@@ -1,0 +1,37 @@
+name: wiredash
+description: The wiredash SDK. For more info go to wiredash.io
+version: 0.0.1+1
+author: https://wiredash.io
+homepage: https://github.com/wiredashio/wiredash-sdk
+
+environment:
+  sdk: ">=2.6.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  http: ^0.12.0
+  http_parser: ^3.1.0
+  shared_preferences: ^0.5.6
+
+dev_dependencies:
+  lint: ^1.1.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+
+  assets:
+    - packages/wiredash/assets/images/default.png
+    - packages/wiredash/assets/images/pen.png
+    - packages/wiredash/assets/images/logo_draw.png
+    - packages/wiredash/assets/images/logo_footer.png
+
+  fonts:
+    - family: LexendDeca
+      fonts:
+        - asset: lib/assets/fonts/LexendDeca-Regular.ttf
+    - family: wiredash-icons
+      fonts:
+        - asset: lib/assets/fonts/Wiredash-Icons.ttf

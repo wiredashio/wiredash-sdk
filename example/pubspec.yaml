@@ -1,0 +1,16 @@
+name: example
+description: Wiredash example project.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.5.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  wiredash:
+    path: ../
+
+flutter:
+  uses-material-design: true

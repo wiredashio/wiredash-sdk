@@ -1,0 +1,17 @@
+name: Static Analysis
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: cirrusci/flutter:stable
+    steps:
+    - uses: actions/checkout@v1.2.0
+    - name: Download dependencies
+      run: sudo --preserve-env=PATH env flutter packages get
+    - name: Check formatting
+      run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
+    - name: Analyze
+      run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
