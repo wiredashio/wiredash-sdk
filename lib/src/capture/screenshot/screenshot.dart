@@ -45,7 +45,6 @@ class ScreenshotState extends State<Screenshot> {
   }
 
   Future<void> _captureScreen() async {
-    print('CAPTURE');
     final canvas = _repaintBoundaryGlobalKey.currentContext.findRenderObject()
         as RenderRepaintBoundary;
 
