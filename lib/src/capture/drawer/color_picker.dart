@@ -3,44 +3,32 @@ import 'dart:math' show pi;
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 
-class ColorPicker extends StatefulWidget {
-  const ColorPicker({
-    Key key,
-    @required this.selectedColor,
-    @required this.onColorSelected,
-  })  : assert(selectedColor != null),
-        assert(onColorSelected != null),
-        super(key: key);
+class ColorPicker extends StatelessWidget {
+  const ColorPicker({Key key, this.selectedColor, this.onChanged})
+      : super(key: key);
 
   final Color selectedColor;
-  final Function(Color color) onColorSelected;
+  final Function(Color color) onChanged;
 
-  @override
-  _ColorPickerState createState() => _ColorPickerState();
-}
-
-class _ColorPickerState extends State<ColorPicker> {
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: _buildColors(),
-    );
-  }
-
-  List<Widget> _buildColors() {
-    return WiredashThemeData.penColors.map((color) {
-      return GestureDetector(
-        onTap: () => widget.onColorSelected(color),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5),
-          child: _ColorDot(
-            color: color,
-            isSelected: widget.selectedColor == color,
+      children: WiredashThemeData.penColors.map((color) {
+        return GestureDetector(
+          onTap: () {
+            onChanged(color);
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: _ColorDot(
+              color: color,
+              isSelected: selectedColor == color,
+            ),
           ),
-        ),
-      );
-    }).toList();
+        );
+      }).toList(),
+    );
   }
 }
 

@@ -1,12 +1,15 @@
+import 'dart:async';
 import 'dart:math' as math;
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:wiredash/src/capture/drawer/drawer.dart';
+import 'package:wiredash/src/capture/screenshot/screenshot.dart';
 import 'package:wiredash/src/capture/sketcher/sketcher.dart';
-import 'package:wiredash/src/capture/state/capture_state.dart';
-import 'package:wiredash/src/capture/state/capture_state_data.dart';
-import 'package:wiredash/src/common/state/wiredash_state.dart';
-import 'package:wiredash/src/common/state/wiredash_state_data.dart';
+import 'package:wiredash/src/capture/sketcher/sketcher_controller.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_translation.dart';
 import 'package:wiredash/src/common/utils/diagonal_shape_painter.dart';
@@ -17,8 +20,10 @@ import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 
 const int _animationDuration = 350;
 
-class CaptureWidget extends StatefulWidget {
-  const CaptureWidget({
+enum CaptureUiState { hidden, navigate, draw }
+
+class Capture extends StatefulWidget {
+  const Capture({
     Key key,
     @required this.child,
   })  : assert(child != null),
@@ -27,12 +32,11 @@ class CaptureWidget extends StatefulWidget {
   final Widget child;
 
   @override
-  CaptureWidgetState createState() => CaptureWidgetState();
+  CaptureState createState() => CaptureState();
 }
 
-class CaptureWidgetState extends State<CaptureWidget>
+class CaptureState extends State<Capture>
     with TickerProviderStateMixin, WidgetsBindingObserver {
-  final _sketcherKey = GlobalKey<SketcherState>();
   final _spotlightKey = GlobalKey<SpotlightState>();
 
   AnimationController _animationControllerScreen;
@@ -49,7 +53,12 @@ class CaptureWidgetState extends State<CaptureWidget>
   Animation<double> _drawPanelSlideAnimation;
   Listenable _masterListenable;
 
-  final _captureState = CaptureStateData();
+  Completer<Uint8List> _captureCompleter;
+  ValueNotifier<CaptureUiState> _captureUiState;
+  SketcherController _sketcherController;
+
+  ui.Image _screenshot;
+  Uint8List _screenshotSketch;
 
   @override
   void initState() {
@@ -64,10 +73,12 @@ class CaptureWidgetState extends State<CaptureWidget>
       duration: const Duration(milliseconds: _animationDuration),
     );
 
+    _captureUiState = ValueNotifier(CaptureUiState.hidden);
+    _sketcherController = SketcherController();
+
     _updateDimensions();
     _initAnimations();
 
-    _captureState.addListener(didCaptureStateChange);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -77,7 +88,7 @@ class CaptureWidgetState extends State<CaptureWidget>
         window.viewPadding, window.devicePixelRatio);
     _screenSize = window.physicalSize / window.devicePixelRatio;
 
-    final widthRestriction = CaptureDrawer.width + _windowPadding.horizontal;
+    final widthRestriction = Drawer.width + _windowPadding.horizontal;
     final heightRestriction = 80 + _windowPadding.vertical; // Bottom Bar height
 
     final targetContentWidth = _screenSize.width - widthRestriction;
@@ -105,7 +116,7 @@ class CaptureWidgetState extends State<CaptureWidget>
     _contentSlideUpAnimation = Tween(begin: 0.0, end: _contentBottomOffset)
         .animate(curvedScreenAnimation);
 
-    _drawPanelSlideAnimation = Tween(begin: 0.0, end: CaptureDrawer.width * 0.4)
+    _drawPanelSlideAnimation = Tween(begin: 0.0, end: Drawer.width * 0.4)
         .animate(curvedDrawerAnimation);
 
     _masterListenable =
@@ -121,26 +132,23 @@ class CaptureWidgetState extends State<CaptureWidget>
     });
   }
 
-  void didCaptureStateChange() {
-    setState(() {
-      // Call setState to notify children which depend on CaptureState
-    });
-  }
-
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _captureState.removeListener(didCaptureStateChange);
-
     _animationControllerScreen.dispose();
     _animationControllerDrawer.dispose();
+    _captureUiState.dispose();
+    _sketcherController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return CaptureState(
-      data: _captureState,
+    return MultiProvider(
+      providers: [
+        ValueListenableProvider.value(value: _captureUiState),
+        ChangeNotifierProvider.value(value: _sketcherController)
+      ],
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: <Widget>[
@@ -167,20 +175,7 @@ class CaptureWidgetState extends State<CaptureWidget>
                 child: child,
               );
             },
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: WiredashTheme.of(context).secondaryBackgroundColor,
-                border: Border.all(
-                  color: WiredashTheme.of(context).dividerColor,
-                  width: 2,
-                ),
-              ),
-              child: Container(
-                alignment: Alignment.centerRight,
-                child: CaptureDrawer(),
-              ),
-            ),
+            child: _buildDrawer(),
           ),
           // --- Capture Content
           AnimatedBuilder(
@@ -197,66 +192,93 @@ class CaptureWidgetState extends State<CaptureWidget>
                 child: child,
               );
             },
-            child: CornerRadiusTransition(
-              radius: _cornerRadiusAnimation,
-              child: Spotlight(
-                key: _spotlightKey,
-                child: Sketcher(
-                  key: _sketcherKey,
-                  isEnabled: _captureState.status == CaptureStatus.draw,
-                  color: _captureState.selectedPenColor,
-                  child: widget.child,
-                ),
-              ),
-            ),
+            child: _buildContent(),
           )
         ],
       ),
     );
   }
 
-  Widget _buildBottomMenu() {
-    return SafeArea(
-      minimum: const EdgeInsets.all(20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          SimpleButton(
-            onPressed: _onBackButtonPressed,
-            text: _getBackButtonString(),
-          ),
-          SimpleButton(
-            onPressed: _onNextButtonPressed,
-            text: _getNextButtonString(),
-            icon: _getNextButtonIcon(),
-          ),
-        ],
+  Widget _buildDrawer() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: WiredashTheme.of(context).secondaryBackgroundColor,
+        border: Border.all(
+          color: WiredashTheme.of(context).dividerColor,
+          width: 2,
+        ),
+      ),
+      child: Container(
+        alignment: Alignment.centerRight,
+        child: Drawer(),
       ),
     );
   }
 
+  Widget _buildContent() {
+    return Consumer<CaptureUiState>(
+      builder: (_, uiState, __) {
+        return CornerRadiusTransition(
+          radius: _cornerRadiusAnimation,
+          child: Spotlight(
+            key: _spotlightKey,
+            child: Sketcher(
+              isEnabled: uiState == CaptureUiState.draw,
+              controller: _sketcherController,
+              child: Screenshot(
+                capture: uiState == CaptureUiState.draw,
+                onCaptured: (image) => _screenshot = image,
+                child: widget.child,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildBottomMenu() {
+    return Consumer<CaptureUiState>(builder: (context, uiState, child) {
+      return SafeArea(
+        minimum: const EdgeInsets.all(20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            SimpleButton(
+              onPressed: _onBackButtonPressed,
+              text: _getBackButtonString(),
+            ),
+            SimpleButton(
+              onPressed: _onNextButtonPressed,
+              text: _getNextButtonString(),
+              icon: _getNextButtonIcon(),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
   void _onBackButtonPressed() {
-    switch (_captureState.status) {
-      case CaptureStatus.hidden:
+    switch (_captureUiState.value) {
+      case CaptureUiState.hidden:
         // Don't do anything
         break;
-      case CaptureStatus.navigate:
-        _hide().then((_) {
-          WiredashState.of(context).feedbackState = FeedbackState.feedback;
-        });
+      case CaptureUiState.navigate:
+        _animateToHidden();
         break;
-      case CaptureStatus.draw:
-        _animationControllerDrawer.reverse();
-        _captureState.status = CaptureStatus.navigate;
+      case CaptureUiState.draw:
+        _animateToNavigate();
         break;
     }
   }
 
   String _getBackButtonString() {
-    switch (_captureState.status) {
-      case CaptureStatus.navigate:
+    switch (_captureUiState.value) {
+      case CaptureUiState.navigate:
         return WiredashTranslation.of(context).captureSkip;
-      case CaptureStatus.draw:
+      case CaptureUiState.draw:
         return WiredashTranslation.of(context).captureBack;
       default:
         return '';
@@ -264,70 +286,39 @@ class CaptureWidgetState extends State<CaptureWidget>
   }
 
   void _onNextButtonPressed() {
-    switch (_captureState.status) {
-      case CaptureStatus.hidden:
+    switch (_captureUiState.value) {
+      case CaptureUiState.hidden:
         // Don't do anything
         break;
-      case CaptureStatus.navigate:
-        _animationControllerDrawer.forward();
-        _spotlightKey.currentState.show(
-          WiredashIcons.spotlightDraw,
-          WiredashTranslation.of(context)
-              .captureSpotlightScreenCapturedTitle
-              .toUpperCase(),
-          WiredashTranslation.of(context).captureSpotlightScreenCapturedMsg,
-        );
-
-        _captureState.status = CaptureStatus.draw;
+      case CaptureUiState.navigate:
+        _animateToDraw();
         break;
-      case CaptureStatus.draw:
-        _takeScreenshot();
+      case CaptureUiState.draw:
+        _takeScreenshotAndHide();
         break;
     }
   }
 
-  String _getNextButtonString() {
-    switch (_captureState.status) {
-      case CaptureStatus.navigate:
-        return WiredashTranslation.of(context).captureTakeScreenshot;
-      case CaptureStatus.draw:
-        return WiredashTranslation.of(context).captureSaveScreenshot;
-      default:
-        return '';
-    }
-  }
+  TickerFuture _animateToHidden() {
+    _sketcherController.clearGestures();
+    _captureUiState.value = CaptureUiState.hidden;
 
-  IconData _getNextButtonIcon() {
-    switch (_captureState.status) {
-      case CaptureStatus.navigate:
-      case CaptureStatus.draw:
-        return WiredashIcons.right;
-      default:
-        return null;
-    }
-  }
-
-  Future<void> _takeScreenshot() async {
-    final screenshot = await _sketcherKey.currentState.getSketch();
-    final wiredashState = WiredashState.of(context, listen: false);
-
-    _hide();
-    wiredashState.feedbackScreenshot = screenshot;
-    wiredashState.feedbackState = FeedbackState.feedback;
-  }
-
-  TickerFuture _hide() {
-    _captureState.status = CaptureStatus.hidden;
+    _captureCompleter.complete(_screenshotSketch);
+    _captureCompleter = null;
+    _screenshot = null;
+    _screenshotSketch = null;
 
     _spotlightKey.currentState.hide();
     _animationControllerDrawer.reverse();
     return _animationControllerScreen.reverse();
   }
 
-  void show() {
-    _captureState.status = CaptureStatus.navigate;
+  void _animateToNavigate() {
+    _sketcherController.clearGestures();
+    _captureUiState.value = CaptureUiState.navigate;
 
     _animationControllerScreen.forward();
+    _animationControllerDrawer.reverse();
     _spotlightKey.currentState.show(
       WiredashIcons.spotlightMove,
       WiredashTranslation.of(context)
@@ -335,5 +326,51 @@ class CaptureWidgetState extends State<CaptureWidget>
           .toLowerCase(),
       WiredashTranslation.of(context).captureSpotlightNavigateMsg,
     );
+  }
+
+  void _animateToDraw() {
+    _captureUiState.value = CaptureUiState.draw;
+
+    _animationControllerScreen.forward();
+    _animationControllerDrawer.forward();
+    _spotlightKey.currentState.show(
+      WiredashIcons.spotlightDraw,
+      WiredashTranslation.of(context)
+          .captureSpotlightScreenCapturedTitle
+          .toUpperCase(),
+      WiredashTranslation.of(context).captureSpotlightScreenCapturedMsg,
+    );
+  }
+
+  String _getNextButtonString() {
+    switch (_captureUiState.value) {
+      case CaptureUiState.navigate:
+        return WiredashTranslation.of(context).captureTakeScreenshot;
+      case CaptureUiState.draw:
+        return WiredashTranslation.of(context).captureSaveScreenshot;
+      default:
+        return '';
+    }
+  }
+
+  IconData _getNextButtonIcon() {
+    switch (_captureUiState.value) {
+      case CaptureUiState.navigate:
+      case CaptureUiState.draw:
+        return WiredashIcons.right;
+      default:
+        return null;
+    }
+  }
+
+  Future<void> _takeScreenshotAndHide() async {
+    _screenshotSketch = await _sketcherController.recordOntoImage(_screenshot);
+    _animateToHidden();
+  }
+
+  Future<Uint8List> show() {
+    _animateToNavigate();
+    _captureCompleter = Completer<Uint8List>();
+    return _captureCompleter.future;
   }
 }
