@@ -28,10 +28,14 @@ class SpotlightState extends State<Spotlight>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 500));
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
     _opacityAnimation = CurvedAnimation(
-        parent: _animationController,
-        curve: Interval(0.3, 1.0, curve: Curves.easeInOut));
+      parent: _animationController,
+      curve: const Interval(0.3, 1.0, curve: Curves.easeInOut),
+    );
 
     _animationController.addStatusListener((AnimationStatus status) {
       if (status == AnimationStatus.dismissed && mounted) {
@@ -51,14 +55,14 @@ class SpotlightState extends State<Spotlight>
 
   @override
   Widget build(BuildContext context) {
-    if (_spotlightWidget == null) {
-      return widget.child;
-    }
-
     return Stack(
       children: <Widget>[
         widget.child,
-        FadeTransition(opacity: _opacityAnimation, child: _spotlightWidget),
+        if (_spotlightWidget != null)
+          FadeTransition(
+            opacity: _opacityAnimation,
+            child: _spotlightWidget,
+          ),
       ],
     );
   }

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/src/capture/capture_widget.dart';
-import 'package:wiredash/src/common/state/wiredash_state.dart';
-import 'package:wiredash/src/common/state/wiredash_state_data.dart';
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
+import 'package:wiredash/src/capture/capture.dart';
+import 'package:wiredash/src/common/network/api_client.dart';
+import 'package:wiredash/src/common/network/network_manager.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_translation.dart';
 import 'package:wiredash/src/common/translation/wiredash_translation_data.dart';
-import 'package:wiredash/src/common/widgets/wiredash_app.dart';
+import 'package:wiredash/src/common/user/user_manager.dart';
+import 'package:wiredash/src/common/widgets/wiredash_scaffold.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
 
 /// Capture in-app user feedback, wishes, ratings and much more
@@ -94,7 +98,7 @@ class Wiredash extends StatefulWidget {
   final Widget child;
 
   @override
-  WiredashWidgetState createState() => WiredashWidgetState();
+  WiredashState createState() => WiredashState();
 
   /// The [WiredashController] from the closest [Wiredash] instance that
   /// encloses the given context.
@@ -105,25 +109,47 @@ class Wiredash extends StatefulWidget {
   /// Wiredash.of(context).show();
   /// ```
   static WiredashController of(BuildContext context) {
-    final state = context.findAncestorStateOfType<WiredashWidgetState>();
+    final state = context.findAncestorStateOfType<WiredashState>();
     return WiredashController(state);
   }
 }
 
-class WiredashWidgetState extends State<Wiredash> {
-  final _captureKey = GlobalKey<CaptureWidgetState>();
+class WiredashState extends State<Wiredash> {
+  GlobalKey<CaptureState> captureKey;
+  GlobalKey<NavigatorState> navigatorKey;
 
-  WiredashStateData _data;
+  NetworkManager networkManager;
+  UserManager userManager;
+
+  FeedbackModel _feedbackModel;
+
   WiredashThemeData _theme;
   WiredashTranslationData _translation;
 
   @override
   void initState() {
     super.initState();
-    _data = WiredashStateData(
-        _captureKey, widget.navigatorKey, widget.projectId, widget.secret);
+    captureKey = GlobalKey<CaptureState>();
+    navigatorKey = widget.navigatorKey;
+
     _updateDependencies();
-    _data.addListener(_onDataStateChange);
+
+    networkManager = NetworkManager(ApiClient(
+      httpClient: Client(),
+      projectId: widget.projectId,
+      secret: widget.secret,
+    ));
+
+    userManager = UserManager();
+
+    _feedbackModel =
+        FeedbackModel(captureKey, navigatorKey, networkManager, userManager);
+  }
+
+  @override
+  void dispose() {
+    _feedbackModel.dispose();
+    super.dispose();
   }
 
   @override
@@ -132,34 +158,28 @@ class WiredashWidgetState extends State<Wiredash> {
     _updateDependencies();
   }
 
-  @override
-  void dispose() {
-    _data.removeListener(_onDataStateChange);
-    super.dispose();
-  }
-
   void _updateDependencies() {
-    _theme = widget.theme ?? WiredashThemeData();
-    _translation = widget.translation ?? WiredashTranslationData();
-  }
-
-  void _onDataStateChange() {
     setState(() {
-      // Call setState to notify child widgets which depend on the data state
+      _theme = widget.theme ?? WiredashThemeData();
+      _translation = widget.translation ?? WiredashTranslationData();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return WiredashState(
-      data: _data,
+    return MultiProvider(
+      providers: [
+        Provider.value(value: networkManager),
+        Provider.value(value: userManager),
+        ChangeNotifierProvider.value(value: _feedbackModel),
+      ],
       child: WiredashTheme(
         data: _theme,
         child: WiredashTranslation(
           data: _translation,
           child: WiredashScaffold(
-            child: CaptureWidget(
-              key: _captureKey,
+            child: Capture(
+              key: captureKey,
               child: widget.child,
             ),
           ),
@@ -168,5 +188,7 @@ class WiredashWidgetState extends State<Wiredash> {
     );
   }
 
-  WiredashStateData get data => _data;
+  void show() {
+    _feedbackModel.show();
+  }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/common/state/wiredash_state.dart';
-import 'package:wiredash/src/common/state/wiredash_state_data.dart';
+import 'package:provider/provider.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_translation.dart';
+import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/animated_fade_in.dart';
 import 'package:wiredash/src/common/widgets/animated_progress.dart';
 import 'package:wiredash/src/common/widgets/simple_button.dart';
@@ -11,6 +11,7 @@ import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/components/input_component.dart';
 import 'package:wiredash/src/feedback/components/intro_component.dart';
 import 'package:wiredash/src/feedback/components/success_component.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 
 class FeedbackSheet extends StatefulWidget {
   @override
@@ -60,7 +61,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
       children: <Widget>[
         _buildHeader(),
         AnimatedProgress(
-          isLoading: WiredashState.of(context, listen: false).loading,
+          isLoading: Provider.of<FeedbackModel>(context).loading,
           value: _getProgressValue(),
         ),
         Padding(
@@ -114,7 +115,8 @@ class _FeedbackSheetState extends State<FeedbackSheet>
           ),
           const SizedBox(height: 24),
           AnimatedFadeIn(
-            changeKey: ValueKey(WiredashState.of(context).feedbackState),
+            changeKey:
+                ValueKey(Provider.of<FeedbackModel>(context).feedbackUiState),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -137,7 +139,8 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   }
 
   Widget _buildFooter() {
-    if (WiredashState.of(context).feedbackState == FeedbackState.intro) {
+    if (Provider.of<FeedbackModel>(context).feedbackUiState ==
+        FeedbackUiState.intro) {
       return Image.asset(
         'assets/images/logo_footer.png',
         width: 100,
@@ -148,17 +151,17 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   }
 
   Widget _buildButtons() {
-    final state = WiredashState.of(context);
+    final state = Provider.of<FeedbackModel>(context);
 
-    switch (state.feedbackState) {
-      case FeedbackState.feedback:
+    switch (state.feedbackUiState) {
+      case FeedbackUiState.feedback:
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             SimpleButton(
               text: WiredashTranslation.of(context).feedbackCancel,
               onPressed: () {
-                state.feedbackState = FeedbackState.intro;
+                state.feedbackUiState = FeedbackUiState.intro;
               },
             ),
             SimpleButton(
@@ -168,13 +171,13 @@ class _FeedbackSheetState extends State<FeedbackSheet>
             ),
           ],
         );
-      case FeedbackState.email:
+      case FeedbackUiState.email:
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             SimpleButton(
               text: WiredashTranslation.of(context).feedbackBack,
-              onPressed: () => state.feedbackState = FeedbackState.feedback,
+              onPressed: () => state.feedbackUiState = FeedbackUiState.feedback,
             ),
             SimpleButton(
               text: WiredashTranslation.of(context).feedbackSend,
@@ -191,47 +194,46 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   void _submitFeedback() {
     if (_feedbackFormKey.currentState.validate()) {
       _feedbackFormKey.currentState.save();
-      WiredashState.of(context, listen: false).feedbackState =
-          FeedbackState.email;
+      Provider.of<FeedbackModel>(context, listen: false).feedbackUiState =
+          FeedbackUiState.email;
     }
   }
 
   void _submitEmail() {
     if (_emailFormKey.currentState.validate()) {
       _emailFormKey.currentState.save();
-      WiredashState.of(context, listen: false).feedbackState =
-          FeedbackState.success;
+      Provider.of<FeedbackModel>(context, listen: false).feedbackUiState =
+          FeedbackUiState.success;
     }
   }
 
   void _onFeedbackModeSelected(FeedbackType mode) {
-    WiredashState.of(context, listen: false).feedbackType = mode;
+    final feedbackModel = Provider.of<FeedbackModel>(context, listen: false);
+    feedbackModel.feedbackType = mode;
 
     switch (mode) {
       case FeedbackType.bug:
       case FeedbackType.improvement:
         // Start the capture process
         Navigator.pop(context);
-        WiredashState.of(context, listen: false).feedbackState =
-            FeedbackState.capture;
+        feedbackModel.feedbackUiState = FeedbackUiState.capture;
         break;
       case FeedbackType.praise:
         // Don't start the screen capturing and directly continue to the feedback form
-        WiredashState.of(context, listen: false).feedbackState =
-            FeedbackState.feedback;
+        feedbackModel.feedbackUiState = FeedbackUiState.feedback;
         break;
     }
   }
 
   String _getTitle() {
-    switch (WiredashState.of(context).feedbackState) {
-      case FeedbackState.intro:
+    switch (Provider.of<FeedbackModel>(context).feedbackUiState) {
+      case FeedbackUiState.intro:
         return WiredashTranslation.of(context).feedbackStateIntroTitle;
-      case FeedbackState.feedback:
+      case FeedbackUiState.feedback:
         return WiredashTranslation.of(context).feedbackStateFeedbackTitle;
-      case FeedbackState.email:
+      case FeedbackUiState.email:
         return WiredashTranslation.of(context).feedbackStateEmailTitle;
-      case FeedbackState.success:
+      case FeedbackUiState.success:
         return WiredashTranslation.of(context).feedbackStateSuccessTitle;
       default:
         return '';
@@ -239,14 +241,14 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   }
 
   String _getSubtitle() {
-    switch (WiredashState.of(context).feedbackState) {
-      case FeedbackState.intro:
+    switch (Provider.of<FeedbackModel>(context).feedbackUiState) {
+      case FeedbackUiState.intro:
         return WiredashTranslation.of(context).feedbackStateIntroMsg;
-      case FeedbackState.feedback:
+      case FeedbackUiState.feedback:
         return WiredashTranslation.of(context).feedbackStateFeedbackMsg;
-      case FeedbackState.email:
+      case FeedbackUiState.email:
         return WiredashTranslation.of(context).feedbackStateEmailMsg;
-      case FeedbackState.success:
+      case FeedbackUiState.success:
         return WiredashTranslation.of(context).feedbackStateSuccessMsg;
       default:
         return '';
@@ -254,12 +256,12 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   }
 
   double _getProgressValue() {
-    switch (WiredashState.of(context).feedbackState) {
-      case FeedbackState.feedback:
+    switch (Provider.of<FeedbackModel>(context).feedbackUiState) {
+      case FeedbackUiState.feedback:
         return 0.3;
-      case FeedbackState.email:
+      case FeedbackUiState.email:
         return 0.8;
-      case FeedbackState.success:
+      case FeedbackUiState.success:
         return 1.0;
       default:
         return 0;
@@ -267,30 +269,30 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   }
 
   Widget _getInputComponent() {
-    final state = WiredashState.of(context);
-    final uiState = state.feedbackState;
+    final feedbackModel = Provider.of<FeedbackModel>(context);
+    final uiState = feedbackModel.feedbackUiState;
     switch (uiState) {
-      case FeedbackState.intro:
+      case FeedbackUiState.intro:
         return IntroComponent(_onFeedbackModeSelected);
-      case FeedbackState.feedback:
+      case FeedbackUiState.feedback:
         return InputComponent(
           key: ValueKey(uiState),
           type: InputComponentType.feedback,
           formKey: _feedbackFormKey,
           focusNode: _feedbackFocusNode,
-          prefill: state.feedbackMessage,
+          prefill: feedbackModel.feedbackMessage,
           autofocus: _emailFocusNode.hasFocus,
         );
-      case FeedbackState.email:
+      case FeedbackUiState.email:
         return InputComponent(
           key: ValueKey(uiState),
           type: InputComponentType.email,
           formKey: _emailFormKey,
           focusNode: _emailFocusNode,
-          prefill: state.userEmail,
+          prefill: Provider.of<UserManager>(context, listen: false).userEmail,
           autofocus: _feedbackFocusNode.hasFocus,
         );
-      case FeedbackState.success:
+      case FeedbackUiState.success:
         return SuccessComponent();
       default:
         return IntroComponent(_onFeedbackModeSelected);
