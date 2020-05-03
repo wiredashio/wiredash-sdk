@@ -100,7 +100,38 @@ class FeedbackModel with ChangeNotifier {
   }
 
   void show() {
-    if (feedbackUiState == FeedbackUiState.capture) return;
+    assert(_navigatorKey.currentState != null, '''
+Wiredash couldn't access your app's root navigator.
+
+This is likely to happen when you forget to add the navigator key to your 
+Material- / Cupertino- or WidgetsApp widget. 
+
+To fix this, simply assign the same GlobalKey you assigned to Wiredash 
+to your Material- / Cupertino- or WidgetsApp widget, like so:
+
+return Wiredash(
+  projectId: "YOUR-PROJECT-ID",
+  secret: "YOUR-SECRET",
+  navigatorKey: _navigatorKey, // <-- should be the same
+  child: MaterialApp(
+    navigatorKey: _navigatorKey, // <-- should be the same
+    title: 'Flutter Demo',
+    home: ...
+  ),
+);
+
+For more info on how to setup Wiredash, check out 
+https://github.com/wiredashio/wiredash-sdk
+
+If this did not fix the issue, please file an issue at 
+https://github.com/wiredashio/wiredash-sdk/issues
+
+Thanks!
+''');
+
+    if (_navigatorKey.currentState == null ||
+        feedbackUiState == FeedbackUiState.capture) return;
+
     feedbackUiState = FeedbackUiState.intro;
     _navigatorKey.currentState
         .push(DismissiblePageRoute(builder: (context) => FeedbackSheet()));
