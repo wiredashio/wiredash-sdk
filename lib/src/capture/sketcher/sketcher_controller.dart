@@ -55,16 +55,22 @@ class SketcherController extends ChangeNotifier {
   }
 
   Future<Uint8List> recordOntoImage(Image image) async {
-    final size = Size(image.width.toDouble(), image.height.toDouble());
+    final imageSize = Size(image.width.toDouble(), image.height.toDouble());
     final recording = PictureRecorder();
-    final canvas =
-        Canvas(recording, Rect.fromLTWH(0.0, 0.0, size.width, size.height))
-          ..drawImage(image, Offset.zero, Paint())
-          ..scale(size.width / size.width, size.height / size.height);
-    SketchPainter(this).paint(canvas, size);
-    final combined = await recording
-        .endRecording()
-        .toImage(size.width.toInt(), size.height.toInt());
+    final canvas = Canvas(
+      recording,
+      Rect.fromLTWH(0.0, 0.0, imageSize.width, imageSize.height),
+    )
+      ..drawImage(image, Offset.zero, Paint())
+      ..scale(imageSize.width / size.width, imageSize.height / size.height);
+
+    SketchPainter(this).paint(canvas, imageSize);
+
+    final combined = await recording.endRecording().toImage(
+          imageSize.width.toInt(),
+          imageSize.height.toInt(),
+        );
+
     return (await combined.toByteData(format: ImageByteFormat.png))
         .buffer
         .asUint8List();

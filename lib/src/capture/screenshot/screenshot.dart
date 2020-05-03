@@ -34,7 +34,7 @@ class ScreenshotState extends State<Screenshot> {
     super.didUpdateWidget(oldWidget);
 
     if (_wasCaptured != widget.capture) {
-      _releaseScreen(); // _clearScreenshotFromMemory();
+      _releaseScreen();
 
       if (!_wasCaptured) {
         scheduleMicrotask(() => _captureScreen());
@@ -48,7 +48,8 @@ class ScreenshotState extends State<Screenshot> {
     final canvas = _repaintBoundaryGlobalKey.currentContext.findRenderObject()
         as RenderRepaintBoundary;
 
-    _screenshot = await canvas.toImage(pixelRatio: 1);
+    _screenshot = await canvas.toImage(
+        pixelRatio: MediaQuery.of(context).devicePixelRatio);
 
     final byteData =
         await _screenshot.toByteData(format: ui.ImageByteFormat.png);
