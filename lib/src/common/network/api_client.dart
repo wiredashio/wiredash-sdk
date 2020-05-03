@@ -10,8 +10,7 @@ class ApiClient {
     @required this.secret,
   });
 
-  static const String _host =
-      'http://localhost:3000/'; //'https://api.wiredash.io/';
+  static const String _host = 'https://api.wiredash.io/';
 
   final Client httpClient;
   final String projectId;
