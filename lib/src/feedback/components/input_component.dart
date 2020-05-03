@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/common/state/wiredash_state.dart';
+import 'package:provider/provider.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_translation.dart';
+import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 
 enum InputComponentType { feedback, email }
 
@@ -145,13 +147,13 @@ class _InputComponentState extends State<InputComponent> {
   }
 
   void _handleInput(String input) {
-    final state = WiredashState.of(context, listen: false);
     switch (widget.type) {
       case InputComponentType.feedback:
-        state.feedbackMessage = input;
+        Provider.of<FeedbackModel>(context, listen: false).feedbackMessage =
+            input;
         break;
       case InputComponentType.email:
-        state.userEmail = input;
+        Provider.of<UserManager>(context, listen: false).userEmail = input;
         break;
     }
   }

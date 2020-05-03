@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/src/common/state/wiredash_state_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_translation.dart';
 import 'package:wiredash/src/common/widgets/list_tile_button.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 
 class IntroComponent extends StatelessWidget {
   final Function(FeedbackType) onModeSelectedCallback;
