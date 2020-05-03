@@ -56,6 +56,7 @@ class CaptureState extends State<Capture>
   Completer<Uint8List> _captureCompleter;
   ValueNotifier<CaptureUiState> _captureUiState;
   SketcherController _sketcherController;
+  ValueNotifier<bool> _visible;
 
   ui.Image _screenshot;
   Uint8List _screenshotSketch;
@@ -75,6 +76,21 @@ class CaptureState extends State<Capture>
 
     _captureUiState = ValueNotifier(CaptureUiState.hidden);
     _sketcherController = SketcherController();
+    _visible = ValueNotifier(false);
+
+    _captureUiState.addListener(() {
+      switch (_captureUiState.value) {
+        case CaptureUiState.hidden:
+          _visible.value = false;
+          break;
+        case CaptureUiState.navigate:
+          _visible.value = true;
+          break;
+        case CaptureUiState.draw:
+          _visible.value = true;
+          break;
+      }
+    });
 
     _updateDimensions();
     _initAnimations();
@@ -139,6 +155,7 @@ class CaptureState extends State<Capture>
     _animationControllerDrawer.dispose();
     _captureUiState.dispose();
     _sketcherController.dispose();
+    _visible.dispose();
     super.dispose();
   }
 
@@ -373,4 +390,6 @@ class CaptureState extends State<Capture>
     _captureCompleter = Completer<Uint8List>();
     return _captureCompleter.future;
   }
+
+  ValueNotifier<bool> get visible => _visible;
 }
