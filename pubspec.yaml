@@ -24,7 +24,6 @@ dev_dependencies:
 flutter:
 
   assets:
-    - packages/wiredash/assets/images/default.png
     - packages/wiredash/assets/images/pen.png
     - packages/wiredash/assets/images/logo_draw.png
     - packages/wiredash/assets/images/logo_footer.png
