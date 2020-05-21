@@ -5,7 +5,7 @@ import 'dart:ui' as ui show window;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DeviceInfo {
-  static const _prefsDeviceID = 'deviceID';
+  static const _prefsDeviceID = '_wiredashDeviceID';
 
   static Map<String, dynamic> generate(String appVersion, String deviceId) {
     final Map<String, dynamic> uiValues = {};
