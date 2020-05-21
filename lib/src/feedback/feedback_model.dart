@@ -75,6 +75,7 @@ class FeedbackModel with ChangeNotifier {
 
   void _clearFeedback() {
     feedbackMessage = null;
+    screenshot = null;
   }
 
   void _sendFeedback() {
