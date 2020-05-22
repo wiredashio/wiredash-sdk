@@ -102,9 +102,9 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
                 navigator.pop();
                 _didUserPop = true;
               }
-            if (onPagePopped != null) {
-              onPagePopped();
-            }
+              if (onPagePopped != null) {
+                onPagePopped();
+              }
             },
             child: FadeTransition(
               opacity: animation,
