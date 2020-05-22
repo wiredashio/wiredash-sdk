@@ -168,7 +168,7 @@ class _FloatingHandleState extends State<FloatingHandle>
     if (widget.visible) {
       _animationController.forward();
     } else {
-      _animationController.reverse(from: 0.0);
+      _animationController.reverse(from: _elevated ? null : 0.0);
     }
   }
 
