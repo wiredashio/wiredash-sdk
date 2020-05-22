@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 
 class FloatingEntry extends StatefulWidget {
@@ -44,65 +47,70 @@ class _FloatingEntryState extends State<FloatingEntry> {
         return Stack(
           children: <Widget>[
             widget.child,
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: AnimatedOpacity(
-                opacity: isDragging ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 350),
-                curve: Curves.fastOutSlowIn,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomLeft,
-                      end: Alignment.topRight,
-                      colors: [
-                        Colors.black54,
-                        Colors.transparent,
-                        Colors.transparent
-                      ],
+            if (WiredashOptions.of(context).showDebugFloatingEntryPoint) ...[
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: AnimatedOpacity(
+                  opacity: isDragging ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 350),
+                  curve: Curves.fastOutSlowIn,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight,
+                        colors: [
+                          Colors.black54,
+                          Colors.transparent,
+                          Colors.transparent
+                        ],
+                      ),
                     ),
-                  ),
-                  height: 100,
-                  width: 100,
-                  alignment: Alignment.bottomLeft,
-                  child: const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Icon(
-                      WiredashIcons.trashcan,
-                      color: Colors.white,
+                    height: 100,
+                    width: 100,
+                    alignment: Alignment.bottomLeft,
+                    child: const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Icon(
+                        WiredashIcons.trashcan,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              left: _position.dx,
-              top: _position.dy,
-              child: AnimatedBuilder(
-                animation: Wiredash.of(context).visible,
-                builder: (context, _) {
-                  return FloatingHandle(
-                    visible: showHandle && !Wiredash.of(context).visible.value,
-                    onDragStart: () {
-                      setState(() {
-                        isDragging = true;
-                      });
-                    },
-                    onDragEnd: () {
-                      setState(() {
-                        isDragging = false;
-                      });
-                    },
-                    onDragUpdate: (details) {
-                      setState(() {
-                        _position =
-                            details.globalPosition - const Offset(28, 28);
-                      });
-                    },
-                  );
-                },
+              Positioned(
+                left: _position.dx,
+                top: _position.dy,
+                child: Selector<FeedbackModel, FeedbackUiState>(
+                  selector: (context, feedbackModel) =>
+                      feedbackModel.feedbackUiState,
+                  builder: (_, feedbackUiState, __) {
+                    return FloatingHandle(
+                      visible: showHandle &&
+                          feedbackUiState == FeedbackUiState.hidden,
+                      onTap: Wiredash.of(context).show,
+                      onDragStart: () {
+                        setState(() {
+                          isDragging = true;
+                        });
+                      },
+                      onDragEnd: () {
+                        setState(() {
+                          isDragging = false;
+                        });
+                      },
+                      onDragUpdate: (details) {
+                        setState(() {
+                          _position =
+                              details.globalPosition - const Offset(28, 28);
+                        });
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
+            ],
           ],
         );
       },
@@ -112,6 +120,7 @@ class _FloatingEntryState extends State<FloatingEntry> {
 
 class FloatingHandle extends StatefulWidget {
   final bool visible;
+  final Function() onTap;
   final Function() onDragStart;
   final Function() onDragEnd;
   final Function(DragUpdateDetails) onDragUpdate;
@@ -119,6 +128,7 @@ class FloatingHandle extends StatefulWidget {
   const FloatingHandle(
       {Key key,
       this.visible,
+      this.onTap,
       this.onDragUpdate,
       this.onDragStart,
       this.onDragEnd})
@@ -158,7 +168,7 @@ class _FloatingHandleState extends State<FloatingHandle>
     if (widget.visible) {
       _animationController.forward();
     } else {
-      _animationController.reverse();
+      _animationController.reverse(from: 0.0);
     }
   }
 
@@ -191,7 +201,7 @@ class _FloatingHandleState extends State<FloatingHandle>
         );
       },
       child: GestureDetector(
-        onTap: Wiredash.of(context).show,
+        onTap: widget.onTap,
         onTapDown: _elevate,
         onTapUp: _lower,
         onPanUpdate: widget.onDragUpdate,
