@@ -26,6 +26,7 @@ flutter:
   assets:
     - packages/wiredash/assets/images/pen.png
     - packages/wiredash/assets/images/logo_draw.png
+    - packages/wiredash/assets/images/logo_white.png
     - packages/wiredash/assets/images/logo_footer.png
 
   fonts:
