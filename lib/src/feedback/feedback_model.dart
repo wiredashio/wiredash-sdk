@@ -61,6 +61,9 @@ class FeedbackModel with ChangeNotifier {
             DismissiblePageRoute(
               builder: (context) => FeedbackSheet(),
               background: image,
+              onPagePopped: () {
+                feedbackUiState = FeedbackUiState.hidden;
+              },
             ),
           );
         });
@@ -134,8 +137,14 @@ Thanks!
         feedbackUiState == FeedbackUiState.capture) return;
 
     feedbackUiState = FeedbackUiState.intro;
-    _navigatorKey.currentState
-        .push(DismissiblePageRoute(builder: (context) => FeedbackSheet()));
+    _navigatorKey.currentState.push(
+      DismissiblePageRoute(
+        builder: (context) => FeedbackSheet(),
+        onPagePopped: () {
+          feedbackUiState = FeedbackUiState.hidden;
+        },
+      ),
+    );
   }
 }
 

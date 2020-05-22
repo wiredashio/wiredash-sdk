@@ -293,7 +293,13 @@ class _FeedbackSheetState extends State<FeedbackSheet>
           autofocus: _feedbackFocusNode.hasFocus,
         );
       case FeedbackUiState.success:
-        return SuccessComponent();
+        return SuccessComponent(
+          () {
+            Provider.of<FeedbackModel>(context, listen: false).feedbackUiState =
+                FeedbackUiState.hidden;
+            Navigator.pop(context);
+          },
+        );
       default:
         return IntroComponent(_onFeedbackModeSelected);
     }

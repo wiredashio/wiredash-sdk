@@ -4,6 +4,14 @@ import 'package:wiredash/src/common/widgets/list_tile_button.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 
 class SuccessComponent extends StatelessWidget {
+  final Function() onClosedCallback;
+
+  const SuccessComponent(
+    this.onClosedCallback, {
+    Key key,
+  })  : assert(onClosedCallback != null),
+        super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -19,8 +27,8 @@ class SuccessComponent extends StatelessWidget {
                 WiredashTranslation.of(context).feedbackStateSuccessCloseTitle,
             subtitle:
                 WiredashTranslation.of(context).feedbackStateSuccessCloseMsg,
-            onPressed: () => Navigator.pop(context),
-          )
+            onPressed: onClosedCallback,
+          ),
         ],
       ),
     );
