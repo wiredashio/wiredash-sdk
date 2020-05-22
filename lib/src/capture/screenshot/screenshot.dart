@@ -48,8 +48,7 @@ class ScreenshotState extends State<Screenshot> {
     final canvas = _repaintBoundaryGlobalKey.currentContext.findRenderObject()
         as RenderRepaintBoundary;
 
-    _screenshot = await canvas.toImage(
-        pixelRatio: MediaQuery.of(context).devicePixelRatio);
+    _screenshot = await canvas.toImage(pixelRatio: 1.5);
 
     final byteData =
         await _screenshot.toByteData(format: ui.ImageByteFormat.png);
