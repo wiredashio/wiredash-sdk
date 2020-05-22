@@ -4,7 +4,7 @@ import 'package:wiredash/src/common/widgets/list_tile_button.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 
 class SuccessComponent extends StatelessWidget {
-  final Function() onClosedCallback;
+  final VoidCallback onClosedCallback;
 
   const SuccessComponent(
     this.onClosedCallback, {
