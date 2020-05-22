@@ -31,4 +31,6 @@ class WiredashIcons {
       IconData(0xe00C, fontFamily: 'wiredash-icons', fontPackage: 'wiredash');
   static const IconData email =
       IconData(0xe00D, fontFamily: 'wiredash-icons', fontPackage: 'wiredash');
+  static const IconData trashcan =
+      IconData(0xe00E, fontFamily: 'wiredash-icons', fontPackage: 'wiredash');
 }
