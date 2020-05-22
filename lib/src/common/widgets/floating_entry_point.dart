@@ -8,27 +8,26 @@ import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 
-class FloatingEntry extends StatefulWidget {
+class FloatingEntryPoint extends StatefulWidget {
   final Widget child;
 
-  const FloatingEntry({Key key, this.child}) : super(key: key);
+  const FloatingEntryPoint({Key key, this.child}) : super(key: key);
 
   @override
-  _FloatingEntryState createState() => _FloatingEntryState();
+  _FloatingEntryPointState createState() => _FloatingEntryPointState();
 }
 
-class _FloatingEntryState extends State<FloatingEntry> {
+class _FloatingEntryPointState extends State<FloatingEntryPoint> {
   Offset _position;
-
-  bool showHandle = true;
-  bool isDragging = false;
+  bool _isButtonDiscarded = false;
+  bool _isDragging = false;
 
   void calculateRecyclePosition(Size biggestConstrains) {
     final removeArea = biggestConstrains.bottomLeft(Offset.zero);
-    final shouldShowHandle = (removeArea - _position).distance > 100;
+    final isButtonDiscarded = (removeArea - _position).distance <= 100;
 
-    if (shouldShowHandle != showHandle) {
-      showHandle = shouldShowHandle;
+    if (_isButtonDiscarded != isButtonDiscarded) {
+      _isButtonDiscarded = isButtonDiscarded;
       scheduleMicrotask(() {
         setState(() {
           // Update handle state
@@ -50,65 +49,12 @@ class _FloatingEntryState extends State<FloatingEntry> {
             if (WiredashOptions.of(context).showDebugFloatingEntryPoint) ...[
               Align(
                 alignment: Alignment.bottomLeft,
-                child: AnimatedOpacity(
-                  opacity: isDragging ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 350),
-                  curve: Curves.fastOutSlowIn,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.topRight,
-                        colors: [
-                          Colors.black54,
-                          Colors.transparent,
-                          Colors.transparent
-                        ],
-                      ),
-                    ),
-                    height: 100,
-                    width: 100,
-                    alignment: Alignment.bottomLeft,
-                    child: const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Icon(
-                        WiredashIcons.trashcan,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
+                child: _buildDiscardCorner(),
               ),
               Positioned(
                 left: _position.dx,
                 top: _position.dy,
-                child: Selector<FeedbackModel, FeedbackUiState>(
-                  selector: (context, feedbackModel) =>
-                      feedbackModel.feedbackUiState,
-                  builder: (_, feedbackUiState, __) {
-                    return FloatingHandle(
-                      visible: showHandle &&
-                          feedbackUiState == FeedbackUiState.hidden,
-                      onTap: Wiredash.of(context).show,
-                      onDragStart: () {
-                        setState(() {
-                          isDragging = true;
-                        });
-                      },
-                      onDragEnd: () {
-                        setState(() {
-                          isDragging = false;
-                        });
-                      },
-                      onDragUpdate: (details) {
-                        setState(() {
-                          _position =
-                              details.globalPosition - const Offset(28, 28);
-                        });
-                      },
-                    );
-                  },
-                ),
+                child: _buildFloatingButton(),
               ),
             ],
           ],
@@ -116,34 +62,89 @@ class _FloatingEntryState extends State<FloatingEntry> {
       },
     );
   }
+
+  Widget _buildDiscardCorner() {
+    return AnimatedOpacity(
+      opacity: _isDragging ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.fastOutSlowIn,
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight,
+            colors: [Colors.black54, Colors.transparent, Colors.transparent],
+          ),
+        ),
+        height: 100,
+        width: 100,
+        alignment: Alignment.bottomLeft,
+        child: const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Icon(
+            WiredashIcons.trashcan,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFloatingButton() {
+    return Selector<FeedbackModel, FeedbackUiState>(
+      selector: (context, feedbackModel) => feedbackModel.feedbackUiState,
+      builder: (context, feedbackUiState, __) {
+        return FloatingButton(
+          isVisible:
+              !_isButtonDiscarded && feedbackUiState == FeedbackUiState.hidden,
+          onTap: Wiredash.of(context).show,
+          onDragStart: () {
+            setState(() {
+              _isDragging = true;
+            });
+          },
+          onDragEnd: () {
+            setState(() {
+              _isDragging = false;
+            });
+          },
+          onDragUpdate: (details) {
+            setState(() {
+              _position = details.globalPosition - const Offset(28, 28);
+            });
+          },
+        );
+      },
+    );
+  }
 }
 
-class FloatingHandle extends StatefulWidget {
-  final bool visible;
+class FloatingButton extends StatefulWidget {
+  final bool isVisible;
   final Function() onTap;
   final Function() onDragStart;
   final Function() onDragEnd;
   final Function(DragUpdateDetails) onDragUpdate;
 
-  const FloatingHandle(
-      {Key key,
-      this.visible,
-      this.onTap,
-      this.onDragUpdate,
-      this.onDragStart,
-      this.onDragEnd})
-      : super(key: key);
+  const FloatingButton({
+    Key key,
+    this.isVisible,
+    this.onTap,
+    this.onDragUpdate,
+    this.onDragStart,
+    this.onDragEnd,
+  }) : super(key: key);
 
   @override
-  _FloatingHandleState createState() => _FloatingHandleState();
+  _FloatingButtonState createState() => _FloatingButtonState();
 }
 
-class _FloatingHandleState extends State<FloatingHandle>
+class _FloatingButtonState extends State<FloatingButton>
     with SingleTickerProviderStateMixin {
   final _curvedInterval = const Interval(0.4, 1.0, curve: Curves.elasticOut);
 
   AnimationController _animationController;
-  bool _elevated = false;
+  bool _isDragging = false;
 
   @override
   void initState() {
@@ -162,26 +163,26 @@ class _FloatingHandleState extends State<FloatingHandle>
   }
 
   @override
-  void didUpdateWidget(FloatingHandle oldWidget) {
+  void didUpdateWidget(FloatingButton oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.visible) {
+    if (widget.isVisible) {
       _animationController.forward();
     } else {
-      _animationController.reverse(from: _elevated ? null : 0.0);
+      _animationController.reverse(from: _isDragging ? null : 0.0);
     }
   }
 
   void _elevate(_) {
     setState(() {
-      _elevated = true;
+      _isDragging = true;
       widget.onDragStart();
     });
   }
 
   void _lower(_) {
     setState(() {
-      _elevated = false;
+      _isDragging = false;
       widget.onDragEnd();
     });
   }
@@ -210,7 +211,7 @@ class _FloatingHandleState extends State<FloatingHandle>
           opacity: 0.85,
           child: Material(
             shape: const StadiumBorder(),
-            elevation: _elevated ? 12 : 6,
+            elevation: _isDragging ? 12 : 6,
             color: Colors.transparent,
             clipBehavior: Clip.antiAlias,
             child: Container(
