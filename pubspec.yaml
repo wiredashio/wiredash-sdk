@@ -1,6 +1,6 @@
 name: wiredash
 description: Wiredash is an interactive user feedback tool for Flutter apps.
-version: 0.0.2
+version: 0.1.0
 homepage: https://wiredash.io
 repository: https://github.com/wiredashio/wiredash-sdk
 
@@ -24,9 +24,10 @@ dev_dependencies:
 flutter:
 
   assets:
-    - packages/wiredash/assets/images/pen.png
-    - packages/wiredash/assets/images/logo_draw.png
     - packages/wiredash/assets/images/logo_footer.png
+    - packages/wiredash/assets/images/logo_grey.png
+    - packages/wiredash/assets/images/logo_white.png
+    - packages/wiredash/assets/images/pen.png
 
   fonts:
     - family: LexendDeca

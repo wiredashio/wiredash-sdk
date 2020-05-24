@@ -4,11 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/network/api_client.dart';
 import 'package:wiredash/src/common/network/network_manager.dart';
+import 'package:wiredash/src/common/options/wiredash_options.dart';
+import 'package:wiredash/src/common/options/wiredash_options_data.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_translation.dart';
 import 'package:wiredash/src/common/translation/wiredash_translation_data.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
+import 'package:wiredash/src/common/widgets/floating_entry_point.dart';
 import 'package:wiredash/src/common/widgets/wiredash_scaffold.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
@@ -58,6 +61,7 @@ class Wiredash extends StatefulWidget {
     @required this.projectId,
     @required this.secret,
     @required this.navigatorKey,
+    this.options,
     this.theme,
     this.translation,
     @required this.child,
@@ -75,6 +79,9 @@ class Wiredash extends StatefulWidget {
 
   /// Your Wiredash project secret
   final String secret;
+
+  /// Customize Wiredash's behaviour
+  final WiredashOptionsData options;
 
   /// Default visual properties, like colors and fonts for the Wiredash bottom
   /// sheet and the screenshot capture UI.
@@ -123,6 +130,7 @@ class WiredashState extends State<Wiredash> {
 
   FeedbackModel _feedbackModel;
 
+  WiredashOptionsData _options;
   WiredashThemeData _theme;
   WiredashTranslationData _translation;
 
@@ -160,6 +168,7 @@ class WiredashState extends State<Wiredash> {
 
   void _updateDependencies() {
     setState(() {
+      _options = widget.options ?? WiredashOptionsData();
       _theme = widget.theme ?? WiredashThemeData();
       _translation = widget.translation ?? WiredashTranslationData();
     });
@@ -173,14 +182,19 @@ class WiredashState extends State<Wiredash> {
         Provider.value(value: userManager),
         ChangeNotifierProvider.value(value: _feedbackModel),
       ],
-      child: WiredashTheme(
-        data: _theme,
-        child: WiredashTranslation(
-          data: _translation,
-          child: WiredashScaffold(
-            child: Capture(
-              key: captureKey,
-              child: widget.child,
+      child: WiredashOptions(
+        data: _options,
+        child: WiredashTheme(
+          data: _theme,
+          child: WiredashTranslation(
+            data: _translation,
+            child: WiredashScaffold(
+              child: Capture(
+                key: captureKey,
+                child: FloatingEntryPoint(
+                  child: widget.child,
+                ),
+              ),
             ),
           ),
         ),

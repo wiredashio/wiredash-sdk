@@ -17,8 +17,11 @@ class _ExampleAppState extends State<ExampleApp> {
     return Wiredash(
       projectId: "YOUR-PROJECT-ID",
       secret: "YOUR-SECRET",
-      theme: WiredashThemeData(brightness: _brightness),
       navigatorKey: _navigatorKey,
+      options: WiredashOptionsData(
+        showDebugFloatingEntryPoint: true,
+      ),
+      theme: WiredashThemeData(brightness: _brightness),
       child: MaterialApp(
         navigatorKey: _navigatorKey,
         title: 'Wiredash Demo',
