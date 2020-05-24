@@ -231,6 +231,7 @@ class _FloatingButtonState extends State<FloatingButton>
               child: Image.asset(
                 'assets/images/logo_white.png',
                 package: 'wiredash',
+                width: 32,
               ),
             ),
           ),
