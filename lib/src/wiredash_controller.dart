@@ -11,7 +11,7 @@ import 'package:wiredash/src/wiredash_widget.dart';
 ///
 /// Add user information
 /// ```dart
-/// Wiredash.of(context).setOptions(appVersion: "1.4.3");
+/// Wiredash.of(context).setIdentifiers(appVersion: "1.4.3");
 /// ```
 class WiredashController {
   WiredashController(this._state) : assert(_state != null);
@@ -22,7 +22,7 @@ class WiredashController {
   /// to the feedback. The [userEmail] parameter can be used to prefill the
   /// email input field but it's up to the user to decide if he want's to
   /// include his email with the feedback.
-  void setOptions({String appVersion, String userId, String userEmail}) {
+  void setIdentifiers({String appVersion, String userId, String userEmail}) {
     _state.userManager.appVersion = appVersion ?? _state.userManager.appVersion;
     _state.userManager.userId = userId ?? _state.userManager.userId;
     _state.userManager.userEmail = userEmail ?? _state.userManager.userEmail;

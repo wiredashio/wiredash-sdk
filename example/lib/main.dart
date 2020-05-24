@@ -27,6 +27,10 @@ class _ExampleAppState extends State<ExampleApp> {
       projectId: "YOUR-PROJECT-ID",
       secret: "YOUR-SECRET",
       navigatorKey: _navigatorKey,
+      options: WiredashOptionsData(
+        showDebugFloatingEntryPoint: true,
+      ),
+      theme: WiredashThemeData(brightness: _brightness),
       child: MaterialApp(
         navigatorKey: _navigatorKey,
         title: 'Adventure 🌎',

@@ -21,7 +21,7 @@ class Drawer extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 margin: const EdgeInsets.only(top: 24),
                 child: Image.asset(
-                  'assets/images/logo_draw.png',
+                  'assets/images/logo_grey.png',
                   width: 40,
                   package: 'wiredash',
                 ),
