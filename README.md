@@ -16,7 +16,7 @@ In order to get started, you need to create an account at [wiredash.io](https://
 
 ### Setting up your Flutter project
 
-After successfully creating a new project in the Wiredash admin console it's time to add Wiredash to your app. Simply open your `pubspec.yaml` file and add the current version of Wiredash as a dependency, e.g. `wiredash: 0.0.2`. Make sure to get the newest version.
+After successfully creating a new project in the Wiredash admin console it's time to add Wiredash to your app. Simply open your `pubspec.yaml` file and add the current version of Wiredash as a dependency, e.g. `wiredash: 0.1.0`. Make sure to get the newest version.
 
 Now get all pub packages by clicking on `Packages get` in your IDE or executing `flutter packages get` inside your Flutter project.
 
