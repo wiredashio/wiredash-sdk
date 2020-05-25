@@ -110,6 +110,7 @@ class CountryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       margin: const EdgeInsets.all(12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,14 +120,23 @@ class CountryCard extends StatelessWidget {
             width: double.maxFinite,
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(
+              top: 18.0,
+              left: 12.0,
+              right: 12.0,
+            ),
             child: Text(
               item.title,
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headline6,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(
+              top: 12.0,
+              left: 12.0,
+              right: 12.0,
+              bottom: 8.0,
+            ),
             child: Text(
               item.description,
               style: Theme.of(context).textTheme.caption.copyWith(
