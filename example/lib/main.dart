@@ -9,20 +9,20 @@ class ExampleApp extends StatefulWidget {
 }
 
 class _ExampleAppState extends State<ExampleApp> {
-  /// Wiredash uses a navigation key to show and hide our overaly. This key must be passed to 
-  /// the `MaterialApp` and `Wiredash` widgets. 
-  /// Note you are not required to use `MaterialApp`, Wiredash will work perfectly fine with 
+  /// Wiredash uses a navigation key to show and hide our overlay. This key must be passed to
+  /// the `MaterialApp` and `Wiredash` widgets.
+  /// Note you are not required to use `MaterialApp`, Wiredash will work perfectly fine with
   /// `CupertinoApp` and `WidgetsApp`.
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    /// Here we wrap our app at the top level using a `Wiredash` widget. This requires us to pass 
-    /// the `projectId` and `secret` obtained from the "configuration" section of your console. 
-    /// Notice we are also passing our `_navigatorKey` to both widgets. 
-    /// Wiredash also allows you to setup custom themes and translations using `WiredashThemeData` and 
-    /// `WiredashTranslationData`. Both of these are optional but should your heart desire an extra layer 
-    /// of customizability, you can make wiredash your own. 
+    /// Here we wrap our app at the top level using a `Wiredash` widget. This requires us to pass
+    /// the `projectId` and `secret` obtained from the "configuration" section of your console.
+    /// Notice we are also passing our `_navigatorKey` to both widgets.
+    /// Wiredash also allows you to setup custom themes and translations using `WiredashThemeData` and
+    /// `WiredashTranslationData`. Both of these are optional but should your heart desire an extra layer
+    /// of customizability, you can make wiredash your own.
     return Wiredash(
       projectId: "YOUR-PROJECT-ID",
       secret: "YOUR-SECRET",
@@ -30,7 +30,6 @@ class _ExampleAppState extends State<ExampleApp> {
       options: WiredashOptionsData(
         showDebugFloatingEntryPoint: true,
       ),
-      theme: WiredashThemeData(brightness: _brightness),
       child: MaterialApp(
         navigatorKey: _navigatorKey,
         title: 'Adventure 🌎',
@@ -51,7 +50,7 @@ class DemoHomePage extends StatelessWidget {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.help_outline),
-            /// In a single line of code, we can show the Wiredash menu. Because we wrapped our app 
+            /// In a single line of code, we can show the Wiredash menu. Because we wrapped our app
             /// with the `Wiredash` widget at the very top level, we can access this method from anywhere in our code.
             onPressed: () => Wiredash.of(context).show(),
           )
@@ -110,6 +109,7 @@ class CountryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      clipBehavior: Clip.antiAlias,
       margin: const EdgeInsets.all(12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
