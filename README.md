@@ -46,6 +46,20 @@ class MyApp extends StatelessWidget {
 
 Now you can call `Wiredash.of(context).show()` from anywhere inside your app to start the feedback process!
 
+#### Passing build information to Wiredash
+
+If you want to receive information about build number and specific commit related to the feedback you can pass additional parameters to your `flutter build` command. Most of the CI platforms define some common environment variables containing current build number and SHA of commit used to build the app. For instance, on Codemagic these are `BUILD_NUMBER` and `FCI_COMMIT` respectively.
+
+To receive this build information along with your feedback you mast pass `--dart-define` flag to your `flutter build` command as follows:
+
+```sh
+flutter build --dart-define=BUILD_NUMBER=$BUILD_NUMBER --dart-define=BUILD_COMMIT=$FCI_COMMIT
+```
+
+Of course you can also use any other value or variable like `--dart-define=BUILD_NUMBER="1.0.9"`.
+
+Be aware that this feature was added in [Flutter 1.17](https://flutter.dev/docs/development/tools/sdk/release-notes/changelogs/changelog-1.17.0) and won't work in previous versions.
+
 ### Android / iOS specific setup
 
 Wiredash is by design written in Dart and relies on very few dependencies by the official Flutter team. However, when running on Android it needs the internet permission (for sending user feedback back to you). If you already use Flutter in production, chances are quite high that you already added the internet permission to the manifest - if not, add the following line to the `AndroidManifest.xml` in your Android project folder:
