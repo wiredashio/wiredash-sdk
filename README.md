@@ -48,7 +48,9 @@ Now you can call `Wiredash.of(context).show()` from anywhere inside your app to 
 
 #### Passing build information to Wiredash
 
-If you want to receive information about build number and specific commit related to the feedback you can pass additional parameters to your `flutter build` command. Most of the CI platforms define some common environment variables containing current build number and SHA of commit used to build the app. For instance, on Codemagic these are `BUILD_NUMBER` and `FCI_COMMIT` respectively.
+> Available only when using Flutter 1.17 or newer
+
+If you want to receive information about build number and specific commit related to the feedback you can pass additional parameters to your `flutter build` or `flutter run` command.
 
 To receive this build information along with your feedback you mast pass `--dart-define` flag to your `flutter build` command as follows:
 
@@ -57,6 +59,8 @@ flutter build --dart-define=BUILD_NUMBER=$BUILD_NUMBER --dart-define=BUILD_COMMI
 ```
 
 Of course you can also use any other value or variable like `--dart-define=BUILD_NUMBER="1.0.9"`.
+
+Most of the CI platforms define some common environment variables containing current build number and SHA of commit used to build the app. For instance, on Codemagic these are `BUILD_NUMBER` and `FCI_COMMIT` respectively.
 
 Be aware that this feature was added in [Flutter 1.17](https://flutter.dev/docs/development/tools/sdk/release-notes/changelogs/changelog-1.17.0) and won't work in previous versions.
 
