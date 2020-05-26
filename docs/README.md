@@ -48,5 +48,5 @@ class MyApp extends StatelessWidget {
 ```
 
 ::: warning COMPATIBILITY NOTE
-Wiredash requires Flutter >= 1.17.
+Wiredash requires Flutter >= 1.7.
 :::
