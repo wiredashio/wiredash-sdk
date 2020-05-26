@@ -1,0 +1,16 @@
+{
+  "name": "wiredash-docs",
+  "version": "1.0.0",
+  "description": "Automated builds for the Wiredash SDK docs.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs:build": "vuepress build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "vuepress": "^1.5.0"
+  }
+}
