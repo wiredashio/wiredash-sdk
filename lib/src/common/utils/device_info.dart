@@ -3,6 +3,7 @@ import 'dart:math' show Random;
 import 'dart:ui' as ui show window;
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/common/utils/build_info.dart';
 
 class DeviceInfo {
   static const _prefsDeviceID = '_wiredashDeviceID';
@@ -35,6 +36,13 @@ class DeviceInfo {
       ui.window.viewInsets.right,
       ui.window.viewInsets.bottom
     ];
+
+    if (BuildInfo.buildNumber != null) {
+      uiValues['buildNumber'] = BuildInfo.buildNumber;
+    }
+    if (BuildInfo.buildCommit != null) {
+      uiValues['buildCommit'] = BuildInfo.buildCommit;
+    }
 
     return uiValues;
   }
