@@ -1,8 +1,8 @@
 /// Class retrieving basic build information about the app
-/// 
+///
 /// The properties can be defined in Flutter >=1.17 by passing
 /// `--dart-define` flag to the `flutter run` or `flutter build`.
-/// 
+///
 /// For example:
 /// ```
 /// flutter build --dart-define=BUILD_NUMBER=$BUILD_NUMBER --dart-define=BUILD_COMMIT=$FCI_COMMIT
