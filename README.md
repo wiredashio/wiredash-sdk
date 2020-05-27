@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
 
 Now you can call `Wiredash.of(context).show()` from anywhere inside your app to start the feedback process!
 
-### Android / iOS specific setup
+### Android / iOS / MacOS specific setup
 
 Wiredash is by design written in Dart and relies on very few dependencies by the official Flutter team. However, when running on Android it needs the internet permission (for sending user feedback back to you). If you already use Flutter in production, chances are quite high that you already added the internet permission to the manifest - if not, add the following line to the `AndroidManifest.xml` in your Android project folder:
 
@@ -56,8 +56,12 @@ Wiredash is by design written in Dart and relies on very few dependencies by the
  <application ...
 </manifest>
 ```
-
 That's it!
+
+On MacOS, you also need the internet permission, so don't forget to open `Runner.xcodeproj` located in the macos folder in the root directory of your app, then go in the "Signing & Capabilities" tab of your XCode project.
+There, be sure to check the box "Outgoing Connections (Client)".
+
+Voilà !
   
 ## License  
   
