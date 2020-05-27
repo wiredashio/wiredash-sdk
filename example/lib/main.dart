@@ -30,7 +30,7 @@ class _ExampleAppState extends State<ExampleApp> {
       options: WiredashOptionsData(
         showDebugFloatingEntryPoint: true,
       ),
-      theme: WiredashThemeData(brightness: _brightness),
+      theme: WiredashThemeData(brightness: Theme.of(context).brightness),
       child: MaterialApp(
         navigatorKey: _navigatorKey,
         title: 'Adventure 🌎',
