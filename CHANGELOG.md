@@ -1,7 +1,7 @@
 ## [0.1.1] - Build information in users' feedback
 You can pass additional build information (number and commit) that will be visible when user submits the feedback.
 
-* Added buildNumber and buildCommit properties that can be passed through dart-define
+* Added buildNumber, buildVersion and buildCommit properties that can be passed through dart-define
 * Constrained the SDK to 2.8.0 or newer and Flutter to 1.17.0 or newer
 
 ## [0.1.0] - Floating Entry 📲, Confidential 👀 & Provider 🏗
