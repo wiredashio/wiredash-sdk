@@ -3,17 +3,29 @@ import 'dart:math' show Random;
 import 'dart:ui' as ui show window;
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/common/utils/build_info.dart';
+import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 
 class DeviceInfo {
   static const _prefsDeviceID = '_wiredashDeviceID';
 
-  static Map<String, dynamic> generate(String appVersion, String deviceId) {
+  static Map<String, dynamic> generate(BuildInfoManager buildInfo) {
     final Map<String, dynamic> uiValues = {};
 
     uiValues['appIsDebug'] = _isInDebugMode();
-    if (appVersion != null) uiValues['appVersion'] = appVersion;
-    if (deviceId != null) uiValues['deviceId'] = deviceId;
+
+    if (buildInfo.buildVersion != null) {
+      uiValues['appVersion'] = buildInfo.buildVersion;
+    }
+    if (buildInfo.buildNumber != null) {
+      uiValues['buildNumber'] = buildInfo.buildNumber;
+    }
+    if (buildInfo.buildCommit != null) {
+      uiValues['buildCommit'] = buildInfo.buildCommit;
+    }
+    if (buildInfo.deviceId != null) {
+      uiValues['deviceId'] = buildInfo.deviceId;
+    }
+
     uiValues['locale'] = ui.window.locale.toString();
     uiValues['padding'] = [
       ui.window.padding.left,
@@ -36,13 +48,6 @@ class DeviceInfo {
       ui.window.viewInsets.right,
       ui.window.viewInsets.bottom
     ];
-
-    if (BuildInfo.buildNumber != null) {
-      uiValues['buildNumber'] = BuildInfo.buildNumber;
-    }
-    if (BuildInfo.buildCommit != null) {
-      uiValues['buildCommit'] = BuildInfo.buildCommit;
-    }
 
     return uiValues;
   }
