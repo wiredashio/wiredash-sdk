@@ -18,14 +18,38 @@ class WiredashController {
 
   final WiredashState _state;
 
-  /// Use this method to provide your app version or to attach a custom [userId]
+  /// This method is deprecated in favor of [setUserProperties] and [setBuildProperties]
+  @Deprecated("Use [setUserProperties] and [setBuildProperties] instead")
+  void setIdentifiers({String appVersion, String userId, String userEmail}) {
+    if (appVersion != null) {
+      setBuildProperties(buildVersion: appVersion);
+    }
+    if (userId != null) {
+      setUserProperties(userId: userId);
+    }
+    if (userEmail != null) {
+      setUserProperties(userEmail: userEmail);
+    }
+  }
+
+  /// Use this method to provide custom [userId]
   /// to the feedback. The [userEmail] parameter can be used to prefill the
   /// email input field but it's up to the user to decide if he want's to
   /// include his email with the feedback.
-  void setIdentifiers({String appVersion, String userId, String userEmail}) {
-    _state.userManager.appVersion = appVersion ?? _state.userManager.appVersion;
+  void setUserProperties({String userId, String userEmail}) {
     _state.userManager.userId = userId ?? _state.userManager.userId;
     _state.userManager.userEmail = userEmail ?? _state.userManager.userEmail;
+  }
+
+  /// Use this method to attach custom [buildVersion] and [buildNumber]
+  ///
+  /// If these values are also provided through dart-define during compile time
+  /// then they will be overwritten by this method
+  void setBuildProperties({String buildVersion, String buildNumber}) {
+    _state.buildInfoManager.buildVersion =
+        buildVersion ?? _state.buildInfoManager.buildVersion;
+    _state.buildInfoManager.buildNumber =
+        buildNumber ?? _state.buildInfoManager.buildNumber;
   }
 
   /// This will open the Wiredash feedback sheet and start the feedback process.

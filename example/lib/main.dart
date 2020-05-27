@@ -30,7 +30,7 @@ class _ExampleAppState extends State<ExampleApp> {
       options: WiredashOptionsData(
         showDebugFloatingEntryPoint: true,
       ),
-      theme: WiredashThemeData(brightness: _brightness),
+      theme: WiredashThemeData(brightness: Theme.of(context).brightness),
       child: MaterialApp(
         navigatorKey: _navigatorKey,
         title: 'Adventure 🌎',
@@ -44,13 +44,25 @@ class DemoHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF6F9FC),
+      backgroundColor: const Color(0xFFF6F9FC),
+      drawer: Drawer(
+        child: Column(
+          children: <Widget>[
+            const DrawerHeader(
+              child: Center(child: Text('Wiredash example')),
+            ),
+            UserInfoButton(),
+            BuildInfoButton(),
+          ],
+        ),
+      ),
       appBar: AppBar(
         title: const Text('Adventure 🌎'),
-        backgroundColor: Color(0XFF02579B),
+        backgroundColor: const Color(0xFF02579B),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.help_outline),
+
             /// In a single line of code, we can show the Wiredash menu. Because we wrapped our app
             /// with the `Wiredash` widget at the very top level, we can access this method from anywhere in our code.
             onPressed: () => Wiredash.of(context).show(),
@@ -148,6 +160,36 @@ class CountryCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class BuildInfoButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      onPressed: () {
+        Wiredash.of(context).setBuildProperties(
+          buildNumber: '42',
+          buildVersion: '1.42',
+        );
+      },
+      child: const Text('Set random build parameters'),
+    );
+  }
+}
+
+class UserInfoButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      onPressed: () {
+        Wiredash.of(context).setUserProperties(
+          userEmail: 'mail@example.com',
+          userId: 'custom-id',
+        );
+      },
+      child: const Text('Set random user parameters'),
     );
   }
 }

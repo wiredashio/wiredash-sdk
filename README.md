@@ -46,6 +46,55 @@ class MyApp extends StatelessWidget {
 
 Now you can call `Wiredash.of(context).show()` from anywhere inside your app to start the feedback process!
 
+### Setting user properties
+
+You can set user properties to be sent together with the feedback by calling:
+
+```dart
+Wiredash.of(context).setUserProperties(
+  userEmail: 'mail@example.com',
+  userId: 'custom-id',
+);
+```
+
+### Passing build information to Wiredash
+
+**In runtime**
+
+You can receive information about build number and build version together with the user feedback. Set build properties before sending the feedback by calling:
+
+```dart
+Wiredash.of(context).setBuildProperties(
+  buildNumber: '42',
+  buildVersion: '1.42',
+);
+```
+
+You can also define them during compile-time instead.
+
+**Setting build properties during compile time**
+
+> Available only when using Flutter 1.17 or newer
+
+If you want to receive information about build number, build version or specific commit related to the feedback you can pass additional parameters to your `flutter build` or `flutter run` command.
+
+To receive the build information along with your feedback you mast pass `--dart-define` flags to your `flutter build` command as follows:
+
+```sh
+flutter build --dart-define=BUILD_NUMBER=$BUILD_NUMBER --dart-define=BUILD_VERSION=$BUILD_VERSION --dart-define=BUILD_COMMIT=$FCI_COMMIT
+```
+
+Supported keys are:
+* BUILD_NUMBER
+* BUILD_VERSION
+* BUILD_COMMIT
+
+In the example above `$BUILD_NUMBER` is an environment variable defined in CI. Of course you can also use any other value or variable like `--dart-define=BUILD_NUMBER="1.0.42"`.
+
+Most of the CI platforms define some common environment variables containing current build number and SHA of commit used to build the app. For instance, on Codemagic these are `BUILD_NUMBER` and `FCI_COMMIT` respectively.
+
+Be aware that this feature was added in [Flutter 1.17](https://flutter.dev/docs/development/tools/sdk/release-notes/changelogs/changelog-1.17.0) and won't work in previous versions.
+
 ### Android / iOS / MacOS specific setup
 
 Wiredash is by design written in Dart and relies on very few dependencies by the official Flutter team. However, when running on Android it needs the internet permission (for sending user feedback back to you). If you already use Flutter in production, chances are quite high that you already added the internet permission to the manifest - if not, add the following line to the `AndroidManifest.xml` in your Android project folder:

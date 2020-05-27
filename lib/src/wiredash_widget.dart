@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:wiredash/src/capture/capture.dart';
+import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/network/api_client.dart';
 import 'package:wiredash/src/common/network/network_manager.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
@@ -11,6 +12,7 @@ import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_translation.dart';
 import 'package:wiredash/src/common/translation/wiredash_translation_data.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
+import 'package:wiredash/src/common/utils/build_info.dart';
 import 'package:wiredash/src/common/widgets/floating_entry_point.dart';
 import 'package:wiredash/src/common/widgets/wiredash_scaffold.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
@@ -127,6 +129,7 @@ class WiredashState extends State<Wiredash> {
 
   NetworkManager networkManager;
   UserManager userManager;
+  BuildInfoManager buildInfoManager;
 
   FeedbackModel _feedbackModel;
 
@@ -149,9 +152,15 @@ class WiredashState extends State<Wiredash> {
     ));
 
     userManager = UserManager();
+    buildInfoManager = BuildInfoManager(PlatformBuildInfo());
 
-    _feedbackModel =
-        FeedbackModel(captureKey, navigatorKey, networkManager, userManager);
+    _feedbackModel = FeedbackModel(
+      captureKey,
+      navigatorKey,
+      networkManager,
+      userManager,
+      buildInfoManager,
+    );
   }
 
   @override
