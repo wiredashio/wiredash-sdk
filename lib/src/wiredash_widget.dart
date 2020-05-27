@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:wiredash/src/capture/capture.dart';
+import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/network/api_client.dart';
 import 'package:wiredash/src/common/network/network_manager.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
@@ -127,6 +128,7 @@ class WiredashState extends State<Wiredash> {
 
   NetworkManager networkManager;
   UserManager userManager;
+  BuildInfoManager buildInfoManager;
 
   FeedbackModel _feedbackModel;
 
@@ -149,9 +151,15 @@ class WiredashState extends State<Wiredash> {
     ));
 
     userManager = UserManager();
+    buildInfoManager = BuildInfoManager();
 
-    _feedbackModel =
-        FeedbackModel(captureKey, navigatorKey, networkManager, userManager);
+    _feedbackModel = FeedbackModel(
+      captureKey,
+      navigatorKey,
+      networkManager,
+      userManager,
+      buildInfoManager,
+    );
   }
 
   @override
