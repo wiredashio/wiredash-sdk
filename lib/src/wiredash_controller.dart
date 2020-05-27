@@ -42,7 +42,7 @@ class WiredashController {
   }
 
   /// Use this method to attach custom [buildVersion] and [buildNumber]
-  /// 
+  ///
   /// If these values are also provided through dart-define during compile time
   /// then they will be overwritten by this method
   void setBuildProperties({String buildVersion, String buildNumber}) {
