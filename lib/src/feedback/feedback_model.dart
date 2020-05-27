@@ -3,20 +3,23 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/capture/capture.dart';
+import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/network/network_manager.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
+import 'package:wiredash/src/common/utils/device_info.dart';
 import 'package:wiredash/src/common/widgets/dismissible_page_route.dart';
 
 import 'feedback_sheet.dart';
 
 class FeedbackModel with ChangeNotifier {
   FeedbackModel(this._captureKey, this._navigatorKey, this._networkManager,
-      this._userManager);
+      this._userManager, this._buildInfoManager);
 
   final GlobalKey<CaptureState> _captureKey;
   final GlobalKey<NavigatorState> _navigatorKey;
   final NetworkManager _networkManager;
   final UserManager _userManager;
+  final BuildInfoManager _buildInfoManager;
 
   FeedbackType feedbackType = FeedbackType.bug;
   String feedbackMessage;
@@ -87,7 +90,7 @@ class FeedbackModel with ChangeNotifier {
 
     _networkManager
         .sendFeedback(
-      deviceInfo: _userManager.deviceInfo,
+      deviceInfo: DeviceInfo.generate(_buildInfoManager),
       email: _userManager.userEmail,
       message: feedbackMessage,
       picture: screenshot,
