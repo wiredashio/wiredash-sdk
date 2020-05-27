@@ -12,6 +12,7 @@ import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_translation.dart';
 import 'package:wiredash/src/common/translation/wiredash_translation_data.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
+import 'package:wiredash/src/common/utils/build_info.dart';
 import 'package:wiredash/src/common/widgets/floating_entry_point.dart';
 import 'package:wiredash/src/common/widgets/wiredash_scaffold.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
@@ -151,7 +152,7 @@ class WiredashState extends State<Wiredash> {
     ));
 
     userManager = UserManager();
-    buildInfoManager = BuildInfoManager();
+    buildInfoManager = BuildInfoManager(PlatformBuildInfo());
 
     _feedbackModel = FeedbackModel(
       captureKey,

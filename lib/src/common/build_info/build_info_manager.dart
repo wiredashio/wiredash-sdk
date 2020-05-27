@@ -1,13 +1,18 @@
 import 'package:wiredash/src/common/utils/build_info.dart';
-import 'package:wiredash/src/common/utils/device_info.dart';
 
 class BuildInfoManager {
-  BuildInfoManager() {
-    DeviceInfo.getDeviceID().then((id) => deviceId = id);
-  }
+  final BuildInfo buildInfo;
+  BuildInfoManager(this.buildInfo);
 
-  String deviceId;
-  String buildVersion = BuildInfo.buildVersion;
-  String buildNumber = BuildInfo.buildNumber;
-  String buildCommit = BuildInfo.buildCommit;
+  String get deviceId => buildInfo.deviceId;
+
+  String _buildVersion;
+  String get buildVersion => _buildVersion ?? buildInfo.buildVersion;
+  set buildVersion(String s) => _buildVersion = s;
+
+  String _buildNumber;
+  String get buildNumber => _buildNumber ?? buildInfo.buildNumber;
+  set buildNumber(String s) => _buildNumber = s;
+
+  String get buildCommit => buildInfo.buildCommit;
 }
