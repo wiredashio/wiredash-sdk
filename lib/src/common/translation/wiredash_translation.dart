@@ -2,7 +2,9 @@ import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/translation/wiredash_translation_data.dart';
 
 class WiredashTranslation extends StatelessWidget {
-  const WiredashTranslation({@required this.data, @required this.child});
+  const WiredashTranslation(
+      {@required this.data, @required this.child, Key key})
+      : super(key: key);
 
   final WiredashTranslationData data;
   final Widget child;

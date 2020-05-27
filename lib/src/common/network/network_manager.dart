@@ -43,7 +43,7 @@ class NetworkManager {
     }
 
     await _apiClient.post(
-      urlPath: '$_feedbackPath',
+      urlPath: _feedbackPath,
       arguments: {
         _parameterDeviceInfo: json.encode(deviceInfo),
         if (email != null) _parameterEmail: email,

@@ -6,6 +6,7 @@ import 'package:wiredash/src/capture/sketcher/sketcher_controller.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 
+// ignore: use_key_in_widget_constructors
 class Drawer extends StatelessWidget {
   static const width = 80.0;
 

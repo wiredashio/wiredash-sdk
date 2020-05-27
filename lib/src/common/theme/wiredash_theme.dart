@@ -2,7 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 
 class WiredashTheme extends StatelessWidget {
-  const WiredashTheme({@required this.data, @required this.child});
+  const WiredashTheme({@required this.data, @required this.child, Key key})
+      : super(key: key);
 
   final WiredashThemeData data;
   final Widget child;
