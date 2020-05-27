@@ -35,7 +35,7 @@ class WiredashTranslationData {
       'If you want to get updates regarding your feedback, enter your email down below.';
   String get feedbackStateSuccessTitle => 'Thank you ✌️';
   String get feedbackStateSuccessMsg =>
-      'That\'s it. Thank you so much for helping us building a better app!';
+      "That's it. Thank you so much for helping us building a better app!";
   String get feedbackStateSuccessCloseTitle => 'Close this Dialog';
   String get feedbackStateSuccessCloseMsg =>
       'Thanks for submitting your feedback!';

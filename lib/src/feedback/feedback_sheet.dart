@@ -13,6 +13,7 @@ import 'package:wiredash/src/feedback/components/intro_component.dart';
 import 'package:wiredash/src/feedback/components/success_component.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 
+// ignore: use_key_in_widget_constructors
 class FeedbackSheet extends StatefulWidget {
   @override
   _FeedbackSheetState createState() => _FeedbackSheetState();
@@ -103,7 +104,6 @@ class _FeedbackSheetState extends State<FeedbackSheet>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Align(
-            alignment: Alignment.center,
             child: Material(
               shape: const StadiumBorder(),
               color: WiredashTheme.of(context).dividerColor,

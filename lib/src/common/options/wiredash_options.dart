@@ -2,7 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/options/wiredash_options_data.dart';
 
 class WiredashOptions extends StatelessWidget {
-  const WiredashOptions({@required this.data, @required this.child});
+  const WiredashOptions({@required this.data, @required this.child, Key key})
+      : super(key: key);
 
   final WiredashOptionsData data;
   final Widget child;
