@@ -1,4 +1,4 @@
-## [0.1.1] - Build information in users' feedback
+## [0.1.1] - Build information ⚙️ in the feedback
 You can pass additional build information (number and commit) that will be visible when user submits the feedback.
 
 * Added buildNumber, buildVersion and buildCommit properties that can be passed through dart-define
