@@ -21,42 +21,61 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "captureSaveScreenshot": MessageLookupByLibrary.simpleMessage(""),
-        "captureSkip": MessageLookupByLibrary.simpleMessage(""),
-        "captureSpotlightNavigateMsg": MessageLookupByLibrary.simpleMessage(""),
+        "captureSaveScreenshot":
+            MessageLookupByLibrary.simpleMessage("Speichern"),
+        "captureSkip": MessageLookupByLibrary.simpleMessage("Überspringen"),
+        "captureSpotlightNavigateMsg": MessageLookupByLibrary.simpleMessage(
+            "Navigiere zu dem Screen, auf welchem Du Feedback geben möchtest."),
         "captureSpotlightNavigateTitle":
-            MessageLookupByLibrary.simpleMessage(""),
-        "captureSpotlightScreenCapturedMsg":
-            MessageLookupByLibrary.simpleMessage(""),
+            MessageLookupByLibrary.simpleMessage("navigieren"),
+        "captureSpotlightScreenCapturedMsg": MessageLookupByLibrary.simpleMessage(
+            "Screenshot erstellt! Du kannst nun auf dem Bildschirm malen und so bestimmte Bereiche hervorheben."),
         "captureSpotlightScreenCapturedTitle":
-            MessageLookupByLibrary.simpleMessage(""),
-        "captureTakeScreenshot": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackBack": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackCancel": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackModeBugMsg": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackModeBugTitle": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackModeImprovementMsg": MessageLookupByLibrary.simpleMessage(""),
+            MessageLookupByLibrary.simpleMessage("malen"),
+        "captureTakeScreenshot":
+            MessageLookupByLibrary.simpleMessage("Screenshot erstellen"),
+        "feedbackBack": MessageLookupByLibrary.simpleMessage("Zurück"),
+        "feedbackCancel": MessageLookupByLibrary.simpleMessage("Abbrechen"),
+        "feedbackModeBugMsg": MessageLookupByLibrary.simpleMessage(
+            "Wir leiten das dann an unser Expertenteam weiter."),
+        "feedbackModeBugTitle":
+            MessageLookupByLibrary.simpleMessage("Melde einen Fehler"),
+        "feedbackModeImprovementMsg": MessageLookupByLibrary.simpleMessage(
+            "Hättest Du eine Idee, welche unsere App besser machen würde? Lass es uns wissen!"),
         "feedbackModeImprovementTitle":
-            MessageLookupByLibrary.simpleMessage(""),
-        "feedbackModePraiseMsg": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackModePraiseTitle": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackSave": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackSend": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackStateEmailMsg": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackStateEmailTitle": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackStateFeedbackMsg": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackStateIntroMsg": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackStateIntroTitle": MessageLookupByLibrary.simpleMessage(""),
+            MessageLookupByLibrary.simpleMessage("Eine Idee einreichen"),
+        "feedbackModePraiseMsg": MessageLookupByLibrary.simpleMessage(
+            "Was genau gefällt Dir besonders gut - vielleicht können wir es ja noch ein bisschen besser machen?"),
+        "feedbackModePraiseTitle":
+            MessageLookupByLibrary.simpleMessage("Applaus senden"),
+        "feedbackSave": MessageLookupByLibrary.simpleMessage("Speichern"),
+        "feedbackSend": MessageLookupByLibrary.simpleMessage("Feedback senden"),
+        "feedbackStateEmailMsg": MessageLookupByLibrary.simpleMessage(
+            "Wenn Du über Neuigkeiten bezüglich Deines Feedbacks informiert werden möchtest, trage Deine Email ein."),
+        "feedbackStateEmailTitle":
+            MessageLookupByLibrary.simpleMessage("Bleib auf dem Laufenden 👇"),
+        "feedbackStateFeedbackMsg": MessageLookupByLibrary.simpleMessage(
+            "Wir hören Dir zu. Bitte beschreibe Dein Anliegen so gut wie möglich, damit wir Dir helfen können."),
+        "feedbackStateIntroMsg": MessageLookupByLibrary.simpleMessage(
+            "Wir können es kaum abwarten, Deine Gedanken zu unserer App zu hören! Was möchtest Du tun?"),
+        "feedbackStateIntroTitle":
+            MessageLookupByLibrary.simpleMessage("Hallo 👋"),
         "feedbackStateSuccessCloseMsg":
-            MessageLookupByLibrary.simpleMessage(""),
+            MessageLookupByLibrary.simpleMessage("Danke für Dein Feedback!"),
         "feedbackStateSuccessCloseTitle":
-            MessageLookupByLibrary.simpleMessage(""),
-        "feedbackStateSuccessMsg": MessageLookupByLibrary.simpleMessage(""),
-        "feedbackStateSuccessTitle": MessageLookupByLibrary.simpleMessage(""),
-        "inputHintEmail": MessageLookupByLibrary.simpleMessage(""),
-        "inputHintFeedback": MessageLookupByLibrary.simpleMessage(""),
-        "validationHintEmail": MessageLookupByLibrary.simpleMessage(""),
-        "validationHintFeedbackEmpty": MessageLookupByLibrary.simpleMessage(""),
-        "validationHintFeedbackLength": MessageLookupByLibrary.simpleMessage("")
+            MessageLookupByLibrary.simpleMessage("Diesen Dialog schließen"),
+        "feedbackStateSuccessMsg": MessageLookupByLibrary.simpleMessage(
+            "Das wars auch schon. Danke, dass Du uns hilfst, eine bessere App zu entwickeln!"),
+        "feedbackStateSuccessTitle":
+            MessageLookupByLibrary.simpleMessage("Vielen Dank ✌️"),
+        "inputHintEmail": MessageLookupByLibrary.simpleMessage("Deine Email"),
+        "inputHintFeedback":
+            MessageLookupByLibrary.simpleMessage("Dein Feedback"),
+        "validationHintEmail": MessageLookupByLibrary.simpleMessage(
+            "Bitte gib eine gültige Email an oder lasse das Feld frei."),
+        "validationHintFeedbackEmpty": MessageLookupByLibrary.simpleMessage(
+            "Bitte gib Dein Feedback ein."),
+        "validationHintFeedbackLength":
+            MessageLookupByLibrary.simpleMessage("Dein Feedback ist zu lang.")
       };
 }
