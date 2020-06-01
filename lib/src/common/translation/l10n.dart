@@ -12,7 +12,7 @@ class WiredashLocalizations extends WiredashTranslations {
       WiredashLocalizationDelegate();
 
   static const WiredashTranslations _defaultEnglishTranslations =
-      WiredashEnglishTranslation();
+      WiredashEnglishTranslations();
 
   static Future<WiredashLocalizations> load(Locale locale) {
     final name = (locale.countryCode?.isEmpty ?? false)

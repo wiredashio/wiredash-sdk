@@ -56,7 +56,7 @@ class _ExampleAppState extends State<ExampleApp> {
   }
 }
 
-class DemoCustomTranslations extends WiredashEnglishTranslation {
+class DemoCustomTranslations extends WiredashEnglishTranslations {
   const DemoCustomTranslations() : super();
 
   @override

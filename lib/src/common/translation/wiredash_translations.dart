@@ -38,8 +38,8 @@ abstract class WiredashTranslations {
   String get validationHintEmail;
 }
 
-class WiredashEnglishTranslation extends WiredashTranslations {
-  const WiredashEnglishTranslation() : super();
+class WiredashEnglishTranslations extends WiredashTranslations {
+  const WiredashEnglishTranslations() : super();
   @override
   String get captureSkip => 'Skip screenshot';
   @override
