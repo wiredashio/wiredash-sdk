@@ -242,7 +242,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
       case FeedbackUiState.intro:
         return WiredashLocalizations.of(context).feedbackStateIntroTitle;
       case FeedbackUiState.feedback:
-        return WiredashLocalizations.of(context).inputHintFeedback;
+        return WiredashLocalizations.of(context).feedbackStateFeedbackTitle;
       case FeedbackUiState.email:
         return WiredashLocalizations.of(context).feedbackStateEmailTitle;
       case FeedbackUiState.success:
