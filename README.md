@@ -107,10 +107,110 @@ Wiredash is by design written in Dart and relies on very few dependencies by the
 ```
 That's it!
 
-On MacOS, you also need the internet permission, so don't forget to open `Runner.xcodeproj` located in the macos folder in the root directory of your app, then go in the "Signing & Capabilities" tab of your XCode project.
+On MacOS, you also need the internet permission, so don't forget to open `Runner.xcodeproj` located in the `macos` folder in the root directory of your app, then go in the "Signing & Capabilities" tab of your XCode project.
 There, be sure to check the box "Outgoing Connections (Client)".
 
 Voilà !
+
+## Localization/internationalization support 🇬🇧🇵🇱🇩🇪
+
+Wiredash supports several languages by default (see the list of supported translation files in the repository). However, in order to use them a basic setup is needed in your MaterialApp similar to the official guide in the [Flutter docs](https://flutter.dev/docs/development/accessibility-and-localization/internationalization).
+
+1. Add `flutter_localizations` dependency in your `pubspec.yaml` as described [here](https://flutter.dev/docs/development/accessibility-and-localization/internationalization#setting-up)
+2. Add `WiredashLocalizations.delegate` and all the other default localization delegates in your `MaterialApp` (see snippet below)
+3. Add `WiredashLocalizations.delegate.supportedLocales` to list of supported locales
+4. On iOS you need to enable desired locales in `Runner.xcworkspace` as described [here](https://flutter.dev/docs/development/accessibility-and-localization/internationalization#appendix-updating-the-ios-app-bundle)
+
+
+```dart
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+  MaterialApp(
+    navigatorKey: _navigatorKey,
+    localizationsDelegates: [
+      // Add Wiredash localizations delegate
+      WiredashLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: [
+      // Wiredash supports only selected locales, 
+      // so in case of unsupported
+      // it will fallback to English
+      ...WiredashLocalizations.delegate.supportedLocales,
+    ],
+  ),
+  ...
+```
+
+### Providing custom terms
+
+You can also provide custom translations for all or only selected terms. Bear in mind that **this overrides all the other localizations supported by default** (you will always see custom translations instead of ones provided by `WiredashLocalizations`).
+
+**Important** This is experimental feature and its usage may change in the future - hopefully to something more convenient and robust.
+
+1. Create class implementing `WiredashTranslations` to override all the possible translation terms:
+
+```dart
+// WiredashTranslations is abstract
+class DemoCustomTranslations extends WiredashTranslations { 
+  const DemoCustomTranslations() : super();
+
+  @override
+  String get captureSkip => 'Not this time';
+  /// etc.
+}
+```
+
+Or if you want to override only selected terms extend `WiredashEnglishTranslation`
+
+```dart
+class DemoCustomTranslations extends WiredashEnglishTranslation {
+  const DemoCustomTranslations() : super();
+
+  @override
+  String get captureSkip => 'Not this time'';
+}
+```
+
+2. Provide instance of this class to `WiredashOptionsData` as in the snippet below:
+
+```dart
+Wiredash(
+  projectId: "PROJECT-ID",
+  secret: "SECRET",
+  navigatorKey: _navigatorKey,
+  options: WiredashOptionsData(
+    showDebugFloatingEntryPoint: true,
+    // Provide custom translation overrides
+    customTranslations: const DemoCustomTranslations(),
+  ),
+```
+
+> In the future we plan to add ability to replace selected terms in all supported languages.
+
+### Contribute your translations
+
+If you want to contribute your own translations there are several ways to do it:
+
+- Make a PR with your own ARB files (e.g. `intl_ru.arb`). We will happily review it and merge if it provides sufficient level of translations. To regenerate translation files follow these steps:
+
+  - To generate `.arb` files call: 
+  
+  ```
+  flutter pub run intl_translation:extract_to_arb --output-dir=lib/src/common/translation/l10n/ lib/src/common/translation/l10n.dart
+  ```
+
+  - To generate `.dart` files associated with `.arb` files 
+  
+  ```
+  flutter pub run intl_translation:generate_from_arb --output-dir=lib/src/common/translation/l10n --no-use-deferred-loading lib/src/common/translation/l10n.dart lib/src/common/translation/l10n/intl_*.arb
+  ```
+
+  - Remark: It may be necessary to add `Map<String,Function>` as a return type to method `_notInlinedMessages(_)` in `messages_**.dart` file until `intl_translation` supports it by default
+
+- Ask community to provide translations in given language. There are many Flutter developers and contributors that may answer to your request.
   
 ## License  
   

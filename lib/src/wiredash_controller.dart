@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:wiredash/src/common/translation/wiredash_translation.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 
 /// Use this controller to interact with [Wiredash]

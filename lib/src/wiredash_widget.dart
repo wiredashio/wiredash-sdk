@@ -9,8 +9,7 @@ import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/options/wiredash_options_data.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
-import 'package:wiredash/src/common/translation/wiredash_translation.dart';
-import 'package:wiredash/src/common/translation/wiredash_translation_data.dart';
+import 'package:wiredash/src/common/translation/l10n.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/utils/build_info.dart';
 import 'package:wiredash/src/common/widgets/floating_entry_point.dart';
@@ -65,7 +64,6 @@ class Wiredash extends StatefulWidget {
     @required this.navigatorKey,
     this.options,
     this.theme,
-    this.translation,
     @required this.child,
   })  : assert(projectId != null),
         assert(secret != null),
@@ -82,7 +80,7 @@ class Wiredash extends StatefulWidget {
   /// Your Wiredash project secret
   final String secret;
 
-  /// Customize Wiredash's behaviour
+  /// Customize Wiredash's behaviour and language
   final WiredashOptionsData options;
 
   /// Default visual properties, like colors and fonts for the Wiredash bottom
@@ -99,9 +97,6 @@ class Wiredash extends StatefulWidget {
   /// );
   /// ```
   final WiredashThemeData theme;
-
-  /// Replace every text in Wiredash and localize it for you audience
-  final WiredashTranslationData translation;
 
   /// Your application
   final Widget child;
@@ -135,7 +130,6 @@ class WiredashState extends State<Wiredash> {
 
   WiredashOptionsData _options;
   WiredashThemeData _theme;
-  WiredashTranslationData _translation;
 
   @override
   void initState() {
@@ -179,24 +173,27 @@ class WiredashState extends State<Wiredash> {
     setState(() {
       _options = widget.options ?? WiredashOptionsData();
       _theme = widget.theme ?? WiredashThemeData();
-      _translation = widget.translation ?? WiredashTranslationData();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider.value(value: networkManager),
-        Provider.value(value: userManager),
-        ChangeNotifierProvider.value(value: _feedbackModel),
+    return Localizations(
+      locale: WiredashOptionsData.currentLocale,
+      delegates: [
+        DefaultWidgetsLocalizations.delegate,
+        WiredashLocalizations.delegate,
       ],
-      child: WiredashOptions(
-        data: _options,
-        child: WiredashTheme(
-          data: _theme,
-          child: WiredashTranslation(
-            data: _translation,
+      child: MultiProvider(
+        providers: [
+          Provider.value(value: networkManager),
+          Provider.value(value: userManager),
+          ChangeNotifierProvider.value(value: _feedbackModel),
+        ],
+        child: WiredashOptions(
+          data: _options,
+          child: WiredashTheme(
+            data: _theme,
             child: WiredashScaffold(
               child: Capture(
                 key: captureKey,
