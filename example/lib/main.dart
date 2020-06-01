@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:wiredash/wiredash.dart';
 
 void main() => runApp(ExampleApp());
@@ -21,23 +22,45 @@ class _ExampleAppState extends State<ExampleApp> {
     /// the `projectId` and `secret` obtained from the "configuration" section of your console.
     /// Notice we are also passing our `_navigatorKey` to both widgets.
     /// Wiredash also allows you to setup custom themes and translations using `WiredashThemeData` and
-    /// `WiredashTranslationData`. Both of these are optional but should your heart desire an extra layer
+    /// `WiredashOptionsData`. Both of these are optional but should your heart desire an extra layer
     /// of customizability, you can make wiredash your own.
+    /// Read more about translations support in the package's README.
     return Wiredash(
-      projectId: "YOUR-PROJECT-ID",
-      secret: "YOUR-SECRET",
+      projectId: "example-cut3sk6",
+      secret: "5k5kyrdyonolihzpqn2e833b5yqap6i3",
       navigatorKey: _navigatorKey,
       options: WiredashOptionsData(
         showDebugFloatingEntryPoint: true,
+
+        /// Uncomment below to see how custom translations work
+        // customTranslations: const DemoCustomTranslations(),
       ),
       theme: WiredashThemeData(brightness: Theme.of(context).brightness),
       child: MaterialApp(
         navigatorKey: _navigatorKey,
         title: 'Adventure 🌎',
         home: DemoHomePage(),
+
+        /// Uncomment below to use flutter_localizations
+        // localizationsDelegates: [
+        //   WiredashLocalizations.delegate,
+        //   GlobalWidgetsLocalizations.delegate,
+        //   GlobalMaterialLocalizations.delegate,
+        //   GlobalCupertinoLocalizations.delegate,
+        // ],
+        // supportedLocales: [
+        //   ...WiredashLocalizations.delegate.supportedLocales,
+        // ],
       ),
     );
   }
+}
+
+class DemoCustomTranslations extends WiredashEnglishTranslation {
+  const DemoCustomTranslations() : super();
+
+  @override
+  String get captureSkip => 'TEST';
 }
 
 class DemoHomePage extends StatelessWidget {
