@@ -194,6 +194,8 @@ Wiredash(
 
 If you want to contribute your own translations there are several ways to do it:
 
+- contribute in our [public POEditor project here](https://poeditor.com/projects/view?id=347065)
+
 - Make a PR with your own ARB files (e.g. `intl_ru.arb`). We will happily review it and merge if it provides sufficient level of translations. To regenerate translation files follow these steps:
 
   - To generate `.arb` files call: 
