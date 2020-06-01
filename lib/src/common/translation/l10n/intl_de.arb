@@ -30,5 +30,6 @@
     "inputHintFeedback": "Dein Feedback",
     "validationHintEmail": "Bitte gib eine gültige Email an oder lasse das Feld frei.",
     "validationHintFeedbackEmpty": "Bitte gib Dein Feedback ein.",
-    "validationHintFeedbackLength": "Dein Feedback ist zu lang."
+    "validationHintFeedbackLength": "Dein Feedback ist zu lang.",
+    "feedbackStateFeedbackTitle": "Dein Feedback ✍️"
 }

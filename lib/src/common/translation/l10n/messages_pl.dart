@@ -56,6 +56,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Bądź na bieżąco 👇"),
         "feedbackStateFeedbackMsg": MessageLookupByLibrary.simpleMessage(
             "Czytamy uważnie wszystkie opinie. Podaj jak najwięcej szczegółów."),
+        "feedbackStateFeedbackTitle":
+            MessageLookupByLibrary.simpleMessage("Twój feedback ✍️"),
         "feedbackStateIntroMsg": MessageLookupByLibrary.simpleMessage(
             "Nie możemy doczekać się, by poznać Twoją opinię o aplikacji"),
         "feedbackStateIntroTitle":

@@ -22,6 +22,7 @@ abstract class WiredashTranslations {
   String get feedbackCancel;
   String get feedbackSave;
   String get feedbackSend;
+  String get feedbackStateFeedbackTitle;
   String get feedbackStateIntroTitle;
   String get feedbackStateIntroMsg;
   String get feedbackStateFeedbackMsg;
@@ -56,6 +57,8 @@ class WiredashEnglishTranslations extends WiredashTranslations {
   @override
   String get captureSpotlightScreenCapturedMsg =>
       'Screen captured! Feel free to draw on the screen to highlight areas affected by your capture.';
+  @override
+  String get feedbackStateFeedbackTitle => 'Your feedback ✍️';
   @override
   String get feedbackModeBugTitle => 'Report a Bug';
   @override

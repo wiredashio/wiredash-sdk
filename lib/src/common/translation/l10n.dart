@@ -89,6 +89,16 @@ class WiredashLocalizations extends WiredashTranslations {
   }
 
   @override
+  String get feedbackStateFeedbackTitle {
+    return Intl.message(
+      'Your feedback ✍️',
+      name: 'feedbackStateFeedbackTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  @override
   String get feedbackStateSuccessCloseMsg {
     return Intl.message(
       'Thanks for submitting your feedback!',
