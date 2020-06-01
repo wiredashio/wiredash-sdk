@@ -163,10 +163,10 @@ class DemoCustomTranslations extends WiredashTranslations {
 }
 ```
 
-Or if you want to override only selected terms extend `WiredashEnglishTranslation`
+Or if you want to override only selected terms extend `WiredashEnglishTranslations`
 
 ```dart
-class DemoCustomTranslations extends WiredashEnglishTranslation {
+class DemoCustomTranslations extends WiredashEnglishTranslations {
   const DemoCustomTranslations() : super();
 
   @override
