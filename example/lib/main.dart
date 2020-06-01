@@ -26,8 +26,8 @@ class _ExampleAppState extends State<ExampleApp> {
     /// of customizability, you can make wiredash your own.
     /// Read more about translations support in the package's README.
     return Wiredash(
-      projectId: "example-cut3sk6",
-      secret: "5k5kyrdyonolihzpqn2e833b5yqap6i3",
+      projectId: "YOUR-PROJECT-ID",
+      secret: "YOUR-SECRET",
       navigatorKey: _navigatorKey,
       options: WiredashOptionsData(
         showDebugFloatingEntryPoint: true,
