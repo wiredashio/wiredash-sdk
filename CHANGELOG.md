@@ -1,6 +1,6 @@
-## [0.2.0] - Internationalization support
+## [0.2.0] - Internationalization support 🇬🇧🇩🇪🇵🇱
 
-We added initial internationalization support for several languages
+We added initial internationalization support for several languages. Feel free to contribute your own translations!
 
 * Added `WiredashLocalizations`
 * Added ability to provide custom `WiredashTranslations`
