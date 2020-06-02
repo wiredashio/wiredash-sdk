@@ -97,6 +97,7 @@ class _InputComponentState extends State<InputComponent> {
             hintStyle: wiredashTheme.inputHintStyle,
             errorStyle: wiredashTheme.inputErrorStyle,
           ),
+          keyboardAppearance: WiredashTheme.of(context).brightness,
           keyboardType: TextInputType.emailAddress,
         ),
       ),
