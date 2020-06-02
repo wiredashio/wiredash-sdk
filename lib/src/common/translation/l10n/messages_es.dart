@@ -8,7 +8,7 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get captureSkip => "Saltar pantalla";
   @override
   String get captureSpotlightNavigateMsg =>
-      "Navegar a la pantalla a la pantalla que le gustaría adicionar para capturar ";
+      "Navegar a la pantalla a la pantalla que le gustaría adicionar para capturar";
   @override
   String get captureSpotlightNavigateTitle => "Navegar";
   @override
@@ -26,7 +26,7 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get feedbackModeBugMsg =>
       "Informe este error para que lo enviemos a nuestro repositorio";
   @override
-  String get feedbackModeBugTitle => "Reporte un error ";
+  String get feedbackModeBugTitle => "Reporte un error";
   @override
   String get feedbackModeImprovementMsg =>
       "Tiene alguna idea que podría mejorar nuestra app? Nos encanta escucharla!";
@@ -35,7 +35,7 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
       "Solicitar una nueva funcionalidad";
   @override
   String get feedbackModePraiseMsg =>
-      "Déjenos saber lo que más le gustó de nuestra app, cree que la podemos mejorar más ?";
+      "Déjenos saber lo que más le gustó de nuestra app, cree que la podemos mejorar más?";
   @override
   String get feedbackModePraiseTitle => "Enviar aplauso";
   @override
@@ -52,12 +52,12 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
       "Por favor proveer información detallada para ayudarle de la mejor manera";
   @override
   String get feedbackStateIntroMsg =>
-      "Nos interesa conocer su opinión acerca de la app. Que le gustaría realizar ?";
+      "Nos interesa conocer su opinión acerca de la app. Que le gustaría realizar?";
   @override
   String get feedbackStateIntroTitle => "Saludos 👋";
   @override
   String get feedbackStateSuccessCloseMsg =>
-      "Muchas gracias por sus comentarios ";
+      "Muchas gracias por sus comentarios!";
   @override
   String get feedbackStateSuccessCloseTitle => "Cerrar ventana";
   @override
@@ -73,8 +73,7 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get validationHintEmail =>
       "Por favor escriba un email válido o deje este campo vacío";
   @override
-  String get validationHintFeedbackEmpty =>
-      "Por favor escriba sus comentarios ";
+  String get validationHintFeedbackEmpty => "Por favor escriba sus comentarios";
   @override
   String get validationHintFeedbackLength =>
       "Sus comentarios son demasiado extensos";
