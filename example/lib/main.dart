@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:wiredash/wiredash.dart';
+import 'package:wiredash/src/common/translation/l10n/messages_pl.dart' as pl;
 
-void main() => runApp(ExampleApp());
+void main() => runApp(const ExampleApp());
 
 class ExampleApp extends StatefulWidget {
+  const ExampleApp({Key key}) : super(key: key);
   @override
   _ExampleAppState createState() => _ExampleAppState();
 }
@@ -33,24 +34,21 @@ class _ExampleAppState extends State<ExampleApp> {
         showDebugFloatingEntryPoint: true,
 
         /// Uncomment below to see how custom translations work
-        // customTranslations: const DemoCustomTranslations(),
+        // customTranslations: {
+        //   const Locale.fromSubtags(languageCode: 'en'):
+        //       const DemoCustomTranslations(),
+        //   const Locale.fromSubtags(languageCode: 'pl'):
+        //       const DemoPolishTranslations(),
+        // },
+
+        /// Uncomment below to override default device locale
+        // locale: const Locale('en'),
       ),
       theme: WiredashThemeData(brightness: Theme.of(context).brightness),
       child: MaterialApp(
         navigatorKey: _navigatorKey,
         title: 'Adventure 🌎',
-        home: DemoHomePage(),
-
-        /// Uncomment below to use flutter_localizations
-        // localizationsDelegates: [
-        //   WiredashLocalizations.delegate,
-        //   GlobalWidgetsLocalizations.delegate,
-        //   GlobalMaterialLocalizations.delegate,
-        //   GlobalCupertinoLocalizations.delegate,
-        // ],
-        // supportedLocales: [
-        //   ...WiredashLocalizations.delegate.supportedLocales,
-        // ],
+        home: const DemoHomePage(),
       ),
     );
   }
@@ -60,18 +58,27 @@ class DemoCustomTranslations extends WiredashEnglishTranslations {
   const DemoCustomTranslations() : super();
 
   @override
-  String get captureSkip => 'TEST';
+  String get feedbackStateIntroTitle => 'Good morning!';
+}
+
+class DemoPolishTranslations extends pl.WiredashLocalizedTranslations {
+  const DemoPolishTranslations() : super();
+
+  @override
+  String get feedbackStateIntroTitle => 'Dzień dobry!';
 }
 
 class DemoHomePage extends StatelessWidget {
+  const DemoHomePage({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F9FC),
       drawer: Drawer(
         child: Column(
-          children: <Widget>[
-            const DrawerHeader(
+          children: const <Widget>[
+            DrawerHeader(
               child: Center(child: Text('Wiredash example')),
             ),
             UserInfoButton(),
@@ -188,6 +195,8 @@ class CountryCard extends StatelessWidget {
 }
 
 class BuildInfoButton extends StatelessWidget {
+  const BuildInfoButton({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return FlatButton(
@@ -203,6 +212,8 @@ class BuildInfoButton extends StatelessWidget {
 }
 
 class UserInfoButton extends StatelessWidget {
+  const UserInfoButton({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return FlatButton(
