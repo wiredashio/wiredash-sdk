@@ -97,11 +97,34 @@ class _InputComponentState extends State<InputComponent> {
             hintStyle: wiredashTheme.inputHintStyle,
             errorStyle: wiredashTheme.inputErrorStyle,
           ),
+          textCapitalization: _getTextCapitalization(),
           keyboardAppearance: WiredashTheme.of(context).brightness,
-          keyboardType: TextInputType.emailAddress,
+          keyboardType: _getKeyboardType(),
         ),
       ),
     );
+  }
+
+  TextCapitalization _getTextCapitalization() {
+    switch (widget.type) {
+      case InputComponentType.feedback:
+        return TextCapitalization.sentences;
+        break;
+      case InputComponentType.email:
+        return TextCapitalization.none;
+    }
+    return TextCapitalization.sentences;
+  }
+
+  TextInputType _getKeyboardType() {
+    switch (widget.type) {
+      case InputComponentType.feedback:
+        return TextInputType.text;
+        break;
+      case InputComponentType.email:
+        return TextInputType.emailAddress;
+    }
+    return TextInputType.text;
   }
 
   IconData _getIcon() {
