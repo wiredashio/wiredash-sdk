@@ -12,7 +12,6 @@ import 'package:wiredash/src/feedback/components/input_component.dart';
 import 'package:wiredash/src/feedback/components/intro_component.dart';
 import 'package:wiredash/src/feedback/components/success_component.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
-import 'package:wiredash/wiredash.dart';
 
 // ignore: use_key_in_widget_constructors
 class FeedbackSheet extends StatefulWidget {
