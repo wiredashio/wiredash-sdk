@@ -10,7 +10,10 @@ class WiredashOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _InheritedWiredashOptions(options: this, child: child);
+    return _InheritedWiredashOptions(
+      options: this,
+      child: child,
+    );
   }
 
   static WiredashOptionsData of(BuildContext context) {

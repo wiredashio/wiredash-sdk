@@ -11,7 +11,7 @@ import 'package:wiredash/src/capture/screenshot/screenshot.dart';
 import 'package:wiredash/src/capture/sketcher/sketcher.dart';
 import 'package:wiredash/src/capture/sketcher/sketcher_controller.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/translation/wiredash_translation.dart';
+import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/utils/diagonal_shape_painter.dart';
 import 'package:wiredash/src/common/widgets/corner_radius_transition.dart';
 import 'package:wiredash/src/common/widgets/simple_button.dart';
@@ -294,9 +294,9 @@ class CaptureState extends State<Capture>
   String _getBackButtonString() {
     switch (_captureUiState.value) {
       case CaptureUiState.navigate:
-        return WiredashTranslation.of(context).captureSkip;
+        return WiredashLocalizations.of(context).captureSkip;
       case CaptureUiState.draw:
-        return WiredashTranslation.of(context).captureBack;
+        return WiredashLocalizations.of(context).feedbackBack;
       default:
         return '';
     }
@@ -338,10 +338,10 @@ class CaptureState extends State<Capture>
     _animationControllerDrawer.reverse();
     _spotlightKey.currentState.show(
       WiredashIcons.spotlightMove,
-      WiredashTranslation.of(context)
+      WiredashLocalizations.of(context)
           .captureSpotlightNavigateTitle
           .toLowerCase(),
-      WiredashTranslation.of(context).captureSpotlightNavigateMsg,
+      WiredashLocalizations.of(context).captureSpotlightNavigateMsg,
     );
   }
 
@@ -352,19 +352,19 @@ class CaptureState extends State<Capture>
     _animationControllerDrawer.forward();
     _spotlightKey.currentState.show(
       WiredashIcons.spotlightDraw,
-      WiredashTranslation.of(context)
+      WiredashLocalizations.of(context)
           .captureSpotlightScreenCapturedTitle
           .toUpperCase(),
-      WiredashTranslation.of(context).captureSpotlightScreenCapturedMsg,
+      WiredashLocalizations.of(context).captureSpotlightScreenCapturedMsg,
     );
   }
 
   String _getNextButtonString() {
     switch (_captureUiState.value) {
       case CaptureUiState.navigate:
-        return WiredashTranslation.of(context).captureTakeScreenshot;
+        return WiredashLocalizations.of(context).captureTakeScreenshot;
       case CaptureUiState.draw:
-        return WiredashTranslation.of(context).captureSaveScreenshot;
+        return WiredashLocalizations.of(context).captureSaveScreenshot;
       default:
         return '';
     }

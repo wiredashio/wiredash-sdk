@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/src/common/translation/wiredash_translation.dart';
+import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/widgets/list_tile_button.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 
@@ -23,10 +23,10 @@ class SuccessComponent extends StatelessWidget {
             icon: WiredashIcons.exit,
             iconColor: const Color(0xff9c4db1),
             iconBackgroundColor: const Color(0xffffc4f0),
-            title:
-                WiredashTranslation.of(context).feedbackStateSuccessCloseTitle,
+            title: WiredashLocalizations.of(context)
+                .feedbackStateSuccessCloseTitle,
             subtitle:
-                WiredashTranslation.of(context).feedbackStateSuccessCloseMsg,
+                WiredashLocalizations.of(context).feedbackStateSuccessCloseMsg,
             onPressed: onClosedCallback,
           ),
         ],

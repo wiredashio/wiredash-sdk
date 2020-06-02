@@ -107,10 +107,99 @@ Wiredash is by design written in Dart and relies on very few dependencies by the
 ```
 That's it!
 
-On MacOS, you also need the internet permission, so don't forget to open `Runner.xcodeproj` located in the macos folder in the root directory of your app, then go in the "Signing & Capabilities" tab of your XCode project.
+On MacOS, you also need the internet permission, so don't forget to open `Runner.xcodeproj` located in the `macos` folder in the root directory of your app, then go in the "Signing & Capabilities" tab of your XCode project.
 There, be sure to check the box "Outgoing Connections (Client)".
 
 Voilà !
+
+## Localization/internationalization support 🇬🇧🇵🇱🇩🇪
+
+Wiredash supports several languages out of the box (see the list of supported translation files [here](https://github.com/wiredashio/wiredash-sdk/tree/master/lib/src/common/translation)). By default Wiredash will be shown in the device language provided it's supported by the package.
+
+If you want to override the default locale just pass `locale` parameter as follows. If the locale is not supported then English will be used by default.
+
+```dart
+return Wiredash(
+  ...
+  options: WiredashOptionsData(
+    /// You can set your own locale to override device default (`window.locale` by default)
+    locale: const Locale.fromSubtags(languageCode: 'pl'),
+  ),
+  ...
+);
+```
+
+### Providing custom terms
+
+You can also provide custom translations. You can choose if you want to provide all the possible terms or only selected (e.g. you want to get rid of the emojis in current locale). 
+
+For instance you can provide locale for unsupported language and use this locale by providing proper value to `locale` property.
+
+```dart
+return Wiredash(
+  //...
+  options: WiredashOptionsData(
+    customTranslations: {
+      const Locale.fromSubtags(languageCode: 'zh'):
+          const DemoCustomTranslations()
+    },
+    locale: const Locale.fromSubtags(languageCode: 'zh'),
+  ),
+  //...
+);
+```
+
+If you want to add new locale the custom translation class should extend `WiredashTranslations`:
+
+```dart
+// WiredashTranslations is abstract
+class DemoCustomTranslations extends WiredashTranslations {
+  const DemoCustomTranslations() : super();
+
+  @override
+  String get feedbackStateIntroTitle => 'Good morning!';
+  /// override all the terms
+}
+```
+
+Or if you want to override only selected Polish terms you should extend built-in `WiredashLocalizedTranslations`:
+
+```dart
+import 'package:wiredash/src/common/translation/l10n/messages_pl.dart' as pl;
+
+class DemoPolishTranslations extends pl.WiredashLocalizedTranslations {
+  const DemoPolishTranslations() : super();
+
+  @override
+  String get feedbackStateIntroTitle => 'Dzień dobry!';
+}
+```
+
+Then provide the instance of this class to `WiredashOptionsData` as in the snippet below:
+
+```dart
+return Wiredash(
+  //...
+  options: WiredashOptionsData(
+    customTranslations: {
+      const Locale.fromSubtags(languageCode: 'pl'):
+          const DemoPolishTranslations(),
+    },
+    locale: const Locale('pl'),
+  ),
+  //...
+);
+```
+
+### Contribute your translations 🎉
+
+If you want to contribute your own translations you can join our [public POEditor project here](https://poeditor.com/join/project/yq6ereCbKZ).
+
+#### Translation contributors
+
+Thank you so much to following people who helped translate Wiredash! 🙌
+
+- [orkwizard](https://github.com/orkwizard)
   
 ## License  
   

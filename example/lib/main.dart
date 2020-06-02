@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
+import 'package:wiredash/src/common/translation/l10n/messages_pl.dart' as pl;
 
-void main() => runApp(ExampleApp());
+part 'main_localizations.dart';
+
+void main() => runApp(const ExampleApp());
 
 class ExampleApp extends StatefulWidget {
+  const ExampleApp({Key key}) : super(key: key);
   @override
   _ExampleAppState createState() => _ExampleAppState();
 }
@@ -21,34 +25,48 @@ class _ExampleAppState extends State<ExampleApp> {
     /// the `projectId` and `secret` obtained from the "configuration" section of your console.
     /// Notice we are also passing our `_navigatorKey` to both widgets.
     /// Wiredash also allows you to setup custom themes and translations using `WiredashThemeData` and
-    /// `WiredashTranslationData`. Both of these are optional but should your heart desire an extra layer
+    /// `WiredashOptionsData`. Both of these are optional but should your heart desire an extra layer
     /// of customizability, you can make wiredash your own.
+    /// Read more about translations support in the package's README.
     return Wiredash(
       projectId: "YOUR-PROJECT-ID",
       secret: "YOUR-SECRET",
       navigatorKey: _navigatorKey,
       options: WiredashOptionsData(
         showDebugFloatingEntryPoint: true,
+
+        /// Uncomment below to see how custom translations work
+        // customTranslations: {
+        //   const Locale.fromSubtags(languageCode: 'en'):
+        //       const DemoCustomTranslations(),
+        //   const Locale.fromSubtags(languageCode: 'pl'):
+        //       const DemoPolishTranslations(),
+        // },
+
+        /// Uncomment below to override default device locale
+        // locale: const Locale('de'),
       ),
       theme: WiredashThemeData(brightness: Theme.of(context).brightness),
       child: MaterialApp(
         navigatorKey: _navigatorKey,
         title: 'Adventure 🌎',
-        home: DemoHomePage(),
+        home: const DemoHomePage(),
       ),
     );
   }
 }
 
 class DemoHomePage extends StatelessWidget {
+  const DemoHomePage({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F9FC),
       drawer: Drawer(
         child: Column(
-          children: <Widget>[
-            const DrawerHeader(
+          children: const <Widget>[
+            DrawerHeader(
               child: Center(child: Text('Wiredash example')),
             ),
             UserInfoButton(),
@@ -165,6 +183,8 @@ class CountryCard extends StatelessWidget {
 }
 
 class BuildInfoButton extends StatelessWidget {
+  const BuildInfoButton({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return FlatButton(
@@ -180,6 +200,8 @@ class BuildInfoButton extends StatelessWidget {
 }
 
 class UserInfoButton extends StatelessWidget {
+  const UserInfoButton({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return FlatButton(

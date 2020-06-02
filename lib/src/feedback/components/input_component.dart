@@ -3,7 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/translation/wiredash_translation.dart';
+import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
@@ -117,9 +117,9 @@ class _InputComponentState extends State<InputComponent> {
   String _getHintText() {
     switch (widget.type) {
       case InputComponentType.feedback:
-        return WiredashTranslation.of(context).inputHintFeedback;
+        return WiredashLocalizations.of(context).inputHintFeedback;
       case InputComponentType.email:
-        return WiredashTranslation.of(context).inputHintEmail;
+        return WiredashLocalizations.of(context).inputHintEmail;
     }
 
     return null;
@@ -129,9 +129,9 @@ class _InputComponentState extends State<InputComponent> {
     switch (widget.type) {
       case InputComponentType.feedback:
         if (input.isEmpty) {
-          return WiredashTranslation.of(context).validationHintFeedbackEmpty;
+          return WiredashLocalizations.of(context).validationHintFeedbackEmpty;
         } else if (input.length > 512) {
-          return WiredashTranslation.of(context).validationHintFeedbackLength;
+          return WiredashLocalizations.of(context).validationHintFeedbackLength;
         }
         break;
       case InputComponentType.email:
@@ -140,7 +140,7 @@ class _InputComponentState extends State<InputComponent> {
                 r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
             .hasMatch(input);
         if (isValidEmail) return null;
-        return WiredashTranslation.of(context).validationHintEmail;
+        return WiredashLocalizations.of(context).validationHintEmail;
     }
 
     return null;

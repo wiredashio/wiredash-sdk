@@ -1,3 +1,10 @@
+## [0.2.0] - Internationalization support 🇬🇧🇩🇪🇵🇱
+
+We added initial internationalization support for several languages. Feel free to contribute your own translations!
+
+* Added `WiredashLocalizations`
+* Added ability to provide custom `WiredashTranslations`
+
 ## [0.1.1] - Build information ⚙️ in the feedback
 You can pass additional build information (number and commit) that will be visible when user submits the feedback.
 
@@ -10,9 +17,9 @@ Wiredash now uses the Provider package for internal state management and support
 also using Provider in your app, please make sure to at least use version 3.0.0.
 
 * Added a Floating Entry which is shown by default in debug to show Wiredash from any screen
-* Added WiredashOptions to further customise the Wiredash widget (e.g. the Floating Entry)
+* Added WiredashOptions to further customize the Wiredash widget (e.g. the Floating Entry)
 * Added a Confidential widget to automatically hide sensitive widgets during screen capture
-* Added a Wiredash.of(context).visible ValueListener to check if Wiredash is in screen capture mode (e.g. for hiding certain widgets being screencaptured)
+* Added a Wiredash.of(context).visible ValueListener to check if Wiredash is in screen capture mode (e.g. for hiding certain widgets being screen captured)
 * Improved error handling when there is no valid root navigator key
 * Improved performance
 * Minor bug fixes

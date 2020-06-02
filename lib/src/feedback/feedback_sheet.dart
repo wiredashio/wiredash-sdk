@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/translation/wiredash_translation.dart';
+import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/animated_fade_in.dart';
 import 'package:wiredash/src/common/widgets/animated_progress.dart';
@@ -159,13 +159,13 @@ class _FeedbackSheetState extends State<FeedbackSheet>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             SimpleButton(
-              text: WiredashTranslation.of(context).feedbackCancel,
+              text: WiredashLocalizations.of(context).feedbackCancel,
               onPressed: () {
                 state.feedbackUiState = FeedbackUiState.intro;
               },
             ),
             SimpleButton(
-              text: WiredashTranslation.of(context).feedbackSave,
+              text: WiredashLocalizations.of(context).feedbackSave,
               icon: WiredashIcons.right,
               onPressed: _submitFeedback,
             ),
@@ -176,11 +176,11 @@ class _FeedbackSheetState extends State<FeedbackSheet>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             SimpleButton(
-              text: WiredashTranslation.of(context).feedbackBack,
+              text: WiredashLocalizations.of(context).feedbackBack,
               onPressed: () => state.feedbackUiState = FeedbackUiState.feedback,
             ),
             SimpleButton(
-              text: WiredashTranslation.of(context).feedbackSend,
+              text: WiredashLocalizations.of(context).feedbackSend,
               icon: WiredashIcons.right,
               onPressed: _submitEmail,
             ),
@@ -228,13 +228,13 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   String _getTitle() {
     switch (Provider.of<FeedbackModel>(context).feedbackUiState) {
       case FeedbackUiState.intro:
-        return WiredashTranslation.of(context).feedbackStateIntroTitle;
+        return WiredashLocalizations.of(context).feedbackStateIntroTitle;
       case FeedbackUiState.feedback:
-        return WiredashTranslation.of(context).feedbackStateFeedbackTitle;
+        return WiredashLocalizations.of(context).feedbackStateFeedbackTitle;
       case FeedbackUiState.email:
-        return WiredashTranslation.of(context).feedbackStateEmailTitle;
+        return WiredashLocalizations.of(context).feedbackStateEmailTitle;
       case FeedbackUiState.success:
-        return WiredashTranslation.of(context).feedbackStateSuccessTitle;
+        return WiredashLocalizations.of(context).feedbackStateSuccessTitle;
       default:
         return '';
     }
@@ -243,13 +243,13 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   String _getSubtitle() {
     switch (Provider.of<FeedbackModel>(context).feedbackUiState) {
       case FeedbackUiState.intro:
-        return WiredashTranslation.of(context).feedbackStateIntroMsg;
+        return WiredashLocalizations.of(context).feedbackStateIntroMsg;
       case FeedbackUiState.feedback:
-        return WiredashTranslation.of(context).feedbackStateFeedbackMsg;
+        return WiredashLocalizations.of(context).feedbackStateFeedbackMsg;
       case FeedbackUiState.email:
-        return WiredashTranslation.of(context).feedbackStateEmailMsg;
+        return WiredashLocalizations.of(context).feedbackStateEmailMsg;
       case FeedbackUiState.success:
-        return WiredashTranslation.of(context).feedbackStateSuccessMsg;
+        return WiredashLocalizations.of(context).feedbackStateSuccessMsg;
       default:
         return '';
     }
