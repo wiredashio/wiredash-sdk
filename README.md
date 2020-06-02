@@ -199,7 +199,8 @@ If you want to contribute your own translations you can join our [public POEdito
 
 Thank you so much to following people who helped translate Wiredash! 🙌
 
-- [orkwizard](https://github.com/orkwizard)
+- [orkwizard](https://github.com/orkwizard) 🇪🇸
+- [stefandevo](https://github.com/stefandevo) 🇳🇱
   
 ## License  
   

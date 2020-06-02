@@ -5,6 +5,7 @@ import 'package:wiredash/wiredash.dart';
 import 'l10n/messages_de.dart' as de;
 import 'l10n/messages_en.dart' as en;
 import 'l10n/messages_es.dart' as es;
+import 'l10n/messages_nl.dart' as nl;
 import 'l10n/messages_pl.dart' as pl;
 
 class WiredashLocalizations extends StatelessWidget {
@@ -50,6 +51,7 @@ class WiredashLocalizations extends StatelessWidget {
       Locale.fromSubtags(languageCode: 'de'),
       Locale.fromSubtags(languageCode: 'pl'),
       Locale.fromSubtags(languageCode: 'es'),
+      Locale.fromSubtags(languageCode: 'nl'),
     ];
   }
 }
@@ -69,6 +71,8 @@ class _InheritedWiredashTranslation extends InheritedWidget {
           const pl.WiredashLocalizedTranslations(),
       const Locale.fromSubtags(languageCode: 'es'):
           const es.WiredashLocalizedTranslations(),
+      const Locale.fromSubtags(languageCode: 'nl'):
+          const nl.WiredashLocalizedTranslations(),
     };
     _translations.addAll(defaultTranslations);
 
