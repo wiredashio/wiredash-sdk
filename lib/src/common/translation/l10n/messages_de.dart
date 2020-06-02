@@ -48,7 +48,7 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get feedbackStateEmailTitle => "Bleib auf dem Laufenden 👇";
   @override
   String get feedbackStateFeedbackMsg =>
-      "Wir hören Dir zu. Bitte beschreibe Dein Anliegen so gut wie möglich, damit wir Dir helfen können.";
+      "Wir sind ganz Ohr. Bitte beschreibe Dein Anliegen so gut wie möglich, damit wir Dir helfen können.";
   @override
   String get feedbackStateIntroMsg =>
       "Wir können es kaum abwarten, Deine Gedanken zu unserer App zu hören! Was möchtest Du tun?";
