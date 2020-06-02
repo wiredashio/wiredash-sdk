@@ -15,8 +15,9 @@ class WiredashThemeData {
     Color backgroundColor,
     Color dividerColor,
   }) {
-    if (Brightness.light == brightness) {
+    if (brightness == Brightness.light) {
       return WiredashThemeData._(
+        brightness: brightness,
         primaryColor: primaryColor ?? const Color(0xff03A4E5),
         secondaryColor: secondaryColor ?? const Color(0xff35F1D7),
         primaryTextColor: primaryTextColor ?? const Color(0xff2b2b2b),
@@ -31,6 +32,7 @@ class WiredashThemeData {
       );
     } else {
       return WiredashThemeData._(
+        brightness: brightness,
         primaryColor: primaryColor ?? const Color(0xff03A4E5),
         secondaryColor: secondaryColor ?? const Color(0xff35F1D7),
         primaryTextColor: primaryTextColor ?? const Color(0xfffafafa),
@@ -47,6 +49,7 @@ class WiredashThemeData {
   }
 
   WiredashThemeData._({
+    this.brightness,
     this.primaryColor,
     this.secondaryColor,
     this.primaryTextColor,
@@ -57,6 +60,8 @@ class WiredashThemeData {
     this.backgroundColor,
     this.dividerColor,
   });
+
+  final Brightness brightness;
 
   final Color primaryColor;
   final Color secondaryColor;
