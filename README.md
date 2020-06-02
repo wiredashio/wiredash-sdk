@@ -194,6 +194,12 @@ return Wiredash(
 ### Contribute your translations 🎉
 
 If you want to contribute your own translations you can join our [public POEditor project here](https://poeditor.com/join/project/yq6ereCbKZ).
+
+#### Translation contributors
+
+Thank you so much to following people who helped translate Wiredash! 🙌
+
+- [orkwizard](https://github.com/orkwizard)
   
 ## License  
   
