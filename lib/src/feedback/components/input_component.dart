@@ -3,7 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/translation/l10n.dart';
+import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';

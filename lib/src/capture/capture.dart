@@ -11,7 +11,7 @@ import 'package:wiredash/src/capture/screenshot/screenshot.dart';
 import 'package:wiredash/src/capture/sketcher/sketcher.dart';
 import 'package:wiredash/src/capture/sketcher/sketcher_controller.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/translation/l10n.dart';
+import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/utils/diagonal_shape_painter.dart';
 import 'package:wiredash/src/common/widgets/corner_radius_transition.dart';
 import 'package:wiredash/src/common/widgets/simple_button.dart';

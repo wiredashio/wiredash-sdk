@@ -9,13 +9,13 @@ import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/options/wiredash_options_data.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
-import 'package:wiredash/src/common/translation/l10n.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/utils/build_info.dart';
 import 'package:wiredash/src/common/widgets/floating_entry_point.dart';
 import 'package:wiredash/src/common/widgets/wiredash_scaffold.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
+import 'package:wiredash/wiredash.dart';
 
 /// Capture in-app user feedback, wishes, ratings and much more
 ///
@@ -178,20 +178,15 @@ class WiredashState extends State<Wiredash> {
 
   @override
   Widget build(BuildContext context) {
-    return Localizations(
-      locale: WiredashOptionsData.currentLocale,
-      delegates: [
-        DefaultWidgetsLocalizations.delegate,
-        WiredashLocalizations.delegate,
+    return MultiProvider(
+      providers: [
+        Provider.value(value: networkManager),
+        Provider.value(value: userManager),
+        ChangeNotifierProvider.value(value: _feedbackModel),
       ],
-      child: MultiProvider(
-        providers: [
-          Provider.value(value: networkManager),
-          Provider.value(value: userManager),
-          ChangeNotifierProvider.value(value: _feedbackModel),
-        ],
-        child: WiredashOptions(
-          data: _options,
+      child: WiredashOptions(
+        data: _options,
+        child: WiredashLocalizations(
           child: WiredashTheme(
             data: _theme,
             child: WiredashScaffold(

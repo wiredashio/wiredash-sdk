@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/translation/l10n.dart';
+import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/animated_fade_in.dart';
 import 'package:wiredash/src/common/widgets/animated_progress.dart';
@@ -34,16 +34,6 @@ class _FeedbackSheetState extends State<FeedbackSheet>
     _feedbackFocusNode.dispose();
     _emailFocusNode.dispose();
     super.dispose();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Because Wiredash widget is outside the MaterialApp we need
-    // to update (sync) the locale before showing the feedback sheet
-    // in the surrounding Localizations widget
-    final locale = Localizations.localeOf(context);
-    WiredashOptions.of(context).setCurrentLocale(locale.languageCode);
   }
 
   @override

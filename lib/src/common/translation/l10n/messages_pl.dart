@@ -1,83 +1,79 @@
-// DO NOT EDIT. This is code generated via package:intl/generate_localized.dart
-// This is a library that provides messages for a pl locale. All the
-// messages from the main program should be duplicated here with the same
-// function name.
+import 'package:wiredash/wiredash.dart';
 
-// Ignore issues from commonly used lints in this file.
-// ignore_for_file:unnecessary_brace_in_string_interps, unnecessary_new
-// ignore_for_file:prefer_single_quotes,comment_references, directives_ordering
-// ignore_for_file:annotate_overrides,prefer_generic_function_type_aliases
-// ignore_for_file:unused_import, file_names
-
-import 'package:intl/intl.dart';
-import 'package:intl/message_lookup_by_library.dart';
-
-final messages = new MessageLookup();
-
-typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
-
-class MessageLookup extends MessageLookupByLibrary {
-  String get localeName => 'pl';
-
-  final messages = _notInlinedMessages(_notInlinedMessages);
-  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "captureSaveScreenshot":
-            MessageLookupByLibrary.simpleMessage("Zapisz screenshot"),
-        "captureSkip": MessageLookupByLibrary.simpleMessage("Pomiń screenshot"),
-        "captureSpotlightNavigateMsg": MessageLookupByLibrary.simpleMessage(
-            "Przejdź do ekranu, do którego chcesz zgłosić uwagi"),
-        "captureSpotlightNavigateTitle":
-            MessageLookupByLibrary.simpleMessage("nawiguj"),
-        "captureSpotlightScreenCapturedMsg": MessageLookupByLibrary.simpleMessage(
-            "Screenshot zapisany! Jeśli chcesz, możesz zaznaczyć na nim elementy, których dotyczy Twoja opinia."),
-        "captureSpotlightScreenCapturedTitle":
-            MessageLookupByLibrary.simpleMessage("rysuj"),
-        "captureTakeScreenshot":
-            MessageLookupByLibrary.simpleMessage("Zrób screenshot"),
-        "feedbackBack": MessageLookupByLibrary.simpleMessage("Wstecz"),
-        "feedbackCancel": MessageLookupByLibrary.simpleMessage("Anuluj"),
-        "feedbackModeBugMsg": MessageLookupByLibrary.simpleMessage(
-            "Daj nam znać o błędzie, jeśli jakiś dostrzegasz"),
-        "feedbackModeBugTitle":
-            MessageLookupByLibrary.simpleMessage("Zgłoś błąd"),
-        "feedbackModeImprovementMsg": MessageLookupByLibrary.simpleMessage(
-            "Masz pomysł, jak poprawić aplikację? Daj nam znać!"),
-        "feedbackModeImprovementTitle":
-            MessageLookupByLibrary.simpleMessage("Zgłoś propozycję"),
-        "feedbackModePraiseMsg": MessageLookupByLibrary.simpleMessage(
-            "Czy coś spodobało ci się w aplikacji? Daj nam znać, a być może będzie jeszcze lepsze!"),
-        "feedbackModePraiseTitle":
-            MessageLookupByLibrary.simpleMessage("Podziękuj nam"),
-        "feedbackSave": MessageLookupByLibrary.simpleMessage("Zapisz"),
-        "feedbackSend": MessageLookupByLibrary.simpleMessage("Wyślij feedback"),
-        "feedbackStateEmailMsg": MessageLookupByLibrary.simpleMessage(
-            "Podaj e-mail, jeśli chcesz otrzymywać informacje na temat zgłoszenia."),
-        "feedbackStateEmailTitle":
-            MessageLookupByLibrary.simpleMessage("Bądź na bieżąco 👇"),
-        "feedbackStateFeedbackMsg": MessageLookupByLibrary.simpleMessage(
-            "Czytamy uważnie wszystkie opinie. Podaj jak najwięcej szczegółów."),
-        "feedbackStateFeedbackTitle":
-            MessageLookupByLibrary.simpleMessage("Twój feedback ✍️"),
-        "feedbackStateIntroMsg": MessageLookupByLibrary.simpleMessage(
-            "Nie możemy doczekać się, by poznać Twoją opinię o aplikacji"),
-        "feedbackStateIntroTitle":
-            MessageLookupByLibrary.simpleMessage("Czołem 👋"),
-        "feedbackStateSuccessCloseMsg": MessageLookupByLibrary.simpleMessage(
-            "Dzięki za zgłoszenie propozycji!"),
-        "feedbackStateSuccessCloseTitle":
-            MessageLookupByLibrary.simpleMessage("Zamknij"),
-        "feedbackStateSuccessMsg": MessageLookupByLibrary.simpleMessage(
-            "To wszystko! Dziękujemy, że pomagasz nam poprawiać aplikację!"),
-        "feedbackStateSuccessTitle":
-            MessageLookupByLibrary.simpleMessage("Dzięki ✌️"),
-        "inputHintEmail": MessageLookupByLibrary.simpleMessage("Twój e-mail"),
-        "inputHintFeedback":
-            MessageLookupByLibrary.simpleMessage("Twój feedback"),
-        "validationHintEmail": MessageLookupByLibrary.simpleMessage(
-            "Podaj prawidłowy e-mail lub pozostaw pole puste."),
-        "validationHintFeedbackEmpty":
-            MessageLookupByLibrary.simpleMessage("Wpisz swój feedback."),
-        "validationHintFeedbackLength":
-            MessageLookupByLibrary.simpleMessage("Twój wpis jest zbyt długi.")
-      };
+class WiredashLocalizedTranslations extends WiredashTranslations {
+  const WiredashLocalizedTranslations() : super();
+  @override
+  String get captureSaveScreenshot => "Zapisz screenshot";
+  @override
+  String get captureSkip => "Pomiń screenshot";
+  @override
+  String get captureSpotlightNavigateMsg =>
+      "Przejdź do ekranu, do którego chcesz zgłosić uwagi";
+  @override
+  String get captureSpotlightNavigateTitle => "nawiguj";
+  @override
+  String get captureSpotlightScreenCapturedMsg =>
+      "Screenshot zapisany! Jeśli chcesz, możesz zaznaczyć na nim elementy, których dotyczy Twoja opinia.";
+  @override
+  String get captureSpotlightScreenCapturedTitle => "rysuj";
+  @override
+  String get captureTakeScreenshot => "Zrób screenshot";
+  @override
+  String get feedbackBack => "Wstecz";
+  @override
+  String get feedbackCancel => "Anuluj";
+  @override
+  String get feedbackModeBugMsg =>
+      "Daj nam znać o błędzie, jeśli jakiś dostrzegasz";
+  @override
+  String get feedbackModeBugTitle => "Zgłoś błąd";
+  @override
+  String get feedbackModeImprovementMsg =>
+      "Masz pomysł, jak poprawić aplikację? Daj nam znać!";
+  @override
+  String get feedbackModeImprovementTitle => "Zgłoś propozycję";
+  @override
+  String get feedbackModePraiseMsg =>
+      "Czy coś spodobało ci się w aplikacji? Daj nam znać, a być może będzie jeszcze lepsze!";
+  @override
+  String get feedbackModePraiseTitle => "Podziękuj nam";
+  @override
+  String get feedbackSave => "Zapisz";
+  @override
+  String get feedbackSend => "Wyślij feedback";
+  @override
+  String get feedbackStateEmailMsg =>
+      "Podaj e-mail, jeśli chcesz otrzymywać informacje na temat zgłoszenia.";
+  @override
+  String get feedbackStateEmailTitle => "Bądź na bieżąco 👇";
+  @override
+  String get feedbackStateFeedbackMsg =>
+      "Czytamy uważnie wszystkie opinie. Podaj jak najwięcej szczegółów.";
+  @override
+  String get feedbackStateIntroMsg =>
+      "Nie możemy doczekać się, by poznać Twoją opinię o aplikacji";
+  @override
+  String get feedbackStateIntroTitle => "Czołem 👋";
+  @override
+  String get feedbackStateSuccessCloseMsg => "Dzięki za zgłoszenie propozycji!";
+  @override
+  String get feedbackStateSuccessCloseTitle => "Zamknij";
+  @override
+  String get feedbackStateSuccessMsg =>
+      "To wszystko! Dziękujemy, że pomagasz nam poprawiać aplikację!";
+  @override
+  String get feedbackStateSuccessTitle => "Dzięki ✌️";
+  @override
+  String get inputHintEmail => "Twój e-mail";
+  @override
+  String get inputHintFeedback => "Twój feedback";
+  @override
+  String get validationHintEmail =>
+      "Podaj prawidłowy e-mail lub pozostaw pole puste.";
+  @override
+  String get validationHintFeedbackEmpty => "Wpisz swój feedback.";
+  @override
+  String get validationHintFeedbackLength => "Twój wpis jest zbyt długi.";
+  @override
+  String get feedbackStateFeedbackTitle => "Twój feedback ✍️";
 }

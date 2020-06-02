@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/src/common/translation/l10n.dart';
+import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/widgets/list_tile_button.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
