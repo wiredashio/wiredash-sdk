@@ -48,7 +48,7 @@ class _FloatingEntryPointState extends State<FloatingEntryPoint> {
             widget.child,
             if (WiredashOptions.of(context).showDebugFloatingEntryPoint) ...[
               IgnorePointer(
-                ignoring: !_isDragging || _isButtonDiscarded,
+                ignoring: true,
                 child: Align(
                   alignment: Alignment.bottomLeft,
                   child: _buildDiscardCorner(),
