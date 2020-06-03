@@ -8,13 +8,15 @@ class ApiClient {
     @required this.httpClient,
     @required this.projectId,
     @required this.secret,
+    @required this.host,
   });
-
-  static const String _host = 'https://api.wiredash.io/';
 
   final Client httpClient;
   final String projectId;
   final String secret;
+  final String host;
+
+  String get _host => host ?? 'https://api.wiredash.io/';
 
   Future<Map<String, dynamic>> get(String urlPath) async {
     final url = '$_host$urlPath';
