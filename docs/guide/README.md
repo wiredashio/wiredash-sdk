@@ -1,10 +1,5 @@
----
-title: Getting Started with Wiredash
-lang: en-US
----
-
-![](New%20Logo.png)
-#  WireDash Getting Started Guide
+![](../assets/getting_started/new-logo.png)
+#  Wiredash Getting Started Guide
 Thank you for choosing Wiredash 🎉 We are thrilled to have you on board! 
 
 This guide will get you up and running with Wiredash in just a few short steps. 
@@ -22,13 +17,14 @@ Once you have successfully created an account, you will be directed to the proje
 
 Let’s create a new project by clicking the “Create new Project” option. 
 For the purposes of this guide, let’s call it `my-first-project`.
-![](1.creating-project.png)
+
+![](../assets/getting_started/1.creating-project.png)
 
 With the project created, you are taken to the `Feedback` tab of the project console.
-![](2.console-all.png)
-Before closing the  console, head to the `Configuration` tab and copy the values for “Project ID” and “API Secret”. We will need these shortly. 
-![](3.redacted-keys.png)
+![](../assets/getting_started/2.console-all.png)
 
+Before closing the  console, head to the `Configuration` tab and copy the values for “Project ID” and “API Secret”. We will need these shortly. 
+![](../assets/getting_started/3.redacted-keys.png)
 
 ### 2. Add to Flutter
 Nice Job 🎈 You’ve successfully registered and created your first project. Now comes the fun part, adding `Wiredash` to your app. 
@@ -81,8 +77,9 @@ return Wiredash(
 ```
 
 ### 3 Done 🎉
-![](wiredash%20gif.gif)
+![](../assets/getting_started/demo.gif)
+
 Congratulations! You’ve successfully added Wiredash to your project. If you would like to see a completed app, checkout our example app in the project’s Github. 
 [https://github.com/wiredashio/wiredash-sdk/blob/nash/updated-sample/example/lib/main.dart](https://github.com/wiredashio/wiredash-sdk/blob/nash/updated-sample/example/lib/main.dart)
 
-There are tons of options and customisations you can make to optimise Wiredash for your app. For more information on customising WireDash, please see TODO
+There are tons of options and customisations you can make to optimise Wiredash for your app. For more information on customising WireDash, please see [here](/configuration/)
