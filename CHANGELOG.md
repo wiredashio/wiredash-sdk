@@ -1,16 +1,13 @@
-## [0.2.0] - Internationalization support 🇬🇧🇩🇪🇵🇱
-
-We added initial internationalization support for several languages. Feel free to contribute your own translations!
+## [0.2.0] - Internationalization Support 🇬🇧🇩🇪🇵🇱
+We added initial internationalization support for several languages. Feel free to contribute your own translations 
+(check out the docs for more info on that)!
 
 * Added `WiredashLocalizations`
 * Added ability to provide custom `WiredashTranslations`
-
-## [0.1.1] - Build information ⚙️ in the feedback
-You can pass additional build information (number and commit) that will be visible when user submits the feedback.
-
 * Added buildNumber, buildVersion and buildCommit properties that can be passed through dart-define
 * Constrained the SDK to 2.8.0 or newer and Flutter to 1.17.0 or newer
 * Deprecated method `setIdentifiers` in favor of `setUserProperties` and `setBuildProperties`
+* Minor bug fixes
 
 ## [0.1.0] - Floating Entry 📲, Confidential 👀 & Provider 🏗
 Wiredash now uses the Provider package for internal state management and supports version 3.0.0 and higher. If you are
