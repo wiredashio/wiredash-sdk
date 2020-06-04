@@ -40,7 +40,7 @@ class _FloatingEntryPointState extends State<FloatingEntryPoint> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constrains) {
-        _position ??= constrains.biggest.bottomRight(-const Offset(72, 144));
+        _position ??= constrains.biggest.centerRight(-const Offset(80, 0));
         calculateRecyclePosition(constrains.biggest);
 
         return Stack(
@@ -75,8 +75,8 @@ class _FloatingEntryPointState extends State<FloatingEntryPoint> {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.bottomLeft,
-            end: Alignment.topRight,
-            colors: [Colors.black54, Colors.transparent, Colors.transparent],
+            end: Alignment.center,
+            colors: [Colors.black87, Colors.black54, Colors.transparent],
           ),
         ),
         height: 100,
