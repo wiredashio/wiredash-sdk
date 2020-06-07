@@ -201,7 +201,8 @@ Thank you so much to following people who helped translate Wiredash! 🙌
 
 - [orkwizard](https://github.com/orkwizard) 🇪🇸
 - [stefandevo](https://github.com/stefandevo) 🇳🇱
-  
+- [huextrat](https://github.com/huextrat) 🇫🇷
+
 ## License  
   
 The Wiredash SDK is released under the [Attribution Assurance License](https://opensource.org/licenses/AAL). See [LICENSE](https://github.com/wiredashio/wiredash-sdk/blob/master/LICENSE) for details.

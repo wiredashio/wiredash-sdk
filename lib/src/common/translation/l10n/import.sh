@@ -3,7 +3,7 @@
 apiToken=$POEDITOR_API_TOKEN
 projectId=347065
 
-for lang in "en" "pl" "de" "es" "nl"; do
+for lang in "en" "pl" "de" "es" "nl" "fr"; do
     echo $lang
     command=$(curl -X POST https://api.poeditor.com/v2/projects/export \
         -d api_token="$apiToken" \
