@@ -229,7 +229,7 @@ class CaptureState extends State<Capture>
         ),
       ),
       child: Container(
-        alignment: Alignment.centerRight,
+        alignment: AlignmentDirectional.centerEnd,
         child: Drawer(),
       ),
     );

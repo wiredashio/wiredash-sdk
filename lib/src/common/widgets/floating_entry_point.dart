@@ -50,7 +50,7 @@ class _FloatingEntryPointState extends State<FloatingEntryPoint> {
               IgnorePointer(
                 ignoring: true,
                 child: Align(
-                  alignment: Alignment.bottomLeft,
+                  alignment: AlignmentDirectional.bottomStart,
                   child: _buildDiscardCorner(),
                 ),
               ),
@@ -81,7 +81,7 @@ class _FloatingEntryPointState extends State<FloatingEntryPoint> {
         ),
         height: 100,
         width: 100,
-        alignment: Alignment.bottomLeft,
+        alignment: AlignmentDirectional.bottomStart,
         child: const Padding(
           padding: EdgeInsets.all(16.0),
           child: Icon(
@@ -224,7 +224,7 @@ class _FloatingButtonState extends State<FloatingButton>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                  end: AlignmentDirectional.bottomEnd,
                   colors: [
                     WiredashTheme.of(context).primaryColor,
                     WiredashTheme.of(context).secondaryColor,
