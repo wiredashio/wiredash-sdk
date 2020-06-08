@@ -8,8 +8,10 @@ class WiredashOptionsData {
   WiredashOptionsData({
     bool showDebugFloatingEntryPoint,
     Locale locale,
+    TextDirection textDirection,
     this.customTranslations,
   })  : showDebugFloatingEntryPoint = showDebugFloatingEntryPoint ?? kDebugMode,
+        textDirection = textDirection ?? TextDirection.ltr,
         _currentLocale = locale ?? window.locale;
 
   /// Show a floating button with the Wiredash logo to easily report issues
@@ -21,6 +23,9 @@ class WiredashOptionsData {
   /// You can also use Wiredash delegate in your MaterialApp
   /// if default translations are sufficient for you
   final Map<Locale, WiredashTranslations> customTranslations;
+
+  /// Current [TextDirection] used by Wiredash widget
+  TextDirection textDirection;
 
   Locale _currentLocale;
 
