@@ -202,6 +202,9 @@ Thank you so much to following people who helped translate Wiredash! 🙌
 - [orkwizard](https://github.com/orkwizard) 🇪🇸
 - [stefandevo](https://github.com/stefandevo) 🇳🇱
 - [huextrat](https://github.com/huextrat) 🇫🇷
+- [mohanadshaban](https://github.com/mohanadshaban) [ar]
+- [AtaTrkgl](https://github.com/AtaTrkgl), [salihgueler](https://github.com/salihgueler) 🇹🇷
+- Caiofapedroso 🇵🇹
 
 ## License  
   
