@@ -161,6 +161,8 @@ class CaptureState extends State<Capture>
 
   @override
   Widget build(BuildContext context) {
+    final directionalityFactor =
+        Directionality.of(context) == TextDirection.ltr ? 1.0 : -1.0;
     return MultiProvider(
       providers: [
         ValueListenableProvider.value(value: _captureUiState),
@@ -185,7 +187,7 @@ class CaptureState extends State<Capture>
                 alignment: Alignment.bottomCenter,
                 transform: Matrix4.identity()
                   ..translate(
-                    _drawPanelSlideAnimation.value,
+                    directionalityFactor * _drawPanelSlideAnimation.value,
                     -_contentBottomOffset,
                   )
                   ..scale(_scaleFactor),
@@ -202,7 +204,7 @@ class CaptureState extends State<Capture>
                 alignment: Alignment.bottomCenter,
                 transform: Matrix4.identity()
                   ..translate(
-                    -_drawPanelSlideAnimation.value,
+                    directionalityFactor * -_drawPanelSlideAnimation.value,
                     -_contentSlideUpAnimation.value,
                   )
                   ..scale(_scaleAnimation.value),
