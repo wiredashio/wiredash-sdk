@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/wiredash.dart';
 
+import 'l10n/messages_ar.dart' as ar;
 import 'l10n/messages_de.dart' as de;
 import 'l10n/messages_en.dart' as en;
 import 'l10n/messages_es.dart' as es;
 import 'l10n/messages_fr.dart' as fr;
 import 'l10n/messages_nl.dart' as nl;
 import 'l10n/messages_pl.dart' as pl;
+import 'l10n/messages_pt.dart' as pt;
+import 'l10n/messages_tr.dart' as tr;
 
 class WiredashLocalizations extends StatelessWidget {
   const WiredashLocalizations({@required this.child, Key key})
@@ -54,6 +57,9 @@ class WiredashLocalizations extends StatelessWidget {
       Locale.fromSubtags(languageCode: 'es'),
       Locale.fromSubtags(languageCode: 'nl'),
       Locale.fromSubtags(languageCode: 'fr'),
+      Locale.fromSubtags(languageCode: 'pt'),
+      Locale.fromSubtags(languageCode: 'ar'),
+      Locale.fromSubtags(languageCode: 'tr'),
     ];
   }
 }
@@ -76,7 +82,13 @@ class _InheritedWiredashTranslation extends InheritedWidget {
       const Locale.fromSubtags(languageCode: 'nl'):
           const nl.WiredashLocalizedTranslations(),
       const Locale.fromSubtags(languageCode: 'fr'):
-        const fr.WiredashLocalizedTranslations(),
+          const fr.WiredashLocalizedTranslations(),
+      const Locale.fromSubtags(languageCode: 'pt'):
+          const pt.WiredashLocalizedTranslations(),
+      const Locale.fromSubtags(languageCode: 'ar'):
+          const ar.WiredashLocalizedTranslations(),
+      const Locale.fromSubtags(languageCode: 'tr'):
+          const tr.WiredashLocalizedTranslations(),
     };
     _translations.addAll(defaultTranslations);
 
