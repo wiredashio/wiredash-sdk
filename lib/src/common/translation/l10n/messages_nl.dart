@@ -38,7 +38,7 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   @override
   String get feedbackModePraiseTitle => "Stuur een applaus";
   @override
-  String get feedbackSave => "Bewaren";
+  String get feedbackSave => "Opslaan";
   @override
   String get feedbackSend => "Verstuur feedback";
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 
 class WiredashScaffold extends StatefulWidget {
@@ -21,7 +22,7 @@ class _WiredashScaffoldState extends State<WiredashScaffold>
     return MediaQuery(
       data: MediaQueryData.fromWindow(WidgetsBinding.instance.window),
       child: Directionality(
-        textDirection: TextDirection.ltr,
+        textDirection: WiredashOptions.of(context).textDirection,
         child: Container(
           color: WiredashTheme.of(context).backgroundColor,
           child: widget.child,

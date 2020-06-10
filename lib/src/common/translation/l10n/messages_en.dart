@@ -61,7 +61,7 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get feedbackStateSuccessCloseTitle => "Close this Dialog";
   @override
   String get feedbackStateSuccessMsg =>
-      "That's it. Thank you so much for helping us building a better app!";
+      "That's it. Thank you so much for helping us build a better app!";
   @override
   String get feedbackStateSuccessTitle => "Thank you ✌️";
   @override

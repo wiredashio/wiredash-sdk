@@ -124,6 +124,7 @@ return Wiredash(
   options: WiredashOptionsData(
     /// You can set your own locale to override device default (`window.locale` by default)
     locale: const Locale.fromSubtags(languageCode: 'pl'),
+    textDirection: TextDirection.ltr,
   ),
   ...
 );
@@ -133,7 +134,7 @@ return Wiredash(
 
 You can also provide custom translations. You can choose if you want to provide all the possible terms or only selected (e.g. you want to get rid of the emojis in current locale). 
 
-For instance you can provide locale for unsupported language and use this locale by providing proper value to `locale` property.
+For instance you can provide locale for unsupported language and use this locale by providing proper value to `locale` property. You can also override default text direction - this is recommended step if your app is using right-to-left language (`TextDirection.rtl`).
 
 ```dart
 return Wiredash(
@@ -144,6 +145,7 @@ return Wiredash(
           const DemoCustomTranslations()
     },
     locale: const Locale.fromSubtags(languageCode: 'zh'),
+    textDirection: TextDirection.rtl,
   ),
   //...
 );
@@ -202,6 +204,9 @@ Thank you so much to following people who helped translate Wiredash! 🙌
 - [orkwizard](https://github.com/orkwizard) 🇪🇸
 - [stefandevo](https://github.com/stefandevo) 🇳🇱
 - [huextrat](https://github.com/huextrat) 🇫🇷
+- [mohanadshaban](https://github.com/mohanadshaban) [ar]
+- [AtaTrkgl](https://github.com/AtaTrkgl), [salihgueler](https://github.com/salihgueler) 🇹🇷
+- Caiofapedroso 🇵🇹
 
 ## License  
   
