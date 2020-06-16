@@ -206,7 +206,7 @@ Thank you so much to following people who helped translate Wiredash! 🙌
 - [huextrat](https://github.com/huextrat) 🇫🇷
 - [mohanadshaban](https://github.com/mohanadshaban) [ar]
 - [AtaTrkgl](https://github.com/AtaTrkgl), [salihgueler](https://github.com/salihgueler) 🇹🇷
-- Caiofapedroso 🇵🇹
+- [Caio Pedroso](https://github.com/KyleKun) 🇵🇹
 
 ## License  
   
