@@ -1,6 +1,7 @@
 import 'dart:math' as math show Random;
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/common/utils/uuid.dart';
 
 abstract class BuildInfo {
   String get buildNumber;
@@ -56,27 +57,10 @@ class PlatformBuildInfo extends BuildInfo {
     if (prefs.containsKey(_prefsDeviceID)) {
       _deviceId = prefs.getString(_prefsDeviceID);
     } else {
-      _deviceId = _generateUUIDV4();
+      _deviceId = uuidV4.generate();
       await prefs.setString(_prefsDeviceID, deviceId);
     }
 
     return deviceId;
-  }
-
-  static String _generateUUIDV4() {
-    final random = math.Random.secure();
-    final bytes = List.generate(16, (_) => random.nextInt(256));
-
-    bytes[6] = (bytes[6] & 0x0F) | 0x40;
-    bytes[8] = (bytes[8] & 0x3f) | 0x80;
-
-    final chars = bytes
-        .map((b) => b.toRadixString(16).padLeft(2, '0'))
-        .join()
-        .toUpperCase();
-
-    return '${chars.substring(0, 8)}-${chars.substring(8, 12)}-'
-        '${chars.substring(12, 16)}-${chars.substring(16, 20)}-'
-        '${chars.substring(20, 32)}';
   }
 }

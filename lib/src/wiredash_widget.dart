@@ -1,6 +1,8 @@
+import 'package:file/local.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/network/api_client.dart';
@@ -14,6 +16,8 @@ import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/utils/build_info.dart';
 import 'package:wiredash/src/common/widgets/floating_entry_point.dart';
 import 'package:wiredash/src/common/widgets/wiredash_scaffold.dart';
+import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
+import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
 
@@ -148,12 +152,18 @@ class WiredashState extends State<Wiredash> {
     userManager = UserManager();
     buildInfoManager = BuildInfoManager(PlatformBuildInfo());
 
+    final retryingFeedbackSubmitter = RetryingFeedbackSubmitter(
+      const LocalFileSystem(),
+      PendingFeedbackItemStorage(SharedPreferences.getInstance),
+      networkManager,
+    )..submitPendingFeedbackItems();
+
     _feedbackModel = FeedbackModel(
       captureKey,
       navigatorKey,
-      networkManager,
       userManager,
       buildInfoManager,
+      retryingFeedbackSubmitter,
     );
   }
 
