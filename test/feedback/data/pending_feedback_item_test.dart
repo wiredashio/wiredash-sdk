@@ -14,7 +14,7 @@ void main() {
             'email': 'email@example.com',
             'message': 'Hello world!',
             'type': 'bug',
-            'user': 'Erkki Esimerkki',
+            'user': 'Testy McTestFace',
           },
         }),
         const PendingFeedbackItem(
@@ -25,7 +25,7 @@ void main() {
             email: 'email@example.com',
             message: 'Hello world!',
             type: 'bug',
-            user: 'Erkki Esimerkki',
+            user: 'Testy McTestFace',
           ),
         ),
       );
@@ -41,7 +41,7 @@ void main() {
             email: 'email@example.com',
             message: 'Hello world!',
             type: 'bug',
-            user: 'Erkki Esimerkki',
+            user: 'Testy McTestFace',
           ),
         ).toJson(),
         {
@@ -52,7 +52,7 @@ void main() {
             'email': 'email@example.com',
             'message': 'Hello world!',
             'type': 'bug',
-            'user': 'Erkki Esimerkki',
+            'user': 'Testy McTestFace',
           },
         },
       );

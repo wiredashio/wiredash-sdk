@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+/// Contains all relevant feedback information, both user-provided and automatically
+/// inferred, that will be eventually sent to the Wiredash console.
 class FeedbackItem {
   const FeedbackItem({
     @required this.deviceInfo,

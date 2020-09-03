@@ -10,7 +10,7 @@ UuidV4Generator get uuidV4 =>
 final _uuidGeneratorKey = Object();
 
 @visibleForTesting
-T withUUIDV4Generator<T>(UuidV4Generator generator, T Function() callback) {
+T withUuidV4Generator<T>(UuidV4Generator generator, T Function() callback) {
   return runZoned<T>(callback, zoneValues: {_uuidGeneratorKey: generator});
 }
 

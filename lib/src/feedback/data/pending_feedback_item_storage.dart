@@ -1,19 +1,29 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:path_provider/path_provider.dart';
+import 'package:file/file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/common/utils/uuid.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 
+/// A temporary place for [FeedbackItem] classes and user-generated screenshot to
+/// sit in until they get sent into the Wiredash console.
 class PendingFeedbackItemStorage {
-  PendingFeedbackItemStorage(this._sharedPreferences);
+  PendingFeedbackItemStorage(
+    this._fs,
+    this._sharedPreferences,
+    this._getScreenshotStorageDirectoryPath,
+  );
+
+  final FileSystem _fs;
   final Future<SharedPreferences> Function() _sharedPreferences;
+  final Future<String> Function() _getScreenshotStorageDirectoryPath;
 
   static const _feedbackItemsKey = 'io.wiredash.pending_feedback_items';
 
+  /// Returns a list of all feedback items and their screenshot paths that are
+  /// currently stored in the storage.
   Future<List<PendingFeedbackItem>> retrieveAllPendingItems() async {
     final items = (await _sharedPreferences()).getStringList(_feedbackItemsKey);
     return items == null
@@ -24,13 +34,17 @@ class PendingFeedbackItemStorage {
             .toList();
   }
 
-  Future<PendingFeedbackItem> persistItem(
-      FeedbackItem item, Uint8List screenshot) async {
+  /// Saves [item] and [screenshot] in the persistent storage.
+  ///
+  /// If [screenshot] is non-null, saves it in the application documents directory
+  /// with a randomly generated filename.
+  Future<void> persistItem(FeedbackItem item, Uint8List screenshot) async {
     String screenshotPath;
 
     if (screenshot != null) {
-      final directory = await getApplicationDocumentsDirectory();
-      final file = await File('${directory.path}/${uuidV4.generate()}.png')
+      final directory = await _getScreenshotStorageDirectoryPath();
+      final file = await _fs
+          .file('$directory/${uuidV4.generate()}.png')
           .writeAsBytes(screenshot);
       screenshotPath = file.path;
     }
@@ -50,6 +64,8 @@ class PendingFeedbackItemStorage {
     return pendingItem;
   }
 
+  /// Deletes [itemToClear] and the screenshot associated with (if any) from the
+  /// persistent storage.
   Future<void> clearPendingItem(PendingFeedbackItem itemToClear) async {
     final items = await retrieveAllPendingItems();
 
@@ -57,7 +73,7 @@ class PendingFeedbackItemStorage {
       for (final item in items) {
         if (item.id == itemToClear.id) {
           if (item.screenshotPath != null) {
-            await File(item.screenshotPath).delete();
+            await _fs.file(item.screenshotPath).delete();
           }
 
           final updatedItems = List.of(await retrieveAllPendingItems());

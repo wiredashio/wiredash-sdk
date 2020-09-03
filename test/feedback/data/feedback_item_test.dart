@@ -10,14 +10,14 @@ void main() {
           'email': 'email@example.com',
           'message': 'Hello world!',
           'type': 'bug',
-          'user': 'Erkki Esimerkki',
+          'user': 'Testy McTestFace',
         }),
         const FeedbackItem(
           deviceInfo: '<device info>',
           email: 'email@example.com',
           message: 'Hello world!',
           type: 'bug',
-          user: 'Erkki Esimerkki',
+          user: 'Testy McTestFace',
         ),
       );
     });
@@ -29,14 +29,14 @@ void main() {
           email: 'email@example.com',
           message: 'Hello world!',
           type: 'bug',
-          user: 'Erkki Esimerkki',
+          user: 'Testy McTestFace',
         ).toJson(),
         {
           'deviceInfo': '<device info>',
           'email': 'email@example.com',
           'message': 'Hello world!',
           'type': 'bug',
-          'user': 'Erkki Esimerkki',
+          'user': 'Testy McTestFace',
         },
       );
     });
