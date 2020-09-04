@@ -13,6 +13,7 @@ import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 
+// ignore: must_be_immutable
 class MockGlobalKey<T extends State<StatefulWidget>> extends Mock
     implements GlobalKey<T> {}
 

@@ -4,7 +4,7 @@ import 'package:wiredash/wiredash.dart';
 
 void main() {
   testWidgets('Wiredash widget can be created', (WidgetTester tester) async {
-    final key = ValueKey('wiredash');
+    const key = ValueKey('wiredash');
     await tester.pumpWidget(
       Wiredash(
         projectId: 'test',
