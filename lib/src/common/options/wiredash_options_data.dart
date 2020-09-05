@@ -6,17 +6,11 @@ import 'package:wiredash/wiredash.dart';
 
 class WiredashOptionsData {
   WiredashOptionsData({
-    bool showDebugFloatingEntryPoint,
     Locale locale,
     TextDirection textDirection,
     this.customTranslations,
-  })  : showDebugFloatingEntryPoint = showDebugFloatingEntryPoint ?? kDebugMode,
-        textDirection = textDirection ?? TextDirection.ltr,
+  })  : textDirection = textDirection ?? TextDirection.ltr,
         _currentLocale = locale ?? window.locale;
-
-  /// Show a floating button with the Wiredash logo to easily report issues
-  /// while debugging the app
-  final bool showDebugFloatingEntryPoint;
 
   /// Replace desired texts in Wiredash and localize it for you audience
   ///

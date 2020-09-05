@@ -12,7 +12,6 @@ import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/utils/build_info.dart';
-import 'package:wiredash/src/common/widgets/floating_entry_point.dart';
 import 'package:wiredash/src/common/widgets/wiredash_scaffold.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
@@ -192,9 +191,7 @@ class WiredashState extends State<Wiredash> {
             child: WiredashScaffold(
               child: Capture(
                 key: captureKey,
-                child: FloatingEntryPoint(
-                  child: widget.child,
-                ),
+                child: widget.child,
               ),
             ),
           ),
