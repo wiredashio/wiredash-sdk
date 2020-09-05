@@ -33,7 +33,7 @@ class RetryingFeedbackSubmitter {
   ///
   /// If sending fails, uses exponential backoff and tries again up to 7 times.
   Future<void> submit(FeedbackItem item, Uint8List screenshot) async {
-    await _pendingFeedbackItemStorage.persistItem(item, screenshot);
+    await _pendingFeedbackItemStorage.addPendingItem(item, screenshot);
 
     // Intentionally not "await"-ed. Since we've persisted the pending feedback
     // item, we can pretty safely assume it's going to be eventually sent, so the

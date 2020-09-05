@@ -32,7 +32,7 @@ class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
   }
 
   @override
-  Future<PendingFeedbackItem> persistItem(
+  Future<PendingFeedbackItem> addPendingItem(
       FeedbackItem item, Uint8List screenshot) async {
     final id = _currentItems.length + 1;
     final screenshotName = '$id.png';
@@ -153,8 +153,8 @@ void main() {
       );
 
       // Prepopulate storage with 2 existing items.
-      await fakePendingFeedbackItemStorage.persistItem(item, kTransparentImage);
-      await fakePendingFeedbackItemStorage.persistItem(item, kTransparentImage);
+      await fakePendingFeedbackItemStorage.addPendingItem(item, kTransparentImage);
+      await fakePendingFeedbackItemStorage.addPendingItem(item, kTransparentImage);
 
       // Make sure they exist.
       expect(await fileSystem.file('1.png').exists(), isTrue);

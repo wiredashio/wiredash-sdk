@@ -37,7 +37,7 @@ void main() {
 
       await withUuidV4Generator(
         mockUuidV4Generator,
-        () => storage.persistItem(
+        () => storage.addPendingItem(
           const FeedbackItem(
             deviceInfo: '<device info>',
             email: 'email@example.com',
@@ -97,7 +97,7 @@ void main() {
 
       await withUuidV4Generator(
         mockUuidV4Generator,
-        () => storage.persistItem(
+        () => storage.addPendingItem(
           const FeedbackItem(
             deviceInfo: '<device info>',
             email: 'email@example.com',

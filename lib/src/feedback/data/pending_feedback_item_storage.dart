@@ -38,7 +38,7 @@ class PendingFeedbackItemStorage {
   ///
   /// If [screenshot] is non-null, saves it in the application documents directory
   /// with a randomly generated filename.
-  Future<void> persistItem(FeedbackItem item, Uint8List screenshot) async {
+  Future<void> addPendingItem(FeedbackItem item, Uint8List screenshot) async {
     String screenshotPath;
 
     if (screenshot != null) {
