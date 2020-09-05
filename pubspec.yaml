@@ -12,16 +12,21 @@ dependencies:
   flutter:
     sdk: flutter
 
+  file: ^5.2.1
   http: ^0.12.0
   http_parser: ^3.1.0
+  path_provider: ^1.6.14
   provider: ">=3.0.0 <5.0.0"
   shared_preferences: ^0.5.6
 
 dev_dependencies:
   lint: ^1.2.0
+  fake_async: ^1.1.0
   flutter_test:
     sdk: flutter
-  mockito:
+  test: any
+  transparent_image: ^1.0.0
+  mockito: any
 
 flutter:
   assets:
