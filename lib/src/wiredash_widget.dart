@@ -143,19 +143,23 @@ class WiredashState extends State<Wiredash> {
 
     _updateDependencies();
 
-    networkManager = NetworkManager(ApiClient(
-      httpClient: Client(),
-      projectId: widget.projectId,
-      secret: widget.secret,
-    ));
+    networkManager = NetworkManager(
+      ApiClient(
+        httpClient: debugCreateHttpClient(),
+        projectId: widget.projectId,
+        secret: widget.secret,
+      ),
+    );
 
     userManager = UserManager();
-    buildInfoManager = BuildInfoManager(PlatformBuildInfo());
+    buildInfoManager = BuildInfoManager(
+      PlatformBuildInfo(debugObtainSharedPreferencesInstance),
+    );
 
     const fileSystem = LocalFileSystem();
     final storage = PendingFeedbackItemStorage(
       fileSystem,
-      SharedPreferences.getInstance,
+      debugObtainSharedPreferencesInstance,
       () async => (await getApplicationDocumentsDirectory()).path,
     );
 
@@ -220,3 +224,11 @@ class WiredashState extends State<Wiredash> {
     _feedbackModel.show();
   }
 }
+
+@visibleForTesting
+// ignore: prefer_function_declarations_over_variables
+Client Function() debugCreateHttpClient = () => Client();
+
+@visibleForTesting
+Future<SharedPreferences> Function() debugObtainSharedPreferencesInstance =
+    SharedPreferences.getInstance;

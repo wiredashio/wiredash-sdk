@@ -20,9 +20,11 @@ abstract class BuildInfo {
 class PlatformBuildInfo extends BuildInfo {
   static const _prefsDeviceID = '_wiredashDeviceID';
 
-  PlatformBuildInfo() {
+  PlatformBuildInfo(this.sharedPreferences) {
     _getDeviceID();
   }
+
+  final Future<SharedPreferences> Function() sharedPreferences;
 
   static const _buildNumber = bool.hasEnvironment('BUILD_NUMBER')
       ? String.fromEnvironment('BUILD_NUMBER')
@@ -49,7 +51,7 @@ class PlatformBuildInfo extends BuildInfo {
   String get deviceId => _deviceId;
 
   Future<String> _getDeviceID() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await sharedPreferences();
     String deviceId;
 
     if (prefs.containsKey(_prefsDeviceID)) {
