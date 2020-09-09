@@ -36,39 +36,6 @@ class ListTileButton extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: <Widget>[
-              if (icon != null)
-                Container(
-                  width: 48,
-                  height: 48,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    color: iconBackgroundColor,
-                  ),
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Icon(
-                    icon,
-                    size: 22,
-                    color: iconColor,
-                  ),
-                ),
-              if (icon != null) const SizedBox(width: 16),
-              Flexible(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      title,
-                      style: WiredashTheme.of(context).body1Style,
-                    ),
-                    Text(
-                      subtitle,
-                      style: WiredashTheme.of(context).body2Style,
-                    )
-                  ],
-                ),
-              )
             ],
           ),
         ),

@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
 import 'package:mockito/mockito.dart';
+import 'package:wiredash/src/feedback/feedback_sheet.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -29,37 +30,60 @@ void main() {
       final navigatorKey = GlobalKey<NavigatorState>();
 
       // Sets the test window size to an iPhone SE from 2016.
-      tester.binding.window.physicalSizeTestValue = const Size(320, 569);
+      tester.binding.window.physicalSizeTestValue = const Size(375, 667);
 
       for (final locale in WiredashLocalizations.supportedLocales) {
-        WiredashController controller;
+        final key = ValueKey(locale);
 
         await tester.pumpWidget(
-          Wiredash(
-            projectId: 'null',
-            secret: 'null',
-            navigatorKey: navigatorKey,
-            options: WiredashOptionsData(locale: locale),
-            child: MaterialApp(
+          KeyedSubtree(
+            key: key,
+            child: Wiredash(
+              projectId: 'asdasdas',
+              secret: 'nsadasdasdsdl',
               navigatorKey: navigatorKey,
-              home: Builder(
-                builder: (context) {
-                  controller = Wiredash.of(context);
-                  return Container();
-                },
+              options: WiredashOptionsData(locale: locale),
+              child: MaterialApp(
+                navigatorKey: navigatorKey,
+                home: Builder(
+                  builder: (context) {
+                    return Container(
+                      constraints: const BoxConstraints.expand(),
+                      child: Center(
+                        child: RaisedButton(
+                          onPressed: () => Wiredash.of(context).show(),
+                          child: const Text('tappy tap'),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),
         );
 
-        controller.show();
         await tester.pump();
+
+        await tester.tap(find.text('tappy tap'));
+
+        await tester.pump();
+        await tester.pump();
+        
+        expect(find.byType(FeedbackSheet), findsOneWidget);
+
+        await expectLater(
+          find.byKey(key),
+          matchesGoldenFile('$locale.png'),
+        );
 
         expect(
           tester.takeException(),
           isNull,
           reason: 'The translations for locale $locale cause an overflow.',
         );
+
+        await tester.pumpWidget(Container());
       }
     });
   });
