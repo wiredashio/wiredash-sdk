@@ -33,8 +33,6 @@ class _ExampleAppState extends State<ExampleApp> {
       secret: "YOUR-SECRET",
       navigatorKey: _navigatorKey,
       options: WiredashOptionsData(
-        locale: const Locale('de'),
-
         /// Uncomment below to see how custom translations work
         // customTranslations: {
         //   const Locale.fromSubtags(languageCode: 'en'):

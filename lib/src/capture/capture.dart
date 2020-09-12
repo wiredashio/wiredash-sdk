@@ -269,6 +269,7 @@ class CaptureState extends State<Capture>
               text: _getBackButtonString(),
             ),
             SimpleButton(
+              key: const ValueKey('wiredash.sdk.next_button'),
               onPressed: _onNextButtonPressed,
               text: _getNextButtonString(),
               icon: _getNextButtonIcon(),
