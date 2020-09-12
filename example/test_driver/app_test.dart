@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
-import 'dart:convert';
 
 void main() {
   group('blabla', () {
     FlutterDriver driver;
+    final errorsByLocale = <String, Set<String>>{};
 
     setUpAll(() async {
       driver = await FlutterDriver.connect();
@@ -16,6 +18,24 @@ void main() {
       }
     });
 
+    Future<void> _mark(String name, String locale) async {
+      // Give the UI some "time to settle" and possible errors to pop up
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      final errors = await driver.requestData('getLastError');
+
+      if (errors != null) {
+        final bytes = await driver.screenshot();
+        await Directory('test_driver/overflow_screenshots')
+            .create(recursive: true);
+        await File('test_driver/overflow_screenshots/$locale-$name.png')
+            .writeAsBytesSync(bytes);
+
+        errorsByLocale[locale] ??= {};
+        errorsByLocale[locale].add(name);
+      }
+    }
+
     test('starts at 0', () async {
       final supportedLocales =
           (await driver.requestData('getSupportedLocales')).split(',');
@@ -25,10 +45,15 @@ void main() {
 
         await driver
             .tap(find.byValueKey('wiredash.example.show_wiredash_button'));
+        await _mark('intro', locale);
 
         await driver
             .tap(find.byValueKey('wiredash.sdk.intro.report_a_bug_button'));
+        await _mark('report_a_bug', locale);
+
         await driver.tap(find.byValueKey('wiredash.sdk.next_button'));
+        await _mark('screenshot', locale);
+
         await driver.tap(find.byValueKey('wiredash.sdk.next_button'));
 
         await driver.tap(find.byValueKey('wiredash.sdk.text_field'));
@@ -42,18 +67,21 @@ void main() {
         await driver.tap(find.byValueKey('wiredash.sdk.exit_button'));
       }
 
-      final errors = await driver.requestData('getErrors');
-
-      if (errors != null) {
+      if (errorsByLocale.isNotEmpty) {
         final buffer = StringBuffer(
           'Encountered overflow errors for the following locales:',
         )..writeln();
 
-        final errorsByLocale = (json.decode(errors) as Map).cast<String, int>();
         for (final entry in errorsByLocale.entries) {
-          buffer.writeln('- ${entry.key}: ${entry.value} errors');
+          buffer
+              .writeln('- ${entry.key}: section(s) [${entry.value.join(',')}]');
         }
 
+        buffer
+          ..writeln()
+          ..writeln(
+            'Screenshots of overflowing pages have been saved in test_driver/overflow_screenshots.',
+          );
         fail(buffer.toString());
       }
     }, timeout: const Timeout(Duration(minutes: 2)));

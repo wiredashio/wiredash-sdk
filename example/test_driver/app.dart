@@ -7,10 +7,10 @@ import 'package:wiredash/wiredash.dart';
 void main() {
   final navigatorKey = GlobalKey<NavigatorState>();
   final currentLocale = ValueNotifier<Locale>(null);
-  final errorsByLocale = <String, int>{};
+
+  bool hasUnconsumedError = false;
   FlutterError.onError = (details) {
-    errorsByLocale[currentLocale.value.languageCode] =
-        (errorsByLocale[currentLocale.value.languageCode] ?? 0) + 1;
+    hasUnconsumedError = true;
   };
 
   enableFlutterDriverExtension(
@@ -18,6 +18,7 @@ void main() {
       if (message.startsWith('changeLocale:')) {
         final locale = message.split('changeLocale:').last;
         currentLocale.value = null;
+        hasUnconsumedError = false;
         await Future.delayed(const Duration(milliseconds: 200));
         currentLocale.value = WiredashLocalizations.supportedLocales
             .singleWhere((l) => l.languageCode == locale);
@@ -29,8 +30,12 @@ void main() {
           return WiredashLocalizations.supportedLocales
               .map((l) => l.languageCode)
               .join(',');
-        case 'getErrors':
-          return errorsByLocale.isNotEmpty ? json.encode(errorsByLocale) : null;
+        case 'getLastError':
+          if (hasUnconsumedError) {
+            hasUnconsumedError = false;
+            return '';
+          }
+          return null;
         default:
           throw ArgumentError.value(
             message,
