@@ -4,7 +4,7 @@ import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('blabla', () {
+  group('overflow tests', () {
     FlutterDriver driver;
     final errorsByLocale = <String, Set<String>>{};
 
@@ -38,7 +38,7 @@ void main() {
       }
     }
 
-    test('starts at 0', () async {
+    test("translations for supported languages don't overflow", () async {
       final supportedLocales =
           (await driver.requestData('getSupportedLocales')).split(',');
 
