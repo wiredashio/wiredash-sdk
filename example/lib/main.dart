@@ -33,18 +33,19 @@ class _ExampleAppState extends State<ExampleApp> {
       secret: "YOUR-SECRET",
       navigatorKey: _navigatorKey,
       options: WiredashOptionsData(
-        /// Uncomment below to see how custom translations work
-        // customTranslations: {
-        //   const Locale.fromSubtags(languageCode: 'en'):
-        //       const DemoCustomTranslations(),
-        //   const Locale.fromSubtags(languageCode: 'pl'):
-        //       const DemoPolishTranslations(),
-        // },
 
-        /// Uncomment below to override default device locale
-        // locale: const Locale('de'),
-        // textDirection: TextDirection.rtl,
-      ),
+          /// Uncomment below to see how custom translations work
+          // customTranslations: {
+          //   const Locale.fromSubtags(languageCode: 'en'):
+          //       const DemoCustomTranslations(),
+          //   const Locale.fromSubtags(languageCode: 'pl'):
+          //       const DemoPolishTranslations(),
+          // },
+
+          /// Uncomment below to override default device locale
+          // locale: const Locale('de'),
+          // textDirection: TextDirection.rtl,
+          ),
       theme: WiredashThemeData(brightness: Theme.of(context).brightness),
       child: MaterialApp(
         navigatorKey: _navigatorKey,
