@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:wiredash/wiredash.dart';
@@ -8,9 +6,9 @@ void main() {
   final navigatorKey = GlobalKey<NavigatorState>();
   final currentLocale = ValueNotifier<Locale>(null);
 
-  bool hasUnconsumedError = false;
+  bool hasErrors = false;
   FlutterError.onError = (details) {
-    hasUnconsumedError = true;
+    hasErrors = true;
   };
 
   enableFlutterDriverExtension(
@@ -18,7 +16,7 @@ void main() {
       if (message.startsWith('changeLocale:')) {
         final locale = message.split('changeLocale:').last;
         currentLocale.value = null;
-        hasUnconsumedError = false;
+        hasErrors = false;
         await Future.delayed(const Duration(milliseconds: 200));
         currentLocale.value = WiredashLocalizations.supportedLocales
             .singleWhere((l) => l.languageCode == locale);
@@ -31,8 +29,8 @@ void main() {
               .map((l) => l.languageCode)
               .join(',');
         case 'getLastError':
-          if (hasUnconsumedError) {
-            hasUnconsumedError = false;
+          if (hasErrors) {
+            hasErrors = false;
             return '';
           }
           return null;

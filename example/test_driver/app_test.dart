@@ -18,13 +18,15 @@ void main() {
       }
     });
 
-    Future<void> _mark(String name, String locale) async {
-      // Give the UI some "time to settle" and possible errors to pop up
+    Future<void> _takeOverflowScreenshotIfNeeded(
+      String name,
+      String locale,
+    ) async {
+      // Give the UI some "time to settle" and possible overflow errors to happen
       await Future.delayed(const Duration(milliseconds: 100));
 
-      final errors = await driver.requestData('getLastError');
-
-      if (errors != null) {
+      final error = await driver.requestData('getLastError');
+      if (error != null) {
         final bytes = await driver.screenshot();
         await Directory('test_driver/overflow_screenshots')
             .create(recursive: true);
@@ -45,24 +47,27 @@ void main() {
 
         await driver
             .tap(find.byValueKey('wiredash.example.show_wiredash_button'));
-        await _mark('intro', locale);
+        await _takeOverflowScreenshotIfNeeded('intro', locale);
 
         await driver
             .tap(find.byValueKey('wiredash.sdk.intro.report_a_bug_button'));
-        await _mark('report_a_bug', locale);
+        await _takeOverflowScreenshotIfNeeded('take_screenshot', locale);
 
         await driver.tap(find.byValueKey('wiredash.sdk.next_button'));
-        await _mark('screenshot', locale);
+        await _takeOverflowScreenshotIfNeeded('save_screenshot', locale);
 
         await driver.tap(find.byValueKey('wiredash.sdk.next_button'));
+        await _takeOverflowScreenshotIfNeeded('give_feedback', locale);
 
         await driver.tap(find.byValueKey('wiredash.sdk.text_field'));
         await driver.enterText('hello');
         await driver.tap(find.byValueKey('wiredash.sdk.save_feedback_button'));
+        await _takeOverflowScreenshotIfNeeded('email', locale);
 
         await driver.tap(find.byValueKey('wiredash.sdk.text_field'));
         await driver.enterText('example@example.com');
         await driver.tap(find.byValueKey('wiredash.sdk.send_feedback_button'));
+        await _takeOverflowScreenshotIfNeeded('thanks', locale);
 
         await driver.tap(find.byValueKey('wiredash.sdk.exit_button'));
       }
