@@ -1,3 +1,10 @@
+## [0.2.1] - Confidential enabled flag
+
+* Added an `enabled` flag to the `Confidential` widget.
+* Added docs for the `Confidential` widget.
+* Hid `PaintItBlack` from the public API - this should not be a breaking change since no one will
+  have ever used this.
+
 ## [0.2.0] - Internationalization Support 🇬🇧🇩🇪🇵🇱
 We added initial internationalization support for several languages. Feel free to contribute your own translations 
 (check out the docs for more info on that)!
