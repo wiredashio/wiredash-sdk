@@ -14,7 +14,7 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/utils/diagonal_shape_painter.dart';
 import 'package:wiredash/src/common/widgets/corner_radius_transition.dart';
-import 'package:wiredash/src/common/widgets/simple_button.dart';
+import 'package:wiredash/src/common/widgets/navigation_buttons.dart';
 import 'package:wiredash/src/common/widgets/spotlight.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 
@@ -263,16 +263,20 @@ class CaptureState extends State<Capture>
         minimum: const EdgeInsets.all(20),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            SimpleButton(
-              onPressed: _onBackButtonPressed,
-              text: _getBackButtonString(),
+          children: [
+            Expanded(
+              child: PreviousButton(
+                onPressed: _onBackButtonPressed,
+                text: _getBackButtonString(),
+              ),
             ),
-            SimpleButton(
-              key: const ValueKey('wiredash.sdk.next_button'),
-              onPressed: _onNextButtonPressed,
-              text: _getNextButtonString(),
-              icon: _getNextButtonIcon(),
+            Expanded(
+              child: NextButton(
+                key: const ValueKey('wiredash.sdk.next_button'),
+                onPressed: _onNextButtonPressed,
+                text: _getNextButtonString(),
+                icon: _getNextButtonIcon(),
+              ),
             ),
           ],
         ),

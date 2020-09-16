@@ -6,7 +6,7 @@ import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/animated_fade_in.dart';
 import 'package:wiredash/src/common/widgets/animated_progress.dart';
-import 'package:wiredash/src/common/widgets/simple_button.dart';
+import 'package:wiredash/src/common/widgets/navigation_buttons.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/components/input_component.dart';
 import 'package:wiredash/src/feedback/components/intro_component.dart';
@@ -157,34 +157,41 @@ class _FeedbackSheetState extends State<FeedbackSheet>
       case FeedbackUiState.feedback:
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            SimpleButton(
-              text: WiredashLocalizations.of(context).feedbackCancel,
-              onPressed: () {
-                state.feedbackUiState = FeedbackUiState.intro;
-              },
+          children: [
+            Expanded(
+              child: PreviousButton(
+                text: WiredashLocalizations.of(context).feedbackCancel,
+                onPressed: () => state.feedbackUiState = FeedbackUiState.intro,
+              ),
             ),
-            SimpleButton(
-              key: const ValueKey('wiredash.sdk.save_feedback_button'),
-              text: WiredashLocalizations.of(context).feedbackSave,
-              icon: WiredashIcons.right,
-              onPressed: _submitFeedback,
+            Expanded(
+              child: NextButton(
+                key: const ValueKey('wiredash.sdk.save_feedback_button'),
+                text: WiredashLocalizations.of(context).feedbackSave,
+                icon: WiredashIcons.right,
+                onPressed: _submitFeedback,
+              ),
             ),
           ],
         );
       case FeedbackUiState.email:
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            SimpleButton(
-              text: WiredashLocalizations.of(context).feedbackBack,
-              onPressed: () => state.feedbackUiState = FeedbackUiState.feedback,
+          children: [
+            Expanded(
+              child: PreviousButton(
+                text: WiredashLocalizations.of(context).feedbackBack,
+                onPressed: () =>
+                    state.feedbackUiState = FeedbackUiState.feedback,
+              ),
             ),
-            SimpleButton(
-              key: const ValueKey('wiredash.sdk.send_feedback_button'),
-              text: WiredashLocalizations.of(context).feedbackSend,
-              icon: WiredashIcons.right,
-              onPressed: _submitEmail,
+            Expanded(
+              child: NextButton(
+                key: const ValueKey('wiredash.sdk.send_feedback_button'),
+                text: WiredashLocalizations.of(context).feedbackSend,
+                icon: WiredashIcons.right,
+                onPressed: _submitEmail,
+              ),
             ),
           ],
         );
