@@ -96,6 +96,7 @@ class _InputComponentState extends State<InputComponent> {
             hintText: _getHintText(),
             hintStyle: wiredashTheme.inputHintStyle,
             errorStyle: wiredashTheme.inputErrorStyle,
+            errorMaxLines: 2,
           ),
           textCapitalization: _getTextCapitalization(),
           keyboardAppearance: WiredashTheme.of(context).brightness,
