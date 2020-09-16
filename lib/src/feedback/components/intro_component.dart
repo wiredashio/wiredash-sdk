@@ -16,9 +16,10 @@ class IntroComponent extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
-        children: <Widget>[
+        children: [
           const SizedBox(height: 8),
           ListTileButton(
+            key: const ValueKey('wiredash.sdk.intro.report_a_bug_button'),
             icon: WiredashIcons.bug,
             iconColor: const Color(0xff9c4db1),
             iconBackgroundColor: const Color(0xffffc4f0),

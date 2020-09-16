@@ -165,6 +165,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
               },
             ),
             SimpleButton(
+              key: const ValueKey('wiredash.sdk.save_feedback_button'),
               text: WiredashLocalizations.of(context).feedbackSave,
               icon: WiredashIcons.right,
               onPressed: _submitFeedback,
@@ -180,6 +181,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
               onPressed: () => state.feedbackUiState = FeedbackUiState.feedback,
             ),
             SimpleButton(
+              key: const ValueKey('wiredash.sdk.send_feedback_button'),
               text: WiredashLocalizations.of(context).feedbackSend,
               icon: WiredashIcons.right,
               onPressed: _submitEmail,
