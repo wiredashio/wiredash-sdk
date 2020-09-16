@@ -43,7 +43,7 @@ class _ExampleAppState extends State<ExampleApp> {
           // },
 
           /// Uncomment below to override default device locale
-          locale: WiredashLocalizations.supportedLocales[1],
+          // locale: const Locale('de'),
           // textDirection: TextDirection.rtl,
           ),
       theme: WiredashThemeData(brightness: Theme.of(context).brightness),
