@@ -159,7 +159,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: CancelButton(
+              child: PreviousButton(
                 text: WiredashLocalizations.of(context).feedbackCancel,
                 onPressed: () => state.feedbackUiState = FeedbackUiState.intro,
               ),
@@ -178,7 +178,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: CancelButton(
+              child: PreviousButton(
                 text: WiredashLocalizations.of(context).feedbackBack,
                 onPressed: () =>
                     state.feedbackUiState = FeedbackUiState.feedback,

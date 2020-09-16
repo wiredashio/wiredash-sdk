@@ -265,7 +265,7 @@ class CaptureState extends State<Capture>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: CancelButton(
+              child: PreviousButton(
                 onPressed: _onBackButtonPressed,
                 text: _getBackButtonString(),
               ),

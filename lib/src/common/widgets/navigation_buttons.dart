@@ -2,8 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/animated_fade_in.dart';
 
-class CancelButton extends StatelessWidget {
-  const CancelButton({
+class PreviousButton extends StatelessWidget {
+  const PreviousButton({
     Key key,
     @required this.onPressed,
     @required this.text,
