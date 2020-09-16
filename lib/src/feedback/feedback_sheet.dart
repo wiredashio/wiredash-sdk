@@ -157,32 +157,44 @@ class _FeedbackSheetState extends State<FeedbackSheet>
       case FeedbackUiState.feedback:
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            SimpleButton(
-              text: WiredashLocalizations.of(context).feedbackCancel,
-              onPressed: () {
-                state.feedbackUiState = FeedbackUiState.intro;
-              },
+          children: [
+            Expanded(
+              child: SimpleButton(
+                mainAxisAlignment: MainAxisAlignment.start,
+                text: WiredashLocalizations.of(context).feedbackCancel,
+                onPressed: () {
+                  state.feedbackUiState = FeedbackUiState.intro;
+                },
+              ),
             ),
-            SimpleButton(
-              text: WiredashLocalizations.of(context).feedbackSave,
-              icon: WiredashIcons.right,
-              onPressed: _submitFeedback,
+            Expanded(
+              child: SimpleButton(
+                mainAxisAlignment: MainAxisAlignment.end,
+                text: WiredashLocalizations.of(context).feedbackSave,
+                icon: WiredashIcons.right,
+                onPressed: _submitFeedback,
+              ),
             ),
           ],
         );
       case FeedbackUiState.email:
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            SimpleButton(
-              text: WiredashLocalizations.of(context).feedbackBack,
-              onPressed: () => state.feedbackUiState = FeedbackUiState.feedback,
+          children: [
+            Expanded(
+              child: SimpleButton(
+                mainAxisAlignment: MainAxisAlignment.start,
+                text: WiredashLocalizations.of(context).feedbackBack,
+                onPressed: () => state.feedbackUiState = FeedbackUiState.feedback,
+              ),
             ),
-            SimpleButton(
-              text: WiredashLocalizations.of(context).feedbackSend,
-              icon: WiredashIcons.right,
-              onPressed: _submitEmail,
+            Expanded(
+              child: SimpleButton(
+                mainAxisAlignment: MainAxisAlignment.end,
+                text: WiredashLocalizations.of(context).feedbackSend,
+                icon: WiredashIcons.right,
+                onPressed: _submitEmail,
+              ),
             ),
           ],
         );

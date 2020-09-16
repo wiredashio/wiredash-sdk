@@ -3,14 +3,21 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/animated_fade_in.dart';
 
 class SimpleButton extends StatelessWidget {
+  const SimpleButton({
+    Key key,
+    @required this.mainAxisAlignment,
+    @required this.onPressed,
+    @required this.text,
+    this.icon,
+  })  : assert(mainAxisAlignment != null),
+        assert(onPressed != null),
+        assert(text != null),
+        super(key: key);
+
   final VoidCallback onPressed;
+  final MainAxisAlignment mainAxisAlignment;
   final String text;
   final IconData icon;
-
-  const SimpleButton(
-      {Key key, @required this.onPressed, @required this.text, this.icon})
-      : assert(text != null),
-        super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +28,23 @@ class SimpleButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8),
         constraints: const BoxConstraints(minHeight: 48),
         child: AnimatedFadeIn(
-          changeKey: ObjectKey(text),
+          changeKey: ValueKey(text),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                text,
-                style: icon != null
-                    ? WiredashTheme.of(context).buttonStyle
-                    : WiredashTheme.of(context).buttonCancel,
+            mainAxisAlignment: mainAxisAlignment,
+            children: [
+              Expanded(
+                child: Text(
+                  text,
+                  style: icon != null
+                      ? WiredashTheme.of(context).buttonStyle
+                      : WiredashTheme.of(context).buttonCancel,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: mainAxisAlignment == MainAxisAlignment.end
+                      ? TextAlign.end
+                      : TextAlign.start,
+                ),
               ),
               if (icon != null)
                 Padding(

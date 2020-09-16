@@ -263,15 +263,21 @@ class CaptureState extends State<Capture>
         minimum: const EdgeInsets.all(20),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            SimpleButton(
-              onPressed: _onBackButtonPressed,
-              text: _getBackButtonString(),
+          children: [
+            Expanded(
+              child: SimpleButton(
+                mainAxisAlignment: MainAxisAlignment.start,
+                onPressed: _onBackButtonPressed,
+                text: _getBackButtonString(),
+              ),
             ),
-            SimpleButton(
-              onPressed: _onNextButtonPressed,
-              text: _getNextButtonString(),
-              icon: _getNextButtonIcon(),
+            Expanded(
+              child: SimpleButton(
+                mainAxisAlignment: MainAxisAlignment.end,
+                onPressed: _onNextButtonPressed,
+                text: _getNextButtonString(),
+                icon: _getNextButtonIcon(),
+              ),
             ),
           ],
         ),
