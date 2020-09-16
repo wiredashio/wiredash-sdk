@@ -159,17 +159,13 @@ class _FeedbackSheetState extends State<FeedbackSheet>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: SimpleButton(
-                mainAxisAlignment: MainAxisAlignment.start,
+              child: CancelButton(
                 text: WiredashLocalizations.of(context).feedbackCancel,
-                onPressed: () {
-                  state.feedbackUiState = FeedbackUiState.intro;
-                },
+                onPressed: () => state.feedbackUiState = FeedbackUiState.intro,
               ),
             ),
             Expanded(
-              child: SimpleButton(
-                mainAxisAlignment: MainAxisAlignment.end,
+              child: NextButton(
                 text: WiredashLocalizations.of(context).feedbackSave,
                 icon: WiredashIcons.right,
                 onPressed: _submitFeedback,
@@ -182,15 +178,14 @@ class _FeedbackSheetState extends State<FeedbackSheet>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: SimpleButton(
-                mainAxisAlignment: MainAxisAlignment.start,
+              child: CancelButton(
                 text: WiredashLocalizations.of(context).feedbackBack,
-                onPressed: () => state.feedbackUiState = FeedbackUiState.feedback,
+                onPressed: () =>
+                    state.feedbackUiState = FeedbackUiState.feedback,
               ),
             ),
             Expanded(
-              child: SimpleButton(
-                mainAxisAlignment: MainAxisAlignment.end,
+              child: NextButton(
                 text: WiredashLocalizations.of(context).feedbackSend,
                 icon: WiredashIcons.right,
                 onPressed: _submitEmail,

@@ -265,15 +265,13 @@ class CaptureState extends State<Capture>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: SimpleButton(
-                mainAxisAlignment: MainAxisAlignment.start,
+              child: CancelButton(
                 onPressed: _onBackButtonPressed,
                 text: _getBackButtonString(),
               ),
             ),
             Expanded(
-              child: SimpleButton(
-                mainAxisAlignment: MainAxisAlignment.end,
+              child: NextButton(
                 onPressed: _onNextButtonPressed,
                 text: _getNextButtonString(),
                 icon: _getNextButtonIcon(),
