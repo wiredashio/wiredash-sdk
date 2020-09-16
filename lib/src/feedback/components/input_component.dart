@@ -65,6 +65,7 @@ class _InputComponentState extends State<InputComponent> {
       child: Form(
         key: widget.formKey,
         child: TextFormField(
+          key: const ValueKey('wiredash.sdk.text_field'),
           controller: _textEditingController,
           focusNode: widget.focusNode,
           style: wiredashTheme.inputTextStyle,

@@ -166,6 +166,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
             ),
             Expanded(
               child: NextButton(
+                key: const ValueKey('wiredash.sdk.save_feedback_button'),
                 text: WiredashLocalizations.of(context).feedbackSave,
                 icon: WiredashIcons.right,
                 onPressed: _submitFeedback,
@@ -186,6 +187,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
             ),
             Expanded(
               child: NextButton(
+                key: const ValueKey('wiredash.sdk.send_feedback_button'),
                 text: WiredashLocalizations.of(context).feedbackSend,
                 icon: WiredashIcons.right,
                 onPressed: _submitEmail,
