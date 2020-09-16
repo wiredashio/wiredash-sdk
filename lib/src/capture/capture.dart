@@ -272,7 +272,8 @@ class CaptureState extends State<Capture>
             ),
             Expanded(
               child: NextButton(
-                key: const ValueKey('wiredash.sdk.next_button'),onPressed: _onNextButtonPressed,
+                key: const ValueKey('wiredash.sdk.next_button'),
+                onPressed: _onNextButtonPressed,
                 text: _getNextButtonString(),
                 icon: _getNextButtonIcon(),
               ),
