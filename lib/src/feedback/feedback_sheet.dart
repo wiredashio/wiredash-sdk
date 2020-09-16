@@ -6,7 +6,7 @@ import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/animated_fade_in.dart';
 import 'package:wiredash/src/common/widgets/animated_progress.dart';
-import 'package:wiredash/src/common/widgets/simple_button.dart';
+import 'package:wiredash/src/common/widgets/navigation_buttons.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/components/input_component.dart';
 import 'package:wiredash/src/feedback/components/intro_component.dart';
