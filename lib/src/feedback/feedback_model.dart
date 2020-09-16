@@ -1,25 +1,32 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
-import 'package:wiredash/src/common/network/network_manager.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/utils/device_info.dart';
 import 'package:wiredash/src/common/widgets/dismissible_page_route.dart';
+import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 
+import 'data/feedback_item.dart';
 import 'feedback_sheet.dart';
 
 class FeedbackModel with ChangeNotifier {
-  FeedbackModel(this._captureKey, this._navigatorKey, this._networkManager,
-      this._userManager, this._buildInfoManager);
+  FeedbackModel(
+    this._captureKey,
+    this._navigatorKey,
+    this._userManager,
+    this._buildInfoManager,
+    this._retryingFeedbackSubmitter,
+  );
 
   final GlobalKey<CaptureState> _captureKey;
   final GlobalKey<NavigatorState> _navigatorKey;
-  final NetworkManager _networkManager;
   final UserManager _userManager;
   final BuildInfoManager _buildInfoManager;
+  final RetryingFeedbackSubmitter _retryingFeedbackSubmitter;
 
   FeedbackType feedbackType = FeedbackType.bug;
   String feedbackMessage;
@@ -34,22 +41,13 @@ class FeedbackModel with ChangeNotifier {
     notifyListeners();
   }
 
-  bool _error = false;
-  bool get error => _error;
-  set error(bool newValue) {
-    if (_error == newValue) return;
-    _error = newValue;
-    notifyListeners();
-  }
-
   bool _loading = false;
+  bool get loading => _loading;
   set loading(bool newValue) {
     if (_loading == newValue) return;
     _loading = newValue;
     notifyListeners();
   }
-
-  bool get loading => _loading;
 
   void _handleUiChange() {
     switch (_feedbackUiState) {
@@ -85,25 +83,20 @@ class FeedbackModel with ChangeNotifier {
   }
 
   void _sendFeedback() {
-    error = false;
     loading = true;
 
-    _networkManager
-        .sendFeedback(
-      deviceInfo: DeviceInfo.generate(_buildInfoManager),
+    final item = FeedbackItem(
+      deviceInfo: json.encode(DeviceInfo.generate(_buildInfoManager)),
       email: _userManager.userEmail,
       message: feedbackMessage,
-      picture: screenshot,
       type: feedbackType.label,
       user: _userManager.userId,
-    )
-        .catchError((_) {
-      error = true;
-    }).then((value) {
-      _clearFeedback();
-    }).whenComplete(() {
-      loading = false;
-    });
+    );
+
+    _retryingFeedbackSubmitter
+        .submit(item, screenshot)
+        .then((value) => _clearFeedback())
+        .whenComplete(() => loading = false);
   }
 
   void show() {

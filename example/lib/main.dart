@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/wiredash.dart';
 import 'package:wiredash/src/common/translation/l10n/messages_pl.dart' as pl;
+import 'package:wiredash/wiredash.dart';
 
 part 'main_localizations.dart';
 
@@ -33,20 +33,19 @@ class _ExampleAppState extends State<ExampleApp> {
       secret: "YOUR-SECRET",
       navigatorKey: _navigatorKey,
       options: WiredashOptionsData(
-        showDebugFloatingEntryPoint: true,
 
-        /// Uncomment below to see how custom translations work
-        // customTranslations: {
-        //   const Locale.fromSubtags(languageCode: 'en'):
-        //       const DemoCustomTranslations(),
-        //   const Locale.fromSubtags(languageCode: 'pl'):
-        //       const DemoPolishTranslations(),
-        // },
+          /// Uncomment below to see how custom translations work
+          // customTranslations: {
+          //   const Locale.fromSubtags(languageCode: 'en'):
+          //       const DemoCustomTranslations(),
+          //   const Locale.fromSubtags(languageCode: 'pl'):
+          //       const DemoPolishTranslations(),
+          // },
 
-        /// Uncomment below to override default device locale
-        // locale: const Locale('de'),
-        // textDirection: TextDirection.rtl,
-      ),
+          /// Uncomment below to override default device locale
+          // locale: const Locale('de'),
+          // textDirection: TextDirection.rtl,
+          ),
       theme: WiredashThemeData(brightness: Theme.of(context).brightness),
       child: MaterialApp(
         navigatorKey: _navigatorKey,
@@ -70,6 +69,7 @@ class DemoHomePage extends StatelessWidget {
             DrawerHeader(
               child: Center(child: Text('Wiredash example')),
             ),
+            SendFeedbackButton(),
             UserInfoButton(),
             BuildInfoButton(),
           ],
@@ -213,6 +213,18 @@ class UserInfoButton extends StatelessWidget {
         );
       },
       child: const Text('Set random user parameters'),
+    );
+  }
+}
+
+class SendFeedbackButton extends StatelessWidget {
+  const SendFeedbackButton({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      onPressed: () => Wiredash.of(context).show(),
+      child: const Text('Send feedback'),
     );
   }
 }
