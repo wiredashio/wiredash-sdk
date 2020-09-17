@@ -92,17 +92,17 @@ class RetryingFeedbackSubmitter {
   Future<void> _submitWithRetry<T>(PendingFeedbackItem item) async {
     var attempt = 0;
 
-    final feedback = item.feedbackItem;
-    final Uint8List screenshot = item.screenshotPath != null
-        ? await fs.file(item.screenshotPath).readAsBytes()
-        : null;
-
     // ignore: literal_only_boolean_expressions
     while (true) {
       attempt++;
 
       try {
-        await _networkManager.sendFeedback(feedback, screenshot);
+        final Uint8List screenshot = item.screenshotPath != null &&
+                await fs.file(item.screenshotPath).exists()
+            ? await fs.file(item.screenshotPath).readAsBytes()
+            : null;
+
+        await _networkManager.sendFeedback(item.feedbackItem, screenshot);
         await _pendingFeedbackItemStorage.clearPendingItem(item);
         break;
       } catch (_) {

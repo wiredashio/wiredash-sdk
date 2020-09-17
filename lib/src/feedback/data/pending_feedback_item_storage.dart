@@ -73,7 +73,10 @@ class PendingFeedbackItemStorage {
       for (final item in items) {
         if (item.id == itemToClear.id) {
           if (item.screenshotPath != null) {
-            await _fs.file(item.screenshotPath).delete();
+            final screenshot = _fs.file(item.screenshotPath);
+            if (await screenshot.exists()) {
+              await screenshot.delete();
+            }
           }
 
           final updatedItems = List.of(await retrieveAllPendingItems());
