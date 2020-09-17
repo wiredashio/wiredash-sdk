@@ -265,5 +265,30 @@ void main() {
         isFalse,
       );
     });
+
+    test(
+        'does not crash when clearing an item and the screenshot file does not exist',
+        () async {
+      when(mockSharedPreferences
+              .getStringList('io.wiredash.pending_feedback_items'))
+          .thenReturn([
+        json.encode({
+          'id': '<existing item id>',
+          'feedbackItem': {
+            'deviceInfo': '<existing item device info>',
+            'email': '<existing item email>',
+            'message': '<existing item message>',
+            'type': '<existing item type>',
+            'user': '<existing item user>'
+          },
+          'screenshotPath': '<existing item screenshot>'
+        }),
+      ]);
+
+      final item = (await storage.retrieveAllPendingItems()).single;
+      await storage.clearPendingItem(item);
+
+      // If the test didn't crash until this point, it's considered a passing test.
+    });
   });
 }

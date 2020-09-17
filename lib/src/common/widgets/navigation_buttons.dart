@@ -23,11 +23,13 @@ class PreviousButton extends StatelessWidget {
       onPressed: onPressed,
       child: Row(
         children: [
-          Text(
-            text,
-            style: theme.buttonCancel,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+          Expanded(
+            child: Text(
+              text,
+              style: theme.buttonCancel,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),

@@ -1,9 +1,9 @@
-## [0.2.1] - Confidential enabled flag
-
-* Added an `enabled` flag to the `Confidential` widget.
-* Added docs for the `Confidential` widget.
-* Hid `PaintItBlack` from the public API - this should not be a breaking change since no one will
-  have ever used this.
+## [0.3.0] - Hello offline support, bye-bye FloatingEntryPoint!
+* Support sending feedback and screenshots when offline.
+* Added translations for Arabic, Portuguese, and Turkish.
+* Removed `FloatingEntryPoint` as it was a bit confusing to first-time users and most would disable it anyway.
+* Added an `enabled` flag, docs, and hid `PaintItBlack` in the `Confidential` widget.
+* Fixed translation overflow exceptions for some languages.
 
 ## [0.2.0] - Internationalization Support 🇬🇧🇩🇪🇵🇱
 We added initial internationalization support for several languages. Feel free to contribute your own translations 

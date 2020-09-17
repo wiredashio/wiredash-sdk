@@ -26,7 +26,9 @@ class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
 
   @override
   Future<void> clearPendingItem(PendingFeedbackItem itemToClear) async {
-    await fs.file(itemToClear.screenshotPath).delete();
+    final screenshot = fs.file(itemToClear.screenshotPath);
+    if (await screenshot.exists()) await screenshot.delete();
+
     _deletedItemIds.add(itemToClear.id);
     _currentItems.remove(itemToClear);
   }
@@ -95,6 +97,41 @@ void main() {
       ]);
     });
 
+    test(
+        'submit() - does not crash when screenshot file does not exist anymore for some reason',
+        () async {
+      const item = FeedbackItem(
+        deviceInfo: '<device info>',
+        email: 'email@example.com',
+        message: 'test post pls ignore',
+        type: 'feedback',
+        user: 'Testy McTestFace',
+      );
+
+      when(mockNetworkManager.sendFeedback(item, any)).thenAnswer((_) async {});
+
+      fakeAsync((async) {
+        retryingFeedbackSubmitter.submit(item, kTransparentImage);
+
+        // Ensure that the screenshot exists, then delete it, and make sure it
+        // was deleted successfully.
+        expect(fileSystem.file('1.png').existsSync(), isTrue);
+        fileSystem.file('1.png').deleteSync();
+        expect(fileSystem.file('1.png').existsSync(), isFalse);
+
+        // Should've not sent the feedback just yet.
+        verifyZeroInteractions(mockNetworkManager);
+
+        // Hop on the time machine...
+        async.elapse(const Duration(minutes: 5));
+
+        // Should just submit the feedback item once, without the screenshot, as
+        // the file didn't exist.
+        verify(mockNetworkManager.sendFeedback(item, null));
+        verifyNoMoreInteractions(mockNetworkManager);
+      });
+    });
+
     test('submit() - future completes before interacting with NetworkManager',
         () async {
       const item = FeedbackItem(
@@ -153,8 +190,10 @@ void main() {
       );
 
       // Prepopulate storage with 2 existing items.
-      await fakePendingFeedbackItemStorage.addPendingItem(item, kTransparentImage);
-      await fakePendingFeedbackItemStorage.addPendingItem(item, kTransparentImage);
+      await fakePendingFeedbackItemStorage.addPendingItem(
+          item, kTransparentImage);
+      await fakePendingFeedbackItemStorage.addPendingItem(
+          item, kTransparentImage);
 
       // Make sure they exist.
       expect(await fileSystem.file('1.png').exists(), isTrue);
