@@ -130,17 +130,18 @@ Thanks!
 ''');
 
     if (_navigatorKey.currentState == null ||
-        feedbackUiState == FeedbackUiState.capture) return;
+        feedbackUiState == FeedbackUiState.capture ||
+        feedbackUiState != FeedbackUiState.hidden) return;
 
     feedbackUiState = FeedbackUiState.intro;
-    _navigatorKey.currentState.push(
-      DismissiblePageRoute(
-        builder: (context) => FeedbackSheet(),
-        onPagePopped: () {
-          feedbackUiState = FeedbackUiState.hidden;
-        },
-      ),
-    );
+    _navigatorKey.currentState
+        .push(
+          DismissiblePageRoute(
+            builder: (context) => FeedbackSheet(),
+            onPagePopped: () => feedbackUiState = FeedbackUiState.hidden,
+          ),
+        )
+        .then((_) => _feedbackUiState = FeedbackUiState.hidden);
   }
 }
 
