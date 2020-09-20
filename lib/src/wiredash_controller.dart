@@ -57,6 +57,9 @@ class WiredashController {
   /// own [WiredashTheme] and / or [WiredashTranslation] to the [Wiredash]
   /// root widget. In a future release you'll be able to customize the SDK
   /// through the Wiredash admin console as well.
+  ///
+  /// If a Wiredash feedback flow is already active (=a feedback sheet is open),
+  /// does nothing.
   void show() => _state.show();
 
   /// A [ValueNotifier] representing the current state of the capture UI. Use
