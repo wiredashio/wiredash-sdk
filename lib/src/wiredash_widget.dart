@@ -15,6 +15,7 @@ import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/utils/build_info.dart';
+import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/common/widgets/wiredash_scaffold.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
@@ -138,6 +139,11 @@ class WiredashState extends State<Wiredash> {
   @override
   void initState() {
     super.initState();
+    debugProjectCredentialValidator.validate(
+      projectId: widget.projectId,
+      secret: widget.secret,
+    );
+
     captureKey = GlobalKey<CaptureState>();
     navigatorKey = widget.navigatorKey;
 
@@ -220,3 +226,7 @@ class WiredashState extends State<Wiredash> {
     _feedbackModel.show();
   }
 }
+
+@visibleForTesting
+ProjectCredentialValidator debugProjectCredentialValidator =
+    const ProjectCredentialValidator();
