@@ -295,7 +295,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
         );
       case FeedbackUiState.email:
         return InputComponent(
-          key: ValueKey(uiState),
+          key: const ValueKey('wiredash.sdk.email_input_field'),
           type: InputComponentType.email,
           formKey: _emailFormKey,
           focusNode: _emailFocusNode,

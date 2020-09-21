@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
+import 'package:wiredash/src/common/utils/email_validator.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 
@@ -161,12 +162,16 @@ class _InputComponentState extends State<InputComponent> {
         }
         break;
       case InputComponentType.email:
-        if (input.isEmpty) return null;
-        final isValidEmail = RegExp(
-                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-            .hasMatch(input);
-        if (isValidEmail) return null;
-        return WiredashLocalizations.of(context).validationHintEmail;
+        if (input.isEmpty) {
+          // It's okay to not provide an email address, in which we consider the
+          // input to be valid.
+          return null;
+        }
+
+        // If the email is non-null, we validate it.
+        return debugEmailValidator.validate(input)
+            ? null
+            : WiredashLocalizations.of(context).validationHintEmail;
     }
 
     return null;
@@ -184,3 +189,6 @@ class _InputComponentState extends State<InputComponent> {
     }
   }
 }
+
+@visibleForTesting
+EmailValidator debugEmailValidator = const EmailValidator();
