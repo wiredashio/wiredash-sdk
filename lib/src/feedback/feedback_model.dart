@@ -60,7 +60,7 @@ class FeedbackModel with ChangeNotifier {
           _feedbackUiState = FeedbackUiState.feedback;
           _navigatorKey.currentState.push(
             DismissiblePageRoute(
-              builder: (context) => FeedbackSheet(),
+              builder: (context) => const FeedbackSheet(),
               background: image,
               onPagePopped: () {
                 feedbackUiState = FeedbackUiState.hidden;
@@ -137,7 +137,7 @@ Thanks!
     _navigatorKey.currentState
         .push(
           DismissiblePageRoute(
-            builder: (context) => FeedbackSheet(),
+            builder: (context) => const FeedbackSheet(),
             onPagePopped: () => feedbackUiState = FeedbackUiState.hidden,
           ),
         )

@@ -154,7 +154,7 @@ class _InputComponentState extends State<InputComponent> {
   String _validateInput(String input) {
     switch (widget.type) {
       case InputComponentType.feedback:
-        if (input.isEmpty) {
+        if (input.trim().isEmpty) {
           return WiredashLocalizations.of(context).validationHintFeedbackEmpty;
         } else if (input.length > 512) {
           return WiredashLocalizations.of(context).validationHintFeedbackLength;
