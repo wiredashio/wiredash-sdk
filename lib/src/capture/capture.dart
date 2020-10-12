@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
+import 'package:wiredash/src/capture/capture_provider.dart';
 import 'package:wiredash/src/capture/drawer/drawer.dart';
 import 'package:wiredash/src/capture/screenshot/screenshot.dart';
 import 'package:wiredash/src/capture/sketcher/sketcher.dart';
@@ -163,11 +163,9 @@ class CaptureState extends State<Capture>
   Widget build(BuildContext context) {
     final directionalityFactor =
         Directionality.of(context) == TextDirection.ltr ? 1.0 : -1.0;
-    return MultiProvider(
-      providers: [
-        ValueListenableProvider.value(value: _captureUiState),
-        ChangeNotifierProvider.value(value: _sketcherController)
-      ],
+    return CaptureProvider(
+      captureUiState: _captureUiState,
+      sketcherController: _sketcherController,
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: <Widget>[
@@ -236,17 +234,18 @@ class CaptureState extends State<Capture>
   }
 
   Widget _buildContent() {
-    return Consumer<CaptureUiState>(
-      builder: (_, uiState, __) {
+    return AnimatedBuilder(
+      animation: _captureUiState,
+      builder: (_, __) {
         return CornerRadiusTransition(
           radius: _cornerRadiusAnimation,
           child: Spotlight(
             key: _spotlightKey,
             child: Sketcher(
-              isEnabled: uiState == CaptureUiState.draw,
+              isEnabled: _captureUiState.value == CaptureUiState.draw,
               controller: _sketcherController,
               child: Screenshot(
-                capture: uiState == CaptureUiState.draw,
+                capture: _captureUiState.value == CaptureUiState.draw,
                 onCaptured: (image) => _screenshot = image,
                 child: widget.child,
               ),
@@ -258,30 +257,33 @@ class CaptureState extends State<Capture>
   }
 
   Widget _buildBottomMenu() {
-    return Consumer<CaptureUiState>(builder: (context, uiState, child) {
-      return SafeArea(
-        minimum: const EdgeInsets.all(20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: PreviousButton(
-                onPressed: _onBackButtonPressed,
-                text: _getBackButtonString(),
+    return AnimatedBuilder(
+      animation: _captureUiState,
+      builder: (_, __) {
+        return SafeArea(
+          minimum: const EdgeInsets.all(20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: PreviousButton(
+                  onPressed: _onBackButtonPressed,
+                  text: _getBackButtonString(),
+                ),
               ),
-            ),
-            Expanded(
-              child: NextButton(
-                key: const ValueKey('wiredash.sdk.next_button'),
-                onPressed: _onNextButtonPressed,
-                text: _getNextButtonString(),
-                icon: _getNextButtonIcon(),
+              Expanded(
+                child: NextButton(
+                  key: const ValueKey('wiredash.sdk.next_button'),
+                  onPressed: _onNextButtonPressed,
+                  text: _getNextButtonString(),
+                  icon: _getNextButtonIcon(),
+                ),
               ),
-            ),
-          ],
-        ),
-      );
-    });
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _onBackButtonPressed() {

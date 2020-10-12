@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
-import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/animated_fade_in.dart';
 import 'package:wiredash/src/common/widgets/animated_progress.dart';
 import 'package:wiredash/src/common/widgets/navigation_buttons.dart';
@@ -12,6 +10,7 @@ import 'package:wiredash/src/feedback/components/input_component.dart';
 import 'package:wiredash/src/feedback/components/intro_component.dart';
 import 'package:wiredash/src/feedback/components/success_component.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/wiredash_provider.dart';
 
 class FeedbackSheet extends StatefulWidget {
   const FeedbackSheet({Key key}) : super(key: key);
@@ -62,9 +61,14 @@ class _FeedbackSheetState extends State<FeedbackSheet>
     return Column(
       children: <Widget>[
         _buildHeader(),
-        AnimatedProgress(
-          isLoading: Provider.of<FeedbackModel>(context).loading,
-          value: _getProgressValue(),
+        AnimatedBuilder(
+          animation: context.feedbackModel,
+          builder: (context, _) {
+            return AnimatedProgress(
+              isLoading: context.feedbackModel.loading,
+              value: _getProgressValue(),
+            );
+          },
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -73,12 +77,15 @@ class _FeedbackSheetState extends State<FeedbackSheet>
             alignment: Alignment.topCenter,
             curve: Curves.fastOutSlowIn,
             duration: const Duration(milliseconds: 350),
-            child: Column(
-              children: <Widget>[
-                _getInputComponent(),
-                _buildButtons(),
-                _buildFooter(),
-              ],
+            child: AnimatedBuilder(
+              animation: context.feedbackModel,
+              builder: (context, _) => Column(
+                children: <Widget>[
+                  _getInputComponent(),
+                  _buildButtons(),
+                  _buildFooter(),
+                ],
+              ),
             ),
           ),
         ),
@@ -115,22 +122,24 @@ class _FeedbackSheetState extends State<FeedbackSheet>
             ),
           ),
           const SizedBox(height: 24),
-          AnimatedFadeIn(
-            changeKey:
-                ValueKey(Provider.of<FeedbackModel>(context).feedbackUiState),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  _getTitle(),
-                  style: WiredashTheme.of(context).titleStyle,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _getSubtitle(),
-                  style: WiredashTheme.of(context).subtitleStyle,
-                ),
-              ],
+          AnimatedBuilder(
+            animation: context.feedbackModel,
+            builder: (context, child) => AnimatedFadeIn(
+              changeKey: ValueKey(context.feedbackModel.feedbackUiState),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    _getTitle(),
+                    style: WiredashTheme.of(context).titleStyle,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _getSubtitle(),
+                    style: WiredashTheme.of(context).subtitleStyle,
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -140,8 +149,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   }
 
   Widget _buildFooter() {
-    if (Provider.of<FeedbackModel>(context).feedbackUiState ==
-        FeedbackUiState.intro) {
+    if (context.feedbackModel.feedbackUiState == FeedbackUiState.intro) {
       return Image.asset(
         'assets/images/logo_footer.png',
         width: 100,
@@ -152,7 +160,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   }
 
   Widget _buildButtons() {
-    final state = Provider.of<FeedbackModel>(context);
+    final state = context.feedbackModel;
 
     switch (state.feedbackUiState) {
       case FeedbackUiState.feedback:
@@ -204,21 +212,19 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   void _submitFeedback() {
     if (_feedbackFormKey.currentState.validate()) {
       _feedbackFormKey.currentState.save();
-      Provider.of<FeedbackModel>(context, listen: false).feedbackUiState =
-          FeedbackUiState.email;
+      context.feedbackModel.feedbackUiState = FeedbackUiState.email;
     }
   }
 
   void _submitEmail() {
     if (_emailFormKey.currentState.validate()) {
       _emailFormKey.currentState.save();
-      Provider.of<FeedbackModel>(context, listen: false).feedbackUiState =
-          FeedbackUiState.success;
+      context.feedbackModel.feedbackUiState = FeedbackUiState.success;
     }
   }
 
   void _onFeedbackModeSelected(FeedbackType mode) {
-    final feedbackModel = Provider.of<FeedbackModel>(context, listen: false);
+    final feedbackModel = context.feedbackModel;
     feedbackModel.feedbackType = mode;
 
     switch (mode) {
@@ -236,7 +242,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   }
 
   String _getTitle() {
-    switch (Provider.of<FeedbackModel>(context).feedbackUiState) {
+    switch (context.feedbackModel.feedbackUiState) {
       case FeedbackUiState.intro:
         return WiredashLocalizations.of(context).feedbackStateIntroTitle;
       case FeedbackUiState.feedback:
@@ -251,7 +257,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   }
 
   String _getSubtitle() {
-    switch (Provider.of<FeedbackModel>(context).feedbackUiState) {
+    switch (context.feedbackModel.feedbackUiState) {
       case FeedbackUiState.intro:
         return WiredashLocalizations.of(context).feedbackStateIntroMsg;
       case FeedbackUiState.feedback:
@@ -266,7 +272,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   }
 
   double _getProgressValue() {
-    switch (Provider.of<FeedbackModel>(context).feedbackUiState) {
+    switch (context.feedbackModel.feedbackUiState) {
       case FeedbackUiState.feedback:
         return 0.3;
       case FeedbackUiState.email:
@@ -279,8 +285,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   }
 
   Widget _getInputComponent() {
-    final feedbackModel = Provider.of<FeedbackModel>(context);
-    final uiState = feedbackModel.feedbackUiState;
+    final uiState = context.feedbackModel.feedbackUiState;
     switch (uiState) {
       case FeedbackUiState.intro:
         return IntroComponent(_onFeedbackModeSelected);
@@ -290,7 +295,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
           type: InputComponentType.feedback,
           formKey: _feedbackFormKey,
           focusNode: _feedbackFocusNode,
-          prefill: feedbackModel.feedbackMessage,
+          prefill: context.feedbackModel.feedbackMessage,
           autofocus: _emailFocusNode.hasFocus,
         );
       case FeedbackUiState.email:
@@ -299,14 +304,13 @@ class _FeedbackSheetState extends State<FeedbackSheet>
           type: InputComponentType.email,
           formKey: _emailFormKey,
           focusNode: _emailFocusNode,
-          prefill: Provider.of<UserManager>(context, listen: false).userEmail,
+          prefill: context.userManager.userEmail,
           autofocus: _feedbackFocusNode.hasFocus,
         );
       case FeedbackUiState.success:
         return SuccessComponent(
           () {
-            Provider.of<FeedbackModel>(context, listen: false).feedbackUiState =
-                FeedbackUiState.hidden;
+            context.feedbackModel.feedbackUiState = FeedbackUiState.hidden;
             Navigator.pop(context);
           },
         );

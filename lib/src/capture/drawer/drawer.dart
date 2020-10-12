@@ -1,8 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
+import 'package:wiredash/src/capture/capture_provider.dart';
 import 'package:wiredash/src/capture/drawer/color_picker.dart';
 import 'package:wiredash/src/capture/drawer/pen.dart';
-import 'package:wiredash/src/capture/sketcher/sketcher_controller.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 
@@ -12,8 +11,11 @@ class Drawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SketcherController>(
-      builder: (context, controller, __) {
+    final controller = context.sketcherController;
+
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, __) {
         return SizedBox(
           width: Drawer.width,
           child: Stack(

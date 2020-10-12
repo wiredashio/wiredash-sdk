@@ -2,7 +2,6 @@ import 'package:file/local.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
@@ -21,6 +20,7 @@ import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
+import 'package:wiredash/src/wiredash_provider.dart';
 
 /// Capture in-app user feedback, wishes, ratings and much more
 ///
@@ -199,12 +199,10 @@ class WiredashState extends State<Wiredash> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider.value(value: networkManager),
-        Provider.value(value: userManager),
-        ChangeNotifierProvider.value(value: _feedbackModel),
-      ],
+    return WiredashProvider(
+      networkManager: networkManager,
+      userManager: userManager,
+      feedbackModel: _feedbackModel,
       child: WiredashOptions(
         data: _options,
         child: WiredashLocalizations(
