@@ -7,15 +7,31 @@ class WiredashOptionsData {
   WiredashOptionsData({
     Locale locale,
     TextDirection textDirection,
+    this.bugReportButton = true,
+    this.praiseButton = true,
+    this.featureRequestButton = true,
     this.customTranslations,
   })  : textDirection = textDirection ?? TextDirection.ltr,
-        _currentLocale = locale ?? window.locale;
+        _currentLocale = locale ?? window.locale,
+        assert(
+          bugReportButton || praiseButton || featureRequestButton,
+          'WiredashOptionsData Configuration Error: Show at least one button',
+        );
 
   /// Replace desired texts in Wiredash and localize it for you audience
   ///
   /// You can also use Wiredash delegate in your MaterialApp
   /// if default translations are sufficient for you
   final Map<Locale, WiredashTranslations> customTranslations;
+
+  /// Whether to display the Bug Report button or not.
+  final bool bugReportButton;
+
+  /// Whether to display the Send Praise button or not.
+  final bool praiseButton;
+
+  /// Whether to display the Feature Request button or not.
+  final bool featureRequestButton;
 
   /// Current [TextDirection] used by Wiredash widget
   TextDirection textDirection;

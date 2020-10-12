@@ -35,6 +35,9 @@ class _ExampleAppState extends State<ExampleApp> {
       options: WiredashOptionsData(
 
           /// Uncomment below to see how custom translations work
+          // bugReportButton: false,
+          // featureRequestButton: false,
+          // praiseButton: false,
           // customTranslations: {
           //   const Locale.fromSubtags(languageCode: 'en'):
           //       const DemoCustomTranslations(),
