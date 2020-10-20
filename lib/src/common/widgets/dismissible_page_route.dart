@@ -87,50 +87,53 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (onPagePopped != null) {
-          onPagePopped();
-        }
-        return true;
-      },
-      child: Stack(
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              if (!_didUserPop && !navigator.userGestureInProgress) {
-                navigator.pop();
-                _didUserPop = true;
-              }
-              if (onPagePopped != null) {
-                onPagePopped();
-              }
-            },
-            child: FadeTransition(
-              opacity: animation,
-              child: Container(
-                color: const Color(0x90000000),
-                child: (background != null)
-                    ? Image.memory(
-                        background,
-                        color: const Color(0xff8b8b8d),
-                        colorBlendMode: BlendMode.multiply,
-                      )
-                    : const SizedBox.expand(),
+    return Semantics(
+      container: true,
+      child: WillPopScope(
+        onWillPop: () async {
+          if (onPagePopped != null) {
+            onPagePopped();
+          }
+          return true;
+        },
+        child: Stack(
+          children: <Widget>[
+            GestureDetector(
+              onTap: () {
+                if (!_didUserPop && !navigator.userGestureInProgress) {
+                  navigator.pop();
+                  _didUserPop = true;
+                }
+                if (onPagePopped != null) {
+                  onPagePopped();
+                }
+              },
+              child: FadeTransition(
+                opacity: animation,
+                child: Container(
+                  color: const Color(0x90000000),
+                  child: (background != null)
+                      ? Image.memory(
+                          background,
+                          color: const Color(0xff8b8b8d),
+                          colorBlendMode: BlendMode.multiply,
+                        )
+                      : const SizedBox.expand(),
+                ),
               ),
             ),
-          ),
-          DismissablePageTransition(
-            primaryRouteAnimation: animation,
-            secondaryRouteAnimation: secondaryAnimation,
-            linearTransition: isPopGestureInProgress(this),
-            child: _DownGestureDetector<T>(
-              onStartPopGesture: () =>
-                  _startPopGesture<T>(this, onPagePopped: onPagePopped),
-              child: child,
+            DismissablePageTransition(
+              primaryRouteAnimation: animation,
+              secondaryRouteAnimation: secondaryAnimation,
+              linearTransition: isPopGestureInProgress(this),
+              child: _DownGestureDetector<T>(
+                onStartPopGesture: () =>
+                    _startPopGesture<T>(this, onPagePopped: onPagePopped),
+                child: child,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

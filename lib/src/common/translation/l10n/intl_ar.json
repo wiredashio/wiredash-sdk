@@ -3,32 +3,42 @@
     "captureSkip": "تخطي لقطة الشاشة",
     "captureSpotlightNavigateMsg": "توجه للواجهة حيث ترغب بأخذ لقطة شاشة.",
     "captureSpotlightNavigateTitle": "توجه",
-    "captureSpotlightScreenCapturedMsg": "تم الالتق",
-    "captureSpotlightScreenCapturedTitle": "رسم",
+    "captureSpotlightScreenCapturedMsg": "تم التقاط الشاشة!  لا تتردد في الرسم على الشاشة لإبراز المناطق المتأثرة بالتقاطك.",
+    "captureSpotlightScreenCapturedTitle": "قم بالرسم",
     "captureTakeScreenshot": "أخذ لقطة شاشة",
-    "feedbackBack": "رجوع",
+    "feedbackBack": "قم بالرجوع",
     "feedbackCancel": "إلغاء",
-    "feedbackModeBugMsg": "قم بإعلامنا عن الخطأ وارساله لنا حتى نعمل على اصلاحه.",
+    "feedbackModeBugMsg": "قم بإعلامنا عن الخطأ وإرساله لنا حتى نعمل على إصلاحه.",
     "feedbackModeBugTitle": "الإبلاغ عن خطأ.",
     "feedbackModeImprovementMsg": "هل لديك أي أفكار يمكن أن تجعل تطبيقنا أفضل؟ يسعدنا أن نعلم!",
-    "feedbackModeImprovementTitle": "طلب ميزة",
-    "feedbackModePraiseMsg": "أخبرنا بما يعجبك حقًا في تطبيقنا ، ربما يمكننا تحسينه؟",
+    "feedbackModeImprovementTitle": "طلب ميزة جديدة",
+    "feedbackModePraiseMsg": "أخبرنا بما يعجبك حَقًّا في تطبيقنا ، ربما يمكننا تحسينه؟",
     "feedbackModePraiseTitle": "إرسال مديح",
     "feedbackSave": "حفظ",
-    "feedbackSend": "ارسل رأيك",
+    "feedbackSend": "أرسل رأيك",
     "feedbackStateEmailMsg": "إذا كنت ترغب في الحصول على تحديثات بشأن ملاحظاتك ، فأدخل بريدك الإلكتروني أدناه.",
     "feedbackStateEmailTitle": "ابق في الحلقة 👇",
     "feedbackStateFeedbackMsg": "نحن نستمع. يرجى تقديم أكبر قدر ممكن من المعلومات حتى نتمكن من مساعدتك.",
-    "feedbackStateIntroMsg": "لا يمكننا الانتظار للحصول على أفكارك حول تطبيقنا. ماذا تريد ان نفعل؟",
+    "feedbackStateIntroMsg": "لا يمكننا الانتظار للحصول على أفكارك حول تطبيقنا. ماذا تريد أن نفعل؟",
     "feedbackStateIntroTitle": "مرحباً 👋",
     "feedbackStateSuccessCloseMsg": "شكراً لإرسال رأيك!",
-    "feedbackStateSuccessCloseTitle": "أغلق هذا الحوار",
-    "feedbackStateSuccessMsg": "تم. شكرا جزيلا لكم على مساعدتنا في بناء التطبيق بشكل أفضل!",
+    "feedbackStateSuccessCloseTitle": "أغلق هذا النافذة",
+    "feedbackStateSuccessMsg": "هذا كل شيء. شكراً جزيلاً لك على مساعدتنا في بناء التطبيق بشكل أفضل!",
     "feedbackStateSuccessTitle": "شكراً جزيلاً ✌",
-    "inputHintEmail": "بريدك الالكتروني",
+    "inputHintEmail": "بريدك الإلكتروني",
     "inputHintFeedback": "رأيك",
     "validationHintEmail": "يرجى إدخال بريد إلكتروني صالح أو ترك هذا الحقل فارغًا.",
     "validationHintFeedbackEmpty": "يرجى تقديم ملاحظاتك.",
     "validationHintFeedbackLength": "ملاحظاتك طويلة للغاية.",
-    "feedbackStateFeedbackTitle": "ملاحظاتك ✍"
+    "feedbackStateFeedbackTitle": "ملاحظاتك ✍",
+    "firstPenLabel": "",
+    "secondPenLabel": "",
+    "thirdPenLabel": "",
+    "fourthPenLabel": "",
+    "companyLogoLabel": "",
+    "undoButtonLabel": "",
+    "firstPenSelected": "",
+    "secondPenSelected": "",
+    "thirdPenSelected": "",
+    "fourthPenSelected": ""
 }

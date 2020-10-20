@@ -61,20 +61,40 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get feedbackStateSuccessCloseTitle => "Bu diyalogu kapat";
   @override
   String get feedbackStateSuccessMsg =>
-      "Bu kadar. Daha iyi bir uygulama yapmamıza yardım ettiğiniz için teşekkürler";
+      "Bu kadar. Daha iyi bir uygulama yapmamıza yardım ettiğiniz için çok teşekkürler!";
   @override
   String get feedbackStateSuccessTitle => "Teşekkürler ✌️";
   @override
   String get inputHintEmail => "E-posta adresiniz";
   @override
-  String get inputHintFeedback => "Geri dönüşünüz";
+  String get inputHintFeedback => "Geri bildiriminiz";
   @override
   String get validationHintEmail =>
       "Lütfen geçerli bir e-posta girin yada bu alanı boş bırakın.";
   @override
-  String get validationHintFeedbackEmpty => "Lütfen geri dönüşünüzü girin.";
+  String get validationHintFeedbackEmpty => "Lütfen geri bildiriminiz girin.";
   @override
-  String get validationHintFeedbackLength => "Geri dönüşünüz çok uzun.";
+  String get validationHintFeedbackLength => "Geri bildiriminiz çok uzun.";
   @override
-  String get feedbackStateFeedbackTitle => "Geri dönüşünüz ✍️";
+  String get feedbackStateFeedbackTitle => "Geri bildiriminiz ✍️";
+  @override
+  String get firstPenLabel => "";
+  @override
+  String get secondPenLabel => "";
+  @override
+  String get thirdPenLabel => "";
+  @override
+  String get fourthPenLabel => "";
+  @override
+  String get companyLogoLabel => "";
+  @override
+  String get undoButtonLabel => "";
+  @override
+  String get firstPenSelected => "";
+  @override
+  String get secondPenSelected => "";
+  @override
+  String get thirdPenSelected => "";
+  @override
+  String get fourthPenSelected => "";
 }

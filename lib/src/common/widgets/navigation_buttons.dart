@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/animated_fade_in.dart';
@@ -103,15 +104,18 @@ class _Wrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: onPressed,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        constraints: const BoxConstraints(minHeight: 48),
-        child: AnimatedFadeIn(
-          changeKey: ValueKey(text),
-          child: child,
+    return Semantics(
+      button: true,
+      child: GestureDetector(
+        onTap: onPressed,
+        behavior: HitTestBehavior.translucent,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          constraints: const BoxConstraints(minHeight: 48),
+          child: AnimatedFadeIn(
+            changeKey: ValueKey(text),
+            child: child,
+          ),
         ),
       ),
     );

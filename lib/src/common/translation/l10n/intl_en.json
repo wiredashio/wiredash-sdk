@@ -30,5 +30,15 @@
     "validationHintEmail": "Please enter a valid email or leave this field blank.",
     "validationHintFeedbackEmpty": "Please provide your feedback.",
     "validationHintFeedbackLength": "Your feedback is too long.",
-    "feedbackStateFeedbackTitle": "Your feedback ✍️"
+    "feedbackStateFeedbackTitle": "Your feedback ✍️",
+    "firstPenLabel": "A dark brown pen",
+    "secondPenLabel": "An off-white pen",
+    "thirdPenLabel": "A teal highlighter",
+    "fourthPenLabel": "An orange highlighter",
+    "companyLogoLabel": "The Wiredash Logo",
+    "undoButtonLabel": "Undo the last change",
+    "firstPenSelected": "The dark brown pen is selected",
+    "secondPenSelected": "The off-white pen is selected",
+    "thirdPenSelected": "The teal highlighter is selected",
+    "fourthPenSelected": "The orange highlighter is selected"
 }

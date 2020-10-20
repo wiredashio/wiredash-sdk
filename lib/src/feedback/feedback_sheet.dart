@@ -154,6 +154,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
         'assets/images/logo_footer.png',
         width: 100,
         package: 'wiredash',
+        semanticLabel: WiredashLocalizations.of(context).companyLogoLabel,
       );
     }
     return const SizedBox.shrink();

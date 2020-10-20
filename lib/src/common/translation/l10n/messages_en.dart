@@ -77,4 +77,24 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get validationHintFeedbackLength => "Your feedback is too long.";
   @override
   String get feedbackStateFeedbackTitle => "Your feedback ✍️";
+  @override
+  String get firstPenLabel => "A dark brown pen";
+  @override
+  String get secondPenLabel => "An off-white pen";
+  @override
+  String get thirdPenLabel => "A teal highlighter";
+  @override
+  String get fourthPenLabel => "An orange highlighter";
+  @override
+  String get companyLogoLabel => "The Wiredash Logo";
+  @override
+  String get undoButtonLabel => "Undo the last change";
+  @override
+  String get firstPenSelected => "The dark brown pen is selected";
+  @override
+  String get secondPenSelected => "The off-white pen is selected";
+  @override
+  String get thirdPenSelected => "The teal highlighter is selected";
+  @override
+  String get fourthPenSelected => "The orange highlighter is selected";
 }

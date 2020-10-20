@@ -29,7 +29,7 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get feedbackModeBugTitle => "Reporte un error";
   @override
   String get feedbackModeImprovementMsg =>
-      "Tiene alguna idea que podría mejorar nuestra app? Nos encanta escucharla!";
+      "¿Tiene alguna idea que podría mejorar nuestra app? ¡Nos encantaría escucharla!";
   @override
   String get feedbackModeImprovementTitle =>
       "Solicitar una nueva funcionalidad";
@@ -39,7 +39,7 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   @override
   String get feedbackModePraiseTitle => "Enviar aplauso";
   @override
-  String get feedbackSave => "Grabar";
+  String get feedbackSave => "Guardar";
   @override
   String get feedbackSend => "Enviar retroalimentación";
   @override
@@ -52,7 +52,7 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
       "Por favor proveer información detallada para ayudarle de la mejor manera";
   @override
   String get feedbackStateIntroMsg =>
-      "Nos interesa conocer su opinión acerca de la app. Que le gustaría realizar?";
+      "Nos interesa conocer su opinión acerca de la app. ¿Qué le gustaría realizar?";
   @override
   String get feedbackStateIntroTitle => "Saludos 👋";
   @override
@@ -79,4 +79,24 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
       "Sus comentarios son demasiado extensos";
   @override
   String get feedbackStateFeedbackTitle => "Sus comentarios 🖊";
+  @override
+  String get firstPenLabel => "";
+  @override
+  String get secondPenLabel => "";
+  @override
+  String get thirdPenLabel => "";
+  @override
+  String get fourthPenLabel => "";
+  @override
+  String get companyLogoLabel => "";
+  @override
+  String get undoButtonLabel => "";
+  @override
+  String get firstPenSelected => "";
+  @override
+  String get secondPenSelected => "";
+  @override
+  String get thirdPenSelected => "";
+  @override
+  String get fourthPenSelected => "";
 }

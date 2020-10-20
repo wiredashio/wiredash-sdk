@@ -211,6 +211,7 @@ class WiredashState extends State<Wiredash> {
             child: WiredashScaffold(
               child: Capture(
                 key: captureKey,
+                initialColor: _theme.firstPenColor,
                 child: widget.child,
               ),
             ),

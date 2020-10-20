@@ -37,4 +37,14 @@ abstract class WiredashTranslations {
   String get validationHintFeedbackEmpty;
   String get validationHintFeedbackLength;
   String get validationHintEmail;
+  String get firstPenLabel;
+  String get secondPenLabel;
+  String get thirdPenLabel;
+  String get fourthPenLabel;
+  String get firstPenSelected;
+  String get secondPenSelected;
+  String get thirdPenSelected;
+  String get fourthPenSelected;
+  String get companyLogoLabel;
+  String get undoButtonLabel;
 }

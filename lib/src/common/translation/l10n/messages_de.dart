@@ -29,7 +29,7 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get feedbackModeBugTitle => "Melde einen Fehler";
   @override
   String get feedbackModeImprovementMsg =>
-      "Hättest Du eine Idee, welche unsere App besser machen würde? Lass es uns wissen!";
+      "Hast Du eine Idee, die unsere App besser machen würde? Lass es uns wissen!";
   @override
   String get feedbackModeImprovementTitle => "Eine Idee einreichen";
   @override
@@ -76,4 +76,24 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get validationHintFeedbackLength => "Dein Feedback ist zu lang.";
   @override
   String get feedbackStateFeedbackTitle => "Dein Feedback ✍️";
+  @override
+  String get firstPenLabel => "";
+  @override
+  String get secondPenLabel => "";
+  @override
+  String get thirdPenLabel => "";
+  @override
+  String get fourthPenLabel => "";
+  @override
+  String get companyLogoLabel => "";
+  @override
+  String get undoButtonLabel => "";
+  @override
+  String get firstPenSelected => "";
+  @override
+  String get secondPenSelected => "";
+  @override
+  String get thirdPenSelected => "";
+  @override
+  String get fourthPenSelected => "";
 }

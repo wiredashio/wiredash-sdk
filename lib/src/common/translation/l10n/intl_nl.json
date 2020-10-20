@@ -30,5 +30,15 @@
     "validationHintEmail": "Gelieve een correcte email in te geven, of laat het veld leeg.",
     "validationHintFeedbackEmpty": "Gelieve je feedback te geven.",
     "validationHintFeedbackLength": "Jouw feedback is te lang.",
-    "feedbackStateFeedbackTitle": "Jouw feedback ✌️"
+    "feedbackStateFeedbackTitle": "Jouw feedback ✌️",
+    "firstPenLabel": "",
+    "secondPenLabel": "",
+    "thirdPenLabel": "",
+    "fourthPenLabel": "",
+    "companyLogoLabel": "",
+    "undoButtonLabel": "",
+    "firstPenSelected": "",
+    "secondPenSelected": "",
+    "thirdPenSelected": "",
+    "fourthPenSelected": ""
 }

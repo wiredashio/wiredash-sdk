@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/src/common/translation/l10n/messages_pl.dart' as pl;
 import 'package:wiredash/wiredash.dart';
-
-part 'main_localizations.dart';
 
 void main() => runApp(const ExampleApp());
 
@@ -49,7 +46,7 @@ class _ExampleAppState extends State<ExampleApp> {
           // locale: const Locale('de'),
           // textDirection: TextDirection.rtl,
           ),
-      theme: WiredashThemeData(brightness: Theme.of(context).brightness),
+      theme: WiredashThemeData(brightness: Brightness.light),
       child: MaterialApp(
         navigatorKey: _navigatorKey,
         title: 'Adventure 🌎',

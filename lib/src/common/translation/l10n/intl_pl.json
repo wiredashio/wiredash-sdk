@@ -30,5 +30,15 @@
     "validationHintEmail": "Podaj prawidłowy e-mail lub pozostaw pole puste.",
     "validationHintFeedbackEmpty": "Wpisz swój feedback.",
     "validationHintFeedbackLength": "Twój wpis jest zbyt długi.",
-    "feedbackStateFeedbackTitle": "Twój feedback ✍️"
+    "feedbackStateFeedbackTitle": "Twój feedback ✍️",
+    "firstPenLabel": "",
+    "secondPenLabel": "",
+    "thirdPenLabel": "",
+    "fourthPenLabel": "",
+    "companyLogoLabel": "",
+    "undoButtonLabel": "",
+    "firstPenSelected": "",
+    "secondPenSelected": "",
+    "thirdPenSelected": "",
+    "fourthPenSelected": ""
 }

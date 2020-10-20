@@ -5,16 +5,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:wiredash/src/capture/sketcher/gesture.dart';
 import 'package:wiredash/src/capture/sketcher/sketch_painter.dart';
-import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 
 class SketcherController extends ChangeNotifier {
+  SketcherController(Color initialColor) : _color = initialColor;
+
   final List<Gesture> _gestures = [];
-  Color _color = WiredashThemeData.penColors[0];
+  Color _color;
   Gesture _last;
 
   Size size = Size.zero;
 
   Color get color => _color;
+
   set color(Color newColor) {
     if (_color == newColor) return;
     _color = newColor;

@@ -12,34 +12,35 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   @override
   String get captureSpotlightNavigateTitle => "توجه";
   @override
-  String get captureSpotlightScreenCapturedMsg => "تم الالتق";
+  String get captureSpotlightScreenCapturedMsg =>
+      "تم التقاط الشاشة!  لا تتردد في الرسم على الشاشة لإبراز المناطق المتأثرة بالتقاطك.";
   @override
-  String get captureSpotlightScreenCapturedTitle => "رسم";
+  String get captureSpotlightScreenCapturedTitle => "قم بالرسم";
   @override
   String get captureTakeScreenshot => "أخذ لقطة شاشة";
   @override
-  String get feedbackBack => "رجوع";
+  String get feedbackBack => "قم بالرجوع";
   @override
   String get feedbackCancel => "إلغاء";
   @override
   String get feedbackModeBugMsg =>
-      "قم بإعلامنا عن الخطأ وارساله لنا حتى نعمل على اصلاحه.";
+      "قم بإعلامنا عن الخطأ وإرساله لنا حتى نعمل على إصلاحه.";
   @override
   String get feedbackModeBugTitle => "الإبلاغ عن خطأ.";
   @override
   String get feedbackModeImprovementMsg =>
       "هل لديك أي أفكار يمكن أن تجعل تطبيقنا أفضل؟ يسعدنا أن نعلم!";
   @override
-  String get feedbackModeImprovementTitle => "طلب ميزة";
+  String get feedbackModeImprovementTitle => "طلب ميزة جديدة";
   @override
   String get feedbackModePraiseMsg =>
-      "أخبرنا بما يعجبك حقًا في تطبيقنا ، ربما يمكننا تحسينه؟";
+      "أخبرنا بما يعجبك حَقًّا في تطبيقنا ، ربما يمكننا تحسينه؟";
   @override
   String get feedbackModePraiseTitle => "إرسال مديح";
   @override
   String get feedbackSave => "حفظ";
   @override
-  String get feedbackSend => "ارسل رأيك";
+  String get feedbackSend => "أرسل رأيك";
   @override
   String get feedbackStateEmailMsg =>
       "إذا كنت ترغب في الحصول على تحديثات بشأن ملاحظاتك ، فأدخل بريدك الإلكتروني أدناه.";
@@ -50,20 +51,20 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
       "نحن نستمع. يرجى تقديم أكبر قدر ممكن من المعلومات حتى نتمكن من مساعدتك.";
   @override
   String get feedbackStateIntroMsg =>
-      "لا يمكننا الانتظار للحصول على أفكارك حول تطبيقنا. ماذا تريد ان نفعل؟";
+      "لا يمكننا الانتظار للحصول على أفكارك حول تطبيقنا. ماذا تريد أن نفعل؟";
   @override
   String get feedbackStateIntroTitle => "مرحباً 👋";
   @override
   String get feedbackStateSuccessCloseMsg => "شكراً لإرسال رأيك!";
   @override
-  String get feedbackStateSuccessCloseTitle => "أغلق هذا الحوار";
+  String get feedbackStateSuccessCloseTitle => "أغلق هذا النافذة";
   @override
   String get feedbackStateSuccessMsg =>
-      "تم. شكرا جزيلا لكم على مساعدتنا في بناء التطبيق بشكل أفضل!";
+      "هذا كل شيء. شكراً جزيلاً لك على مساعدتنا في بناء التطبيق بشكل أفضل!";
   @override
   String get feedbackStateSuccessTitle => "شكراً جزيلاً ✌";
   @override
-  String get inputHintEmail => "بريدك الالكتروني";
+  String get inputHintEmail => "بريدك الإلكتروني";
   @override
   String get inputHintFeedback => "رأيك";
   @override
@@ -75,4 +76,24 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get validationHintFeedbackLength => "ملاحظاتك طويلة للغاية.";
   @override
   String get feedbackStateFeedbackTitle => "ملاحظاتك ✍";
+  @override
+  String get firstPenLabel => "";
+  @override
+  String get secondPenLabel => "";
+  @override
+  String get thirdPenLabel => "";
+  @override
+  String get fourthPenLabel => "";
+  @override
+  String get companyLogoLabel => "";
+  @override
+  String get undoButtonLabel => "";
+  @override
+  String get firstPenSelected => "";
+  @override
+  String get secondPenSelected => "";
+  @override
+  String get thirdPenSelected => "";
+  @override
+  String get fourthPenSelected => "";
 }

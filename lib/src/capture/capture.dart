@@ -25,11 +25,13 @@ enum CaptureUiState { hidden, navigate, draw }
 class Capture extends StatefulWidget {
   const Capture({
     Key key,
+    @required this.initialColor,
     @required this.child,
   })  : assert(child != null),
         super(key: key);
 
   final Widget child;
+  final Color initialColor;
 
   @override
   CaptureState createState() => CaptureState();
@@ -75,7 +77,7 @@ class CaptureState extends State<Capture>
     );
 
     _captureUiState = ValueNotifier(CaptureUiState.hidden);
-    _sketcherController = SketcherController();
+    _sketcherController = SketcherController(widget.initialColor);
     _visible = ValueNotifier(false);
 
     _captureUiState.addListener(() {
@@ -176,7 +178,6 @@ class CaptureState extends State<Capture>
             ),
             child: const SizedBox.expand(),
           ),
-          _buildBottomMenu(),
           // --- Capture Menu
           AnimatedBuilder(
             animation: _drawPanelSlideAnimation,
@@ -210,7 +211,8 @@ class CaptureState extends State<Capture>
               );
             },
             child: _buildContent(),
-          )
+          ),
+          _buildBottomMenu(),
         ],
       ),
     );
@@ -260,6 +262,8 @@ class CaptureState extends State<Capture>
     return AnimatedBuilder(
       animation: _captureUiState,
       builder: (_, __) {
+        if (!_showBottomMenu) return const SizedBox(width: 0, height: 0);
+
         return SafeArea(
           minimum: const EdgeInsets.all(20),
           child: Row(
@@ -401,4 +405,15 @@ class CaptureState extends State<Capture>
   }
 
   ValueNotifier<bool> get visible => _visible;
+
+  bool get _showBottomMenu {
+    switch (_captureUiState.value) {
+      case CaptureUiState.navigate:
+      case CaptureUiState.draw:
+        return true;
+      case CaptureUiState.hidden:
+      default:
+        return false;
+    }
+  }
 }

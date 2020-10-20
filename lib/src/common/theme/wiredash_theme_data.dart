@@ -14,6 +14,7 @@ class WiredashThemeData {
     Color secondaryBackgroundColor,
     Color backgroundColor,
     Color dividerColor,
+    Color errorColor,
   }) {
     if (brightness == Brightness.light) {
       return WiredashThemeData._(
@@ -22,13 +23,14 @@ class WiredashThemeData {
         secondaryColor: secondaryColor ?? const Color(0xff35F1D7),
         primaryTextColor: primaryTextColor ?? const Color(0xff2b2b2b),
         secondaryTextColor: secondaryTextColor ?? const Color(0xff88888a),
-        tertiaryTextColor: tertiaryTextColor ?? const Color(0xff9ba9bc),
+        tertiaryTextColor: tertiaryTextColor ?? const Color(0xff586a84),
         primaryBackgroundColor:
             primaryBackgroundColor ?? const Color(0xffffffff),
         secondaryBackgroundColor:
             secondaryBackgroundColor ?? const Color(0xfff5f6f8),
         backgroundColor: backgroundColor ?? const Color(0xff9ba9bc),
         dividerColor: dividerColor ?? const Color(0xffccd2d9),
+        errorColor: errorColor ?? const Color(0xffd41121),
       );
     } else {
       return WiredashThemeData._(
@@ -44,6 +46,7 @@ class WiredashThemeData {
             secondaryBackgroundColor ?? const Color(0xff2b2b2b),
         backgroundColor: backgroundColor ?? const Color(0xff202124),
         dividerColor: dividerColor ?? const Color(0xffccd2d9),
+        errorColor: errorColor ?? const Color(0xffff5c6a),
       );
     }
   }
@@ -59,6 +62,11 @@ class WiredashThemeData {
     this.secondaryBackgroundColor,
     this.backgroundColor,
     this.dividerColor,
+    this.errorColor,
+    this.firstPenColor = const Color(0xff483e39),
+    this.secondPenColor = const Color(0xffdbd4d1),
+    this.thirdPenColor = const Color(0xff14e9d0),
+    this.fourthPenColor = const Color(0xffe96115),
   });
 
   final Brightness brightness;
@@ -75,16 +83,13 @@ class WiredashThemeData {
   final Color backgroundColor;
 
   final Color dividerColor;
-  final Color errorColor = const Color(0xffe51326);
-
+  final Color errorColor;
+  final Color firstPenColor;
+  final Color secondPenColor;
+  final Color thirdPenColor;
+  final Color fourthPenColor;
   static const white = Color(0xFFFFFFFF);
   static const black = Color(0xFF000000);
-  static const penColors = [
-    Color(0xff483e39),
-    Color(0xffdbd4d1),
-    Color(0xff14e9d0),
-    Color(0xffe96115),
-  ];
 
   static const fontFamily = 'LexendDeca';
   static const packageName = 'wiredash';
