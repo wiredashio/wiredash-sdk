@@ -77,23 +77,23 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   @override
   String get feedbackStateFeedbackTitle => "Twój feedback ✍️";
   @override
-  String get firstPenLabel => "";
+  String get firstPenLabel => "Ciemnobrązowy pisak";
   @override
-  String get secondPenLabel => "";
+  String get secondPenLabel => "Biały pisak";
   @override
-  String get thirdPenLabel => "";
+  String get thirdPenLabel => "Morski zakreślacz";
   @override
-  String get fourthPenLabel => "";
+  String get fourthPenLabel => "Pomarańczowy zakreślacz";
   @override
-  String get companyLogoLabel => "";
+  String get companyLogoLabel => "Logo Wiredash";
   @override
-  String get undoButtonLabel => "";
+  String get undoButtonLabel => "Cofnij zmianę";
   @override
-  String get firstPenSelected => "";
+  String get firstPenSelected => "Ciemnobrązowy pisak jest wybrany";
   @override
-  String get secondPenSelected => "";
+  String get secondPenSelected => "Biały pisak jest wybrany";
   @override
-  String get thirdPenSelected => "";
+  String get thirdPenSelected => "Morski zakreślacz jest wybrany";
   @override
-  String get fourthPenSelected => "";
+  String get fourthPenSelected => "Pomarańczowy zakreślacz jest wybrany";
 }

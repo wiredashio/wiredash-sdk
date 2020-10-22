@@ -77,23 +77,23 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   @override
   String get feedbackStateFeedbackTitle => "Dein Feedback ✍️";
   @override
-  String get firstPenLabel => "";
+  String get firstPenLabel => "Ein dunkelbrauner Sift";
   @override
-  String get secondPenLabel => "";
+  String get secondPenLabel => "Ein grauweißer Stift";
   @override
-  String get thirdPenLabel => "";
+  String get thirdPenLabel => "Ein türkiser Stift";
   @override
-  String get fourthPenLabel => "";
+  String get fourthPenLabel => "Ein orangener Stift";
   @override
-  String get companyLogoLabel => "";
+  String get companyLogoLabel => "Das Wiredash Logo";
   @override
-  String get undoButtonLabel => "";
+  String get undoButtonLabel => "Letzte Änderung rückgängig machen";
   @override
-  String get firstPenSelected => "";
+  String get firstPenSelected => "Der dunkelbraune Stift ist ausgewählt";
   @override
-  String get secondPenSelected => "";
+  String get secondPenSelected => "Der grauweiße Stift ist ausgewählt";
   @override
-  String get thirdPenSelected => "";
+  String get thirdPenSelected => "Der türkise Stift ist ausgewählt";
   @override
-  String get fourthPenSelected => "";
+  String get fourthPenSelected => "Der orangene Stift ist ausgewählt";
 }
