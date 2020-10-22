@@ -10,6 +10,7 @@ class WiredashOptionsData {
     this.bugReportButton = true,
     this.praiseButton = true,
     this.featureRequestButton = true,
+    this.skipScreenshotStep = false,
     this.customTranslations,
   })  : textDirection = textDirection ?? TextDirection.ltr,
         _currentLocale = locale ?? window.locale,
@@ -23,6 +24,9 @@ class WiredashOptionsData {
   /// You can also use Wiredash delegate in your MaterialApp
   /// if default translations are sufficient for you
   final Map<Locale, WiredashTranslations> customTranslations;
+
+  /// Whether to skip the screenshot and drawing step or not.
+  final bool skipScreenshotStep;
 
   /// Whether to display the Bug Report button or not.
   final bool bugReportButton;

@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/widgets/animated_fade_in.dart';
@@ -231,12 +233,19 @@ class _FeedbackSheetState extends State<FeedbackSheet>
     switch (mode) {
       case FeedbackType.bug:
       case FeedbackType.improvement:
-        // Start the capture process
-        Navigator.pop(context);
-        feedbackModel.feedbackUiState = FeedbackUiState.capture;
+        if (WiredashOptions.of(context).skipScreenshotStep || kIsWeb) {
+          // Don't start the screen capturing and directly continue to the
+          // feedback form
+          feedbackModel.feedbackUiState = FeedbackUiState.feedback;
+        } else {
+          // Start the capture process
+          Navigator.pop(context);
+          feedbackModel.feedbackUiState = FeedbackUiState.capture;
+        }
         break;
       case FeedbackType.praise:
-        // Don't start the screen capturing and directly continue to the feedback form
+        // Don't start the screen capturing and directly continue to the
+        // feedback form
         feedbackModel.feedbackUiState = FeedbackUiState.feedback;
         break;
     }

@@ -31,10 +31,15 @@ class _ExampleAppState extends State<ExampleApp> {
       navigatorKey: _navigatorKey,
       options: WiredashOptionsData(
 
-          /// Uncomment below to see how custom translations work
+          /// Uncomment below to disable the screenshot step
+          // skipScreenshotStep: true,
+
+          /// Uncomment below to disable different buttons
           // bugReportButton: false,
           // featureRequestButton: false,
           // praiseButton: false,
+
+          /// Uncomment below to see how custom translations work
           // customTranslations: {
           //   const Locale.fromSubtags(languageCode: 'en'):
           //       const DemoCustomTranslations(),
