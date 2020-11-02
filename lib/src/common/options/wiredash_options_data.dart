@@ -10,6 +10,7 @@ class WiredashOptionsData {
     this.bugReportButton = true,
     this.praiseButton = true,
     this.featureRequestButton = true,
+    this.screenshotStep = true,
     this.customTranslations,
   })  : textDirection = textDirection ?? TextDirection.ltr,
         _currentLocale = locale ?? window.locale,
@@ -23,6 +24,12 @@ class WiredashOptionsData {
   /// You can also use Wiredash delegate in your MaterialApp
   /// if default translations are sufficient for you
   final Map<Locale, WiredashTranslations> customTranslations;
+
+  /// Whether to display the screenshot and drawing step or not.
+  ///
+  /// The Flutter Web beta does not currently support screenshots. Therefore,
+  /// the screenshot and drawing step is never shown and this option is ignored.
+  final bool screenshotStep;
 
   /// Whether to display the Bug Report button or not.
   final bool bugReportButton;
