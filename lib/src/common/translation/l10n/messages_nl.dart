@@ -77,23 +77,23 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   @override
   String get feedbackStateFeedbackTitle => "Jouw feedback ✌️";
   @override
-  String get firstPenLabel => "";
+  String get firstPenLabel => "Een donker bruine pen";
   @override
-  String get secondPenLabel => "";
+  String get secondPenLabel => "Een uit-witte pen";
   @override
-  String get thirdPenLabel => "";
+  String get thirdPenLabel => "Een groenblauwe highlighter";
   @override
-  String get fourthPenLabel => "";
+  String get fourthPenLabel => "Een oranje highlighter";
   @override
-  String get companyLogoLabel => "";
+  String get companyLogoLabel => "Het Wiredash Logo";
   @override
-  String get undoButtonLabel => "";
+  String get undoButtonLabel => "Laatste wijziging ongedaan maken";
   @override
-  String get firstPenSelected => "";
+  String get firstPenSelected => "De donker bruine pen is geselecteerd";
   @override
-  String get secondPenSelected => "";
+  String get secondPenSelected => "De uit-witte pen is geselecteerd";
   @override
-  String get thirdPenSelected => "";
+  String get thirdPenSelected => "De groenblauwe highlighter is geselecteerd";
   @override
-  String get fourthPenSelected => "";
+  String get fourthPenSelected => "De oranje highlighter is geselecteerd";
 }
