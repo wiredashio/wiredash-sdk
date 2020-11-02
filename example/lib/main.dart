@@ -10,36 +10,36 @@ class ExampleApp extends StatefulWidget {
 }
 
 class _ExampleAppState extends State<ExampleApp> {
-  /// Wiredash uses a navigation key to show and hide our overlay. This key must be passed to
-  /// the `MaterialApp` and `Wiredash` widgets.
-  /// Note you are not required to use `MaterialApp`, Wiredash will work perfectly fine with
+  /// Wiredash uses a navigation key to show and hide our overlay. This key must
+  /// be passed to the `MaterialApp` and `Wiredash` widgets. Note you are not
+  /// required to use `MaterialApp`, Wiredash will work perfectly fine with
   /// `CupertinoApp` and `WidgetsApp`.
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    /// Here we wrap our app at the top level using a `Wiredash` widget. This requires us to pass
-    /// the `projectId` and `secret` obtained from the "configuration" section of your console.
-    /// Notice we are also passing our `_navigatorKey` to both widgets.
-    /// Wiredash also allows you to setup custom themes and translations using `WiredashThemeData` and
-    /// `WiredashOptionsData`. Both of these are optional but should your heart desire an extra layer
-    /// of customizability, you can make wiredash your own.
-    /// Read more about translations support in the package's README.
+    /// Here we wrap our app at the top level using a `Wiredash` widget. This
+    /// requires us to pass the `projectId` and `secret` obtained from the
+    /// "configuration" section of your console. Notice we are also passing our
+    /// `_navigatorKey` to both widgets. Wiredash also allows you to setup
+    /// custom themes and translations using `WiredashThemeData` and
+    /// `WiredashOptionsData`. Both of these are optional but should your heart
+    /// desire an extra layer of customizability, you can make wiredash your
+    /// own. Read more about translations support in the package's README.
     return Wiredash(
       projectId: "YOUR-PROJECT-ID",
       secret: "YOUR-SECRET",
       navigatorKey: _navigatorKey,
       options: WiredashOptionsData(
+          // Uncomment below to disable the screenshot step
+          // screenshotStep: false,
 
-          /// Uncomment below to disable the screenshot step
-          // skipScreenshotStep: true,
-
-          /// Uncomment below to disable different buttons
+          // Uncomment below to disable different buttons
           // bugReportButton: false,
           // featureRequestButton: false,
           // praiseButton: false,
 
-          /// Uncomment below to see how custom translations work
+          // Uncomment below to see how custom translations work
           // customTranslations: {
           //   const Locale.fromSubtags(languageCode: 'en'):
           //       const DemoCustomTranslations(),
@@ -47,7 +47,7 @@ class _ExampleAppState extends State<ExampleApp> {
           //       const DemoPolishTranslations(),
           // },
 
-          /// Uncomment below to override default device locale
+          // Uncomment below to override default device locale
           // locale: const Locale('de'),
           // textDirection: TextDirection.rtl,
           ),

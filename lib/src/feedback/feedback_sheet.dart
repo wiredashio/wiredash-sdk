@@ -233,14 +233,14 @@ class _FeedbackSheetState extends State<FeedbackSheet>
     switch (mode) {
       case FeedbackType.bug:
       case FeedbackType.improvement:
-        if (WiredashOptions.of(context).skipScreenshotStep || kIsWeb) {
-          // Don't start the screen capturing and directly continue to the
-          // feedback form
-          feedbackModel.feedbackUiState = FeedbackUiState.feedback;
-        } else {
+        if (WiredashOptions.of(context).screenshotStep && !kIsWeb) {
           // Start the capture process
           Navigator.pop(context);
           feedbackModel.feedbackUiState = FeedbackUiState.capture;
+        } else {
+          // Don't start the screen capturing and directly continue to the
+          // feedback form
+          feedbackModel.feedbackUiState = FeedbackUiState.feedback;
         }
         break;
       case FeedbackType.praise:
