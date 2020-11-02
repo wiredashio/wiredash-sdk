@@ -1,4 +1,4 @@
-part of 'main.dart';
+import 'package:wiredash/wiredash.dart';
 
 class DemoPolishTranslations extends pl.WiredashLocalizedTranslations {
   const DemoPolishTranslations() : super();
@@ -84,4 +84,25 @@ class DemoCustomTranslations extends WiredashTranslations {
   @override
   String get validationHintEmail =>
       'Please enter a valid email or leave this field blank.';
+
+  @override
+  String get firstPenLabel => 'A dark brown pen';
+  @override
+  String get secondPenLabel => 'An off-white pen';
+  @override
+  String get thirdPenLabel => 'A teal highlighter';
+  @override
+  String get fourthPenLabel => 'An orange highlighter';
+  @override
+  String get firstPenSelected => 'The dark brown pen is selected';
+  @override
+  String get secondPenSelected => 'The off-white pen is selected';
+  @override
+  String get thirdPenSelected => 'The teal highlighter is selected';
+  @override
+  String get fourthPenSelected => 'The orange highlighter is selected';
+  @override
+  String get companyLogoLabel => 'The Wiredash Logo';
+  @override
+  String get undoButtonLabel => 'Undo the latest change';
 }

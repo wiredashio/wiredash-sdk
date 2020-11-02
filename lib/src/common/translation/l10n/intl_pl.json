@@ -30,5 +30,15 @@
     "validationHintEmail": "Podaj prawidłowy e-mail lub pozostaw pole puste.",
     "validationHintFeedbackEmpty": "Wpisz swój feedback.",
     "validationHintFeedbackLength": "Twój wpis jest zbyt długi.",
-    "feedbackStateFeedbackTitle": "Twój feedback ✍️"
+    "feedbackStateFeedbackTitle": "Twój feedback ✍️",
+    "firstPenLabel": "Ciemnobrązowy pisak",
+    "secondPenLabel": "Biały pisak",
+    "thirdPenLabel": "Morski zakreślacz",
+    "fourthPenLabel": "Pomarańczowy zakreślacz",
+    "companyLogoLabel": "Logo Wiredash",
+    "undoButtonLabel": "Cofnij zmianę",
+    "firstPenSelected": "Ciemnobrązowy pisak jest wybrany",
+    "secondPenSelected": "Biały pisak jest wybrany",
+    "thirdPenSelected": "Morski zakreślacz jest wybrany",
+    "fourthPenSelected": "Pomarańczowy zakreślacz jest wybrany"
 }

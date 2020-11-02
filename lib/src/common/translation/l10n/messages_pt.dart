@@ -76,4 +76,24 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get validationHintFeedbackLength => "Seu feedback é muito longo.";
   @override
   String get feedbackStateFeedbackTitle => "Seu feedback ✍️";
+  @override
+  String get firstPenLabel => "";
+  @override
+  String get secondPenLabel => "";
+  @override
+  String get thirdPenLabel => "";
+  @override
+  String get fourthPenLabel => "";
+  @override
+  String get companyLogoLabel => "";
+  @override
+  String get undoButtonLabel => "";
+  @override
+  String get firstPenSelected => "";
+  @override
+  String get secondPenSelected => "";
+  @override
+  String get thirdPenSelected => "";
+  @override
+  String get fourthPenSelected => "";
 }

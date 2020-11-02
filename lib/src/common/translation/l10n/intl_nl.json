@@ -30,5 +30,15 @@
     "validationHintEmail": "Gelieve een correcte email in te geven, of laat het veld leeg.",
     "validationHintFeedbackEmpty": "Gelieve je feedback te geven.",
     "validationHintFeedbackLength": "Jouw feedback is te lang.",
-    "feedbackStateFeedbackTitle": "Jouw feedback ✌️"
+    "feedbackStateFeedbackTitle": "Jouw feedback ✌️",
+    "firstPenLabel": "Een donker bruine pen",
+    "secondPenLabel": "Een uit-witte pen",
+    "thirdPenLabel": "Een groenblauwe highlighter",
+    "fourthPenLabel": "Een oranje highlighter",
+    "companyLogoLabel": "Het Wiredash Logo",
+    "undoButtonLabel": "Laatste wijziging ongedaan maken",
+    "firstPenSelected": "De donker bruine pen is geselecteerd",
+    "secondPenSelected": "De uit-witte pen is geselecteerd",
+    "thirdPenSelected": "De groenblauwe highlighter is geselecteerd",
+    "fourthPenSelected": "De oranje highlighter is geselecteerd"
 }

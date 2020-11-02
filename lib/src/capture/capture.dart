@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
+import 'package:wiredash/src/capture/capture_provider.dart';
 import 'package:wiredash/src/capture/drawer/drawer.dart';
 import 'package:wiredash/src/capture/screenshot/screenshot.dart';
 import 'package:wiredash/src/capture/sketcher/sketcher.dart';
@@ -25,11 +25,13 @@ enum CaptureUiState { hidden, navigate, draw }
 class Capture extends StatefulWidget {
   const Capture({
     Key key,
+    @required this.initialColor,
     @required this.child,
   })  : assert(child != null),
         super(key: key);
 
   final Widget child;
+  final Color initialColor;
 
   @override
   CaptureState createState() => CaptureState();
@@ -75,7 +77,7 @@ class CaptureState extends State<Capture>
     );
 
     _captureUiState = ValueNotifier(CaptureUiState.hidden);
-    _sketcherController = SketcherController();
+    _sketcherController = SketcherController(widget.initialColor);
     _visible = ValueNotifier(false);
 
     _captureUiState.addListener(() {
@@ -163,11 +165,9 @@ class CaptureState extends State<Capture>
   Widget build(BuildContext context) {
     final directionalityFactor =
         Directionality.of(context) == TextDirection.ltr ? 1.0 : -1.0;
-    return MultiProvider(
-      providers: [
-        ValueListenableProvider.value(value: _captureUiState),
-        ChangeNotifierProvider.value(value: _sketcherController)
-      ],
+    return CaptureProvider(
+      captureUiState: _captureUiState,
+      sketcherController: _sketcherController,
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: <Widget>[
@@ -178,7 +178,6 @@ class CaptureState extends State<Capture>
             ),
             child: const SizedBox.expand(),
           ),
-          _buildBottomMenu(),
           // --- Capture Menu
           AnimatedBuilder(
             animation: _drawPanelSlideAnimation,
@@ -212,7 +211,8 @@ class CaptureState extends State<Capture>
               );
             },
             child: _buildContent(),
-          )
+          ),
+          _buildBottomMenu(),
         ],
       ),
     );
@@ -236,17 +236,18 @@ class CaptureState extends State<Capture>
   }
 
   Widget _buildContent() {
-    return Consumer<CaptureUiState>(
-      builder: (_, uiState, __) {
+    return AnimatedBuilder(
+      animation: _captureUiState,
+      builder: (_, __) {
         return CornerRadiusTransition(
           radius: _cornerRadiusAnimation,
           child: Spotlight(
             key: _spotlightKey,
             child: Sketcher(
-              isEnabled: uiState == CaptureUiState.draw,
+              isEnabled: _captureUiState.value == CaptureUiState.draw,
               controller: _sketcherController,
               child: Screenshot(
-                capture: uiState == CaptureUiState.draw,
+                capture: _captureUiState.value == CaptureUiState.draw,
                 onCaptured: (image) => _screenshot = image,
                 child: widget.child,
               ),
@@ -258,30 +259,35 @@ class CaptureState extends State<Capture>
   }
 
   Widget _buildBottomMenu() {
-    return Consumer<CaptureUiState>(builder: (context, uiState, child) {
-      return SafeArea(
-        minimum: const EdgeInsets.all(20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: PreviousButton(
-                onPressed: _onBackButtonPressed,
-                text: _getBackButtonString(),
+    return AnimatedBuilder(
+      animation: _captureUiState,
+      builder: (_, __) {
+        if (!_showBottomMenu) return const SizedBox(width: 0, height: 0);
+
+        return SafeArea(
+          minimum: const EdgeInsets.all(20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: PreviousButton(
+                  onPressed: _onBackButtonPressed,
+                  text: _getBackButtonString(),
+                ),
               ),
-            ),
-            Expanded(
-              child: NextButton(
-                key: const ValueKey('wiredash.sdk.next_button'),
-                onPressed: _onNextButtonPressed,
-                text: _getNextButtonString(),
-                icon: _getNextButtonIcon(),
+              Expanded(
+                child: NextButton(
+                  key: const ValueKey('wiredash.sdk.next_button'),
+                  onPressed: _onNextButtonPressed,
+                  text: _getNextButtonString(),
+                  icon: _getNextButtonIcon(),
+                ),
               ),
-            ),
-          ],
-        ),
-      );
-    });
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _onBackButtonPressed() {
@@ -399,4 +405,15 @@ class CaptureState extends State<Capture>
   }
 
   ValueNotifier<bool> get visible => _visible;
+
+  bool get _showBottomMenu {
+    switch (_captureUiState.value) {
+      case CaptureUiState.navigate:
+      case CaptureUiState.draw:
+        return true;
+      case CaptureUiState.hidden:
+      default:
+        return false;
+    }
+  }
 }

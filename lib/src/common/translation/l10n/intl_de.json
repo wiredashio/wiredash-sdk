@@ -10,7 +10,7 @@
     "feedbackCancel": "Abbrechen",
     "feedbackModeBugMsg": "Wir leiten das dann an unser Expertenteam weiter.",
     "feedbackModeBugTitle": "Melde einen Fehler",
-    "feedbackModeImprovementMsg": "Hättest Du eine Idee, welche unsere App besser machen würde? Lass es uns wissen!",
+    "feedbackModeImprovementMsg": "Hast Du eine Idee, die unsere App besser machen würde? Lass es uns wissen!",
     "feedbackModeImprovementTitle": "Eine Idee einreichen",
     "feedbackModePraiseMsg": "Was genau gefällt Dir besonders gut - vielleicht können wir es ja noch ein bisschen besser machen?",
     "feedbackModePraiseTitle": "Applaus senden",
@@ -30,5 +30,15 @@
     "validationHintEmail": "Bitte gib eine gültige Email an oder lasse das Feld frei.",
     "validationHintFeedbackEmpty": "Bitte gib Dein Feedback ein.",
     "validationHintFeedbackLength": "Dein Feedback ist zu lang.",
-    "feedbackStateFeedbackTitle": "Dein Feedback ✍️"
+    "feedbackStateFeedbackTitle": "Dein Feedback ✍️",
+    "firstPenLabel": "Ein dunkelbrauner Sift",
+    "secondPenLabel": "Ein grauweißer Stift",
+    "thirdPenLabel": "Ein türkiser Stift",
+    "fourthPenLabel": "Ein orangener Stift",
+    "companyLogoLabel": "Das Wiredash Logo",
+    "undoButtonLabel": "Letzte Änderung rückgängig machen",
+    "firstPenSelected": "Der dunkelbraune Stift ist ausgewählt",
+    "secondPenSelected": "Der grauweiße Stift ist ausgewählt",
+    "thirdPenSelected": "Der türkise Stift ist ausgewählt",
+    "fourthPenSelected": "Der orangene Stift ist ausgewählt"
 }

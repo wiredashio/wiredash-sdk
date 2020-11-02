@@ -1,6 +1,9 @@
 import 'dart:math' show pi;
 
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 
 class FeedbackPen extends StatefulWidget {
   const FeedbackPen({
@@ -71,11 +74,29 @@ class _FeedbackPenState extends State<FeedbackPen>
             child: Image.asset(
               'assets/images/pen.png',
               package: 'wiredash',
+              semanticLabel: _buildLabel(context),
             ),
           ),
         ),
       ),
     );
+  }
+
+  String _buildLabel(BuildContext context) {
+    final theme = WiredashTheme.of(context);
+    final localizations = WiredashLocalizations.of(context);
+
+    if (_currentColor == theme.firstPenColor) {
+      return localizations.firstPenSelected;
+    } else if (_currentColor == theme.secondPenColor) {
+      return localizations.secondPenSelected;
+    } else if (_currentColor == theme.thirdPenColor) {
+      return localizations.thirdPenSelected;
+    } else if (_currentColor == theme.fourthPenColor) {
+      return localizations.fourthPenSelected;
+    }
+
+    throw StateError('Wiredash Error: No Label found for $_currentColor.');
   }
 
   @override
