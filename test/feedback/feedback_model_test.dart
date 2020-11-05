@@ -6,9 +6,9 @@ import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/capture/capture.dart';
-import 'package:wiredash/src/common/build_info/build_info_manager.dart';
+import 'package:wiredash/src/common/device_info/device_info.dart';
+import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
-import 'package:wiredash/src/common/utils/build_info.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
@@ -19,9 +19,7 @@ class MockGlobalKey<T extends State<StatefulWidget>> extends Mock
 
 class MockUserManager extends Mock implements UserManager {}
 
-class MockBuildInfoManager extends Mock implements BuildInfoManager {}
-
-class MockBuildInfo extends Mock implements BuildInfo {}
+class MockDeviceInfoGenerator extends Mock implements DeviceInfoGenerator {}
 
 class MockRetryingFeedbackSubmitter extends Mock
     implements RetryingFeedbackSubmitter {}
@@ -31,8 +29,7 @@ void main() {
     MockGlobalKey<CaptureState> mockCaptureKey;
     MockGlobalKey<NavigatorState> mockNavigatorKey;
     MockUserManager mockUserManager;
-    MockBuildInfoManager mockBuildInfoManager;
-    MockBuildInfo mockBuildInfo;
+    MockDeviceInfoGenerator mockDeviceInfoGenerator;
     MockRetryingFeedbackSubmitter mockRetryingFeedbackSubmitter;
     FeedbackModel model;
 
@@ -40,15 +37,14 @@ void main() {
       mockCaptureKey = MockGlobalKey();
       mockNavigatorKey = MockGlobalKey();
       mockUserManager = MockUserManager();
-      mockBuildInfoManager = MockBuildInfoManager();
-      mockBuildInfo = MockBuildInfo();
+      mockDeviceInfoGenerator = MockDeviceInfoGenerator();
       mockRetryingFeedbackSubmitter = MockRetryingFeedbackSubmitter();
       model = FeedbackModel(
         mockCaptureKey,
         mockNavigatorKey,
         mockUserManager,
-        mockBuildInfoManager,
         mockRetryingFeedbackSubmitter,
+        mockDeviceInfoGenerator,
       );
     });
 
@@ -57,8 +53,9 @@ void main() {
       when(mockUserManager.userId).thenReturn('<user id>');
       when(mockUserManager.userEmail).thenReturn('<user email>');
 
-      when(mockBuildInfoManager.buildInfo).thenReturn(mockBuildInfo);
-      when(mockBuildInfo.deviceId).thenReturn('<device id>');
+      when(mockDeviceInfoGenerator.generate()).thenReturn(
+        const DeviceInfo(appVersion: 'test'),
+      );
 
       when(mockRetryingFeedbackSubmitter.submit(any, any))
           .thenAnswer((_) async {});

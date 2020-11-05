@@ -28,17 +28,21 @@ class PendingFeedbackItemStorage {
     final items = (await _sharedPreferences()).getStringList(_feedbackItemsKey);
     return items == null
         ? <PendingFeedbackItem>[]
-        : items
-            .map((item) =>
-                PendingFeedbackItem.fromJson((json.decode(item) as Map).cast()))
-            .toList();
+        : items.map((item) {
+            return PendingFeedbackItem.fromJson(
+              json.decode(item) as Map<String, dynamic>,
+            );
+          }).toList();
   }
 
   /// Saves [item] and [screenshot] in the persistent storage.
   ///
   /// If [screenshot] is non-null, saves it in the application documents directory
   /// with a randomly generated filename.
-  Future<void> addPendingItem(FeedbackItem item, Uint8List screenshot) async {
+  Future<PendingFeedbackItem> addPendingItem(
+    FeedbackItem item,
+    Uint8List screenshot,
+  ) async {
     String screenshotPath;
 
     if (screenshot != null) {

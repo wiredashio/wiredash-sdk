@@ -23,7 +23,7 @@ class NetworkManager {
 
     return _apiClient.post(
       urlPath: 'feedback',
-      arguments: item.toJson(),
+      arguments: item.toMultipartFormFields(),
       files: [screenshotFile],
     );
   }

@@ -1,12 +1,10 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/capture/capture.dart';
-import 'package:wiredash/src/common/build_info/build_info_manager.dart';
+import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
-import 'package:wiredash/src/common/utils/device_info.dart';
 import 'package:wiredash/src/common/widgets/dismissible_page_route.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 
@@ -18,15 +16,15 @@ class FeedbackModel with ChangeNotifier {
     this._captureKey,
     this._navigatorKey,
     this._userManager,
-    this._buildInfoManager,
     this._retryingFeedbackSubmitter,
+    this._deviceInfoGenerator,
   );
 
   final GlobalKey<CaptureState> _captureKey;
   final GlobalKey<NavigatorState> _navigatorKey;
   final UserManager _userManager;
-  final BuildInfoManager _buildInfoManager;
   final RetryingFeedbackSubmitter _retryingFeedbackSubmitter;
+  final DeviceInfoGenerator _deviceInfoGenerator;
 
   FeedbackType feedbackType = FeedbackType.bug;
   String feedbackMessage;
@@ -86,7 +84,7 @@ class FeedbackModel with ChangeNotifier {
     loading = true;
 
     final item = FeedbackItem(
-      deviceInfo: json.encode(DeviceInfo.generate(_buildInfoManager)),
+      deviceInfo: _deviceInfoGenerator.generate(),
       email: _userManager.userEmail,
       message: feedbackMessage,
       type: feedbackType.label,
