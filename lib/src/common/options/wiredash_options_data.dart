@@ -11,6 +11,8 @@ class WiredashOptionsData {
     this.praiseButton = true,
     this.featureRequestButton = true,
     this.screenshotStep = true,
+    this.buildColorPickerHeader,
+    this.buildIntroFooter,
     this.customTranslations,
   })  : textDirection = textDirection ?? TextDirection.ltr,
         _currentLocale = locale ?? window.locale,
@@ -24,6 +26,23 @@ class WiredashOptionsData {
   /// You can also use Wiredash delegate in your MaterialApp
   /// if default translations are sufficient for you
   final Map<Locale, WiredashTranslations> customTranslations;
+
+  /// Builds a Widget displayed at the top of the Color Picker drawer.
+  ///
+  /// The color picker header is a square Widget displayed at the top of the
+  /// Color Picker Drawer during the "Draw" step. It is constrained to 40x40
+  /// logical pixels in size.
+  ///
+  /// By default, builds a square Wiredash Image Widget.
+  final WidgetBuilder buildColorPickerHeader;
+
+  /// Builds a Widget displayed at the bottom of the Introduction Screen.
+  ///
+  /// The introduction screen is displayed when the user first enters the
+  /// Wiredash feedback flow.
+  ///
+  /// By default, builds a Widget with the Wiredash logo.
+  final WidgetBuilder buildIntroFooter;
 
   /// Whether to display the screenshot and drawing step or not.
   ///

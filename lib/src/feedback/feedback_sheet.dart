@@ -85,7 +85,10 @@ class _FeedbackSheetState extends State<FeedbackSheet>
                 children: <Widget>[
                   _getInputComponent(),
                   _buildButtons(),
-                  _buildFooter(),
+                  if (context.feedbackModel.feedbackUiState ==
+                      FeedbackUiState.intro)
+                    (WiredashOptions.of(context).buildIntroFooter ??
+                        _buildIntroFooter)(context),
                 ],
               ),
             ),
@@ -150,16 +153,13 @@ class _FeedbackSheetState extends State<FeedbackSheet>
     );
   }
 
-  Widget _buildFooter() {
-    if (context.feedbackModel.feedbackUiState == FeedbackUiState.intro) {
-      return Image.asset(
-        'assets/images/logo_footer.png',
-        width: 100,
-        package: 'wiredash',
-        semanticLabel: WiredashLocalizations.of(context).companyLogoLabel,
-      );
-    }
-    return const SizedBox.shrink();
+  Widget _buildIntroFooter(BuildContext context) {
+    return Image.asset(
+      'assets/images/logo_footer.png',
+      width: 100,
+      package: 'wiredash',
+      semanticLabel: WiredashLocalizations.of(context).companyLogoLabel,
+    );
   }
 
   Widget _buildButtons() {

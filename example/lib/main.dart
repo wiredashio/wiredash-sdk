@@ -39,6 +39,19 @@ class _ExampleAppState extends State<ExampleApp> {
           // featureRequestButton: false,
           // praiseButton: false,
 
+          // Customize the Intro Footer
+          // buildIntroFooter: (context) => Text('Replacement footer!'),
+
+          // Customize the Color Picker Header
+          // buildColorPickerHeader: (context) {
+          //   return Container(
+          //     decoration: BoxDecoration(
+          //       borderRadius: BorderRadius.circular(8),
+          //       color: Colors.blue,
+          //     ),
+          //   );
+          // },
+
           // Uncomment below to see how custom translations work
           // customTranslations: {
           //   const Locale.fromSubtags(languageCode: 'en'):

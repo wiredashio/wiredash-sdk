@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/capture/capture_provider.dart';
 import 'package:wiredash/src/capture/drawer/color_picker.dart';
 import 'package:wiredash/src/capture/drawer/pen.dart';
+import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
@@ -25,12 +26,11 @@ class Drawer extends StatelessWidget {
               Container(
                 alignment: Alignment.topCenter,
                 margin: const EdgeInsets.only(top: 24),
-                child: Image.asset(
-                  'assets/images/logo_grey.png',
+                child: SizedBox(
                   width: 40,
-                  package: 'wiredash',
-                  semanticLabel:
-                      WiredashLocalizations.of(context).companyLogoLabel,
+                  height: 40,
+                  child: (WiredashOptions.of(context).buildColorPickerHeader ??
+                      _buildColorPickerHeader)(context),
                 ),
               ),
               Align(
@@ -56,6 +56,14 @@ class Drawer extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildColorPickerHeader(BuildContext context) {
+    return Image.asset(
+      'assets/images/logo_grey.png',
+      package: 'wiredash',
+      semanticLabel: WiredashLocalizations.of(context).companyLogoLabel,
     );
   }
 }
