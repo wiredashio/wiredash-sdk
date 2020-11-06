@@ -15,6 +15,12 @@ class WiredashThemeData {
     Color backgroundColor,
     Color dividerColor,
     Color errorColor,
+    Color firstPenColor,
+    Color secondPenColor,
+    Color thirdPenColor,
+    Color fourthPenColor,
+    BorderRadius sheetBorderRadius,
+    String fontFamily,
   }) {
     if (brightness == Brightness.light) {
       return WiredashThemeData._(
@@ -31,6 +37,16 @@ class WiredashThemeData {
         backgroundColor: backgroundColor ?? const Color(0xff9ba9bc),
         dividerColor: dividerColor ?? const Color(0xffccd2d9),
         errorColor: errorColor ?? const Color(0xffd41121),
+        firstPenColor: firstPenColor ?? const Color(0xff483e39),
+        secondPenColor: secondPenColor ?? const Color(0xffdbd4d1),
+        thirdPenColor: thirdPenColor ?? const Color(0xff14e9d0),
+        fourthPenColor: fourthPenColor ?? const Color(0xffe96115),
+        sheetBorderRadius: sheetBorderRadius ??
+            const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+        fontFamily: fontFamily ?? _fontFamily,
       );
     } else {
       return WiredashThemeData._(
@@ -47,6 +63,16 @@ class WiredashThemeData {
         backgroundColor: backgroundColor ?? const Color(0xff202124),
         dividerColor: dividerColor ?? const Color(0xffccd2d9),
         errorColor: errorColor ?? const Color(0xffff5c6a),
+        firstPenColor: firstPenColor ?? const Color(0xff483e39),
+        secondPenColor: secondPenColor ?? const Color(0xffdbd4d1),
+        thirdPenColor: thirdPenColor ?? const Color(0xff14e9d0),
+        fourthPenColor: fourthPenColor ?? const Color(0xffe96115),
+        sheetBorderRadius: sheetBorderRadius ??
+            const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+        fontFamily: fontFamily ?? _fontFamily,
       );
     }
   }
@@ -63,10 +89,12 @@ class WiredashThemeData {
     this.backgroundColor,
     this.dividerColor,
     this.errorColor,
-    this.firstPenColor = const Color(0xff483e39),
-    this.secondPenColor = const Color(0xffdbd4d1),
-    this.thirdPenColor = const Color(0xff14e9d0),
-    this.fourthPenColor = const Color(0xffe96115),
+    this.firstPenColor,
+    this.secondPenColor,
+    this.thirdPenColor,
+    this.fourthPenColor,
+    this.sheetBorderRadius,
+    this.fontFamily,
   });
 
   final Brightness brightness;
@@ -84,24 +112,32 @@ class WiredashThemeData {
 
   final Color dividerColor;
   final Color errorColor;
+
   final Color firstPenColor;
   final Color secondPenColor;
   final Color thirdPenColor;
   final Color fourthPenColor;
+
+  final String fontFamily;
+
+  final BorderRadius sheetBorderRadius;
+
   static const white = Color(0xFFFFFFFF);
   static const black = Color(0xFF000000);
 
-  static const fontFamily = 'LexendDeca';
-  static const packageName = 'wiredash';
+  static const _fontFamily = 'LexendDeca';
+  static const _packageName = 'wiredash';
 
-  TextStyle get titleStyle => const TextStyle(
+  String get packageName => fontFamily == _fontFamily ? _packageName : null;
+
+  TextStyle get titleStyle => TextStyle(
       package: packageName,
       fontFamily: fontFamily,
       fontSize: 24,
       color: white,
       fontWeight: FontWeight.bold);
 
-  TextStyle get subtitleStyle => const TextStyle(
+  TextStyle get subtitleStyle => TextStyle(
       package: packageName, fontFamily: fontFamily, fontSize: 14, color: white);
 
   TextStyle get body1Style => TextStyle(
@@ -148,7 +184,7 @@ class WiredashThemeData {
       fontSize: 14,
       color: tertiaryTextColor);
 
-  TextStyle get spotlightTitleStyle => const TextStyle(
+  TextStyle get spotlightTitleStyle => TextStyle(
       package: packageName,
       fontFamily: fontFamily,
       fontSize: 18,
@@ -156,6 +192,6 @@ class WiredashThemeData {
       color: white,
       fontWeight: FontWeight.bold);
 
-  TextStyle get spotlightTextStyle => const TextStyle(
+  TextStyle get spotlightTextStyle => TextStyle(
       package: packageName, fontFamily: fontFamily, fontSize: 15, color: white);
 }
