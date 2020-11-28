@@ -1,11 +1,11 @@
 {
-    "name": "example",
-    "short_name": "example",
+    "name": "flutter_app",
+    "short_name": "flutter_app",
     "start_url": ".",
     "display": "minimal-ui",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Wiredash example project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
