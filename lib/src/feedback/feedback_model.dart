@@ -33,7 +33,9 @@ class FeedbackModel with ChangeNotifier {
   Uint8List screenshot;
 
   FeedbackUiState _feedbackUiState = FeedbackUiState.hidden;
+
   FeedbackUiState get feedbackUiState => _feedbackUiState;
+
   set feedbackUiState(FeedbackUiState newValue) {
     if (_feedbackUiState == newValue) return;
     _feedbackUiState = newValue;
@@ -42,7 +44,9 @@ class FeedbackModel with ChangeNotifier {
   }
 
   bool _loading = false;
+
   bool get loading => _loading;
+
   set loading(bool newValue) {
     if (_loading == newValue) return;
     _loading = newValue;
@@ -134,14 +138,18 @@ Thanks!
         feedbackUiState != FeedbackUiState.hidden) return;
 
     feedbackUiState = FeedbackUiState.intro;
-    _navigatorKey.currentState
-        .push(
-          DismissiblePageRoute(
-            builder: (context) => const FeedbackSheet(),
-            onPagePopped: () => feedbackUiState = FeedbackUiState.hidden,
-          ),
-        )
-        .then((_) => _feedbackUiState = FeedbackUiState.hidden);
+    final route = DismissiblePageRoute(
+      builder: (context) => const FeedbackSheet(),
+      onPagePopped: () => feedbackUiState = FeedbackUiState.hidden,
+    );
+    _navigatorKey.currentState.push(route).then((_) {
+      if (_feedbackUiState == FeedbackUiState.capture) {
+        // The capture mode pops this route but it stays in capture mode
+        // and doesn't switch to hidden
+        return;
+      }
+      _feedbackUiState = FeedbackUiState.hidden;
+    });
   }
 }
 
