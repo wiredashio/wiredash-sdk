@@ -1,75 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
 
-void main() => runApp(const ExampleApp());
-
-class ExampleApp extends StatefulWidget {
-  const ExampleApp({Key key}) : super(key: key);
-  @override
-  _ExampleAppState createState() => _ExampleAppState();
+void main() {
+  runApp(const WiredashExampleApp());
 }
 
-class _ExampleAppState extends State<ExampleApp> {
-  /// Wiredash uses a navigation key to show and hide our overlay. This key must
-  /// be passed to the `MaterialApp` and `Wiredash` widgets. Note you are not
-  /// required to use `MaterialApp`, Wiredash will work perfectly fine with
-  /// `CupertinoApp` and `WidgetsApp`.
-  final _navigatorKey = GlobalKey<NavigatorState>();
+class WiredashExampleApp extends StatefulWidget {
+  const WiredashExampleApp({Key key}) : super(key: key);
+
+  @override
+  _WiredashExampleAppState createState() => _WiredashExampleAppState();
+}
+
+class _WiredashExampleAppState extends State<WiredashExampleApp> {
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    /// Here we wrap our app at the top level using a `Wiredash` widget. This
-    /// requires us to pass the `projectId` and `secret` obtained from the
-    /// "configuration" section of your console. Notice we are also passing our
-    /// `_navigatorKey` to both widgets. Wiredash also allows you to setup
-    /// custom themes and translations using `WiredashThemeData` and
-    /// `WiredashOptionsData`. Both of these are optional but should your heart
-    /// desire an extra layer of customizability, you can make wiredash your
-    /// own. Read more about translations support in the package's README.
+    /// The `Wiredash` widget wraps the top level application widget.
+    ///
+    /// `Wiredash` requires the `Project ID` and the `API Key` obtained from the
+    /// "Settings" tab of the console.
+    /// The navigator key is also required to be able to show the overlay.
+    /// `_navigatorKey` is assigned to both `Wiredash` and `MaterialApp`.
+    /// Note: you are not required to use `MaterialApp`,
+    /// Wiredash will work just as well with `CupertinoApp` and `WidgetsApp`.
+    ///
+    /// Wiredash also allows you to set custom themes using `WiredashThemeData`.
+    /// The behaviour as well as the locale and translations can be customized
+    /// using `WiredashOptionsData`.
+    /// Both of these are optional but they enable you to make Wiredash your
+    /// own.
+    /// Read more about translations support in the package's README.
     return Wiredash(
-      projectId: "YOUR-PROJECT-ID",
-      secret: "YOUR-SECRET",
+      projectId: "Project ID from console.wiredash.io",
+      secret: "API Key from console.wiredash.io",
       navigatorKey: _navigatorKey,
       options: WiredashOptionsData(
-          // Uncomment below to disable the screenshot step
+
+          /// Uncomment below to disable the screenshot step
           // screenshotStep: false,
 
-          // Uncomment below to disable different buttons
+          /// Uncomment below to disable different buttons
           // bugReportButton: false,
           // featureRequestButton: false,
           // praiseButton: false,
 
-          // Uncomment below to see how custom translations work
+          /// Uncomment below to set custom translations work
           // customTranslations: {
           //   const Locale.fromSubtags(languageCode: 'en'):
-          //       const DemoCustomTranslations(),
-          //   const Locale.fromSubtags(languageCode: 'pl'):
-          //       const DemoPolishTranslations(),
+          //       const CustomDemoTranslations(),
           // },
 
-          // Uncomment below to override default device locale
+          /// Uncomment below to override the default device locale
+          // and/or text direction
           // locale: const Locale('de'),
           // textDirection: TextDirection.rtl,
           ),
       theme: WiredashThemeData(
-          // Uncomment Blow to explore the various Theme Options!
 
-          // Customize Font Family
+          /// Uncomment below to explore the various theme options:
+
+          /// Customize the Font Family
           // fontFamily: 'Monospace',
 
-          // Customize the Bottom Sheet Border Radius
+          /// Customize the Bottom Sheet Border Radius
           // sheetBorderRadius: BorderRadius.zero,
 
-          // Customize Brightness and Colors
+          /// Customize Brightness and Colors
           // brightness: Brightness.light,
           // primaryColor: Colors.red,
           // secondaryColor: Colors.blue,
 
-          // Customize the Pen Colors
-          // Note: If you change the Pen Colors, please consider providing
-          // custom translations to the WiredashOptions to ensure the app is
-          // accessible to all. The default translations describe the default
-          // pen colors.
+          /// Customize the Pen Colors
+          /// Note: If you change the Pen Colors, please consider providing
+          /// custom translations to the WiredashOptions to ensure the app is
+          /// accessible to all. The default translations describe the default
+          /// pen colors.
           // firstPenColor: Colors.orange,
           // secondPenColor: Colors.green,
           // thirdPenColor: Colors.yellow,
@@ -77,182 +84,82 @@ class _ExampleAppState extends State<ExampleApp> {
           ),
       child: MaterialApp(
         navigatorKey: _navigatorKey,
-        title: 'Adventure 🌎',
-        home: const DemoHomePage(),
+        home: const _HomePage(),
       ),
     );
   }
 }
 
-class DemoHomePage extends StatelessWidget {
-  const DemoHomePage({Key key}) : super(key: key);
+class _HomePage extends StatelessWidget {
+  const _HomePage({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F9FC),
-      drawer: Drawer(
-        child: Column(
-          children: const <Widget>[
-            DrawerHeader(
-              child: Center(child: Text('Wiredash example')),
-            ),
-            SendFeedbackButton(),
-            UserInfoButton(),
-            BuildInfoButton(),
-          ],
-        ),
-      ),
       appBar: AppBar(
-        title: const Text('Adventure 🌎'),
-        backgroundColor: const Color(0xFF02579B),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-
-            /// In a single line of code, we can show the Wiredash menu. Because we wrapped our app
-            /// with the `Wiredash` widget at the very top level, we can access this method from anywhere in our code.
-            onPressed: () => Wiredash.of(context).show(),
-          )
-        ],
+        title: Text('Wiredash Demo'),
       ),
-      body: SafeArea(
-        child: ListView.builder(
-          itemCount: CitiesModel.cities.length,
-          itemBuilder: (context, index) {
-            return CountryCard(item: CitiesModel.cities[index]);
-          },
+      body: ListView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            title: Text('Sample Item #$index'),
+            subtitle: const Text('Tap me to open a new page'),
+            onTap: () => _openDetailsPage(context, index),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        /// Showing the Wiredash Dialog is as easy as calling:
+        /// Wiredash.of(context).show()
+        /// Since the `Wiredash` widget is at the root of the widget tree this
+        /// method can be accessed from anywhere in the code.
+        onPressed: Wiredash.of(context).show,
+        child: Icon(Icons.feedback_outlined),
+      ),
+    );
+  }
+
+  void _openDetailsPage(BuildContext context, int which) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return _DetailsPage(index: which);
+        },
+      ),
+    );
+  }
+}
+
+class _DetailsPage extends StatelessWidget {
+  const _DetailsPage({
+    Key key,
+    @required this.index,
+  }) : super(key: key);
+
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Details Page #$index'),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Details page #$index',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              const SizedBox(height: 8),
+              const Text('Try navigating here in feedback mode.')
+            ],
+          ),
         ),
       ),
-    );
-  }
-}
-
-class CitiesModel {
-  const CitiesModel({
-    @required this.title,
-    @required this.description,
-    @required this.image,
-  });
-
-  final String title;
-  final String description;
-  final String image;
-  static const cities = <CitiesModel>[
-    CitiesModel(
-      title: 'Germany',
-      description:
-          "Frankfurt, a central German city on the river Main, is a major financial hub that's home to the European Central Bank. It's the birthplace of famed writer Johann Wolfgang von Goethe, whose former home is now the Goethe House Museum.",
-      image:
-          "https://user-images.githubusercontent.com/25674767/82772933-badd0880-9e0e-11ea-9b25-0c1f084052a1.jpg",
-    ),
-    CitiesModel(
-      title: 'Ne York',
-      description:
-          "At its core is Manhattan, a densely populated borough that’s among the world’s major commercial, financial and cultural centers. Its iconic sites include skyscrapers such as the Empire State Building and sprawling Central Park.",
-      image:
-          "https://user-images.githubusercontent.com/25674767/82772939-bdd7f900-9e0e-11ea-9de6-1adf978c91b4.jpg",
-    ),
-    CitiesModel(
-      title: 'Trinidad and Tobago',
-      description:
-          "Trinidad and Tobago is a dual-island Caribbean nation near Venezuela,  with distinctive Creole traditions and cuisines. Trinidad’s capital,  Port of Spain, hosts a boisterous carnival featuring calypso and soca music.",
-      image:
-          "https://user-images.githubusercontent.com/25674767/82772941-bf092600-9e0e-11ea-9fd7-7eb40161274b.jpg",
-    ),
-  ];
-}
-
-class CountryCard extends StatelessWidget {
-  const CountryCard({Key key, @required this.item}) : super(key: key);
-  final CitiesModel item;
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      margin: const EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Image.network(
-            item.image,
-            width: double.maxFinite,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              top: 18.0,
-              left: 12.0,
-              right: 12.0,
-            ),
-            child: Text(
-              item.title,
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              top: 12.0,
-              left: 12.0,
-              right: 12.0,
-              bottom: 8.0,
-            ),
-            child: Text(
-              item.description,
-              style: Theme.of(context).textTheme.caption.copyWith(
-                    fontSize: 16.0,
-                  ),
-              textAlign: TextAlign.justify,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class BuildInfoButton extends StatelessWidget {
-  const BuildInfoButton({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return FlatButton(
-      onPressed: () {
-        Wiredash.of(context).setBuildProperties(
-          buildNumber: '42',
-          buildVersion: '1.42',
-        );
-      },
-      child: const Text('Set random build parameters'),
-    );
-  }
-}
-
-class UserInfoButton extends StatelessWidget {
-  const UserInfoButton({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return FlatButton(
-      onPressed: () {
-        Wiredash.of(context).setUserProperties(
-          userEmail: 'mail@example.com',
-          userId: 'custom-id',
-        );
-      },
-      child: const Text('Set random user parameters'),
-    );
-  }
-}
-
-class SendFeedbackButton extends StatelessWidget {
-  const SendFeedbackButton({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return FlatButton(
-      onPressed: () => Wiredash.of(context).show(),
-      child: const Text('Send feedback'),
     );
   }
 }
