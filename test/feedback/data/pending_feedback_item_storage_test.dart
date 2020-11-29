@@ -6,6 +6,7 @@ import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/utils/uuid.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
@@ -35,11 +36,11 @@ void main() {
     test('can persist one feedback item', () async {
       when(mockUuidV4Generator.generate()).thenReturn('<unique identifier>');
 
-      await withUuidV4Generator(
+      final pendingItem = await withUuidV4Generator(
         mockUuidV4Generator,
         () => storage.addPendingItem(
           const FeedbackItem(
-            deviceInfo: '<device info>',
+            deviceInfo: DeviceInfo(),
             email: 'email@example.com',
             message: 'Hello world!',
             type: 'bug',
@@ -53,17 +54,7 @@ void main() {
         mockSharedPreferences.setStringList(
           'io.wiredash.pending_feedback_items',
           [
-            json.encode({
-              'id': '<unique identifier>',
-              'feedbackItem': {
-                'deviceInfo': '<device info>',
-                'email': 'email@example.com',
-                'message': 'Hello world!',
-                'type': 'bug',
-                'user': 'Testy McTestFace'
-              },
-              'screenshotPath': '/<unique identifier>.png'
-            }),
+            json.encode(pendingItem.toJson()),
           ],
         ),
       );
@@ -79,27 +70,39 @@ void main() {
           .file('<existing item screenshot>')
           .writeAsBytes(kTransparentImage);
 
+      final existingItem = json.encode({
+        'id': '<existing item id>',
+        'feedbackItem': {
+          'deviceInfo': {
+            'appIsDebug': true,
+            'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+            'locale': 'en_US',
+            'padding': [0.0, 66.0, 0.0, 0.0],
+            'physicalSize': [1080.0, 2088.0],
+            'pixelRatio': 2.75,
+            'platformOS': 'android',
+            'platformOSVersion': 'RSR1.201013.001',
+            'dartVersion':
+                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+            'textScaleFactor': 1.0,
+            'viewInsets': [0.0, 0.0, 0.0, 685.0],
+          },
+          'email': '<existing item email>',
+          'message': '<existing item message>',
+          'type': '<existing item type>',
+          'user': '<existing item user>'
+        },
+        'screenshotPath': '<existing item screenshot>'
+      });
       when(mockSharedPreferences
               .getStringList('io.wiredash.pending_feedback_items'))
-          .thenReturn([
-        json.encode({
-          'id': '<existing item id>',
-          'feedbackItem': {
-            'deviceInfo': '<existing item device info>',
-            'email': '<existing item email>',
-            'message': '<existing item message>',
-            'type': '<existing item type>',
-            'user': '<existing item user>'
-          },
-          'screenshotPath': '<existing item screenshot>'
-        }),
-      ]);
+          .thenReturn([existingItem]);
 
-      await withUuidV4Generator(
+      final pendingFeedbackItem = await withUuidV4Generator(
         mockUuidV4Generator,
         () => storage.addPendingItem(
           const FeedbackItem(
-            deviceInfo: '<device info>',
+            deviceInfo: DeviceInfo(),
             email: 'email@example.com',
             message: 'Hello world!',
             type: 'bug',
@@ -113,28 +116,8 @@ void main() {
         mockSharedPreferences.setStringList(
           'io.wiredash.pending_feedback_items',
           [
-            json.encode({
-              "id": "<existing item id>",
-              "feedbackItem": {
-                "deviceInfo": "<existing item device info>",
-                "email": "<existing item email>",
-                "message": "<existing item message>",
-                "type": "<existing item type>",
-                "user": "<existing item user>"
-              },
-              "screenshotPath": "<existing item screenshot>"
-            }),
-            json.encode({
-              'id': '<unique identifier>',
-              'feedbackItem': {
-                'deviceInfo': '<device info>',
-                'email': 'email@example.com',
-                'message': 'Hello world!',
-                'type': 'bug',
-                'user': 'Testy McTestFace'
-              },
-              'screenshotPath': '/<unique identifier>.png'
-            }),
+            existingItem,
+            json.encode(pendingFeedbackItem.toJson()),
           ],
         ),
       );
@@ -163,7 +146,20 @@ void main() {
         json.encode({
           'id': '<existing item id>',
           'feedbackItem': {
-            'deviceInfo': '<existing item device info>',
+            'deviceInfo': {
+              'appIsDebug': true,
+              'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+              'locale': 'en_US',
+              'padding': [0.0, 66.0, 0.0, 0.0],
+              'physicalSize': [1080.0, 2088.0],
+              'pixelRatio': 2.75,
+              'platformOS': 'android',
+              'platformOSVersion': 'RSR1.201013.001',
+              'dartVersion':
+                  '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+              'textScaleFactor': 1.0,
+              'viewInsets': [0.0, 0.0, 0.0, 685.0],
+            },
             'email': '<existing item email>',
             'message': '<existing item message>',
             'type': '<existing item type>',
@@ -213,7 +209,20 @@ void main() {
         json.encode({
           'id': '<id for item to be preserved>',
           'feedbackItem': {
-            'deviceInfo': '<device info for item to be preserved>',
+            'deviceInfo': {
+              'appIsDebug': true,
+              'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+              'locale': 'en_US',
+              'padding': [0.0, 66.0, 0.0, 0.0],
+              'physicalSize': [1080.0, 2088.0],
+              'pixelRatio': 2.75,
+              'platformOS': 'android',
+              'platformOSVersion': 'RSR1.201013.001',
+              'dartVersion':
+                  '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+              'textScaleFactor': 1.0,
+              'viewInsets': [0.0, 0.0, 0.0, 685.0],
+            },
             'email': '<email for item to be preserved>',
             'message': '<message for item to be preserved>',
             'type': '<type for item to be preserved>',
@@ -224,7 +233,20 @@ void main() {
         json.encode({
           'id': '<existing item id>',
           'feedbackItem': {
-            'deviceInfo': '<existing item device info>',
+            'deviceInfo': {
+              'appIsDebug': true,
+              'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+              'locale': 'en_US',
+              'padding': [0.0, 66.0, 0.0, 0.0],
+              'physicalSize': [1080.0, 2088.0],
+              'pixelRatio': 2.75,
+              'platformOS': 'android',
+              'platformOSVersion': 'RSR1.201013.001',
+              'dartVersion':
+                  '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+              'textScaleFactor': 1.0,
+              'viewInsets': [0.0, 0.0, 0.0, 685.0],
+            },
             'email': '<existing item email>',
             'message': '<existing item message>',
             'type': '<existing item type>',
@@ -244,7 +266,20 @@ void main() {
           json.encode({
             'id': '<id for item to be preserved>',
             'feedbackItem': {
-              'deviceInfo': '<device info for item to be preserved>',
+              'deviceInfo': {
+                'appIsDebug': true,
+                'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+                'locale': 'en_US',
+                'padding': [0.0, 66.0, 0.0, 0.0],
+                'physicalSize': [1080.0, 2088.0],
+                'pixelRatio': 2.75,
+                'platformOS': 'android',
+                'platformOSVersion': 'RSR1.201013.001',
+                'dartVersion':
+                    '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+                'textScaleFactor': 1.0,
+                'viewInsets': [0.0, 0.0, 0.0, 685.0],
+              },
               'email': '<email for item to be preserved>',
               'message': '<message for item to be preserved>',
               'type': '<type for item to be preserved>',
@@ -275,7 +310,7 @@ void main() {
         json.encode({
           'id': '<existing item id>',
           'feedbackItem': {
-            'deviceInfo': '<existing item device info>',
+            'deviceInfo': {},
             'email': '<existing item email>',
             'message': '<existing item message>',
             'type': '<existing item type>',

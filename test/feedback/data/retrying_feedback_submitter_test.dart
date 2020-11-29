@@ -6,6 +6,7 @@ import 'package:file/memory.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/network/network_manager.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
@@ -77,7 +78,7 @@ void main() {
 
     test('submit() - persists the feedback item properly', () async {
       const item = FeedbackItem(
-        deviceInfo: '<device info>',
+        deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
@@ -101,7 +102,7 @@ void main() {
         'submit() - does not crash when screenshot file does not exist anymore for some reason',
         () async {
       const item = FeedbackItem(
-        deviceInfo: '<device info>',
+        deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
@@ -135,7 +136,7 @@ void main() {
     test('submit() - future completes before interacting with NetworkManager',
         () async {
       const item = FeedbackItem(
-        deviceInfo: '<device info>',
+        deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
@@ -151,7 +152,7 @@ void main() {
         'submit() - if successful, gets rid of the feedback item in the storage',
         () async {
       const item = FeedbackItem(
-        deviceInfo: '<device info>',
+        deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
@@ -182,7 +183,7 @@ void main() {
         'submit() - when has existing items and submits only the first one successfully, does not remove the failed items from storage',
         () async {
       const item = FeedbackItem(
-        deviceInfo: '<device info>',
+        deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
@@ -252,7 +253,7 @@ void main() {
     test('submit() - if fails, retries up to 8 times with exponential backoff',
         () async {
       const item = FeedbackItem(
-        deviceInfo: '<device info>',
+        deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',

@@ -18,7 +18,7 @@ class PendingFeedbackItem {
   PendingFeedbackItem.fromJson(Map<String, dynamic> json)
       : id = json['id'] as String,
         feedbackItem =
-            FeedbackItem.fromJson((json['feedbackItem'] as Map).cast()),
+            FeedbackItem.fromJson(json['feedbackItem'] as Map<String, dynamic>),
         screenshotPath = json['screenshotPath'] as String;
 
   Map<String, dynamic> toJson() {

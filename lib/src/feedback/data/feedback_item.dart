@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:wiredash/src/common/device_info/device_info.dart';
 
 /// Contains all relevant feedback information, both user-provided and automatically
 /// inferred, that will be eventually sent to the Wiredash console.
@@ -13,22 +16,34 @@ class FeedbackItem {
         assert(message != null),
         assert(type != null);
 
-  final String deviceInfo;
+  final DeviceInfo deviceInfo;
   final String email;
   final String message;
   final String type;
   final String user;
 
   FeedbackItem.fromJson(Map<String, dynamic> json)
-      : deviceInfo = json['deviceInfo'] as String,
+      : deviceInfo =
+            DeviceInfo.fromJson(json['deviceInfo'] as Map<String, dynamic>),
         email = json['email'] as String,
         message = json['message'] as String,
         type = json['type'] as String,
         user = json['user'] as String;
 
-  Map<String, String> toJson() {
+  Map<String, dynamic> toJson() {
     return {
-      'deviceInfo': deviceInfo,
+      'deviceInfo': deviceInfo.toJson(),
+      'email': email,
+      'message': message,
+      'type': type,
+      'user': user,
+    };
+  }
+
+  /// Encodes the fields for a multipart/form-data request
+  Map<String, String> toMultipartFormFields() {
+    return {
+      'deviceInfo': json.encode(deviceInfo.toJson()),
       'email': email,
       'message': message,
       'type': type,
