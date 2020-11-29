@@ -50,6 +50,7 @@ class SpotlightState extends State<Spotlight>
   @override
   void dispose() {
     _animationController.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
