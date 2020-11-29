@@ -10,11 +10,29 @@ class DeviceInfo {
   final List<double> padding;
   final List<double> physicalSize;
   final double pixelRatio;
+
+  /// A string representing the operating system or platform.
+  ///
+  /// Platform.operatingSystem
   final String platformOS;
-  final String platformOSBuild;
-  final String platformVersion;
+
+  /// A string representing the version of the operating system or platform.
+  ///
+  /// Platform.operatingSystemVersion
+  final String platformOSVersion;
+
+  /// The version of the current Dart runtime.
+  ///
+  /// Platform.version
+  final String dartVersion;
+
   final double textScaleFactor;
   final List<double> viewInsets;
+
+  /// When in web, the full user agent String of the browser
+  ///
+  /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent
+  final String userAgent;
 
   const DeviceInfo({
     this.appIsDebug,
@@ -27,11 +45,92 @@ class DeviceInfo {
     this.physicalSize,
     this.pixelRatio,
     this.platformOS,
-    this.platformOSBuild,
-    this.platformVersion,
+    this.platformOSVersion,
+    this.dartVersion,
     this.textScaleFactor,
     this.viewInsets,
+    this.userAgent,
   });
+
+  DeviceInfo copyWith({
+    bool appIsDebug,
+    String appVersion,
+    String buildNumber,
+    String buildCommit,
+    String deviceId,
+    String locale,
+    List<double> padding,
+    List<double> physicalSize,
+    double pixelRatio,
+    String platformOS,
+    String platformOSVersion,
+    String dartVersion,
+    double textScaleFactor,
+    List<double> viewInsets,
+    String userAgent,
+  }) {
+    return DeviceInfo(
+      appIsDebug: appIsDebug ?? this.appIsDebug,
+      appVersion: appVersion ?? this.appVersion,
+      buildNumber: buildNumber ?? this.buildNumber,
+      buildCommit: buildCommit ?? this.buildCommit,
+      deviceId: deviceId ?? this.deviceId,
+      locale: locale ?? this.locale,
+      padding: padding ?? this.padding,
+      physicalSize: physicalSize ?? this.physicalSize,
+      pixelRatio: pixelRatio ?? this.pixelRatio,
+      platformOS: platformOS ?? this.platformOS,
+      platformOSVersion: platformOSVersion ?? this.platformOSVersion,
+      dartVersion: dartVersion ?? this.dartVersion,
+      textScaleFactor: textScaleFactor ?? this.textScaleFactor,
+      viewInsets: viewInsets ?? this.viewInsets,
+      userAgent: userAgent ?? this.userAgent,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'DeviceInfo{appIsDebug: $appIsDebug, appVersion: $appVersion, buildNumber: $buildNumber, buildCommit: $buildCommit, deviceId: $deviceId, locale: $locale, padding: $padding, physicalSize: $physicalSize, pixelRatio: $pixelRatio, platformOS: $platformOS, platformOSVersion: $platformOSVersion, dartVersion: $dartVersion, textScaleFactor: $textScaleFactor, viewInsets: $viewInsets, userAgent: $userAgent}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DeviceInfo &&
+          runtimeType == other.runtimeType &&
+          appIsDebug == other.appIsDebug &&
+          appVersion == other.appVersion &&
+          buildNumber == other.buildNumber &&
+          buildCommit == other.buildCommit &&
+          deviceId == other.deviceId &&
+          locale == other.locale &&
+          listEquals(padding, other.padding) &&
+          listEquals(physicalSize, other.physicalSize) &&
+          pixelRatio == other.pixelRatio &&
+          platformOS == other.platformOS &&
+          platformOSVersion == other.platformOSVersion &&
+          dartVersion == other.dartVersion &&
+          textScaleFactor == other.textScaleFactor &&
+          listEquals(viewInsets, other.viewInsets) &&
+          userAgent == other.userAgent);
+
+  @override
+  int get hashCode =>
+      appIsDebug.hashCode ^
+      appVersion.hashCode ^
+      buildNumber.hashCode ^
+      buildCommit.hashCode ^
+      deviceId.hashCode ^
+      locale.hashCode ^
+      padding.hashCode ^
+      physicalSize.hashCode ^
+      pixelRatio.hashCode ^
+      platformOS.hashCode ^
+      platformOSVersion.hashCode ^
+      dartVersion.hashCode ^
+      textScaleFactor.hashCode ^
+      viewInsets.hashCode ^
+      userAgent.hashCode;
 
   factory DeviceInfo.fromJson(Map<String, dynamic> json) {
     return DeviceInfo(
@@ -51,57 +150,16 @@ class DeviceInfo {
           .toList(growable: false),
       pixelRatio: (json['pixelRatio'] as num)?.toDouble(),
       platformOS: json['platformOS'] as String,
-      platformOSBuild: json['platformOSBuild'] as String,
-      platformVersion: json['platformVersion'] as String,
+      platformOSVersion: json['platformOSVersion'] as String,
+      dartVersion: json['dartVersion'] as String,
       textScaleFactor: (json['textScaleFactor'] as num)?.toDouble(),
       viewInsets: ((json['viewInsets'] as List<dynamic>) ?? [])
           .cast<num>()
           .map((i) => i.toDouble())
           .toList(growable: false),
+      userAgent: json['userAgent'] as String,
     );
   }
-
-  @override
-  String toString() {
-    return 'DeviceInfo{appIsDebug: $appIsDebug, buildVersion: $appVersion, buildNumber: $buildNumber, buildCommit: $buildCommit, deviceId: $deviceId, locale: $locale, padding: $padding, physicalSize: $physicalSize, pixelRatio: $pixelRatio, platformOS: $platformOS, platformOSBuild: $platformOSBuild, platformVersion: $platformVersion, textScaleFactor: $textScaleFactor, viewInsets: $viewInsets}';
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is DeviceInfo &&
-          runtimeType == other.runtimeType &&
-          appIsDebug == other.appIsDebug &&
-          appVersion == other.appVersion &&
-          buildNumber == other.buildNumber &&
-          buildCommit == other.buildCommit &&
-          deviceId == other.deviceId &&
-          locale == other.locale &&
-          listEquals(padding, other.padding) &&
-          listEquals(physicalSize, other.physicalSize) &&
-          pixelRatio == other.pixelRatio &&
-          platformOS == other.platformOS &&
-          platformOSBuild == other.platformOSBuild &&
-          platformVersion == other.platformVersion &&
-          textScaleFactor == other.textScaleFactor &&
-          listEquals(viewInsets, other.viewInsets);
-
-  @override
-  int get hashCode =>
-      appIsDebug.hashCode ^
-      appVersion.hashCode ^
-      buildNumber.hashCode ^
-      buildCommit.hashCode ^
-      deviceId.hashCode ^
-      locale.hashCode ^
-      padding.hashCode ^
-      physicalSize.hashCode ^
-      pixelRatio.hashCode ^
-      platformOS.hashCode ^
-      platformOSBuild.hashCode ^
-      platformVersion.hashCode ^
-      textScaleFactor.hashCode ^
-      viewInsets.hashCode;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> uiValues = {};
@@ -141,12 +199,12 @@ class DeviceInfo {
       uiValues['platformOS'] = platformOS;
     }
 
-    if (platformOSBuild != null) {
-      uiValues['platformOSBuild'] = platformOSBuild;
+    if (platformOSVersion != null) {
+      uiValues['platformOSVersion'] = platformOSVersion;
     }
 
-    if (platformVersion != null) {
-      uiValues['platformVersion'] = platformVersion;
+    if (dartVersion != null) {
+      uiValues['dartVersion'] = dartVersion;
     }
 
     if (textScaleFactor != null) {
@@ -155,6 +213,10 @@ class DeviceInfo {
 
     if (viewInsets != null) {
       uiValues['viewInsets'] = viewInsets;
+    }
+
+    if (userAgent != null) {
+      uiValues['userAgent'] = userAgent;
     }
 
     return uiValues;

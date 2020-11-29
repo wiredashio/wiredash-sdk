@@ -14,9 +14,11 @@ void main() {
           'locale': 'en_US',
           'pixelRatio': 2.75,
           'platformOS': 'android',
-          'platformOSBuild': 'RSR1.201013.001',
-          'platformVersion':
+          'platformOSVersion': 'RSR1.201013.001',
+          'dartVersion':
               '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+          'userAgent':
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36',
           'textScaleFactor': 1
         }),
         const DeviceInfo(
@@ -28,8 +30,10 @@ void main() {
           locale: "en_US",
           pixelRatio: 2.75,
           platformOS: "android",
-          platformOSBuild: "RSR1.201013.001",
-          platformVersion:
+          platformOSVersion: "RSR1.201013.001",
+          userAgent:
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36',
+          dartVersion:
               '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
           textScaleFactor: 1,
         ),
@@ -47,7 +51,8 @@ void main() {
           'locale': null,
           'pixelRatio': 2.75,
           'platformOS': null,
-          'platformOSBuild': null,
+          'platformOSVersion': null,
+          'userAgent': null,
           'textScaleFactor': 1
         }),
         const DeviceInfo(
@@ -72,8 +77,8 @@ void main() {
           physicalSize: [1080, 2088],
           pixelRatio: 2.75,
           platformOS: "android",
-          platformOSBuild: "RSR1.201013.001",
-          platformVersion:
+          platformOSVersion: "RSR1.201013.001",
+          dartVersion:
               '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
           textScaleFactor: 1,
           viewInsets: [0, 0, 0, 685],
@@ -87,8 +92,8 @@ void main() {
           'locale': 'en_US',
           'pixelRatio': 2.75,
           'platformOS': 'android',
-          'platformOSBuild': 'RSR1.201013.001',
-          'platformVersion':
+          'platformOSVersion': 'RSR1.201013.001',
+          'dartVersion':
               '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
           'textScaleFactor': 1
         },
