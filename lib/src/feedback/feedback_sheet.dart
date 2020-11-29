@@ -42,10 +42,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
       alignment: Alignment.bottomCenter,
       child: Material(
         color: WiredashTheme.of(context).secondaryBackgroundColor,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
+        borderRadius: WiredashTheme.of(context).sheetBorderRadius,
         elevation: 8,
         clipBehavior: Clip.antiAlias,
         child: SafeArea(

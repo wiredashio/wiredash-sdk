@@ -51,7 +51,30 @@ class _ExampleAppState extends State<ExampleApp> {
           // locale: const Locale('de'),
           // textDirection: TextDirection.rtl,
           ),
-      theme: WiredashThemeData(brightness: Brightness.light),
+      theme: WiredashThemeData(
+          // Uncomment Blow to explore the various Theme Options!
+
+          // Customize Font Family
+          // fontFamily: 'Monospace',
+
+          // Customize the Bottom Sheet Border Radius
+          // sheetBorderRadius: BorderRadius.zero,
+
+          // Customize Brightness and Colors
+          // brightness: Brightness.light,
+          // primaryColor: Colors.red,
+          // secondaryColor: Colors.blue,
+
+          // Customize the Pen Colors
+          // Note: If you change the Pen Colors, please consider providing
+          // custom translations to the WiredashOptions to ensure the app is
+          // accessible to all. The default translations describe the default
+          // pen colors.
+          // firstPenColor: Colors.orange,
+          // secondPenColor: Colors.green,
+          // thirdPenColor: Colors.yellow,
+          // fourthPenColor: Colors.deepPurpleAccent,
+          ),
       child: MaterialApp(
         navigatorKey: _navigatorKey,
         title: 'Adventure 🌎',
