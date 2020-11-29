@@ -41,14 +41,14 @@ class DeviceInfo {
     this.buildCommit,
     this.deviceId,
     this.locale,
-    this.padding,
-    this.physicalSize,
+    this.padding = const [],
+    this.physicalSize = const [],
     this.pixelRatio,
     this.platformOS,
     this.platformOSVersion,
     this.dartVersion,
     this.textScaleFactor,
-    this.viewInsets,
+    this.viewInsets = const [],
     this.userAgent,
   });
 
@@ -183,11 +183,11 @@ class DeviceInfo {
       uiValues['locale'] = locale.toString();
     }
 
-    if (padding != null) {
+    if (padding != null && padding.isNotEmpty) {
       uiValues['padding'] = padding;
     }
 
-    if (physicalSize != null) {
+    if (physicalSize != null && physicalSize.isNotEmpty) {
       uiValues['physicalSize'] = physicalSize;
     }
 
@@ -211,7 +211,7 @@ class DeviceInfo {
       uiValues['textScaleFactor'] = textScaleFactor;
     }
 
-    if (viewInsets != null) {
+    if (viewInsets != null && viewInsets.isNotEmpty) {
       uiValues['viewInsets'] = viewInsets;
     }
 

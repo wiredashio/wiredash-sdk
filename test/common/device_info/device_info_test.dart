@@ -40,6 +40,35 @@ void main() {
       );
     });
 
+    test('full: toJson -> fromJson - still equal', () {
+      const fullInfo = DeviceInfo(
+        padding: [0, 66, 0, 0],
+        physicalSize: [1080, 2088],
+        viewInsets: [0, 0, 0, 685],
+        appIsDebug: true,
+        deviceId: "8F821AB6-B3A7-41BA-882E-32D8367243C1",
+        locale: "en_US",
+        pixelRatio: 2.75,
+        platformOS: "android",
+        platformOSVersion: "RSR1.201013.001",
+        userAgent:
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36',
+        dartVersion:
+            '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+        textScaleFactor: 1,
+      );
+      final map = fullInfo.toJson();
+      final copy = DeviceInfo.fromJson(map);
+      expect(copy, fullInfo);
+    });
+
+    test('empty: toJson -> fromJson - still equal', () {
+      const empty = DeviceInfo();
+      final map = empty.toJson();
+      final copy = DeviceInfo.fromJson(map);
+      expect(copy, empty);
+    });
+
     test('fromJson() with some missing data', () {
       expect(
         DeviceInfo.fromJson({
