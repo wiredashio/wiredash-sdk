@@ -100,23 +100,11 @@ class _HomePage extends StatelessWidget {
         title: Text('Wiredash Demo'),
       ),
       body: ListView.builder(
-        padding: const EdgeInsets.all(8),
         itemBuilder: (BuildContext context, int index) {
-          return InkWell(
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (BuildContext context) {
-                    return _DetailsPage(index: index);
-                  },
-                ),
-              );
-            },
-            child: Card(
-              child: ListTile(
-                title: Text('ListTile #$index'),
-              ),
-            ),
+          return ListTile(
+            title: Text('Sample Item #$index'),
+            subtitle: const Text('Tap me to open a new page'),
+            onTap: () => _openDetailsPage(context, index),
           );
         },
       ),
@@ -126,7 +114,17 @@ class _HomePage extends StatelessWidget {
         /// Since the `Wiredash` widget is at the root of the widget tree this
         /// method can be accessed from anywhere in the code.
         onPressed: Wiredash.of(context).show,
-        child: Icon(Icons.help),
+        child: Icon(Icons.feedback_outlined),
+      ),
+    );
+  }
+
+  void _openDetailsPage(BuildContext context, int which) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return _DetailsPage(index: which);
+        },
       ),
     );
   }
@@ -149,7 +147,17 @@ class _DetailsPage extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Text('The details page for list item number $index.'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Details page #$index',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              const SizedBox(height: 8),
+              const Text('Try navigating here in feedback mode.')
+            ],
+          ),
         ),
       ),
     );
