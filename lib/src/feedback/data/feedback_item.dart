@@ -40,6 +40,7 @@ class FeedbackItem {
     };
   }
 
+  /// Encodes the fields for a multipart/form-data request
   Map<String, String> toMultipartFormFields() {
     return {
       'deviceInfo': json.encode(deviceInfo.toJson()),
