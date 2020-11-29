@@ -1,12 +1,10 @@
-name: wiredash_example
-description: Wiredash example project.
+name: example
+description: A new Flutter project.
 publish_to: 'none'
 version: 1.0.0+1
 
-
 environment:
   sdk: ">=2.7.0 <3.0.0"
-
 
 dependencies:
   flutter:
@@ -15,12 +13,10 @@ dependencies:
   wiredash:
     path: ../
 
-
 dev_dependencies:
   flutter_driver:
     sdk: flutter
   test: any
-
 
 flutter:
   uses-material-design: true
