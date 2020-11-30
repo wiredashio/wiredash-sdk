@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 
+/// API client to communicate with the Wiredash servers
 class WiredashApi {
   WiredashApi({
     @required Client httpClient,
@@ -23,6 +24,8 @@ class WiredashApi {
   /// Reports a feedback
   ///
   /// POST /feedback
+  ///
+  /// When [screenshot] is provided it sends a multipart request
   Future<void> sendFeedback({
     @required FeedbackItem feedback,
     Uint8List screenshot,
@@ -57,7 +60,7 @@ class WiredashApi {
     throw WiredashApiException(response: response);
   }
 
-  /// Sends a [BaseRequest]
+  /// Sends a [BaseRequest] after attaching HTTP headers
   Future<Response> _send(BaseRequest request) async {
     request.headers['project'] = 'Project $_projectId';
     request.headers['authorization'] = 'Secret $_secret';
