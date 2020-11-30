@@ -7,14 +7,16 @@ import 'package:wiredash/src/feedback/data/feedback_item.dart';
 
 class WiredashApi {
   WiredashApi({
-    @required this.httpClient,
-    @required this.projectId,
-    @required this.secret,
-  });
+    @required Client httpClient,
+    @required String projectId,
+    @required String secret,
+  })  : _httpClient = httpClient,
+        _projectId = projectId,
+        _secret = secret;
 
-  final Client httpClient;
-  final String projectId;
-  final String secret;
+  final Client _httpClient;
+  final String _projectId;
+  final String _secret;
 
   static const String _host = 'https://api.wiredash.io';
 
@@ -50,17 +52,17 @@ class WiredashApi {
       return;
     }
     if (response.statusCode == 401) {
-      throw UnauthenticatedWiredashApiException(response, projectId, secret);
+      throw UnauthenticatedWiredashApiException(response, _projectId, _secret);
     }
     throw WiredashApiException(response: response);
   }
 
   /// Sends a [BaseRequest]
   Future<Response> _send(BaseRequest request) async {
-    request.headers['project'] = 'Project $projectId';
-    request.headers['authorization'] = 'Secret $secret';
+    request.headers['project'] = 'Project $_projectId';
+    request.headers['authorization'] = 'Secret $_secret';
 
-    final streamedResponse = await httpClient.send(request);
+    final streamedResponse = await _httpClient.send(request);
     return Response.fromStream(streamedResponse);
   }
 }
