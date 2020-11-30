@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:file/file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
+import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
@@ -128,31 +129,15 @@ class RetryingFeedbackSubmitter {
       } catch (e, stack) {
         if (attempt >= _maxAttempts) {
           // Exit after max attempts
-          final errorDetails = FlutterErrorDetails(
-            exception: e,
-            stack: stack,
-            library: 'wiredash',
-            informationCollector: () => [
-              DiagnosticsNode.message(
-                  'Could not send feedback after $attempt retries')
-            ],
-          );
-          FlutterError.onError?.call(errorDetails);
+          reportWiredashError(
+              e, stack, 'Could not send feedback after $attempt retries');
           break;
         }
 
         // Report error and retry with exponential backoff
-        final errorDetails = FlutterErrorDetails(
-          exception: e,
-          stack: stack,
-          library: 'wiredash',
-          silent: true,
-          informationCollector: () => [
-            DiagnosticsNode.message(
-                'Could not send feedback to server after $attempt retries. Retrying...')
-          ],
-        );
-        FlutterError.onError?.call(errorDetails);
+        reportWiredashError(e, stack,
+            'Could not send feedback to server after $attempt retries. Retrying...',
+            debugOnly: true);
         await Future.delayed(_exponentialBackoff(attempt));
       }
     }
