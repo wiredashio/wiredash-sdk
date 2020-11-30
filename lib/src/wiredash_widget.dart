@@ -7,8 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
-import 'package:wiredash/src/common/network/api_client.dart';
-import 'package:wiredash/src/common/network/network_manager.dart';
+import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/options/wiredash_options_data.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
@@ -129,10 +128,10 @@ class WiredashState extends State<Wiredash> {
   GlobalKey<CaptureState> captureKey;
   GlobalKey<NavigatorState> navigatorKey;
 
-  NetworkManager networkManager;
   UserManager userManager;
   BuildInfoManager buildInfoManager;
 
+  WiredashApi _api;
   FeedbackModel _feedbackModel;
 
   WiredashOptionsData _options;
@@ -151,11 +150,11 @@ class WiredashState extends State<Wiredash> {
 
     _updateDependencies();
 
-    networkManager = NetworkManager(ApiClient(
+    _api = WiredashApi(
       httpClient: Client(),
       projectId: widget.projectId,
       secret: widget.secret,
-    ));
+    );
 
     userManager = UserManager();
     buildInfoManager = BuildInfoManager(PlatformBuildInfo());
@@ -168,7 +167,7 @@ class WiredashState extends State<Wiredash> {
     );
 
     final retryingFeedbackSubmitter =
-        RetryingFeedbackSubmitter(fileSystem, storage, networkManager)
+        RetryingFeedbackSubmitter(fileSystem, storage, _api)
           ..submitPendingFeedbackItems();
 
     _feedbackModel = FeedbackModel(
@@ -205,7 +204,6 @@ class WiredashState extends State<Wiredash> {
   @override
   Widget build(BuildContext context) {
     return WiredashProvider(
-      networkManager: networkManager,
       userManager: userManager,
       feedbackModel: _feedbackModel,
       child: WiredashOptions(
