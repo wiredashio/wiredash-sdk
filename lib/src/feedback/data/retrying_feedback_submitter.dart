@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:file/file.dart';
-import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
@@ -113,18 +112,8 @@ class RetryingFeedbackSubmitter {
         break;
       } on UnauthenticatedWiredashApiException catch (e, stack) {
         // Project configuration is off, retry at next app start
-        FlutterError.onError?.call(FlutterErrorDetails(
-            exception: e, stack: stack, library: 'wiredash'));
-        final errorDetails = FlutterErrorDetails(
-          exception: e,
-          stack: stack,
-          library: 'wiredash',
-          informationCollector: () => [
-            DiagnosticsNode.message('Wiredash project configuration is wrong, '
-                'next retry after next app start')
-          ],
-        );
-        FlutterError.onError?.call(errorDetails);
+        reportWiredashError(e, stack,
+            'Wiredash project configuration is wrong, next retry after next app start');
         break;
       } catch (e, stack) {
         if (attempt >= _maxAttempts) {
