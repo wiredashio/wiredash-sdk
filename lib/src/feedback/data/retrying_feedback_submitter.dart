@@ -115,6 +115,18 @@ class RetryingFeedbackSubmitter {
         reportWiredashError(e, stack,
             'Wiredash project configuration is wrong, next retry after next app start');
         break;
+      } on WiredashApiException catch (e, stack) {
+        if (e.message != null &&
+            e.message.contains("fails because") &&
+            e.message.contains("is required")) {
+          // some required property is missing. The item will never be delivered
+          // to the server, therefore discard it.
+          await _pendingFeedbackItemStorage.clearPendingItem(item.id);
+          break;
+        }
+        reportWiredashError(
+            e, stack, 'Wiredash server error. Will retry after app restart');
+        break;
       } catch (e, stack) {
         if (attempt >= _maxAttempts) {
           // Exit after max attempts
