@@ -20,8 +20,8 @@ void main() {
               'locale': 'en_US',
               'pixelRatio': 2.75,
               'platformOS': 'android',
-              'platformOSVersion': 'RSR1.201013.001',
-              'dartVersion':
+              'platformOSBuild': 'RSR1.201013.001',
+              'platformVersion':
                   '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
               'textScaleFactor': 1
             },
@@ -44,8 +44,8 @@ void main() {
               locale: "en_US",
               pixelRatio: 2.75,
               platformOS: "android",
-              platformOSVersion: "RSR1.201013.001",
-              dartVersion:
+              platformOSBuild: "RSR1.201013.001",
+              platformVersion:
                   '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
               textScaleFactor: 1,
             ),
@@ -73,8 +73,8 @@ void main() {
               locale: "en_US",
               pixelRatio: 2.75,
               platformOS: "android",
-              platformOSVersion: "RSR1.201013.001",
-              dartVersion:
+              platformOSBuild: "RSR1.201013.001",
+              platformVersion:
                   '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
               textScaleFactor: 1,
             ),
@@ -97,8 +97,8 @@ void main() {
               'locale': 'en_US',
               'pixelRatio': 2.75,
               'platformOS': 'android',
-              'platformOSVersion': 'RSR1.201013.001',
-              'dartVersion':
+              'platformOSBuild': 'RSR1.201013.001',
+              'platformVersion':
                   '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
               'textScaleFactor': 1
             },

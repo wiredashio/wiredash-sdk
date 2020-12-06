@@ -1,38 +1,38 @@
 import 'package:flutter/foundation.dart';
 
 class DeviceInfo {
-  final bool appIsDebug;
-  final String appVersion;
-  final String buildNumber;
-  final String buildCommit;
-  final String deviceId;
-  final String locale;
-  final List<double> padding;
-  final List<double> physicalSize;
-  final double pixelRatio;
+  final bool /*?*/ appIsDebug;
+  final String /*?*/ appVersion;
+  final String /*?*/ buildNumber;
+  final String /*?*/ buildCommit;
+  final String /*?*/ deviceId;
+  final String /*?*/ locale;
+  final List<double> /*?*/ padding;
+  final List<double> /*?*/ physicalSize;
+  final double /*?*/ pixelRatio;
 
   /// A string representing the operating system or platform.
   ///
   /// Platform.operatingSystem
-  final String platformOS;
+  final String /*?*/ platformOS;
 
   /// A string representing the version of the operating system or platform.
   ///
   /// Platform.operatingSystemVersion
-  final String platformOSVersion;
+  final String /*?*/ platformOSBuild;
 
   /// The version of the current Dart runtime.
   ///
   /// Platform.version
-  final String dartVersion;
+  final String /*?*/ platformVersion;
 
-  final double textScaleFactor;
-  final List<double> viewInsets;
+  final double /*?*/ textScaleFactor;
+  final List<double> /*?*/ viewInsets;
 
   /// When in web, the full user agent String of the browser
   ///
   /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent
-  final String userAgent;
+  final String /*?*/ userAgent;
 
   const DeviceInfo({
     this.appIsDebug,
@@ -45,8 +45,8 @@ class DeviceInfo {
     this.physicalSize = const [],
     this.pixelRatio,
     this.platformOS,
-    this.platformOSVersion,
-    this.dartVersion,
+    this.platformOSBuild,
+    this.platformVersion,
     this.textScaleFactor,
     this.viewInsets = const [],
     this.userAgent,
@@ -63,8 +63,8 @@ class DeviceInfo {
     List<double> physicalSize,
     double pixelRatio,
     String platformOS,
-    String platformOSVersion,
-    String dartVersion,
+    String platformOSBuild,
+    String platformVersion,
     double textScaleFactor,
     List<double> viewInsets,
     String userAgent,
@@ -80,8 +80,8 @@ class DeviceInfo {
       physicalSize: physicalSize ?? this.physicalSize,
       pixelRatio: pixelRatio ?? this.pixelRatio,
       platformOS: platformOS ?? this.platformOS,
-      platformOSVersion: platformOSVersion ?? this.platformOSVersion,
-      dartVersion: dartVersion ?? this.dartVersion,
+      platformOSBuild: platformOSBuild ?? this.platformOSBuild,
+      platformVersion: platformVersion ?? this.platformVersion,
       textScaleFactor: textScaleFactor ?? this.textScaleFactor,
       viewInsets: viewInsets ?? this.viewInsets,
       userAgent: userAgent ?? this.userAgent,
@@ -90,7 +90,23 @@ class DeviceInfo {
 
   @override
   String toString() {
-    return 'DeviceInfo{appIsDebug: $appIsDebug, appVersion: $appVersion, buildNumber: $buildNumber, buildCommit: $buildCommit, deviceId: $deviceId, locale: $locale, padding: $padding, physicalSize: $physicalSize, pixelRatio: $pixelRatio, platformOS: $platformOS, platformOSVersion: $platformOSVersion, dartVersion: $dartVersion, textScaleFactor: $textScaleFactor, viewInsets: $viewInsets, userAgent: $userAgent}';
+    return 'DeviceInfo{'
+        'appIsDebug: $appIsDebug, '
+        'appVersion: $appVersion, '
+        'buildNumber: $buildNumber, '
+        'buildCommit: $buildCommit, '
+        'deviceId: $deviceId, '
+        'locale: $locale, '
+        'padding: $padding, '
+        'physicalSize: $physicalSize, '
+        'pixelRatio: $pixelRatio, '
+        'platformOS: $platformOS, '
+        'platformOSBuild: $platformOSBuild, '
+        'platformVersion: $platformVersion, '
+        'textScaleFactor: $textScaleFactor, '
+        'viewInsets: $viewInsets, '
+        'userAgent: $userAgent, '
+        '}';
   }
 
   @override
@@ -108,8 +124,8 @@ class DeviceInfo {
           listEquals(physicalSize, other.physicalSize) &&
           pixelRatio == other.pixelRatio &&
           platformOS == other.platformOS &&
-          platformOSVersion == other.platformOSVersion &&
-          dartVersion == other.dartVersion &&
+          platformOSBuild == other.platformOSBuild &&
+          platformVersion == other.platformVersion &&
           textScaleFactor == other.textScaleFactor &&
           listEquals(viewInsets, other.viewInsets) &&
           userAgent == other.userAgent);
@@ -126,8 +142,8 @@ class DeviceInfo {
       physicalSize.hashCode ^
       pixelRatio.hashCode ^
       platformOS.hashCode ^
-      platformOSVersion.hashCode ^
-      dartVersion.hashCode ^
+      platformOSBuild.hashCode ^
+      platformVersion.hashCode ^
       textScaleFactor.hashCode ^
       viewInsets.hashCode ^
       userAgent.hashCode;
@@ -150,8 +166,8 @@ class DeviceInfo {
           .toList(growable: false),
       pixelRatio: (json['pixelRatio'] as num)?.toDouble(),
       platformOS: json['platformOS'] as String,
-      platformOSVersion: json['platformOSVersion'] as String,
-      dartVersion: json['dartVersion'] as String,
+      platformOSBuild: json['platformOSBuild'] as String,
+      platformVersion: json['platformVersion'] as String,
       textScaleFactor: (json['textScaleFactor'] as num)?.toDouble(),
       viewInsets: ((json['viewInsets'] as List<dynamic>) ?? [])
           .cast<num>()
@@ -164,14 +180,18 @@ class DeviceInfo {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> uiValues = {};
 
-    uiValues['appIsDebug'] = appIsDebug;
+    if (appIsDebug != null) {
+      uiValues['appIsDebug'] = appIsDebug;
+    }
 
     if (appVersion != null) {
       uiValues['appVersion'] = appVersion;
     }
+
     if (buildNumber != null) {
       uiValues['buildNumber'] = buildNumber;
     }
+
     if (buildCommit != null) {
       uiValues['buildCommit'] = buildCommit;
     }
@@ -199,12 +219,12 @@ class DeviceInfo {
       uiValues['platformOS'] = platformOS;
     }
 
-    if (platformOSVersion != null) {
-      uiValues['platformOSVersion'] = platformOSVersion;
+    if (platformOSBuild != null) {
+      uiValues['platformOSBuild'] = platformOSBuild;
     }
 
-    if (dartVersion != null) {
-      uiValues['dartVersion'] = dartVersion;
+    if (platformVersion != null) {
+      uiValues['platformVersion'] = platformVersion;
     }
 
     if (textScaleFactor != null) {
