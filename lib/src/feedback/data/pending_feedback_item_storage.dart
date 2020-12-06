@@ -25,9 +25,6 @@ class PendingFeedbackItemStorage {
 
   /// Returns a list of all feedback items and their screenshot paths that are
   /// currently stored in the storage.
-  ///
-  /// Automatically removes items which can't be parsed when
-  /// [autoDelete] == true
   Future<List<PendingFeedbackItem>> retrieveAllPendingItems() async {
     final preferences = await _sharedPreferences();
     final items = preferences.getStringList(_feedbackItemsKey);
@@ -37,15 +34,18 @@ class PendingFeedbackItemStorage {
     final List<PendingFeedbackItem> parsed = [];
     for (final item in items) {
       try {
+        // cast may fail for invalid entries
         final map = json.decode(item) as Map<String, dynamic>;
+        // parsing may fail for missing required properties
         parsed.add(PendingFeedbackItem.fromJson(map));
       } catch (e, stack) {
         // Usually this happens when we add new required properties without a migration
 
-        // The next time addPendingItem is called, the invalid items get removed
-        // automatically
+        // The next time addPendingItem is called, the invalid feedbacks get
+        // removed automatically
         reportWiredashError(e, stack, 'Could not parse item from disk $item');
         try {
+          // Remove the associated screenshot right now.
           final screenshot = _fs.file(json.decode(item)['screenshotPath']);
           if (await screenshot.exists()) {
             await screenshot.delete();
