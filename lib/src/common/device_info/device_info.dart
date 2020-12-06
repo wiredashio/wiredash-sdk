@@ -1,38 +1,38 @@
 import 'package:flutter/foundation.dart';
 
 class DeviceInfo {
-  final bool appIsDebug;
-  final String appVersion;
-  final String buildNumber;
-  final String buildCommit;
-  final String deviceId;
-  final String locale;
-  final List<double> padding;
-  final List<double> physicalSize;
-  final double pixelRatio;
+  final bool /*?*/ appIsDebug;
+  final String /*?*/ appVersion;
+  final String /*?*/ buildNumber;
+  final String /*?*/ buildCommit;
+  final String /*?*/ deviceId;
+  final String /*?*/ locale;
+  final List<double> /*?*/ padding;
+  final List<double> /*?*/ physicalSize;
+  final double /*?*/ pixelRatio;
 
   /// A string representing the operating system or platform.
   ///
   /// Platform.operatingSystem
-  final String platformOS;
+  final String /*?*/ platformOS;
 
   /// A string representing the version of the operating system or platform.
   ///
   /// Platform.operatingSystemVersion
-  final String platformOSVersion;
+  final String /*?*/ platformOSVersion;
 
   /// The version of the current Dart runtime.
   ///
   /// Platform.version
-  final String dartVersion;
+  final String /*?*/ dartVersion;
 
-  final double textScaleFactor;
-  final List<double> viewInsets;
+  final double /*?*/ textScaleFactor;
+  final List<double> /*?*/ viewInsets;
 
   /// When in web, the full user agent String of the browser
   ///
   /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent
-  final String userAgent;
+  final String /*?*/ userAgent;
 
   const DeviceInfo({
     this.appIsDebug,
@@ -90,7 +90,23 @@ class DeviceInfo {
 
   @override
   String toString() {
-    return 'DeviceInfo{appIsDebug: $appIsDebug, appVersion: $appVersion, buildNumber: $buildNumber, buildCommit: $buildCommit, deviceId: $deviceId, locale: $locale, padding: $padding, physicalSize: $physicalSize, pixelRatio: $pixelRatio, platformOS: $platformOS, platformOSVersion: $platformOSVersion, dartVersion: $dartVersion, textScaleFactor: $textScaleFactor, viewInsets: $viewInsets, userAgent: $userAgent}';
+    return 'DeviceInfo{'
+        'appIsDebug: $appIsDebug, '
+        'appVersion: $appVersion, '
+        'buildNumber: $buildNumber, '
+        'buildCommit: $buildCommit, '
+        'deviceId: $deviceId, '
+        'locale: $locale, '
+        'padding: $padding, '
+        'physicalSize: $physicalSize, '
+        'pixelRatio: $pixelRatio, '
+        'platformOS: $platformOS, '
+        'platformOSVersion: $platformOSVersion, '
+        'dartVersion: $dartVersion, '
+        'textScaleFactor: $textScaleFactor, '
+        'viewInsets: $viewInsets, '
+        'userAgent: $userAgent, '
+        '}';
   }
 
   @override
@@ -164,14 +180,18 @@ class DeviceInfo {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> uiValues = {};
 
-    uiValues['appIsDebug'] = appIsDebug;
+    if (appIsDebug != null) {
+      uiValues['appIsDebug'] = appIsDebug;
+    }
 
     if (appVersion != null) {
       uiValues['appVersion'] = appVersion;
     }
+
     if (buildNumber != null) {
       uiValues['buildNumber'] = buildNumber;
     }
+
     if (buildCommit != null) {
       uiValues['buildCommit'] = buildCommit;
     }
