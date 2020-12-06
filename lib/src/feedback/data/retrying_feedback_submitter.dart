@@ -99,15 +99,15 @@ class RetryingFeedbackSubmitter {
     // ignore: literal_only_boolean_expressions
     while (true) {
       attempt++;
-
       try {
         final Uint8List screenshot = item.screenshotPath != null &&
                 await fs.file(item.screenshotPath).exists()
             ? await fs.file(item.screenshotPath).readAsBytes()
             : null;
-
         await _api.sendFeedback(
             feedback: item.feedbackItem, screenshot: screenshot);
+        // ignore: avoid_print
+        print("Feedback submitted ✌️");
         await _pendingFeedbackItemStorage.clearPendingItem(item.id);
         break;
       } on UnauthenticatedWiredashApiException catch (e, stack) {
@@ -121,6 +121,8 @@ class RetryingFeedbackSubmitter {
             e.message.contains("is required")) {
           // some required property is missing. The item will never be delivered
           // to the server, therefore discard it.
+          reportWiredashError(e, stack,
+              'Feedback has missing properties and can not be submitted to server');
           await _pendingFeedbackItemStorage.clearPendingItem(item.id);
           break;
         }
