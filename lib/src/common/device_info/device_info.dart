@@ -19,12 +19,12 @@ class DeviceInfo {
   /// A string representing the version of the operating system or platform.
   ///
   /// Platform.operatingSystemVersion
-  final String /*?*/ platformOSVersion;
+  final String /*?*/ platformOSBuild;
 
   /// The version of the current Dart runtime.
   ///
   /// Platform.version
-  final String /*?*/ dartVersion;
+  final String /*?*/ platformVersion;
 
   final double /*?*/ textScaleFactor;
   final List<double> /*?*/ viewInsets;
@@ -45,8 +45,8 @@ class DeviceInfo {
     this.physicalSize = const [],
     this.pixelRatio,
     this.platformOS,
-    this.platformOSVersion,
-    this.dartVersion,
+    this.platformOSBuild,
+    this.platformVersion,
     this.textScaleFactor,
     this.viewInsets = const [],
     this.userAgent,
@@ -63,8 +63,8 @@ class DeviceInfo {
     List<double> physicalSize,
     double pixelRatio,
     String platformOS,
-    String platformOSVersion,
-    String dartVersion,
+    String platformOSBuild,
+    String platformVersion,
     double textScaleFactor,
     List<double> viewInsets,
     String userAgent,
@@ -80,8 +80,8 @@ class DeviceInfo {
       physicalSize: physicalSize ?? this.physicalSize,
       pixelRatio: pixelRatio ?? this.pixelRatio,
       platformOS: platformOS ?? this.platformOS,
-      platformOSVersion: platformOSVersion ?? this.platformOSVersion,
-      dartVersion: dartVersion ?? this.dartVersion,
+      platformOSBuild: platformOSBuild ?? this.platformOSBuild,
+      platformVersion: platformVersion ?? this.platformVersion,
       textScaleFactor: textScaleFactor ?? this.textScaleFactor,
       viewInsets: viewInsets ?? this.viewInsets,
       userAgent: userAgent ?? this.userAgent,
@@ -101,8 +101,8 @@ class DeviceInfo {
         'physicalSize: $physicalSize, '
         'pixelRatio: $pixelRatio, '
         'platformOS: $platformOS, '
-        'platformOSVersion: $platformOSVersion, '
-        'dartVersion: $dartVersion, '
+        'platformOSBuild: $platformOSBuild, '
+        'platformVersion: $platformVersion, '
         'textScaleFactor: $textScaleFactor, '
         'viewInsets: $viewInsets, '
         'userAgent: $userAgent, '
@@ -124,8 +124,8 @@ class DeviceInfo {
           listEquals(physicalSize, other.physicalSize) &&
           pixelRatio == other.pixelRatio &&
           platformOS == other.platformOS &&
-          platformOSVersion == other.platformOSVersion &&
-          dartVersion == other.dartVersion &&
+          platformOSBuild == other.platformOSBuild &&
+          platformVersion == other.platformVersion &&
           textScaleFactor == other.textScaleFactor &&
           listEquals(viewInsets, other.viewInsets) &&
           userAgent == other.userAgent);
@@ -142,8 +142,8 @@ class DeviceInfo {
       physicalSize.hashCode ^
       pixelRatio.hashCode ^
       platformOS.hashCode ^
-      platformOSVersion.hashCode ^
-      dartVersion.hashCode ^
+      platformOSBuild.hashCode ^
+      platformVersion.hashCode ^
       textScaleFactor.hashCode ^
       viewInsets.hashCode ^
       userAgent.hashCode;
@@ -166,8 +166,8 @@ class DeviceInfo {
           .toList(growable: false),
       pixelRatio: (json['pixelRatio'] as num)?.toDouble(),
       platformOS: json['platformOS'] as String,
-      platformOSVersion: json['platformOSVersion'] as String,
-      dartVersion: json['dartVersion'] as String,
+      platformOSBuild: json['platformOSBuild'] as String,
+      platformVersion: json['platformVersion'] as String,
       textScaleFactor: (json['textScaleFactor'] as num)?.toDouble(),
       viewInsets: ((json['viewInsets'] as List<dynamic>) ?? [])
           .cast<num>()
@@ -219,12 +219,12 @@ class DeviceInfo {
       uiValues['platformOS'] = platformOS;
     }
 
-    if (platformOSVersion != null) {
-      uiValues['platformOSVersion'] = platformOSVersion;
+    if (platformOSBuild != null) {
+      uiValues['platformOSBuild'] = platformOSBuild;
     }
 
-    if (dartVersion != null) {
-      uiValues['dartVersion'] = dartVersion;
+    if (platformVersion != null) {
+      uiValues['platformVersion'] = platformVersion;
     }
 
     if (textScaleFactor != null) {
