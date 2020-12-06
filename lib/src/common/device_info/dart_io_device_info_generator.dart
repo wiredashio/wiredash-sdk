@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:ui' as ui show Window;
+import 'dart:ui' show SingletonFlutterWindow;
 
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
@@ -12,7 +12,7 @@ class _DartIoDeviceInfoGenerator implements DeviceInfoGenerator {
   );
 
   final BuildInfoManager buildInfo;
-  final ui.Window window;
+  final SingletonFlutterWindow window;
 
   @override
   DeviceInfo generate() {
@@ -27,6 +27,6 @@ class _DartIoDeviceInfoGenerator implements DeviceInfoGenerator {
 
 /// Called by [DeviceInfoGenerator] factory constructor
 DeviceInfoGenerator createDeviceInfoGenerator(
-    BuildInfoManager buildInfo, ui.Window window) {
+    BuildInfoManager buildInfo, SingletonFlutterWindow window) {
   return _DartIoDeviceInfoGenerator(buildInfo, window);
 }

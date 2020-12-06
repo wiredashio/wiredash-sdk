@@ -1,4 +1,4 @@
-import 'dart:ui' as ui show Window;
+import 'dart:ui' show SingletonFlutterWindow;
 
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
@@ -13,14 +13,15 @@ import 'device_info_generator_stub.dart'
 abstract class DeviceInfoGenerator {
   /// Loads a [DeviceInfoGenerator] based on the environment by calling the
   /// optional imported createDeviceInfoGenerator function
-  factory DeviceInfoGenerator(BuildInfoManager buildInfo, ui.Window window) {
+  factory DeviceInfoGenerator(
+      BuildInfoManager buildInfo, SingletonFlutterWindow window) {
     return createDeviceInfoGenerator(buildInfo, window);
   }
 
   /// Collection of all [DeviceInfo] shared between all platforms
   static DeviceInfo baseDeviceInfo(
     BuildInfoManager buildInfo,
-    ui.Window window,
+    SingletonFlutterWindow window,
   ) {
     return DeviceInfo(
       appIsDebug: kDebugMode,
