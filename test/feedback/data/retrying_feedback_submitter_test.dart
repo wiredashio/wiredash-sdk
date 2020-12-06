@@ -378,9 +378,9 @@ void main() {
                 feedback: item, screenshot: kTransparentImage))
             .thenAnswer((_) {
           throw WiredashApiException(
-              message:
-                  'child "deviceInfo" fails because [child "platformOS" fails because ["platformOS" is required]]',
-              response: Response("error", 401));
+              response: Response(
+                  '{"message": "child "deviceInfo" fails because [child "platformOS" fails because ["platformOS" is required]]"}',
+                  401));
         });
 
         retryingFeedbackSubmitter.submit(item, kTransparentImage);
