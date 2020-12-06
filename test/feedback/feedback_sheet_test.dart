@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:wiredash/src/common/network/network_manager.dart';
+import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/options/wiredash_options_data.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
@@ -19,7 +18,7 @@ class MockFeedbackModel extends Mock implements FeedbackModel {}
 
 class MockUserManager extends Mock implements UserManager {}
 
-class MockNetworkManager extends Mock implements NetworkManager {}
+class MockNetworkManager extends Mock implements WiredashApi {}
 
 class MockEmailValidator extends Mock implements EmailValidator {}
 
@@ -184,7 +183,7 @@ class _TestBoilerplate extends StatelessWidget {
         assert(child != null),
         super(key: key);
 
-  final NetworkManager networkManager;
+  final WiredashApi networkManager;
   final FeedbackModel feedbackModel;
   final UserManager userManager;
   final Widget child;
@@ -199,7 +198,6 @@ class _TestBoilerplate extends StatelessWidget {
         ),
         child: WiredashLocalizations(
           child: WiredashProvider(
-            networkManager: networkManager,
             userManager: userManager,
             feedbackModel: feedbackModel,
             child: MaterialApp(

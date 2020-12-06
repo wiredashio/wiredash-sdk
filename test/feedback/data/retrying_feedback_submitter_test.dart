@@ -3,11 +3,12 @@ import 'dart:typed_data';
 import 'package:fake_async/fake_async.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
-import 'package:wiredash/src/common/network/network_manager.dart';
+import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
@@ -16,10 +17,11 @@ import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 class MockPendingFeedbackItemStorage extends Mock
     implements PendingFeedbackItemStorage {}
 
-class MockNetworkManager extends Mock implements NetworkManager {}
+class MockNetworkManager extends Mock implements WiredashApi {}
 
 class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
   FakePendingFeedbackItemStorage(this.fs);
+
   final FileSystem fs;
 
   final _currentItems = <PendingFeedbackItem>[];
@@ -109,7 +111,9 @@ void main() {
         user: 'Testy McTestFace',
       );
 
-      when(mockNetworkManager.sendFeedback(item, any)).thenAnswer((_) async {});
+      when(mockNetworkManager.sendFeedback(
+              feedback: item, screenshot: anyNamed('screenshot')))
+          .thenAnswer((_) async {});
 
       fakeAsync((async) {
         retryingFeedbackSubmitter.submit(item, kTransparentImage);
@@ -128,7 +132,8 @@ void main() {
 
         // Should just submit the feedback item once, without the screenshot, as
         // the file didn't exist.
-        verify(mockNetworkManager.sendFeedback(item, null));
+        verify(mockNetworkManager.sendFeedback(
+            feedback: item, screenshot: anyNamed('screenshot')));
         verifyNoMoreInteractions(mockNetworkManager);
       });
     });
@@ -159,7 +164,8 @@ void main() {
         user: 'Testy McTestFace',
       );
 
-      when(mockNetworkManager.sendFeedback(item, kTransparentImage))
+      when(mockNetworkManager.sendFeedback(
+              feedback: item, screenshot: kTransparentImage))
           .thenAnswer((_) async {});
 
       fakeAsync((async) {
@@ -174,7 +180,8 @@ void main() {
         expect(fakePendingFeedbackItemStorage._deletedItemIds, ['1']);
 
         // Feedback should be sent, and only once.
-        verify(mockNetworkManager.sendFeedback(item, kTransparentImage));
+        verify(mockNetworkManager.sendFeedback(
+            feedback: item, screenshot: kTransparentImage));
         verifyNoMoreInteractions(mockNetworkManager);
       });
     });
@@ -214,7 +221,8 @@ void main() {
 
       fakeAsync((async) {
         var firstFileSubmitted = false;
-        when(mockNetworkManager.sendFeedback(item, kTransparentImage))
+        when(mockNetworkManager.sendFeedback(
+                feedback: item, screenshot: kTransparentImage))
             .thenAnswer((_) async {
           if (firstFileSubmitted) throw Exception();
           firstFileSubmitted = true;
@@ -246,7 +254,8 @@ void main() {
           ),
         ]);
 
-        verify(mockNetworkManager.sendFeedback(item, kTransparentImage));
+        verify(mockNetworkManager.sendFeedback(
+            feedback: item, screenshot: kTransparentImage));
       });
     });
 
@@ -265,7 +274,8 @@ void main() {
 
       fakeAsync((async) {
         final clock = async.getClock(initialTime);
-        when(mockNetworkManager.sendFeedback(item, kTransparentImage))
+        when(mockNetworkManager.sendFeedback(
+                feedback: item, screenshot: kTransparentImage))
             .thenAnswer((_) {
           retryLog.add(clock.now());
           throw Exception();
@@ -277,7 +287,8 @@ void main() {
         async.elapse(const Duration(minutes: 5));
 
         // Sending one feedback item should be retried no more than 8 times.
-        verify(mockNetworkManager.sendFeedback(item, kTransparentImage))
+        verify(mockNetworkManager.sendFeedback(
+                feedback: item, screenshot: kTransparentImage))
             .called(8);
 
         // Should've retried sending feedback at these very specific times.
@@ -290,6 +301,55 @@ void main() {
           DateTime(2000, 01, 01, 00, 01, 00, 000),
           DateTime(2000, 01, 01, 00, 01, 30, 000),
           DateTime(2000, 01, 01, 00, 02, 00, 000),
+        ]);
+
+        expect(fakePendingFeedbackItemStorage._deletedItemIds, isEmpty);
+        expect(fakePendingFeedbackItemStorage._currentItems, [
+          const PendingFeedbackItem(
+            id: '1',
+            feedbackItem: item,
+            screenshotPath: '1.png',
+          ),
+        ]);
+      }, initialTime: initialTime);
+    });
+
+    test('submit() - does not retry for UnauthenticatedWiredashApiException',
+        () async {
+      const item = FeedbackItem(
+        deviceInfo: DeviceInfo(),
+        email: 'email@example.com',
+        message: 'test post pls ignore',
+        type: 'feedback',
+        user: 'Testy McTestFace',
+      );
+
+      final initialTime = DateTime(2000, 01, 01, 00, 00, 00, 000);
+      final retryLog = <DateTime>[];
+
+      fakeAsync((async) {
+        final clock = async.getClock(initialTime);
+        when(mockNetworkManager.sendFeedback(
+                feedback: item, screenshot: kTransparentImage))
+            .thenAnswer((_) {
+          retryLog.add(clock.now());
+          throw UnauthenticatedWiredashApiException(
+              Response("error", 401), 'projectX', 'abcdefg1234');
+        });
+
+        retryingFeedbackSubmitter.submit(item, kTransparentImage);
+
+        // Hop on the time machine...
+        async.elapse(const Duration(minutes: 5));
+
+        // Sending one feedback item should be retried no more than 8 times.
+        verify(mockNetworkManager.sendFeedback(
+                feedback: item, screenshot: kTransparentImage))
+            .called(1);
+
+        // Should've retried sending feedback at these very specific times.
+        expect(retryLog, [
+          DateTime(2000, 01, 01, 00, 00, 00, 000),
         ]);
 
         expect(fakePendingFeedbackItemStorage._deletedItemIds, isEmpty);

@@ -3,7 +3,8 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:file/file.dart';
-import 'package:wiredash/src/common/network/network_manager.dart';
+import 'package:wiredash/src/common/network/wiredash_api.dart';
+import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
@@ -14,12 +15,12 @@ class RetryingFeedbackSubmitter {
   RetryingFeedbackSubmitter(
     this.fs,
     this._pendingFeedbackItemStorage,
-    this._networkManager,
+    this._api,
   );
 
   final FileSystem fs;
   final PendingFeedbackItemStorage _pendingFeedbackItemStorage;
-  final NetworkManager _networkManager;
+  final WiredashApi _api;
 
   // Ensures that we're not starting multiple "submitPendingFeedbackItems()" jobs
   // in parallel.
@@ -62,7 +63,10 @@ class RetryingFeedbackSubmitter {
 
     if (items != null) {
       for (final item in items) {
-        await _submitWithRetry(item);
+        await _submitWithRetry(item).catchError((_) {
+          // ignore when a single item couldn't be submitted
+          return null;
+        });
 
         // Some "time to breathe", so that if there's a lot of pending items to
         // send, they're not sent at the same exact moment which could cause
@@ -102,16 +106,29 @@ class RetryingFeedbackSubmitter {
             ? await fs.file(item.screenshotPath).readAsBytes()
             : null;
 
-        await _networkManager.sendFeedback(item.feedbackItem, screenshot);
+        await _api.sendFeedback(
+            feedback: item.feedbackItem, screenshot: screenshot);
         await _pendingFeedbackItemStorage.clearPendingItem(item);
         break;
-      } catch (_) {
+      } on UnauthenticatedWiredashApiException catch (e, stack) {
+        // Project configuration is off, retry at next app start
+        reportWiredashError(e, stack,
+            'Wiredash project configuration is wrong, next retry after next app start');
+        break;
+      } catch (e, stack) {
         if (attempt >= _maxAttempts) {
+          // Exit after max attempts
+          reportWiredashError(
+              e, stack, 'Could not send feedback after $attempt retries');
           break;
         }
-      }
 
-      await Future.delayed(_exponentialBackoff(attempt));
+        // Report error and retry with exponential backoff
+        reportWiredashError(e, stack,
+            'Could not send feedback to server after $attempt retries. Retrying...',
+            debugOnly: true);
+        await Future.delayed(_exponentialBackoff(attempt));
+      }
     }
   }
 }

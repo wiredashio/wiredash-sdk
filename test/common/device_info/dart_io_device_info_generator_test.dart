@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
-import 'package:wiredash/src/common/device_info/dart_io_device_info_generator.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/utils/build_info.dart';
 
