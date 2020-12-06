@@ -28,12 +28,12 @@ class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
   final _deletedItemIds = <String>[];
 
   @override
-  Future<void> clearPendingItem(PendingFeedbackItem itemToClear) async {
-    final screenshot = fs.file(itemToClear.screenshotPath);
+  Future<void> clearPendingItem(String itemId) async {
+    final screenshot = fs.file('$itemId.png');
     if (await screenshot.exists()) await screenshot.delete();
 
-    _deletedItemIds.add(itemToClear.id);
-    _currentItems.remove(itemToClear);
+    _deletedItemIds.add(itemId);
+    _currentItems.removeWhere((it) => it.id == itemId);
   }
 
   @override

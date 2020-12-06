@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:file/file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/common/utils/uuid.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
@@ -24,15 +25,38 @@ class PendingFeedbackItemStorage {
 
   /// Returns a list of all feedback items and their screenshot paths that are
   /// currently stored in the storage.
+  ///
+  /// Automatically removes items which can't be parsed when
+  /// [autoDelete] == true
   Future<List<PendingFeedbackItem>> retrieveAllPendingItems() async {
-    final items = (await _sharedPreferences()).getStringList(_feedbackItemsKey);
-    return items == null
-        ? <PendingFeedbackItem>[]
-        : items.map((item) {
-            return PendingFeedbackItem.fromJson(
-              json.decode(item) as Map<String, dynamic>,
-            );
-          }).toList();
+    final preferences = await _sharedPreferences();
+    final items = preferences.getStringList(_feedbackItemsKey);
+    if (items == null) {
+      return [];
+    }
+    final List<PendingFeedbackItem> parsed = [];
+    for (final item in items) {
+      try {
+        final map = json.decode(item) as Map<String, dynamic>;
+        parsed.add(PendingFeedbackItem.fromJson(map));
+      } catch (e, stack) {
+        // Usually this happens when we add new required properties without a migration
+
+        // The next time addPendingItem is called, the invalid items get removed
+        // automatically
+        reportWiredashError(e, stack, 'Could not parse item from disk $item');
+        try {
+          final screenshot = _fs.file(json.decode(item)['screenshotPath']);
+          if (await screenshot.exists()) {
+            await screenshot.delete();
+          }
+        } catch (e) {
+          reportWiredashError(
+              e, stack, 'Could not delete screenshot for invalid item $item');
+        }
+      }
+    }
+    return parsed.toList();
   }
 
   /// Saves [item] and [screenshot] in the persistent storage.
@@ -59,23 +83,23 @@ class PendingFeedbackItemStorage {
       screenshotPath: screenshotPath,
     );
 
-    final items = List.of(await retrieveAllPendingItems())..add(pendingItem);
-    (await _sharedPreferences()).setStringList(
-      _feedbackItemsKey,
-      items.map((e) => json.encode(e.toJson())).toList(),
-    );
+    final all = await retrieveAllPendingItems();
+    final items = List.of(all)..add(pendingItem);
+    final preferences = await _sharedPreferences();
+    preferences.setStringList(_feedbackItemsKey,
+        items.map((it) => json.encode(it.toJson())).toList());
 
     return pendingItem;
   }
 
   /// Deletes [itemToClear] and the screenshot associated with (if any) from the
   /// persistent storage.
-  Future<void> clearPendingItem(PendingFeedbackItem itemToClear) async {
+  Future<void> clearPendingItem(String itemId) async {
     final items = await retrieveAllPendingItems();
 
     if (items != null) {
       for (final item in items) {
-        if (item.id == itemToClear.id) {
+        if (item.id == itemId) {
           if (item.screenshotPath != null) {
             final screenshot = _fs.file(item.screenshotPath);
             if (await screenshot.exists()) {
@@ -85,10 +109,9 @@ class PendingFeedbackItemStorage {
 
           final updatedItems = List.of(await retrieveAllPendingItems());
           updatedItems.removeWhere((e) => e.id == item.id);
-          (await _sharedPreferences()).setStringList(
-            _feedbackItemsKey,
-            updatedItems.map((e) => json.encode(e.toJson())).toList(),
-          );
+          final preferences = await _sharedPreferences();
+          preferences.setStringList(_feedbackItemsKey,
+              updatedItems.map((e) => json.encode(e.toJson())).toList());
           break;
         }
       }

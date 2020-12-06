@@ -108,7 +108,7 @@ class RetryingFeedbackSubmitter {
 
         await _api.sendFeedback(
             feedback: item.feedbackItem, screenshot: screenshot);
-        await _pendingFeedbackItemStorage.clearPendingItem(item);
+        await _pendingFeedbackItemStorage.clearPendingItem(item.id);
         break;
       } on UnauthenticatedWiredashApiException catch (e, stack) {
         // Project configuration is off, retry at next app start
