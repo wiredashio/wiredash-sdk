@@ -76,6 +76,11 @@ class WiredashApiException implements Exception {
 
   final String /*?*/ message;
   final Response /*?*/ response;
+
+  @override
+  String toString() {
+    return 'WiredashApiException{message: $message, ${response?.statusCode} response: ${response.body}';
+  }
 }
 
 /// Thrown when the server couldn't match the project + secret to a existing project
