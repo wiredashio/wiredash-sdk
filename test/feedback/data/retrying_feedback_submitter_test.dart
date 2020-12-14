@@ -28,12 +28,12 @@ class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
   final _deletedItemIds = <String>[];
 
   @override
-  Future<void> clearPendingItem(PendingFeedbackItem itemToClear) async {
-    final screenshot = fs.file(itemToClear.screenshotPath);
+  Future<void> clearPendingItem(String itemId) async {
+    final screenshot = fs.file('$itemId.png');
     if (await screenshot.exists()) await screenshot.delete();
 
-    _deletedItemIds.add(itemToClear.id);
-    _currentItems.remove(itemToClear);
+    _deletedItemIds.add(itemId);
+    _currentItems.removeWhere((it) => it.id == itemId);
   }
 
   @override
@@ -347,7 +347,7 @@ void main() {
                 feedback: item, screenshot: kTransparentImage))
             .called(1);
 
-        // Should've retried sending feedback at these very specific times.
+        // Log shows only one entry
         expect(retryLog, [
           DateTime(2000, 01, 01, 00, 00, 00, 000),
         ]);
@@ -361,6 +361,40 @@ void main() {
           ),
         ]);
       }, initialTime: initialTime);
+    });
+
+    test('submit() - does not retry when server reports missing properties',
+        () async {
+      const item = FeedbackItem(
+        deviceInfo: DeviceInfo(),
+        email: 'email@example.com',
+        message: 'test post pls ignore',
+        type: 'feedback',
+        user: 'Testy McTestFace',
+      );
+
+      fakeAsync((async) {
+        when(mockNetworkManager.sendFeedback(
+                feedback: item, screenshot: kTransparentImage))
+            .thenAnswer((_) {
+          throw WiredashApiException(
+              response: Response(
+                  '{"message": "child "deviceInfo" fails because [child "platformOS" fails because ["platformOS" is required]]"}',
+                  401));
+        });
+
+        retryingFeedbackSubmitter.submit(item, kTransparentImage);
+        async.elapse(const Duration(seconds: 1));
+
+        // Sending one feedback item should be retried no more than 8 times.
+        verify(mockNetworkManager.sendFeedback(
+                feedback: item, screenshot: kTransparentImage))
+            .called(1);
+
+        // Item has beend deleted
+        expect(fakePendingFeedbackItemStorage._deletedItemIds, ['1']);
+        expect(fakePendingFeedbackItemStorage._currentItems, isEmpty);
+      });
     });
   });
 }

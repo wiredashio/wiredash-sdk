@@ -99,21 +99,35 @@ class RetryingFeedbackSubmitter {
     // ignore: literal_only_boolean_expressions
     while (true) {
       attempt++;
-
       try {
         final Uint8List screenshot = item.screenshotPath != null &&
                 await fs.file(item.screenshotPath).exists()
             ? await fs.file(item.screenshotPath).readAsBytes()
             : null;
-
         await _api.sendFeedback(
             feedback: item.feedbackItem, screenshot: screenshot);
-        await _pendingFeedbackItemStorage.clearPendingItem(item);
+        // ignore: avoid_print
+        print("Feedback submitted ✌️");
+        await _pendingFeedbackItemStorage.clearPendingItem(item.id);
         break;
       } on UnauthenticatedWiredashApiException catch (e, stack) {
         // Project configuration is off, retry at next app start
         reportWiredashError(e, stack,
             'Wiredash project configuration is wrong, next retry after next app start');
+        break;
+      } on WiredashApiException catch (e, stack) {
+        if (e.message != null &&
+            e.message.contains("fails because") &&
+            e.message.contains("is required")) {
+          // some required property is missing. The item will never be delivered
+          // to the server, therefore discard it.
+          reportWiredashError(e, stack,
+              'Feedback has missing properties and can not be submitted to server');
+          await _pendingFeedbackItemStorage.clearPendingItem(item.id);
+          break;
+        }
+        reportWiredashError(
+            e, stack, 'Wiredash server error. Will retry after app restart');
         break;
       } catch (e, stack) {
         if (attempt >= _maxAttempts) {
