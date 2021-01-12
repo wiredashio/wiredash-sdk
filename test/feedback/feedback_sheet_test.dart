@@ -68,6 +68,65 @@ void main() {
     );
 
     testWidgets(
+      'displays error message when submitting too long feedback',
+      (tester) async {
+        when(mockFeedbackModel.feedbackUiState)
+            .thenReturn(FeedbackUiState.feedback);
+        when(mockFeedbackModel.loading).thenReturn(false);
+
+        await tester.pumpWidget(
+          _TestBoilerplate(
+            feedbackModel: mockFeedbackModel,
+            userManager: mockUserManager,
+            networkManager: mockNetworkManager,
+            child: const FeedbackSheet(),
+          ),
+        );
+
+        await tester.enterText(
+          find.byKey(const ValueKey('wiredash.sdk.feedback_input_field')),
+          'a'.padLeft(2049, 'a'),
+        );
+
+        await tester.tap(
+            find.byKey(const ValueKey('wiredash.sdk.save_feedback_button')));
+        await tester.pump();
+
+        expect(find.text('Your feedback is too long.'), findsOneWidget);
+        verifyNever(mockFeedbackModel.feedbackUiState = FeedbackUiState.email);
+      },
+    );
+
+    testWidgets(
+      'displays counter when close to max input length',
+      (tester) async {
+        when(mockFeedbackModel.feedbackUiState)
+            .thenReturn(FeedbackUiState.feedback);
+        when(mockFeedbackModel.loading).thenReturn(false);
+
+        await tester.pumpWidget(
+          _TestBoilerplate(
+            feedbackModel: mockFeedbackModel,
+            userManager: mockUserManager,
+            networkManager: mockNetworkManager,
+            child: const FeedbackSheet(),
+          ),
+        );
+
+        await tester.enterText(
+          find.byKey(const ValueKey('wiredash.sdk.feedback_input_field')),
+          'a'.padLeft(2040, 'a'),
+        );
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+
+        await tester.pump();
+
+        expect(find.text('8'), findsOneWidget);
+        verifyNever(mockFeedbackModel.feedbackUiState = FeedbackUiState.email);
+      },
+    );
+
+    testWidgets(
       'goes to email step when submitting non-empty feedback',
       (tester) async {
         when(mockFeedbackModel.feedbackUiState)
