@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/common/state/wiredash_state.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/translation/wiredash_translation.dart';
+import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
+import 'package:wiredash/src/common/utils/email_validator.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
+import 'package:wiredash/src/wiredash_provider.dart';
 
 enum InputComponentType { feedback, email }
 
@@ -63,6 +64,7 @@ class _InputComponentState extends State<InputComponent> {
       child: Form(
         key: widget.formKey,
         child: TextFormField(
+          key: const ValueKey('wiredash.sdk.text_field'),
           controller: _textEditingController,
           focusNode: widget.focusNode,
           style: wiredashTheme.inputTextStyle,
@@ -94,11 +96,36 @@ class _InputComponentState extends State<InputComponent> {
             hintText: _getHintText(),
             hintStyle: wiredashTheme.inputHintStyle,
             errorStyle: wiredashTheme.inputErrorStyle,
+            errorMaxLines: 2,
           ),
-          keyboardType: TextInputType.emailAddress,
+          textCapitalization: _getTextCapitalization(),
+          keyboardAppearance: WiredashTheme.of(context).brightness,
+          keyboardType: _getKeyboardType(),
         ),
       ),
     );
+  }
+
+  TextCapitalization _getTextCapitalization() {
+    switch (widget.type) {
+      case InputComponentType.feedback:
+        return TextCapitalization.sentences;
+        break;
+      case InputComponentType.email:
+        return TextCapitalization.none;
+    }
+    return TextCapitalization.sentences;
+  }
+
+  TextInputType _getKeyboardType() {
+    switch (widget.type) {
+      case InputComponentType.feedback:
+        return TextInputType.text;
+        break;
+      case InputComponentType.email:
+        return TextInputType.emailAddress;
+    }
+    return TextInputType.text;
   }
 
   IconData _getIcon() {
@@ -115,9 +142,9 @@ class _InputComponentState extends State<InputComponent> {
   String _getHintText() {
     switch (widget.type) {
       case InputComponentType.feedback:
-        return WiredashTranslation.of(context).inputHintFeedback;
+        return WiredashLocalizations.of(context).inputHintFeedback;
       case InputComponentType.email:
-        return WiredashTranslation.of(context).inputHintEmail;
+        return WiredashLocalizations.of(context).inputHintEmail;
     }
 
     return null;
@@ -126,33 +153,39 @@ class _InputComponentState extends State<InputComponent> {
   String _validateInput(String input) {
     switch (widget.type) {
       case InputComponentType.feedback:
-        if (input.isEmpty) {
-          return WiredashTranslation.of(context).validationHintFeedbackEmpty;
+        if (input.trim().isEmpty) {
+          return WiredashLocalizations.of(context).validationHintFeedbackEmpty;
         } else if (input.length > 512) {
-          return WiredashTranslation.of(context).validationHintFeedbackLength;
+          return WiredashLocalizations.of(context).validationHintFeedbackLength;
         }
         break;
       case InputComponentType.email:
-        if (input.isEmpty) return null;
-        final isValidEmail = RegExp(
-                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-            .hasMatch(input);
-        if (isValidEmail) return null;
-        return WiredashTranslation.of(context).validationHintEmail;
+        if (input.isEmpty) {
+          // It's okay to not provide an email address, in which we consider the
+          // input to be valid.
+          return null;
+        }
+
+        // If the email is non-null, we validate it.
+        return debugEmailValidator.validate(input)
+            ? null
+            : WiredashLocalizations.of(context).validationHintEmail;
     }
 
     return null;
   }
 
   void _handleInput(String input) {
-    final state = WiredashState.of(context, listen: false);
     switch (widget.type) {
       case InputComponentType.feedback:
-        state.feedbackMessage = input;
+        context.feedbackModel.feedbackMessage = input;
         break;
       case InputComponentType.email:
-        state.userEmail = input;
+        context.userManager.userEmail = input;
         break;
     }
   }
 }
+
+@visibleForTesting
+EmailValidator debugEmailValidator = const EmailValidator();

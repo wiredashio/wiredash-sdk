@@ -7,58 +7,79 @@
 [![Pub](https://img.shields.io/pub/v/wiredash.svg)](https://pub.dartlang.org/packages/wiredash)
 [![Build](https://img.shields.io/github/workflow/status/wiredashio/wiredash-sdk/Static%20Analysis)](https://github.com/wiredashio/wiredash-sdk/actions)
 [![Website](https://img.shields.io/badge/website-wiredash.io-blue.svg)](https://wiredash.io/)
+[![likes](https://badges.bar/wiredash/likes)](https://pub.dev/packages/wiredash/score)
+[![popularity](https://badges.bar/wiredash/popularity)](https://pub.dev/packages/wiredash/score)
+[![pub points](https://badges.bar/wiredash/pub%20points)](https://pub.dev/packages/wiredash/score) 
   
-Wiredash is probably the easiest and most convenient way to capture in-app user feedback, wishes, ratings and much more. The SDK is completely written in Dart and runs on Android, iOS, Desktop and the Web. For more info, head over to [wiredash.io](https://wiredash.io). 
+Wiredash is probably the easiest, and most convenient way to capture in-app user feedback, wishes, ratings and much more. The SDK is completely written in Dart and runs on Android, iOS, Desktop and the Web. For more info, head over to [wiredash.io](https://wiredash.io). 
   
-## Getting Started  
-  
-In order to get started, you need to create an account at [wiredash.io](https://wiredash.io) - you do this by simply signing in with a valid Google or GitHub account.
+## 🚀 Getting Started
 
-### Setting up your Flutter project
+> **TIP**  Visit [docs.wiredash.io](https://docs.wiredash.io/guide/#integrating-wiredash-in-your-app) for the in-depth guide and additional info.
 
-After successfully creating a new project in the Wiredash admin console it's time to add Wiredash to your app. Simply open your `pubspec.yaml` file and add the current version of Wiredash as a dependency, e.g. `wiredash: 1.0.0`. Make sure to get the newest version.
+### 1. Create a free account on [wiredash.io](https://console.wiredash.io)
 
-Now get all pub packages by clicking on `Packages get` in your IDE or executing `flutter packages get` inside your Flutter project.
+Sign in with a valid Google or GitHub account.
 
-Head over to the main entry point of your app which most likely resides inside `main.dart`. In here wrap your root widget inside a `Wiredash` widget and provide your API credentials and your app's navigator key as parameters. That was already the hard part 🙌
+### 2. Add wiredash to your pubspec.yaml.
+
+```yaml
+name: your_flutter_app
+dependencies:
+  flutter:
+    sdk: flutter
+  wiredash: ^0.4.0
+```
+
+### 3. Wrap your root widget with Wiredash
+
+Fill in the `projectId` and `secret` from [Wiredash console](https://console.wiredash.io) > Project > Settings
 
 ```dart
-void main() => runApp(MyApp());
+import 'package:flutter/material.dart';
+import 'package:wiredash/wiredash.dart';
 
 class MyApp extends StatelessWidget {
+  // It's important that Wiredash and your root Material- / Cupertino- / WidgetsApp
+  // share the same Navigator key.
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
     return Wiredash(
-      projectId: "YOUR-PROJECT-ID",
-      secret: "YOUR-SECRET",
+      projectId: 'YOUR-PROJECT-ID',
+      secret: 'YOUR-SECRET',
       navigatorKey: _navigatorKey,
       child: MaterialApp(
         navigatorKey: _navigatorKey,
         title: 'Flutter Demo',
-        home: ...
+        home: YourSuperDuperAwesomeApp(),
       ),
     );
-  }  
+  }
 }
 ```
 
-Now you can call `Wiredash.of(context).show()` from anywhere inside your app to start the feedback process!
+### 4. Launch the feedback flow
 
-### Android / iOS specific setup
+From anywhere in your app
 
-Wiredash is by design written in Dart and relies on very few dependencies by the official Flutter team. However, when running on Android it needs the internet permission (for sending user feedback back to you). If you already use Flutter in production, chances are quite high that you already added the internet permission to the manifest - if not, add the following line to the `AndroidManifest.xml` in your Android project folder:
-
-```xml
-<manifest ...>
- <uses-permission android:name="android.permission.INTERNET" />
- <application ...
-</manifest>
+```dart
+ElevatedButton(
+  // launch wiredash where appropriate in your App 
+  onPressed: () => Wiredash.of(context).show(),
+  child: Text('Give Feedback'),
+),
 ```
 
-That's it!
-  
-## License  
+![bottom sheet](https://deploy-preview-4--wiredash-docs.netlify.app/assets/img/wiredash-sample-app-side-by-side-start.09e3b5f2.png)
+
+## 🎨 Customization
+
+The Wiredash SDK is completely customizable and offers many configuration options!
+
+For all the details, check out the full documentation at [docs.wiredash.io/configuration](https://docs.wiredash.io/configuration/).
+
+## 📃 License  
   
 The Wiredash SDK is released under the [Attribution Assurance License](https://opensource.org/licenses/AAL). See [LICENSE](https://github.com/wiredashio/wiredash-sdk/blob/master/LICENSE) for details.

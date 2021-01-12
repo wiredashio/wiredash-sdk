@@ -23,11 +23,15 @@ final Animatable<Offset> _kMiddleLeftTween = Tween<Offset>(
 );
 
 class DismissiblePageRoute<T> extends PageRoute<T> {
-  DismissiblePageRoute(
-      {@required this.builder, this.background, RouteSettings settings})
-      : super(settings: settings);
+  DismissiblePageRoute({
+    @required this.builder,
+    this.background,
+    this.onPagePopped,
+    RouteSettings settings,
+  }) : super(settings: settings);
 
   final WidgetBuilder builder;
+  final VoidCallback onPagePopped;
   final Uint8List background;
   bool _didUserPop = false;
 
@@ -69,49 +73,68 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
     return result;
   }
 
-  static _DownGestureController<T> _startPopGesture<T>(PageRoute<T> route) {
+  static _DownGestureController<T> _startPopGesture<T>(
+    PageRoute<T> route, {
+    VoidCallback onPagePopped,
+  }) {
     return _DownGestureController<T>(
       navigator: route.navigator,
       controller: route.controller,
+      onPagePopped: onPagePopped,
     );
   }
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
-    return Stack(
-      children: <Widget>[
-        GestureDetector(
-          onTap: () {
-            if (!_didUserPop && !navigator.userGestureInProgress) {
-              navigator.pop();
-              _didUserPop = true;
-            }
-          },
-          child: FadeTransition(
-            opacity: animation,
-            child: Container(
-              color: const Color(0x90000000),
-              child: (background != null)
-                  ? Image.memory(
-                      background,
-                      color: const Color(0xff8b8b8d),
-                      colorBlendMode: BlendMode.multiply,
-                    )
-                  : const SizedBox.expand(),
+    return Semantics(
+      container: true,
+      child: WillPopScope(
+        onWillPop: () async {
+          if (onPagePopped != null) {
+            onPagePopped();
+          }
+          return true;
+        },
+        child: Stack(
+          children: <Widget>[
+            GestureDetector(
+              onTap: () {
+                if (!_didUserPop && !navigator.userGestureInProgress) {
+                  navigator.pop();
+                  _didUserPop = true;
+                }
+                if (onPagePopped != null) {
+                  onPagePopped();
+                }
+              },
+              child: FadeTransition(
+                opacity: animation,
+                child: Container(
+                  color: const Color(0x90000000),
+                  child: (background != null)
+                      ? Image.memory(
+                          background,
+                          color: const Color(0xff8b8b8d),
+                          colorBlendMode: BlendMode.multiply,
+                        )
+                      : const SizedBox.expand(),
+                ),
+              ),
             ),
-          ),
+            DismissablePageTransition(
+              primaryRouteAnimation: animation,
+              secondaryRouteAnimation: secondaryAnimation,
+              linearTransition: isPopGestureInProgress(this),
+              child: _DownGestureDetector<T>(
+                onStartPopGesture: () =>
+                    _startPopGesture<T>(this, onPagePopped: onPagePopped),
+                child: child,
+              ),
+            ),
+          ],
         ),
-        DismissablePageTransition(
-          primaryRouteAnimation: animation,
-          secondaryRouteAnimation: secondaryAnimation,
-          linearTransition: isPopGestureInProgress(this),
-          child: _DownGestureDetector<T>(
-            onStartPopGesture: () => _startPopGesture<T>(this),
-            child: child,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -277,6 +300,7 @@ class _DownGestureController<T> {
   _DownGestureController({
     @required this.navigator,
     @required this.controller,
+    this.onPagePopped,
   })  : assert(navigator != null),
         assert(controller != null) {
     navigator.didStartUserGesture();
@@ -284,6 +308,7 @@ class _DownGestureController<T> {
 
   final AnimationController controller;
   final NavigatorState navigator;
+  final VoidCallback onPagePopped;
 
   void dragUpdate(double delta) {
     controller.value -= delta;
@@ -311,6 +336,9 @@ class _DownGestureController<T> {
           curve: animationCurve);
     } else {
       navigator.pop();
+      if (onPagePopped != null) {
+        onPagePopped();
+      }
       if (controller.isAnimating) {
         final int droppedPageBackAnimationTime = lerpDouble(
                 0, _kMaxDroppedSwipePageForwardAnimationTime, controller.value)

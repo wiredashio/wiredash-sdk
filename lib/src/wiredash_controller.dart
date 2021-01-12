@@ -1,4 +1,4 @@
-import 'package:wiredash/src/common/translation/wiredash_translation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 
 /// Use this controller to interact with [Wiredash]
@@ -10,21 +10,45 @@ import 'package:wiredash/src/wiredash_widget.dart';
 ///
 /// Add user information
 /// ```dart
-/// Wiredash.of(context).setOptions(appVersion: "1.4.3");
+/// Wiredash.of(context).setIdentifiers(appVersion: "1.4.3");
 /// ```
 class WiredashController {
   WiredashController(this._state) : assert(_state != null);
 
-  final WiredashWidgetState _state;
+  final WiredashState _state;
 
-  /// Use this method to provide your app version or to attach a custom [userId]
+  /// This method is deprecated in favor of [setUserProperties] and [setBuildProperties]
+  @Deprecated("Use [setUserProperties] and [setBuildProperties] instead")
+  void setIdentifiers({String appVersion, String userId, String userEmail}) {
+    if (appVersion != null) {
+      setBuildProperties(buildVersion: appVersion);
+    }
+    if (userId != null) {
+      setUserProperties(userId: userId);
+    }
+    if (userEmail != null) {
+      setUserProperties(userEmail: userEmail);
+    }
+  }
+
+  /// Use this method to provide custom [userId]
   /// to the feedback. The [userEmail] parameter can be used to prefill the
   /// email input field but it's up to the user to decide if he want's to
   /// include his email with the feedback.
-  void setOptions({String appVersion, String userId, String userEmail}) {
-    _state.data.appVersion = appVersion ?? _state.data.appVersion;
-    _state.data.userId = userId ?? _state.data.userId;
-    _state.data.userEmail = userEmail ?? _state.data.userEmail;
+  void setUserProperties({String userId, String userEmail}) {
+    _state.userManager.userId = userId ?? _state.userManager.userId;
+    _state.userManager.userEmail = userEmail ?? _state.userManager.userEmail;
+  }
+
+  /// Use this method to attach custom [buildVersion] and [buildNumber]
+  ///
+  /// If these values are also provided through dart-define during compile time
+  /// then they will be overwritten by this method
+  void setBuildProperties({String buildVersion, String buildNumber}) {
+    _state.buildInfoManager.buildVersion =
+        buildVersion ?? _state.buildInfoManager.buildVersion;
+    _state.buildInfoManager.buildNumber =
+        buildNumber ?? _state.buildInfoManager.buildNumber;
   }
 
   /// This will open the Wiredash feedback sheet and start the feedback process.
@@ -33,5 +57,17 @@ class WiredashController {
   /// own [WiredashTheme] and / or [WiredashTranslation] to the [Wiredash]
   /// root widget. In a future release you'll be able to customize the SDK
   /// through the Wiredash admin console as well.
-  void show() => _state.data.show();
+  ///
+  /// If a Wiredash feedback flow is already active (=a feedback sheet is open),
+  /// does nothing.
+  void show() => _state.show();
+
+  /// A [ValueNotifier] representing the current state of the capture UI. Use
+  /// this to change your app's configuration when the user is in the process
+  /// of taking a screenshot of your app - e.g. hiding sensitive information or
+  /// disabling specific widgets.
+  ///
+  /// The [Confidential] widget can automatically hide sensitive widgets from
+  /// being recorded in a feedback screenshot.
+  ValueNotifier<bool> get visible => _state.captureKey.currentState.visible;
 }

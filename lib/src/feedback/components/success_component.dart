@@ -1,26 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/src/common/translation/wiredash_translation.dart';
+import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/widgets/list_tile_button.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 
 class SuccessComponent extends StatelessWidget {
+  final VoidCallback onClosedCallback;
+
+  const SuccessComponent(
+    this.onClosedCallback, {
+    Key key,
+  })  : assert(onClosedCallback != null),
+        super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
-        children: <Widget>[
+        children: [
           const SizedBox(height: 8),
           ListTileButton(
+            key: const ValueKey('wiredash.sdk.exit_button'),
             icon: WiredashIcons.exit,
             iconColor: const Color(0xff9c4db1),
             iconBackgroundColor: const Color(0xffffc4f0),
-            title:
-                WiredashTranslation.of(context).feedbackStateSuccessCloseTitle,
+            title: WiredashLocalizations.of(context)
+                .feedbackStateSuccessCloseTitle,
             subtitle:
-                WiredashTranslation.of(context).feedbackStateSuccessCloseMsg,
-            onPressed: () => Navigator.pop(context),
-          )
+                WiredashLocalizations.of(context).feedbackStateSuccessCloseMsg,
+            onPressed: onClosedCallback,
+          ),
         ],
       ),
     );
