@@ -2,6 +2,7 @@
 
 apiToken=$POEDITOR_API_TOKEN
 projectId=347065
+l10nPath="lib/src/common/translation/l10n"
 
 for lang in "ar" "zh-CN" "da" "nl" "en" "fr" "de" "hu" "ko" "pl" "pt" "ru" "es" "tr"; do
     echo $lang
@@ -10,10 +11,10 @@ for lang in "ar" "zh-CN" "da" "nl" "en" "fr" "de" "hu" "ko" "pl" "pt" "ru" "es" 
         -d id="$projectId" \
         -d language="$lang" \
         -d type="key_value_json" | jq -r ".result.url")
-    file="intl_$lang.json"
+    file="${l10nPath}/intl_$lang.json"
     curl "$command" -o "$file"
 
-    langFile="messages_$lang.dart"
+    langFile="${l10nPath}/messages_$lang.dart"
 
     printf "import 'package:wiredash/wiredash.dart';\n\n" >"$langFile"
     printf "class WiredashLocalizedTranslations extends WiredashTranslations {\n" >>"$langFile"
@@ -50,4 +51,4 @@ for lang in "ar" "zh-CN" "da" "nl" "en" "fr" "de" "hu" "ko" "pl" "pt" "ru" "es" 
     unset n
 done
 
-dartfmt -w .
+dartfmt -w $l10nPath
