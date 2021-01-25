@@ -37,26 +37,28 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
       secret: "API Key from console.wiredash.io",
       navigatorKey: _navigatorKey,
       options: WiredashOptionsData(
+        /// Change the locale of the Wiredash UI
+        locale: Locale('en'),
 
-          /// Uncomment below to disable the screenshot step
-          // screenshotStep: false,
+        /// Uncomment below to disable the screenshot step
+        // screenshotStep: false,
 
-          /// Uncomment below to disable different buttons
-          // bugReportButton: false,
-          // featureRequestButton: false,
-          // praiseButton: false,
+        /// Uncomment below to disable different buttons
+        // bugReportButton: false,
+        // featureRequestButton: false,
+        // praiseButton: false,
 
-          /// Uncomment below to set custom translations work
-          // customTranslations: {
-          //   const Locale.fromSubtags(languageCode: 'en'):
-          //       const CustomDemoTranslations(),
-          // },
+        /// Uncomment below to set custom translations work
+        // customTranslations: {
+        //   const Locale.fromSubtags(languageCode: 'en'):
+        //       const CustomDemoTranslations(),
+        // },
 
-          /// Uncomment below to override the default device locale
-          // and/or text direction
-          // locale: const Locale('de'),
-          // textDirection: TextDirection.rtl,
-          ),
+        /// Uncomment below to override the default device locale
+        // and/or text direction
+        // locale: const Locale('de'),
+        // textDirection: TextDirection.rtl,
+      ),
       theme: WiredashThemeData(
 
           /// Uncomment below to explore the various theme options:
