@@ -51,4 +51,7 @@ for lang in "ar" "zh-CN" "da" "nl" "en" "fr" "de" "hu" "ko" "pl" "pt" "ru" "es" 
     unset n
 done
 
+# fix wrong file name
+mv "$l10nPath/messages_zh-CN.dart" "$l10nPath/messages_zh_cn.dart"
+
 dartfmt -w $l10nPath

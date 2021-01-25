@@ -15,7 +15,7 @@ import 'l10n/messages_pl.dart' as pl;
 import 'l10n/messages_pt.dart' as pt;
 import 'l10n/messages_ru.dart' as ru;
 import 'l10n/messages_tr.dart' as tr;
-import 'l10n/messages_zh-CN.dart' as zhcn;
+import 'l10n/messages_zh_cn.dart' as zhcn;
 
 class WiredashLocalizations extends StatelessWidget {
   const WiredashLocalizations({@required this.child, Key key})
