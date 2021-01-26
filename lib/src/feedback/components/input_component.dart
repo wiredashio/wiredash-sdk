@@ -177,7 +177,7 @@ class _InputComponentState extends State<InputComponent> {
       case InputComponentType.feedback:
         if (input.trim().isEmpty) {
           return WiredashLocalizations.of(context).validationHintFeedbackEmpty;
-        } else if (input.length > _maxInputLength) {
+        } else if (input.characters.length > _maxInputLength) {
           return WiredashLocalizations.of(context).validationHintFeedbackLength;
         }
         break;
