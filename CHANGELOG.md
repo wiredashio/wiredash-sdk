@@ -1,3 +1,8 @@
+## 0.4.1 - Longer feedback & more languages
+* Feedback length has been increased from 512 to 2048 characters
+* Support for new languages: [da] 🇩🇰, [hu] 🇭🇺, [ko] 🇰🇷, [ru] 🇷🇺 and [zh-cn] 🇨🇳. We are still missing some languages, please help us to translate Wiredash on [POEditor](https://poeditor.com/projects/view?id=347065)
+* Wiredash supports Android, iOS, macOS, Windows and Linux. We hope with this release pub.dev detects it correctly
+
 ## 0.4.0 - Web support 🕸 & Customizations 🎨
 * Wiredash is now available for Flutter Web. No screenshots yet but sending feedback generally works [#98](https://github.com/wiredashio/wiredash-sdk/pull/98) [#106](https://github.com/wiredashio/wiredash-sdk/pull/106)
 * You can now customize the BottomSheet to match your apps style. Custom fonts & colors [#100](https://github.com/wiredashio/wiredash-sdk/pull/100) as well as disabled individually buttons [#90](https://github.com/wiredashio/wiredash-sdk/pull/90)
@@ -33,7 +38,7 @@ Wiredash(
 ## 0.3.0 - Hello offline support, bye-bye FloatingEntryPoint!
 * Support sending feedback and screenshots when offline.
 * Added translations for Arabic, Portuguese, and Turkish.
-* Removed `FloatingEntryPoint` as it was a bit confusing to first-time users and most would disable it anyway.
+* Removed `FloatingEntryPoint` as it was a bit confusing to first-time users, and most would disable it anyway.
 * Added an `enabled` flag, docs, and hid `PaintItBlack` in the `Confidential` widget.
 * Fixed translation overflow exceptions for some languages.
 
