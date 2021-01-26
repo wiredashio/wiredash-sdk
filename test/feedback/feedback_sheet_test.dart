@@ -121,7 +121,7 @@ void main() {
 
         await tester.pump();
 
-        expect(find.text('8'), findsOneWidget);
+        expect(find.text('8 / 2048'), findsOneWidget);
         verifyNever(mockFeedbackModel.feedbackUiState = FeedbackUiState.email);
       },
     );
