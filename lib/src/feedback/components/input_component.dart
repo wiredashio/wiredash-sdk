@@ -158,13 +158,16 @@ class _InputComponentState extends State<InputComponent> {
 
   Widget _getCounterText(BuildContext context,
       {int currentLength, int maxLength, bool isFocused}) {
+    final theme = WiredashTheme.of(context);
     switch (widget.type) {
       case InputComponentType.feedback:
         final difference = maxLength - currentLength;
         return difference <= _lengthWarningThreshold
             ? Text(
-                '$difference / $_maxInputLength',
-                style: WiredashTheme.of(context).inputHintStyle,
+                '$currentLength / $_maxInputLength',
+                style: currentLength > maxLength
+                    ? theme.inputHintStyle.copyWith(color: theme.errorColor)
+                    : theme.inputHintStyle,
               )
             : null;
       default:

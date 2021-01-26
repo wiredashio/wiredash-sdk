@@ -68,7 +68,7 @@ void main() {
     );
 
     testWidgets(
-      'displays error message when submitting too long feedback',
+      'displays counter & error message when submitting too long feedback',
       (tester) async {
         when(mockFeedbackModel.feedbackUiState)
             .thenReturn(FeedbackUiState.feedback);
@@ -79,19 +79,28 @@ void main() {
             feedbackModel: mockFeedbackModel,
             userManager: mockUserManager,
             networkManager: mockNetworkManager,
-            child: const FeedbackSheet(),
+            child: const SingleChildScrollView(
+              child: FeedbackSheet(),
+            ),
           ),
         );
-
         await tester.enterText(
           find.byKey(const ValueKey('wiredash.sdk.feedback_input_field')),
           'a'.padLeft(2049, 'a'),
         );
+        await tester.pumpAndSettle();
+        expect(find.text('2049 / 2048'), findsOneWidget);
 
+        await tester.scrollUntilVisible(
+            find.byKey(const ValueKey('wiredash.sdk.save_feedback_button')),
+            100,
+            scrollable: find.byType(Scrollable).first);
         await tester.tap(
             find.byKey(const ValueKey('wiredash.sdk.save_feedback_button')));
         await tester.pump();
 
+        await expectLater(find.byType(_TestBoilerplate),
+            matchesGoldenFile('goldens/overflow2.png'));
         expect(find.text('Your feedback is too long.'), findsOneWidget);
         verifyNever(mockFeedbackModel.feedbackUiState = FeedbackUiState.email);
       },
@@ -109,7 +118,9 @@ void main() {
             feedbackModel: mockFeedbackModel,
             userManager: mockUserManager,
             networkManager: mockNetworkManager,
-            child: const FeedbackSheet(),
+            child: const SingleChildScrollView(
+              child: FeedbackSheet(),
+            ),
           ),
         );
 
@@ -117,11 +128,12 @@ void main() {
           find.byKey(const ValueKey('wiredash.sdk.feedback_input_field')),
           'a'.padLeft(2040, 'a'),
         );
-        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pumpAndSettle();
+        expect(find.text('2040 / 2048'), findsOneWidget);
 
+        await tester.testTextInput.receiveAction(TextInputAction.done);
         await tester.pump();
 
-        expect(find.text('8 / 2048'), findsOneWidget);
         verifyNever(mockFeedbackModel.feedbackUiState = FeedbackUiState.email);
       },
     );
