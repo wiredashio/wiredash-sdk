@@ -162,7 +162,10 @@ class _InputComponentState extends State<InputComponent> {
       case InputComponentType.feedback:
         final difference = maxLength - currentLength;
         return difference <= _lengthWarningThreshold
-            ? Text(difference.toString())
+            ? Text(
+                '$difference / $_maxInputLength',
+                style: WiredashTheme.of(context).inputHintStyle,
+              )
             : null;
       default:
         return null;
