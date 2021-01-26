@@ -21,7 +21,7 @@ Thank you so much to following people who helped translate Wiredash! 🙌
 Downloading the translations from POEditor is automated using the `tool/poeditor-import.sh`.
 
 1. Get your API key [here](https://poeditor.com/account/api)
-2. On macOS run `brew cask install jq`
+2. On macOS run `brew install jq`
 3. `export $POEDITOR_API_TOKEN=abcdefg1234`
-4. Do the final import `.tool/poeditor-import.sh`
+4. Do the final import `./tool/poeditor-import.sh`
 

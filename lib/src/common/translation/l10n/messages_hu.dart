@@ -55,41 +55,43 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   @override
   String get feedbackStateSuccessCloseMsg => "A visszajelzésed túl hosszú";
   @override
-  String get feedbackStateSuccessCloseTitle => "";
+  String get feedbackStateSuccessCloseTitle => "Close this Dialog";
   @override
-  String get feedbackStateSuccessMsg => "";
+  String get feedbackStateSuccessMsg =>
+      "That's it. Thank you so much for helping us build a better app!";
   @override
-  String get feedbackStateSuccessTitle => "";
+  String get feedbackStateSuccessTitle => "Thank you ✌️";
   @override
-  String get inputHintEmail => "";
+  String get inputHintEmail => "Your email";
   @override
-  String get inputHintFeedback => "";
+  String get inputHintFeedback => "Your feedback";
   @override
-  String get validationHintEmail => "";
+  String get validationHintEmail =>
+      "Please enter a valid email or leave this field blank.";
   @override
-  String get validationHintFeedbackEmpty => "";
+  String get validationHintFeedbackEmpty => "Please provide your feedback.";
   @override
-  String get validationHintFeedbackLength => "";
+  String get validationHintFeedbackLength => "Your feedback is too long.";
   @override
-  String get feedbackStateFeedbackTitle => "";
+  String get feedbackStateFeedbackTitle => "Your feedback ✍️";
   @override
-  String get firstPenLabel => "";
+  String get firstPenLabel => "A dark brown pen";
   @override
-  String get secondPenLabel => "";
+  String get secondPenLabel => "An off-white pen";
   @override
-  String get thirdPenLabel => "";
+  String get thirdPenLabel => "A teal highlighter";
   @override
-  String get fourthPenLabel => "";
+  String get fourthPenLabel => "An orange highlighter";
   @override
-  String get companyLogoLabel => "";
+  String get companyLogoLabel => "The Wiredash Logo";
   @override
-  String get undoButtonLabel => "";
+  String get undoButtonLabel => "Undo the last change";
   @override
-  String get firstPenSelected => "";
+  String get firstPenSelected => "The dark brown pen is selected";
   @override
-  String get secondPenSelected => "";
+  String get secondPenSelected => "The off-white pen is selected";
   @override
-  String get thirdPenSelected => "";
+  String get thirdPenSelected => "The teal highlighter is selected";
   @override
-  String get fourthPenSelected => "";
+  String get fourthPenSelected => "The orange highlighter is selected";
 }
