@@ -68,6 +68,77 @@ void main() {
     );
 
     testWidgets(
+      'displays counter & error message when submitting too long feedback',
+      (tester) async {
+        when(mockFeedbackModel.feedbackUiState)
+            .thenReturn(FeedbackUiState.feedback);
+        when(mockFeedbackModel.loading).thenReturn(false);
+
+        await tester.pumpWidget(
+          _TestBoilerplate(
+            feedbackModel: mockFeedbackModel,
+            userManager: mockUserManager,
+            networkManager: mockNetworkManager,
+            child: const SingleChildScrollView(
+              child: FeedbackSheet(),
+            ),
+          ),
+        );
+        await tester.enterText(
+          find.byKey(const ValueKey('wiredash.sdk.feedback_input_field')),
+          'a'.padLeft(2049, 'a'),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('2049 / 2048'), findsOneWidget);
+
+        await tester.scrollUntilVisible(
+            find.byKey(const ValueKey('wiredash.sdk.save_feedback_button')),
+            100,
+            scrollable: find.byType(Scrollable).first);
+        await tester.tap(
+            find.byKey(const ValueKey('wiredash.sdk.save_feedback_button')));
+        await tester.pump();
+
+        await expectLater(find.byType(_TestBoilerplate),
+            matchesGoldenFile('goldens/overflow2.png'));
+        expect(find.text('Your feedback is too long.'), findsOneWidget);
+        verifyNever(mockFeedbackModel.feedbackUiState = FeedbackUiState.email);
+      },
+    );
+
+    testWidgets(
+      'displays counter when close to max input length',
+      (tester) async {
+        when(mockFeedbackModel.feedbackUiState)
+            .thenReturn(FeedbackUiState.feedback);
+        when(mockFeedbackModel.loading).thenReturn(false);
+
+        await tester.pumpWidget(
+          _TestBoilerplate(
+            feedbackModel: mockFeedbackModel,
+            userManager: mockUserManager,
+            networkManager: mockNetworkManager,
+            child: const SingleChildScrollView(
+              child: FeedbackSheet(),
+            ),
+          ),
+        );
+
+        await tester.enterText(
+          find.byKey(const ValueKey('wiredash.sdk.feedback_input_field')),
+          'a'.padLeft(2040, 'a'),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('2040 / 2048'), findsOneWidget);
+
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pump();
+
+        verifyNever(mockFeedbackModel.feedbackUiState = FeedbackUiState.email);
+      },
+    );
+
+    testWidgets(
       'goes to email step when submitting non-empty feedback',
       (tester) async {
         when(mockFeedbackModel.feedbackUiState)
