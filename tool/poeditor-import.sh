@@ -2,18 +2,22 @@
 
 apiToken=$POEDITOR_API_TOKEN
 projectId=347065
+l10nPath="lib/src/common/translation/l10n"
 
-for lang in "en" "pl" "de" "es" "nl" "fr" "ar" "pt" "tr"; do
+declare -a defaultTranslations
+# The default locale should always be the first one
+# to have the fallback translations for all other locales
+for lang in "en" "ar" "zh-CN" "da" "nl" "fr" "de" "hu" "ko" "pl" "pt" "ru" "es" "tr"; do
     echo $lang
     command=$(curl -X POST https://api.poeditor.com/v2/projects/export \
         -d api_token="$apiToken" \
         -d id="$projectId" \
         -d language="$lang" \
         -d type="key_value_json" | jq -r ".result.url")
-    file="intl_$lang.json"
+    file="${l10nPath}/intl_$lang.json"
     curl "$command" -o "$file"
 
-    langFile="messages_$lang.dart"
+    langFile="${l10nPath}/messages_$lang.dart"
 
     printf "import 'package:wiredash/wiredash.dart';\n\n" >"$langFile"
     printf "class WiredashLocalizedTranslations extends WiredashTranslations {\n" >>"$langFile"
@@ -35,19 +39,33 @@ for lang in "en" "pl" "de" "es" "nl" "fr" "ar" "pt" "tr"; do
 
     # Print keys and values to Dart class
     n=0
-    for i in "${keys[@]}"; do
+    for key in "${keys[@]}"; do
         printf "   @override\n" >>$langFile
-        printf "   String get %s => \"%s\";\n" $i "${array[$n]}" >>$langFile
+        if [ -z "${array[$n]}" ]; then
+          translation="${defaultTranslations[$n]}"
+        else
+          translation="${array[$n]}"
+        fi
+        printf "   String get %s => \"%s\";\n" $key "$translation" >>$langFile
         n=$(($n + 1))
     done
 
     IFS=$SAVEIFS # Restore IFS
 
     printf "}" >>"$langFile"
+
+    # Save the default locale translations for future use
+    if [ "$lang" == "en" ]; then
+      defaultTranslations=("${array[@]}")
+    fi
     unset array
     unset keys
     unset values
+    unset translation
     unset n
 done
 
-dartfmt -w .
+# fix wrong file name
+mv "$l10nPath/messages_zh-CN.dart" "$l10nPath/messages_zh_cn.dart"
+
+dartfmt -w $l10nPath

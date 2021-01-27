@@ -34,6 +34,9 @@ class InputComponent extends StatefulWidget {
 class _InputComponentState extends State<InputComponent> {
   TextEditingController _textEditingController;
 
+  static const _maxInputLength = 2048;
+  static const _lengthWarningThreshold = 50;
+
   @override
   void initState() {
     super.initState();
@@ -98,6 +101,9 @@ class _InputComponentState extends State<InputComponent> {
             errorStyle: wiredashTheme.inputErrorStyle,
             errorMaxLines: 2,
           ),
+          maxLength: _maxInputLength,
+          maxLengthEnforced: false,
+          buildCounter: _getCounterText,
           textCapitalization: _getTextCapitalization(),
           keyboardAppearance: WiredashTheme.of(context).brightness,
           keyboardType: _getKeyboardType(),
@@ -150,12 +156,31 @@ class _InputComponentState extends State<InputComponent> {
     return null;
   }
 
+  Widget _getCounterText(BuildContext context,
+      {int currentLength, int maxLength, bool isFocused}) {
+    final theme = WiredashTheme.of(context);
+    switch (widget.type) {
+      case InputComponentType.feedback:
+        final difference = maxLength - currentLength;
+        return difference <= _lengthWarningThreshold
+            ? Text(
+                '$currentLength / $_maxInputLength',
+                style: currentLength > maxLength
+                    ? theme.inputHintStyle.copyWith(color: theme.errorColor)
+                    : theme.inputHintStyle,
+              )
+            : null;
+      default:
+        return null;
+    }
+  }
+
   String _validateInput(String input) {
     switch (widget.type) {
       case InputComponentType.feedback:
         if (input.trim().isEmpty) {
           return WiredashLocalizations.of(context).validationHintFeedbackEmpty;
-        } else if (input.length > 512) {
+        } else if (input.characters.length > _maxInputLength) {
           return WiredashLocalizations.of(context).validationHintFeedbackLength;
         }
         break;
