@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
@@ -9,10 +8,10 @@ import 'package:wiredash/src/feedback/data/feedback_item.dart';
 /// API client to communicate with the Wiredash servers
 class WiredashApi {
   WiredashApi({
-    @required Client httpClient,
-    @required String projectId,
-    @required String secret,
-  })  : _httpClient = httpClient,
+    required Client httpClient,
+    required String projectId,
+    required String secret,
+  })   : _httpClient = httpClient,
         _projectId = projectId,
         _secret = secret;
 
@@ -28,10 +27,9 @@ class WiredashApi {
   ///
   /// When [screenshot] is provided it sends a multipart request
   Future<void> sendFeedback({
-    @required FeedbackItem feedback,
-    Uint8List screenshot,
+    required FeedbackItem feedback,
+    Uint8List? screenshot,
   }) async {
-    assert(feedback != null);
     final uri = Uri.parse('$_host/feedback');
     final arguments = feedback.toMultipartFormFields()
       ..removeWhere((key, value) => value == null || value.isEmpty);
@@ -73,11 +71,11 @@ class WiredashApi {
 
 /// Generic error from the Wiredash API
 class WiredashApiException implements Exception {
-  WiredashApiException({String message, this.response}) : _message = message;
-  String /*?*/ get message {
-    final String /*?*/ bodyMessage = () {
+  WiredashApiException({String? message, this.response}) : _message = message;
+  String? get message {
+    final String? bodyMessage = () {
       try {
-        return jsonDecode(response?.body)['message'] as String;
+        return jsonDecode(response?.body ?? "")?['message'] as String?;
       } catch (e) {
         return response?.body;
       }
@@ -88,8 +86,8 @@ class WiredashApiException implements Exception {
     return "$_message $bodyMessage";
   }
 
-  final String /*?*/ _message;
-  final Response /*?*/ response;
+  final String? _message;
+  final Response? response;
 
   @override
   String toString() {

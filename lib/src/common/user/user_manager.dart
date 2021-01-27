@@ -1,4 +1,4 @@
 class UserManager {
-  String userId;
-  String userEmail;
+  String? userId;
+  String? userEmail;
 }

@@ -24,10 +24,10 @@ class MockEmailValidator extends Mock implements EmailValidator {}
 
 void main() {
   group('FeedbackSheet', () {
-    MockFeedbackModel mockFeedbackModel;
-    MockUserManager mockUserManager;
-    MockEmailValidator mockEmailValidator;
-    MockNetworkManager mockNetworkManager;
+    late MockFeedbackModel mockFeedbackModel;
+    late MockUserManager mockUserManager;
+    late MockEmailValidator mockEmailValidator;
+    late MockNetworkManager mockNetworkManager;
 
     setUp(() {
       mockFeedbackModel = MockFeedbackModel();
@@ -244,15 +244,12 @@ void main() {
 
 class _TestBoilerplate extends StatelessWidget {
   const _TestBoilerplate({
-    Key key,
-    @required this.networkManager,
-    @required this.feedbackModel,
-    @required this.userManager,
-    @required this.child,
-  })  : assert(feedbackModel != null),
-        assert(userManager != null),
-        assert(child != null),
-        super(key: key);
+    Key? key,
+    required this.networkManager,
+    required this.feedbackModel,
+    required this.userManager,
+    required this.child,
+  }) : super(key: key);
 
   final WiredashApi networkManager;
   final FeedbackModel feedbackModel;

@@ -13,29 +13,15 @@ import 'package:wiredash/src/wiredash_widget.dart';
 /// Wiredash.of(context).setIdentifiers(appVersion: "1.4.3");
 /// ```
 class WiredashController {
-  WiredashController(this._state) : assert(_state != null);
+  WiredashController(this._state);
 
   final WiredashState _state;
-
-  /// This method is deprecated in favor of [setUserProperties] and [setBuildProperties]
-  @Deprecated("Use [setUserProperties] and [setBuildProperties] instead")
-  void setIdentifiers({String appVersion, String userId, String userEmail}) {
-    if (appVersion != null) {
-      setBuildProperties(buildVersion: appVersion);
-    }
-    if (userId != null) {
-      setUserProperties(userId: userId);
-    }
-    if (userEmail != null) {
-      setUserProperties(userEmail: userEmail);
-    }
-  }
 
   /// Use this method to provide custom [userId]
   /// to the feedback. The [userEmail] parameter can be used to prefill the
   /// email input field but it's up to the user to decide if he want's to
   /// include his email with the feedback.
-  void setUserProperties({String userId, String userEmail}) {
+  void setUserProperties({String? userId, String? userEmail}) {
     _state.userManager.userId = userId ?? _state.userManager.userId;
     _state.userManager.userEmail = userEmail ?? _state.userManager.userEmail;
   }
@@ -44,7 +30,7 @@ class WiredashController {
   ///
   /// If these values are also provided through dart-define during compile time
   /// then they will be overwritten by this method
-  void setBuildProperties({String buildVersion, String buildNumber}) {
+  void setBuildProperties({String? buildVersion, String? buildNumber}) {
     _state.buildInfoManager.buildVersion =
         buildVersion ?? _state.buildInfoManager.buildVersion;
     _state.buildInfoManager.buildNumber =
@@ -69,5 +55,5 @@ class WiredashController {
   ///
   /// The [Confidential] widget can automatically hide sensitive widgets from
   /// being recorded in a feedback screenshot.
-  ValueNotifier<bool> get visible => _state.captureKey.currentState.visible;
+  ValueNotifier<bool> get visible => _state.captureKey.currentState!.visible;
 }

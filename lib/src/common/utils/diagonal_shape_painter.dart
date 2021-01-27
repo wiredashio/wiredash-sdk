@@ -4,7 +4,10 @@ class DiagonalShapePainter extends CustomPainter {
   final Color color;
   final double padding;
 
-  DiagonalShapePainter({this.color, this.padding});
+  DiagonalShapePainter({
+    required this.color,
+    required this.padding,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {

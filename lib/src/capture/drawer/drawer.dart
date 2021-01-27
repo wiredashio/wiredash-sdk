@@ -13,7 +13,7 @@ class Drawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.sketcherController;
+    final controller = context.sketcherController!;
 
     return AnimatedBuilder(
       animation: controller,
@@ -30,7 +30,7 @@ class Drawer extends StatelessWidget {
                   width: 40,
                   package: 'wiredash',
                   semanticLabel:
-                      WiredashLocalizations.of(context).companyLogoLabel,
+                      WiredashLocalizations.of(context)!.companyLogoLabel,
                 ),
               ),
               Align(
@@ -62,8 +62,8 @@ class Drawer extends StatelessWidget {
 
 class UndoButton extends StatelessWidget {
   const UndoButton({
-    Key key,
-    @required this.onTap,
+    Key? key,
+    required this.onTap,
   }) : super(key: key);
 
   final VoidCallback onTap;
@@ -71,7 +71,7 @@ class UndoButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: WiredashLocalizations.of(context).undoButtonLabel,
+      label: WiredashLocalizations.of(context)!.undoButtonLabel,
       button: true,
       child: GestureDetector(
         onTap: onTap,
@@ -82,7 +82,7 @@ class UndoButton extends StatelessWidget {
           ),
           child: Icon(
             WiredashIcons.undo,
-            color: WiredashTheme.of(context).dividerColor,
+            color: WiredashTheme.of(context)!.dividerColor,
           ),
         ),
       ),

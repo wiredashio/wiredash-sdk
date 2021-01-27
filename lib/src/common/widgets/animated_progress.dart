@@ -5,8 +5,11 @@ class AnimatedProgress extends StatefulWidget {
   final double value;
   final bool isLoading;
 
-  const AnimatedProgress({Key key, this.value, this.isLoading = false})
-      : super(key: key);
+  const AnimatedProgress({
+    Key? key,
+    required this.value,
+    this.isLoading = false,
+  }) : super(key: key);
 
   @override
   _AnimatedProgressState createState() => _AnimatedProgressState();
@@ -14,7 +17,7 @@ class AnimatedProgress extends StatefulWidget {
 
 class _AnimatedProgressState extends State<AnimatedProgress>
     with SingleTickerProviderStateMixin {
-  AnimationController _progressAnimation;
+  late AnimationController _progressAnimation;
 
   @override
   void initState() {
@@ -40,13 +43,13 @@ class _AnimatedProgressState extends State<AnimatedProgress>
   @override
   Widget build(BuildContext context) {
     final backgroundColor =
-        WiredashTheme.of(context).primaryColor.withAlpha(100);
+        WiredashTheme.of(context)!.primaryColor.withAlpha(100);
     final progressColor =
-        AlwaysStoppedAnimation<Color>(WiredashTheme.of(context).primaryColor);
+        AlwaysStoppedAnimation<Color>(WiredashTheme.of(context)!.primaryColor);
 
     return AnimatedBuilder(
       animation: _progressAnimation,
-      builder: (BuildContext context, Widget child) {
+      builder: (context, _) {
         return LinearProgressIndicator(
           value: widget.isLoading ? null : _progressAnimation.value,
           backgroundColor: backgroundColor,

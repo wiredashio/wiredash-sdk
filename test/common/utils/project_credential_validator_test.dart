@@ -3,7 +3,7 @@ import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 
 void main() {
   group('ProjectCredentialValidator', () {
-    ProjectCredentialValidator validator;
+    late ProjectCredentialValidator validator;
 
     setUp(() {
       validator = const ProjectCredentialValidator();
@@ -12,7 +12,7 @@ void main() {
     test('throws when using the copy-pasted project id value', () {
       expect(
         () async =>
-            validator.validate(projectId: 'YOUR-PROJECT-ID', secret: null),
+            validator.validate(projectId: 'YOUR-PROJECT-ID', secret: ''),
         throwsA(
           const TypeMatcher<ArgumentError>()
               .having((e) => e.name, 'name', 'projectId')
@@ -27,7 +27,7 @@ void main() {
 
     test('throws when using the copy-pasted secret value', () {
       expect(
-        () async => validator.validate(projectId: null, secret: 'YOUR-SECRET'),
+        () async => validator.validate(projectId: '', secret: 'YOUR-SECRET'),
         throwsA(
           const TypeMatcher<ArgumentError>()
               .having((e) => e.name, 'name', 'secret')

@@ -18,8 +18,10 @@ import 'l10n/messages_tr.dart' as tr;
 import 'l10n/messages_zh_cn.dart' as zhcn;
 
 class WiredashLocalizations extends StatelessWidget {
-  const WiredashLocalizations({@required this.child, Key key})
-      : super(key: key);
+  const WiredashLocalizations({
+    Key? key,
+    required this.child,
+  }) : super(key: key);
 
   final Widget child;
 
@@ -27,27 +29,25 @@ class WiredashLocalizations extends StatelessWidget {
   Widget build(BuildContext context) {
     final options = WiredashOptions.of(context);
     return _InheritedWiredashTranslation(
-      customTranslations: options.customTranslations,
+      customTranslations: options?.customTranslations,
       child: child,
     );
   }
 
-  static WiredashTranslations of(BuildContext context) {
+  static WiredashTranslations? of(BuildContext context) {
     final options = WiredashOptions.of(context);
-    final _InheritedWiredashTranslation inheritedTranslation = context
+    final _InheritedWiredashTranslation? inheritedTranslation = context
         .dependOnInheritedWidgetOfExactType<_InheritedWiredashTranslation>();
-    return inheritedTranslation.translation(options.currentLocale);
+    return inheritedTranslation?.translation(options?.currentLocale);
   }
 
   /// Checks if given [locale] is supported by its langaugeCode
   static bool isSupported(Locale locale) => _isSupported(locale);
 
   static bool _isSupported(Locale locale) {
-    if (locale != null) {
-      for (final supportedLocale in supportedLocales) {
-        if (supportedLocale.languageCode == locale.languageCode) {
-          return true;
-        }
+    for (final supportedLocale in supportedLocales) {
+      if (supportedLocale.languageCode == locale.languageCode) {
+        return true;
       }
     }
     return false;
@@ -76,9 +76,9 @@ class WiredashLocalizations extends StatelessWidget {
 
 class _InheritedWiredashTranslation extends InheritedWidget {
   _InheritedWiredashTranslation({
-    Key key,
-    @required Map<Locale, WiredashTranslations> customTranslations,
-    @required Widget child,
+    Key? key,
+    required Map<Locale, WiredashTranslations>? customTranslations,
+    required Widget child,
   }) : super(key: key, child: child) {
     final defaultTranslations = <Locale, WiredashTranslations>{
       const Locale.fromSubtags(languageCode: 'ar'):
@@ -122,15 +122,19 @@ class _InheritedWiredashTranslation extends InheritedWidget {
   final Map<Locale, WiredashTranslations> _translations =
       <Locale, WiredashTranslations>{};
 
-  WiredashTranslations translation(Locale locale) {
-    if (_translations.containsKey(locale)) {
-      return _translations[locale];
-    } else if (WiredashLocalizations.isSupported(locale)) {
-      return _translations[
-          Locale.fromSubtags(languageCode: locale.languageCode)];
-    } else {
-      return _translations[const Locale.fromSubtags(languageCode: 'en')];
+  WiredashTranslations translation(Locale? locale) {
+    if (locale != null) {
+      if (_translations.containsKey(locale)) {
+        return _translations[locale]!;
+      } else if (WiredashLocalizations.isSupported(locale)) {
+        final translation = _translations[
+            Locale.fromSubtags(languageCode: locale.languageCode)];
+        if (translation != null) {
+          return translation;
+        }
+      }
     }
+    return _translations[const Locale.fromSubtags(languageCode: 'en')]!;
   }
 
   @override

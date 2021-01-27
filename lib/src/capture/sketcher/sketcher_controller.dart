@@ -11,7 +11,7 @@ class SketcherController extends ChangeNotifier {
 
   final List<Gesture> _gestures = [];
   Color _color;
-  Gesture _last;
+  Gesture? _last;
 
   Size size = Size.zero;
 
@@ -37,17 +37,19 @@ class SketcherController extends ChangeNotifier {
   }
 
   void updateGesture(Offset offset) {
-    _last..addPoint(offset)..addPoint(offset);
+    _last?..addPoint(offset)..addPoint(offset);
     notifyListeners();
   }
 
   void endGesture() {
+    final last = _last;
+    if (last == null) return;
     // Interpret as a point when less than 5 points recorded
-    if (_last.points.length < 5) {
+    if (last.points.length < 5) {
       _gestures.removeLast();
-      _gestures.add(_last.firstPoint());
+      _gestures.add(last.firstPoint());
     } else {
-      _last.addPoint(_last.points[_last.points.length - 1]);
+      last.addPoint(last.points[last.points.length - 1]);
     }
     notifyListeners();
   }
@@ -73,8 +75,7 @@ class SketcherController extends ChangeNotifier {
           imageSize.height.toInt(),
         );
 
-    return (await combined.toByteData(format: ImageByteFormat.png))
-        .buffer
-        .asUint8List();
+    final bytes = await combined.toByteData(format: ImageByteFormat.png);
+    return bytes!.buffer.asUint8List();
   }
 }

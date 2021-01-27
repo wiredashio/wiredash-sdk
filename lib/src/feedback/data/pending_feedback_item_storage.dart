@@ -65,9 +65,9 @@ class PendingFeedbackItemStorage {
   /// with a randomly generated filename.
   Future<PendingFeedbackItem> addPendingItem(
     FeedbackItem item,
-    Uint8List screenshot,
+    Uint8List? screenshot,
   ) async {
-    String screenshotPath;
+    String? screenshotPath;
 
     if (screenshot != null) {
       final directory = await _getScreenshotStorageDirectoryPath();
@@ -97,23 +97,21 @@ class PendingFeedbackItemStorage {
   Future<void> clearPendingItem(String itemId) async {
     final items = await retrieveAllPendingItems();
 
-    if (items != null) {
-      for (final item in items) {
-        if (item.id == itemId) {
-          if (item.screenshotPath != null) {
-            final screenshot = _fs.file(item.screenshotPath);
-            if (await screenshot.exists()) {
-              await screenshot.delete();
-            }
+    for (final item in items) {
+      if (item.id == itemId) {
+        if (item.screenshotPath != null) {
+          final screenshot = _fs.file(item.screenshotPath);
+          if (await screenshot.exists()) {
+            await screenshot.delete();
           }
-
-          final updatedItems = List.of(await retrieveAllPendingItems());
-          updatedItems.removeWhere((e) => e.id == item.id);
-          final preferences = await _sharedPreferences();
-          preferences.setStringList(_feedbackItemsKey,
-              updatedItems.map((e) => json.encode(e.toJson())).toList());
-          break;
         }
+
+        final updatedItems = List.of(await retrieveAllPendingItems());
+        updatedItems.removeWhere((e) => e.id == item.id);
+        final preferences = await _sharedPreferences();
+        preferences.setStringList(_feedbackItemsKey,
+            updatedItems.map((e) => json.encode(e.toJson())).toList());
+        break;
       }
     }
   }

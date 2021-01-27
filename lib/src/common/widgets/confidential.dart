@@ -5,14 +5,11 @@ import 'package:wiredash/src/wiredash_widget.dart';
 /// from being captured inside a feedback screenshot.
 class Confidential extends StatelessWidget {
   const Confidential({
-    Key key,
+    Key? key,
     this.mode = ConfidentialMode.black,
     this.enabled = true,
-    @required this.child,
-  })  : assert(mode != null),
-        assert(enabled != null),
-        assert(child != null),
-        super(key: key);
+    required this.child,
+  }) : super(key: key);
 
   /// How the confidential widget will be hidden when Wiredash is active.
   ///
@@ -32,9 +29,9 @@ class Confidential extends StatelessWidget {
     if (!enabled) return child;
 
     return AnimatedBuilder(
-      animation: Wiredash.of(context).visible,
+      animation: Wiredash.of(context)!.visible,
       builder: (_, __) {
-        final isVisible = Wiredash.of(context).visible.value;
+        final isVisible = Wiredash.of(context)!.visible.value;
         return CustomPaint(
           foregroundPainter: isVisible && mode == ConfidentialMode.black
               ? _PaintItBlack()

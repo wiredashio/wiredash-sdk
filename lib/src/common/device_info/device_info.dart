@@ -1,38 +1,38 @@
 import 'package:flutter/foundation.dart';
 
 class DeviceInfo {
-  final bool /*?*/ appIsDebug;
-  final String /*?*/ appVersion;
-  final String /*?*/ buildNumber;
-  final String /*?*/ buildCommit;
-  final String /*?*/ deviceId;
-  final String /*?*/ locale;
-  final List<double> /*?*/ padding;
-  final List<double> /*?*/ physicalSize;
-  final double /*?*/ pixelRatio;
+  final bool? appIsDebug;
+  final String? appVersion;
+  final String? buildNumber;
+  final String? buildCommit;
+  final String? deviceId;
+  final String? locale;
+  final List<double>? padding;
+  final List<double>? physicalSize;
+  final double? pixelRatio;
 
   /// A string representing the operating system or platform.
   ///
   /// Platform.operatingSystem
-  final String /*?*/ platformOS;
+  final String? platformOS;
 
   /// A string representing the version of the operating system or platform.
   ///
   /// Platform.operatingSystemVersion
-  final String /*?*/ platformOSBuild;
+  final String? platformOSBuild;
 
   /// The version of the current Dart runtime.
   ///
   /// Platform.version
-  final String /*?*/ platformVersion;
+  final String? platformVersion;
 
-  final double /*?*/ textScaleFactor;
-  final List<double> /*?*/ viewInsets;
+  final double? textScaleFactor;
+  final List<double>? viewInsets;
 
   /// When in web, the full user agent String of the browser
   ///
   /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent
-  final String /*?*/ userAgent;
+  final String? userAgent;
 
   const DeviceInfo({
     this.appIsDebug,
@@ -53,21 +53,21 @@ class DeviceInfo {
   });
 
   DeviceInfo copyWith({
-    bool appIsDebug,
-    String appVersion,
-    String buildNumber,
-    String buildCommit,
-    String deviceId,
-    String locale,
-    List<double> padding,
-    List<double> physicalSize,
-    double pixelRatio,
-    String platformOS,
-    String platformOSBuild,
-    String platformVersion,
-    double textScaleFactor,
-    List<double> viewInsets,
-    String userAgent,
+    bool? appIsDebug,
+    String? appVersion,
+    String? buildNumber,
+    String? buildCommit,
+    String? deviceId,
+    String? locale,
+    List<double>? padding,
+    List<double>? physicalSize,
+    double? pixelRatio,
+    String? platformOS,
+    String? platformOSBuild,
+    String? platformVersion,
+    double? textScaleFactor,
+    List<double>? viewInsets,
+    String? userAgent,
   }) {
     return DeviceInfo(
       appIsDebug: appIsDebug ?? this.appIsDebug,
@@ -150,30 +150,30 @@ class DeviceInfo {
 
   factory DeviceInfo.fromJson(Map<String, dynamic> json) {
     return DeviceInfo(
-      appIsDebug: json['appIsDebug'] as bool,
-      appVersion: json['appVersion'] as String,
-      buildNumber: json['buildNumber'] as String,
-      buildCommit: json['buildCommit'] as String,
-      deviceId: json['deviceId'] as String,
-      locale: json['locale'] as String,
-      padding: ((json['padding'] as List<dynamic>) ?? [])
+      appIsDebug: json['appIsDebug'] as bool?,
+      appVersion: json['appVersion'] as String?,
+      buildNumber: json['buildNumber'] as String?,
+      buildCommit: json['buildCommit'] as String?,
+      deviceId: json['deviceId'] as String?,
+      locale: json['locale'] as String?,
+      padding: ((json['padding'] as List<dynamic>?) ?? [])
           .cast<num>()
           .map((i) => i.toDouble())
           .toList(growable: false),
-      physicalSize: ((json['physicalSize'] as List<dynamic>) ?? [])
+      physicalSize: ((json['physicalSize'] as List<dynamic>?) ?? [])
           .cast<num>()
           .map((i) => i.toDouble())
           .toList(growable: false),
-      pixelRatio: (json['pixelRatio'] as num)?.toDouble(),
-      platformOS: json['platformOS'] as String,
-      platformOSBuild: json['platformOSBuild'] as String,
-      platformVersion: json['platformVersion'] as String,
-      textScaleFactor: (json['textScaleFactor'] as num)?.toDouble(),
-      viewInsets: ((json['viewInsets'] as List<dynamic>) ?? [])
+      pixelRatio: (json['pixelRatio'] as num?)?.toDouble(),
+      platformOS: json['platformOS'] as String?,
+      platformOSBuild: json['platformOSBuild'] as String?,
+      platformVersion: json['platformVersion'] as String?,
+      textScaleFactor: (json['textScaleFactor'] as num?)?.toDouble(),
+      viewInsets: ((json['viewInsets'] as List<dynamic>?) ?? [])
           .cast<num>()
           .map((i) => i.toDouble())
           .toList(growable: false),
-      userAgent: json['userAgent'] as String,
+      userAgent: json['userAgent'] as String?,
     );
   }
 
@@ -203,11 +203,11 @@ class DeviceInfo {
       uiValues['locale'] = locale.toString();
     }
 
-    if (padding != null && padding.isNotEmpty) {
+    if (padding != null && padding!.isNotEmpty) {
       uiValues['padding'] = padding;
     }
 
-    if (physicalSize != null && physicalSize.isNotEmpty) {
+    if (physicalSize != null && physicalSize!.isNotEmpty) {
       uiValues['physicalSize'] = physicalSize;
     }
 
@@ -231,7 +231,7 @@ class DeviceInfo {
       uiValues['textScaleFactor'] = textScaleFactor;
     }
 
-    if (viewInsets != null && viewInsets.isNotEmpty) {
+    if (viewInsets != null && viewInsets!.isNotEmpty) {
       uiValues['viewInsets'] = viewInsets;
     }
 

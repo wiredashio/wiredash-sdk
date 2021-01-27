@@ -2,10 +2,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/common/utils/uuid.dart';
 
 abstract class BuildInfo {
-  String get buildNumber;
-  String get buildVersion;
-  String get buildCommit;
-  String get deviceId;
+  String? get buildNumber;
+  String? get buildVersion;
+  String? get buildCommit;
+  String? get deviceId;
 }
 
 /// Class retrieving basic build information about the app
@@ -21,7 +21,7 @@ class PlatformBuildInfo extends BuildInfo {
   static const _prefsDeviceID = '_wiredashDeviceID';
 
   PlatformBuildInfo() {
-    _getDeviceID();
+    _loadDeviceID();
   }
 
   static const _buildNumber = bool.hasEnvironment('BUILD_NUMBER')
@@ -34,31 +34,27 @@ class PlatformBuildInfo extends BuildInfo {
       ? String.fromEnvironment('BUILD_COMMIT')
       : null;
 
-  String _deviceId;
+  String? _deviceId;
 
   @override
-  String get buildCommit => _buildCommit;
+  String? get buildCommit => _buildCommit;
 
   @override
-  String get buildNumber => _buildNumber;
+  String? get buildNumber => _buildNumber;
 
   @override
-  String get buildVersion => _buildVersion;
+  String? get buildVersion => _buildVersion;
 
   @override
-  String get deviceId => _deviceId;
+  String? get deviceId => _deviceId;
 
-  Future<String> _getDeviceID() async {
+  Future<void> _loadDeviceID() async {
     final prefs = await SharedPreferences.getInstance();
-    String deviceId;
-
     if (prefs.containsKey(_prefsDeviceID)) {
       _deviceId = prefs.getString(_prefsDeviceID);
     } else {
       _deviceId = uuidV4.generate();
-      await prefs.setString(_prefsDeviceID, deviceId);
+      await prefs.setString(_prefsDeviceID, _deviceId);
     }
-
-    return deviceId;
   }
 }

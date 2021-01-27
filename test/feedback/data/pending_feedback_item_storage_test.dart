@@ -18,10 +18,10 @@ class MockUuidV4Generator extends Mock implements UuidV4Generator {}
 
 void main() {
   group('PendingFeedbackItemStorage', () {
-    FileSystem fileSystem;
-    MockSharedPreferences mockSharedPreferences;
-    MockUuidV4Generator mockUuidV4Generator;
-    PendingFeedbackItemStorage storage;
+    late FileSystem fileSystem;
+    late MockSharedPreferences mockSharedPreferences;
+    late MockUuidV4Generator mockUuidV4Generator;
+    late PendingFeedbackItemStorage storage;
 
     setUp(() {
       fileSystem = MemoryFileSystem.test();
@@ -382,7 +382,7 @@ void main() {
           .thenReturn([illegalItem, legalItem]);
 
       final oldOnErrorHandler = FlutterError.onError;
-      FlutterErrorDetails caught;
+      late FlutterErrorDetails caught;
       FlutterError.onError = (FlutterErrorDetails details) {
         caught = details;
       };

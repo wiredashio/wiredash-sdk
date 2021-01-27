@@ -38,7 +38,7 @@ class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
 
   @override
   Future<PendingFeedbackItem> addPendingItem(
-      FeedbackItem item, Uint8List screenshot) async {
+      FeedbackItem item, Uint8List? screenshot) async {
     final id = _currentItems.length + 1;
     final screenshotName = '$id.png';
     final screenshotFile =
@@ -61,10 +61,10 @@ class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
 
 void main() {
   group('RetryingFeedbackSubmitter', () {
-    FileSystem fileSystem;
-    FakePendingFeedbackItemStorage fakePendingFeedbackItemStorage;
-    MockNetworkManager mockNetworkManager;
-    RetryingFeedbackSubmitter retryingFeedbackSubmitter;
+    late FileSystem fileSystem;
+    late FakePendingFeedbackItemStorage fakePendingFeedbackItemStorage;
+    late MockNetworkManager mockNetworkManager;
+    late RetryingFeedbackSubmitter retryingFeedbackSubmitter;
 
     setUp(() {
       fileSystem = MemoryFileSystem.test();

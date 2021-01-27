@@ -33,7 +33,6 @@ void main() {
         ui.window,
       );
       final info = generator.generate();
-      assert(info != null);
       expect(info.buildNumber, '42');
       expect(info.appVersion, '1.42');
       expect(info.buildCommit, 'commit');

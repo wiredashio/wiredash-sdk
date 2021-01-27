@@ -5,8 +5,8 @@ import 'package:wiredash/wiredash.dart';
 
 class WiredashOptionsData {
   WiredashOptionsData({
-    Locale locale,
-    TextDirection textDirection,
+    Locale? locale,
+    TextDirection? textDirection,
     this.bugReportButton = true,
     this.praiseButton = true,
     this.featureRequestButton = true,
@@ -23,7 +23,7 @@ class WiredashOptionsData {
   ///
   /// You can also use Wiredash delegate in your MaterialApp
   /// if default translations are sufficient for you
-  final Map<Locale, WiredashTranslations> customTranslations;
+  final Map<Locale, WiredashTranslations>? customTranslations;
 
   /// Whether to display the screenshot and drawing step or not.
   ///

@@ -33,7 +33,7 @@ class RetryingFeedbackSubmitter {
   /// Persists [item] and [screenshot], then tries to send them.
   ///
   /// If sending fails, uses exponential backoff and tries again up to 7 times.
-  Future<void> submit(FeedbackItem item, Uint8List screenshot) async {
+  Future<void> submit(FeedbackItem item, Uint8List? screenshot) async {
     await _pendingFeedbackItemStorage.addPendingItem(item, screenshot);
 
     // Intentionally not "await"-ed. Since we've persisted the pending feedback
@@ -117,8 +117,8 @@ class RetryingFeedbackSubmitter {
         break;
       } on WiredashApiException catch (e, stack) {
         if (e.message != null &&
-            e.message.contains("fails because") &&
-            e.message.contains("is required")) {
+            e.message!.contains("fails because") &&
+            e.message!.contains("is required")) {
           // some required property is missing. The item will never be delivered
           // to the server, therefore discard it.
           reportWiredashError(e, stack,

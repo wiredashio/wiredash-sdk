@@ -7,10 +7,9 @@ import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 
 class FeedbackPen extends StatefulWidget {
   const FeedbackPen({
-    Key key,
-    @required this.color,
-  })  : assert(color != null),
-        super(key: key);
+    Key? key,
+    required this.color,
+  }) : super(key: key);
 
   final Color color;
 
@@ -20,11 +19,11 @@ class FeedbackPen extends StatefulWidget {
 
 class _FeedbackPenState extends State<FeedbackPen>
     with SingleTickerProviderStateMixin {
-  AnimationController _animationController;
-  Animation<Offset> _slideAnimation;
+  late AnimationController _animationController;
+  late Animation<Offset> _slideAnimation;
 
-  Color _currentColor;
-  Color _nextColor;
+  late Color _currentColor;
+  late Color _nextColor;
 
   @override
   void initState() {
@@ -83,8 +82,8 @@ class _FeedbackPenState extends State<FeedbackPen>
   }
 
   String _buildLabel(BuildContext context) {
-    final theme = WiredashTheme.of(context);
-    final localizations = WiredashLocalizations.of(context);
+    final theme = WiredashTheme.of(context)!;
+    final localizations = WiredashLocalizations.of(context)!;
 
     if (_currentColor == theme.firstPenColor) {
       return localizations.firstPenSelected;
@@ -108,8 +107,7 @@ class _FeedbackPenState extends State<FeedbackPen>
 
 class _PenNosePainter extends CustomPainter {
   _PenNosePainter(this._color)
-      : assert(_color != null),
-        _nosePaint = Paint()
+      : _nosePaint = Paint()
           ..color = _color.withOpacity(0.8)
           ..style = PaintingStyle.fill;
 

@@ -26,12 +26,12 @@ class MockRetryingFeedbackSubmitter extends Mock
 
 void main() {
   group('FeedbackModel', () {
-    MockGlobalKey<CaptureState> mockCaptureKey;
-    MockGlobalKey<NavigatorState> mockNavigatorKey;
-    MockUserManager mockUserManager;
-    MockDeviceInfoGenerator mockDeviceInfoGenerator;
-    MockRetryingFeedbackSubmitter mockRetryingFeedbackSubmitter;
-    FeedbackModel model;
+    late MockGlobalKey<CaptureState> mockCaptureKey;
+    late MockGlobalKey<NavigatorState> mockNavigatorKey;
+    late MockUserManager mockUserManager;
+    late MockDeviceInfoGenerator mockDeviceInfoGenerator;
+    late MockRetryingFeedbackSubmitter mockRetryingFeedbackSubmitter;
+    late FeedbackModel model;
 
     setUp(() {
       mockCaptureKey = MockGlobalKey();

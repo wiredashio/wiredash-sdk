@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 
 UuidV4Generator get uuidV4 =>
-    Zone.current[_uuidGeneratorKey] as UuidV4Generator ??
+    Zone.current[_uuidGeneratorKey] as UuidV4Generator? ??
     const UuidV4Generator();
 
 final _uuidGeneratorKey = Object();
