@@ -5,12 +5,10 @@ import 'package:wiredash/src/common/widgets/animated_fade_in.dart';
 
 class PreviousButton extends StatelessWidget {
   const PreviousButton({
-    Key key,
+    Key /*?*/ key,
     @required this.onPressed,
     @required this.text,
-  })  : assert(onPressed != null),
-        assert(text != null),
-        super(key: key);
+  }) : super(key: key);
 
   final VoidCallback onPressed;
   final String text;
@@ -40,17 +38,15 @@ class PreviousButton extends StatelessWidget {
 
 class NextButton extends StatelessWidget {
   const NextButton({
-    Key key,
+    Key /*?*/ key,
     @required this.onPressed,
     @required this.text,
     this.icon,
-  })  : assert(onPressed != null),
-        assert(text != null),
-        super(key: key);
+  }) : super(key: key);
 
   final VoidCallback onPressed;
   final String text;
-  final IconData icon;
+  final IconData /*?*/ icon;
 
   @override
   Widget build(BuildContext context) {
@@ -89,14 +85,11 @@ class NextButton extends StatelessWidget {
 
 class _Wrapper extends StatelessWidget {
   const _Wrapper({
-    Key key,
+    Key /*?*/ key,
     @required this.text,
     @required this.onPressed,
     @required this.child,
-  })  : assert(text != null),
-        assert(onPressed != null),
-        assert(child != null),
-        super(key: key);
+  }) : super(key: key);
 
   final String text;
   final VoidCallback onPressed;

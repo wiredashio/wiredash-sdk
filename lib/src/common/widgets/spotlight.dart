@@ -7,9 +7,10 @@ import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 class Spotlight extends StatefulWidget {
   final Widget child;
 
-  const Spotlight({Key key, @required this.child})
-      : assert(child != null),
-        super(key: key);
+  const Spotlight({
+    Key /*?*/ key,
+    @required this.child,
+  }) : super(key: key);
 
   @override
   SpotlightState createState() => SpotlightState();
@@ -17,12 +18,13 @@ class Spotlight extends StatefulWidget {
 
 class SpotlightState extends State<Spotlight>
     with SingleTickerProviderStateMixin {
-  AnimationController _animationController;
-  Animation<double> _opacityAnimation;
-  Widget _spotlightWidget;
-  IconData _icon;
-  String _title, _msg;
-  Timer _timer;
+  /*late*/ AnimationController _animationController;
+  /*late*/ Animation<double> _opacityAnimation;
+  Widget /*?*/ _spotlightWidget;
+  IconData /*?*/ _icon;
+  String /*?*/ _title;
+  String /*?*/ _msg;
+  Timer /*?*/ _timer;
 
   @override
   void initState() {
@@ -85,12 +87,12 @@ class SpotlightState extends State<Spotlight>
             ),
             const SizedBox(height: 32),
             Text(
-              _title.toUpperCase(),
+              _title?.toUpperCase() ?? "-",
               style: WiredashTheme.of(context).spotlightTitleStyle,
             ),
             const SizedBox(height: 12),
             Text(
-              _msg,
+              _msg ?? "-",
               textAlign: TextAlign.center,
               style: WiredashTheme.of(context).spotlightTextStyle,
             ),
@@ -102,7 +104,7 @@ class SpotlightState extends State<Spotlight>
 
   void hide() {
     _timer?.cancel();
-    _animationController?.reverse();
+    _animationController.reverse();
   }
 
   void show(IconData icon, String title, String message) {

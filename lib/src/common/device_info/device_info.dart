@@ -53,21 +53,21 @@ class DeviceInfo {
   });
 
   DeviceInfo copyWith({
-    bool appIsDebug,
-    String appVersion,
-    String buildNumber,
-    String buildCommit,
-    String deviceId,
-    String locale,
-    List<double> padding,
-    List<double> physicalSize,
-    double pixelRatio,
-    String platformOS,
-    String platformOSBuild,
-    String platformVersion,
-    double textScaleFactor,
-    List<double> viewInsets,
-    String userAgent,
+    bool /*?*/ appIsDebug,
+    String /*?*/ appVersion,
+    String /*?*/ buildNumber,
+    String /*?*/ buildCommit,
+    String /*?*/ deviceId,
+    String /*?*/ locale,
+    List<double> /*?*/ padding,
+    List<double> /*?*/ physicalSize,
+    double /*?*/ pixelRatio,
+    String /*?*/ platformOS,
+    String /*?*/ platformOSBuild,
+    String /*?*/ platformVersion,
+    double /*?*/ textScaleFactor,
+    List<double> /*?*/ viewInsets,
+    String /*?*/ userAgent,
   }) {
     return DeviceInfo(
       appIsDebug: appIsDebug ?? this.appIsDebug,
@@ -150,30 +150,30 @@ class DeviceInfo {
 
   factory DeviceInfo.fromJson(Map<String, dynamic> json) {
     return DeviceInfo(
-      appIsDebug: json['appIsDebug'] as bool,
-      appVersion: json['appVersion'] as String,
-      buildNumber: json['buildNumber'] as String,
-      buildCommit: json['buildCommit'] as String,
-      deviceId: json['deviceId'] as String,
-      locale: json['locale'] as String,
-      padding: ((json['padding'] as List<dynamic>) ?? [])
+      appIsDebug: json['appIsDebug'] as bool /*?*/,
+      appVersion: json['appVersion'] as String /*?*/,
+      buildNumber: json['buildNumber'] as String /*?*/,
+      buildCommit: json['buildCommit'] as String /*?*/,
+      deviceId: json['deviceId'] as String /*?*/,
+      locale: json['locale'] as String /*?*/,
+      padding: (json['padding'] as List<dynamic> /*?*/ ?? [])
           .cast<num>()
           .map((i) => i.toDouble())
           .toList(growable: false),
-      physicalSize: ((json['physicalSize'] as List<dynamic>) ?? [])
+      physicalSize: (json['physicalSize'] as List<dynamic> /*?*/ ?? [])
           .cast<num>()
           .map((i) => i.toDouble())
           .toList(growable: false),
-      pixelRatio: (json['pixelRatio'] as num)?.toDouble(),
-      platformOS: json['platformOS'] as String,
-      platformOSBuild: json['platformOSBuild'] as String,
-      platformVersion: json['platformVersion'] as String,
-      textScaleFactor: (json['textScaleFactor'] as num)?.toDouble(),
-      viewInsets: ((json['viewInsets'] as List<dynamic>) ?? [])
+      pixelRatio: (json['pixelRatio'] as num /*?*/)?.toDouble(),
+      platformOS: json['platformOS'] as String /*?*/,
+      platformOSBuild: json['platformOSBuild'] as String /*?*/,
+      platformVersion: json['platformVersion'] as String /*?*/,
+      textScaleFactor: (json['textScaleFactor'] as num /*?*/)?.toDouble(),
+      viewInsets: (json['viewInsets'] as List<dynamic> /*?*/ ?? [])
           .cast<num>()
           .map((i) => i.toDouble())
           .toList(growable: false),
-      userAgent: json['userAgent'] as String,
+      userAgent: json['userAgent'] as String /*?*/,
     );
   }
 

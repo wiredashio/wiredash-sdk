@@ -27,12 +27,12 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
     @required this.builder,
     this.background,
     this.onPagePopped,
-    RouteSettings settings,
+    RouteSettings /*?*/ settings,
   }) : super(settings: settings);
 
   final WidgetBuilder builder;
-  final VoidCallback onPagePopped;
-  final Uint8List background;
+  final VoidCallback /*?*/ onPagePopped;
+  final Uint8List /*?*/ background;
   bool _didUserPop = false;
 
   @override
@@ -45,10 +45,10 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
   bool get opaque => background != null;
 
   @override
-  Color get barrierColor => null;
+  Color /*?*/ get barrierColor => null;
 
   @override
-  String get barrierLabel => null;
+  String /*?*/ get barrierLabel => null;
 
   @override
   bool canTransitionTo(TransitionRoute<dynamic> nextRoute) {
@@ -56,7 +56,7 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
   }
 
   static bool isPopGestureInProgress(PageRoute<dynamic> route) {
-    return route.navigator.userGestureInProgress;
+    return route.navigator?.userGestureInProgress ?? false;
   }
 
   bool get popGestureInProgress => isPopGestureInProgress(this);
@@ -75,7 +75,7 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
 
   static _DownGestureController<T> _startPopGesture<T>(
     PageRoute<T> route, {
-    VoidCallback onPagePopped,
+    VoidCallback /*?*/ onPagePopped,
   }) {
     return _DownGestureController<T>(
       navigator: route.navigator,
@@ -91,9 +91,7 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
       container: true,
       child: WillPopScope(
         onWillPop: () async {
-          if (onPagePopped != null) {
-            onPagePopped();
-          }
+          onPagePopped?.call();
           return true;
         },
         child: Stack(
@@ -105,7 +103,7 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
                   _didUserPop = true;
                 }
                 if (onPagePopped != null) {
-                  onPagePopped();
+                  onPagePopped?.call();
                 }
               },
               child: FadeTransition(
@@ -144,13 +142,12 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
 
 class DismissablePageTransition extends StatelessWidget {
   DismissablePageTransition({
-    Key key,
+    Key /*?*/ key,
     @required Animation<double> primaryRouteAnimation,
     @required Animation<double> secondaryRouteAnimation,
     @required this.child,
     @required bool linearTransition,
-  })  : assert(linearTransition != null),
-        _primaryPositionAnimation = (linearTransition
+  })  : _primaryPositionAnimation = (linearTransition
                 ? primaryRouteAnimation
                 : CurvedAnimation(
                     parent: primaryRouteAnimation,
@@ -192,12 +189,10 @@ class DismissablePageTransition extends StatelessWidget {
 
 class _DownGestureDetector<T> extends StatefulWidget {
   const _DownGestureDetector({
-    Key key,
+    Key /*?*/ key,
     @required this.onStartPopGesture,
     @required this.child,
-  })  : assert(onStartPopGesture != null),
-        assert(child != null),
-        super(key: key);
+  }) : super(key: key);
 
   final Widget child;
 
@@ -209,9 +204,9 @@ class _DownGestureDetector<T> extends StatefulWidget {
 
 class _DownGestureDetectorState<T> extends State<_DownGestureDetector<T>>
     with WidgetsBindingObserver {
-  _DownGestureController<T> _downGestureController;
+  _DownGestureController<T> /*?*/ _downGestureController;
 
-  VerticalDragGestureRecognizer _recognizer;
+  /*late*/ VerticalDragGestureRecognizer _recognizer;
 
   @override
   void didChangeMetrics() {
@@ -244,16 +239,14 @@ class _DownGestureDetectorState<T> extends State<_DownGestureDetector<T>>
 
   void _handleDragUpdate(DragUpdateDetails details) {
     assert(mounted);
-    assert(_downGestureController != null);
     _downGestureController
-        .dragUpdate(details.primaryDelta / context.size.height);
+        .dragUpdate((details.primaryDelta ?? 0) / (context.size?.height ?? 1));
   }
 
   void _handleDragEnd(DragEndDetails details) {
     assert(mounted);
-    assert(_downGestureController != null);
-    _downGestureController
-        .dragEnd(details.velocity.pixelsPerSecond.dx / context.size.height);
+    _downGestureController.dragEnd(
+        details.velocity.pixelsPerSecond.dx / (context.size?.height ?? 1));
     _downGestureController = null;
   }
 
@@ -301,14 +294,13 @@ class _DownGestureController<T> {
     @required this.navigator,
     @required this.controller,
     this.onPagePopped,
-  })  : assert(navigator != null),
-        assert(controller != null) {
+  }) {
     navigator.didStartUserGesture();
   }
 
   final AnimationController controller;
   final NavigatorState navigator;
-  final VoidCallback onPagePopped;
+  final VoidCallback /*?*/ onPagePopped;
 
   void dragUpdate(double delta) {
     controller.value -= delta;
@@ -325,24 +317,20 @@ class _DownGestureController<T> {
     }
 
     if (animateForward) {
-      final int droppedPageForwardAnimationTime = min(
-        lerpDouble(
-                _kMaxDroppedSwipePageForwardAnimationTime, 0, controller.value)
-            .floor(),
-        _kMaxPageBackAnimationTime,
-      );
+      final a = lerpDouble(
+          _kMaxDroppedSwipePageForwardAnimationTime, 0, controller.value);
+      final int droppedPageForwardAnimationTime =
+          min(a?.floor() ?? 0, _kMaxPageBackAnimationTime);
       controller.animateTo(1.0,
           duration: Duration(milliseconds: droppedPageForwardAnimationTime),
           curve: animationCurve);
     } else {
       navigator.pop();
-      if (onPagePopped != null) {
-        onPagePopped();
-      }
+      onPagePopped?.call();
       if (controller.isAnimating) {
-        final int droppedPageBackAnimationTime = lerpDouble(
-                0, _kMaxDroppedSwipePageForwardAnimationTime, controller.value)
-            .floor();
+        final a = lerpDouble(
+            0, _kMaxDroppedSwipePageForwardAnimationTime, controller.value);
+        final droppedPageBackAnimationTime = a?.floor() ?? 0;
         controller.animateBack(0.0,
             duration: Duration(milliseconds: droppedPageBackAnimationTime),
             curve: animationCurve);
@@ -350,7 +338,7 @@ class _DownGestureController<T> {
     }
 
     if (controller.isAnimating) {
-      AnimationStatusListener animationStatusCallback;
+      /*late*/ AnimationStatusListener animationStatusCallback;
       animationStatusCallback = (AnimationStatus status) {
         navigator.didStopUserGesture();
         controller.removeStatusListener(animationStatusCallback);

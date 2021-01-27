@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 /// Validates project credentials, such as project id and secret, and throws
 /// errors if they are invalid.

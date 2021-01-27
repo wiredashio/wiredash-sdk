@@ -9,8 +9,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ["stable"]
     container:
-      image: cirrusci/flutter:stable
+      image: cirrusci/flutter:${{ matrix.version }}
     steps:
     - uses: actions/checkout@v1.2.0
     - name: Download dependencies
@@ -19,3 +23,5 @@ jobs:
       run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
     - name: Analyze
       run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
+    - name: Test
+      run: sudo --preserve-env=PATH env flutter test --no-sound-null-safety

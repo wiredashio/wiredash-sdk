@@ -3,7 +3,7 @@ import 'package:wiredash/src/common/utils/email_validator.dart';
 
 void main() {
   group('EmailValidator', () {
-    EmailValidator validator;
+    /*late*/ EmailValidator validator;
 
     setUp(() {
       validator = const EmailValidator();
