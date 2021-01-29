@@ -9,11 +9,11 @@ environment:
   flutter: ">=1.24.0-8.0.pre.341"
 
 dependencies:
-  file: ">=5.2.1 <7.0.0"
+  file: ">=6.0.0-nullsafety.4 <7.0.0"
   flutter:
     sdk: flutter
-  http: ">=0.12.0 <0.13.0"
-  http_parser: ">=3.1.0 <4.0.0"
+  http: ">=0.13.0-nullsafety.0 <0.14.0"
+  http_parser: ">=4.0.0-nullsafety <5.0.0"
   path_provider: ">=1.6.14 <2.0.0"
   shared_preferences: '>=0.5.6 <2.0.0'
 
@@ -22,9 +22,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   lint: ^1.0.0
-  mockito: any
-  test: any
-  transparent_image: any
+  test: ^1.16.0-nullsafety
+  transparent_image: ^2.0.0-nullsafety.0
 
 flutter:
   assets:
