@@ -100,10 +100,11 @@ class RetryingFeedbackSubmitter {
     while (true) {
       attempt++;
       try {
-        final Uint8List screenshot = item.screenshotPath != null &&
-                await fs.file(item.screenshotPath).exists()
-            ? await fs.file(item.screenshotPath).readAsBytes()
-            : null;
+        final screenshotPath = item.screenshotPath;
+        final Uint8List? screenshot =
+            screenshotPath != null && await fs.file(screenshotPath).exists()
+                ? await fs.file(screenshotPath).readAsBytes()
+                : null;
         await _api.sendFeedback(
             feedback: item.feedbackItem, screenshot: screenshot);
         // ignore: avoid_print
