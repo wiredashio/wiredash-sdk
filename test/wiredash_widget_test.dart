@@ -48,8 +48,8 @@ void main() {
           ),
         );
 
-        expect(validator.validateInvocations.count, 1);
-        final lastCall = validator.validateInvocations.latest!;
+        validator.validateInvocations.verifyInvocationCount(1);
+        final lastCall = validator.validateInvocations.latest;
         expect(lastCall['projectId'], 'my-project-id');
         expect(lastCall['secret'], 'my-secret');
       },
@@ -161,6 +161,6 @@ class _MockProjectCredentialValidator extends Fake
   Future<void> validate(
       {required String projectId, required String secret}) async {
     validateInvocations
-        .catchMethodCall(namedArgs: {'projectId': projectId, 'secret': secret});
+        .addMethodCall(namedArgs: {'projectId': projectId, 'secret': secret});
   }
 }
