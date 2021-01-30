@@ -100,6 +100,7 @@ class _InputComponentState extends State<InputComponent> {
             errorMaxLines: 2,
           ),
           maxLength: _maxInputLength,
+          // ignore: deprecated_member_use
           maxLengthEnforced: false,
           buildCounter: _getCounterText,
           textCapitalization: _getTextCapitalization(),
