@@ -25,10 +25,10 @@ class FeedbackItem {
   FeedbackItem.fromJson(Map<String, dynamic> json)
       : deviceInfo =
             DeviceInfo.fromJson(json['deviceInfo'] as Map<String, dynamic>),
-        email = json['email'] as String,
+        email = json['email'] as String?,
         message = json['message'] as String,
         type = json['type'] as String,
-        user = json['user'] as String,
+        user = json['user'] as String?,
         sdkVersion = json['sdkVersion'] as int;
 
   Map<String, dynamic> toJson() {

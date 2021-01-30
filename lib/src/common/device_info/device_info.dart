@@ -156,12 +156,12 @@ class DeviceInfo {
       buildCommit: json['buildCommit'] as String?,
       deviceId: json['deviceId'] as String?,
       locale: json['locale'] as String?,
-      padding: ((json['padding'] as List<dynamic>?) ?? [])
-          .cast<num>()
+      padding: (json['padding'] as List<dynamic>?)
+          ?.cast<num>()
           .map((i) => i.toDouble())
           .toList(growable: false),
-      physicalSize: ((json['physicalSize'] as List<dynamic>?) ?? [])
-          .cast<num>()
+      physicalSize: (json['physicalSize'] as List<dynamic>?)
+          ?.cast<num>()
           .map((i) => i.toDouble())
           .toList(growable: false),
       pixelRatio: (json['pixelRatio'] as num?)?.toDouble(),
@@ -169,8 +169,8 @@ class DeviceInfo {
       platformOSBuild: json['platformOSBuild'] as String?,
       platformVersion: json['platformVersion'] as String?,
       textScaleFactor: (json['textScaleFactor'] as num?)?.toDouble(),
-      viewInsets: ((json['viewInsets'] as List<dynamic>?) ?? [])
-          .cast<num>()
+      viewInsets: (json['viewInsets'] as List<dynamic>?)
+          ?.cast<num>()
           .map((i) => i.toDouble())
           .toList(growable: false),
       userAgent: json['userAgent'] as String?,

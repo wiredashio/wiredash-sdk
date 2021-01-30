@@ -109,7 +109,7 @@ class PendingFeedbackItemStorage {
         final updatedItems = List.of(await retrieveAllPendingItems());
         updatedItems.removeWhere((e) => e.id == item.id);
         final preferences = await _sharedPreferences();
-        preferences.setStringList(_feedbackItemsKey,
+        await preferences.setStringList(_feedbackItemsKey,
             updatedItems.map((e) => json.encode(e.toJson())).toList());
         break;
       }
