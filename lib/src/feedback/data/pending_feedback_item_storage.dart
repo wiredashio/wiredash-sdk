@@ -28,7 +28,7 @@ class PendingFeedbackItemStorage {
   /// currently stored in the storage.
   Future<List<PendingFeedbackItem>> retrieveAllPendingItems() async {
     final preferences = await _sharedPreferences();
-    final items = preferences.getStringList(_feedbackItemsKey);
+    final items = preferences.getStringList(_feedbackItemsKey) ?? [];
     final List<PendingFeedbackItem> parsed = [];
     for (final item in items) {
       try {
