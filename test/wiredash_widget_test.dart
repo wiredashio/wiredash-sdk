@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:test/fake.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test/fake.dart';
 import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/feedback/feedback_sheet.dart';

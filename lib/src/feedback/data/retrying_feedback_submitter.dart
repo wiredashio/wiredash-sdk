@@ -61,18 +61,16 @@ class RetryingFeedbackSubmitter {
     _submitting = true;
     final items = await _pendingFeedbackItemStorage.retrieveAllPendingItems();
 
-    if (items != null) {
-      for (final item in items) {
-        await _submitWithRetry(item).catchError((_) {
-          // ignore when a single item couldn't be submitted
-          return null;
-        });
+    for (final item in items) {
+      await _submitWithRetry(item).catchError((_) {
+        // ignore when a single item couldn't be submitted
+        return null;
+      });
 
-        // Some "time to breathe", so that if there's a lot of pending items to
-        // send, they're not sent at the same exact moment which could cause
-        // some potential jank.
-        await Future.delayed(const Duration(milliseconds: 100));
-      }
+      // Some "time to breathe", so that if there's a lot of pending items to
+      // send, they're not sent at the same exact moment which could cause
+      // some potential jank.
+      await Future.delayed(const Duration(milliseconds: 100));
     }
 
     _submitting = false;

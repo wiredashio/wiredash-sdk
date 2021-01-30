@@ -14,7 +14,7 @@ class MethodInvocationCatcher {
   }
 
   AssertableInvocation get latest {
-    if (_invocations.last == null) {
+    if (_invocations.isEmpty) {
       throw "$methodName was not called.";
     }
     return _invocations.last;
@@ -39,11 +39,6 @@ class MethodInvocationCatcher {
   }
 
   dynamic Function(Invocation invocation)? interceptor;
-
-  void registerInterceptor(
-      dynamic Function(Invocation invocation)? interceptor) {
-    this.interceptor = interceptor;
-  }
 
   void verifyInvocationCount(int n) {
     if (_invocations.length == n) {
@@ -70,6 +65,7 @@ class AssertableInvocation {
     if (argument is int) {
       try {
         return original.positionalArguments[argument];
+        // ignore: avoid_catching_errors
       } on RangeError {
         throw "there is no positional arguments at index $argument."
             "\nInvocation: $this";

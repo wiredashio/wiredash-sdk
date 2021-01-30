@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter/widgets.dart';
+import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/capture/capture.dart';
@@ -11,7 +12,6 @@ import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
-import 'package:test/fake.dart';
 
 import '../util/invocation_catcher.dart';
 
@@ -46,8 +46,8 @@ void main() {
     late MockGlobalKey<CaptureState> mockCaptureKey;
     late MockGlobalKey<NavigatorState> mockNavigatorKey;
     late UserManager usermanager;
-    late StaticDeviceInfoGenerator deviceInfoGenerator =
-        StaticDeviceInfoGenerator(DeviceInfo(appVersion: 'test'));
+    final StaticDeviceInfoGenerator deviceInfoGenerator =
+        StaticDeviceInfoGenerator(const DeviceInfo(appVersion: 'test'));
     late MockRetryingFeedbackSubmitter mockRetryingFeedbackSubmitter;
     late FeedbackModel model;
 

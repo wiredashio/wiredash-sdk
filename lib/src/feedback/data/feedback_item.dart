@@ -83,7 +83,7 @@ class FeedbackItem {
         'message: $message, '
         'type: $type, '
         'user: $user, '
-        'sdkVersion: $sdkVersion'
+        'sdkVersion: $sdkVersion, '
         '}';
   }
 }

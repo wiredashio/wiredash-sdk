@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:test/fake.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/options/wiredash_options_data.dart';
@@ -10,7 +11,6 @@ import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_sheet.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 import 'package:wiredash/wiredash.dart';
-import 'package:test/fake.dart';
 
 import '../util/invocation_catcher.dart';
 
@@ -240,11 +240,13 @@ class MockFeedbackModel extends Fake
 
   final MethodInvocationCatcher feedbackUiStateInvocations =
       MethodInvocationCatcher('set feedbackUiState');
-  @override
+
   FeedbackUiState _feedbackUiState = FeedbackUiState.feedback;
 
+  @override
   FeedbackUiState get feedbackUiState => _feedbackUiState;
 
+  @override
   set feedbackUiState(FeedbackUiState feedbackUiState) {
     _feedbackUiState = feedbackUiState;
     feedbackUiStateInvocations.addMethodCall(args: [feedbackUiState]);
