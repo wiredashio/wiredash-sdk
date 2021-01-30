@@ -35,7 +35,7 @@ void main() {
         final _MockProjectCredentialValidator validator =
             _MockProjectCredentialValidator();
         debugProjectCredentialValidator = validator;
-        tearDown(() {
+        addTearDown(() {
           debugProjectCredentialValidator = const ProjectCredentialValidator();
         });
 

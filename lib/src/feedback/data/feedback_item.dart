@@ -74,4 +74,16 @@ class FeedbackItem {
       type.hashCode ^
       user.hashCode ^
       sdkVersion.hashCode;
+
+  @override
+  String toString() {
+    return 'FeedbackItem{'
+        'deviceInfo: $deviceInfo, '
+        'email: $email, '
+        'message: $message, '
+        'type: $type, '
+        'user: $user, '
+        'sdkVersion: $sdkVersion'
+        '}';
+  }
 }

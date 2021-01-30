@@ -39,4 +39,13 @@ class PendingFeedbackItem {
   @override
   int get hashCode =>
       id.hashCode ^ feedbackItem.hashCode ^ screenshotPath.hashCode;
+
+  @override
+  String toString() {
+    return 'PendingFeedbackItem{'
+        'id: $id, '
+        'feedbackItem: $feedbackItem, '
+        'screenshotPath: $screenshotPath, '
+        '}';
+  }
 }
