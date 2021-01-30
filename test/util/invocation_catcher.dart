@@ -22,6 +22,29 @@ class MethodInvocationCatcher {
 
   int get count => _invocations.length;
 
+  dynamic addMethodCall({
+    Map<String, Object?>? namedArgs,
+    List<Object?>? args,
+  }) {
+    final iv = Invocation.method(
+      Symbol(methodName),
+      args,
+      namedArgs?.map((key, value) => MapEntry(Symbol(key), value)),
+    );
+    _invocations.add(AssertableInvocation(iv));
+    if (interceptor != null) {
+      return interceptor!.call(iv);
+    }
+    return null;
+  }
+
+  dynamic Function(Invocation invocation)? interceptor;
+
+  void registerInterceptor(
+      dynamic Function(Invocation invocation)? interceptor) {
+    this.interceptor = interceptor;
+  }
+
   void verifyInvocationCount(int n) {
     if (_invocations.length == n) {
       return;
@@ -35,18 +58,6 @@ class MethodInvocationCatcher {
     }
     throw 'There have been ${_invocations.length} invocations - '
         'zero where expected. Invocations where:\n${_invocations.join('\n')}';
-  }
-
-  void addMethodCall({
-    Map<String, Object?>? namedArgs,
-    List<Object?>? args,
-  }) {
-    final iv = Invocation.method(
-      Symbol(methodName),
-      args,
-      namedArgs?.map((key, value) => MapEntry(Symbol(key), value)),
-    );
-    _invocations.add(AssertableInvocation(iv));
   }
 }
 
@@ -79,3 +90,5 @@ class AssertableInvocation {
     return "${original.memberName}(named: ${original.namedArguments}, positional: ${original.positionalArguments})";
   }
 }
+
+class WithArgument {}
