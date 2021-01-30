@@ -68,11 +68,12 @@ class AssertableInvocation {
 
   Object? operator [](dynamic argument) {
     if (argument is int) {
-      if (!original.positionalArguments.contains(argument)) {
+      try {
+        return original.positionalArguments[argument];
+      } on RangeError {
         throw "there is no positional arguments at index $argument."
             "\nInvocation: $this";
       }
-      return original.positionalArguments[argument];
     }
     if (argument is String) {
       if (!original.namedArguments.containsKey(Symbol(argument))) {
