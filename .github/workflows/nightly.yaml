@@ -1,0 +1,53 @@
+name: Nightly
+
+on:
+  schedule:
+    # Every night at 03:00
+    - cron: '0 3 * * *'
+
+jobs:
+  stable:
+    runs-on: ubuntu-latest
+    container:
+      image: cirrusci/flutter:stable
+    steps:
+      - uses: actions/checkout@v1.2.0
+        with:
+          ref: stable
+      - name: Download dependencies
+        run: sudo --preserve-env=PATH env flutter packages get
+      - name: Analyze
+        run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
+      - name: Test
+        run: sudo --preserve-env=PATH env flutter test --no-sound-null-safety
+
+
+  beta:
+    runs-on: ubuntu-latest
+    container:
+      image: cirrusci/flutter:beta
+    steps:
+      - uses: actions/checkout@v1.2.0
+          with:
+            ref: beta
+      - name: Download dependencies
+        run: sudo --preserve-env=PATH env flutter packages get
+      - name: Analyze
+        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings lib
+      - name: Test
+        run: sudo --preserve-env=PATH env flutter test --no-sound-null-safety
+
+  dev:
+    runs-on: ubuntu-latest
+    container:
+      image: cirrusci/flutter:dev
+    steps:
+      - uses: actions/checkout@v1.2.0
+          with:
+            ref: dev
+      - name: Download dependencies
+        run: sudo --preserve-env=PATH env flutter packages get
+      - name: Analyze
+        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings lib
+      - name: Test
+        run: sudo --preserve-env=PATH env flutter test --no-sound-null-safety

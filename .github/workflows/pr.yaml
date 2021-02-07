@@ -1,10 +1,8 @@
-name: Static Analysis
+name: Pull Requests
 
 on:
   pull_request:
   push:
-    branches:
-      - master
 
 jobs:
   build:
@@ -12,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ["stable"]
+        version: ["stable", "beta", "dev", "master"]
     container:
       image: cirrusci/flutter:${{ matrix.version }}
     steps:
