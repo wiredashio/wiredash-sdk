@@ -1,6 +1,6 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html show window;
-import 'dart:ui' as ui show Window;
+import 'dart:ui' show SingletonFlutterWindow;
 
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
@@ -13,7 +13,7 @@ class _DartHtmlDeviceInfoGenerator implements DeviceInfoGenerator {
   );
 
   final BuildInfoManager buildInfo;
-  final ui.Window window;
+  final SingletonFlutterWindow window;
 
   @override
   DeviceInfo generate() {
@@ -26,6 +26,6 @@ class _DartHtmlDeviceInfoGenerator implements DeviceInfoGenerator {
 
 /// Called by [DeviceInfoGenerator] factory constructor in browsers
 DeviceInfoGenerator createDeviceInfoGenerator(
-    BuildInfoManager buildInfo, ui.Window window) {
+    BuildInfoManager buildInfo, SingletonFlutterWindow window) {
   return _DartHtmlDeviceInfoGenerator(buildInfo, window);
 }
