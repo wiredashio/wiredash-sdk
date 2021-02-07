@@ -1,4 +1,4 @@
-name: Static Analysis
+name: Pull Requests
 
 on:
   pull_request:
@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [ "beta", "dev" , "master"]
+        version: ["stable", "beta", "dev", "master"]
     container:
       image: cirrusci/flutter:${{ matrix.version }}
     steps:
@@ -22,6 +22,6 @@ jobs:
     - name: Check formatting
       run: sudo --preserve-env=PATH env flutter format --dry-run --set-exit-if-changed lib
     - name: Analyze
-      run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings lib
+      run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
     - name: Test
       run: sudo --preserve-env=PATH env flutter test --no-sound-null-safety
