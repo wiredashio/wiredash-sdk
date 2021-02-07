@@ -33,7 +33,7 @@ class RetryingFeedbackSubmitter {
   /// Persists [item] and [screenshot], then tries to send them.
   ///
   /// If sending fails, uses exponential backoff and tries again up to 7 times.
-  Future<void> submit(FeedbackItem item, Uint8List screenshot) async {
+  Future<void> submit(FeedbackItem item, Uint8List /*?*/ screenshot) async {
     await _pendingFeedbackItemStorage.addPendingItem(item, screenshot);
 
     // Intentionally not "await"-ed. Since we've persisted the pending feedback
@@ -61,18 +61,16 @@ class RetryingFeedbackSubmitter {
     _submitting = true;
     final items = await _pendingFeedbackItemStorage.retrieveAllPendingItems();
 
-    if (items != null) {
-      for (final item in items) {
-        await _submitWithRetry(item).catchError((_) {
-          // ignore when a single item couldn't be submitted
-          return null;
-        });
+    for (final item in items) {
+      await _submitWithRetry(item).catchError((_) {
+        // ignore when a single item couldn't be submitted
+        return null;
+      });
 
-        // Some "time to breathe", so that if there's a lot of pending items to
-        // send, they're not sent at the same exact moment which could cause
-        // some potential jank.
-        await Future.delayed(const Duration(milliseconds: 100));
-      }
+      // Some "time to breathe", so that if there's a lot of pending items to
+      // send, they're not sent at the same exact moment which could cause
+      // some potential jank.
+      await Future.delayed(const Duration(milliseconds: 100));
     }
 
     _submitting = false;
@@ -100,9 +98,10 @@ class RetryingFeedbackSubmitter {
     while (true) {
       attempt++;
       try {
-        final Uint8List screenshot = item.screenshotPath != null &&
-                await fs.file(item.screenshotPath).exists()
-            ? await fs.file(item.screenshotPath).readAsBytes()
+        final screenshotPath = item.screenshotPath;
+        final Uint8List /*?*/ screenshot = screenshotPath != null &&
+                await fs.file(screenshotPath).exists()
+            ? await fs.file(screenshotPath).readAsBytes()
             : null;
         await _api.sendFeedback(
             feedback: item.feedbackItem, screenshot: screenshot);

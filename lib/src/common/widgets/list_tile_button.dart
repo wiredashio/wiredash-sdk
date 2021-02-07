@@ -5,23 +5,20 @@ import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 class ListTileButton extends StatelessWidget {
   final String title;
   final String subtitle;
-  final IconData icon;
+  final IconData /*?*/ icon;
   final Color iconColor;
   final Color iconBackgroundColor;
   final VoidCallback onPressed;
 
   const ListTileButton({
-    Key key,
+    Key /*?*/ key,
     @required this.title,
     @required this.subtitle,
     this.icon,
     this.iconColor = WiredashThemeData.white,
     this.iconBackgroundColor = WiredashThemeData.black,
     @required this.onPressed,
-  })  : assert(title != null),
-        assert(subtitle != null),
-        assert(onPressed != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

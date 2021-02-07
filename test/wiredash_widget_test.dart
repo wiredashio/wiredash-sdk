@@ -1,28 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test/fake.dart';
 import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/feedback/feedback_sheet.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 import 'package:wiredash/wiredash.dart';
 
-class MockProjectCredentialValidator extends Mock
-    implements ProjectCredentialValidator {}
+import 'util/invocation_catcher.dart';
 
 void main() {
   group('Wiredash', () {
-    MockProjectCredentialValidator mockProjectCredentialValidator;
-
     setUp(() {
-      mockProjectCredentialValidator = MockProjectCredentialValidator();
-      debugProjectCredentialValidator = mockProjectCredentialValidator;
       SharedPreferences.setMockInitialValues({});
-    });
-
-    tearDown(() {
-      debugProjectCredentialValidator = const ProjectCredentialValidator();
     });
 
     testWidgets('widget can be created', (tester) async {
@@ -41,6 +33,13 @@ void main() {
     testWidgets(
       'calls ProjectCredentialValidator.validate() initially',
       (tester) async {
+        final _MockProjectCredentialValidator validator =
+            _MockProjectCredentialValidator();
+        debugProjectCredentialValidator = validator;
+        addTearDown(() {
+          debugProjectCredentialValidator = const ProjectCredentialValidator();
+        });
+
         await tester.pumpWidget(
           Wiredash(
             projectId: 'my-project-id',
@@ -50,13 +49,10 @@ void main() {
           ),
         );
 
-        verify(
-          mockProjectCredentialValidator.validate(
-            projectId: 'my-project-id',
-            secret: 'my-secret',
-          ),
-        );
-        verifyNoMoreInteractions(mockProjectCredentialValidator);
+        validator.validateInvocations.verifyInvocationCount(1);
+        final lastCall = validator.validateInvocations.latest;
+        expect(lastCall['projectId'], 'my-project-id');
+        expect(lastCall['secret'], 'my-secret');
       },
     );
 
@@ -64,7 +60,7 @@ void main() {
         'only one feedback flow will be launched at a time - intro mode',
         (tester) async {
       final navigatorKey = GlobalKey<NavigatorState>();
-      WiredashController controller;
+      WiredashController /*?*/ controller;
 
       await tester.pumpWidget(
         Wiredash(
@@ -155,4 +151,17 @@ void main() {
       expect(find.byType(FeedbackSheet), findsNothing);
     });
   });
+}
+
+class _MockProjectCredentialValidator extends Fake
+    implements ProjectCredentialValidator {
+  final MethodInvocationCatcher validateInvocations =
+      MethodInvocationCatcher('validate');
+
+  @override
+  Future<void> validate(
+      {@required String projectId, @required String secret}) async {
+    validateInvocations
+        .addMethodCall(namedArgs: {'projectId': projectId, 'secret': secret});
+  }
 }

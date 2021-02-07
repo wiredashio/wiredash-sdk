@@ -29,6 +29,7 @@ void main() {
             'message': 'Hello world!',
             'type': 'bug',
             'user': 'Testy McTestFace',
+            'sdkVersion': 1
           },
         }),
         const PendingFeedbackItem(
@@ -53,6 +54,7 @@ void main() {
             message: 'Hello world!',
             type: 'bug',
             user: 'Testy McTestFace',
+            sdkVersion: 1,
           ),
         ),
       );
@@ -82,6 +84,7 @@ void main() {
             message: 'Hello world!',
             type: 'bug',
             user: 'Testy McTestFace',
+            sdkVersion: 1,
           ),
         ).toJson(),
         {
@@ -106,6 +109,7 @@ void main() {
             'message': 'Hello world!',
             'type': 'bug',
             'user': 'Testy McTestFace',
+            'sdkVersion': 1,
           },
         },
       );

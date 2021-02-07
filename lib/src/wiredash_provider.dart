@@ -4,17 +4,16 @@ import 'package:wiredash/src/feedback/feedback_model.dart';
 
 class WiredashProvider extends InheritedWidget {
   const WiredashProvider({
-    Key key,
+    Key /*?*/ key,
     @required this.userManager,
     @required this.feedbackModel,
     @required Widget child,
-  })  : assert(child != null),
-        super(key: key, child: child);
+  }) : super(key: key, child: child);
 
   final UserManager userManager;
   final FeedbackModel feedbackModel;
 
-  static WiredashProvider of(BuildContext context) {
+  static WiredashProvider /*?*/ of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<WiredashProvider>();
   }
 
@@ -25,7 +24,8 @@ class WiredashProvider extends InheritedWidget {
 }
 
 extension WiredashExtensions on BuildContext {
-  FeedbackModel get feedbackModel => WiredashProvider.of(this).feedbackModel;
+  FeedbackModel /*?*/ get feedbackModel =>
+      WiredashProvider.of(this)?.feedbackModel;
 
-  UserManager get userManager => WiredashProvider.of(this).userManager;
+  UserManager /*?*/ get userManager => WiredashProvider.of(this)?.userManager;
 }

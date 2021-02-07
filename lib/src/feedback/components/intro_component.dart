@@ -6,11 +6,10 @@ import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 
 class IntroComponent extends StatelessWidget {
-  final Function(FeedbackType) onModeSelectedCallback;
+  final void Function(FeedbackType) /*?*/ onModeSelectedCallback;
 
-  const IntroComponent(this.onModeSelectedCallback, {Key key})
-      : assert(onModeSelectedCallback != null),
-        super(key: key);
+  const IntroComponent(this.onModeSelectedCallback, {Key /*?*/ key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +28,7 @@ class IntroComponent extends StatelessWidget {
               iconBackgroundColor: const Color(0xffffc4f0),
               title: WiredashLocalizations.of(context).feedbackModeBugTitle,
               subtitle: WiredashLocalizations.of(context).feedbackModeBugMsg,
-              onPressed: () => onModeSelectedCallback(FeedbackType.bug),
+              onPressed: () => onModeSelectedCallback?.call(FeedbackType.bug),
             ),
           ],
           if (options.featureRequestButton) ...[
@@ -42,7 +41,8 @@ class IntroComponent extends StatelessWidget {
                   .feedbackModeImprovementTitle,
               subtitle:
                   WiredashLocalizations.of(context).feedbackModeImprovementMsg,
-              onPressed: () => onModeSelectedCallback(FeedbackType.improvement),
+              onPressed: () =>
+                  onModeSelectedCallback?.call(FeedbackType.improvement),
             ),
           ],
           if (options.praiseButton) ...[
@@ -53,7 +53,8 @@ class IntroComponent extends StatelessWidget {
               iconBackgroundColor: const Color(0xffcdfbcb),
               title: WiredashLocalizations.of(context).feedbackModePraiseTitle,
               subtitle: WiredashLocalizations.of(context).feedbackModePraiseMsg,
-              onPressed: () => onModeSelectedCallback(FeedbackType.praise),
+              onPressed: () =>
+                  onModeSelectedCallback?.call(FeedbackType.praise),
             ),
           ],
         ],

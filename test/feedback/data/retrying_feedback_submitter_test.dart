@@ -1,10 +1,11 @@
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:http/http.dart';
-import 'package:mockito/mockito.dart';
+import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
@@ -14,10 +15,22 @@ import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 
-class MockPendingFeedbackItemStorage extends Mock
+import '../../util/invocation_catcher.dart';
+
+class MockPendingFeedbackItemStorage extends Fake
     implements PendingFeedbackItemStorage {}
 
-class MockNetworkManager extends Mock implements WiredashApi {}
+class MockNetworkManager extends Fake implements WiredashApi {
+  final MethodInvocationCatcher sendFeedbackInvocations =
+      MethodInvocationCatcher('sendFeedback');
+
+  @override
+  Future<void> sendFeedback(
+      {@required FeedbackItem feedback, Uint8List /*?*/ screenshot}) async {
+    await sendFeedbackInvocations.addMethodCall(
+        namedArgs: {'feedback': feedback, 'screenshot': screenshot});
+  }
+}
 
 class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
   FakePendingFeedbackItemStorage(this.fs);
@@ -38,15 +51,17 @@ class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
 
   @override
   Future<PendingFeedbackItem> addPendingItem(
-      FeedbackItem item, Uint8List screenshot) async {
+      FeedbackItem item, Uint8List /*?*/ screenshot) async {
     final id = _currentItems.length + 1;
+
     final screenshotName = '$id.png';
-    final screenshotFile =
-        await fs.file(screenshotName).writeAsBytes(screenshot);
+    final screenshotFile = screenshot != null
+        ? await fs.file(screenshotName).writeAsBytes(screenshot)
+        : null;
     final pendingItem = PendingFeedbackItem(
       id: '$id',
       feedbackItem: item,
-      screenshotPath: screenshotFile.path,
+      screenshotPath: screenshotFile?.path,
     );
 
     _currentItems.add(pendingItem);
@@ -61,10 +76,10 @@ class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
 
 void main() {
   group('RetryingFeedbackSubmitter', () {
-    FileSystem fileSystem;
-    FakePendingFeedbackItemStorage fakePendingFeedbackItemStorage;
-    MockNetworkManager mockNetworkManager;
-    RetryingFeedbackSubmitter retryingFeedbackSubmitter;
+    /*late*/ FileSystem fileSystem;
+    /*late*/ FakePendingFeedbackItemStorage fakePendingFeedbackItemStorage;
+    /*late*/ MockNetworkManager mockNetworkManager;
+    /*late*/ RetryingFeedbackSubmitter retryingFeedbackSubmitter;
 
     setUp(() {
       fileSystem = MemoryFileSystem.test();
@@ -111,10 +126,6 @@ void main() {
         user: 'Testy McTestFace',
       );
 
-      when(mockNetworkManager.sendFeedback(
-              feedback: item, screenshot: anyNamed('screenshot')))
-          .thenAnswer((_) async {});
-
       fakeAsync((async) {
         retryingFeedbackSubmitter.submit(item, kTransparentImage);
 
@@ -125,16 +136,17 @@ void main() {
         expect(fileSystem.file('1.png').existsSync(), isFalse);
 
         // Should've not sent the feedback just yet.
-        verifyZeroInteractions(mockNetworkManager);
+        mockNetworkManager.sendFeedbackInvocations.verifyHasNoInvocation();
 
         // Hop on the time machine...
         async.elapse(const Duration(minutes: 5));
 
         // Should just submit the feedback item once, without the screenshot, as
         // the file didn't exist.
-        verify(mockNetworkManager.sendFeedback(
-            feedback: item, screenshot: anyNamed('screenshot')));
-        verifyNoMoreInteractions(mockNetworkManager);
+        mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
+        final submitCall = mockNetworkManager.sendFeedbackInvocations.latest;
+        expect(submitCall['feedback'], item);
+        expect(submitCall['screenshot'], null);
       });
     });
 
@@ -150,7 +162,7 @@ void main() {
 
       await retryingFeedbackSubmitter.submit(item, kTransparentImage);
 
-      verifyZeroInteractions(mockNetworkManager);
+      mockNetworkManager.sendFeedbackInvocations.verifyHasNoInvocation();
     });
 
     test(
@@ -164,10 +176,6 @@ void main() {
         user: 'Testy McTestFace',
       );
 
-      when(mockNetworkManager.sendFeedback(
-              feedback: item, screenshot: kTransparentImage))
-          .thenAnswer((_) async {});
-
       fakeAsync((async) {
         retryingFeedbackSubmitter.submit(item, kTransparentImage);
 
@@ -180,9 +188,7 @@ void main() {
         expect(fakePendingFeedbackItemStorage._deletedItemIds, ['1']);
 
         // Feedback should be sent, and only once.
-        verify(mockNetworkManager.sendFeedback(
-            feedback: item, screenshot: kTransparentImage));
-        verifyNoMoreInteractions(mockNetworkManager);
+        mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
       });
     });
 
@@ -221,12 +227,10 @@ void main() {
 
       fakeAsync((async) {
         var firstFileSubmitted = false;
-        when(mockNetworkManager.sendFeedback(
-                feedback: item, screenshot: kTransparentImage))
-            .thenAnswer((_) async {
+        mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
           if (firstFileSubmitted) throw Exception();
           firstFileSubmitted = true;
-        });
+        };
 
         // Persist a new item - in this case with an id of '3' and '3.png' as the
         // screenshot path. Triggers submitting of pending items, starting from '1'.
@@ -254,8 +258,12 @@ void main() {
           ),
         ]);
 
-        verify(mockNetworkManager.sendFeedback(
-            feedback: item, screenshot: kTransparentImage));
+        expect(
+            mockNetworkManager.sendFeedbackInvocations.invocations.length > 1,
+            true);
+        final lastCall = mockNetworkManager.sendFeedbackInvocations.latest;
+        expect(lastCall['feedback'], item);
+        expect(lastCall['screenshot'], kTransparentImage);
       });
     });
 
@@ -274,12 +282,10 @@ void main() {
 
       fakeAsync((async) {
         final clock = async.getClock(initialTime);
-        when(mockNetworkManager.sendFeedback(
-                feedback: item, screenshot: kTransparentImage))
-            .thenAnswer((_) {
+        mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
           retryLog.add(clock.now());
           throw Exception();
-        });
+        };
 
         retryingFeedbackSubmitter.submit(item, kTransparentImage);
 
@@ -287,9 +293,14 @@ void main() {
         async.elapse(const Duration(minutes: 5));
 
         // Sending one feedback item should be retried no more than 8 times.
-        verify(mockNetworkManager.sendFeedback(
-                feedback: item, screenshot: kTransparentImage))
-            .called(8);
+        final sendAttempts =
+            mockNetworkManager.sendFeedbackInvocations.invocations.where((iv) {
+          final matchItem = iv['feedback'] == item;
+          final matchImage =
+              equals(iv['screenshot']).matches(kTransparentImage, {});
+          return matchItem && matchImage;
+        });
+        expect(sendAttempts.length, 8);
 
         // Should've retried sending feedback at these very specific times.
         expect(retryLog, [
@@ -329,13 +340,11 @@ void main() {
 
       fakeAsync((async) {
         final clock = async.getClock(initialTime);
-        when(mockNetworkManager.sendFeedback(
-                feedback: item, screenshot: kTransparentImage))
-            .thenAnswer((_) {
+        mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
           retryLog.add(clock.now());
           throw UnauthenticatedWiredashApiException(
               Response("error", 401), 'projectX', 'abcdefg1234');
-        });
+        };
 
         retryingFeedbackSubmitter.submit(item, kTransparentImage);
 
@@ -343,9 +352,7 @@ void main() {
         async.elapse(const Duration(minutes: 5));
 
         // Sending one feedback item should be retried no more than 8 times.
-        verify(mockNetworkManager.sendFeedback(
-                feedback: item, screenshot: kTransparentImage))
-            .called(1);
+        mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
 
         // Log shows only one entry
         expect(retryLog, [
@@ -374,22 +381,18 @@ void main() {
       );
 
       fakeAsync((async) {
-        when(mockNetworkManager.sendFeedback(
-                feedback: item, screenshot: kTransparentImage))
-            .thenAnswer((_) {
-          throw WiredashApiException(
-              response: Response(
-                  '{"message": "child "deviceInfo" fails because [child "platformOS" fails because ["platformOS" is required]]"}',
-                  401));
-        });
+        mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
+          final response = Response(
+              '{"message": "child "deviceInfo" fails because [child "platformOS" fails because ["platformOS" is required]]"}',
+              401);
+          throw WiredashApiException(response: response);
+        };
 
         retryingFeedbackSubmitter.submit(item, kTransparentImage);
         async.elapse(const Duration(seconds: 1));
 
         // Sending one feedback item should be retried no more than 8 times.
-        verify(mockNetworkManager.sendFeedback(
-                feedback: item, screenshot: kTransparentImage))
-            .called(1);
+        mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
 
         // Item has beend deleted
         expect(fakePendingFeedbackItemStorage._deletedItemIds, ['1']);

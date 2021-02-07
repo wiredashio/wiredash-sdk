@@ -15,7 +15,7 @@ import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
 class FeedbackSheet extends StatefulWidget {
-  const FeedbackSheet({Key key}) : super(key: key);
+  const FeedbackSheet({Key /*?*/ key}) : super(key: key);
 
   @override
   _FeedbackSheetState createState() => _FeedbackSheetState();

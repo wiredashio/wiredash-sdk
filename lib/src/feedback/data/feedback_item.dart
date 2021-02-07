@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/version.dart';
 
@@ -14,17 +14,14 @@ class FeedbackItem {
     @required this.type,
     this.user,
     this.sdkVersion = wiredashSdkVersion,
-  })  : assert(deviceInfo != null),
-        assert(message != null),
-        assert(type != null),
-        assert(sdkVersion != null);
+  });
 
   final DeviceInfo deviceInfo;
   final String /*?*/ email;
-  final String /*!*/ message;
-  final String /*!*/ type;
+  final String message;
+  final String type;
   final String /*?*/ user;
-  final int /*!*/ sdkVersion;
+  final int sdkVersion;
 
   FeedbackItem.fromJson(Map<String, dynamic> json)
       : deviceInfo =
@@ -54,7 +51,7 @@ class FeedbackItem {
       'message': message,
       'type': type,
       'user': user,
-      'sdkVersion': sdkVersion?.toString(),
+      'sdkVersion': sdkVersion.toString(),
     };
   }
 
@@ -78,4 +75,16 @@ class FeedbackItem {
       type.hashCode ^
       user.hashCode ^
       sdkVersion.hashCode;
+
+  @override
+  String toString() {
+    return 'FeedbackItem{'
+        'deviceInfo: $deviceInfo, '
+        'email: $email, '
+        'message: $message, '
+        'type: $type, '
+        'user: $user, '
+        'sdkVersion: $sdkVersion, '
+        '}';
+  }
 }
