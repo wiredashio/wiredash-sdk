@@ -17,11 +17,11 @@ abstract class DataState<T> {
 
   bool get isSuccess => this is Success;
 
-  Success<T> get success => this is Success ? this as Success<T> : null;
+  Success<T> /*?*/ get success => this is Success ? this as Success<T> : null;
 
   bool get isError => this is UncaughtException;
 
-  UncaughtException<T> get error =>
+  UncaughtException<T> /*?*/ get error =>
       this is UncaughtException ? this as UncaughtException<T> : null;
 }
 

@@ -62,7 +62,7 @@ class Drawer extends StatelessWidget {
 
 class UndoButton extends StatelessWidget {
   const UndoButton({
-    Key key,
+    Key /*?*/ key,
     @required this.onTap,
   }) : super(key: key);
 

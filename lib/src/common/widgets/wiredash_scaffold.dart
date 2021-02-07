@@ -4,10 +4,9 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 
 class WiredashScaffold extends StatefulWidget {
   const WiredashScaffold({
-    Key key,
+    Key /*?*/ key,
     @required this.child,
-  })  : assert(child != null),
-        super(key: key);
+  }) : super(key: key);
 
   final Widget child;
 

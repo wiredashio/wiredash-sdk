@@ -5,11 +5,12 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 
 class ColorPicker extends StatelessWidget {
-  const ColorPicker({Key key, this.selectedColor, this.onChanged})
+  const ColorPicker(
+      {Key /*?*/ key, @required this.selectedColor, this.onChanged})
       : super(key: key);
 
   final Color selectedColor;
-  final Function(Color color) onChanged;
+  final void Function(Color color) /*?*/ onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -50,19 +51,18 @@ class ColorPicker extends StatelessWidget {
 
 class _ColorDot extends StatelessWidget {
   const _ColorDot({
-    Key key,
+    Key /*?*/ key,
     @required this.label,
     @required this.color,
     @required this.onChanged,
     @required Color selectedColor,
   })  : isSelected = color == selectedColor,
-        assert(color != null),
         super(key: key);
 
   final String label;
   final Color color;
   final bool isSelected;
-  final Function(Color color) onChanged;
+  final Function(Color color) /*?*/ onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class _ColorDot extends StatelessWidget {
       button: true,
       label: label,
       child: GestureDetector(
-        onTap: () => onChanged(color),
+        onTap: () => onChanged?.call(color),
         child: Padding(
           padding: const EdgeInsets.symmetric(
             vertical: 14,
@@ -96,9 +96,7 @@ class _ColorDotPainter extends CustomPainter {
   _ColorDotPainter(
     Color color, {
     @required this.paintRing,
-  })  : assert(color != null),
-        assert(paintRing != null),
-        _dotPaint = Paint()..color = color;
+  }) : _dotPaint = Paint()..color = color;
 
   final Paint _dotPaint;
   final Paint _ringPaint = Paint()

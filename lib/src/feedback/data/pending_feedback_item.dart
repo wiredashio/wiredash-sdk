@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 
 /// Represents a [FeedbackItem] that has not yet been submitted, and that has
@@ -8,12 +8,11 @@ class PendingFeedbackItem {
     @required this.id,
     @required this.feedbackItem,
     @required this.screenshotPath,
-  })  : assert(id != null),
-        assert(feedbackItem != null);
+  });
 
   final String id;
   final FeedbackItem feedbackItem;
-  final String screenshotPath;
+  final String /*?*/ screenshotPath;
 
   PendingFeedbackItem.fromJson(Map<String, dynamic> json)
       : id = json['id'] as String,
@@ -41,4 +40,13 @@ class PendingFeedbackItem {
   @override
   int get hashCode =>
       id.hashCode ^ feedbackItem.hashCode ^ screenshotPath.hashCode;
+
+  @override
+  String toString() {
+    return 'PendingFeedbackItem{'
+        'id: $id, '
+        'feedbackItem: $feedbackItem, '
+        'screenshotPath: $screenshotPath, '
+        '}';
+  }
 }

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
@@ -29,17 +29,17 @@ class WiredashApi {
   /// When [screenshot] is provided it sends a multipart request
   Future<void> sendFeedback({
     @required FeedbackItem feedback,
-    Uint8List screenshot,
+    Uint8List /*?*/ screenshot,
   }) async {
-    assert(feedback != null);
     final uri = Uri.parse('$_host/feedback');
     final arguments = feedback.toMultipartFormFields()
       ..removeWhere((key, value) => value == null || value.isEmpty);
+    final argumentsNN = arguments.map((key, value) => MapEntry(key, value));
 
     final BaseRequest request = () {
       if (screenshot != null) {
         return MultipartRequest('POST', uri)
-          ..fields.addAll(arguments)
+          ..fields.addAll(argumentsNN)
           ..files.add(MultipartFile.fromBytes(
             'file',
             screenshot,
@@ -47,7 +47,7 @@ class WiredashApi {
             contentType: MediaType('image', 'png'),
           ));
       }
-      return Request('POST', uri)..bodyFields = arguments;
+      return Request('POST', uri)..bodyFields = argumentsNN;
     }();
 
     final response = await _send(request);
@@ -73,11 +73,12 @@ class WiredashApi {
 
 /// Generic error from the Wiredash API
 class WiredashApiException implements Exception {
-  WiredashApiException({String message, this.response}) : _message = message;
+  WiredashApiException({String /*?*/ message, this.response})
+      : _message = message;
   String /*?*/ get message {
     final String /*?*/ bodyMessage = () {
       try {
-        return jsonDecode(response?.body)['message'] as String;
+        return jsonDecode(response?.body ?? "")['message'] as String;
       } catch (e) {
         return response?.body;
       }

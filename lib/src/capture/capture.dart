@@ -24,11 +24,10 @@ enum CaptureUiState { hidden, navigate, draw }
 
 class Capture extends StatefulWidget {
   const Capture({
-    Key key,
+    Key /*?*/ key,
     @required this.initialColor,
     @required this.child,
-  })  : assert(child != null),
-        super(key: key);
+  }) : super(key: key);
 
   final Widget child;
   final Color initialColor;
@@ -41,27 +40,27 @@ class CaptureState extends State<Capture>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   final _spotlightKey = GlobalKey<SpotlightState>();
 
-  AnimationController _animationControllerScreen;
-  AnimationController _animationControllerDrawer;
+  /*late*/ AnimationController _animationControllerScreen;
+  /*late*/ AnimationController _animationControllerDrawer;
 
-  Size _screenSize;
-  EdgeInsets _windowPadding;
-  double _scaleFactor;
-  double _contentBottomOffset;
+  /*late*/ Size _screenSize;
+  /*late*/ EdgeInsets _windowPadding;
+  /*late*/ double _scaleFactor;
+  /*late*/ double _contentBottomOffset;
 
-  Animation<double> _scaleAnimation;
-  Animation<double> _cornerRadiusAnimation;
-  Animation<double> _contentSlideUpAnimation;
-  Animation<double> _drawPanelSlideAnimation;
-  Listenable _masterListenable;
+  /*late*/ Animation<double> _scaleAnimation;
+  /*late*/ Animation<double> _cornerRadiusAnimation;
+  /*late*/ Animation<double> _contentSlideUpAnimation;
+  /*late*/ Animation<double> _drawPanelSlideAnimation;
+  /*late*/ Listenable _masterListenable;
 
-  Completer<Uint8List> _captureCompleter;
-  ValueNotifier<CaptureUiState> _captureUiState;
-  SketcherController _sketcherController;
-  ValueNotifier<bool> _visible;
+  Completer<Uint8List> /*?*/ _captureCompleter;
+  /*late*/ ValueNotifier<CaptureUiState> _captureUiState;
+  /*late*/ SketcherController _sketcherController;
+  /*late*/ ValueNotifier<bool> _visible;
 
-  ui.Image _screenshot;
-  Uint8List _screenshotSketch;
+  ui.Image /*?*/ _screenshot;
+  Uint8List /*?*/ _screenshotSketch;
 
   @override
   void initState() {
@@ -333,7 +332,7 @@ class CaptureState extends State<Capture>
     _sketcherController.clearGestures();
     _captureUiState.value = CaptureUiState.hidden;
 
-    _captureCompleter.complete(_screenshotSketch);
+    _captureCompleter?.complete(_screenshotSketch);
     _captureCompleter = null;
     _screenshot = null;
     _screenshotSketch = null;
@@ -383,7 +382,7 @@ class CaptureState extends State<Capture>
     }
   }
 
-  IconData _getNextButtonIcon() {
+  IconData /*?*/ _getNextButtonIcon() {
     switch (_captureUiState.value) {
       case CaptureUiState.navigate:
       case CaptureUiState.draw:

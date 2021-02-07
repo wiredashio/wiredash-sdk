@@ -5,17 +5,15 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 class Screenshot extends StatefulWidget {
-  const Screenshot(
-      {Key key,
-      @required this.capture,
-      @required this.onCaptured,
-      @required this.child})
-      : assert(onCaptured != null),
-        assert(child != null),
-        super(key: key);
+  const Screenshot({
+    Key /*?*/ key,
+    @required this.capture,
+    this.onCaptured,
+    @required this.child,
+  }) : super(key: key);
 
   final bool capture;
-  final Function(ui.Image image) onCaptured;
+  final void Function(ui.Image image) /*?*/ onCaptured;
   final Widget child;
 
   @override
@@ -26,8 +24,7 @@ class ScreenshotState extends State<Screenshot> {
   final _repaintBoundaryGlobalKey = GlobalKey();
 
   bool _wasCaptured = false;
-  ui.Image _screenshot;
-  MemoryImage _screenshotMemoryImage;
+  MemoryImage /*?*/ _screenshotMemoryImage;
 
   @override
   void didUpdateWidget(Screenshot oldWidget) {
@@ -48,24 +45,21 @@ class ScreenshotState extends State<Screenshot> {
     final canvas = _repaintBoundaryGlobalKey.currentContext.findRenderObject()
         as RenderRepaintBoundary;
 
-    _screenshot = await canvas.toImage(pixelRatio: 1.5);
+    final _screenshot = await canvas.toImage(pixelRatio: 1.5);
 
     final byteData =
         await _screenshot.toByteData(format: ui.ImageByteFormat.png);
+    if (byteData == null) return;
 
-    _screenshotMemoryImage = MemoryImage(byteData.buffer.asUint8List());
-
-    await precacheImage(_screenshotMemoryImage, context);
-    widget.onCaptured(_screenshot);
-    _screenshot = null;
-
+    final image = MemoryImage(byteData.buffer.asUint8List());
+    await precacheImage(image, context);
     setState(() {
-      // Update the UI with the screenshot image
+      _screenshotMemoryImage = image;
     });
+    widget.onCaptured?.call(_screenshot);
   }
 
   void _releaseScreen() {
-    _screenshot = null;
     _screenshotMemoryImage = null;
   }
 

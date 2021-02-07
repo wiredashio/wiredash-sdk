@@ -25,6 +25,7 @@ void main() {
           'message': 'Hello world!',
           'type': 'bug',
           'user': 'Testy McTestFace',
+          'sdkVersion': 1,
         }),
         const FeedbackItem(
           deviceInfo: DeviceInfo(
@@ -45,6 +46,7 @@ void main() {
           message: 'Hello world!',
           type: 'bug',
           user: 'Testy McTestFace',
+          sdkVersion: 1,
         ),
       );
     });
@@ -70,6 +72,7 @@ void main() {
           message: 'Hello world!',
           type: 'bug',
           user: 'Testy McTestFace',
+          sdkVersion: 1,
         ).toJson(),
         {
           'deviceInfo': {
@@ -90,6 +93,7 @@ void main() {
           'message': 'Hello world!',
           'type': 'bug',
           'user': 'Testy McTestFace',
+          'sdkVersion': 1,
         },
       );
     });
@@ -115,6 +119,7 @@ void main() {
           message: 'Hello world!',
           type: 'bug',
           user: 'Testy McTestFace',
+          sdkVersion: 1,
         ).toMultipartFormFields(),
         {
           'deviceInfo':
@@ -123,6 +128,7 @@ void main() {
           'message': 'Hello world!',
           'type': 'bug',
           'user': 'Testy McTestFace',
+          'sdkVersion': '1',
         },
       );
     });

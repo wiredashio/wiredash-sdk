@@ -27,8 +27,8 @@ class FeedbackModel with ChangeNotifier {
   final DeviceInfoGenerator _deviceInfoGenerator;
 
   FeedbackType feedbackType = FeedbackType.bug;
-  String feedbackMessage;
-  Uint8List screenshot;
+  String /*?*/ feedbackMessage;
+  Uint8List /*?*/ screenshot;
 
   FeedbackUiState _feedbackUiState = FeedbackUiState.hidden;
 

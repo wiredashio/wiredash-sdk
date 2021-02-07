@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/painting.dart';
 
 class Gesture {
-  Gesture(this.mode, this.paint) : assert(mode != null && paint != null);
+  Gesture(this.mode, this.paint);
 
   factory Gesture.point(Color color, Offset point) {
     return Gesture(
