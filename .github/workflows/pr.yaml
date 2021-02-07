@@ -20,7 +20,7 @@ jobs:
     - name: Download dependencies
       run: sudo --preserve-env=PATH env flutter packages get
     - name: Check formatting
-      run: sudo --preserve-env=PATH env flutter format --dry-run --set-exit-if-changed lib
+      run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
     - name: Analyze
       run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
     - name: Test

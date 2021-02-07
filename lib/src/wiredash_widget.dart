@@ -2,7 +2,6 @@ import 'package:file/local.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:path_provider/path_provider.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:shared_preferences/shared_preferences.dart';
@@ -162,7 +161,7 @@ class WiredashState extends State<Wiredash> {
     final storage = PendingFeedbackItemStorage(
       fileSystem,
       SharedPreferences.getInstance,
-      () async => (await getApplicationDocumentsDirectory()).path,
+      () async => (await getApplicationDocumentsDirectory())!.path,
     );
 
     final retryingFeedbackSubmitter =
