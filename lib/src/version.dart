@@ -1,2 +1,2 @@
 /// The version of the Wiredash SDK
-const wiredashSdkVersion = 5;
+const wiredashSdkVersion = 6;
