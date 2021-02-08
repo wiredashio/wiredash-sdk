@@ -1,3 +1,7 @@
+## 0.4.2 - Prepare for nullsafety
+* Remove mockito dependency
+* Add nullability hints `/*?*/`
+
 ## 0.4.1 - Longer feedback & more languages
 * Feedback length has been increased from 512 to 2048 characters
 * Support for new languages: [da] 🇩🇰, [hu] 🇭🇺, [ko] 🇰🇷, [ru] 🇷🇺 and [zh-cn] 🇨🇳. We are still missing some languages, please help us to translate Wiredash on [POEditor](https://poeditor.com/projects/view?id=347065)
