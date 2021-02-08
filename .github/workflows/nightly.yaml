@@ -1,6 +1,7 @@
 name: Nightly
 
 on:
+  workflow_dispatch:
   schedule:
     # Every night at 03:00
     - cron: '0 3 * * *'
