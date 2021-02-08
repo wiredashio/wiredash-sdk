@@ -1,3 +1,11 @@
+## 0.5.0 - SingletonFlutterWindow
+* *Breaking* Replace references to `ui.Window` with the new `SingletonFlutterWindow` [`flutter/pull/69617`](https://github.com/flutter/flutter/pull/69617)
+* Raise minimum Flutter version to `1.24.0-8.0.pre.341` where the breaking change was introduced
+
+## 0.4.2 - Prepare for nullsafety
+* Remove mockito dependency
+* Add nullability hints `/*?*/`
+
 ## 0.4.1 - Longer feedback & more languages
 * Feedback length has been increased from 512 to 2048 characters
 * Support for new languages: [da] 🇩🇰, [hu] 🇭🇺, [ko] 🇰🇷, [ru] 🇷🇺 and [zh-cn] 🇨🇳. We are still missing some languages, please help us to translate Wiredash on [POEditor](https://poeditor.com/projects/view?id=347065)
