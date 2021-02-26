@@ -527,7 +527,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.6.0-nullsafety.1"
+    version: "0.6.0-nullsafety.2"
   xdg_directories:
     dependency: transitive
     description:
