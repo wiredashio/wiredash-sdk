@@ -161,7 +161,7 @@ class WiredashState extends State<Wiredash> {
     final storage = PendingFeedbackItemStorage(
       fileSystem,
       SharedPreferences.getInstance,
-      () async => (await getApplicationDocumentsDirectory())!.path,
+      () async => (await getApplicationDocumentsDirectory()).path,
     );
 
     final retryingFeedbackSubmitter =
