@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:stable
-    if: github.base_ref == 'refs/heads/stable' || github.ref == 'refs/heads/stable'
+    if: github.base_ref == 'stable' || github.ref == 'refs/heads/stable'
     steps:
       - uses: actions/checkout@v1.2.0
       - name: Download dependencies
@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:beta
-    if: github.base_ref == 'refs/heads/beta' || github.ref == 'refs/heads/beta'
+    if: github.base_ref == 'beta' || github.ref == 'refs/heads/beta'
     steps:
       - uses: actions/checkout@v1.2.0
       - name: Download dependencies
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:dev
-    if: github.base_ref == 'refs/heads/dev' || github.ref == 'refs/heads/dev'
+    if: github.base_ref == 'dev' || github.ref == 'refs/heads/dev'
     steps:
       - uses: actions/checkout@v1.2.0
       - name: Download dependencies
@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:master
-    if: github.base_ref == 'refs/heads/dev' || github.ref == 'refs/heads/dev'
+    if: github.base_ref == 'dev' || github.ref == 'refs/heads/dev'
     steps:
       - uses: actions/checkout@v1.2.0
       - name: Download dependencies
