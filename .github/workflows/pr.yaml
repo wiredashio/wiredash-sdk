@@ -9,22 +9,66 @@ on:
       - dev
 
 jobs:
-  build:
+  pr-stable:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        version: ["stable", "beta", "dev", "master"]
     container:
-      image: cirrusci/flutter:${{ matrix.version }}
-    if: github.base_ref == refs/heads/${{ matrix.version }} || github.ref == refs/heads/${{ matrix.version }}
+      image: cirrusci/flutter:stable
+    if: github.base_ref == 'refs/heads/stable' || github.ref == 'refs/heads/stable'
     steps:
-    - uses: actions/checkout@v1.2.0
-    - name: Download dependencies
-      run: sudo --preserve-env=PATH env flutter packages get
-    - name: Check formatting
-      run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
-    - name: Analyze
-      run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
-    - name: Test
-      run: sudo --preserve-env=PATH env flutter test --no-sound-null-safety
+      - uses: actions/checkout@v1.2.0
+      - name: Download dependencies
+        run: sudo --preserve-env=PATH env flutter packages get
+      - name: Check formatting
+        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
+      - name: Analyze
+        run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
+      - name: Test
+        run: sudo --preserve-env=PATH env flutter test --no-sound-null-safety
+
+  pr-beta:
+    runs-on: ubuntu-latest
+    container:
+      image: cirrusci/flutter:beta
+    if: github.base_ref == 'refs/heads/beta' || github.ref == 'refs/heads/beta'
+    steps:
+      - uses: actions/checkout@v1.2.0
+      - name: Download dependencies
+        run: sudo --preserve-env=PATH env flutter packages get
+      - name: Check formatting
+        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
+      - name: Analyze
+        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings lib
+      - name: Test
+        run: sudo --preserve-env=PATH env flutter test --no-sound-null-safety
+
+  pr-dev:
+    runs-on: ubuntu-latest
+    container:
+      image: cirrusci/flutter:dev
+    if: github.base_ref == 'refs/heads/dev' || github.ref == 'refs/heads/dev'
+    steps:
+      - uses: actions/checkout@v1.2.0
+      - name: Download dependencies
+        run: sudo --preserve-env=PATH env flutter packages get
+      - name: Check formatting
+        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
+      - name: Analyze
+        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings lib
+      - name: Test
+        run: sudo --preserve-env=PATH env flutter test --no-sound-null-safety
+
+  pr-master:
+    runs-on: ubuntu-latest
+    container:
+      image: cirrusci/flutter:master
+    if: github.base_ref == 'refs/heads/dev' || github.ref == 'refs/heads/dev'
+    steps:
+      - uses: actions/checkout@v1.2.0
+      - name: Download dependencies
+        run: flutter packages get
+      - name: Check formatting
+        run: dartfmt --dry-run --set-exit-if-changed lib
+      - name: Analyze
+        run: flutter analyze --fatal-infos --fatal-warnings lib
+      - name: Test
+        run: flutter test --no-sound-null-safety
