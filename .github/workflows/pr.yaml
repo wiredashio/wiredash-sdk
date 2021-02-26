@@ -17,6 +17,7 @@ jobs:
         version: ["stable", "beta", "dev", "master"]
     container:
       image: cirrusci/flutter:${{ matrix.version }}
+    if: github.base_ref == refs/heads/${{ matrix.version }} || github.ref == refs/heads/${{ matrix.version }}
     steps:
     - uses: actions/checkout@v1.2.0
     - name: Download dependencies
