@@ -54,7 +54,7 @@ class CaptureState extends State<Capture>
   late Animation<double> _drawPanelSlideAnimation;
   late Listenable _masterListenable;
 
-  Completer<Uint8List>? _captureCompleter;
+  Completer<Uint8List?>? _captureCompleter;
   late ValueNotifier<CaptureUiState> _captureUiState;
   late SketcherController _sketcherController;
   late ValueNotifier<bool> _visible;
@@ -397,9 +397,9 @@ class CaptureState extends State<Capture>
     _animateToHidden();
   }
 
-  Future<Uint8List> show() {
+  Future<Uint8List?> show() {
     _animateToNavigate();
-    _captureCompleter = Completer<Uint8List>();
+    _captureCompleter = Completer();
     return _captureCompleter!.future;
   }
 

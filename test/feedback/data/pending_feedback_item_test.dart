@@ -5,7 +5,7 @@ import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 
 void main() {
   group('PendingFeedbackItem', () {
-    test('fromJson()', () {
+    test('Full fromJson()', () {
       expect(
         PendingFeedbackItem.fromJson({
           'id': 'abc123',
@@ -54,6 +54,29 @@ void main() {
             message: 'Hello world!',
             type: 'bug',
             user: 'Testy McTestFace',
+            sdkVersion: 1,
+          ),
+        ),
+      );
+    });
+
+    test('Minimal fromJson()', () {
+      expect(
+        PendingFeedbackItem.fromJson({
+          'id': 'abc123',
+          'feedbackItem': {
+            'deviceInfo': <String, dynamic>{},
+            'message': 'Hello world!',
+            'type': 'bug',
+            'sdkVersion': 1
+          },
+        }),
+        const PendingFeedbackItem(
+          id: 'abc123',
+          feedbackItem: FeedbackItem(
+            deviceInfo: DeviceInfo(),
+            message: 'Hello world!',
+            type: 'bug',
             sdkVersion: 1,
           ),
         ),
