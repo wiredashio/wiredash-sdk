@@ -6,5 +6,6 @@
 ///  6 -> 0.4.2
 /// 10 -> 0.5.0
 /// 20 -> 0.6.0-nullsafety.0
+/// 21 -> 0.6.0
 /// 30 -> 0.7.0
-const wiredashSdkVersion = 10;
+const wiredashSdkVersion = 21;

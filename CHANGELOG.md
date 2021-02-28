@@ -1,3 +1,6 @@
+## 0.6.0 - Nullsafety
+* Migrate the sdk to nullsafety. No breaking changes except for raising the Dart SDK to 2.12.0-0.
+
 ## 0.5.0 - SingletonFlutterWindow
 * *Breaking* Replace references to `ui.Window` with the new `SingletonFlutterWindow` [`flutter/pull/69617`](https://github.com/flutter/flutter/pull/69617)
 * Raise minimum Flutter version to `1.24.0-8.0.pre.341` where the breaking change was introduced
