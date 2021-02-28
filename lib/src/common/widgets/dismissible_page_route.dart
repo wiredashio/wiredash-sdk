@@ -317,10 +317,10 @@ class _DownGestureController<T> {
     }
 
     if (animateForward) {
-      final a = lerpDouble(
+      final time = lerpDouble(
           _kMaxDroppedSwipePageForwardAnimationTime, 0, controller.value);
       final int droppedPageForwardAnimationTime =
-          min(a?.floor() ?? 0, _kMaxPageBackAnimationTime);
+          min(time?.floor() ?? 0, _kMaxPageBackAnimationTime);
       controller.animateTo(1.0,
           duration: Duration(milliseconds: droppedPageForwardAnimationTime),
           curve: animationCurve);
@@ -328,9 +328,9 @@ class _DownGestureController<T> {
       navigator.pop();
       onPagePopped?.call();
       if (controller.isAnimating) {
-        final a = lerpDouble(
+        final time = lerpDouble(
             0, _kMaxDroppedSwipePageForwardAnimationTime, controller.value);
-        final droppedPageBackAnimationTime = a?.floor() ?? 0;
+        final droppedPageBackAnimationTime = time?.floor() ?? 0;
         controller.animateBack(0.0,
             duration: Duration(milliseconds: droppedPageBackAnimationTime),
             curve: animationCurve);
