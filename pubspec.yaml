@@ -14,8 +14,8 @@ dependencies:
     sdk: flutter
   http: ">=0.13.0-0 <0.15.0"
   http_parser: ">=4.0.0-0 <5.0.0"
-  path_provider: ">=2.0.0-0 <3.0.0"
-  shared_preferences: '>=0.5.6 <3.0.0'
+  path_provider: ">=2.0.0 <3.0.0"
+  shared_preferences: '>=2.0.0 <3.0.0'
 
 dev_dependencies:
   fake_async: any
