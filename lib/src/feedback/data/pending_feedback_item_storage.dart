@@ -63,9 +63,9 @@ class PendingFeedbackItemStorage {
   /// with a randomly generated filename.
   Future<PendingFeedbackItem> addPendingItem(
     FeedbackItem item,
-    Uint8List /*?*/ screenshot,
+    Uint8List? screenshot,
   ) async {
-    String /*?*/ screenshotPath;
+    String? screenshotPath;
 
     if (screenshot != null) {
       final directory = await _getScreenshotStorageDirectoryPath();

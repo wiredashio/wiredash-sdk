@@ -1,24 +1,23 @@
-import 'package:meta/meta.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 
 /// Represents a [FeedbackItem] that has not yet been submitted, and that has
 /// been saved in the persistent storage.
 class PendingFeedbackItem {
   const PendingFeedbackItem({
-    @required this.id,
-    @required this.feedbackItem,
-    @required this.screenshotPath,
+    required this.id,
+    required this.feedbackItem,
+    this.screenshotPath,
   });
 
   final String id;
   final FeedbackItem feedbackItem;
-  final String /*?*/ screenshotPath;
+  final String? screenshotPath;
 
   PendingFeedbackItem.fromJson(Map<String, dynamic> json)
       : id = json['id'] as String,
         feedbackItem =
             FeedbackItem.fromJson(json['feedbackItem'] as Map<String, dynamic>),
-        screenshotPath = json['screenshotPath'] as String;
+        screenshotPath = json['screenshotPath'] as String?;
 
   Map<String, dynamic> toJson() {
     return {

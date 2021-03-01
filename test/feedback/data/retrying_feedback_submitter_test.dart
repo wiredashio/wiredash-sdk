@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:meta/meta.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -26,7 +25,7 @@ class MockNetworkManager extends Fake implements WiredashApi {
 
   @override
   Future<void> sendFeedback(
-      {@required FeedbackItem feedback, Uint8List /*?*/ screenshot}) async {
+      {required FeedbackItem feedback, Uint8List? screenshot}) async {
     await sendFeedbackInvocations.addMethodCall(
         namedArgs: {'feedback': feedback, 'screenshot': screenshot});
   }
@@ -51,7 +50,7 @@ class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
 
   @override
   Future<PendingFeedbackItem> addPendingItem(
-      FeedbackItem item, Uint8List /*?*/ screenshot) async {
+      FeedbackItem item, Uint8List? screenshot) async {
     final id = _currentItems.length + 1;
 
     final screenshotName = '$id.png';
@@ -76,10 +75,10 @@ class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
 
 void main() {
   group('RetryingFeedbackSubmitter', () {
-    /*late*/ FileSystem fileSystem;
-    /*late*/ FakePendingFeedbackItemStorage fakePendingFeedbackItemStorage;
-    /*late*/ MockNetworkManager mockNetworkManager;
-    /*late*/ RetryingFeedbackSubmitter retryingFeedbackSubmitter;
+    late FileSystem fileSystem;
+    late FakePendingFeedbackItemStorage fakePendingFeedbackItemStorage;
+    late MockNetworkManager mockNetworkManager;
+    late RetryingFeedbackSubmitter retryingFeedbackSubmitter;
 
     setUp(() {
       fileSystem = MemoryFileSystem.test();

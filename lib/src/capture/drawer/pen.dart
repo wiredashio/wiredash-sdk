@@ -7,8 +7,8 @@ import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 
 class FeedbackPen extends StatefulWidget {
   const FeedbackPen({
-    Key /*?*/ key,
-    @required this.color,
+    Key? key,
+    required this.color,
   }) : super(key: key);
 
   final Color color;
@@ -19,11 +19,11 @@ class FeedbackPen extends StatefulWidget {
 
 class _FeedbackPenState extends State<FeedbackPen>
     with SingleTickerProviderStateMixin {
-  /*late*/ AnimationController _animationController;
-  /*late*/ Animation<Offset> _slideAnimation;
+  late AnimationController _animationController;
+  late Animation<Offset> _slideAnimation;
 
-  /*late*/ Color _currentColor;
-  /*late*/ Color _nextColor;
+  late Color _currentColor;
+  late Color _nextColor;
 
   @override
   void initState() {
@@ -82,8 +82,8 @@ class _FeedbackPenState extends State<FeedbackPen>
   }
 
   String _buildLabel(BuildContext context) {
-    final theme = WiredashTheme.of(context);
-    final localizations = WiredashLocalizations.of(context);
+    final theme = WiredashTheme.of(context)!;
+    final localizations = WiredashLocalizations.of(context)!;
 
     if (_currentColor == theme.firstPenColor) {
       return localizations.firstPenSelected;

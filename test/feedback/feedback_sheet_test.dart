@@ -25,9 +25,9 @@ void main() {
       find.byKey(const ValueKey('wiredash.sdk.send_feedback_button'));
 
   group('FeedbackSheet', () {
-    /*late*/ MockFeedbackModel mockFeedbackModel;
-    /*late*/ MockUserManager mockUserManager;
-    /*late*/ MockNetworkManager mockNetworkManager;
+    late MockFeedbackModel mockFeedbackModel;
+    late MockUserManager mockUserManager;
+    late MockNetworkManager mockNetworkManager;
 
     setUp(() {
       mockFeedbackModel = MockFeedbackModel();
@@ -197,11 +197,11 @@ void main() {
 
 class _TestBoilerplate extends StatelessWidget {
   const _TestBoilerplate({
-    Key /*?*/ key,
-    @required this.networkManager,
-    @required this.feedbackModel,
-    @required this.userManager,
-    @required this.child,
+    Key? key,
+    required this.networkManager,
+    required this.feedbackModel,
+    required this.userManager,
+    required this.child,
   }) : super(key: key);
 
   final WiredashApi networkManager;
@@ -253,12 +253,12 @@ class MockFeedbackModel extends Fake
   }
 
   @override
-  String /*?*/ feedbackMessage;
+  String? feedbackMessage;
 }
 
 class MockUserManager extends Fake implements UserManager {
   @override
-  String /*?*/ userEmail;
+  String? userEmail;
 }
 
 class MockNetworkManager extends Fake implements WiredashApi {}

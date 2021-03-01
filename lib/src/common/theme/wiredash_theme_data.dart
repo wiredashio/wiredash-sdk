@@ -1,27 +1,26 @@
 import 'dart:ui' show Brightness;
 
-import 'package:meta/meta.dart';
 import 'package:flutter/rendering.dart';
 
 class WiredashThemeData {
   factory WiredashThemeData({
     Brightness brightness = Brightness.light,
-    Color /*?*/ primaryColor,
-    Color /*?*/ secondaryColor,
-    Color /*?*/ primaryTextColor,
-    Color /*?*/ secondaryTextColor,
-    Color /*?*/ tertiaryTextColor,
-    Color /*?*/ primaryBackgroundColor,
-    Color /*?*/ secondaryBackgroundColor,
-    Color /*?*/ backgroundColor,
-    Color /*?*/ dividerColor,
-    Color /*?*/ errorColor,
-    Color /*?*/ firstPenColor,
-    Color /*?*/ secondPenColor,
-    Color /*?*/ thirdPenColor,
-    Color /*?*/ fourthPenColor,
-    BorderRadius /*?*/ sheetBorderRadius,
-    String /*?*/ fontFamily,
+    Color? primaryColor,
+    Color? secondaryColor,
+    Color? primaryTextColor,
+    Color? secondaryTextColor,
+    Color? tertiaryTextColor,
+    Color? primaryBackgroundColor,
+    Color? secondaryBackgroundColor,
+    Color? backgroundColor,
+    Color? dividerColor,
+    Color? errorColor,
+    Color? firstPenColor,
+    Color? secondPenColor,
+    Color? thirdPenColor,
+    Color? fourthPenColor,
+    BorderRadius? sheetBorderRadius,
+    String? fontFamily,
   }) {
     if (brightness == Brightness.light) {
       return WiredashThemeData._(
@@ -79,23 +78,23 @@ class WiredashThemeData {
   }
 
   WiredashThemeData._({
-    @required this.brightness,
-    @required this.primaryColor,
-    @required this.secondaryColor,
-    @required this.primaryTextColor,
-    @required this.secondaryTextColor,
-    @required this.tertiaryTextColor,
-    @required this.primaryBackgroundColor,
-    @required this.secondaryBackgroundColor,
-    @required this.backgroundColor,
-    @required this.dividerColor,
-    @required this.errorColor,
-    @required this.firstPenColor,
-    @required this.secondPenColor,
-    @required this.thirdPenColor,
-    @required this.fourthPenColor,
-    @required this.sheetBorderRadius,
-    @required this.fontFamily,
+    required this.brightness,
+    required this.primaryColor,
+    required this.secondaryColor,
+    required this.primaryTextColor,
+    required this.secondaryTextColor,
+    required this.tertiaryTextColor,
+    required this.primaryBackgroundColor,
+    required this.secondaryBackgroundColor,
+    required this.backgroundColor,
+    required this.dividerColor,
+    required this.errorColor,
+    required this.firstPenColor,
+    required this.secondPenColor,
+    required this.thirdPenColor,
+    required this.fourthPenColor,
+    required this.sheetBorderRadius,
+    required this.fontFamily,
   });
 
   final Brightness brightness;
@@ -129,8 +128,7 @@ class WiredashThemeData {
   static const _fontFamily = 'LexendDeca';
   static const _packageName = 'wiredash';
 
-  String /*?*/ get packageName =>
-      fontFamily == _fontFamily ? _packageName : null;
+  String? get packageName => fontFamily == _fontFamily ? _packageName : null;
 
   TextStyle get titleStyle => TextStyle(
       package: packageName,

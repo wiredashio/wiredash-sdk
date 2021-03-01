@@ -4,16 +4,16 @@ import 'package:wiredash/src/capture/sketcher/sketcher_controller.dart';
 
 class CaptureProvider extends InheritedWidget {
   const CaptureProvider({
-    Key /*?*/ key,
-    @required this.captureUiState,
-    @required this.sketcherController,
-    @required Widget child,
+    Key? key,
+    required this.captureUiState,
+    required this.sketcherController,
+    required Widget child,
   }) : super(key: key, child: child);
 
   final ValueNotifier<CaptureUiState> captureUiState;
   final SketcherController sketcherController;
 
-  static CaptureProvider /*?*/ of(BuildContext context) {
+  static CaptureProvider? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<CaptureProvider>();
   }
 
@@ -25,9 +25,9 @@ class CaptureProvider extends InheritedWidget {
 }
 
 extension CaptureProviderExtension on BuildContext {
-  ValueNotifier<CaptureUiState> /*?*/ get captureUiState =>
+  ValueNotifier<CaptureUiState>? get captureUiState =>
       CaptureProvider.of(this)?.captureUiState;
 
-  SketcherController /*?*/ get sketcherController =>
+  SketcherController? get sketcherController =>
       CaptureProvider.of(this)?.sketcherController;
 }

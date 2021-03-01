@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 /// Validates project credentials, such as project id and secret, and throws
 /// errors if they are invalid.
 ///
@@ -8,8 +6,8 @@ class ProjectCredentialValidator {
   const ProjectCredentialValidator();
 
   Future<void> validate({
-    @required String projectId,
-    @required String secret,
+    required String projectId,
+    required String secret,
   }) async {
     assert(() {
       if (projectId == 'YOUR-PROJECT-ID') {

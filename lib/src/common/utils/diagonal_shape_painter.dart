@@ -5,8 +5,8 @@ class DiagonalShapePainter extends CustomPainter {
   final double padding;
 
   DiagonalShapePainter({
-    @required this.color,
-    @required this.padding,
+    required this.color,
+    required this.padding,
   });
 
   @override

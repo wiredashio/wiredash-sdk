@@ -21,7 +21,7 @@ class WiredashController {
   /// to the feedback. The [userEmail] parameter can be used to prefill the
   /// email input field but it's up to the user to decide if he want's to
   /// include his email with the feedback.
-  void setUserProperties({String /*?*/ userId, String /*?*/ userEmail}) {
+  void setUserProperties({String? userId, String? userEmail}) {
     _state.userManager.userId = userId ?? _state.userManager.userId;
     _state.userManager.userEmail = userEmail ?? _state.userManager.userEmail;
   }
@@ -30,8 +30,7 @@ class WiredashController {
   ///
   /// If these values are also provided through dart-define during compile time
   /// then they will be overwritten by this method
-  void setBuildProperties(
-      {String /*?*/ buildVersion, String /*?*/ buildNumber}) {
+  void setBuildProperties({String? buildVersion, String? buildNumber}) {
     _state.buildInfoManager.buildVersion =
         buildVersion ?? _state.buildInfoManager.buildVersion;
     _state.buildInfoManager.buildNumber =
@@ -56,5 +55,5 @@ class WiredashController {
   ///
   /// The [Confidential] widget can automatically hide sensitive widgets from
   /// being recorded in a feedback screenshot.
-  ValueNotifier<bool> get visible => _state.captureKey.currentState.visible;
+  ValueNotifier<bool> get visible => _state.captureKey.currentState!.visible;
 }

@@ -13,14 +13,14 @@ class InputComponent extends StatefulWidget {
   final InputComponentType type;
   final GlobalKey<FormState> formKey;
   final FocusNode focusNode;
-  final String /*?*/ prefill;
+  final String? prefill;
   final bool autofocus;
 
   const InputComponent({
-    Key /*?*/ key,
-    @required this.type,
-    @required this.formKey,
-    @required this.focusNode,
+    Key? key,
+    required this.type,
+    required this.formKey,
+    required this.focusNode,
     this.prefill,
     this.autofocus = false,
   }) : super(key: key);
@@ -30,7 +30,7 @@ class InputComponent extends StatefulWidget {
 }
 
 class _InputComponentState extends State<InputComponent> {
-  /*late*/ TextEditingController _textEditingController;
+  late TextEditingController _textEditingController;
 
   static const _maxInputLength = 2048;
   static const _lengthWarningThreshold = 50;
@@ -39,7 +39,7 @@ class _InputComponentState extends State<InputComponent> {
   void initState() {
     super.initState();
     _textEditingController = TextEditingController(text: widget.prefill);
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+    SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       if (widget.autofocus) {
         widget.focusNode.requestFocus();
       }
@@ -59,7 +59,7 @@ class _InputComponentState extends State<InputComponent> {
                 context, MaterialLocalizations) !=
             null;
 
-    final wiredashTheme = WiredashTheme.of(context);
+    final wiredashTheme = WiredashTheme.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Form(
@@ -104,7 +104,7 @@ class _InputComponentState extends State<InputComponent> {
           maxLengthEnforced: false,
           buildCounter: _getCounterText,
           textCapitalization: _getTextCapitalization(),
-          keyboardAppearance: WiredashTheme.of(context).brightness,
+          keyboardAppearance: WiredashTheme.of(context)!.brightness,
           keyboardType: _getKeyboardType(),
         ),
       ),
@@ -118,7 +118,6 @@ class _InputComponentState extends State<InputComponent> {
       case InputComponentType.email:
         return TextCapitalization.none;
     }
-    throw UnsupportedError(widget.type.toString());
   }
 
   TextInputType _getKeyboardType() {
@@ -128,7 +127,6 @@ class _InputComponentState extends State<InputComponent> {
       case InputComponentType.email:
         return TextInputType.emailAddress;
     }
-    throw UnsupportedError(widget.type.toString());
   }
 
   IconData _getIcon() {
@@ -138,34 +136,32 @@ class _InputComponentState extends State<InputComponent> {
       case InputComponentType.email:
         return WiredashIcons.email;
     }
-    throw UnsupportedError(widget.type.toString());
   }
 
   String _getHintText() {
     switch (widget.type) {
       case InputComponentType.feedback:
-        return WiredashLocalizations.of(context).inputHintFeedback;
+        return WiredashLocalizations.of(context)!.inputHintFeedback;
       case InputComponentType.email:
-        return WiredashLocalizations.of(context).inputHintEmail;
+        return WiredashLocalizations.of(context)!.inputHintEmail;
     }
-    throw UnsupportedError(widget.type.toString());
   }
 
-  Widget /*?*/ _getCounterText(
+  Widget? _getCounterText(
     /// The build context for the TextField.
     BuildContext context, {
 
     /// The length of the string currently in the input.
-    @required int currentLength,
+    required int currentLength,
 
     /// The maximum string length that can be entered into the TextField.
-    @required int /*?*/ maxLength,
+    required int? maxLength,
 
     /// Whether or not the TextField is currently focused.  Mainly provided for
     /// the [liveRegion] parameter in the [Semantics] widget for accessibility.
-    @required bool isFocused,
+    required bool isFocused,
   }) {
-    final theme = WiredashTheme.of(context);
+    final theme = WiredashTheme.of(context)!;
     final max = maxLength ?? _maxInputLength;
     switch (widget.type) {
       case InputComponentType.feedback:
@@ -183,14 +179,15 @@ class _InputComponentState extends State<InputComponent> {
     }
   }
 
-  String /*?*/ _validateInput(String /*?*/ input) {
+  String? _validateInput(String? input) {
     final text = input ?? "";
     switch (widget.type) {
       case InputComponentType.feedback:
         if (text.trim().isEmpty) {
-          return WiredashLocalizations.of(context).validationHintFeedbackEmpty;
+          return WiredashLocalizations.of(context)!.validationHintFeedbackEmpty;
         } else if (text.characters.length > _maxInputLength) {
-          return WiredashLocalizations.of(context).validationHintFeedbackLength;
+          return WiredashLocalizations.of(context)!
+              .validationHintFeedbackLength;
         }
         break;
       case InputComponentType.email:
@@ -203,19 +200,19 @@ class _InputComponentState extends State<InputComponent> {
         // If the email is non-null, we validate it.
         return debugEmailValidator.validate(text)
             ? null
-            : WiredashLocalizations.of(context).validationHintEmail;
+            : WiredashLocalizations.of(context)!.validationHintEmail;
     }
 
     return null;
   }
 
-  void _handleInput(String /*?*/ input) {
+  void _handleInput(String? input) {
     switch (widget.type) {
       case InputComponentType.feedback:
-        context.feedbackModel.feedbackMessage = input;
+        context.feedbackModel!.feedbackMessage = input;
         break;
       case InputComponentType.email:
-        context.userManager.userEmail = input;
+        context.userManager!.userEmail = input;
         break;
     }
   }

@@ -6,14 +6,14 @@ import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 
 class IntroComponent extends StatelessWidget {
-  final void Function(FeedbackType) /*?*/ onModeSelectedCallback;
+  final void Function(FeedbackType)? onModeSelectedCallback;
 
-  const IntroComponent(this.onModeSelectedCallback, {Key /*?*/ key})
+  const IntroComponent(this.onModeSelectedCallback, {Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final options = WiredashOptions.of(context);
+    final options = WiredashOptions.of(context)!;
 
     return Padding(
       padding: const EdgeInsets.only(top: 12, bottom: 16),
@@ -26,8 +26,8 @@ class IntroComponent extends StatelessWidget {
               icon: WiredashIcons.bug,
               iconColor: const Color(0xff9c4db1),
               iconBackgroundColor: const Color(0xffffc4f0),
-              title: WiredashLocalizations.of(context).feedbackModeBugTitle,
-              subtitle: WiredashLocalizations.of(context).feedbackModeBugMsg,
+              title: WiredashLocalizations.of(context)!.feedbackModeBugTitle,
+              subtitle: WiredashLocalizations.of(context)!.feedbackModeBugMsg,
               onPressed: () => onModeSelectedCallback?.call(FeedbackType.bug),
             ),
           ],
@@ -37,10 +37,10 @@ class IntroComponent extends StatelessWidget {
               icon: WiredashIcons.feature,
               iconColor: const Color(0xff007cbc),
               iconBackgroundColor: const Color(0xff2bd9fc),
-              title: WiredashLocalizations.of(context)
+              title: WiredashLocalizations.of(context)!
                   .feedbackModeImprovementTitle,
               subtitle:
-                  WiredashLocalizations.of(context).feedbackModeImprovementMsg,
+                  WiredashLocalizations.of(context)!.feedbackModeImprovementMsg,
               onPressed: () =>
                   onModeSelectedCallback?.call(FeedbackType.improvement),
             ),
@@ -51,8 +51,9 @@ class IntroComponent extends StatelessWidget {
               icon: WiredashIcons.applause,
               iconColor: const Color(0xff00b779),
               iconBackgroundColor: const Color(0xffcdfbcb),
-              title: WiredashLocalizations.of(context).feedbackModePraiseTitle,
-              subtitle: WiredashLocalizations.of(context).feedbackModePraiseMsg,
+              title: WiredashLocalizations.of(context)!.feedbackModePraiseTitle,
+              subtitle:
+                  WiredashLocalizations.of(context)!.feedbackModePraiseMsg,
               onPressed: () =>
                   onModeSelectedCallback?.call(FeedbackType.praise),
             ),

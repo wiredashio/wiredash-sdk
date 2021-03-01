@@ -27,8 +27,8 @@ class FeedbackModel with ChangeNotifier {
   final DeviceInfoGenerator _deviceInfoGenerator;
 
   FeedbackType feedbackType = FeedbackType.bug;
-  String /*?*/ feedbackMessage;
-  Uint8List /*?*/ screenshot;
+  String? feedbackMessage;
+  Uint8List? screenshot;
 
   FeedbackUiState _feedbackUiState = FeedbackUiState.hidden;
 
@@ -57,10 +57,10 @@ class FeedbackModel with ChangeNotifier {
         _clearFeedback();
         break;
       case FeedbackUiState.capture:
-        _captureKey.currentState.show().then((image) {
+        _captureKey.currentState!.show().then((image) {
           screenshot = image;
           _feedbackUiState = FeedbackUiState.feedback;
-          _navigatorKey.currentState.push(
+          _navigatorKey.currentState!.push(
             DismissiblePageRoute(
               builder: (context) => const FeedbackSheet(),
               background: image,
@@ -90,7 +90,7 @@ class FeedbackModel with ChangeNotifier {
     final item = FeedbackItem(
       deviceInfo: _deviceInfoGenerator.generate(),
       email: _userManager.userEmail,
-      message: feedbackMessage,
+      message: feedbackMessage!,
       type: feedbackType.label,
       user: _userManager.userId,
     );
@@ -140,7 +140,7 @@ Thanks!
       builder: (context) => const FeedbackSheet(),
       onPagePopped: () => feedbackUiState = FeedbackUiState.hidden,
     );
-    _navigatorKey.currentState.push(route).then((_) {
+    _navigatorKey.currentState!.push(route).then((_) {
       if (_feedbackUiState == FeedbackUiState.capture) {
         // The capture mode pops this route but it stays in capture mode
         // and doesn't switch to hidden
@@ -158,7 +158,7 @@ extension FeedbackTypeMembers on FeedbackType {
         FeedbackType.bug: "bug",
         FeedbackType.improvement: "improvement",
         FeedbackType.praise: "praise",
-      }[this];
+      }[this]!;
 }
 
 enum FeedbackUiState { hidden, intro, capture, feedback, email, success }

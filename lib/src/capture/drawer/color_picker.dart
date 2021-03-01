@@ -5,17 +5,16 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 
 class ColorPicker extends StatelessWidget {
-  const ColorPicker(
-      {Key /*?*/ key, @required this.selectedColor, this.onChanged})
+  const ColorPicker({Key? key, required this.selectedColor, this.onChanged})
       : super(key: key);
 
   final Color selectedColor;
-  final void Function(Color color) /*?*/ onChanged;
+  final void Function(Color color)? onChanged;
 
   @override
   Widget build(BuildContext context) {
-    final theme = WiredashTheme.of(context);
-    final localizations = WiredashLocalizations.of(context);
+    final theme = WiredashTheme.of(context)!;
+    final localizations = WiredashLocalizations.of(context)!;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -51,18 +50,18 @@ class ColorPicker extends StatelessWidget {
 
 class _ColorDot extends StatelessWidget {
   const _ColorDot({
-    Key /*?*/ key,
-    @required this.label,
-    @required this.color,
-    @required this.onChanged,
-    @required Color selectedColor,
-  })  : isSelected = color == selectedColor,
+    Key? key,
+    required this.label,
+    required this.color,
+    required this.onChanged,
+    required Color selectedColor,
+  })   : isSelected = color == selectedColor,
         super(key: key);
 
   final String label;
   final Color color;
   final bool isSelected;
-  final Function(Color color) /*?*/ onChanged;
+  final Function(Color color)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +94,7 @@ class _ColorDot extends StatelessWidget {
 class _ColorDotPainter extends CustomPainter {
   _ColorDotPainter(
     Color color, {
-    @required this.paintRing,
+    required this.paintRing,
   }) : _dotPaint = Paint()..color = color;
 
   final Paint _dotPaint;

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class CornerRadiusTransition extends AnimatedWidget {
   const CornerRadiusTransition({
-    Key /*?*/ key,
-    @required this.radius,
-    @required this.child,
+    Key? key,
+    required this.radius,
+    required this.child,
   }) : super(key: key, listenable: radius);
 
   final Animation<double> radius;

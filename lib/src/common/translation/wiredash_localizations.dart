@@ -19,8 +19,8 @@ import 'l10n/messages_zh_cn.dart' as zhcn;
 
 class WiredashLocalizations extends StatelessWidget {
   const WiredashLocalizations({
-    Key /*?*/ key,
-    @required this.child,
+    Key? key,
+    required this.child,
   }) : super(key: key);
 
   final Widget child;
@@ -34,9 +34,9 @@ class WiredashLocalizations extends StatelessWidget {
     );
   }
 
-  static WiredashTranslations /*?*/ of(BuildContext context) {
+  static WiredashTranslations? of(BuildContext context) {
     final options = WiredashOptions.of(context);
-    final _InheritedWiredashTranslation /*?*/ inheritedTranslation = context
+    final _InheritedWiredashTranslation? inheritedTranslation = context
         .dependOnInheritedWidgetOfExactType<_InheritedWiredashTranslation>();
     return inheritedTranslation?.translation(options?.currentLocale);
   }
@@ -76,9 +76,9 @@ class WiredashLocalizations extends StatelessWidget {
 
 class _InheritedWiredashTranslation extends InheritedWidget {
   _InheritedWiredashTranslation({
-    Key /*?*/ key,
-    @required Map<Locale, WiredashTranslations> /*?*/ customTranslations,
-    @required Widget child,
+    Key? key,
+    required Map<Locale, WiredashTranslations>? customTranslations,
+    required Widget child,
   }) : super(key: key, child: child) {
     final defaultTranslations = <Locale, WiredashTranslations>{
       const Locale.fromSubtags(languageCode: 'ar'):
@@ -122,10 +122,10 @@ class _InheritedWiredashTranslation extends InheritedWidget {
   final Map<Locale, WiredashTranslations> _translations =
       <Locale, WiredashTranslations>{};
 
-  WiredashTranslations translation(Locale /*?*/ locale) {
+  WiredashTranslations translation(Locale? locale) {
     if (locale != null) {
       if (_translations.containsKey(locale)) {
-        return _translations[locale];
+        return _translations[locale]!;
       } else if (WiredashLocalizations.isSupported(locale)) {
         final translation = _translations[
             Locale.fromSubtags(languageCode: locale.languageCode)];
@@ -134,7 +134,7 @@ class _InheritedWiredashTranslation extends InheritedWidget {
         }
       }
     }
-    return _translations[const Locale.fromSubtags(languageCode: 'en')];
+    return _translations[const Locale.fromSubtags(languageCode: 'en')]!;
   }
 
   @override

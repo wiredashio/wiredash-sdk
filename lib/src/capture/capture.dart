@@ -24,9 +24,9 @@ enum CaptureUiState { hidden, navigate, draw }
 
 class Capture extends StatefulWidget {
   const Capture({
-    Key /*?*/ key,
-    @required this.initialColor,
-    @required this.child,
+    Key? key,
+    required this.initialColor,
+    required this.child,
   }) : super(key: key);
 
   final Widget child;
@@ -40,27 +40,27 @@ class CaptureState extends State<Capture>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   final _spotlightKey = GlobalKey<SpotlightState>();
 
-  /*late*/ AnimationController _animationControllerScreen;
-  /*late*/ AnimationController _animationControllerDrawer;
+  late AnimationController _animationControllerScreen;
+  late AnimationController _animationControllerDrawer;
 
-  /*late*/ Size _screenSize;
-  /*late*/ EdgeInsets _windowPadding;
-  /*late*/ double _scaleFactor;
-  /*late*/ double _contentBottomOffset;
+  late Size _screenSize;
+  late EdgeInsets _windowPadding;
+  late double _scaleFactor;
+  late double _contentBottomOffset;
 
-  /*late*/ Animation<double> _scaleAnimation;
-  /*late*/ Animation<double> _cornerRadiusAnimation;
-  /*late*/ Animation<double> _contentSlideUpAnimation;
-  /*late*/ Animation<double> _drawPanelSlideAnimation;
-  /*late*/ Listenable _masterListenable;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _cornerRadiusAnimation;
+  late Animation<double> _contentSlideUpAnimation;
+  late Animation<double> _drawPanelSlideAnimation;
+  late Listenable _masterListenable;
 
-  Completer<Uint8List> /*?*/ _captureCompleter;
-  /*late*/ ValueNotifier<CaptureUiState> _captureUiState;
-  /*late*/ SketcherController _sketcherController;
-  /*late*/ ValueNotifier<bool> _visible;
+  Completer<Uint8List?>? _captureCompleter;
+  late ValueNotifier<CaptureUiState> _captureUiState;
+  late SketcherController _sketcherController;
+  late ValueNotifier<bool> _visible;
 
-  ui.Image /*?*/ _screenshot;
-  Uint8List /*?*/ _screenshotSketch;
+  ui.Image? _screenshot;
+  Uint8List? _screenshotSketch;
 
   @override
   void initState() {
@@ -96,11 +96,11 @@ class CaptureState extends State<Capture>
     _updateDimensions();
     _initAnimations();
 
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
   }
 
   void _updateDimensions() {
-    final window = WidgetsBinding.instance.window;
+    final window = WidgetsBinding.instance!.window;
     _windowPadding = EdgeInsets.fromWindowPadding(
         window.viewPadding, window.devicePixelRatio);
     _screenSize = window.physicalSize / window.devicePixelRatio;
@@ -151,7 +151,7 @@ class CaptureState extends State<Capture>
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     _animationControllerScreen.dispose();
     _animationControllerDrawer.dispose();
     _captureUiState.dispose();
@@ -172,7 +172,7 @@ class CaptureState extends State<Capture>
         children: <Widget>[
           CustomPaint(
             painter: DiagonalShapePainter(
-              color: WiredashTheme.of(context).secondaryBackgroundColor,
+              color: WiredashTheme.of(context)!.secondaryBackgroundColor,
               padding: _windowPadding.bottom,
             ),
             child: const SizedBox.expand(),
@@ -221,9 +221,9 @@ class CaptureState extends State<Capture>
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: WiredashTheme.of(context).secondaryBackgroundColor,
+        color: WiredashTheme.of(context)!.secondaryBackgroundColor,
         border: Border.all(
-          color: WiredashTheme.of(context).dividerColor,
+          color: WiredashTheme.of(context)!.dividerColor,
           width: 2,
         ),
       ),
@@ -306,9 +306,9 @@ class CaptureState extends State<Capture>
   String _getBackButtonString() {
     switch (_captureUiState.value) {
       case CaptureUiState.navigate:
-        return WiredashLocalizations.of(context).captureSkip;
+        return WiredashLocalizations.of(context)!.captureSkip;
       case CaptureUiState.draw:
-        return WiredashLocalizations.of(context).feedbackBack;
+        return WiredashLocalizations.of(context)!.feedbackBack;
       default:
         return '';
     }
@@ -337,7 +337,7 @@ class CaptureState extends State<Capture>
     _screenshot = null;
     _screenshotSketch = null;
 
-    _spotlightKey.currentState.hide();
+    _spotlightKey.currentState!.hide();
     _animationControllerDrawer.reverse();
     return _animationControllerScreen.reverse();
   }
@@ -348,12 +348,12 @@ class CaptureState extends State<Capture>
 
     _animationControllerScreen.forward();
     _animationControllerDrawer.reverse();
-    _spotlightKey.currentState.show(
+    _spotlightKey.currentState!.show(
       WiredashIcons.spotlightMove,
-      WiredashLocalizations.of(context)
+      WiredashLocalizations.of(context)!
           .captureSpotlightNavigateTitle
           .toLowerCase(),
-      WiredashLocalizations.of(context).captureSpotlightNavigateMsg,
+      WiredashLocalizations.of(context)!.captureSpotlightNavigateMsg,
     );
   }
 
@@ -362,27 +362,27 @@ class CaptureState extends State<Capture>
 
     _animationControllerScreen.forward();
     _animationControllerDrawer.forward();
-    _spotlightKey.currentState.show(
+    _spotlightKey.currentState!.show(
       WiredashIcons.spotlightDraw,
-      WiredashLocalizations.of(context)
+      WiredashLocalizations.of(context)!
           .captureSpotlightScreenCapturedTitle
           .toUpperCase(),
-      WiredashLocalizations.of(context).captureSpotlightScreenCapturedMsg,
+      WiredashLocalizations.of(context)!.captureSpotlightScreenCapturedMsg,
     );
   }
 
   String _getNextButtonString() {
     switch (_captureUiState.value) {
       case CaptureUiState.navigate:
-        return WiredashLocalizations.of(context).captureTakeScreenshot;
+        return WiredashLocalizations.of(context)!.captureTakeScreenshot;
       case CaptureUiState.draw:
-        return WiredashLocalizations.of(context).captureSaveScreenshot;
+        return WiredashLocalizations.of(context)!.captureSaveScreenshot;
       default:
         return '';
     }
   }
 
-  IconData /*?*/ _getNextButtonIcon() {
+  IconData? _getNextButtonIcon() {
     switch (_captureUiState.value) {
       case CaptureUiState.navigate:
       case CaptureUiState.draw:
@@ -393,14 +393,14 @@ class CaptureState extends State<Capture>
   }
 
   Future<void> _takeScreenshotAndHide() async {
-    _screenshotSketch = await _sketcherController.recordOntoImage(_screenshot);
+    _screenshotSketch = await _sketcherController.recordOntoImage(_screenshot!);
     _animateToHidden();
   }
 
-  Future<Uint8List> show() {
+  Future<Uint8List?> show() {
     _animateToNavigate();
-    _captureCompleter = Completer<Uint8List>();
-    return _captureCompleter.future;
+    _captureCompleter = Completer();
+    return _captureCompleter!.future;
   }
 
   ValueNotifier<bool> get visible => _visible;

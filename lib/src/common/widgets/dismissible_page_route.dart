@@ -24,15 +24,15 @@ final Animatable<Offset> _kMiddleLeftTween = Tween<Offset>(
 
 class DismissiblePageRoute<T> extends PageRoute<T> {
   DismissiblePageRoute({
-    @required this.builder,
+    required this.builder,
     this.background,
     this.onPagePopped,
-    RouteSettings /*?*/ settings,
+    RouteSettings? settings,
   }) : super(settings: settings);
 
   final WidgetBuilder builder;
-  final VoidCallback /*?*/ onPagePopped;
-  final Uint8List /*?*/ background;
+  final VoidCallback? onPagePopped;
+  final Uint8List? background;
   bool _didUserPop = false;
 
   @override
@@ -45,10 +45,10 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
   bool get opaque => background != null;
 
   @override
-  Color /*?*/ get barrierColor => null;
+  Color? get barrierColor => null;
 
   @override
-  String /*?*/ get barrierLabel => null;
+  String? get barrierLabel => null;
 
   @override
   bool canTransitionTo(TransitionRoute<dynamic> nextRoute) {
@@ -75,11 +75,11 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
 
   static _DownGestureController<T> _startPopGesture<T>(
     PageRoute<T> route, {
-    VoidCallback /*?*/ onPagePopped,
+    VoidCallback? onPagePopped,
   }) {
     return _DownGestureController<T>(
-      navigator: route.navigator,
-      controller: route.controller,
+      navigator: route.navigator!,
+      controller: route.controller!,
       onPagePopped: onPagePopped,
     );
   }
@@ -98,8 +98,8 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
           children: <Widget>[
             GestureDetector(
               onTap: () {
-                if (!_didUserPop && !navigator.userGestureInProgress) {
-                  navigator.pop();
+                if (!_didUserPop && !navigator!.userGestureInProgress) {
+                  navigator!.pop();
                   _didUserPop = true;
                 }
                 if (onPagePopped != null) {
@@ -112,7 +112,7 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
                   color: const Color(0x90000000),
                   child: (background != null)
                       ? Image.memory(
-                          background,
+                          background!,
                           color: const Color(0xff8b8b8d),
                           colorBlendMode: BlendMode.multiply,
                         )
@@ -142,12 +142,12 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
 
 class DismissablePageTransition extends StatelessWidget {
   DismissablePageTransition({
-    Key /*?*/ key,
-    @required Animation<double> primaryRouteAnimation,
-    @required Animation<double> secondaryRouteAnimation,
-    @required this.child,
-    @required bool linearTransition,
-  })  : _primaryPositionAnimation = (linearTransition
+    Key? key,
+    required Animation<double> primaryRouteAnimation,
+    required Animation<double> secondaryRouteAnimation,
+    required this.child,
+    required bool linearTransition,
+  })   : _primaryPositionAnimation = (linearTransition
                 ? primaryRouteAnimation
                 : CurvedAnimation(
                     parent: primaryRouteAnimation,
@@ -189,9 +189,9 @@ class DismissablePageTransition extends StatelessWidget {
 
 class _DownGestureDetector<T> extends StatefulWidget {
   const _DownGestureDetector({
-    Key /*?*/ key,
-    @required this.onStartPopGesture,
-    @required this.child,
+    Key? key,
+    required this.onStartPopGesture,
+    required this.child,
   }) : super(key: key);
 
   final Widget child;
@@ -204,9 +204,9 @@ class _DownGestureDetector<T> extends StatefulWidget {
 
 class _DownGestureDetectorState<T> extends State<_DownGestureDetector<T>>
     with WidgetsBindingObserver {
-  _DownGestureController<T> /*?*/ _downGestureController;
+  _DownGestureController<T>? _downGestureController;
 
-  /*late*/ VerticalDragGestureRecognizer _recognizer;
+  late VerticalDragGestureRecognizer _recognizer;
 
   @override
   void didChangeMetrics() {
@@ -221,13 +221,13 @@ class _DownGestureDetectorState<T> extends State<_DownGestureDetector<T>>
       ..onUpdate = _handleDragUpdate
       ..onEnd = _handleDragEnd
       ..onCancel = _handleDragCancel;
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
   }
 
   @override
   void dispose() {
     _recognizer.dispose();
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 
@@ -239,13 +239,13 @@ class _DownGestureDetectorState<T> extends State<_DownGestureDetector<T>>
 
   void _handleDragUpdate(DragUpdateDetails details) {
     assert(mounted);
-    _downGestureController
+    _downGestureController!
         .dragUpdate((details.primaryDelta ?? 0) / (context.size?.height ?? 1));
   }
 
   void _handleDragEnd(DragEndDetails details) {
     assert(mounted);
-    _downGestureController.dragEnd(
+    _downGestureController!.dragEnd(
         details.velocity.pixelsPerSecond.dx / (context.size?.height ?? 1));
     _downGestureController = null;
   }
@@ -261,8 +261,8 @@ class _DownGestureDetectorState<T> extends State<_DownGestureDetector<T>>
     return Container(
       alignment: Alignment.bottomCenter,
       margin: EdgeInsets.only(
-          bottom: WidgetsBinding.instance.window.viewInsets.bottom /
-              WidgetsBinding.instance.window.devicePixelRatio),
+          bottom: WidgetsBinding.instance!.window.viewInsets.bottom /
+              WidgetsBinding.instance!.window.devicePixelRatio),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
         child: SingleChildScrollView(
@@ -291,8 +291,8 @@ class _DownGestureDetectorState<T> extends State<_DownGestureDetector<T>>
 
 class _DownGestureController<T> {
   _DownGestureController({
-    @required this.navigator,
-    @required this.controller,
+    required this.navigator,
+    required this.controller,
     this.onPagePopped,
   }) {
     navigator.didStartUserGesture();
@@ -300,7 +300,7 @@ class _DownGestureController<T> {
 
   final AnimationController controller;
   final NavigatorState navigator;
-  final VoidCallback /*?*/ onPagePopped;
+  final VoidCallback? onPagePopped;
 
   void dragUpdate(double delta) {
     controller.value -= delta;
@@ -317,10 +317,10 @@ class _DownGestureController<T> {
     }
 
     if (animateForward) {
-      final a = lerpDouble(
+      final time = lerpDouble(
           _kMaxDroppedSwipePageForwardAnimationTime, 0, controller.value);
       final int droppedPageForwardAnimationTime =
-          min(a?.floor() ?? 0, _kMaxPageBackAnimationTime);
+          min(time?.floor() ?? 0, _kMaxPageBackAnimationTime);
       controller.animateTo(1.0,
           duration: Duration(milliseconds: droppedPageForwardAnimationTime),
           curve: animationCurve);
@@ -328,9 +328,9 @@ class _DownGestureController<T> {
       navigator.pop();
       onPagePopped?.call();
       if (controller.isAnimating) {
-        final a = lerpDouble(
+        final time = lerpDouble(
             0, _kMaxDroppedSwipePageForwardAnimationTime, controller.value);
-        final droppedPageBackAnimationTime = a?.floor() ?? 0;
+        final droppedPageBackAnimationTime = time?.floor() ?? 0;
         controller.animateBack(0.0,
             duration: Duration(milliseconds: droppedPageBackAnimationTime),
             curve: animationCurve);
@@ -338,7 +338,7 @@ class _DownGestureController<T> {
     }
 
     if (controller.isAnimating) {
-      /*late*/ AnimationStatusListener animationStatusCallback;
+      late AnimationStatusListener animationStatusCallback;
       animationStatusCallback = (AnimationStatus status) {
         navigator.didStopUserGesture();
         controller.removeStatusListener(animationStatusCallback);

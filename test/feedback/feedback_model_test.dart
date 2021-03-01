@@ -35,7 +35,7 @@ class MockRetryingFeedbackSubmitter extends Fake
   final MethodInvocationCatcher submitInvocations =
       MethodInvocationCatcher('submit');
   @override
-  Future<void> submit(FeedbackItem item, Uint8List /*?*/ screenshot) async {
+  Future<void> submit(FeedbackItem item, Uint8List? screenshot) async {
     submitInvocations
         .addMethodCall(namedArgs: {'item': item, 'screenshot': screenshot});
   }
@@ -43,13 +43,13 @@ class MockRetryingFeedbackSubmitter extends Fake
 
 void main() {
   group('FeedbackModel', () {
-    /*late*/ MockGlobalKey<CaptureState> mockCaptureKey;
-    /*late*/ MockGlobalKey<NavigatorState> mockNavigatorKey;
-    /*late*/ UserManager usermanager;
+    late MockGlobalKey<CaptureState> mockCaptureKey;
+    late MockGlobalKey<NavigatorState> mockNavigatorKey;
+    late UserManager usermanager;
     final StaticDeviceInfoGenerator deviceInfoGenerator =
         StaticDeviceInfoGenerator(const DeviceInfo(appVersion: 'test'));
-    /*late*/ MockRetryingFeedbackSubmitter mockRetryingFeedbackSubmitter;
-    /*late*/ FeedbackModel model;
+    late MockRetryingFeedbackSubmitter mockRetryingFeedbackSubmitter;
+    late FeedbackModel model;
 
     setUp(() {
       mockCaptureKey = MockGlobalKey();

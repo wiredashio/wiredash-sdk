@@ -2,7 +2,6 @@ import 'package:file/local.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:path_provider/path_provider.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:shared_preferences/shared_preferences.dart';
@@ -66,13 +65,13 @@ class Wiredash extends StatefulWidget {
   /// Creates a new [Wiredash] Widget which allows users to send feedback,
   /// wishes, ratings and much more
   const Wiredash({
-    Key /*?*/ key,
-    @required this.projectId,
-    @required this.secret,
-    @required this.navigatorKey,
+    Key? key,
+    required this.projectId,
+    required this.secret,
+    required this.navigatorKey,
     this.options,
     this.theme,
-    @required this.child,
+    required this.child,
   }) : super(key: key);
 
   /// Reference to the app [Navigator] to show the Wiredash bottom sheet
@@ -85,7 +84,7 @@ class Wiredash extends StatefulWidget {
   final String secret;
 
   /// Customize Wiredash's behaviour and language
-  final WiredashOptionsData /*?*/ options;
+  final WiredashOptionsData? options;
 
   /// Default visual properties, like colors and fonts for the Wiredash bottom
   /// sheet and the screenshot capture UI.
@@ -100,7 +99,7 @@ class Wiredash extends StatefulWidget {
   ///   child: MyApp(),
   /// );
   /// ```
-  final WiredashThemeData /*?*/ theme;
+  final WiredashThemeData? theme;
 
   /// Your application
   final Widget child;
@@ -116,7 +115,7 @@ class Wiredash extends StatefulWidget {
   /// ```dart
   /// Wiredash.of(context).show();
   /// ```
-  static WiredashController /*?*/ of(BuildContext context) {
+  static WiredashController? of(BuildContext context) {
     final state = context.findAncestorStateOfType<WiredashState>();
     if (state == null) return null;
     return WiredashController(state);
@@ -124,17 +123,17 @@ class Wiredash extends StatefulWidget {
 }
 
 class WiredashState extends State<Wiredash> {
-  /*late*/ GlobalKey<CaptureState> captureKey;
-  /*late*/ GlobalKey<NavigatorState> navigatorKey;
+  late GlobalKey<CaptureState> captureKey;
+  late GlobalKey<NavigatorState> navigatorKey;
 
-  /*late*/ UserManager userManager;
-  /*late*/ BuildInfoManager buildInfoManager;
+  late UserManager userManager;
+  late BuildInfoManager buildInfoManager;
 
-  /*late*/ WiredashApi _api;
-  /*late*/ FeedbackModel _feedbackModel;
+  late WiredashApi _api;
+  late FeedbackModel _feedbackModel;
 
-  /*late*/ WiredashOptionsData _options;
-  /*late*/ WiredashThemeData _theme;
+  late WiredashOptionsData _options;
+  late WiredashThemeData _theme;
 
   @override
   void initState() {
@@ -176,7 +175,7 @@ class WiredashState extends State<Wiredash> {
       retryingFeedbackSubmitter,
       DeviceInfoGenerator(
         buildInfoManager,
-        WidgetsBinding.instance.window,
+        WidgetsBinding.instance!.window,
       ),
     );
   }

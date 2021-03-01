@@ -6,7 +6,7 @@ void main() {
 }
 
 class WiredashExampleApp extends StatefulWidget {
-  const WiredashExampleApp({Key key}) : super(key: key);
+  const WiredashExampleApp({Key? key}) : super(key: key);
 
   @override
   _WiredashExampleAppState createState() => _WiredashExampleAppState();
@@ -93,7 +93,7 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
 }
 
 class _HomePage extends StatelessWidget {
-  const _HomePage({Key key}) : super(key: key);
+  const _HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +115,7 @@ class _HomePage extends StatelessWidget {
         /// Wiredash.of(context).show()
         /// Since the `Wiredash` widget is at the root of the widget tree this
         /// method can be accessed from anywhere in the code.
-        onPressed: Wiredash.of(context).show,
+        onPressed: Wiredash.of(context)!.show,
         child: Icon(Icons.feedback_outlined),
       ),
     );
@@ -134,8 +134,8 @@ class _HomePage extends StatelessWidget {
 
 class _DetailsPage extends StatelessWidget {
   const _DetailsPage({
-    Key key,
-    @required this.index,
+    Key? key,
+    required this.index,
   }) : super(key: key);
 
   final int index;

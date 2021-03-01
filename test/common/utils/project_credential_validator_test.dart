@@ -3,7 +3,7 @@ import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 
 void main() {
   group('ProjectCredentialValidator', () {
-    /*late*/ ProjectCredentialValidator validator;
+    late ProjectCredentialValidator validator;
 
     setUp(() {
       validator = const ProjectCredentialValidator();

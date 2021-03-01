@@ -5,19 +5,19 @@ import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 class ListTileButton extends StatelessWidget {
   final String title;
   final String subtitle;
-  final IconData /*?*/ icon;
+  final IconData? icon;
   final Color iconColor;
   final Color iconBackgroundColor;
   final VoidCallback onPressed;
 
   const ListTileButton({
-    Key /*?*/ key,
-    @required this.title,
-    @required this.subtitle,
+    Key? key,
+    required this.title,
+    required this.subtitle,
     this.icon,
     this.iconColor = WiredashThemeData.white,
     this.iconBackgroundColor = WiredashThemeData.black,
-    @required this.onPressed,
+    required this.onPressed,
   }) : super(key: key);
 
   @override
@@ -26,7 +26,7 @@ class ListTileButton extends StatelessWidget {
       button: true,
       child: Material(
         elevation: 1,
-        color: WiredashTheme.of(context).primaryBackgroundColor,
+        color: WiredashTheme.of(context)!.primaryBackgroundColor,
         borderRadius: const BorderRadius.all(Radius.circular(8)),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -59,11 +59,11 @@ class ListTileButton extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         title,
-                        style: WiredashTheme.of(context).body1Style,
+                        style: WiredashTheme.of(context)!.body1Style,
                       ),
                       Text(
                         subtitle,
-                        style: WiredashTheme.of(context).body2Style,
+                        style: WiredashTheme.of(context)!.body2Style,
                       )
                     ],
                   ),

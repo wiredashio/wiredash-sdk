@@ -11,7 +11,7 @@ class SketcherController extends ChangeNotifier {
 
   final List<Gesture> _gestures = [];
   Color _color;
-  Gesture /*?*/ _last;
+  Gesture? _last;
 
   Size size = Size.zero;
 
@@ -37,7 +37,7 @@ class SketcherController extends ChangeNotifier {
   }
 
   void updateGesture(Offset offset) {
-    _last..addPoint(offset)..addPoint(offset);
+    _last?..addPoint(offset)..addPoint(offset);
     notifyListeners();
   }
 
@@ -76,6 +76,6 @@ class SketcherController extends ChangeNotifier {
         );
 
     final bytes = await combined.toByteData(format: ImageByteFormat.png);
-    return bytes.buffer.asUint8List();
+    return bytes!.buffer.asUint8List();
   }
 }

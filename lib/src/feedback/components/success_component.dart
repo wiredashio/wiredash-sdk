@@ -4,11 +4,11 @@ import 'package:wiredash/src/common/widgets/list_tile_button.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 
 class SuccessComponent extends StatelessWidget {
-  final VoidCallback /*?*/ onClosedCallback;
+  final VoidCallback? onClosedCallback;
 
   const SuccessComponent(
     this.onClosedCallback, {
-    Key /*?*/ key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -23,10 +23,10 @@ class SuccessComponent extends StatelessWidget {
             icon: WiredashIcons.exit,
             iconColor: const Color(0xff9c4db1),
             iconBackgroundColor: const Color(0xffffc4f0),
-            title: WiredashLocalizations.of(context)
+            title: WiredashLocalizations.of(context)!
                 .feedbackStateSuccessCloseTitle,
             subtitle:
-                WiredashLocalizations.of(context).feedbackStateSuccessCloseMsg,
+                WiredashLocalizations.of(context)!.feedbackStateSuccessCloseMsg,
             onPressed: () => onClosedCallback?.call(),
           ),
         ],

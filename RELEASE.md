@@ -7,6 +7,7 @@
 - Commit changes
 - Tag release `vX.Y.Z` and push it
 - `pub publish`
+- Update/Move the `stable`, `beta` and `dev` branches
 - Copy paste release notes into github release
 - Update latest SDK version in `console`
 - Announce release on Twitter 🎉

@@ -16,7 +16,7 @@ import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import '../../util/invocation_catcher.dart';
 
 class FakeSharedPreferences extends Fake implements SharedPreferences {
-  final Map<String, Object /*?*/ > _store = {};
+  final Map<String, Object?> _store = {};
 
   final MethodInvocationCatcher setStringListInvocations =
       MethodInvocationCatcher('setStringList');
@@ -53,10 +53,10 @@ class IncrementalUuidV4Generator implements UuidV4Generator {
 
 void main() {
   group('PendingFeedbackItemStorage', () {
-    /*late*/ FileSystem fileSystem;
-    /*late*/ FakeSharedPreferences fakeSharedPreferences;
-    /*late*/ IncrementalUuidV4Generator uuidGenerator;
-    /*late*/ PendingFeedbackItemStorage storage;
+    late FileSystem fileSystem;
+    late FakeSharedPreferences fakeSharedPreferences;
+    late IncrementalUuidV4Generator uuidGenerator;
+    late PendingFeedbackItemStorage storage;
 
     setUp(() {
       fileSystem = MemoryFileSystem.test();
@@ -336,7 +336,7 @@ void main() {
       );
 
       final illegalItem = json.encode({
-        // item has some @required  properties missing
+        // item has some required properties missing
         'id': '<screenshot for invalid item>',
         'feedbackItem': {
           'email': '<email for item to be preserved>',
@@ -375,7 +375,7 @@ void main() {
           'io.wiredash.pending_feedback_items', [illegalItem, legalItem]);
 
       final oldOnErrorHandler = FlutterError.onError;
-      /*late*/ FlutterErrorDetails caught;
+      late FlutterErrorDetails caught;
       FlutterError.onError = (FlutterErrorDetails details) {
         caught = details;
       };

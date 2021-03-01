@@ -8,8 +8,8 @@ class Spotlight extends StatefulWidget {
   final Widget child;
 
   const Spotlight({
-    Key /*?*/ key,
-    @required this.child,
+    Key? key,
+    required this.child,
   }) : super(key: key);
 
   @override
@@ -18,13 +18,13 @@ class Spotlight extends StatefulWidget {
 
 class SpotlightState extends State<Spotlight>
     with SingleTickerProviderStateMixin {
-  /*late*/ AnimationController _animationController;
-  /*late*/ Animation<double> _opacityAnimation;
-  Widget /*?*/ _spotlightWidget;
-  IconData /*?*/ _icon;
-  String /*?*/ _title;
-  String /*?*/ _msg;
-  Timer /*?*/ _timer;
+  late AnimationController _animationController;
+  late Animation<double> _opacityAnimation;
+  Widget? _spotlightWidget;
+  IconData? _icon;
+  String? _title;
+  String? _msg;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -88,13 +88,13 @@ class SpotlightState extends State<Spotlight>
             const SizedBox(height: 32),
             Text(
               _title?.toUpperCase() ?? "-",
-              style: WiredashTheme.of(context).spotlightTitleStyle,
+              style: WiredashTheme.of(context)!.spotlightTitleStyle,
             ),
             const SizedBox(height: 12),
             Text(
               _msg ?? "-",
               textAlign: TextAlign.center,
-              style: WiredashTheme.of(context).spotlightTextStyle,
+              style: WiredashTheme.of(context)!.spotlightTextStyle,
             ),
           ],
         ),

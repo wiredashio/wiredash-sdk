@@ -7,11 +7,11 @@ import 'package:wiredash/src/capture/sketcher/sketcher_controller.dart';
 
 class Sketcher extends StatelessWidget {
   const Sketcher({
-    Key /*?*/ key,
-    @required SketcherController controller,
+    Key? key,
+    required SketcherController controller,
     this.isEnabled = false,
-    @required this.child,
-  })  : _controller = controller,
+    required this.child,
+  })   : _controller = controller,
         super(key: key);
 
   final SketcherController _controller;

@@ -5,9 +5,9 @@ class AnimatedFadeIn extends StatefulWidget {
   final Widget child;
 
   const AnimatedFadeIn({
-    Key /*?*/ key,
-    @required this.changeKey,
-    @required this.child,
+    Key? key,
+    required this.changeKey,
+    required this.child,
   }) : super(key: key);
 
   @override
@@ -16,8 +16,8 @@ class AnimatedFadeIn extends StatefulWidget {
 
 class _AnimatedFadeInState extends State<AnimatedFadeIn>
     with SingleTickerProviderStateMixin {
-  /*late*/ AnimationController _animationController;
-  /*late*/ Animation<double> _fadeAnimation;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {

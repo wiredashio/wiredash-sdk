@@ -6,14 +6,14 @@ import 'package:flutter/widgets.dart';
 
 class Screenshot extends StatefulWidget {
   const Screenshot({
-    Key /*?*/ key,
-    @required this.capture,
+    Key? key,
+    required this.capture,
     this.onCaptured,
-    @required this.child,
+    required this.child,
   }) : super(key: key);
 
   final bool capture;
-  final void Function(ui.Image image) /*?*/ onCaptured;
+  final void Function(ui.Image image)? onCaptured;
   final Widget child;
 
   @override
@@ -24,7 +24,7 @@ class ScreenshotState extends State<Screenshot> {
   final _repaintBoundaryGlobalKey = GlobalKey();
 
   bool _wasCaptured = false;
-  MemoryImage /*?*/ _screenshotMemoryImage;
+  MemoryImage? _screenshotMemoryImage;
 
   @override
   void didUpdateWidget(Screenshot oldWidget) {
@@ -42,7 +42,7 @@ class ScreenshotState extends State<Screenshot> {
   }
 
   Future<void> _captureScreen() async {
-    final canvas = _repaintBoundaryGlobalKey.currentContext.findRenderObject()
+    final canvas = _repaintBoundaryGlobalKey.currentContext!.findRenderObject()
         as RenderRepaintBoundary;
 
     final _screenshot = await canvas.toImage(pixelRatio: 1.5);
@@ -76,7 +76,7 @@ class ScreenshotState extends State<Screenshot> {
           ),
         ),
         if (_screenshotMemoryImage != null)
-          Image(image: _screenshotMemoryImage),
+          Image(image: _screenshotMemoryImage!),
       ],
     );
   }

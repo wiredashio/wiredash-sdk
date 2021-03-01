@@ -3,9 +3,9 @@ import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 
 class WiredashTheme extends StatelessWidget {
   const WiredashTheme({
-    Key /*?*/ key,
-    @required this.data,
-    @required this.child,
+    Key? key,
+    required this.data,
+    required this.child,
   }) : super(key: key);
 
   final WiredashThemeData data;
@@ -16,18 +16,18 @@ class WiredashTheme extends StatelessWidget {
     return _InheritedWiredashTheme(theme: this, child: child);
   }
 
-  static WiredashThemeData /*?*/ of(BuildContext context) {
-    final _InheritedWiredashTheme /*?*/ inheritedTheme =
+  static WiredashThemeData? of(BuildContext context) {
+    final _InheritedWiredashTheme? inheritedTheme =
         context.dependOnInheritedWidgetOfExactType<_InheritedWiredashTheme>();
-    return inheritedTheme?.theme?.data;
+    return inheritedTheme?.theme.data;
   }
 }
 
 class _InheritedWiredashTheme extends InheritedWidget {
   const _InheritedWiredashTheme({
-    Key /*?*/ key,
-    @required this.theme,
-    @required Widget child,
+    Key? key,
+    required this.theme,
+    required Widget child,
   }) : super(key: key, child: child);
 
   final WiredashTheme theme;

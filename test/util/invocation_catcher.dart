@@ -23,8 +23,8 @@ class MethodInvocationCatcher {
   int get count => _invocations.length;
 
   dynamic addMethodCall({
-    Map<String, Object /*?*/ > /*?*/ namedArgs,
-    List<Object /*?*/ > /*?*/ args,
+    Map<String, Object?>? namedArgs,
+    List<Object?>? args,
   }) {
     final iv = Invocation.method(
       Symbol(methodName),
@@ -33,12 +33,12 @@ class MethodInvocationCatcher {
     );
     _invocations.add(AssertableInvocation(iv));
     if (interceptor != null) {
-      return interceptor.call(iv);
+      return interceptor!.call(iv);
     }
     return null;
   }
 
-  dynamic Function(Invocation invocation) /*?*/ interceptor;
+  dynamic Function(Invocation invocation)? interceptor;
 
   void verifyInvocationCount(int n) {
     if (_invocations.length == n) {
@@ -61,7 +61,7 @@ class AssertableInvocation {
 
   final Invocation original;
 
-  Object /*?*/ operator [](dynamic argument) {
+  Object? operator [](dynamic argument) {
     if (argument is int) {
       try {
         return original.positionalArguments[argument];

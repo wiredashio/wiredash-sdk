@@ -1,6 +1,7 @@
 name: Nightly
 
 on:
+  workflow_dispatch:
   schedule:
     # Every night at 03:00
     - cron: '0 3 * * *'
@@ -28,8 +29,8 @@ jobs:
       image: cirrusci/flutter:beta
     steps:
       - uses: actions/checkout@v1.2.0
-          with:
-            ref: beta
+        with:
+          ref: beta
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
       - name: Analyze
@@ -43,8 +44,8 @@ jobs:
       image: cirrusci/flutter:dev
     steps:
       - uses: actions/checkout@v1.2.0
-          with:
-            ref: dev
+        with:
+          ref: dev
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
       - name: Analyze

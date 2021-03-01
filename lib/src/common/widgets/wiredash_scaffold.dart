@@ -4,8 +4,8 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 
 class WiredashScaffold extends StatefulWidget {
   const WiredashScaffold({
-    Key /*?*/ key,
-    @required this.child,
+    Key? key,
+    required this.child,
   }) : super(key: key);
 
   final Widget child;
@@ -19,11 +19,11 @@ class _WiredashScaffoldState extends State<WiredashScaffold>
   @override
   Widget build(BuildContext context) {
     return MediaQuery(
-      data: MediaQueryData.fromWindow(WidgetsBinding.instance.window),
+      data: MediaQueryData.fromWindow(WidgetsBinding.instance!.window),
       child: Directionality(
-        textDirection: WiredashOptions.of(context).textDirection,
+        textDirection: WiredashOptions.of(context)!.textDirection,
         child: Container(
-          color: WiredashTheme.of(context).backgroundColor,
+          color: WiredashTheme.of(context)!.backgroundColor,
           child: widget.child,
         ),
       ),
@@ -33,7 +33,7 @@ class _WiredashScaffoldState extends State<WiredashScaffold>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
   }
 
   @override
@@ -45,7 +45,7 @@ class _WiredashScaffoldState extends State<WiredashScaffold>
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 }

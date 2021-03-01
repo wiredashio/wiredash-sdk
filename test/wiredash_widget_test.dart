@@ -60,7 +60,7 @@ void main() {
         'only one feedback flow will be launched at a time - intro mode',
         (tester) async {
       final navigatorKey = GlobalKey<NavigatorState>();
-      WiredashController /*?*/ controller;
+      WiredashController? controller;
 
       await tester.pumpWidget(
         Wiredash(
@@ -71,8 +71,8 @@ void main() {
             home: const SizedBox(),
             navigatorKey: navigatorKey,
             builder: (context, child) {
-              controller = Wiredash.of(context);
-              return child;
+              controller = Wiredash.of(context)!;
+              return child!;
             },
           ),
         ),
@@ -82,27 +82,27 @@ void main() {
       expect(find.byType(FeedbackSheet), findsNothing);
 
       // Calling controller.show() once should bring out the FeedbackSheet.
-      controller.show();
+      controller!.show();
       await tester.pump();
       await tester.pump();
       expect(find.byType(FeedbackSheet), findsOneWidget);
 
       // Further calls to controller.show() should not bring out additional
       // FeedbackSheets - there should still be only one.
-      controller.show();
-      controller.show();
-      controller.show();
+      controller!.show();
+      controller!.show();
+      controller!.show();
       await tester.pump();
       await tester.pump();
       expect(find.byType(FeedbackSheet), findsOneWidget);
 
       // Hide the FeedbackSheet
-      navigatorKey.currentState.pop();
+      navigatorKey.currentState!.pop();
       await tester.pump();
       expect(find.byType(FeedbackSheet), findsNothing);
 
       // Calling controller.show() should bring out a FeedbackSheet normally.
-      controller.show();
+      controller!.show();
       await tester.pump();
       await tester.pump();
       expect(find.byType(FeedbackSheet), findsOneWidget);
@@ -122,7 +122,7 @@ void main() {
             home: Builder(builder: (context) {
               return Scaffold(
                 floatingActionButton: FloatingActionButton(
-                  onPressed: Wiredash.of(context).show,
+                  onPressed: Wiredash.of(context)!.show,
                 ),
               );
             }),
@@ -160,7 +160,7 @@ class _MockProjectCredentialValidator extends Fake
 
   @override
   Future<void> validate(
-      {@required String projectId, @required String secret}) async {
+      {required String projectId, required String secret}) async {
     validateInvocations
         .addMethodCall(namedArgs: {'projectId': projectId, 'secret': secret});
   }

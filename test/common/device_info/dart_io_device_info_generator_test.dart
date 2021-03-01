@@ -8,16 +8,16 @@ import 'package:wiredash/src/common/utils/build_info.dart';
 
 class _BuildInfoDataClass implements BuildInfo {
   @override
-  final String /*?*/ buildCommit;
+  final String? buildCommit;
 
   @override
-  final String /*?*/ buildNumber;
+  final String? buildNumber;
 
   @override
-  final String /*?*/ buildVersion;
+  final String? buildVersion;
 
   @override
-  final String /*?*/ deviceId;
+  final String? deviceId;
 
   _BuildInfoDataClass(
       {this.buildCommit, this.buildNumber, this.buildVersion, this.deviceId});
