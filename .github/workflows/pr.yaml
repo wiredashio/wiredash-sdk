@@ -15,7 +15,7 @@ jobs:
       image: cirrusci/flutter:stable
     if: github.base_ref == 'stable' || github.ref == 'refs/heads/stable'
     steps:
-      - uses: actions/checkout@v1.2.0
+      - uses: actions/checkout@v2.3.4
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
       - name: Check formatting
@@ -31,7 +31,7 @@ jobs:
       image: cirrusci/flutter:beta
     if: github.base_ref == 'beta' || github.ref == 'refs/heads/beta'
     steps:
-      - uses: actions/checkout@v1.2.0
+      - uses: actions/checkout@v2.3.4
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
       - name: Check formatting
@@ -47,7 +47,7 @@ jobs:
       image: cirrusci/flutter:dev
     if: github.base_ref == 'dev' || github.ref == 'refs/heads/dev'
     steps:
-      - uses: actions/checkout@v1.2.0
+      - uses: actions/checkout@v2.3.4
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
       - name: Check formatting
