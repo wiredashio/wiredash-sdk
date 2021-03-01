@@ -57,18 +57,3 @@ jobs:
       - name: Test
         run: sudo --preserve-env=PATH env flutter test --no-sound-null-safety
 
-  pr-master:
-    runs-on: ubuntu-latest
-    container:
-      image: cirrusci/flutter:master
-    if: github.base_ref == 'dev' || github.ref == 'refs/heads/dev'
-    steps:
-      - uses: actions/checkout@v1.2.0
-      - name: Download dependencies
-        run: flutter packages get
-      - name: Check formatting
-        run: dartfmt --dry-run --set-exit-if-changed lib
-      - name: Analyze
-        run: flutter analyze --fatal-infos --fatal-warnings lib
-      - name: Test
-        run: flutter test --no-sound-null-safety
