@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
@@ -100,8 +101,7 @@ class _InputComponentState extends State<InputComponent> {
             errorMaxLines: 2,
           ),
           maxLength: _maxInputLength,
-          // ignore: deprecated_member_use
-          maxLengthEnforced: false,
+          maxLengthEnforcement: MaxLengthEnforcement.none,
           buildCounter: _getCounterText,
           textCapitalization: _getTextCapitalization(),
           keyboardAppearance: WiredashTheme.of(context)!.brightness,
