@@ -71,7 +71,7 @@ void main() {
             home: const SizedBox(),
             navigatorKey: navigatorKey,
             builder: (context, child) {
-              controller = Wiredash.of(context)!;
+              controller = Wiredash.of(context);
               return child!;
             },
           ),

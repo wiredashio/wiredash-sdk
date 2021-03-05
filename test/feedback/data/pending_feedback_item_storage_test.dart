@@ -31,12 +31,12 @@ class FakeSharedPreferences extends Fake implements SharedPreferences {
   final MethodInvocationCatcher getStringListInvocations =
       MethodInvocationCatcher('getStringList');
   @override
-  List<String> getStringList(String key) {
+  List<String>? getStringList(String key) {
     final result = getStringListInvocations.addMethodCall(args: [key]);
     if (result != null) {
-      return result as List<String>;
+      return result as List<String>?;
     }
-    return _store[key] as List<String>;
+    return _store[key] as List<String>?;
   }
 }
 

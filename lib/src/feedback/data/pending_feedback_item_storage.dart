@@ -44,7 +44,8 @@ class PendingFeedbackItemStorage {
         reportWiredashError(e, stack, 'Could not parse item from disk $item');
         try {
           // Remove the associated screenshot right now.
-          final screenshot = _fs.file(json.decode(item)['screenshotPath']);
+          final map = json.decode(item) as Map<String, dynamic>;
+          final screenshot = _fs.file(map['screenshotPath']);
           if (await screenshot.exists()) {
             await screenshot.delete();
           }

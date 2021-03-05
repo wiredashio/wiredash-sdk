@@ -76,7 +76,8 @@ class WiredashApiException implements Exception {
   String? get message {
     final String? bodyMessage = () {
       try {
-        return jsonDecode(response?.body ?? "")?['message'] as String?;
+        final json = jsonDecode(response?.body ?? "") as Map?;
+        return json?['message'] as String?;
       } catch (e) {
         return response?.body;
       }
