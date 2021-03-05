@@ -25,7 +25,7 @@ jobs:
       - name: Analyze
         run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
       - name: Test
-        run: sudo --preserve-env=PATH env flutter test --no-sound-null-safety
+        run: sudo --preserve-env=PATH env flutter test
 
   pr-beta:
     runs-on: ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
       - name: Analyze
         run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings lib
       - name: Test
-        run: sudo --preserve-env=PATH env flutter test --no-sound-null-safety
+        run: sudo --preserve-env=PATH env flutter test
 
   pr-dev:
     runs-on: ubuntu-latest
@@ -61,5 +61,5 @@ jobs:
       - name: Analyze
         run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings lib
       - name: Test
-        run: sudo --preserve-env=PATH env flutter test --no-sound-null-safety
+        run: sudo --preserve-env=PATH env flutter test
 

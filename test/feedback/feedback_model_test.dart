@@ -83,8 +83,8 @@ void main() {
         final lastSubmit =
             mockRetryingFeedbackSubmitter.submitInvocations.latest;
 
-        final item = lastSubmit['item'] as FeedbackItem;
-        final screenshot = lastSubmit['screenshot'] as Uint8List;
+        final item = lastSubmit['item']! as FeedbackItem;
+        final screenshot = lastSubmit['screenshot']! as Uint8List;
         expect(item.user, '<user id>');
         expect(item.email, '<user email>');
         expect(item.deviceInfo, isNotNull);
