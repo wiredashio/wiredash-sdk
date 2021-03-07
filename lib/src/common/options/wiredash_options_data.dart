@@ -13,6 +13,7 @@ class WiredashOptionsData {
     this.screenshotStep = true,
     this.customTranslations,
   })  : textDirection = textDirection ?? TextDirection.ltr,
+        // ignore: dead_null_aware_expression
         _currentLocale = locale ?? window.locale ?? const Locale('en', 'US'),
         assert(
           bugReportButton || praiseButton || featureRequestButton,
@@ -60,6 +61,7 @@ class WiredashOptionsData {
     if (WiredashLocalizations.isSupported(locale)) {
       _currentLocale = locale;
     } else {
+      // ignore: dead_null_aware_expression
       _currentLocale = window.locale ?? const Locale('en', 'US');
     }
   }
