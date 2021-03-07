@@ -13,7 +13,7 @@ class WiredashOptionsData {
     this.screenshotStep = true,
     this.customTranslations,
   })  : textDirection = textDirection ?? TextDirection.ltr,
-        _currentLocale = locale ?? window.locale,
+        _currentLocale = locale ?? window.locale ?? const Locale('en', 'US'),
         assert(
           bugReportButton || praiseButton || featureRequestButton,
           'WiredashOptionsData Configuration Error: Show at least one button',
@@ -60,7 +60,7 @@ class WiredashOptionsData {
     if (WiredashLocalizations.isSupported(locale)) {
       _currentLocale = locale;
     } else {
-      _currentLocale = window.locale;
+      _currentLocale = window.locale ?? const Locale('en', 'US');
     }
   }
 }
