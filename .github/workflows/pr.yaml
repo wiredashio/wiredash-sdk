@@ -26,6 +26,8 @@ jobs:
         run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
+      - name: Build
+        run: cd example && sudo --preserve-env=PATH env flutter build web
 
   pr-beta:
     runs-on: ubuntu-latest
@@ -44,6 +46,8 @@ jobs:
         run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings lib
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
+      - name: Build
+        run: cd example && sudo --preserve-env=PATH env flutter build web
 
   pr-dev:
     runs-on: ubuntu-latest
@@ -62,4 +66,6 @@ jobs:
         run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings lib
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
+      - name: Build
+        run: cd example && sudo --preserve-env=PATH env flutter build web
 
