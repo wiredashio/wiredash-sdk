@@ -9,6 +9,26 @@ on:
       - dev
 
 jobs:
+  pr-min:
+    runs-on: ubuntu-latest
+    container:
+      image: cirrusci/flutter:1.26.0-17.5.pre
+    if: github.base_ref == 'stable' || github.ref == 'refs/heads/stable'
+    steps:
+      - uses: actions/checkout@v2.3.4
+      - name: Flutter version
+        run: flutter doctor -v
+      - name: Download dependencies
+        run: sudo --preserve-env=PATH env flutter packages get
+      - name: Check formatting
+        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
+      - name: Analyze
+        run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
+      - name: Test
+        run: sudo --preserve-env=PATH env flutter test
+      - name: Build
+        run: cd example && sudo --preserve-env=PATH env flutter build web
+
   pr-stable:
     runs-on: ubuntu-latest
     container:
@@ -68,4 +88,3 @@ jobs:
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
         run: cd example && sudo --preserve-env=PATH env flutter build web
-
