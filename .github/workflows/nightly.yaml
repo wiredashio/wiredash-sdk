@@ -45,7 +45,6 @@ jobs:
       - name: Build
         run: cd example && sudo --preserve-env=PATH env flutter build web
 
-
   beta:
     runs-on: ubuntu-latest
     container:

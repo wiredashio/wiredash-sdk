@@ -88,4 +88,3 @@ jobs:
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
         run: cd example && sudo --preserve-env=PATH env flutter build web
-
