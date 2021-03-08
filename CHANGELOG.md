@@ -1,3 +1,7 @@
+## 0.6.1 - Flutter 2.0
+* [#133](https://github.com/wiredashio/wiredash-sdk/pull/133) Raise min Flutter SDK to `1.26.0-17.5.pre`. Older versions are incompatible with `package:path_provider`
+* [#130](https://github.com/wiredashio/wiredash-sdk/pull/130) Fix Flutter web locale nnbd error on `stable` Flutter `2.0.0`
+
 ## 0.6.0 - Nullsafety
 * Migrate the sdk to nullsafety. No breaking changes except for raising the Dart SDK to 2.12.0-0.
 
