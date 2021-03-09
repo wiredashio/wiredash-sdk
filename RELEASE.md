@@ -6,7 +6,7 @@
 - Write release notes in `CHANGELOG.md`
 - Commit changes
 - Tag release `vX.Y.Z` and push it
-- `pub publish`
+- Double check that there are no local changes, then run `git stash && pub publish`
 - Update/Move the `stable`, `beta` and `dev` branches
 - Copy paste release notes into github release
 - Update latest SDK version in `console`
