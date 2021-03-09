@@ -9,5 +9,6 @@
 /// 21 -> 0.6.0
 /// 22 -> 0.6.1-dev.0
 /// 23 -> 0.6.1
+/// 24 -> 0.6.2
 /// 30 -> 0.7.0
-const wiredashSdkVersion = 23;
+const wiredashSdkVersion = 24;
