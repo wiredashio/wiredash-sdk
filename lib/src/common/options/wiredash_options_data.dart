@@ -13,8 +13,7 @@ class WiredashOptionsData {
     this.screenshotStep = true,
     this.customTranslations,
   })  : textDirection = textDirection ?? TextDirection.ltr,
-        // ignore: dead_null_aware_expression
-        _currentLocale = locale ?? window.locale ?? const Locale('en', 'US'),
+        _currentLocale = locale ?? _defaultLocale,
         assert(
           bugReportButton || praiseButton || featureRequestButton,
           'WiredashOptionsData Configuration Error: Show at least one button',
@@ -61,8 +60,14 @@ class WiredashOptionsData {
     if (WiredashLocalizations.isSupported(locale)) {
       _currentLocale = locale;
     } else {
-      // ignore: dead_null_aware_expression
-      _currentLocale = window.locale ?? const Locale('en', 'US');
+      _currentLocale = _defaultLocale;
     }
   }
+}
+
+Locale get _defaultLocale {
+  // Flutter 1.26 (2.0.1) returns `Locale?`, 1.27 `Locale`
+  // ignore: unnecessary_nullable_for_final_variable_declarations
+  final Locale? locale = window.locale;
+  return locale ?? const Locale('en', 'US');
 }
