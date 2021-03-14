@@ -40,5 +40,9 @@
     "firstPenSelected": "Den mørkebrune farve er valgt",
     "secondPenSelected": "Den knækket hvide farve er valgt",
     "thirdPenSelected": "Den blågrønne markering er valgt",
-    "fourthPenSelected": "Den orange markering er valgt"
+    "fourthPenSelected": "Den orange markering er valgt",
+    "feedbackStateErrorTitle": "",
+    "feedbackStateErrorMsg": "",
+    "feedbackSubmitRetryTitle": "",
+    "feedbackSubmitRetryMsg": ""
 }

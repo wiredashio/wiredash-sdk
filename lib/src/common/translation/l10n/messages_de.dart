@@ -96,4 +96,13 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get thirdPenSelected => "Der türkise Stift ist ausgewählt";
   @override
   String get fourthPenSelected => "Der orangene Stift ist ausgewählt";
+  @override
+  String get feedbackStateErrorTitle => "Ups, das hat nicht geklappt!";
+  @override
+  String get feedbackStateErrorMsg =>
+      "Versuche dein Feedback bitte erneut abzusenden";
+  @override
+  String get feedbackSubmitRetryTitle => "Erneut Absenden";
+  @override
+  String get feedbackSubmitRetryMsg => "Feedback erneut absenden";
 }

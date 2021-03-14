@@ -40,5 +40,9 @@
     "firstPenSelected": "Ciemnobrązowy pisak jest wybrany",
     "secondPenSelected": "Biały pisak jest wybrany",
     "thirdPenSelected": "Morski zakreślacz jest wybrany",
-    "fourthPenSelected": "Pomarańczowy zakreślacz jest wybrany"
+    "fourthPenSelected": "Pomarańczowy zakreślacz jest wybrany",
+    "feedbackStateErrorTitle": "",
+    "feedbackStateErrorMsg": "",
+    "feedbackSubmitRetryTitle": "",
+    "feedbackSubmitRetryMsg": ""
 }

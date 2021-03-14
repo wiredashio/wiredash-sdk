@@ -9,8 +9,10 @@ import 'package:wiredash/src/common/widgets/animated_fade_in.dart';
 import 'package:wiredash/src/common/widgets/animated_progress.dart';
 import 'package:wiredash/src/common/widgets/navigation_buttons.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
+import 'package:wiredash/src/feedback/components/error_component.dart';
 import 'package:wiredash/src/feedback/components/input_component.dart';
 import 'package:wiredash/src/feedback/components/intro_component.dart';
+import 'package:wiredash/src/feedback/components/loading_component.dart';
 import 'package:wiredash/src/feedback/components/success_component.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
@@ -23,7 +25,7 @@ class FeedbackSheet extends StatefulWidget {
 }
 
 class _FeedbackSheetState extends State<FeedbackSheet>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   final _emailFormKey = GlobalKey<FormState>();
   final _feedbackFormKey = GlobalKey<FormState>();
 
@@ -126,19 +128,23 @@ class _FeedbackSheetState extends State<FeedbackSheet>
             animation: context.feedbackModel!,
             builder: (context, child) => AnimatedFadeIn(
               changeKey: ValueKey(context.feedbackModel!.feedbackUiState),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    _getTitle(),
-                    style: WiredashTheme.of(context)!.titleStyle,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _getSubtitle(),
-                    style: WiredashTheme.of(context)!.subtitleStyle,
-                  ),
-                ],
+              child: AnimatedSize(
+                duration: const Duration(milliseconds: 250),
+                vsync: this,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      _getTitle(),
+                      style: WiredashTheme.of(context)!.titleStyle,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _getSubtitle(),
+                      style: WiredashTheme.of(context)!.subtitleStyle,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -220,7 +226,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
   void _submitEmail() {
     if (_emailFormKey.currentState!.validate()) {
       _emailFormKey.currentState!.save();
-      context.feedbackModel!.feedbackUiState = FeedbackUiState.success;
+      context.feedbackModel!.feedbackUiState = FeedbackUiState.submit;
     }
   }
 
@@ -259,8 +265,11 @@ class _FeedbackSheetState extends State<FeedbackSheet>
         return WiredashLocalizations.of(context)!.feedbackStateFeedbackTitle;
       case FeedbackUiState.email:
         return WiredashLocalizations.of(context)!.feedbackStateEmailTitle;
-      case FeedbackUiState.success:
+      case FeedbackUiState.submit:
+      case FeedbackUiState.submitted:
         return WiredashLocalizations.of(context)!.feedbackStateSuccessTitle;
+      case FeedbackUiState.submissionError:
+        return WiredashLocalizations.of(context)!.feedbackStateErrorTitle;
       default:
         return '';
     }
@@ -274,8 +283,11 @@ class _FeedbackSheetState extends State<FeedbackSheet>
         return WiredashLocalizations.of(context)!.feedbackStateFeedbackMsg;
       case FeedbackUiState.email:
         return WiredashLocalizations.of(context)!.feedbackStateEmailMsg;
-      case FeedbackUiState.success:
+      case FeedbackUiState.submit:
+      case FeedbackUiState.submitted:
         return WiredashLocalizations.of(context)!.feedbackStateSuccessMsg;
+      case FeedbackUiState.submissionError:
+        return WiredashLocalizations.of(context)!.feedbackStateErrorMsg;
       default:
         return '';
     }
@@ -286,8 +298,12 @@ class _FeedbackSheetState extends State<FeedbackSheet>
       case FeedbackUiState.feedback:
         return 0.3;
       case FeedbackUiState.email:
-        return 0.8;
-      case FeedbackUiState.success:
+        return 0.7;
+      case FeedbackUiState.submit:
+        return 0.9;
+      case FeedbackUiState.submissionError:
+        return 0.9;
+      case FeedbackUiState.submitted:
         return 1.0;
       default:
         return 0;
@@ -317,11 +333,19 @@ class _FeedbackSheetState extends State<FeedbackSheet>
           prefill: context.userManager!.userEmail,
           autofocus: _feedbackFocusNode.hasFocus,
         );
-      case FeedbackUiState.success:
+      case FeedbackUiState.submit:
+        return LoadingComponent();
+      case FeedbackUiState.submitted:
         return SuccessComponent(
           () {
             context.feedbackModel!.feedbackUiState = FeedbackUiState.hidden;
             Navigator.pop(context);
+          },
+        );
+      case FeedbackUiState.submissionError:
+        return ErrorComponent(
+          onRetry: () {
+            context.feedbackModel!.feedbackUiState = FeedbackUiState.submit;
           },
         );
       default:

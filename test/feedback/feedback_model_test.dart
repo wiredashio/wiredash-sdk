@@ -74,7 +74,7 @@ void main() {
         model
           ..feedbackMessage = 'app not work pls send help'
           ..screenshot = kTransparentImage
-          ..feedbackUiState = FeedbackUiState.success;
+          ..feedbackUiState = FeedbackUiState.submit;
 
         expect(model.loading, isTrue);
         async.flushMicrotasks();

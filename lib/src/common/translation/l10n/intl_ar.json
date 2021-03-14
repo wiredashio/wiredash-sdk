@@ -40,5 +40,9 @@
     "firstPenSelected": "",
     "secondPenSelected": "",
     "thirdPenSelected": "",
-    "fourthPenSelected": ""
+    "fourthPenSelected": "",
+    "feedbackStateErrorTitle": "",
+    "feedbackStateErrorMsg": "",
+    "feedbackSubmitRetryTitle": "",
+    "feedbackSubmitRetryMsg": ""
 }

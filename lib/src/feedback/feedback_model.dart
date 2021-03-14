@@ -29,6 +29,7 @@ class FeedbackModel with ChangeNotifier {
   FeedbackType feedbackType = FeedbackType.bug;
   String? feedbackMessage;
   Uint8List? screenshot;
+  Object? submitError;
 
   FeedbackUiState _feedbackUiState = FeedbackUiState.hidden;
 
@@ -71,7 +72,7 @@ class FeedbackModel with ChangeNotifier {
           );
         });
         break;
-      case FeedbackUiState.success:
+      case FeedbackUiState.submit:
         _sendFeedback();
         break;
       default:
@@ -82,10 +83,13 @@ class FeedbackModel with ChangeNotifier {
   void _clearFeedback() {
     feedbackMessage = null;
     screenshot = null;
+    submitError = null;
+    notifyListeners();
   }
 
-  void _sendFeedback() {
+  Future<void> _sendFeedback() async {
     loading = true;
+    notifyListeners();
 
     final item = FeedbackItem(
       deviceInfo: _deviceInfoGenerator.generate(),
@@ -95,10 +99,16 @@ class FeedbackModel with ChangeNotifier {
       user: _userManager.userId,
     );
 
-    _feedbackSubmitter
-        .submit(item, screenshot)
-        .then((value) => _clearFeedback())
-        .whenComplete(() => loading = false);
+    try {
+      await _feedbackSubmitter.submit(item, screenshot);
+      _clearFeedback();
+      _feedbackUiState = FeedbackUiState.submitted;
+    } catch (e) {
+      submitError = e;
+      _feedbackUiState = FeedbackUiState.submissionError;
+    }
+    loading = false;
+    notifyListeners();
   }
 
   void show() {
@@ -161,4 +171,13 @@ extension FeedbackTypeMembers on FeedbackType {
       }[this]!;
 }
 
-enum FeedbackUiState { hidden, intro, capture, feedback, email, success }
+enum FeedbackUiState {
+  hidden,
+  intro,
+  capture,
+  feedback,
+  email,
+  submit,
+  submitted,
+  submissionError,
+}

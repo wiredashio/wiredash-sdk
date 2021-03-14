@@ -40,5 +40,9 @@
     "firstPenSelected": "Der dunkelbraune Stift ist ausgewählt",
     "secondPenSelected": "Der grauweiße Stift ist ausgewählt",
     "thirdPenSelected": "Der türkise Stift ist ausgewählt",
-    "fourthPenSelected": "Der orangene Stift ist ausgewählt"
+    "fourthPenSelected": "Der orangene Stift ist ausgewählt",
+    "feedbackStateErrorTitle": "Ups, das hat nicht geklappt!",
+    "feedbackStateErrorMsg": "Versuche dein Feedback bitte erneut abzusenden",
+    "feedbackSubmitRetryTitle": "Erneut Absenden",
+    "feedbackSubmitRetryMsg": "Feedback erneut absenden"
 }
