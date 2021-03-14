@@ -6,12 +6,13 @@ import 'package:file/file.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 
 /// A class that knows how to "eventually send" a [FeedbackItem] and an associated
 /// screenshot file, retrying appropriately when sending fails.
-class RetryingFeedbackSubmitter {
+class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   RetryingFeedbackSubmitter(
     this.fs,
     this._pendingFeedbackItemStorage,

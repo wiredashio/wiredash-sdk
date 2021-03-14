@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
+import 'package:wiredash/src/common/renderer/renderer.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/widgets/animated_fade_in.dart';
@@ -230,7 +231,9 @@ class _FeedbackSheetState extends State<FeedbackSheet>
     switch (mode) {
       case FeedbackType.bug:
       case FeedbackType.improvement:
-        if (WiredashOptions.of(context)!.screenshotStep && !kIsWeb) {
+        final renderer = getRenderer();
+        if (WiredashOptions.of(context)!.screenshotStep &&
+            renderer != Renderer.html) {
           // Start the capture process
           Navigator.pop(context);
           feedbackModel.feedbackUiState = FeedbackUiState.capture;

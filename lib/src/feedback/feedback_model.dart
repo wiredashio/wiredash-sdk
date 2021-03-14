@@ -6,7 +6,7 @@ import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/dismissible_page_route.dart';
-import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
+import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 
 import 'data/feedback_item.dart';
 import 'feedback_sheet.dart';
@@ -16,14 +16,14 @@ class FeedbackModel with ChangeNotifier {
     this._captureKey,
     this._navigatorKey,
     this._userManager,
-    this._retryingFeedbackSubmitter,
+    this._feedbackSubmitter,
     this._deviceInfoGenerator,
   );
 
   final GlobalKey<CaptureState> _captureKey;
   final GlobalKey<NavigatorState> _navigatorKey;
   final UserManager _userManager;
-  final RetryingFeedbackSubmitter _retryingFeedbackSubmitter;
+  final FeedbackSubmitter _feedbackSubmitter;
   final DeviceInfoGenerator _deviceInfoGenerator;
 
   FeedbackType feedbackType = FeedbackType.bug;
@@ -95,7 +95,7 @@ class FeedbackModel with ChangeNotifier {
       user: _userManager.userId,
     );
 
-    _retryingFeedbackSubmitter
+    _feedbackSubmitter
         .submit(item, screenshot)
         .then((value) => _clearFeedback())
         .whenComplete(() => loading = false);
