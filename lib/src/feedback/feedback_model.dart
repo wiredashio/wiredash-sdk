@@ -29,7 +29,6 @@ class FeedbackModel with ChangeNotifier {
   FeedbackType feedbackType = FeedbackType.bug;
   String? feedbackMessage;
   Uint8List? screenshot;
-  Object? submitError;
 
   FeedbackUiState _feedbackUiState = FeedbackUiState.hidden;
 
@@ -83,7 +82,6 @@ class FeedbackModel with ChangeNotifier {
   void _clearFeedback() {
     feedbackMessage = null;
     screenshot = null;
-    submitError = null;
     notifyListeners();
   }
 
@@ -104,7 +102,6 @@ class FeedbackModel with ChangeNotifier {
       _clearFeedback();
       _feedbackUiState = FeedbackUiState.submitted;
     } catch (e) {
-      submitError = e;
       _feedbackUiState = FeedbackUiState.submissionError;
     }
     loading = false;
