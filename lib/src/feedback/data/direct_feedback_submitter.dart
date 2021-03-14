@@ -9,12 +9,14 @@ import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 class DirectFeedbackSubmitter implements FeedbackSubmitter {
   DirectFeedbackSubmitter(WiredashApi api) : _api = api;
 
-  WiredashApi _api;
+  final WiredashApi _api;
 
   @override
   Future<void> submit(FeedbackItem item, Uint8List? screenshot) async {
     try {
       await _api.sendFeedback(feedback: item, screenshot: screenshot);
+      // ignore: avoid_print
+      print("Feedback submitted ✌️ ${item.message}");
     } on UnauthenticatedWiredashApiException catch (e, stack) {
       // Project configuration is off, retry at next app start
       reportWiredashError(e, stack,

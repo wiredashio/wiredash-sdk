@@ -34,6 +34,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   /// Persists [item] and [screenshot], then tries to send them.
   ///
   /// If sending fails, uses exponential backoff and tries again up to 7 times.
+  @override
   Future<void> submit(FeedbackItem item, Uint8List? screenshot) async {
     await _pendingFeedbackItemStorage.addPendingItem(item, screenshot);
 
@@ -107,7 +108,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
         await _api.sendFeedback(
             feedback: item.feedbackItem, screenshot: screenshot);
         // ignore: avoid_print
-        print("Feedback submitted ✌️");
+        print("Feedback submitted ✌️ ${item.feedbackItem.message}");
         await _pendingFeedbackItemStorage.clearPendingItem(item.id);
         break;
       } on UnauthenticatedWiredashApiException catch (e, stack) {

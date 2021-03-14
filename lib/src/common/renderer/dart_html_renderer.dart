@@ -7,6 +7,6 @@ Renderer getRenderer() {
 }
 
 bool get isCanvasKitRenderer {
-  var r = js.context['flutterCanvasKit'];
-  return r != null;
+  final flutterCanvasKit = js.context['flutterCanvasKit'];
+  return flutterCanvasKit != null;
 }
