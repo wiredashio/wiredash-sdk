@@ -3,6 +3,7 @@ import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/widgets/list_tile_button.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 
+/// Retry button for submission errors
 class ErrorComponent extends StatelessWidget {
   final VoidCallback onRetry;
 
@@ -22,7 +23,7 @@ class ErrorComponent extends StatelessWidget {
             iconBackgroundColor: const Color(0xffffc4f0),
             title: WiredashLocalizations.of(context)!.feedbackSubmitRetryTitle,
             subtitle: WiredashLocalizations.of(context)!.feedbackSubmitRetryMsg,
-            onPressed: () => onRetry?.call(),
+            onPressed: () => onRetry(),
           ),
         ],
       ),

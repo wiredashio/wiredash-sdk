@@ -334,7 +334,7 @@ class _FeedbackSheetState extends State<FeedbackSheet>
           autofocus: _feedbackFocusNode.hasFocus,
         );
       case FeedbackUiState.submit:
-        return LoadingComponent();
+        return const LoadingComponent();
       case FeedbackUiState.submitted:
         return SuccessComponent(
           () {

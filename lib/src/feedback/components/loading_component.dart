@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
-import 'package:wiredash/src/common/widgets/list_tile_button.dart';
-import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 
+/// Shown while feedback gets submitted
 class LoadingComponent extends StatelessWidget {
   const LoadingComponent({
     Key? key,
@@ -13,10 +11,10 @@ class LoadingComponent extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
-        children: [
-          const SizedBox(height: 32),
+        children: const [
+          SizedBox(height: 32),
           CircularProgressIndicator(),
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
         ],
       ),
     );
