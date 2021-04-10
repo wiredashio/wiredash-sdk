@@ -95,4 +95,12 @@ class WiredashLocalizedTranslations extends WiredashTranslations {
   String get thirdPenSelected => "Den blågrønne markering er valgt";
   @override
   String get fourthPenSelected => "Den orange markering er valgt";
+  @override
+  String get feedbackStateErrorTitle => "Oops, that didn't work!";
+  @override
+  String get feedbackStateErrorMsg => "Please try to send your feedback again";
+  @override
+  String get feedbackSubmitRetryTitle => "Retry";
+  @override
+  String get feedbackSubmitRetryMsg => "Submit your feedback again";
 }

@@ -189,7 +189,7 @@ void main() {
           findsNothing,
         );
 
-        expect(mockFeedbackModel.feedbackUiState, FeedbackUiState.success);
+        expect(mockFeedbackModel.feedbackUiState, FeedbackUiState.submit);
       },
     );
   });

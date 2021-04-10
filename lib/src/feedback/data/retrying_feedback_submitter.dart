@@ -6,12 +6,13 @@ import 'package:file/file.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 
 /// A class that knows how to "eventually send" a [FeedbackItem] and an associated
 /// screenshot file, retrying appropriately when sending fails.
-class RetryingFeedbackSubmitter {
+class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   RetryingFeedbackSubmitter(
     this.fs,
     this._pendingFeedbackItemStorage,
@@ -33,6 +34,7 @@ class RetryingFeedbackSubmitter {
   /// Persists [item] and [screenshot], then tries to send them.
   ///
   /// If sending fails, uses exponential backoff and tries again up to 7 times.
+  @override
   Future<void> submit(FeedbackItem item, Uint8List? screenshot) async {
     await _pendingFeedbackItemStorage.addPendingItem(item, screenshot);
 
@@ -106,7 +108,7 @@ class RetryingFeedbackSubmitter {
         await _api.sendFeedback(
             feedback: item.feedbackItem, screenshot: screenshot);
         // ignore: avoid_print
-        print("Feedback submitted ✌️");
+        print("Feedback submitted ✌️ ${item.feedbackItem.message}");
         await _pendingFeedbackItemStorage.clearPendingItem(item.id);
         break;
       } on UnauthenticatedWiredashApiException catch (e, stack) {

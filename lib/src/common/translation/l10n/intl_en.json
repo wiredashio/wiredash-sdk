@@ -40,5 +40,9 @@
     "firstPenSelected": "The dark brown pen is selected",
     "secondPenSelected": "The off-white pen is selected",
     "thirdPenSelected": "The teal highlighter is selected",
-    "fourthPenSelected": "The orange highlighter is selected"
+    "fourthPenSelected": "The orange highlighter is selected",
+    "feedbackStateErrorTitle": "Oops, that didn't work!",
+    "feedbackStateErrorMsg": "Please try to send your feedback again",
+    "feedbackSubmitRetryTitle": "Retry",
+    "feedbackSubmitRetryMsg": "Submit your feedback again"
 }

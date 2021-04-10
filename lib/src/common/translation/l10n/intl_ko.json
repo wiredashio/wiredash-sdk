@@ -40,5 +40,9 @@
     "firstPenSelected": "진한 갈색 펜 선택됨",
     "secondPenSelected": "미색 펜 선택됨",
     "thirdPenSelected": "청록색 형광펜 선택됨",
-    "fourthPenSelected": "주황색 형광펜 선택됨"
+    "fourthPenSelected": "주황색 형광펜 선택됨",
+    "feedbackStateErrorTitle": "",
+    "feedbackStateErrorMsg": "",
+    "feedbackSubmitRetryTitle": "",
+    "feedbackSubmitRetryMsg": ""
 }

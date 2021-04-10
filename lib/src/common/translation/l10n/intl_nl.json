@@ -40,5 +40,9 @@
     "firstPenSelected": "De donker bruine pen is geselecteerd",
     "secondPenSelected": "De uit-witte pen is geselecteerd",
     "thirdPenSelected": "De groenblauwe highlighter is geselecteerd",
-    "fourthPenSelected": "De oranje highlighter is geselecteerd"
+    "fourthPenSelected": "De oranje highlighter is geselecteerd",
+    "feedbackStateErrorTitle": "",
+    "feedbackStateErrorMsg": "",
+    "feedbackSubmitRetryTitle": "",
+    "feedbackSubmitRetryMsg": ""
 }

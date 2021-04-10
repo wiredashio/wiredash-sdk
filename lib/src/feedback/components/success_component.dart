@@ -3,6 +3,7 @@ import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/widgets/list_tile_button.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 
+/// Feedback was successfully submitted -> close
 class SuccessComponent extends StatelessWidget {
   final VoidCallback? onClosedCallback;
 

@@ -6,7 +6,7 @@ import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/dismissible_page_route.dart';
-import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
+import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 
 import 'data/feedback_item.dart';
 import 'feedback_sheet.dart';
@@ -16,14 +16,14 @@ class FeedbackModel with ChangeNotifier {
     this._captureKey,
     this._navigatorKey,
     this._userManager,
-    this._retryingFeedbackSubmitter,
+    this._feedbackSubmitter,
     this._deviceInfoGenerator,
   );
 
   final GlobalKey<CaptureState> _captureKey;
   final GlobalKey<NavigatorState> _navigatorKey;
   final UserManager _userManager;
-  final RetryingFeedbackSubmitter _retryingFeedbackSubmitter;
+  final FeedbackSubmitter _feedbackSubmitter;
   final DeviceInfoGenerator _deviceInfoGenerator;
 
   FeedbackType feedbackType = FeedbackType.bug;
@@ -71,7 +71,7 @@ class FeedbackModel with ChangeNotifier {
           );
         });
         break;
-      case FeedbackUiState.success:
+      case FeedbackUiState.submit:
         _sendFeedback();
         break;
       default:
@@ -82,10 +82,12 @@ class FeedbackModel with ChangeNotifier {
   void _clearFeedback() {
     feedbackMessage = null;
     screenshot = null;
+    notifyListeners();
   }
 
-  void _sendFeedback() {
+  Future<void> _sendFeedback() async {
     loading = true;
+    notifyListeners();
 
     final item = FeedbackItem(
       deviceInfo: _deviceInfoGenerator.generate(),
@@ -95,10 +97,15 @@ class FeedbackModel with ChangeNotifier {
       user: _userManager.userId,
     );
 
-    _retryingFeedbackSubmitter
-        .submit(item, screenshot)
-        .then((value) => _clearFeedback())
-        .whenComplete(() => loading = false);
+    try {
+      await _feedbackSubmitter.submit(item, screenshot);
+      _clearFeedback();
+      _feedbackUiState = FeedbackUiState.submitted;
+    } catch (e) {
+      _feedbackUiState = FeedbackUiState.submissionError;
+    }
+    loading = false;
+    notifyListeners();
   }
 
   void show() {
@@ -161,4 +168,13 @@ extension FeedbackTypeMembers on FeedbackType {
       }[this]!;
 }
 
-enum FeedbackUiState { hidden, intro, capture, feedback, email, success }
+enum FeedbackUiState {
+  hidden,
+  intro,
+  capture,
+  feedback,
+  email,
+  submit,
+  submitted,
+  submissionError,
+}

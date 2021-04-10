@@ -32,6 +32,10 @@ abstract class WiredashTranslations {
   String get feedbackStateSuccessMsg;
   String get feedbackStateSuccessCloseTitle;
   String get feedbackStateSuccessCloseMsg;
+  String get feedbackStateErrorTitle;
+  String get feedbackStateErrorMsg;
+  String get feedbackSubmitRetryTitle;
+  String get feedbackSubmitRetryMsg;
   String get inputHintFeedback;
   String get inputHintEmail;
   String get validationHintFeedbackEmpty;
