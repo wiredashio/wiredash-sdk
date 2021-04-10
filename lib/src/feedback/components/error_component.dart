@@ -12,20 +12,15 @@ class ErrorComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Column(
-        children: [
-          const SizedBox(height: 8),
-          ListTileButton(
-            key: const ValueKey('wiredash.sdk.retry_button'),
-            icon: WiredashIcons.redo,
-            iconColor: const Color(0xff9c4db1),
-            iconBackgroundColor: const Color(0xffffc4f0),
-            title: WiredashLocalizations.of(context)!.feedbackSubmitRetryTitle,
-            subtitle: WiredashLocalizations.of(context)!.feedbackSubmitRetryMsg,
-            onPressed: () => onRetry(),
-          ),
-        ],
+      padding: const EdgeInsets.only(top: 24, bottom: 16),
+      child: ListTileButton(
+        key: const ValueKey('wiredash.sdk.retry_button'),
+        icon: WiredashIcons.redo,
+        iconColor: const Color(0xff9c4db1),
+        iconBackgroundColor: const Color(0xffffc4f0),
+        title: WiredashLocalizations.of(context)!.feedbackSubmitRetryTitle,
+        subtitle: WiredashLocalizations.of(context)!.feedbackSubmitRetryMsg,
+        onPressed: onRetry,
       ),
     );
   }

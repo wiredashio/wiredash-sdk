@@ -8,15 +8,9 @@ class LoadingComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Column(
-        children: const [
-          SizedBox(height: 32),
-          CircularProgressIndicator(),
-          SizedBox(height: 32),
-        ],
-      ),
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 48),
+      child: CircularProgressIndicator(),
     );
   }
 }
