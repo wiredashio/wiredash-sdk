@@ -20,7 +20,7 @@ jobs:
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
       - name: Analyze
-        run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
+        run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings .
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
@@ -39,7 +39,7 @@ jobs:
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
       - name: Analyze
-        run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
+        run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings .
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
@@ -58,7 +58,7 @@ jobs:
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
       - name: Analyze
-        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings lib
+        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings .
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
@@ -77,7 +77,7 @@ jobs:
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
       - name: Analyze
-        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings lib
+        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings .
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
