@@ -1,3 +1,7 @@
+## 0.7.0 - Screenshot Web support for canvaskit
+* [#140](https://github.com/wiredashio/wiredash-sdk/pull/135) Wiredash now supports screenshots in Flutter Web when the canvasakit renderer is used
+* Flutter compatibility range: `1.26.0-17.5.pre` - `2.3.0-13.0.pre.166`
+
 ## 0.6.2
 * [#135](https://github.com/wiredashio/wiredash-sdk/pull/135) Don't show nullsafety warning on Flutter dev channel
 
