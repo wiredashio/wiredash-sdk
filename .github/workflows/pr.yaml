@@ -20,8 +20,6 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
-      - name: Check formatting
-        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
       - name: Analyze
         run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
       - name: Test
@@ -40,14 +38,14 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
-      - name: Check formatting
-        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
       - name: Analyze
         run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings lib
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
         run: cd example && sudo --preserve-env=PATH env flutter build web
+      - name: Check formatting
+        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
 
   pr-beta:
     runs-on: ubuntu-latest
@@ -60,14 +58,14 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
-      - name: Check formatting
-        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
       - name: Analyze
         run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings lib
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
         run: cd example && sudo --preserve-env=PATH env flutter build web
+      - name: Check formatting
+        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
 
   pr-dev:
     runs-on: ubuntu-latest
@@ -80,11 +78,11 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
-      - name: Check formatting
-        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
       - name: Analyze
         run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings lib
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
         run: cd example && sudo --preserve-env=PATH env flutter build web
+      - name: Check formatting
+        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed lib
