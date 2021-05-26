@@ -11,7 +11,7 @@ class Sketcher extends StatelessWidget {
     required SketcherController controller,
     this.isEnabled = false,
     required this.child,
-  })   : _controller = controller,
+  })  : _controller = controller,
         super(key: key);
 
   final SketcherController _controller;

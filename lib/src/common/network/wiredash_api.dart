@@ -11,7 +11,7 @@ class WiredashApi {
     required Client httpClient,
     required String projectId,
     required String secret,
-  })   : _httpClient = httpClient,
+  })  : _httpClient = httpClient,
         _projectId = projectId,
         _secret = secret;
 
