@@ -55,7 +55,7 @@ class _ColorDot extends StatelessWidget {
     required this.color,
     required this.onChanged,
     required Color selectedColor,
-  })   : isSelected = color == selectedColor,
+  })  : isSelected = color == selectedColor,
         super(key: key);
 
   final String label;

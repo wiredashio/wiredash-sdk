@@ -147,7 +147,7 @@ class DismissablePageTransition extends StatelessWidget {
     required Animation<double> secondaryRouteAnimation,
     required this.child,
     required bool linearTransition,
-  })   : _primaryPositionAnimation = (linearTransition
+  })  : _primaryPositionAnimation = (linearTransition
                 ? primaryRouteAnimation
                 : CurvedAnimation(
                     parent: primaryRouteAnimation,

@@ -75,6 +75,8 @@ class _FeedbackSheetState extends State<FeedbackSheet>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: AnimatedSize(
+            // remove when min Flutter SDK is after v2.2.0-10.1.pre
+            // ignore: deprecated_member_use
             vsync: this,
             alignment: Alignment.topCenter,
             curve: Curves.fastOutSlowIn,
@@ -130,6 +132,8 @@ class _FeedbackSheetState extends State<FeedbackSheet>
               changeKey: ValueKey(context.feedbackModel!.feedbackUiState),
               child: AnimatedSize(
                 duration: const Duration(milliseconds: 250),
+                // remove when min Flutter SDK is after v2.2.0-10.1.pre
+                // ignore: deprecated_member_use
                 vsync: this,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
