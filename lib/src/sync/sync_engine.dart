@@ -19,7 +19,7 @@ class SyncEngine {
 
   Timer? _initTimer;
 
-  static const minSyncGap = Duration(hours: 1);
+  static const minSyncGap = Duration(hours: 3);
 
   static const lastSuccessfulPingKey = 'io.wiredash.last_successful_ping';
   static const lastFeedbackSubmissionKey =

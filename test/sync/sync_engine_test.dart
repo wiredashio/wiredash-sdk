@@ -37,9 +37,9 @@ void main() {
         syncEngine.rememberFeedbackSubmission();
         async.elapse(const Duration(days: 29));
 
-        // Given last sync 2 hours ago
+        // Given last sync 6 hours ago
         prefs.setInt(SyncEngine.lastSuccessfulPingKey, clock.now().millisecond);
-        async.elapse(const Duration(hours: 2));
+        async.elapse(const Duration(hours: 6));
 
         syncEngine.onWiredashInitialized();
         async.elapse(const Duration(milliseconds: 1990));
@@ -51,6 +51,32 @@ void main() {
 
     test('opening wiredash triggers ping immediately', () {
       fakeAsync((async) {
+        expect(api.pingInvocations.count, 0);
+        syncEngine.onUserOpenedWiredash();
+        async.elapse(const Duration(milliseconds: 1));
+        expect(api.pingInvocations.count, 1);
+      });
+    });
+
+    test('opening the app twice within 3h gap does nothing', () {
+      fakeAsync((async) {
+        // Given last ping was almost 3h ago
+        prefs.setInt(SyncEngine.lastSuccessfulPingKey, clock.now().millisecond);
+        async.elapse(const Duration(hours: 2, minutes: 59));
+
+        expect(api.pingInvocations.count, 0);
+        syncEngine.onWiredashInitialized();
+        async.elapse(const Duration(milliseconds: 1));
+        expect(api.pingInvocations.count, 0);
+      });
+    });
+
+    test('opening wiredash within 3h gap triggers ping', () {
+      fakeAsync((async) {
+        // Given last ping was almost 3h ago
+        prefs.setInt(SyncEngine.lastSuccessfulPingKey, clock.now().millisecond);
+        async.elapse(const Duration(hours: 2, minutes: 59));
+
         expect(api.pingInvocations.count, 0);
         syncEngine.onUserOpenedWiredash();
         async.elapse(const Duration(milliseconds: 1));
