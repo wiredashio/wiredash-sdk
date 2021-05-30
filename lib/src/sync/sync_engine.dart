@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:clock/clock.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
@@ -37,7 +36,7 @@ class SyncEngine {
       return true;
     }());
 
-    final now = clock.now();
+    final now = DateTime.now();
     final preferences = await _sharedPreferences();
     final lastPingInt = preferences.getInt(lastSuccessfulPingKey);
     final lastPing = lastPingInt != null
@@ -63,7 +62,7 @@ class SyncEngine {
       final response = await _api.ping();
       assert(!response.hasNewMessages);
       final preferences = await _sharedPreferences();
-      final now = clock.now();
+      final now = DateTime.now();
       await preferences.setInt(lastSuccessfulPingKey, now.millisecond);
     } catch (e, stack) {
       // TODO
@@ -76,7 +75,7 @@ class SyncEngine {
   ///
   /// This information is used to trigger [_ping] on app start within [minSyncGap] periode
   Future<void> rememberFeedbackSubmission() async {
-    final now = clock.now();
+    final now = DateTime.now();
     final preferences = await _sharedPreferences();
     await preferences.setInt(lastFeedbackSubmissionKey, now.millisecond);
   }
