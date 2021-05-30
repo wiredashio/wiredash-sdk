@@ -38,6 +38,7 @@ class MethodInvocationCatcher {
     return null;
   }
 
+  /// Add an interceptor to get a callback when a method is called or return mock data to the caller
   dynamic Function(Invocation invocation)? interceptor;
 
   void verifyInvocationCount(int n) {
@@ -56,6 +57,7 @@ class MethodInvocationCatcher {
   }
 }
 
+/// A invocation which can be used to assert specific values
 class AssertableInvocation {
   AssertableInvocation(this.original);
 
@@ -87,5 +89,3 @@ class AssertableInvocation {
     return "${original.memberName}(named: ${original.namedArguments}, positional: ${original.positionalArguments})";
   }
 }
-
-class WithArgument {}

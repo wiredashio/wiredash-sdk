@@ -60,6 +60,10 @@ class WiredashApi {
     throw WiredashApiException(response: response);
   }
 
+  Future<PingResponse> ping() {
+    throw "TODO implement";
+  }
+
   /// Sends a [BaseRequest] after attaching HTTP headers
   Future<Response> _send(BaseRequest request) async {
     request.headers['project'] = 'Project $_projectId';
@@ -69,6 +73,8 @@ class WiredashApi {
     return Response.fromStream(streamedResponse);
   }
 }
+
+class PingResponse {}
 
 /// Generic error from the Wiredash API
 class WiredashApiException implements Exception {

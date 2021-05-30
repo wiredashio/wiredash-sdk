@@ -21,6 +21,7 @@ import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/sync/sync_engine.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
@@ -135,6 +136,8 @@ class WiredashState extends State<Wiredash> {
   late WiredashOptionsData _options;
   late WiredashThemeData _theme;
 
+  late SyncEngine _syncEngine;
+
   @override
   void initState() {
     super.initState();
@@ -153,6 +156,7 @@ class WiredashState extends State<Wiredash> {
       projectId: widget.projectId,
       secret: widget.secret,
     );
+    _syncEngine = SyncEngine(_api, SharedPreferences.getInstance);
 
     userManager = UserManager();
     buildInfoManager = BuildInfoManager(PlatformBuildInfo());
@@ -179,6 +183,8 @@ class WiredashState extends State<Wiredash> {
         WidgetsBinding.instance!.window,
       ),
     );
+
+    _syncEngine.onWiredashInitialized();
   }
 
   @override

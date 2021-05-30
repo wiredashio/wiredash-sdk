@@ -20,7 +20,6 @@ class FakeSharedPreferences extends Fake implements SharedPreferences {
 
   final MethodInvocationCatcher setStringListInvocations =
       MethodInvocationCatcher('setStringList');
-
   @override
   Future<bool> setStringList(String key, List<String> value) async {
     await setStringListInvocations.addMethodCall(args: [key, value]);
@@ -37,6 +36,26 @@ class FakeSharedPreferences extends Fake implements SharedPreferences {
       return result as List<String>?;
     }
     return _store[key] as List<String>?;
+  }
+
+  final MethodInvocationCatcher setIntInvocations =
+      MethodInvocationCatcher('setInt');
+  @override
+  Future<bool> setInt(String key, int value) async {
+    await setIntInvocations.addMethodCall(args: [key, value]);
+    _store[key] = value;
+    return true;
+  }
+
+  final MethodInvocationCatcher getIntInvocations =
+      MethodInvocationCatcher('getInt');
+  @override
+  int? getInt(String key) {
+    final result = getIntInvocations.addMethodCall(args: [key]);
+    if (result != null) {
+      return result as int?;
+    }
+    return _store[key] as int?;
   }
 }
 
