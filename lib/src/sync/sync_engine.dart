@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
-import 'package:clock/clock.dart';
 
 class SyncEngine {
   final WiredashApi _api;
@@ -46,7 +46,7 @@ class SyncEngine {
 
     if (lastPing != null && lastPing.difference(now).abs() > minSyncGap) {
       _initTimer?.cancel();
-      _initTimer = Timer(Duration(seconds: 2), _ping);
+      _initTimer = Timer(const Duration(seconds: 2), _ping);
     }
   }
 
@@ -61,13 +61,14 @@ class SyncEngine {
   Future<void> _ping() async {
     try {
       final response = await _api.ping();
+      assert(!response.hasNewMessages);
       final preferences = await _sharedPreferences();
       final now = clock.now();
       await preferences.setInt(lastSuccessfulPingKey, now.millisecond);
     } catch (e, stack) {
       // TODO
-      print(e);
-      print(stack);
+      debugPrint(e.toString());
+      debugPrint(stack.toString());
     }
   }
 

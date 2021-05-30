@@ -74,7 +74,13 @@ class WiredashApi {
   }
 }
 
-class PingResponse {}
+class PingResponse {
+  bool hasNewMessages;
+
+  PingResponse({
+    required this.hasNewMessages,
+  });
+}
 
 /// Generic error from the Wiredash API
 class WiredashApiException implements Exception {

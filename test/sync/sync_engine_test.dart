@@ -1,9 +1,9 @@
+import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/sync/sync_engine.dart';
-import 'package:clock/clock.dart';
 
 import '../feedback/data/pending_feedback_item_storage_test.dart';
 import '../util/invocation_catcher.dart';
@@ -24,7 +24,7 @@ void main() {
     test('Never opened Wiredash does not trigger ping', () {
       fakeAsync((async) {
         syncEngine.onWiredashInitialized();
-        async.elapse(Duration(seconds: 10));
+        async.elapse(const Duration(seconds: 10));
         expect(api.pingInvocations.count, 0);
       });
     });
@@ -35,16 +35,16 @@ void main() {
       fakeAsync((async) {
         // Given last feedback 29 days ago
         syncEngine.rememberFeedbackSubmission();
-        async.elapse(Duration(days: 29));
+        async.elapse(const Duration(days: 29));
 
         // Given last sync 2 hours ago
         prefs.setInt(SyncEngine.lastSuccessfulPingKey, clock.now().millisecond);
-        async.elapse(Duration(hours: 2));
+        async.elapse(const Duration(hours: 2));
 
         syncEngine.onWiredashInitialized();
-        async.elapse(Duration(milliseconds: 1990));
+        async.elapse(const Duration(milliseconds: 1990));
         expect(api.pingInvocations.count, 0);
-        async.elapse(Duration(milliseconds: 100));
+        async.elapse(const Duration(milliseconds: 100));
         expect(api.pingInvocations.count, 1);
       });
     });
@@ -53,7 +53,7 @@ void main() {
       fakeAsync((async) {
         expect(api.pingInvocations.count, 0);
         syncEngine.onUserOpenedWiredash();
-        async.elapse(Duration(milliseconds: 1));
+        async.elapse(const Duration(milliseconds: 1));
         expect(api.pingInvocations.count, 1);
       });
     });
