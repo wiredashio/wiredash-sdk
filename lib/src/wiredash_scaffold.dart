@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/media_query_from_window.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
@@ -97,43 +100,51 @@ class _WiredashScaffoldState extends State<WiredashScaffold>
     if (!model.isActive) {
       return keyedChild;
     }
+
+    final options = WiredashOptions.of(context);
     return MediaQueryFromWindow(
       child: Directionality(
-        textDirection: TextDirection.ltr,
+        textDirection: options?.textDirection ?? TextDirection.ltr,
         child: Localizations(
-          locale: Locale('en'),
+          locale: options?.currentLocale ?? window.locale,
           delegates: const <LocalizationsDelegate<dynamic>>[
             DefaultMaterialLocalizations.delegate,
             DefaultCupertinoLocalizations.delegate,
             DefaultWidgetsLocalizations.delegate,
           ],
-          child: Material(
-            child: Container(
-              color: Colors.pink,
-              child: Stack(
-                children: <Widget>[
-                  ListView(
-                    // controller: _scrollController,
-                    physics: const ClampingScrollPhysics(),
-                    children: <Widget>[
-                      _FeedbackInputContent(),
-                      if (_isLayoutingCompleted)
-                        Transform.translate(
-                          offset: const Offset(0, 200),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8), // TODO lerp
-                            child: keyedChild,
-                          ),
-                        )
+          child: Builder(builder: (context) {
+            return Material(
+              child: Container(
+                color: Colors.pink,
+                child: Stack(
+                  children: <Widget>[
+                    ListView(
+                      // controller: _scrollController,
+                      physics: const ClampingScrollPhysics(),
+                      children: <Widget>[
+                        _FeedbackInputContent(),
+                        if (_isLayoutingCompleted)
+                          Transform.translate(
+                            offset: const Offset(0, 200),
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height,
+                              child: ClipRRect(
+                                borderRadius:
+                                    BorderRadius.circular(8), // TODO lerp
+                                child: keyedChild,
+                              ),
+                            ),
+                          )
+                      ],
+                    ),
+                    if (!_isLayoutingCompleted) ...<Widget>[
+                      keyedChild,
                     ],
-                  ),
-                  if (!_isLayoutingCompleted) ...<Widget>[
-                    keyedChild,
                   ],
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          }),
         ),
       ),
     );
