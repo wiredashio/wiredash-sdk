@@ -7,6 +7,7 @@ import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/dismissible_page_route.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
+import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 
 import 'data/feedback_item.dart';
 import 'feedback_sheet.dart';
@@ -49,6 +50,17 @@ class FeedbackModel with ChangeNotifier {
     if (_loading == newValue) return;
     _loading = newValue;
     notifyListeners();
+  }
+
+  /// Deletes pending feedbacks
+  ///
+  /// Usually only relevant for debug builds
+  Future<void> clearPendingFeedbacks() async {
+    debugPrint("Deleting pending feedbacks");
+    final submitter = _feedbackSubmitter;
+    if (submitter is RetryingFeedbackSubmitter) {
+      await submitter.deletePendingFeedbacks();
+    }
   }
 
   void _handleUiChange() {

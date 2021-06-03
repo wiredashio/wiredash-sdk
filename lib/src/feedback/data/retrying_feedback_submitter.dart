@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:file/file.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
@@ -144,6 +145,18 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
             debugOnly: true);
         await Future.delayed(_exponentialBackoff(attempt));
       }
+    }
+  }
+
+  /// Deletes all pending feedback items and their screenshots.
+  Future<void> deletePendingFeedbacks() async {
+    final items = await _pendingFeedbackItemStorage.retrieveAllPendingItems();
+    if (items.isEmpty) {
+      debugPrint('No pending feedbacks');
+    }
+    for (final item in items) {
+      await _pendingFeedbackItemStorage.clearPendingItem(item.id);
+      debugPrint("deleted Feedback ${item.id} '${item.feedbackItem.message}'");
     }
   }
 }

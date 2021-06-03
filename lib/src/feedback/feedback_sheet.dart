@@ -160,12 +160,23 @@ class _FeedbackSheetState extends State<FeedbackSheet>
 
   Widget _buildFooter() {
     if (context.feedbackModel!.feedbackUiState == FeedbackUiState.intro) {
-      return Image.asset(
+      final logo = Image.asset(
         'assets/images/logo_footer.png',
         width: 100,
         package: 'wiredash',
         semanticLabel: WiredashLocalizations.of(context)!.companyLogoLabel,
       );
+      if (kDebugMode) {
+        // allow deletion of pending feedback items
+        return GestureDetector(
+          onLongPress: () async {
+            await context.feedbackModel!.clearPendingFeedbacks();
+          },
+          child: logo,
+        );
+      } else {
+        return logo;
+      }
     }
     return const SizedBox.shrink();
   }
