@@ -57,8 +57,8 @@ class _WiredashScaffoldState extends State<WiredashScaffold>
 
     // TODO explicitly listen to model
     // checking if the wiredashModel.isActive has changed
-    if (_isCurrentlyActive != context.wiredashModel!.isActive) {
-      _isCurrentlyActive = context.wiredashModel!.isActive;
+    if (_isCurrentlyActive != context.wiredashModel!.isWiredashActive) {
+      _isCurrentlyActive = context.wiredashModel!.isWiredashActive;
 
       if (_isCurrentlyActive) {
         // Once that is done and we have the RenderObject for the animation hide the manual overlay
@@ -91,15 +91,20 @@ class _WiredashScaffoldState extends State<WiredashScaffold>
 
   @override
   Widget build(BuildContext context) {
-    final keyedChild = KeyedSubtree(
+    Widget child = KeyedSubtree(
       key: _childAppKey,
       child: widget.child,
     );
 
     final model = context.wiredashModel!;
-    if (!model.isActive) {
-      return keyedChild;
+    if (!model.isWiredashActive) {
+      return child;
     }
+
+    child = AbsorbPointer(
+      absorbing: !model.isAppInteractive,
+      child: child,
+    );
 
     final options = WiredashOptions.of(context);
     return MediaQueryFromWindow(
@@ -131,14 +136,14 @@ class _WiredashScaffoldState extends State<WiredashScaffold>
                               child: ClipRRect(
                                 borderRadius:
                                     BorderRadius.circular(8), // TODO lerp
-                                child: keyedChild,
+                                child: child,
                               ),
                             ),
                           )
                       ],
                     ),
                     if (!_isLayoutingCompleted) ...<Widget>[
-                      keyedChild,
+                      child,
                     ],
                   ],
                 ),
@@ -166,7 +171,7 @@ class _FeedbackInputContent extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  context.wiredashModel!.isActive = false;
+                  context.wiredashModel!.hide();
                 },
                 borderRadius: BorderRadius.circular(20),
                 child: const Padding(

@@ -210,7 +210,7 @@ class WiredashState extends State<Wiredash> {
   }
 
   void show() {
-    _wiredashModel.isActive = true;
+    _wiredashModel.show();
   }
 }
 

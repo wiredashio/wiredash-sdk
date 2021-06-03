@@ -10,15 +10,12 @@ class WiredashModel with ChangeNotifier {
 
   final FeedbackSubmitter _feedbackSubmitter;
 
-  bool _isActive = false;
-
   /// `true` when wiredash is active
-  bool get isActive => _isActive;
+  bool get isWiredashActive => _isWiredashActive;
+  bool _isWiredashActive = false;
 
-  set isActive(bool isActive) {
-    _isActive = isActive;
-    notifyListeners();
-  }
+  bool get isAppInteractive => _isAppInteractive;
+  bool _isAppInteractive = false;
 
   /// Deletes pending feedbacks
   ///
@@ -29,6 +26,18 @@ class WiredashModel with ChangeNotifier {
     if (submitter is RetryingFeedbackSubmitter) {
       await submitter.deletePendingFeedbacks();
     }
+  }
+
+  void show() {
+    _isWiredashActive = true;
+    _isAppInteractive = false;
+    notifyListeners();
+  }
+
+  void hide() {
+    _isWiredashActive = false;
+    _isAppInteractive = true;
+    notifyListeners();
   }
 
   // Future<void> _sendFeedback() async {
