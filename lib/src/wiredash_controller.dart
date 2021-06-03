@@ -22,8 +22,8 @@ class WiredashController {
   /// email input field but it's up to the user to decide if he want's to
   /// include his email with the feedback.
   void setUserProperties({String? userId, String? userEmail}) {
-    _state.userManager.userId = userId ?? _state.userManager.userId;
-    _state.userManager.userEmail = userEmail ?? _state.userManager.userEmail;
+    _state.userId = userId ?? _state.userId;
+    _state.userEmail = userEmail ?? _state.userEmail;
   }
 
   /// Use this method to attach custom [buildVersion] and [buildNumber]

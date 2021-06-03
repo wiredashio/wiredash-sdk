@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+@Deprecated('unused')
 class DiagonalShapePainter extends CustomPainter {
   final Color color;
   final double padding;

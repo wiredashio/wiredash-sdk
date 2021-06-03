@@ -1,17 +1,14 @@
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/common/user/user_manager.dart';
-import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/feedback/wiredash_model.dart';
 
 class WiredashProvider extends InheritedWidget {
   const WiredashProvider({
     Key? key,
-    required this.userManager,
-    required this.feedbackModel,
+    required this.wiredashModel,
     required Widget child,
   }) : super(key: key, child: child);
 
-  final UserManager userManager;
-  final FeedbackModel feedbackModel;
+  final WiredashModel wiredashModel;
 
   static WiredashProvider? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<WiredashProvider>();
@@ -19,12 +16,10 @@ class WiredashProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(WiredashProvider old) {
-    return feedbackModel != old.feedbackModel || userManager != old.userManager;
+    return wiredashModel != old.wiredashModel;
   }
 }
 
 extension WiredashExtensions on BuildContext {
-  FeedbackModel? get feedbackModel => WiredashProvider.of(this)?.feedbackModel;
-
-  UserManager? get userManager => WiredashProvider.of(this)?.userManager;
+  WiredashModel? get wiredashModel => WiredashProvider.of(this)?.wiredashModel;
 }

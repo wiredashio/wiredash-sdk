@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
-import 'package:wiredash/src/feedback/feedback_sheet.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -164,3 +163,5 @@ class _MockProjectCredentialValidator extends Fake
         .addMethodCall(namedArgs: {'projectId': projectId, 'secret': secret});
   }
 }
+
+class FeedbackSheet {}

@@ -5,21 +5,18 @@ import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
-import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/options/wiredash_options_data.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
-import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/utils/build_info.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
-import 'package:wiredash/src/common/widgets/wiredash_scaffold.dart';
 import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
-import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/feedback/wiredash_model.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
@@ -124,14 +121,17 @@ class Wiredash extends StatefulWidget {
 class WiredashState extends State<Wiredash> {
   late GlobalKey<NavigatorState> navigatorKey;
 
-  late UserManager userManager;
   late BuildInfoManager buildInfoManager;
 
   late WiredashApi _api;
-  late FeedbackModel _feedbackModel;
+  late WiredashModel _wiredashModel;
 
   late WiredashOptionsData _options;
   late WiredashThemeData _theme;
+
+  // TODO save somewhere else
+  String? userId;
+  String? userEmail;
 
   @override
   void initState() {
@@ -151,7 +151,6 @@ class WiredashState extends State<Wiredash> {
       secret: widget.secret,
     );
 
-    userManager = UserManager();
     buildInfoManager = BuildInfoManager(PlatformBuildInfo());
 
     const fileSystem = LocalFileSystem();
@@ -166,20 +165,12 @@ class WiredashState extends State<Wiredash> {
         : (RetryingFeedbackSubmitter(fileSystem, storage, _api)
           ..submitPendingFeedbackItems());
 
-    _feedbackModel = FeedbackModel(
-      navigatorKey,
-      userManager,
-      feedbackSubmitter,
-      DeviceInfoGenerator(
-        buildInfoManager,
-        WidgetsBinding.instance!.window,
-      ),
-    );
+    _wiredashModel = WiredashModel(feedbackSubmitter);
   }
 
   @override
   void dispose() {
-    _feedbackModel.dispose();
+    _wiredashModel.dispose();
     super.dispose();
   }
 
@@ -190,6 +181,7 @@ class WiredashState extends State<Wiredash> {
   }
 
   void _updateDependencies() {
+    // TODO validate everything gets updated
     setState(() {
       _options = widget.options ?? WiredashOptionsData();
       _theme = widget.theme ?? WiredashThemeData();
@@ -199,16 +191,13 @@ class WiredashState extends State<Wiredash> {
   @override
   Widget build(BuildContext context) {
     return WiredashProvider(
-      userManager: userManager,
-      feedbackModel: _feedbackModel,
+      wiredashModel: _wiredashModel,
       child: WiredashOptions(
         data: _options,
         child: WiredashLocalizations(
           child: WiredashTheme(
             data: _theme,
-            child: WiredashScaffold(
-              child: widget.child,
-            ),
+            child: widget.child,
           ),
         ),
       ),
@@ -216,8 +205,36 @@ class WiredashState extends State<Wiredash> {
   }
 
   void show() {
-    _feedbackModel.show();
+    assert(widget.navigatorKey.currentState != null, '''
+Wiredash couldn't access your app's root navigator.
+
+This is likely to happen when you forget to add the navigator key to your 
+Material- / Cupertino- or WidgetsApp widget. 
+
+To fix this, simply assign the same GlobalKey you assigned to Wiredash 
+to your Material- / Cupertino- or WidgetsApp widget, like so:
+
+return Wiredash(
+  projectId: "YOUR-PROJECT-ID",
+  secret: "YOUR-SECRET",
+  navigatorKey: _navigatorKey, // <-- should be the same
+  child: MaterialApp(
+    navigatorKey: _navigatorKey, // <-- should be the same
+    title: 'Flutter Demo',
+    home: ...
+  ),
+);
+
+For more info on how to setup Wiredash, check out 
+https://github.com/wiredashio/wiredash-sdk
+
+If this did not fix the issue, please file an issue at 
+https://github.com/wiredashio/wiredash-sdk/issues
+
+Thanks!
+''');
   }
+  // TODO actually show wiredash
 }
 
 @visibleForTesting
