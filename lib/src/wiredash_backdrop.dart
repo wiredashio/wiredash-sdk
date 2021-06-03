@@ -23,7 +23,8 @@ class WiredashBackdrop extends StatefulWidget {
   @override
   State<WiredashBackdrop> createState() => _WiredashBackdropState();
 
-  static const Duration enterExitDuration = Duration(milliseconds: 600);
+  static const Duration enterDuration = Duration(milliseconds: 800);
+  static const Duration exitDuration = Duration(milliseconds: 400);
 }
 
 class BackdropController {
@@ -93,21 +94,27 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     _scrollController = ScrollController();
     _backdropAnimationController = AnimationController(
       vsync: this,
-      duration: WiredashBackdrop.enterExitDuration,
+      duration: WiredashBackdrop.enterDuration,
+      reverseDuration: WiredashBackdrop.exitDuration,
     )..addStatusListener(_animControllerStatusListener);
-    final CurvedAnimation curvedScreenAnimation = CurvedAnimation(
+    final CurvedAnimation centerAnimation = CurvedAnimation(
       parent: _backdropAnimationController,
-      curve: Sprung.overDamped,
+      curve: Interval(0.0, 0.4, curve: Sprung.overDamped),
+      reverseCurve: Sprung.overDamped.flipped,
+    );
+    final CurvedAnimation inlineAnimation = CurvedAnimation(
+      parent: _backdropAnimationController,
+      curve: Interval(0.5, 1.0, curve: Sprung.overDamped),
       reverseCurve: Sprung.overDamped.flipped,
     );
 
     _scaleAppAnimation = Tween<double>(begin: 1, end: _calculateScaleFactor())
-        .animate(curvedScreenAnimation);
+        .animate(centerAnimation);
     _translateAppAnimation =
-        Tween<double>(begin: -1, end: 0).animate(curvedScreenAnimation);
+        Tween<double>(begin: -1, end: 0).animate(inlineAnimation);
     _appCornerRadiusAnimation = BorderRadiusTween(
             begin: BorderRadius.circular(0), end: BorderRadius.circular(16))
-        .animate(curvedScreenAnimation);
+        .animate(centerAnimation);
   }
 
   /// returns the scale factor of
