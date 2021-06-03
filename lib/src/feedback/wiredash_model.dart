@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/build_info/build_info_manager.dart';
+import 'package:wiredash/src/common/utils/build_info.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 
@@ -17,6 +19,13 @@ class WiredashModel with ChangeNotifier {
   bool get isAppInteractive => _isAppInteractive;
   bool _isAppInteractive = false;
 
+  final BuildInfoManager buildInfoManager =
+      BuildInfoManager(PlatformBuildInfo());
+
+  // TODO save somewhere else
+  String? userId;
+  String? userEmail;
+
   /// Deletes pending feedbacks
   ///
   /// Usually only relevant for debug builds
@@ -28,12 +37,14 @@ class WiredashModel with ChangeNotifier {
     }
   }
 
+  /// Opens wiredash behind the app
   void show() {
     _isWiredashActive = true;
     _isAppInteractive = false;
     notifyListeners();
   }
 
+  /// Closes wiredash
   void hide() {
     _isWiredashActive = false;
     _isAppInteractive = true;
@@ -56,23 +67,31 @@ class WiredashModel with ChangeNotifier {
   // }
 }
 
-enum FeedbackType { bug, improvement, praise }
+extension ChangeNotifierAsValueNotifier<C extends ChangeNotifier> on C {
+  ValueNotifier<T> asValueNotifier<T>(T Function(C c) selector) {
+    _DisposableValueNotifier<T>? valueNotifier;
+    void onChange() {
+      valueNotifier!.value = selector(this);
+      // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
+      valueNotifier.notifyListeners();
+    }
 
-extension FeedbackTypeMembers on FeedbackType {
-  String get label => const {
-        FeedbackType.bug: "bug",
-        FeedbackType.improvement: "improvement",
-        FeedbackType.praise: "praise",
-      }[this]!;
+    valueNotifier = _DisposableValueNotifier(selector(this), onDispose: () {
+      this.removeListener(onChange);
+    });
+    this.addListener(onChange);
+
+    return valueNotifier;
+  }
 }
 
-enum FeedbackUiState {
-  hidden,
-  intro,
-  capture,
-  feedback,
-  email,
-  submit,
-  submitted,
-  submissionError,
+class _DisposableValueNotifier<T> extends ValueNotifier<T> {
+  _DisposableValueNotifier(T value, {required this.onDispose}) : super(value);
+  void Function() onDispose;
+
+  @override
+  void dispose() {
+    onDispose();
+    super.dispose();
+  }
 }

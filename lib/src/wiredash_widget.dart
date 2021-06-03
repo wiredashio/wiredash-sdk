@@ -4,22 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/options/wiredash_options_data.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
-import 'package:wiredash/src/common/utils/build_info.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
+import 'package:wiredash/src/wiredash_backdrop.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
-import 'package:wiredash/src/wiredash_scaffold.dart';
 
 /// Capture in-app user feedback, wishes, ratings and much more
 ///
@@ -115,36 +113,21 @@ class Wiredash extends StatefulWidget {
   static WiredashController? of(BuildContext context) {
     final state = context.findAncestorStateOfType<WiredashState>();
     if (state == null) return null;
-    return WiredashController(state);
+    return WiredashController(state._wiredashModel);
   }
 }
 
 class WiredashState extends State<Wiredash> {
-  late BuildInfoManager buildInfoManager;
-
-  late WiredashApi _api;
   late WiredashModel _wiredashModel;
 
   late WiredashOptionsData _options;
   late WiredashThemeData _theme;
-
-  // TODO save somewhere else
-  String? userId;
-  String? userEmail;
 
   @override
   void initState() {
     super.initState();
 
     _updateDependencies();
-
-    _api = WiredashApi(
-      httpClient: Client(),
-      projectId: widget.projectId,
-      secret: widget.secret,
-    );
-
-    buildInfoManager = BuildInfoManager(PlatformBuildInfo());
 
     const fileSystem = LocalFileSystem();
     final storage = PendingFeedbackItemStorage(
@@ -153,9 +136,15 @@ class WiredashState extends State<Wiredash> {
       () async => (await getApplicationDocumentsDirectory()).path,
     );
 
+    final api = WiredashApi(
+      httpClient: Client(),
+      projectId: widget.projectId,
+      secret: widget.secret,
+    );
+
     final feedbackSubmitter = kIsWeb
-        ? DirectFeedbackSubmitter(_api)
-        : (RetryingFeedbackSubmitter(fileSystem, storage, _api)
+        ? DirectFeedbackSubmitter(api)
+        : (RetryingFeedbackSubmitter(fileSystem, storage, api)
           ..submitPendingFeedbackItems());
 
     _wiredashModel = WiredashModel(feedbackSubmitter);
@@ -179,11 +168,11 @@ class WiredashState extends State<Wiredash> {
   @override
   void didUpdateWidget(Wiredash oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // TODO fix update _api
     _updateDependencies();
   }
 
   void _updateDependencies() {
+    // TODO fix update _api
     // TODO validate everything gets updated
     setState(() {
       _options = widget.options ?? WiredashOptionsData();
@@ -200,7 +189,7 @@ class WiredashState extends State<Wiredash> {
         child: WiredashLocalizations(
           child: WiredashTheme(
             data: _theme,
-            child: WiredashScaffold(
+            child: WiredashBackdrop(
               child: widget.child,
             ),
           ),

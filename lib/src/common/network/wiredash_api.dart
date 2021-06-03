@@ -16,6 +16,8 @@ class WiredashApi {
         _secret = secret;
 
   final Client _httpClient;
+
+  // TODO make mutable
   final String _projectId;
   final String _secret;
 

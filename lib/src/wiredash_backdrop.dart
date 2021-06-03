@@ -7,17 +7,18 @@ import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/media_query_from_window.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
-class WiredashScaffold extends StatefulWidget {
-  const WiredashScaffold({Key? key, required this.child}) : super(key: key);
+/// The Wiredash UI behind the app
+class WiredashBackdrop extends StatefulWidget {
+  const WiredashBackdrop({Key? key, required this.child}) : super(key: key);
 
   /// The wrapped app
   final Widget child;
 
   @override
-  State<WiredashScaffold> createState() => _WiredashScaffoldState();
+  State<WiredashBackdrop> createState() => _WiredashBackdropState();
 }
 
-class _WiredashScaffoldState extends State<WiredashScaffold>
+class _WiredashBackdropState extends State<WiredashBackdrop>
     with TickerProviderStateMixin {
   static const Duration _animationDuration = Duration(milliseconds: 350);
 
