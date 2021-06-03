@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
@@ -43,7 +42,6 @@ class MockRetryingFeedbackSubmitter extends Fake
 
 void main() {
   group('FeedbackModel', () {
-    late MockGlobalKey<CaptureState> mockCaptureKey;
     late MockGlobalKey<NavigatorState> mockNavigatorKey;
     late UserManager usermanager;
     final StaticDeviceInfoGenerator deviceInfoGenerator =
@@ -52,12 +50,10 @@ void main() {
     late FeedbackModel model;
 
     setUp(() {
-      mockCaptureKey = MockGlobalKey();
       mockNavigatorKey = MockGlobalKey();
       usermanager = UserManager();
       mockRetryingFeedbackSubmitter = MockRetryingFeedbackSubmitter();
       model = FeedbackModel(
-        mockCaptureKey,
         mockNavigatorKey,
         usermanager,
         mockRetryingFeedbackSubmitter,

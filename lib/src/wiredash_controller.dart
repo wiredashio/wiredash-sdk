@@ -55,5 +55,8 @@ class WiredashController {
   ///
   /// The [Confidential] widget can automatically hide sensitive widgets from
   /// being recorded in a feedback screenshot.
-  ValueNotifier<bool> get visible => _state.captureKey.currentState!.visible;
+  ValueNotifier<bool> get visible {
+    throw "TODO not implemented";
+    // return _state.captureKey.currentState!.visible;
+  }
 }

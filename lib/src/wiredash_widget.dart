@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
@@ -123,7 +122,6 @@ class Wiredash extends StatefulWidget {
 }
 
 class WiredashState extends State<Wiredash> {
-  late GlobalKey<CaptureState> captureKey;
   late GlobalKey<NavigatorState> navigatorKey;
 
   late UserManager userManager;
@@ -143,7 +141,6 @@ class WiredashState extends State<Wiredash> {
       secret: widget.secret,
     );
 
-    captureKey = GlobalKey<CaptureState>();
     navigatorKey = widget.navigatorKey;
 
     _updateDependencies();
@@ -170,7 +167,6 @@ class WiredashState extends State<Wiredash> {
           ..submitPendingFeedbackItems());
 
     _feedbackModel = FeedbackModel(
-      captureKey,
       navigatorKey,
       userManager,
       feedbackSubmitter,
@@ -211,11 +207,7 @@ class WiredashState extends State<Wiredash> {
           child: WiredashTheme(
             data: _theme,
             child: WiredashScaffold(
-              child: Capture(
-                key: captureKey,
-                initialColor: _theme.firstPenColor,
-                child: widget.child,
-              ),
+              child: widget.child,
             ),
           ),
         ),
