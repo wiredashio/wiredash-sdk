@@ -1,25 +1,18 @@
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
 
-class WiredashProvider extends InheritedWidget {
+class WiredashProvider extends InheritedNotifier<WiredashModel> {
   const WiredashProvider({
     Key? key,
-    required this.wiredashModel,
+    required WiredashModel wiredashModel,
     required Widget child,
-  }) : super(key: key, child: child);
-
-  final WiredashModel wiredashModel;
+  }) : super(key: key, notifier: wiredashModel, child: child);
 
   static WiredashProvider? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<WiredashProvider>();
   }
-
-  @override
-  bool updateShouldNotify(WiredashProvider old) {
-    return wiredashModel != old.wiredashModel;
-  }
 }
 
 extension WiredashExtensions on BuildContext {
-  WiredashModel? get wiredashModel => WiredashProvider.of(this)?.wiredashModel;
+  WiredashModel? get wiredashModel => WiredashProvider.of(this)?.notifier;
 }

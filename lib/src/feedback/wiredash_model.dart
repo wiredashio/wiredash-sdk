@@ -10,6 +10,16 @@ class WiredashModel with ChangeNotifier {
 
   final FeedbackSubmitter _feedbackSubmitter;
 
+  bool _isActive = false;
+
+  /// `true` when wiredash is active
+  bool get isActive => _isActive;
+
+  set isActive(bool isActive) {
+    _isActive = isActive;
+    notifyListeners();
+  }
+
   /// Deletes pending feedbacks
   ///
   /// Usually only relevant for debug builds
