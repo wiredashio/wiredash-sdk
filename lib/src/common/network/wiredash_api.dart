@@ -49,6 +49,7 @@ class WiredashApi {
       return Request('POST', uri)..bodyFields = argumentsNN;
     }();
 
+    request.headers['version'] = '1';
     final response = await _send(request);
     if (response.statusCode == 200) {
       // success 🎉
@@ -62,8 +63,8 @@ class WiredashApi {
 
   /// Sends a [BaseRequest] after attaching HTTP headers
   Future<Response> _send(BaseRequest request) async {
-    request.headers['project'] = 'Project $_projectId';
-    request.headers['authorization'] = 'Secret $_secret';
+    request.headers['project'] = _projectId;
+    request.headers['secret'] = _secret;
 
     final streamedResponse = await _httpClient.send(request);
     return Response.fromStream(streamedResponse);
