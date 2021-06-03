@@ -11,7 +11,8 @@ import 'package:wiredash/src/wiredash_widget.dart';
 ///
 /// Add user information
 /// ```dart
-/// Wiredash.of(context).setIdentifiers(appVersion: "1.4.3");
+/// Wiredash.of(context)
+///     .setBuildProperties(buildVersion: "1.4.3", buildNumber: "42");
 /// ```
 class WiredashController {
   WiredashController(this._model);

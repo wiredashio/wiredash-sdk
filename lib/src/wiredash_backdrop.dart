@@ -1,93 +1,149 @@
+import 'dart:async';
 import 'dart:ui';
+import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/media_query_from_window.dart';
+import 'package:wiredash/src/sprung.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
 /// The Wiredash UI behind the app
 class WiredashBackdrop extends StatefulWidget {
-  const WiredashBackdrop({Key? key, required this.child}) : super(key: key);
+  const WiredashBackdrop({Key? key, required this.child, this.controller})
+      : super(key: key);
 
   /// The wrapped app
   final Widget child;
 
+  final BackdropController? controller;
+
   @override
   State<WiredashBackdrop> createState() => _WiredashBackdropState();
+
+  static const Duration enterExitDuration = Duration(milliseconds: 600);
+}
+
+class BackdropController {
+  _WiredashBackdropState? _state;
+
+  Future<void> showWiredash() async {
+    if (_state!._backdropAnimationController.status ==
+        AnimationStatus.dismissed) {
+      // Wiredash is currently not shown
+
+      // 1) start animation, causes app to be rendered on top of stack
+      final openFuture = _state!._backdropAnimationController.forward();
+
+      // 2) Wait 1 frame until layout of the app in the list is known
+      final completer = Completer();
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        // 3) Switch app from top of stack to be inlined in list
+        _state!.setState(() {
+          _state!._isLayoutingCompleted = true;
+        });
+
+        completer.complete();
+      });
+      await completer.future;
+      await openFuture;
+    } else {
+      _state!._backdropAnimationController.forward();
+    }
+  }
+
+  Future<void> hideWiredash() async {
+    await _state!._backdropAnimationController.reverse();
+    _state!.setState(() {
+      _state!._isLayoutingCompleted = false;
+    });
+  }
 }
 
 class _WiredashBackdropState extends State<WiredashBackdrop>
     with TickerProviderStateMixin {
-  static const Duration _animationDuration = Duration(milliseconds: 350);
+  static const double feedbackInputHorizontalPadding = 32;
 
   final GlobalKey _childAppKey = GlobalKey<State<StatefulWidget>>();
 
   AnimationStatus _animationStatus = AnimationStatus.dismissed;
   late final ScrollController _scrollController;
-  late final AnimationController _animationController;
 
+  /// Controls reveleaing and hiding of Wiredash
+  ///
+  /// forward() to open, reverse() to close
+  late final AnimationController _backdropAnimationController;
+
+  late Animation<double> _scaleAppAnimation;
+  late Animation<double> _translateAppAnimation;
+  late Animation<BorderRadius?> _appCornerRadiusAnimation;
+
+  /// When opening wiredash layouting has not yet finished and we don't know
+  /// the exact location of the app in our layout. This flag is used to show the
+  /// app at current position (fully visible, fully expanded) until the first
+  /// frame is drawn and the animation can start.
   bool _isLayoutingCompleted = false;
-  bool _isCurrentlyActive = false;
 
   @override
   void initState() {
     super.initState();
+    widget.controller?._state = this;
     _scrollController = ScrollController();
-    _animationController =
-        AnimationController(vsync: this, duration: _animationDuration)
-          ..addStatusListener(_animControllerStatusListener);
+    _backdropAnimationController = AnimationController(
+      vsync: this,
+      duration: WiredashBackdrop.enterExitDuration,
+    )..addStatusListener(_animControllerStatusListener);
+    final CurvedAnimation curvedScreenAnimation = CurvedAnimation(
+      parent: _backdropAnimationController,
+      curve: Sprung.overDamped,
+      reverseCurve: Sprung.overDamped.flipped,
+    );
+
+    _scaleAppAnimation = Tween<double>(begin: 1, end: _calculateScaleFactor())
+        .animate(curvedScreenAnimation);
+    _translateAppAnimation =
+        Tween<double>(begin: -1, end: 0).animate(curvedScreenAnimation);
+    _appCornerRadiusAnimation = BorderRadiusTween(
+            begin: BorderRadius.circular(0), end: BorderRadius.circular(16))
+        .animate(curvedScreenAnimation);
+  }
+
+  /// returns the scale factor of
+  double _calculateScaleFactor() {
+    final mediaQueryData =
+        MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+    final Size screenSize = mediaQueryData.size;
+    final EdgeInsets viewPadding = mediaQueryData.viewPadding;
+
+    final double targetContentWidth = screenSize.width -
+        viewPadding.horizontal -
+        2 * feedbackInputHorizontalPadding;
+    final double targetContentHeight = screenSize.height -
+        viewPadding.vertical -
+        2 * feedbackInputHorizontalPadding;
+
+    return math.min(
+      targetContentWidth / screenSize.width,
+      targetContentHeight / screenSize.height,
+    );
   }
 
   void _animControllerStatusListener(AnimationStatus status) {
     if (_animationStatus != status) {
-      // Reset the show manual overlay flag once Wiredash is closed
-      if (status == AnimationStatus.dismissed) {
-        _onHideWiredashCompleted();
-      }
       setState(() {
-        _animationStatus = _animationController.status;
+        _animationStatus = _backdropAnimationController.status;
       });
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    // TODO explicitly listen to model
-    // checking if the wiredashModel.isActive has changed
-    if (_isCurrentlyActive != context.wiredashModel!.isWiredashActive) {
-      _isCurrentlyActive = context.wiredashModel!.isWiredashActive;
-
-      if (_isCurrentlyActive) {
-        // Once that is done and we have the RenderObject for the animation hide the manual overlay
-        WidgetsBinding.instance?.addPostFrameCallback((_) {
-          setState(() {
-            _isLayoutingCompleted = true;
-          });
-          // Once the manual overlay is hidden trigger the animation
-          _showWiredash();
-        });
-      } else {
-        _hideWiredash();
-      }
+  void didUpdateWidget(WiredashBackdrop oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?._state = null;
+      widget.controller?._state = this;
     }
-  }
-
-  void _showWiredash() {
-    _animationController.forward();
-  }
-
-  void _hideWiredash() {
-    _animationController.reverse();
-  }
-
-  void _onHideWiredashCompleted() {
-    setState(() {
-      _isLayoutingCompleted = false;
-    });
   }
 
   @override
@@ -97,11 +153,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       child: widget.child,
     );
 
-    final model = context.wiredashModel!;
-    if (!model.isWiredashActive) {
+    if (_animationStatus == AnimationStatus.dismissed) {
+      // animation is not yet started, show the app without being wrapped in Transforms
       return child;
     }
 
+    final model = context.wiredashModel!;
     child = AbsorbPointer(
       absorbing: !model.isAppInteractive,
       child: child,
@@ -121,7 +178,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           child: Builder(builder: (context) {
             return Material(
               child: Container(
-                color: Colors.pink,
+                color: Colors.white,
                 child: Stack(
                   children: <Widget>[
                     ListView(
@@ -129,18 +186,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                       physics: const ClampingScrollPhysics(),
                       children: <Widget>[
                         _FeedbackInputContent(),
-                        if (_isLayoutingCompleted)
-                          Transform.translate(
-                            offset: const Offset(0, 200),
-                            child: SizedBox(
-                              height: MediaQuery.of(context).size.height,
-                              child: ClipRRect(
-                                borderRadius:
-                                    BorderRadius.circular(8), // TODO lerp
-                                child: child,
-                              ),
-                            ),
-                          )
+                        buildBackdropAnimation(
+                            context,
+                            _isLayoutingCompleted
+                                ? child
+                                : const SizedBox.expand())
                       ],
                     ),
                     if (!_isLayoutingCompleted) ...<Widget>[
@@ -153,6 +203,43 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           }),
         ),
       ),
+    );
+  }
+
+  Widget buildBackdropAnimation(BuildContext context, Widget child) {
+    return AnimatedBuilder(
+      animation: _backdropAnimationController,
+      builder: (context, child) {
+        final RenderBox? selfRenderBox =
+            context.findRenderObject() as RenderBox?;
+        final Offset selfOffset =
+            selfRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+
+        return Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..scale(_scaleAppAnimation.value)
+            ..translate(
+              0.0,
+              _translateAppAnimation.value * selfOffset.dy,
+            ),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: Material(
+              elevation: 2,
+              shadowColor: const Color(0xffe5e7eb),
+              clipBehavior: Clip.antiAlias,
+              borderRadius: _appCornerRadiusAnimation.value,
+              animationDuration: Duration.zero,
+              child: ClipRRect(
+                borderRadius: _appCornerRadiusAnimation.value,
+                child: child,
+              ),
+            ),
+          ),
+        );
+      },
+      child: child,
     );
   }
 }
@@ -186,8 +273,8 @@ class _FeedbackInputContent extends StatelessWidget {
           ),
           const Padding(
             padding: EdgeInsets.only(
-              left: 12,
-              right: 12,
+              left: _WiredashBackdropState.feedbackInputHorizontalPadding,
+              right: _WiredashBackdropState.feedbackInputHorizontalPadding,
               top: 128,
             ),
             child: Text(
@@ -205,8 +292,8 @@ class _FeedbackInputContent extends StatelessWidget {
               errorBorder: InputBorder.none,
               hintText: 'e.g. there’s a bug when ... or I really enjoy ...',
               contentPadding: EdgeInsets.only(
-                left: 16,
-                right: 16,
+                left: _WiredashBackdropState.feedbackInputHorizontalPadding,
+                right: _WiredashBackdropState.feedbackInputHorizontalPadding,
                 top: 24,
                 bottom: 16,
               ),

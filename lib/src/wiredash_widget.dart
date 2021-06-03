@@ -123,6 +123,8 @@ class WiredashState extends State<Wiredash> {
   late WiredashOptionsData _options;
   late WiredashThemeData _theme;
 
+  late BackdropController _backdropController;
+
   @override
   void initState() {
     super.initState();
@@ -147,7 +149,8 @@ class WiredashState extends State<Wiredash> {
         : (RetryingFeedbackSubmitter(fileSystem, storage, api)
           ..submitPendingFeedbackItems());
 
-    _wiredashModel = WiredashModel(feedbackSubmitter);
+    _backdropController = BackdropController();
+    _wiredashModel = WiredashModel(feedbackSubmitter, _backdropController);
   }
 
   @override
@@ -190,16 +193,13 @@ class WiredashState extends State<Wiredash> {
           child: WiredashTheme(
             data: _theme,
             child: WiredashBackdrop(
+              controller: _backdropController,
               child: widget.child,
             ),
           ),
         ),
       ),
     );
-  }
-
-  void show() {
-    _wiredashModel.show();
   }
 }
 

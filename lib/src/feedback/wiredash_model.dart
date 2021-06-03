@@ -1,20 +1,28 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/utils/build_info.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
+import 'package:wiredash/src/wiredash_backdrop.dart';
 
 class WiredashModel with ChangeNotifier {
   WiredashModel(
     this._feedbackSubmitter,
+    this._backdropController,
   );
 
+  final BackdropController _backdropController;
   final FeedbackSubmitter _feedbackSubmitter;
 
-  /// `true` when wiredash is active
-  bool get isWiredashActive => _isWiredashActive;
-  bool _isWiredashActive = false;
+  /// `true` when Wiredash is visible
+  ///
+  /// Also true during the wiredash enter/exit transition
+  bool get isWiredashActive => _isWiredashVisible;
+  bool _isWiredashVisible = false;
+  bool _isWiredashOpening = false;
+  bool _isWiredashClosing = false;
 
   bool get isAppInteractive => _isAppInteractive;
   bool _isAppInteractive = false;
@@ -38,15 +46,27 @@ class WiredashModel with ChangeNotifier {
   }
 
   /// Opens wiredash behind the app
-  void show() {
-    _isWiredashActive = true;
+  Future<void> show() async {
+    _isWiredashOpening = true;
+    _isWiredashVisible = true;
     _isAppInteractive = false;
+    notifyListeners();
+
+    // wait until fully opened
+    await _backdropController.showWiredash();
+    _isWiredashOpening = false;
     notifyListeners();
   }
 
   /// Closes wiredash
-  void hide() {
-    _isWiredashActive = false;
+  Future<void> hide() async {
+    _isWiredashClosing = true;
+    notifyListeners();
+
+    // wait until fully closed
+    await _backdropController.hideWiredash();
+    _isWiredashVisible = false;
+    _isWiredashClosing = false;
     _isAppInteractive = true;
     notifyListeners();
   }
