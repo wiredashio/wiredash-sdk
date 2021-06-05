@@ -175,7 +175,16 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final app = OverlayEntry(builder: (BuildContext context) {
       return Material(
         child: Container(
-          color: Colors.white,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: AlignmentDirectional.topStart,
+              end: AlignmentDirectional.bottomEnd,
+              colors: <Color>[
+                Colors.white,
+                Color(0xFFE8EEFB),
+              ],
+            ),
+          ),
           // Stack allows placing the app on top while we're awaiting layout
           child: Stack(
             children: <Widget>[
@@ -294,9 +303,7 @@ class _FeedbackInputContent extends StatelessWidget {
               right: _WiredashBackdropState.feedbackInputHorizontalPadding,
               top: 128,
             ),
-            child: Text(
-              'You got feedback for us?',
-            ),
+            child: Text('You got feedback for us?'),
           ),
           TextFormField(
             keyboardType: TextInputType.multiline,
