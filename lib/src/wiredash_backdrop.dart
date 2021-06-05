@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -263,12 +264,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }
 }
 
-class _FeedbackInputContent extends StatelessWidget {
+class _FeedbackInputContent extends StatefulWidget {
+  @override
+  State<_FeedbackInputContent> createState() => __FeedbackInputContentState();
+}
+
+class __FeedbackInputContentState extends State<_FeedbackInputContent> {
+  final TextEditingController _controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       bottom: false,
-      minimum: const EdgeInsets.only(top: 16),
+      minimum: const EdgeInsets.only(top: 12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,10 +288,15 @@ class _FeedbackInputContent extends StatelessWidget {
                   context.wiredashModel!.hide();
                 },
                 borderRadius: BorderRadius.circular(20),
-                child: const Padding(
-                  padding: EdgeInsets.all(24),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
                   child: Text(
                     'CLOSE',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 10,
+                      letterSpacing: 2,
+                    ),
                   ),
                 ),
               ),
@@ -294,13 +306,32 @@ class _FeedbackInputContent extends StatelessWidget {
             padding: EdgeInsets.only(
               left: _WiredashBackdropState.feedbackInputHorizontalPadding,
               right: _WiredashBackdropState.feedbackInputHorizontalPadding,
-              top: 128,
+              top: 20,
             ),
-            child: Text('You got feedback for us?'),
+            child: Text(
+              'You got feedback for us?',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           TextFormField(
+            controller: _controller,
             keyboardType: TextInputType.multiline,
             maxLines: null,
+            maxLength: 250,
+            buildCounter: (_,
+                {required currentLength, maxLength, required isFocused}) {
+              return Text(
+                currentLength == 0 ? '' : currentLength.toString(),
+                style: TextStyle(
+                  color: _getCounterColor(currentLength),
+                  fontSize: 10,
+                ),
+              );
+            },
+            style: const TextStyle(fontSize: 14),
             decoration: const InputDecoration(
               border: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -311,8 +342,7 @@ class _FeedbackInputContent extends StatelessWidget {
               contentPadding: EdgeInsets.only(
                 left: _WiredashBackdropState.feedbackInputHorizontalPadding,
                 right: _WiredashBackdropState.feedbackInputHorizontalPadding,
-                top: 24,
-                bottom: 16,
+                top: 16,
               ),
             ),
           ),
@@ -320,4 +350,15 @@ class _FeedbackInputContent extends StatelessWidget {
       ),
     );
   }
+}
+
+Color _getCounterColor(int length) {
+  if (length > 150 && length <= 200) {
+    return Colors.green.withOpacity(0.8);
+  } else if (length > 200 && length <= 240) {
+    return Colors.orange.withOpacity(0.8);
+  } else if (length > 240 && length <= 250) {
+    return Colors.red.withOpacity(0.8);
+  }
+  return Colors.black87;
 }
