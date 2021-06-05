@@ -122,19 +122,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final mediaQueryData =
         MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
     final Size screenSize = mediaQueryData.size;
-    final EdgeInsets viewPadding = mediaQueryData.viewPadding;
 
     final double targetContentWidth = screenSize.width -
-        viewPadding.horizontal -
-        2 * feedbackInputHorizontalPadding;
-    final double targetContentHeight = screenSize.height -
-        viewPadding.vertical -
+        mediaQueryData.viewPadding.horizontal -
         2 * feedbackInputHorizontalPadding;
 
-    return math.min(
-      targetContentWidth / screenSize.width,
-      targetContentHeight / screenSize.height,
-    );
+    return targetContentWidth / screenSize.width;
   }
 
   void _animControllerStatusListener(AnimationStatus status) {
