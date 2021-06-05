@@ -11,6 +11,8 @@ import 'package:wiredash/src/media_query_from_window.dart';
 import 'package:wiredash/src/sprung.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
+import 'common/theme/wiredash_theme.dart';
+
 /// The Wiredash UI behind the app
 class WiredashBackdrop extends StatefulWidget {
   const WiredashBackdrop({Key? key, required this.child, this.controller})
@@ -271,6 +273,7 @@ class _FeedbackInputContent extends StatefulWidget {
 
 class __FeedbackInputContentState extends State<_FeedbackInputContent> {
   final TextEditingController _controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -320,17 +323,8 @@ class __FeedbackInputContentState extends State<_FeedbackInputContent> {
             controller: _controller,
             keyboardType: TextInputType.multiline,
             maxLines: null,
-            maxLength: 250,
-            buildCounter: (_,
-                {required currentLength, maxLength, required isFocused}) {
-              return Text(
-                currentLength == 0 ? '' : currentLength.toString(),
-                style: TextStyle(
-                  color: _getCounterColor(currentLength),
-                  fontSize: 10,
-                ),
-              );
-            },
+            maxLength: 20,
+            buildCounter: _getCounterText,
             style: const TextStyle(fontSize: 14),
             decoration: const InputDecoration(
               border: InputBorder.none,
@@ -352,13 +346,39 @@ class __FeedbackInputContentState extends State<_FeedbackInputContent> {
   }
 }
 
-Color _getCounterColor(int length) {
-  if (length > 150 && length <= 200) {
-    return Colors.green.withOpacity(0.8);
-  } else if (length > 200 && length <= 240) {
-    return Colors.orange.withOpacity(0.8);
-  } else if (length > 240 && length <= 250) {
-    return Colors.red.withOpacity(0.8);
+Widget? _getCounterText(
+  /// The build context for the TextField.
+  BuildContext context, {
+
+  /// The length of the string currently in the input.
+  required int currentLength,
+
+  /// The maximum string length that can be entered into the TextField.
+  required int? maxLength,
+
+  /// Whether or not the TextField is currently focused.  Mainly provided for
+  /// the [liveRegion] parameter in the [Semantics] widget for accessibility.
+  required bool isFocused,
+}) {
+  final max = maxLength ?? 2048;
+  final remaining = max - currentLength;
+
+  Color _getCounterColor(int remaining) {
+    if (remaining >= 15) {
+      return Theme.of(context).errorColor;
+    } else if (remaining >= 10) {
+      return Colors.orange.withOpacity(0.8);
+    } else if (remaining >= 5) {
+      return Colors.green.shade400.withOpacity(0.8);
+    }
+    return Colors.black87;
   }
-  return Colors.black87;
+
+  return Text(
+    remaining > 15 ? '' : remaining.toString(),
+    style: TextStyle(
+      color: _getCounterColor(currentLength),
+      fontSize: 10,
+    ),
+  );
 }
