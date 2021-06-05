@@ -172,6 +172,38 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
 
     final options = WiredashOptions.of(context);
+    final app = OverlayEntry(builder: (BuildContext context) {
+      return Material(
+        child: Container(
+          color: Colors.white,
+          // Stack allows placing the app on top while we're awaiting layout
+          child: Stack(
+            children: <Widget>[
+              ListView(
+                // controller: _scrollController,
+                physics: const ClampingScrollPhysics(),
+                children: <Widget>[
+                  _FeedbackInputContent(),
+
+                  // Position of the app in the listview.
+                  // shown when layout is done and the entry animation
+                  // could be started
+                  _buildBackdropAnimation(
+                    context,
+                    _isLayoutingCompleted ? child : const SizedBox.expand(),
+                  )
+                ],
+              ),
+              // shows app on top while waiting for layouting of the ListView
+              if (!_isLayoutingCompleted) ...<Widget>[
+                child,
+              ],
+            ],
+          ),
+        ),
+      );
+    });
+
     return MediaQueryFromWindow(
       // Directionality required for all Text widgets
       child: Directionality(
@@ -185,48 +217,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             DefaultWidgetsLocalizations.delegate,
           ],
           // Overlay is required for text edit functions such as copy/paste on mobile
-          child: Overlay(initialEntries: <OverlayEntry>[
-            OverlayEntry(builder: (BuildContext context) {
-              return Builder(builder: (context) {
-                return Material(
-                  child: Container(
-                    color: Colors.white,
-                    child: Stack(
-                      children: <Widget>[
-                        ListView(
-                          // controller: _scrollController,
-                          physics: const ClampingScrollPhysics(),
-                          children: <Widget>[
-                            _FeedbackInputContent(),
-
-                            // Position of the app in the listview.
-                            // shown when layout is done and the entry animation
-                            // could be started
-                            buildBackdropAnimation(
-                              context,
-                              _isLayoutingCompleted
-                                  ? child
-                                  : const SizedBox.expand(),
-                            )
-                          ],
-                        ),
-                        // shows app on top while waiting for layouting to happen
-                        if (!_isLayoutingCompleted) ...<Widget>[
-                          child,
-                        ],
-                      ],
-                    ),
-                  ),
-                );
-              });
-            })
-          ]),
+          child: Overlay(initialEntries: [app]),
         ),
       ),
     );
   }
 
-  Widget buildBackdropAnimation(BuildContext context, Widget child) {
+  Widget _buildBackdropAnimation(BuildContext context, Widget child) {
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, child) {
