@@ -323,7 +323,7 @@ class __FeedbackInputContentState extends State<_FeedbackInputContent> {
             controller: _controller,
             keyboardType: TextInputType.multiline,
             maxLines: null,
-            maxLength: 20,
+            maxLength: 2048,
             buildCounter: _getCounterText,
             style: const TextStyle(fontSize: 14),
             decoration: const InputDecoration(
@@ -363,22 +363,19 @@ Widget? _getCounterText(
   final max = maxLength ?? 2048;
   final remaining = max - currentLength;
 
-  Color _getCounterColor(int remaining) {
-    if (remaining >= 15) {
-      return Theme.of(context).errorColor;
-    } else if (remaining >= 10) {
-      return Colors.orange.withOpacity(0.8);
-    } else if (remaining >= 5) {
+  Color _getCounterColor() {
+    if (remaining >= 150) {
       return Colors.green.shade400.withOpacity(0.8);
+    } else if (remaining >= 50) {
+      return Colors.orange.withOpacity(0.8);
     }
-    return Colors.black87;
+    return Theme.of(context).errorColor;
   }
 
   return Text(
-    remaining > 15 ? '' : remaining.toString(),
-    style: TextStyle(
-      color: _getCounterColor(currentLength),
-      fontSize: 10,
-    ),
+    remaining > 150 ? '' : remaining.toString(),
+    style: WiredashTheme.of(context)!
+        .inputErrorStyle
+        .copyWith(color: _getCounterColor()),
   );
 }
