@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:ui';
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +99,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     )..addStatusListener(_animControllerStatusListener);
     final CurvedAnimation centerAnimation = CurvedAnimation(
       parent: _backdropAnimationController,
-      curve: Interval(0.0, 0.4, curve: Sprung.overDamped),
+      curve: Interval(0.0, 0.5, curve: Sprung.overDamped),
       reverseCurve: Sprung.overDamped.flipped,
     );
     final CurvedAnimation inlineAnimation = CurvedAnimation(
@@ -173,8 +173,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     final options = WiredashOptions.of(context);
     return MediaQueryFromWindow(
+      // Directionality required for all Text widgets
       child: Directionality(
         textDirection: options?.textDirection ?? TextDirection.ltr,
+        // Localizations required for all Flutter UI widgets
         child: Localizations(
           locale: options?.currentLocale ?? window.locale,
           delegates: const <LocalizationsDelegate<dynamic>>[
@@ -182,32 +184,43 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             DefaultCupertinoLocalizations.delegate,
             DefaultWidgetsLocalizations.delegate,
           ],
-          child: Builder(builder: (context) {
-            return Material(
-              child: Container(
-                color: Colors.white,
-                child: Stack(
-                  children: <Widget>[
-                    ListView(
-                      // controller: _scrollController,
-                      physics: const ClampingScrollPhysics(),
+          // Overlay is required for text edit functions such as copy/paste on mobile
+          child: Overlay(initialEntries: <OverlayEntry>[
+            OverlayEntry(builder: (BuildContext context) {
+              return Builder(builder: (context) {
+                return Material(
+                  child: Container(
+                    color: Colors.white,
+                    child: Stack(
                       children: <Widget>[
-                        _FeedbackInputContent(),
-                        buildBackdropAnimation(
-                            context,
-                            _isLayoutingCompleted
-                                ? child
-                                : const SizedBox.expand())
+                        ListView(
+                          // controller: _scrollController,
+                          physics: const ClampingScrollPhysics(),
+                          children: <Widget>[
+                            _FeedbackInputContent(),
+
+                            // Position of the app in the listview.
+                            // shown when layout is done and the entry animation
+                            // could be started
+                            buildBackdropAnimation(
+                              context,
+                              _isLayoutingCompleted
+                                  ? child
+                                  : const SizedBox.expand(),
+                            )
+                          ],
+                        ),
+                        // shows app on top while waiting for layouting to happen
+                        if (!_isLayoutingCompleted) ...<Widget>[
+                          child,
+                        ],
                       ],
                     ),
-                    if (!_isLayoutingCompleted) ...<Widget>[
-                      child,
-                    ],
-                  ],
-                ),
-              ),
-            );
-          }),
+                  ),
+                );
+              });
+            })
+          ]),
         ),
       ),
     );
