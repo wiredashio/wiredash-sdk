@@ -1,14 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/measure.dart';
-import 'package:wiredash/src/media_query_from_window.dart';
 import 'package:wiredash/src/snap.dart';
 import 'package:wiredash/src/sprung.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
@@ -176,97 +173,63 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       child: child,
     );
 
-    final options = WiredashOptions.of(context);
-    final app = OverlayEntry(builder: (BuildContext context) {
-      print("building overlay ${savedRect?.top}");
-      return Material(
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: AlignmentDirectional.topStart,
-              end: AlignmentDirectional.bottomEnd,
-              colors: <Color>[
-                Colors.white,
-                Color(0xFFE8EEFB),
-              ],
-            ),
-          ),
-          // Stack allows placing the app on top while we're awaiting layout
-          child: Stack(
-            children: <Widget>[
-              NotificationListener<ScrollNotification>(
-                onNotification: (notification) {
-                  // print("layout changed $notification");
-                  return true;
-                },
-                child: ListView(
-                  controller: _scrollController,
-                  physics: SnapScrollPhysics(
-                    parent: const AlwaysScrollableScrollPhysics(),
-                    snaps: [
-                      // TODO somehow calcucalte the offset of the app inside the scrollview
-                      // currently the offset doesn't change when the feedback textfield increases
-                      // caution due to safe areas
-                      Snap.avoidZone(0, savedRect?.top ?? appStartingPosition,
-                          delimiter: math.min(
-                              (savedRect?.top ?? appStartingPosition) * 2 / 3,
-                              200)),
-                      // from app top all the way to the end of list and beyond
-                      Snap.avoidZone(
-                          savedRect?.top ?? appStartingPosition, 9999),
-                    ],
-                  ),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  children: <Widget>[
-                    MeasureSize(
-                      onChange: (size, bounds) {
-                        setState(() {
-                          // input changed size, trigger build to update
-                        });
-                      },
-                      child: _FeedbackInputContent(),
-                    ),
-
-                    // Position of the app in the listview.
-                    // shown when layout is done and the entry animation
-                    // could be started
-                    MeasureSize(
-                      onChange: (size, bounds) {
-                        print("app $size $bounds");
-                      },
-                      child: _buildBackdropAnimation(
-                        context,
-                        _isLayoutingCompleted ? child : const SizedBox.expand(),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              // shows app on top while waiting for layouting of the ListView
-              if (!_isLayoutingCompleted) ...<Widget>[
-                child,
-              ],
+    final appTopPosition = savedRect?.top ?? appStartingPosition;
+    return Material(
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: AlignmentDirectional.topCenter,
+            end: AlignmentDirectional.bottomCenter,
+            colors: <Color>[
+              Colors.white,
+              Color(0xFFE8EEFB),
             ],
           ),
         ),
-      );
-    });
+        // Stack allows placing the app on top while we're awaiting layout
+        child: Stack(
+          children: <Widget>[
+            ListView(
+              controller: _scrollController,
+              physics: SnapScrollPhysics(
+                parent: const AlwaysScrollableScrollPhysics(),
+                snaps: [
+                  Snap.avoidZone(0, appTopPosition,
+                      delimiter: math.min(appTopPosition * 2 / 3, 200)),
+                  // from app top all the way to the end of list and beyond
+                  Snap.avoidZone(appTopPosition, 9999),
+                ],
+              ),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              children: <Widget>[
+                MeasureSize(
+                  onChange: (size, bounds) {
+                    setState(() {
+                      // input changed size, trigger build to update
+                    });
+                  },
+                  child: _FeedbackInputContent(),
+                ),
 
-    return MediaQueryFromWindow(
-      // Directionality required for all Text widgets
-      child: Directionality(
-        textDirection: options?.textDirection ?? TextDirection.ltr,
-        // Localizations required for all Flutter UI widgets
-        child: Localizations(
-          locale: options?.currentLocale ?? window.locale,
-          delegates: const <LocalizationsDelegate<dynamic>>[
-            DefaultMaterialLocalizations.delegate,
-            DefaultCupertinoLocalizations.delegate,
-            DefaultWidgetsLocalizations.delegate,
+                // Position of the app in the listview.
+                // shown when layout is done and the entry animation
+                // could be started
+                MeasureSize(
+                  onChange: (size, bounds) {
+                    print("app $size $bounds");
+                  },
+                  child: _buildBackdropAnimation(
+                    context,
+                    _isLayoutingCompleted ? child : const SizedBox.expand(),
+                  ),
+                )
+              ],
+            ),
+            // shows app on top while waiting for layouting of the ListView
+            if (!_isLayoutingCompleted) ...<Widget>[
+              child,
+            ],
           ],
-          // Overlay is required for text edit functions such as copy/paste on mobile
-          child: Overlay(initialEntries: [app]),
         ),
       ),
     );

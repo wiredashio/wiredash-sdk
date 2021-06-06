@@ -1,7 +1,9 @@
 import 'package:file/local.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'dart:ui';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
@@ -15,6 +17,7 @@ import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
+import 'package:wiredash/src/media_query_from_window.dart';
 import 'package:wiredash/src/wiredash_backdrop.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
@@ -192,9 +195,31 @@ class WiredashState extends State<Wiredash> {
         child: WiredashLocalizations(
           child: WiredashTheme(
             data: _theme,
-            child: WiredashBackdrop(
-              controller: _backdropController,
-              child: widget.child,
+            child: MediaQueryFromWindow(
+              // Directionality required for all Text widgets
+              child: Directionality(
+                textDirection:
+                    widget.options?.textDirection ?? TextDirection.ltr,
+                // Localizations required for all Flutter UI widgets
+                child: Localizations(
+                  locale: widget.options?.currentLocale ?? window.locale,
+                  delegates: const [
+                    DefaultMaterialLocalizations.delegate,
+                    DefaultCupertinoLocalizations.delegate,
+                    DefaultWidgetsLocalizations.delegate,
+                  ],
+                  // Overlay is required for text edit functions such as copy/paste on mobile
+                  child: Overlay(initialEntries: [
+                    OverlayEntry(builder: (context) {
+                      // use a stateful widget as direct child or hot reload will not work for that widget
+                      return WiredashBackdrop(
+                        controller: _backdropController,
+                        child: widget.child,
+                      );
+                    })
+                  ]),
+                ),
+              ),
             ),
           ),
         ),
