@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
+import 'package:wiredash/src/measure.dart';
 import 'package:wiredash/src/media_query_from_window.dart';
 import 'package:wiredash/src/snap.dart';
 import 'package:wiredash/src/sprung.dart';
@@ -153,6 +154,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }
   }
 
+  static const double appStartingPosition = 220;
+
   @override
   Widget build(BuildContext context) {
     Widget child = KeyedSubtree(
@@ -173,6 +176,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     final options = WiredashOptions.of(context);
     final app = OverlayEntry(builder: (BuildContext context) {
+      print("building overlay ${savedRect?.top}");
       return Material(
         child: Container(
           decoration: const BoxDecoration(
@@ -188,31 +192,54 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           // Stack allows placing the app on top while we're awaiting layout
           child: Stack(
             children: <Widget>[
-              ListView(
-                controller: _scrollController,
-                physics: SnapScrollPhysics(
-                  parent: const AlwaysScrollableScrollPhysics(),
-                  snaps: [
-                    // TODO somehow calcucalte the offset of the app inside the scrollview
-                    // currently the offset doesn't change when the feedback textfield increases
-                    // caution due to safe areas
-                    Snap.avoidZone(0, 220, delimiter: 100),
-                    Snap.avoidZone(220, 9999), // way beyond end of list
+              NotificationListener<ScrollNotification>(
+                onNotification: (notification) {
+                  // print("layout changed $notification");
+                  return true;
+                },
+                child: ListView(
+                  controller: _scrollController,
+                  physics: SnapScrollPhysics(
+                    parent: const AlwaysScrollableScrollPhysics(),
+                    snaps: [
+                      // TODO somehow calcucalte the offset of the app inside the scrollview
+                      // currently the offset doesn't change when the feedback textfield increases
+                      // caution due to safe areas
+                      Snap.avoidZone(0, savedRect?.top ?? appStartingPosition,
+                          delimiter: math.min(
+                              (savedRect?.top ?? appStartingPosition) * 2 / 3,
+                              200)),
+                      // from app top all the way to the end of list and beyond
+                      Snap.avoidZone(
+                          savedRect?.top ?? appStartingPosition, 9999),
+                    ],
+                  ),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  children: <Widget>[
+                    MeasureSize(
+                      onChange: (size, bounds) {
+                        setState(() {
+                          // input changed size, trigger build to update
+                        });
+                      },
+                      child: _FeedbackInputContent(),
+                    ),
+
+                    // Position of the app in the listview.
+                    // shown when layout is done and the entry animation
+                    // could be started
+                    MeasureSize(
+                      onChange: (size, bounds) {
+                        print("app $size $bounds");
+                      },
+                      child: _buildBackdropAnimation(
+                        context,
+                        _isLayoutingCompleted ? child : const SizedBox.expand(),
+                      ),
+                    )
                   ],
                 ),
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                children: <Widget>[
-                  _FeedbackInputContent(),
-
-                  // Position of the app in the listview.
-                  // shown when layout is done and the entry animation
-                  // could be started
-                  _buildBackdropAnimation(
-                    context,
-                    _isLayoutingCompleted ? child : const SizedBox.expand(),
-                  )
-                ],
               ),
               // shows app on top while waiting for layouting of the ListView
               if (!_isLayoutingCompleted) ...<Widget>[
@@ -243,14 +270,30 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
   }
 
+  Rect? savedRect;
+
   Widget _buildBackdropAnimation(BuildContext context, Widget child) {
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, child) {
         final RenderBox? selfRenderBox =
             context.findRenderObject() as RenderBox?;
-        final Offset selfOffset =
-            selfRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+        final Offset? selfOffset = selfRenderBox?.localToGlobal(Offset.zero);
+        final Size? size = selfRenderBox?.size;
+
+        // print(constraints);
+        if (selfOffset != null && size != null) {
+          final Rect rect = Rect.fromPoints(
+              selfOffset, selfOffset.translate(size.width, size.height));
+          if (savedRect != rect) {
+            WidgetsBinding.instance!.addPostFrameCallback((_) {
+              setState(() {
+                savedRect = rect;
+                print(savedRect);
+              });
+            });
+          }
+        }
 
         return Transform(
           alignment: Alignment.center,
@@ -258,7 +301,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             ..scale(_scaleAppAnimation.value)
             ..translate(
               0.0,
-              _translateAppAnimation.value * selfOffset.dy,
+              _translateAppAnimation.value * (selfOffset?.dy ?? 0),
             ),
           child: SizedBox(
             height: MediaQuery.of(context).size.height,

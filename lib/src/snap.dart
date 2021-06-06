@@ -13,10 +13,20 @@ mixin _SnapScrollPhysics on ScrollPhysics {
 }
 
 abstract class SnapScrollPhysics extends ScrollPhysics with _SnapScrollPhysics {
+  static bool typeOne = true;
   factory SnapScrollPhysics({
     ScrollPhysics? parent,
-    List<Snap> snaps,
-  }) = RawSnapScrollPhysics;
+    List<Snap> snaps = const [],
+  }) {
+    // switch type because that's the only way flutter updates the physics
+    // https://github.com/flutter/flutter/issues/80051
+    typeOne = !typeOne;
+    if (typeOne) {
+      return RawSnapScrollPhysics1(snaps: snaps, parent: parent);
+    } else {
+      return RawSnapScrollPhysics2(snaps: snaps, parent: parent);
+    }
+  }
 
   factory SnapScrollPhysics.builder(
     SnapBuilder builder, {
@@ -38,6 +48,20 @@ abstract class SnapScrollPhysics extends ScrollPhysics with _SnapScrollPhysics {
       Snap.avoidZone(minExtent, maxExtent, delimiter: delimiter),
     ]);
   }
+}
+
+class RawSnapScrollPhysics1 extends RawSnapScrollPhysics {
+  const RawSnapScrollPhysics1({
+    ScrollPhysics? parent,
+    List<Snap> snaps = const [],
+  }) : super(parent: parent, snaps: snaps);
+}
+
+class RawSnapScrollPhysics2 extends RawSnapScrollPhysics {
+  const RawSnapScrollPhysics2({
+    ScrollPhysics? parent,
+    List<Snap> snaps = const [],
+  }) : super(parent: parent, snaps: snaps);
 }
 
 class RawSnapScrollPhysics extends BaseSnapScrollPhysics {
