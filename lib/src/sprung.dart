@@ -32,6 +32,7 @@ class Sprung extends Curve {
   static final underDamped = Sprung(12);
 
   /// Provides a **critically damped** spring, which overshoots once very slightly.
+  // ignore: avoid_redundant_argument_values
   static final criticallyDamped = Sprung(20);
 
   /// Provides an **over damped** spring, which smoothly glides into place.
@@ -44,7 +45,7 @@ class Sprung extends Curve {
     double stiffness = 180,
     double mass = 1.0,
     double velocity = 0.0,
-  }) : this._sim = SpringSimulation(
+  }) : _sim = SpringSimulation(
           SpringDescription(
             damping: damping,
             mass: mass,

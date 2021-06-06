@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/utils/build_info.dart';
@@ -97,9 +96,9 @@ extension ChangeNotifierAsValueNotifier<C extends ChangeNotifier> on C {
     }
 
     valueNotifier = _DisposableValueNotifier(selector(this), onDispose: () {
-      this.removeListener(onChange);
+      removeListener(onChange);
     });
-    this.addListener(onChange);
+    addListener(onChange);
 
     return valueNotifier;
   }
