@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -9,6 +11,8 @@ import 'package:wiredash/src/media_query_from_window.dart';
 import 'package:wiredash/src/snap.dart';
 import 'package:wiredash/src/sprung.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
+
+import 'common/theme/wiredash_theme.dart';
 
 /// The Wiredash UI behind the app
 class WiredashBackdrop extends StatefulWidget {
@@ -189,8 +193,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 physics: SnapScrollPhysics(
                   parent: const AlwaysScrollableScrollPhysics(),
                   snaps: [
-                    Snap.avoidZone(0, 320, delimiter: 200),
-                    Snap.avoidZone(320, 9999), // way beyond end of list
+                    // TODO somehow calcucalte the offset of the app inside the scrollview
+                    // currently the offset doesn't change when the feedback textfield increases
+                    // caution due to safe areas
+                    Snap.avoidZone(0, 220, delimiter: 100),
+                    Snap.avoidZone(220, 9999), // way beyond end of list
                   ],
                 ),
                 keyboardDismissBehavior:
@@ -274,12 +281,19 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }
 }
 
-class _FeedbackInputContent extends StatelessWidget {
+class _FeedbackInputContent extends StatefulWidget {
+  @override
+  State<_FeedbackInputContent> createState() => __FeedbackInputContentState();
+}
+
+class __FeedbackInputContentState extends State<_FeedbackInputContent> {
+  final TextEditingController _controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       bottom: false,
-      minimum: const EdgeInsets.only(top: 16),
+      minimum: const EdgeInsets.only(top: 12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,10 +306,15 @@ class _FeedbackInputContent extends StatelessWidget {
                   context.wiredashModel!.hide();
                 },
                 borderRadius: BorderRadius.circular(20),
-                child: const Padding(
-                  padding: EdgeInsets.all(24),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
                   child: Text(
                     'CLOSE',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 10,
+                      letterSpacing: 2,
+                    ),
                   ),
                 ),
               ),
@@ -305,13 +324,23 @@ class _FeedbackInputContent extends StatelessWidget {
             padding: EdgeInsets.only(
               left: _WiredashBackdropState.feedbackInputHorizontalPadding,
               right: _WiredashBackdropState.feedbackInputHorizontalPadding,
-              top: 128,
+              top: 20,
             ),
-            child: Text('You got feedback for us?'),
+            child: Text(
+              'You got feedback for us?',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           TextFormField(
+            controller: _controller,
             keyboardType: TextInputType.multiline,
             maxLines: null,
+            maxLength: 2048,
+            buildCounter: _getCounterText,
+            style: const TextStyle(fontSize: 14),
             decoration: const InputDecoration(
               border: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -322,8 +351,7 @@ class _FeedbackInputContent extends StatelessWidget {
               contentPadding: EdgeInsets.only(
                 left: _WiredashBackdropState.feedbackInputHorizontalPadding,
                 right: _WiredashBackdropState.feedbackInputHorizontalPadding,
-                top: 24,
-                bottom: 16,
+                top: 16,
               ),
             ),
           ),
@@ -331,4 +359,38 @@ class _FeedbackInputContent extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget? _getCounterText(
+  /// The build context for the TextField.
+  BuildContext context, {
+
+  /// The length of the string currently in the input.
+  required int currentLength,
+
+  /// The maximum string length that can be entered into the TextField.
+  required int? maxLength,
+
+  /// Whether or not the TextField is currently focused.  Mainly provided for
+  /// the [liveRegion] parameter in the [Semantics] widget for accessibility.
+  required bool isFocused,
+}) {
+  final max = maxLength ?? 2048;
+  final remaining = max - currentLength;
+
+  Color _getCounterColor() {
+    if (remaining >= 150) {
+      return Colors.green.shade400.withOpacity(0.8);
+    } else if (remaining >= 50) {
+      return Colors.orange.withOpacity(0.8);
+    }
+    return Theme.of(context).errorColor;
+  }
+
+  return Text(
+    remaining > 150 ? '' : remaining.toString(),
+    style: WiredashTheme.of(context)!
+        .inputErrorStyle
+        .copyWith(color: _getCounterColor()),
+  );
 }
