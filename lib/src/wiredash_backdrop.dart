@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -7,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/media_query_from_window.dart';
+import 'package:wiredash/src/snap.dart';
 import 'package:wiredash/src/sprung.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
@@ -42,6 +42,7 @@ class BackdropController {
       final completer = Completer();
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         // 3) Switch app from top of stack to be inlined in list
+        // ignore: invalid_use_of_protected_member
         _state!.setState(() {
           _state!._isLayoutingCompleted = true;
         });
@@ -57,6 +58,7 @@ class BackdropController {
 
   Future<void> hideWiredash() async {
     await _state!._backdropAnimationController.reverse();
+    // ignore: invalid_use_of_protected_member
     _state!.setState(() {
       _state!._isLayoutingCompleted = false;
     });
@@ -138,6 +140,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }
   }
 
+  @override
   void didUpdateWidget(WiredashBackdrop oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
@@ -182,8 +185,16 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           child: Stack(
             children: <Widget>[
               ListView(
-                // controller: _scrollController,
-                physics: const ClampingScrollPhysics(),
+                controller: _scrollController,
+                physics: SnapScrollPhysics(
+                  parent: const AlwaysScrollableScrollPhysics(),
+                  snaps: [
+                    Snap.avoidZone(0, 320, delimiter: 200),
+                    Snap.avoidZone(320, 9999), // way beyond end of list
+                  ],
+                ),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 children: <Widget>[
                   _FeedbackInputContent(),
 
