@@ -193,31 +193,37 @@ class WiredashState extends State<Wiredash> {
       child: WiredashOptions(
         data: _options,
         child: WiredashLocalizations(
-          child: WiredashTheme(
-            data: _theme,
-            child: MediaQueryFromWindow(
-              // Directionality required for all Text widgets
-              child: Directionality(
-                textDirection:
-                    widget.options?.textDirection ?? TextDirection.ltr,
-                // Localizations required for all Flutter UI widgets
-                child: Localizations(
-                  locale: widget.options?.currentLocale ?? window.locale,
-                  delegates: const [
-                    DefaultMaterialLocalizations.delegate,
-                    DefaultCupertinoLocalizations.delegate,
-                    DefaultWidgetsLocalizations.delegate,
-                  ],
-                  // Overlay is required for text edit functions such as copy/paste on mobile
-                  child: Overlay(initialEntries: [
-                    OverlayEntry(builder: (context) {
-                      // use a stateful widget as direct child or hot reload will not work for that widget
-                      return WiredashBackdrop(
-                        controller: _backdropController,
-                        child: widget.child,
-                      );
-                    })
-                  ]),
+          // Both DefaultTextEditingShortcuts and DefaultTextEditingActions are
+          // required to make text edits like deletion of characters possible on macOS
+          child: DefaultTextEditingShortcuts(
+            child: DefaultTextEditingActions(
+              child: WiredashTheme(
+                data: _theme,
+                child: MediaQueryFromWindow(
+                  // Directionality required for all Text widgets
+                  child: Directionality(
+                    textDirection:
+                        widget.options?.textDirection ?? TextDirection.ltr,
+                    // Localizations required for all Flutter UI widgets
+                    child: Localizations(
+                      locale: widget.options?.currentLocale ?? window.locale,
+                      delegates: const [
+                        DefaultMaterialLocalizations.delegate,
+                        DefaultCupertinoLocalizations.delegate,
+                        DefaultWidgetsLocalizations.delegate,
+                      ],
+                      // Overlay is required for text edit functions such as copy/paste on mobile
+                      child: Overlay(initialEntries: [
+                        OverlayEntry(builder: (context) {
+                          // use a stateful widget as direct child or hot reload will not work for that widget
+                          return WiredashBackdrop(
+                            controller: _backdropController,
+                            child: widget.child,
+                          );
+                        })
+                      ]),
+                    ),
+                  ),
                 ),
               ),
             ),
