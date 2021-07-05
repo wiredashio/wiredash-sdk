@@ -5,12 +5,11 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/measure.dart';
 import 'package:wiredash/src/snap.dart';
 import 'package:wiredash/src/sprung.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
-
-import 'common/theme/wiredash_theme.dart';
 
 /// The Wiredash UI behind the app
 class WiredashBackdrop extends StatefulWidget {
@@ -19,8 +18,14 @@ class WiredashBackdrop extends StatefulWidget {
 
   /// The wrapped app
   final Widget child;
-
   final BackdropController? controller;
+
+  static const double feedbackInputHorizontalPadding = 32;
+
+  static BackdropController of(BuildContext context) {
+    final state = context.findAncestorStateOfType<_WiredashBackdropState>();
+    return BackdropController().._state = state;
+  }
 
   @override
   State<WiredashBackdrop> createState() => _WiredashBackdropState();
@@ -69,8 +74,6 @@ class BackdropController {
 
 class _WiredashBackdropState extends State<WiredashBackdrop>
     with TickerProviderStateMixin {
-  static const double feedbackInputHorizontalPadding = 32;
-
   final GlobalKey _childAppKey = GlobalKey<State<StatefulWidget>>();
 
   AnimationStatus _animationStatus = AnimationStatus.dismissed;
@@ -119,8 +122,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     _translateAppAnimation =
         Tween<double>(begin: -1, end: 0).animate(inlineAnimation);
     _appCornerRadiusAnimation = BorderRadiusTween(
-            begin: BorderRadius.circular(0), end: BorderRadius.circular(16))
-        .animate(centerAnimation);
+      begin: BorderRadius.circular(0),
+      end: BorderRadius.circular(20),
+    ).animate(centerAnimation);
   }
 
   /// returns the scale factor of
@@ -131,7 +135,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     final double targetContentWidth = screenSize.width -
         mediaQueryData.viewPadding.horizontal -
-        2 * feedbackInputHorizontalPadding;
+        2 * WiredashBackdrop.feedbackInputHorizontalPadding;
 
     return targetContentWidth / screenSize.width;
   }
@@ -208,7 +212,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                       // input changed size, trigger build to update
                     });
                   },
-                  child: _FeedbackInputContent(),
+                  child: const WiredashFeedbackFlow(),
                 ),
 
                 // Position of the app in the listview.
@@ -270,12 +274,22 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             ),
           child: SizedBox(
             height: MediaQuery.of(context).size.height,
-            child: Material(
-              elevation: 2,
-              shadowColor: const Color(0xffe5e7eb),
-              clipBehavior: Clip.antiAlias,
-              borderRadius: _appCornerRadiusAnimation.value,
-              animationDuration: Duration.zero,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: _appCornerRadiusAnimation.value,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF000000).withOpacity(0.04),
+                    offset: const Offset(0, 10),
+                    blurRadius: 10,
+                  ),
+                  BoxShadow(
+                    color: const Color(0xFF000000).withOpacity(0.10),
+                    offset: const Offset(0, 20),
+                    blurRadius: 25,
+                  ),
+                ],
+              ),
               child: ClipRRect(
                 borderRadius: _appCornerRadiusAnimation.value,
                 child: child,
@@ -287,118 +301,4 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       child: child,
     );
   }
-}
-
-class _FeedbackInputContent extends StatefulWidget {
-  @override
-  State<_FeedbackInputContent> createState() => __FeedbackInputContentState();
-}
-
-class __FeedbackInputContentState extends State<_FeedbackInputContent> {
-  final TextEditingController _controller = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      minimum: const EdgeInsets.only(top: 12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Center(
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  context.wiredashModel!.hide();
-                },
-                borderRadius: BorderRadius.circular(20),
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                    'CLOSE',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 10,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(
-              left: _WiredashBackdropState.feedbackInputHorizontalPadding,
-              right: _WiredashBackdropState.feedbackInputHorizontalPadding,
-              top: 20,
-            ),
-            child: Text(
-              'You got feedback for us?',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          TextFormField(
-            controller: _controller,
-            keyboardType: TextInputType.multiline,
-            maxLines: null,
-            maxLength: 2048,
-            buildCounter: _getCounterText,
-            style: const TextStyle(fontSize: 14),
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              disabledBorder: InputBorder.none,
-              errorBorder: InputBorder.none,
-              hintText: 'e.g. there’s a bug when ... or I really enjoy ...',
-              contentPadding: EdgeInsets.only(
-                left: _WiredashBackdropState.feedbackInputHorizontalPadding,
-                right: _WiredashBackdropState.feedbackInputHorizontalPadding,
-                top: 16,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-Widget? _getCounterText(
-  /// The build context for the TextField.
-  BuildContext context, {
-
-  /// The length of the string currently in the input.
-  required int currentLength,
-
-  /// The maximum string length that can be entered into the TextField.
-  required int? maxLength,
-
-  /// Whether or not the TextField is currently focused.  Mainly provided for
-  /// the [liveRegion] parameter in the [Semantics] widget for accessibility.
-  required bool isFocused,
-}) {
-  final max = maxLength ?? 2048;
-  final remaining = max - currentLength;
-
-  Color _getCounterColor() {
-    if (remaining >= 150) {
-      return Colors.green.shade400.withOpacity(0.8);
-    } else if (remaining >= 50) {
-      return Colors.orange.withOpacity(0.8);
-    }
-    return Theme.of(context).errorColor;
-  }
-
-  return Text(
-    remaining > 150 ? '' : remaining.toString(),
-    style: WiredashTheme.of(context)!
-        .inputErrorStyle
-        .copyWith(color: _getCounterColor()),
-  );
 }
