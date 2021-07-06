@@ -3,6 +3,31 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/wiredash_backdrop.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
+class Label {
+  const Label({required this.id, required this.name});
+  final String id;
+  final String name;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Label &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          name == other.name;
+
+  @override
+  int get hashCode => id.hashCode ^ name.hashCode;
+}
+
+const _labels = [
+  Label(id: 'aaa111', name: 'bug'),
+  Label(id: 'bbb222', name: 'praise'),
+  Label(id: 'ccc333', name: 'feature request'),
+  Label(id: 'ddd444', name: 'something funny'),
+  Label(id: 'eee555', name: 'overmorrow'),
+];
+
 class WiredashFeedbackFlow extends StatefulWidget {
   const WiredashFeedbackFlow({Key? key}) : super(key: key);
 
@@ -10,8 +35,23 @@ class WiredashFeedbackFlow extends StatefulWidget {
   State<WiredashFeedbackFlow> createState() => _WiredashFeedbackFlowState();
 }
 
-class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow> {
-  final TextEditingController _controller = TextEditingController();
+class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
+    with TickerProviderStateMixin {
+  late final TextEditingController _controller;
+  late final ValueNotifier<Set<Label>> _selectedLabels;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+    _selectedLabels = ValueNotifier({});
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,9 +121,40 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow> {
           AnimatedBuilder(
             animation: _controller,
             builder: (context, child) {
-              return _controller.text.isEmpty
-                  ? const _Links()
-                  : const _Labels();
+              return AnimatedSize(
+                vsync: this,
+                duration: const Duration(milliseconds: 450),
+                curve: Curves.fastOutSlowIn,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 225),
+                  reverseDuration: const Duration(milliseconds: 175),
+                  switchInCurve: Curves.fastOutSlowIn,
+                  switchOutCurve: Curves.fastOutSlowIn,
+                  child: KeyedSubtree(
+                    key: ValueKey(_controller.text.isEmpty),
+                    child: _controller.text.isEmpty
+                        ? const _Links()
+                        : ValueListenableBuilder<Set<Label>>(
+                            valueListenable: _selectedLabels,
+                            builder: (context, selectedLabels, child) {
+                              return _Labels(
+                                isAnyLabelSelected: selectedLabels.isNotEmpty,
+                                isLabelSelected: selectedLabels.contains,
+                                toggleSelection: (label) {
+                                  setState(() {
+                                    if (selectedLabels.contains(label)) {
+                                      selectedLabels.remove(label);
+                                    } else {
+                                      selectedLabels.add(label);
+                                    }
+                                  });
+                                },
+                              );
+                            },
+                          ),
+                  ),
+                ),
+              );
             },
           ),
         ],
@@ -181,7 +252,16 @@ class _Link extends StatelessWidget {
 }
 
 class _Labels extends StatelessWidget {
-  const _Labels({Key? key}) : super(key: key);
+  const _Labels({
+    required this.isAnyLabelSelected,
+    required this.isLabelSelected,
+    required this.toggleSelection,
+    Key? key,
+  }) : super(key: key);
+
+  final bool isAnyLabelSelected;
+  final bool Function(Label) isLabelSelected;
+  final void Function(Label) toggleSelection;
 
   @override
   Widget build(BuildContext context) {
@@ -189,44 +269,56 @@ class _Labels extends StatelessWidget {
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
-        children: const [
-          _Label(child: Text('bug')),
-          _Label(child: Text('praise')),
-          _Label(child: Text('feature request')),
-          _Label(child: Text('something funny')),
-          _Label(child: Text('overmorrow')),
-        ],
+        children: _labels.map((label) {
+          return _Label(
+            label: label,
+            isAnyLabelSelected: isAnyLabelSelected,
+            selected: isLabelSelected(label),
+            toggleSelection: () => toggleSelection(label),
+          );
+        }).toList(),
       ),
     );
   }
 }
 
-class _Label extends StatefulWidget {
-  const _Label({required this.child, Key? key}) : super(key: key);
-  final Widget child;
+class _Label extends StatelessWidget {
+  const _Label({
+    required this.label,
+    required this.isAnyLabelSelected,
+    required this.selected,
+    required this.toggleSelection,
+    Key? key,
+  }) : super(key: key);
 
-  @override
-  __LabelState createState() => __LabelState();
-}
+  final Label label;
+  final bool isAnyLabelSelected;
+  final bool selected;
+  final VoidCallback toggleSelection;
 
-class __LabelState extends State<_Label> {
-  bool _selected = false;
-
-  void _toggle() {
-    setState(() {
-      _selected = !_selected;
-    });
+  // If this label is selected, or if this label is deselected AND no other
+  // labels have been selected, we want to display the tint color.
+  //
+  // However, if this label is deselected but some other labels are selected, we
+  // want to display a gray color with less contrast so that this label really
+  // looks different from the selected ones.
+  Color _resolveTextColor() {
+    return selected || !isAnyLabelSelected
+        ? const Color(0xFF1A56DB) // tint
+        : const Color(0xFFA0AEC0); // gray / 500
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _toggle,
-      child: Container(
+      onTap: toggleSelection,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 225),
+        curve: Curves.ease,
         decoration: BoxDecoration(
-          color: _selected ? Colors.white : const Color(0xFFE8EEFB),
+          color: selected ? Colors.white : const Color(0xFFE8EEFB),
           borderRadius: BorderRadius.circular(10),
-          border: _selected
+          border: selected
               ? Border.all(
                   width: 2,
                   // tint
@@ -238,14 +330,14 @@ class __LabelState extends State<_Label> {
                 ),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        child: DefaultTextStyle.merge(
+        child: AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 225),
+          curve: Curves.ease,
           style: TextStyle(
             fontWeight: FontWeight.w800,
-            color: _selected
-                ? const Color(0xFF1A56DB) // tint
-                : const Color(0xFFA0AEC0), // gray / 500
+            color: _resolveTextColor(), // gray / 500
           ),
-          child: widget.child,
+          child: Text(label.name),
         ),
       ),
     );
