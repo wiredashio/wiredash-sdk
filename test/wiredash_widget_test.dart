@@ -161,7 +161,7 @@ class _MockProjectCredentialValidator extends Fake
   @override
   Future<void> validate(
       {required String projectId, required String secret}) async {
-    validateInvocations
-        .addMethodCall(namedArgs: {'projectId': projectId, 'secret': secret});
+    await validateInvocations.addAsyncMethodCall(
+        namedArgs: {'projectId': projectId, 'secret': secret})?.value;
   }
 }

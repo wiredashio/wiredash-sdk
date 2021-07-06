@@ -60,14 +60,17 @@ class SyncEngine {
   Future<void> _ping() async {
     try {
       final response = await _api.ping();
-      assert(!response.hasNewMessages);
+      // TODO save to prefs
+      assert(response.latestMessageId.isNotEmpty);
+
       final preferences = await _sharedPreferences();
       final now = DateTime.now();
       await preferences.setInt(lastSuccessfulPingKey, now.millisecond);
     } catch (e, stack) {
-      // TODO
-      debugPrint(e.toString());
-      debugPrint(stack.toString());
+      // TODO track number of conseccutive errors to prevent pings at all
+      // debugPrint(e.toString());
+      // debugPrint(stack.toString());
+      assert(stack != null);
     }
   }
 

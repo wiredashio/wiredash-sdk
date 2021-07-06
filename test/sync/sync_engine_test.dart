@@ -92,7 +92,10 @@ class _MockWiredashApi extends Fake implements WiredashApi {
 
   @override
   Future<PingResponse> ping() async {
-    await pingInvocations.addMethodCall();
+    final mockedReturnValue = pingInvocations.addAsyncMethodCall();
+    if (mockedReturnValue != null) {
+      return await mockedReturnValue.value as PingResponse;
+    }
     throw "Not implemented";
   }
 }

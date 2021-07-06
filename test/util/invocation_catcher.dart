@@ -22,7 +22,7 @@ class MethodInvocationCatcher {
 
   int get count => _invocations.length;
 
-  dynamic addMethodCall({
+  MockedReturnValue<dynamic>? addMethodCall({
     Map<String, Object?>? namedArgs,
     List<Object?>? args,
   }) {
@@ -33,7 +33,23 @@ class MethodInvocationCatcher {
     );
     _invocations.add(AssertableInvocation(iv));
     if (interceptor != null) {
-      return interceptor!.call(iv);
+      return MockedReturnValue(interceptor!.call(iv));
+    }
+    return null;
+  }
+
+  MockedReturnValue<Future<dynamic>>? addAsyncMethodCall({
+    Map<String, Object?>? namedArgs,
+    List<Object?>? args,
+  }) {
+    final iv = Invocation.method(
+      Symbol(methodName),
+      args,
+      namedArgs?.map((key, value) => MapEntry(Symbol(key), value)),
+    );
+    _invocations.add(AssertableInvocation(iv));
+    if (interceptor != null) {
+      return MockedReturnValue(interceptor!.call(iv) as Future<dynamic>);
     }
     return null;
   }
@@ -55,6 +71,11 @@ class MethodInvocationCatcher {
     throw 'There have been ${_invocations.length} invocations - '
         'zero where expected. Invocations where:\n${_invocations.join('\n')}';
   }
+}
+
+class MockedReturnValue<T> {
+  MockedReturnValue(this.value);
+  final T value;
 }
 
 /// A invocation which can be used to assert specific values

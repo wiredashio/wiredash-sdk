@@ -36,8 +36,11 @@ class MockRetryingFeedbackSubmitter extends Fake
       MethodInvocationCatcher('submit');
   @override
   Future<void> submit(FeedbackItem item, Uint8List? screenshot) async {
-    submitInvocations
-        .addMethodCall(namedArgs: {'item': item, 'screenshot': screenshot});
+    final mockedReturnValue = submitInvocations.addAsyncMethodCall(
+        namedArgs: {'item': item, 'screenshot': screenshot});
+    if (mockedReturnValue != null) {
+      await mockedReturnValue.value;
+    }
   }
 }
 

@@ -26,8 +26,8 @@ class MockNetworkManager extends Fake implements WiredashApi {
   @override
   Future<void> sendFeedback(
       {required FeedbackItem feedback, Uint8List? screenshot}) async {
-    await sendFeedbackInvocations.addMethodCall(
-        namedArgs: {'feedback': feedback, 'screenshot': screenshot});
+    await sendFeedbackInvocations.addAsyncMethodCall(
+        namedArgs: {'feedback': feedback, 'screenshot': screenshot})?.value;
   }
 }
 

@@ -22,7 +22,11 @@ class FakeSharedPreferences extends Fake implements SharedPreferences {
       MethodInvocationCatcher('setStringList');
   @override
   Future<bool> setStringList(String key, List<String> value) async {
-    await setStringListInvocations.addMethodCall(args: [key, value]);
+    final mockedReturnValue =
+        setStringListInvocations.addAsyncMethodCall(args: [key, value]);
+    if (mockedReturnValue != null) {
+      return await mockedReturnValue.value as bool;
+    }
     _store[key] = value;
     return true;
   }
@@ -31,9 +35,10 @@ class FakeSharedPreferences extends Fake implements SharedPreferences {
       MethodInvocationCatcher('getStringList');
   @override
   List<String>? getStringList(String key) {
-    final result = getStringListInvocations.addMethodCall(args: [key]);
-    if (result != null) {
-      return result as List<String>?;
+    final mockedReturnValue =
+        getStringListInvocations.addMethodCall(args: [key]);
+    if (mockedReturnValue != null) {
+      return mockedReturnValue.value as List<String>?;
     }
     return _store[key] as List<String>?;
   }
@@ -42,7 +47,11 @@ class FakeSharedPreferences extends Fake implements SharedPreferences {
       MethodInvocationCatcher('setInt');
   @override
   Future<bool> setInt(String key, int value) async {
-    await setIntInvocations.addMethodCall(args: [key, value]);
+    final mockedReturnValue =
+        setIntInvocations.addMethodCall(args: [key, value]);
+    if (mockedReturnValue != null) {
+      return await mockedReturnValue.value as bool;
+    }
     _store[key] = value;
     return true;
   }
@@ -51,9 +60,9 @@ class FakeSharedPreferences extends Fake implements SharedPreferences {
       MethodInvocationCatcher('getInt');
   @override
   int? getInt(String key) {
-    final result = getIntInvocations.addMethodCall(args: [key]);
-    if (result != null) {
-      return result as int?;
+    final mockedReturnValue = getIntInvocations.addMethodCall(args: [key]);
+    if (mockedReturnValue != null) {
+      return mockedReturnValue.value as int?;
     }
     return _store[key] as int?;
   }
