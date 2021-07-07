@@ -85,10 +85,12 @@ class SyncEngine {
   Future<void> _ping() async {
     try {
       final response = await _api.ping();
-      // TODO save to prefs
-      assert(response.latestMessageId.isNotEmpty);
-
       final preferences = await _sharedPreferences();
+      final latestMessageId = response.latestMessageId;
+      if (latestMessageId != null) {
+        await preferences.setString(latestMessageIdKey, latestMessageId);
+      }
+
       final now = clock.now();
       await preferences.setInt(
           lastSuccessfulPingKey, now.millisecondsSinceEpoch);

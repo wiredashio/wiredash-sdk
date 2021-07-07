@@ -66,6 +66,30 @@ class FakeSharedPreferences extends Fake implements SharedPreferences {
     }
     return _store[key] as int?;
   }
+
+  final MethodInvocationCatcher setStringInvocations =
+      MethodInvocationCatcher('setString');
+  @override
+  Future<bool> setString(String key, String value) async {
+    final mockedReturnValue =
+        setStringInvocations.addMethodCall(args: [key, value]);
+    if (mockedReturnValue != null) {
+      return await mockedReturnValue.value as bool;
+    }
+    _store[key] = value;
+    return true;
+  }
+
+  final MethodInvocationCatcher getStringInvocations =
+      MethodInvocationCatcher('getString');
+  @override
+  String? getString(String key) {
+    final mockedReturnValue = getStringInvocations.addMethodCall(args: [key]);
+    if (mockedReturnValue != null) {
+      return mockedReturnValue.value as String?;
+    }
+    return _store[key] as String?;
+  }
 }
 
 class IncrementalUuidV4Generator implements UuidV4Generator {

@@ -108,6 +108,19 @@ void main() {
       expect(prefs.getInt(SyncEngine.lastSuccessfulPingKey), isNotNull);
     });
 
+    test('latest message id is saved', () async {
+      // Silence SDK for two days
+      api.pingInvocations.interceptor = (_) async {
+        return PingResponse(latestMessageId: 'asdf');
+      };
+
+      expect(prefs.getString(SyncEngine.latestMessageIdKey), isNull);
+      final syncEngine = SyncEngine(api, () async => prefs);
+      addTearDown(() => syncEngine.dispose());
+      await syncEngine.onUserOpenedWiredash();
+      expect(prefs.getString(SyncEngine.latestMessageIdKey), 'asdf');
+    });
+
     group('Kill Switch', () {
       test('will silence ping on wiredash initialize', () {
         // We really, really, really don't want million of wiredash users

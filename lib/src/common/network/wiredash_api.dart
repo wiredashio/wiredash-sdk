@@ -79,7 +79,10 @@ class PingResponse {
   /// The id of the last message from dev or user
   ///
   /// Used to detecht if there are new messages
-  final String latestMessageId;
+  ///
+  /// can be `null` when user never gave any feedback
+  // TODO double check with backend
+  final String? latestMessageId;
 
   PingResponse({
     required this.latestMessageId,
