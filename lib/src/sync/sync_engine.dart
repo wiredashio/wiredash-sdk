@@ -88,7 +88,11 @@ class SyncEngine {
       final preferences = await _sharedPreferences();
       final latestMessageId = response.latestMessageId;
       if (latestMessageId != null) {
-        await preferences.setString(latestMessageIdKey, latestMessageId);
+        final currentLatestId = preferences.getString(latestMessageIdKey);
+        if (currentLatestId != latestMessageId) {
+          await preferences.setString(latestMessageIdKey, latestMessageId);
+          // TODO call onNewMessage() callback
+        }
       }
 
       final now = clock.now();
