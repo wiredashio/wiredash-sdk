@@ -90,7 +90,8 @@ class SyncEngine {
 
       final preferences = await _sharedPreferences();
       final now = clock.now();
-      await preferences.setInt(lastSuccessfulPingKey, now.millisecond);
+      await preferences.setInt(
+          lastSuccessfulPingKey, now.millisecondsSinceEpoch);
     } on KillSwitchException catch (e) {
       // sdk receives too much load, prevents further automatic pings
       await _silenceUntil(e.silentUntil);
