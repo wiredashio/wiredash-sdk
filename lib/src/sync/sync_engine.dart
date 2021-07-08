@@ -28,6 +28,7 @@ class SyncEngine {
   static const lastFeedbackSubmissionKey =
       'io.wiredash.last_feedback_submission';
   static const silenceUntilKey = 'io.wiredash.silence_until';
+  static const latestMessageIdKey = 'io.wiredash.latest_message_id';
 
   /// Called when the SDK is initialized (by wrapping the app)
   ///
