@@ -147,15 +147,17 @@ class WiredashState extends State<Wiredash> {
     navigatorKey = widget.navigatorKey;
 
     _updateDependencies();
+    buildInfoManager = BuildInfoManager(PlatformBuildInfo());
 
     _api = WiredashApi(
-      httpClient: Client(),
-      projectId: widget.projectId,
-      secret: widget.secret,
-    );
+        httpClient: Client(),
+        projectId: widget.projectId,
+        secret: widget.secret,
+        deviceIdProvider: () async {
+          return buildInfoManager.deviceId!;
+        });
 
     userManager = UserManager();
-    buildInfoManager = BuildInfoManager(PlatformBuildInfo());
 
     const fileSystem = LocalFileSystem();
     final storage = PendingFeedbackItemStorage(

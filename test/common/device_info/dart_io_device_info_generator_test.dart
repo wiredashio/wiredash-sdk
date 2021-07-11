@@ -17,23 +17,26 @@ class _BuildInfoDataClass implements BuildInfo {
   final String? buildVersion;
 
   @override
-  final String? deviceId;
+  final String deviceId;
 
   _BuildInfoDataClass(
-      {this.buildCommit, this.buildNumber, this.buildVersion, this.deviceId});
+      {this.buildCommit,
+      this.buildNumber,
+      this.buildVersion,
+      required this.deviceId});
 }
 
 void main() {
   group("DartIoDeviceInfoGenerator", () {
     test("doesn't return build information if build properties not set", () {
-      final nullInfo = _BuildInfoDataClass();
+      final nullInfo = _BuildInfoDataClass(deviceId: 'abc');
       final generator =
           DeviceInfoGenerator(BuildInfoManager(nullInfo), ui.window);
       final info = generator.generate();
       expect(info.buildNumber, null);
       expect(info.appVersion, null);
       expect(info.buildCommit, null);
-      expect(info.deviceId, null);
+      expect(info.deviceId, 'abc');
     });
 
     test("returns build information if build properties are set", () {

@@ -100,13 +100,24 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
     while (true) {
       attempt++;
       try {
-        final screenshotPath = item.screenshotPath;
-        final Uint8List? screenshot =
-            screenshotPath != null && await fs.file(screenshotPath).exists()
-                ? await fs.file(screenshotPath).readAsBytes()
-                : null;
+        final ImageBlob? imageUri = await () async {
+          final screenshotPath = item.screenshotPath;
+          if (screenshotPath != null) {
+            if (await fs.file(screenshotPath).exists()) {
+              final Uint8List screenshot =
+                  await fs.file(screenshotPath).readAsBytes();
+              return _api.sendImage(screenshot);
+            }
+          }
+          return null;
+        }();
+
         await _api.sendFeedback(
-            feedback: item.feedbackItem, screenshot: screenshot);
+          item.feedbackItem,
+          images: [
+            if (imageUri != null) imageUri,
+          ],
+        );
         // ignore: avoid_print
         print("Feedback submitted ✌️ ${item.feedbackItem.message}");
         await _pendingFeedbackItemStorage.clearPendingItem(item.id);

@@ -14,7 +14,17 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
   @override
   Future<void> submit(FeedbackItem item, Uint8List? screenshot) async {
     try {
-      await _api.sendFeedback(feedback: item, screenshot: screenshot);
+      ImageBlob? screenshotUri;
+      if (screenshot != null) {
+        screenshotUri = await _api.sendImage(screenshot);
+      }
+
+      await _api.sendFeedback(
+        item,
+        images: [
+          if (screenshotUri != null) screenshotUri,
+        ],
+      );
       // ignore: avoid_print
       print("Feedback submitted ✌️ ${item.message}");
     } on UnauthenticatedWiredashApiException catch (e, stack) {

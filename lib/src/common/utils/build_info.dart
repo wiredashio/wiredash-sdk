@@ -5,7 +5,7 @@ abstract class BuildInfo {
   String? get buildNumber;
   String? get buildVersion;
   String? get buildCommit;
-  String? get deviceId;
+  String get deviceId;
 }
 
 /// Class retrieving basic build information about the app
@@ -46,13 +46,22 @@ class PlatformBuildInfo extends BuildInfo {
   String? get buildVersion => _buildVersion;
 
   @override
-  String? get deviceId => _deviceId;
+  String get deviceId {
+    if (_deviceId == null) {
+      throw "Device Id not yet available, wait";
+    }
+    return _deviceId!;
+  }
 
   Future<void> _loadDeviceID() async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey(_prefsDeviceID)) {
-      _deviceId = prefs.getString(_prefsDeviceID);
-    } else {
+      final saved = prefs.getString(_prefsDeviceID);
+      if (saved != null) {
+        _deviceId = saved;
+      }
+    }
+    if (_deviceId == null) {
       _deviceId = uuidV4.generate();
       await prefs.setString(_prefsDeviceID, _deviceId!);
     }

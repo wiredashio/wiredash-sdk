@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/version.dart';
 
@@ -39,18 +37,6 @@ class FeedbackItem {
       'type': type,
       'user': user,
       'sdkVersion': sdkVersion,
-    };
-  }
-
-  /// Encodes the fields for a multipart/form-data request
-  Map<String, String?> toMultipartFormFields() {
-    return {
-      'deviceInfo': json.encode(deviceInfo.toJson()),
-      'email': email,
-      'message': message,
-      'type': type,
-      'user': user,
-      'sdkVersion': sdkVersion.toString(),
     };
   }
 
