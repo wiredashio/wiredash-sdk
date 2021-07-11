@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
-import 'package:clock/clock.dart';
 
 const _debugPrint = false;
 
@@ -36,7 +36,7 @@ class SyncEngine {
   Future<void> onWiredashInitialized() async {
     assert(() {
       if (_initTimer != null) {
-        debugPrint("called onWiredashInitialized multiple times");
+        debugPrint("Warning: called onWiredashInitialized multiple times");
       }
       return true;
     }());
@@ -102,10 +102,10 @@ class SyncEngine {
     } on KillSwitchException catch (e) {
       // sdk receives too much load, prevents further automatic pings
       await _silenceUntil(e.silentUntil);
-    } catch (e, _) {
+    } catch (e, stack) {
       // TODO track number of conseccutive errors to prevent pings at all
-      // debugPrint(e.toString());
-      // debugPrint(stack.toString());
+      debugPrint(e.toString());
+      debugPrint(stack.toString());
     }
   }
 
