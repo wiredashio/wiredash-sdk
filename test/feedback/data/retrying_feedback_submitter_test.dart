@@ -37,8 +37,12 @@ class MockNetworkManager extends Fake implements WiredashApi {
 
   @override
   Future<ImageBlob> sendImage(Uint8List screenshot) async {
-    return await sendImageInvocations.addMethodCall(args: [screenshot])
-        as ImageBlob;
+    final response =
+        await sendImageInvocations.addMethodCall(args: [screenshot]);
+    if (response != null) {
+      return response as ImageBlob;
+    }
+    throw "Not mocked";
   }
 }
 
@@ -96,6 +100,9 @@ void main() {
       fakePendingFeedbackItemStorage =
           FakePendingFeedbackItemStorage(fileSystem);
       mockNetworkManager = MockNetworkManager();
+      mockNetworkManager.sendImageInvocations.interceptor = (_) {
+        return ImageBlob({'mocked': 'response'});
+      };
       retryingFeedbackSubmitter = RetryingFeedbackSubmitter(
         fileSystem,
         fakePendingFeedbackItemStorage,
@@ -155,8 +162,8 @@ void main() {
         // the file didn't exist.
         mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
         final submitCall = mockNetworkManager.sendFeedbackInvocations.latest;
-        expect(submitCall['feedback'], item);
-        expect(submitCall['screenshot'], null);
+        expect(submitCall[0], item);
+        expect(submitCall['images'], []);
       });
     });
 
@@ -198,6 +205,7 @@ void main() {
         expect(fakePendingFeedbackItemStorage._deletedItemIds, ['1']);
 
         // Feedback should be sent, and only once.
+        mockNetworkManager.sendImageInvocations.verifyInvocationCount(1);
         mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
       });
     });
@@ -268,12 +276,19 @@ void main() {
           ),
         ]);
 
+        expect(mockNetworkManager.sendImageInvocations.invocations.length > 1,
+            true);
+
+        final lastUploadCall = mockNetworkManager.sendImageInvocations.latest;
+        expect(lastUploadCall[0], kTransparentImage);
+
         expect(
             mockNetworkManager.sendFeedbackInvocations.invocations.length > 1,
             true);
-        final lastCall = mockNetworkManager.sendFeedbackInvocations.latest;
-        expect(lastCall['feedback'], item);
-        expect(lastCall['screenshot'], kTransparentImage);
+        final lastSendCall = mockNetworkManager.sendFeedbackInvocations.latest;
+        expect(lastSendCall[0], item);
+        expect(lastSendCall['images'], hasLength(1));
+        expect((lastSendCall['images'] as List)[0], isA<ImageBlob>());
       });
     });
 
@@ -305,9 +320,8 @@ void main() {
         // Sending one feedback item should be retried no more than 8 times.
         final sendAttempts =
             mockNetworkManager.sendFeedbackInvocations.invocations.where((iv) {
-          final matchItem = iv['feedback'] == item;
-          final matchImage =
-              equals(iv['screenshot']).matches(kTransparentImage, {});
+          final matchItem = iv[0] == item;
+          final matchImage = (iv['images'] as List?)?.length == 1;
           return matchItem && matchImage;
         });
         expect(sendAttempts.length, 8);
