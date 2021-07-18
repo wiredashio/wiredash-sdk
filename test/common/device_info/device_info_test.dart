@@ -1,11 +1,12 @@
 import 'package:test/test.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
+import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 
 void main() {
   group('DeviceInfo', () {
     test('fromJson() with all fields', () {
       expect(
-        DeviceInfo.fromJson({
+        DeviceInfoParserV1.fromJson({
           'padding': [0, 66, 0, 0],
           'physicalSize': [1080, 2088],
           'viewInsets': [0, 0, 0, 685],
@@ -58,20 +59,20 @@ void main() {
         textScaleFactor: 1,
       );
       final map = fullInfo.toJson();
-      final copy = DeviceInfo.fromJson(map);
+      final copy = DeviceInfoParserV1.fromJson(map);
       expect(copy, fullInfo);
     });
 
     test('empty: toJson -> fromJson - still equal', () {
       const empty = DeviceInfo();
       final map = empty.toJson();
-      final copy = DeviceInfo.fromJson(map);
+      final copy = DeviceInfoParserV1.fromJson(map);
       expect(copy, empty);
     });
 
     test('fromJson() with some missing data', () {
       expect(
-        DeviceInfo.fromJson({
+        DeviceInfoParserV1.fromJson({
           'padding': [0, 66, 0, 0],
           'physicalSize': [1080, 2088],
           'viewInsets': [0, 0, 0, 685],

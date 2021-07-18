@@ -113,6 +113,7 @@ void main() {
         {
           'id': 'abc123',
           'screenshotPath': 'path/to/file.png',
+          'version': 1,
           'feedbackItem': {
             'deviceInfo': {
               'padding': [0, 66, 0, 0],

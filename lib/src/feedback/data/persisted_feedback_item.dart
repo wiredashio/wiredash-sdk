@@ -24,26 +24,6 @@ class PersistedFeedbackItem {
   final String? user;
   final int sdkVersion;
 
-  PersistedFeedbackItem.fromJson(Map<String, dynamic> json)
-      : deviceInfo =
-            DeviceInfo.fromJson(json['deviceInfo'] as Map<String, dynamic>),
-        email = json['email'] as String?,
-        message = json['message'] as String,
-        type = json['type'] as String,
-        user = json['user'] as String?,
-        sdkVersion = json['sdkVersion'] as int;
-
-  Map<String, dynamic> toJson() {
-    return {
-      'deviceInfo': deviceInfo.toJson(),
-      'email': email,
-      'message': message,
-      'type': type,
-      'user': user,
-      'sdkVersion': sdkVersion,
-    };
-  }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

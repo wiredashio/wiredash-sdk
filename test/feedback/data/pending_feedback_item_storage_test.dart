@@ -120,7 +120,8 @@ void main() {
           'user': '<existing item user>',
           'sdkVersion': 1,
         },
-        'screenshotPath': '<existing item screenshot>'
+        'screenshotPath': '<existing item screenshot>',
+        'version': 1,
       });
       fakeSharedPreferences
           .setStringList('io.wiredash.pending_feedback_items', [existingItem]);
@@ -248,7 +249,8 @@ void main() {
           'user': '<item user for item to be preserved>',
           'sdkVersion': 1,
         },
-        'screenshotPath': '<screenshot for item to be preserved>'
+        'screenshotPath': '<screenshot for item to be preserved>',
+        'version': 1,
       });
       final item2 = json.encode({
         'id': '<existing item id>',
@@ -273,7 +275,8 @@ void main() {
           'user': '<existing item user>',
           'sdkVersion': 1,
         },
-        'screenshotPath': '<existing item screenshot>'
+        'screenshotPath': '<existing item screenshot>',
+        'version': 1,
       });
       await fakeSharedPreferences
           .setStringList('io.wiredash.pending_feedback_items', [item1, item2]);
@@ -368,7 +371,8 @@ void main() {
           'user': '<item user for item to be preserved>',
           'sdkVersion': 1,
         },
-        'screenshotPath': '<screenshot for item to be preserved>'
+        'screenshotPath': '<screenshot for item to be preserved>',
+        'version': 1,
       });
 
       await fakeSharedPreferences.setStringList(
