@@ -1,13 +1,13 @@
 import 'package:test/test.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
 void main() {
   group('FeedbackItem', () {
     test('fromJson()', () {
       expect(
-        FeedbackItem.fromJson({
+        PersistedFeedbackItem.fromJson({
           'deviceInfo': {
             'padding': [0, 66, 0, 0],
             'physicalSize': [1080, 2088],
@@ -28,7 +28,7 @@ void main() {
           'user': 'Testy McTestFace',
           'sdkVersion': 1,
         }),
-        const FeedbackItem(
+        const PersistedFeedbackItem(
           deviceInfo: DeviceInfo(
             padding: [0, 66, 0, 0],
             physicalSize: [1080, 2088],
@@ -54,7 +54,7 @@ void main() {
 
     test('toJson()', () {
       expect(
-        const FeedbackItem(
+        const PersistedFeedbackItem(
           deviceInfo: DeviceInfo(
             padding: [0, 66, 0, 0],
             physicalSize: [1080, 2088],
@@ -101,7 +101,7 @@ void main() {
 
     test('toFeedbackBody()', () {
       expect(
-        const FeedbackItem(
+        const PersistedFeedbackItem(
           deviceInfo: DeviceInfo(
             appIsDebug: true,
             deviceId: "8F821AB6-B3A7-41BA-882E-32D8367243C1",

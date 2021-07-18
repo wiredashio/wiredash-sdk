@@ -5,12 +5,12 @@ import 'dart:typed_data';
 import 'package:file/file.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 
-/// A class that knows how to "eventually send" a [FeedbackItem] and an associated
+/// A class that knows how to "eventually send" a [PersistedFeedbackItem] and an associated
 /// screenshot file, retrying appropriately when sending fails.
 class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   RetryingFeedbackSubmitter(
@@ -35,7 +35,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   ///
   /// If sending fails, uses exponential backoff and tries again up to 7 times.
   @override
-  Future<void> submit(FeedbackItem item, Uint8List? screenshot) async {
+  Future<void> submit(PersistedFeedbackItem item, Uint8List? screenshot) async {
     await _pendingFeedbackItemStorage.addPendingItem(item, screenshot);
 
     // Intentionally not "await"-ed. Since we've persisted the pending feedback

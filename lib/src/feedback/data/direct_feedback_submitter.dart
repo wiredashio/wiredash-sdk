@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 
 /// Submits feedback immediately to the wiredash backend
@@ -12,7 +12,7 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
   final WiredashApi _api;
 
   @override
-  Future<void> submit(FeedbackItem item, Uint8List? screenshot) async {
+  Future<void> submit(PersistedFeedbackItem item, Uint8List? screenshot) async {
     try {
       ImageBlob? screenshotUri;
       if (screenshot != null) {

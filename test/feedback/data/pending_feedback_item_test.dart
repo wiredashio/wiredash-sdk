@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 
 void main() {
@@ -35,7 +35,7 @@ void main() {
         const PendingFeedbackItem(
           id: 'abc123',
           screenshotPath: 'path/to/file.png',
-          feedbackItem: FeedbackItem(
+          feedbackItem: PersistedFeedbackItem(
             deviceInfo: DeviceInfo(
               padding: [0, 66, 0, 0],
               physicalSize: [1080, 2088],
@@ -73,7 +73,7 @@ void main() {
         }),
         const PendingFeedbackItem(
           id: 'abc123',
-          feedbackItem: FeedbackItem(
+          feedbackItem: PersistedFeedbackItem(
             deviceInfo: DeviceInfo(),
             message: 'Hello world!',
             type: 'bug',
@@ -88,7 +88,7 @@ void main() {
         const PendingFeedbackItem(
           id: 'abc123',
           screenshotPath: 'path/to/file.png',
-          feedbackItem: FeedbackItem(
+          feedbackItem: PersistedFeedbackItem(
             deviceInfo: DeviceInfo(
               padding: [0, 66, 0, 0],
               physicalSize: [1080, 2088],

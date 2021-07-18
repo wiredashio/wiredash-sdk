@@ -5,10 +5,10 @@ import 'package:file/file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/common/utils/uuid.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 
-/// A temporary place for [FeedbackItem] classes and user-generated screenshot to
+/// A temporary place for [PersistedFeedbackItem] classes and user-generated screenshot to
 /// sit in until they get sent into the Wiredash console.
 class PendingFeedbackItemStorage {
   PendingFeedbackItemStorage(
@@ -62,7 +62,7 @@ class PendingFeedbackItemStorage {
   /// If [screenshot] is non-null, saves it in the application documents directory
   /// with a randomly generated filename.
   Future<PendingFeedbackItem> addPendingItem(
-    FeedbackItem item,
+    PersistedFeedbackItem item,
     Uint8List? screenshot,
   ) async {
     String? screenshotPath;

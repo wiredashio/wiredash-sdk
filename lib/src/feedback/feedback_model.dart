@@ -7,9 +7,8 @@ import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/dismissible_page_route.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
-
-import 'data/feedback_item.dart';
-import 'feedback_sheet.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
+import 'package:wiredash/src/feedback/feedback_sheet.dart';
 
 class FeedbackModel with ChangeNotifier {
   FeedbackModel(
@@ -89,7 +88,7 @@ class FeedbackModel with ChangeNotifier {
     loading = true;
     notifyListeners();
 
-    final item = FeedbackItem(
+    final item = PersistedFeedbackItem(
       deviceInfo: _deviceInfoGenerator.generate(),
       email: _userManager.userEmail,
       message: feedbackMessage!,

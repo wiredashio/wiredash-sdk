@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/version.dart';
 
 /// API client to communicate with the Wiredash servers
@@ -55,7 +55,7 @@ class WiredashApi {
   /// Reports a feedback
   ///
   /// POST /feedback
-  Future<void> sendFeedback(FeedbackItem feedback,
+  Future<void> sendFeedback(PersistedFeedbackItem feedback,
       {List<ImageBlob> images = const []}) async {
     final uri = Uri.parse('$_host/sendFeedback');
     final Request request = Request('POST', uri);
@@ -160,7 +160,7 @@ class ImageBlob {
   int get hashCode => data.hashCode;
 }
 
-extension FeedbackBody on FeedbackItem {
+extension FeedbackBody on PersistedFeedbackItem {
   Map<String, dynamic> toFeedbackBody() {
     // TODO better handle required values
     final raw = <String, Object?>{

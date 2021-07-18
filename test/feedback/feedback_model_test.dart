@@ -9,7 +9,7 @@ import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 
@@ -35,7 +35,7 @@ class MockRetryingFeedbackSubmitter extends Fake
   final MethodInvocationCatcher submitInvocations =
       MethodInvocationCatcher('submit');
   @override
-  Future<void> submit(FeedbackItem item, Uint8List? screenshot) async {
+  Future<void> submit(PersistedFeedbackItem item, Uint8List? screenshot) async {
     submitInvocations
         .addMethodCall(namedArgs: {'item': item, 'screenshot': screenshot});
   }
@@ -83,7 +83,7 @@ void main() {
         final lastSubmit =
             mockRetryingFeedbackSubmitter.submitInvocations.latest;
 
-        final item = lastSubmit['item']! as FeedbackItem;
+        final item = lastSubmit['item']! as PersistedFeedbackItem;
         final screenshot = lastSubmit['screenshot']! as Uint8List;
         expect(item.user, '<user id>');
         expect(item.email, '<user email>');

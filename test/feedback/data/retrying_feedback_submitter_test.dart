@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
@@ -24,7 +24,7 @@ class MockNetworkManager extends Fake implements WiredashApi {
       MethodInvocationCatcher('sendFeedback');
 
   @override
-  Future<void> sendFeedback(FeedbackItem feedback,
+  Future<void> sendFeedback(PersistedFeedbackItem feedback,
       {List<ImageBlob> images = const []}) async {
     return await sendFeedbackInvocations.addMethodCall(
       args: [feedback],
@@ -61,7 +61,7 @@ class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
 
   @override
   Future<PendingFeedbackItem> addPendingItem(
-      FeedbackItem item, Uint8List? screenshot) async {
+      PersistedFeedbackItem item, Uint8List? screenshot) async {
     final id = _currentItems.length + 1;
 
     final screenshotName = '$id.png';
@@ -104,7 +104,7 @@ void main() {
     });
 
     test('submit() - persists the feedback item properly', () async {
-      const item = FeedbackItem(
+      const item = PersistedFeedbackItem(
         deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -128,7 +128,7 @@ void main() {
     test(
         'submit() - does not crash when screenshot file does not exist anymore for some reason',
         () async {
-      const item = FeedbackItem(
+      const item = PersistedFeedbackItem(
         deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -162,7 +162,7 @@ void main() {
 
     test('submit() - future completes before interacting with NetworkManager',
         () async {
-      const item = FeedbackItem(
+      const item = PersistedFeedbackItem(
         deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -178,7 +178,7 @@ void main() {
     test(
         'submit() - if successful, gets rid of the feedback item in the storage',
         () async {
-      const item = FeedbackItem(
+      const item = PersistedFeedbackItem(
         deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -205,7 +205,7 @@ void main() {
     test(
         'submit() - when has existing items and submits only the first one successfully, does not remove the failed items from storage',
         () async {
-      const item = FeedbackItem(
+      const item = PersistedFeedbackItem(
         deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -279,7 +279,7 @@ void main() {
 
     test('submit() - if fails, retries up to 8 times with exponential backoff',
         () async {
-      const item = FeedbackItem(
+      const item = PersistedFeedbackItem(
         deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -337,7 +337,7 @@ void main() {
 
     test('submit() - does not retry for UnauthenticatedWiredashApiException',
         () async {
-      const item = FeedbackItem(
+      const item = PersistedFeedbackItem(
         deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -382,7 +382,7 @@ void main() {
 
     test('submit() - does not retry when server reports missing properties',
         () async {
-      const item = FeedbackItem(
+      const item = PersistedFeedbackItem(
         deviceInfo: DeviceInfo(),
         email: 'email@example.com',
         message: 'test post pls ignore',

@@ -10,7 +10,7 @@ import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/utils/uuid.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 
 import '../../util/invocation_catcher.dart';
@@ -73,7 +73,7 @@ void main() {
       final pendingItem = await withUuidV4Generator(
         uuidGenerator,
         () => storage.addPendingItem(
-          const FeedbackItem(
+          const PersistedFeedbackItem(
             deviceInfo: DeviceInfo(),
             email: 'email@example.com',
             message: 'Hello world!',
@@ -128,7 +128,7 @@ void main() {
       final pendingFeedbackItem = await withUuidV4Generator(
         uuidGenerator,
         () => storage.addPendingItem(
-          const FeedbackItem(
+          const PersistedFeedbackItem(
             deviceInfo: DeviceInfo(),
             email: 'email@example.com',
             message: 'Hello world!',
@@ -399,7 +399,7 @@ void main() {
       final pendingItem = await withUuidV4Generator(
         uuidGenerator,
         () => storage.addPendingItem(
-          const FeedbackItem(
+          const PersistedFeedbackItem(
             deviceInfo: DeviceInfo(),
             email: 'email@example.com',
             message: 'Hello world!',
