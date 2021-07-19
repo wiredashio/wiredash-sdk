@@ -159,12 +159,12 @@ class ImageBlob {
 
 extension FeedbackBody on PersistedFeedbackItem {
   Map<String, dynamic> toFeedbackBody() {
-    final Map<String, Object?> values = {};
+    final Map<String, Object> values = {};
 
     // Required values
     values.addAll({
-      'deviceId': nonNull(deviceInfo.deviceId),
-      'isDebugBuild': nonNull(deviceInfo.appIsDebug),
+      'deviceId': nonNull(deviceId),
+      'isDebugBuild': nonNull(appInfo.appIsDebug),
       'labels': [
         // TODO
       ],
@@ -176,36 +176,35 @@ extension FeedbackBody on PersistedFeedbackItem {
     });
 
     // locale which is currently set in the app
-    // TODO value is from device, not from app, or is it?
-    // TODO how to distinguish app and platform locale?
-    final String? appLocale = null;
+    final String? appLocale = appInfo.appLocale;
     if (appLocale != null) {
       values.addAll({'appLocale': appLocale});
     }
 
+    // TODO make 'em required on backend?
     values.addAll({
       'platformLocale': nonNull(deviceInfo.platformLocale),
       'platformSupportedLocales': nonNull(deviceInfo.platformSupportedLocales),
     });
 
     // User provided commit hash (String) (dart-define)
-    final buildCommit = deviceInfo.buildCommit;
+    final buildCommit = buildInfo.buildCommit;
     if (buildCommit != null) {
       values.addAll({'buildCommit': buildCommit});
     }
 
     // User provided build number (int as String) (dart-define)
-    final buildNumber = deviceInfo.buildNumber;
+    final buildNumber = buildInfo.buildNumber;
     if (buildNumber != null) {
       values.addAll({'buildNumber': buildNumber});
     }
     // User provided build version (semver) (dart-define)
-    // TODO rename appVersion?
-    final buildVersion = deviceInfo.appVersion;
+    final buildVersion = buildInfo.buildVersion;
     if (buildVersion != null) {
       values.addAll({'buildVersion': buildVersion});
     }
 
+    // TODO make required?
     // system brightness
     values.addAll({
       'platformBrightness': () {

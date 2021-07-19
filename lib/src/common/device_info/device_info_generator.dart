@@ -1,7 +1,5 @@
 import 'dart:ui' show SingletonFlutterWindow;
 
-import 'package:flutter/foundation.dart';
-import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 
 // import a dart:html or dart:io version of `createDeviceInfoGenerator`
@@ -13,22 +11,13 @@ import 'device_info_generator_stub.dart'
 abstract class DeviceInfoGenerator {
   /// Loads a [DeviceInfoGenerator] based on the environment by calling the
   /// optional imported createDeviceInfoGenerator function
-  factory DeviceInfoGenerator(
-      BuildInfoManager buildInfo, SingletonFlutterWindow window) {
-    return createDeviceInfoGenerator(buildInfo, window);
+  factory DeviceInfoGenerator(SingletonFlutterWindow window) {
+    return createDeviceInfoGenerator(window);
   }
 
   /// Collection of all [DeviceInfo] shared between all platforms
-  static DeviceInfo baseDeviceInfo(
-    BuildInfoManager buildInfo,
-    SingletonFlutterWindow window,
-  ) {
+  static DeviceInfo baseDeviceInfo(SingletonFlutterWindow window) {
     return DeviceInfo(
-      appIsDebug: kDebugMode,
-      appVersion: buildInfo.buildVersion,
-      buildNumber: buildInfo.buildNumber,
-      buildCommit: buildInfo.buildCommit,
-      deviceId: buildInfo.deviceId,
       platformLocale: window.locale.toLanguageTag(),
       platformSupportedLocales:
           window.locales.map((it) => it.toLanguageTag()).toList(),

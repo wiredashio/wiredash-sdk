@@ -7,9 +7,13 @@ void main() {
   group('Serialize feedback item', () {
     test('toFeedbackBody()', () {
       final body = const PersistedFeedbackItem(
-        deviceInfo: DeviceInfo(
+        appInfo: AppInfo(
           appIsDebug: true,
-          deviceId: "8F821AB6-B3A7-41BA-882E-32D8367243C1",
+          appLocale: 'de_DE',
+        ),
+        buildInfo: BuildInfo(),
+        deviceId: "8F821AB6-B3A7-41BA-882E-32D8367243C1",
+        deviceInfo: DeviceInfo(
           platformLocale: "en_US",
           platformSupportedLocales: ['en_US', 'de_DE'],
           padding: [0, 66, 0, 0],
@@ -34,6 +38,7 @@ void main() {
       expect(
         body,
         {
+          'appLocale': 'de_DE',
           'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'isDebugBuild': true,
           'labels': [],

@@ -1,18 +1,19 @@
-import 'package:wiredash/src/common/utils/build_info.dart';
+import 'package:wiredash/src/common/build_info/build_info.dart';
 
+/// Allows overriding of statically defined values
 class BuildInfoManager {
-  final BuildInfo buildInfo;
-  BuildInfoManager(this.buildInfo);
+  BuildInfoManager();
 
-  String get deviceId => buildInfo.deviceId;
+  String? buildVersionOverride;
 
-  String? _buildVersion;
-  String? get buildVersion => _buildVersion ?? buildInfo.buildVersion;
-  set buildVersion(String? version) => _buildVersion = version;
+  String? buildNumberOverride;
 
-  String? _buildNumber;
-  String? get buildNumber => _buildNumber ?? buildInfo.buildNumber;
-  set buildNumber(String? number) => _buildNumber = number;
-
-  String? get buildCommit => buildInfo.buildCommit;
+  /// Returns the aggregated build info from compile-time env and overrides
+  BuildInfo get buildInfo {
+    return BuildInfo(
+      buildVersion: buildVersionOverride ?? EnvBuildInfo.buildVersion,
+      buildNumber: buildNumberOverride ?? EnvBuildInfo.buildNumber,
+      buildCommit: EnvBuildInfo.buildCommit,
+    );
+  }
 }

@@ -7,6 +7,9 @@ import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/capture/capture.dart';
+import 'package:wiredash/src/common/build_info/build_info.dart';
+import 'package:wiredash/src/common/build_info/build_info_manager.dart';
+import 'package:wiredash/src/common/build_info/device_id_generator.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
@@ -31,10 +34,31 @@ class StaticDeviceInfoGenerator implements DeviceInfoGenerator {
   }
 }
 
+class StaticBuildInfoManager implements BuildInfoManager {
+  StaticBuildInfoManager(this.buildInfo);
+
+  final BuildInfo buildInfo;
+
+  @override
+  String? buildNumberOverride;
+
+  @override
+  String? buildVersionOverride;
+}
+
+class StaticDeviceIdGenerator implements DeviceIdGenerator {
+  StaticDeviceIdGenerator(String deviceId) : _deviceId = deviceId;
+  final String _deviceId;
+
+  @override
+  Future<String> get deviceId async => _deviceId;
+}
+
 class MockRetryingFeedbackSubmitter extends Fake
     implements RetryingFeedbackSubmitter {
   final MethodInvocationCatcher submitInvocations =
       MethodInvocationCatcher('submit');
+
   @override
   Future<void> submit(PersistedFeedbackItem item, Uint8List? screenshot) async {
     submitInvocations
@@ -49,15 +73,21 @@ void main() {
     late UserManager usermanager;
     final StaticDeviceInfoGenerator deviceInfoGenerator =
         StaticDeviceInfoGenerator(const DeviceInfo(
-      deviceId: '1234',
-      appIsDebug: false,
       pixelRatio: 1.0,
       textScaleFactor: 1.0,
       platformLocale: "en_US",
       platformSupportedLocales: ['en_US', 'de_DE'],
       platformBrightness: Brightness.dark,
       gestureInsets: [0, 0, 0, 0],
+      physicalSize: [800, 1200],
     ));
+    final StaticBuildInfoManager buildInfoManager =
+        StaticBuildInfoManager(BuildInfo(
+      buildCommit: 'df321aa',
+      buildNumber: '1.2.0',
+      buildVersion: '42',
+    ));
+    final DeviceIdGenerator deviceIdGenerator = StaticDeviceIdGenerator('125');
     late MockRetryingFeedbackSubmitter mockRetryingFeedbackSubmitter;
     late FeedbackModel model;
 
@@ -72,6 +102,8 @@ void main() {
         usermanager,
         mockRetryingFeedbackSubmitter,
         deviceInfoGenerator,
+        buildInfoManager,
+        deviceIdGenerator,
       );
     });
 
@@ -98,6 +130,9 @@ void main() {
         expect(item.user, '<user id>');
         expect(item.email, '<user email>');
         expect(item.deviceInfo, isNotNull);
+        expect(item.appInfo, isNotNull);
+        expect(item.buildInfo, isNotNull);
+        expect(item.deviceId, '125');
         expect(item.message, 'app not work pls send help');
         expect(screenshot, kTransparentImage);
       });

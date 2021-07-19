@@ -1,14 +1,10 @@
 import 'dart:ui' show Brightness;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 export 'dart:ui' show Brightness;
 
 class DeviceInfo {
-  final bool appIsDebug;
-  final String? appVersion;
-  final String? buildNumber;
-  final String? buildCommit;
-  final String deviceId;
   final String platformLocale;
   final List<String> platformSupportedLocales;
   final List<double>? padding;
@@ -42,31 +38,22 @@ class DeviceInfo {
   final String? userAgent;
 
   const DeviceInfo({
-    required this.appIsDebug,
-    this.appVersion,
-    this.buildNumber,
-    this.buildCommit,
-    required this.deviceId,
     required this.platformLocale,
     required this.platformSupportedLocales,
-    this.padding = const [],
-    this.physicalSize = const [],
+    this.padding,
+    required this.physicalSize,
     required this.pixelRatio,
     this.platformOS,
     this.platformOSVersion,
     this.platformVersion,
     required this.textScaleFactor,
-    this.viewInsets = const [],
+    this.viewInsets,
     this.userAgent,
     required this.platformBrightness,
     this.gestureInsets,
   });
 
   DeviceInfo copyWith({
-    bool? appIsDebug,
-    String? appVersion,
-    String? buildNumber,
-    String? buildCommit,
     String? deviceId,
     String? platformLocale,
     List<String>? platformSupportedLocales,
@@ -83,11 +70,6 @@ class DeviceInfo {
     List<double>? gestureInsets,
   }) {
     return DeviceInfo(
-      appIsDebug: appIsDebug ?? this.appIsDebug,
-      appVersion: appVersion ?? this.appVersion,
-      buildNumber: buildNumber ?? this.buildNumber,
-      buildCommit: buildCommit ?? this.buildCommit,
-      deviceId: deviceId ?? this.deviceId,
       platformLocale: platformLocale ?? this.platformLocale,
       platformSupportedLocales:
           platformSupportedLocales ?? this.platformSupportedLocales,
@@ -108,11 +90,6 @@ class DeviceInfo {
   @override
   String toString() {
     return 'DeviceInfo{'
-        'appIsDebug: $appIsDebug, '
-        'appVersion: $appVersion, '
-        'buildNumber: $buildNumber, '
-        'buildCommit: $buildCommit, '
-        'deviceId: $deviceId, '
         'platformLocale: $platformLocale, '
         'platformSupportedLocales: $platformSupportedLocales, '
         'padding: $padding, '
@@ -134,11 +111,6 @@ class DeviceInfo {
       identical(this, other) ||
       (other is DeviceInfo &&
           runtimeType == other.runtimeType &&
-          appIsDebug == other.appIsDebug &&
-          appVersion == other.appVersion &&
-          buildNumber == other.buildNumber &&
-          buildCommit == other.buildCommit &&
-          deviceId == other.deviceId &&
           platformLocale == other.platformLocale &&
           listEquals(
               platformSupportedLocales, other.platformSupportedLocales) &&
@@ -156,22 +128,17 @@ class DeviceInfo {
 
   @override
   int get hashCode =>
-      appIsDebug.hashCode ^
-      appVersion.hashCode ^
-      buildNumber.hashCode ^
-      buildCommit.hashCode ^
-      deviceId.hashCode ^
       platformLocale.hashCode ^
-      platformSupportedLocales.hashCode ^
-      padding.hashCode ^
-      physicalSize.hashCode ^
+      hashList(platformSupportedLocales) ^
+      hashList(padding) ^
+      hashList(physicalSize) ^
       pixelRatio.hashCode ^
       platformOS.hashCode ^
       platformOSVersion.hashCode ^
       platformVersion.hashCode ^
       textScaleFactor.hashCode ^
-      viewInsets.hashCode ^
+      hashList(viewInsets) ^
       userAgent.hashCode ^
       platformBrightness.hashCode ^
-      gestureInsets.hashCode;
+      hashList(gestureInsets);
 }

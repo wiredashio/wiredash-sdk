@@ -1,8 +1,12 @@
+import 'package:wiredash/src/common/build_info/app_info.dart';
+import 'package:wiredash/src/common/build_info/build_info.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/version.dart';
 
 export 'package:wiredash/src/common/device_info/device_info.dart';
+export 'package:wiredash/src/common/build_info/build_info.dart';
+export 'package:wiredash/src/common/build_info/app_info.dart';
 
 /// Contains all relevant feedback information, both user-provided and automatically
 /// inferred, that will be eventually sent to the Wiredash console and are in
@@ -12,6 +16,9 @@ export 'package:wiredash/src/common/device_info/device_info.dart';
 class PersistedFeedbackItem {
   const PersistedFeedbackItem({
     required this.deviceInfo,
+    required this.appInfo,
+    required this.buildInfo,
+    required this.deviceId,
     this.email,
     required this.message,
     required this.type,
@@ -20,6 +27,9 @@ class PersistedFeedbackItem {
   });
 
   final DeviceInfo deviceInfo;
+  final AppInfo appInfo;
+  final BuildInfo buildInfo;
+  final String deviceId;
   final String? email;
   final String message;
   final String type;
@@ -32,6 +42,7 @@ class PersistedFeedbackItem {
       other is PersistedFeedbackItem &&
           runtimeType == other.runtimeType &&
           deviceInfo == other.deviceInfo &&
+          appInfo == other.appInfo &&
           email == other.email &&
           message == other.message &&
           type == other.type &&
@@ -41,6 +52,7 @@ class PersistedFeedbackItem {
   @override
   int get hashCode =>
       deviceInfo.hashCode ^
+      appInfo.hashCode ^
       email.hashCode ^
       message.hashCode ^
       type.hashCode ^
@@ -51,6 +63,7 @@ class PersistedFeedbackItem {
   String toString() {
     return 'FeedbackItem{'
         'deviceInfo: $deviceInfo, '
+        'appInfo: $appInfo, '
         'email: $email, '
         'message: $message, '
         'type: $type, '

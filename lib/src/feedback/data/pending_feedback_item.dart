@@ -1,6 +1,8 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:wiredash/src/common/build_info/app_info.dart';
+import 'package:wiredash/src/common/build_info/build_info.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
@@ -48,12 +50,14 @@ class PendingFeedbackItem {
 PendingFeedbackItem deserializePendingFeedbackItem(String json) {
   final map = jsonDecode(json) as Map;
   final version = map['version'] as int?;
-  if (version == null || version == 1) {
-    // V1 is the initial version, where 'version' did not yet exist
-    // Some values are now required, and it will crash when mapping to the current model
-    return PendingFeedbackItemParserV1.fromJson(map as Map<String, dynamic>);
+  if (version == null) {
+    // initial version, which doesn't contain all required values.
+    throw "Can't parse feedback without version";
   }
-  throw 'Unkown version "$version" of PendingFeedbackItem';
+  if (version == 1) {
+    return PendingFeedbackItemParserV1.fromJson(map);
+  }
+  throw 'Unknown version "$version" of PendingFeedbackItem';
 }
 
 String serializePendingFeedbackItem(PendingFeedbackItem item) {
@@ -62,73 +66,75 @@ String serializePendingFeedbackItem(PendingFeedbackItem item) {
 }
 
 class PendingFeedbackItemParserV1 {
-  static PendingFeedbackItem fromJson(Map<String, dynamic> json) {
-    return PendingFeedbackItem(
-      id: json['id'] as String,
-      feedbackItem: PersistedFeedbackItemParserV1.fromJson(
-          json['feedbackItem'] as Map<String, dynamic>),
-      screenshotPath: json['screenshotPath'] as String?,
-    );
-  }
-}
+  static PendingFeedbackItem fromJson(Map json) {
+    final feedbackItemJson = json['feedbackItem'] as Map<dynamic, dynamic>;
 
-class PersistedFeedbackItemParserV1 {
-  static PersistedFeedbackItem fromJson(Map<String, dynamic> json) {
-    return PersistedFeedbackItem(
-      deviceInfo: DeviceInfoParserV1.fromJson(
-          json['deviceInfo'] as Map<String, dynamic>),
-      message: json['message'] as String,
-      type: json['type'] as String,
-      email: json['email'] as String?,
-      user: json['user'] as String?,
-      sdkVersion: json['sdkVersion'] as int,
-    );
-  }
-}
-
-class DeviceInfoParserV1 {
-  static DeviceInfo fromJson(Map<String, dynamic> json) {
-    return DeviceInfo(
-      appIsDebug: json['appIsDebug'] as bool,
-      appVersion: json['appVersion'] as String?,
-      buildNumber: json['buildNumber'] as String?,
-      buildCommit: json['buildCommit'] as String?,
-      deviceId: json['deviceId'] as String,
-      platformLocale: json['locale'] as String,
+    final deviceInfoJson =
+        feedbackItemJson['deviceInfo'] as Map<dynamic, dynamic>;
+    final deviceInfo = DeviceInfo(
+      gestureInsets: (deviceInfoJson['gestureInsets'] as List<dynamic>?)
+          ?.cast<num>()
+          .map((i) => i.toDouble())
+          .toList(growable: false),
+      platformLocale: deviceInfoJson['platformLocale'] as String,
       platformSupportedLocales:
-          (json['supportedLocales'] as List<dynamic>).cast<String>(),
-      padding: (json['padding'] as List<dynamic>?)
-              ?.cast<num>()
-              .map((i) => i.toDouble())
-              .toList(growable: false) ??
-          [],
-      physicalSize: (json['physicalSize'] as List<dynamic>?)
-              ?.cast<num>()
-              .map((i) => i.toDouble())
-              .toList(growable: false) ??
-          [],
-      pixelRatio: (json['pixelRatio'] as num).toDouble(),
-      platformOS: json['platformOS'] as String?,
-      platformOSVersion: json['platformOSBuild'] as String?,
-      platformVersion: json['platformVersion'] as String?,
-      textScaleFactor: (json['textScaleFactor'] as num).toDouble(),
-      viewInsets: (json['viewInsets'] as List<dynamic>?)
-              ?.cast<num>()
-              .map((i) => i.toDouble())
-              .toList(growable: false) ??
-          [],
-      gestureInsets: (json['gestureInsets'] as List<dynamic>?)
-              ?.cast<num>()
-              .map((i) => i.toDouble())
-              .toList(growable: false) ??
-          [],
-      userAgent: json['userAgent'] as String?,
+          (deviceInfoJson['platformSupportedLocales'] as List<dynamic>)
+              .cast<String>(),
+      padding: (deviceInfoJson['padding'] as List<dynamic>?)
+          ?.cast<num>()
+          .map((i) => i.toDouble())
+          .toList(growable: false),
       platformBrightness: () {
-        final value = json['platformBrightness'];
+        final value = deviceInfoJson['platformBrightness'];
         if (value == 'light') return Brightness.light;
         if (value == 'dark') return Brightness.dark;
         throw 'Unknown brightness value $value';
       }(),
+      physicalSize: (deviceInfoJson['physicalSize'] as List<dynamic>)
+          .cast<num>()
+          .map((i) => i.toDouble())
+          .toList(growable: false),
+      pixelRatio: (deviceInfoJson['pixelRatio'] as num).toDouble(),
+      platformOS: deviceInfoJson['platformOS'] as String?,
+      platformOSVersion: deviceInfoJson['platformOSBuild'] as String?,
+      platformVersion: deviceInfoJson['platformVersion'] as String?,
+      textScaleFactor: (deviceInfoJson['textScaleFactor'] as num).toDouble(),
+      viewInsets: (deviceInfoJson['viewInsets'] as List<dynamic>?)
+          ?.cast<num>()
+          .map((i) => i.toDouble())
+          .toList(growable: false),
+      userAgent: deviceInfoJson['userAgent'] as String?,
+    );
+
+    final buildInfoJson =
+        feedbackItemJson['buildInfo'] as Map<dynamic, dynamic>? ?? {};
+    final buildInfo = BuildInfo(
+      buildCommit: buildInfoJson['buildCommit'] as String?,
+      buildNumber: buildInfoJson['buildNumber'] as String?,
+      buildVersion: buildInfoJson['buildVersion'] as String?,
+    );
+
+    final appInfoJson = feedbackItemJson['appInfo'] as Map<dynamic, dynamic>;
+    final appInfo = AppInfo(
+      appIsDebug: appInfoJson['appIsDebug'] as bool,
+      appLocale: appInfoJson['appLocale'] as String,
+    );
+    final feedbackItem = PersistedFeedbackItem(
+      appInfo: appInfo,
+      buildInfo: buildInfo,
+      deviceInfo: deviceInfo,
+      deviceId: feedbackItemJson['deviceId'] as String,
+      email: feedbackItemJson['email'] as String?,
+      message: feedbackItemJson['message'] as String,
+      sdkVersion: feedbackItemJson['sdkVersion'] as int,
+      type: feedbackItemJson['type'] as String,
+      user: feedbackItemJson['user'] as String?,
+    );
+
+    return PendingFeedbackItem(
+      id: json['id'] as String,
+      feedbackItem: feedbackItem,
+      screenshotPath: json['screenshotPath'] as String?,
     );
   }
 }
@@ -139,7 +145,7 @@ extension SerializePendingFeedbackItem on PendingFeedbackItem {
     return SplayTreeMap.from({
       'id': id,
       'feedbackItem': feedbackItem.toJson(),
-      'screenshotPath': screenshotPath,
+      if (screenshotPath != null) 'screenshotPath': screenshotPath,
       'version': _serializationVersion,
     });
   }
@@ -150,10 +156,21 @@ extension SerializePersistedFeedbackItem on PersistedFeedbackItem {
   Map<String, dynamic> toJson() {
     return SplayTreeMap.from({
       'deviceInfo': deviceInfo.toJson(),
-      'email': email,
+      'appInfo': SplayTreeMap.from({
+        'appIsDebug': appInfo.appIsDebug,
+        'appLocale': appInfo.appLocale,
+      }),
+      'buildInfo': SplayTreeMap.from({
+        if (buildInfo.buildVersion != null)
+          'buildVersion': buildInfo.buildVersion,
+        if (buildInfo.buildNumber != null) 'buildNumber': buildInfo.buildNumber,
+        if (buildInfo.buildCommit != null) 'buildCommit': buildInfo.buildCommit,
+      }),
+      'deviceId': deviceId,
+      if (email != null) 'email': email,
       'message': message,
       'type': type,
-      'user': user,
+      if (user != null) 'user': user,
       'sdkVersion': sdkVersion,
     });
   }
@@ -164,24 +181,9 @@ extension SerializeDeviceInfo on DeviceInfo {
   Map<String, dynamic> toJson() {
     final values = SplayTreeMap<String, dynamic>.from({});
 
-    values['appIsDebug'] = appIsDebug;
+    values['platformLocale'] = platformLocale;
 
-    if (appVersion != null) {
-      values['appVersion'] = appVersion;
-    }
-
-    if (buildNumber != null) {
-      values['buildNumber'] = buildNumber;
-    }
-
-    if (buildCommit != null) {
-      values['buildCommit'] = buildCommit;
-    }
-    values['deviceId'] = deviceId;
-
-    values['locale'] = platformLocale;
-
-    values['supportedLocales'] = platformSupportedLocales;
+    values['platformSupportedLocales'] = platformSupportedLocales;
 
     if (padding != null && padding!.isNotEmpty) {
       values['padding'] = padding;
