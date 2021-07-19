@@ -6,7 +6,7 @@ import 'package:wiredash/src/version.dart';
 /// inferred, that will be eventually sent to the Wiredash console and are in
 /// the meantime persisted on disk inside [PendingFeedbackItem].
 ///
-/// Offers [toJson], [PersistedFeedbackItem.fromJson] to serialize the feedback
+/// Actual serialization happens in [PendingFeedbackItem]
 class PersistedFeedbackItem {
   const PersistedFeedbackItem({
     required this.deviceInfo,

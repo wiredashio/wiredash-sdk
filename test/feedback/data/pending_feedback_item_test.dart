@@ -1,13 +1,13 @@
 import 'package:test/test.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
-import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
 void main() {
   group('PendingFeedbackItem', () {
     test('Full fromJson()', () {
       expect(
-        PendingFeedbackItem.fromJson({
+        PendingFeedbackItemParserV1.fromJson({
           'id': 'abc123',
           'screenshotPath': 'path/to/file.png',
           'feedbackItem': {
@@ -62,7 +62,7 @@ void main() {
 
     test('Minimal fromJson()', () {
       expect(
-        PendingFeedbackItem.fromJson({
+        PendingFeedbackItemParserV1.fromJson({
           'id': 'abc123',
           'feedbackItem': {
             'deviceInfo': <String, dynamic>{},

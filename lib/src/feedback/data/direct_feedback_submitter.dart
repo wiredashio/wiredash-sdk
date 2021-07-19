@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
-import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
 /// Submits feedback immediately to the wiredash backend
 class DirectFeedbackSubmitter implements FeedbackSubmitter {

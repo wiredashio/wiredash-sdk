@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
-const int _latestVersion = 1;
+const int _serializationVersion = 1;
 
 /// Represents a [PersistedFeedbackItem] that has not yet been submitted, and that has
 /// been saved in the persistent storage.
@@ -10,30 +12,11 @@ class PendingFeedbackItem {
     required this.id,
     required this.feedbackItem,
     this.screenshotPath,
-    this.version = _latestVersion,
   });
 
   final String id;
   final PersistedFeedbackItem feedbackItem;
   final String? screenshotPath;
-  final int version;
-
-  PendingFeedbackItem.fromJson(Map<String, dynamic> json)
-      : id = json['id'] as String,
-        feedbackItem = PersistedFeedbackItemParserV1.fromJson(
-            json['feedbackItem'] as Map<String, dynamic>),
-        screenshotPath = json['screenshotPath'] as String?,
-        // default to version 1
-        version = 1;
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'feedbackItem': feedbackItem.toJson(),
-      'screenshotPath': screenshotPath,
-      'version': version,
-    };
-  }
 
   @override
   bool operator ==(Object other) =>
@@ -42,15 +25,11 @@ class PendingFeedbackItem {
           runtimeType == other.runtimeType &&
           id == other.id &&
           feedbackItem == other.feedbackItem &&
-          screenshotPath == other.screenshotPath &&
-          version == other.version;
+          screenshotPath == other.screenshotPath;
 
   @override
   int get hashCode =>
-      id.hashCode ^
-      feedbackItem.hashCode ^
-      screenshotPath.hashCode ^
-      version.hashCode;
+      id.hashCode ^ feedbackItem.hashCode ^ screenshotPath.hashCode;
 
   @override
   String toString() {
@@ -58,21 +37,47 @@ class PendingFeedbackItem {
         'id: $id, '
         'feedbackItem: $feedbackItem, '
         'screenshotPath: $screenshotPath, '
-        'version: $version '
         '}';
+  }
+}
+
+PendingFeedbackItem deserializePendingFeedbackItem(String json) {
+  final map = jsonDecode(json) as Map;
+  final version = map['version'] as int?;
+  if (version == null || version == 1) {
+    // V1 is the initial version, where 'version' did not yet exist
+    return PendingFeedbackItemParserV1.fromJson(map as Map<String, dynamic>);
+  }
+  throw 'Unkown version "$version" of PendingFeedbackItem';
+}
+
+String serializePendingFeedbackItem(PendingFeedbackItem item) {
+  final json = item.toJson();
+  return jsonEncode(json);
+}
+
+class PendingFeedbackItemParserV1 {
+  static PendingFeedbackItem fromJson(Map<String, dynamic> json) {
+    return PendingFeedbackItem(
+      id: json['id'] as String,
+      feedbackItem: PersistedFeedbackItemParserV1.fromJson(
+          json['feedbackItem'] as Map<String, dynamic>),
+      screenshotPath: json['screenshotPath'] as String?,
+    );
   }
 }
 
 class PersistedFeedbackItemParserV1 {
   static PersistedFeedbackItem fromJson(Map<String, dynamic> json) {
     return PersistedFeedbackItem(
-        deviceInfo: DeviceInfoParserV1.fromJson(
-            json['deviceInfo'] as Map<String, dynamic>),
-        message: json['message'] as String,
-        type: json['type'] as String,
-        email: json['email'] as String?,
-        user: json['user'] as String?,
-        sdkVersion: json['sdkVersion'] as int);
+      deviceInfo: DeviceInfoParserV1.fromJson(
+          json['deviceInfo'] as Map<String, dynamic>),
+      message: json['message'] as String,
+      type: json['type'] as String,
+      email: json['email'] as String?,
+      user: json['user'] as String?,
+      sdkVersion: json['sdkVersion'] as int,
+    );
   }
 }
 
@@ -110,6 +115,33 @@ class DeviceInfoParserV1 {
   }
 }
 
+/// Visible for testing
+extension SerializePendingFeedbackItem on PendingFeedbackItem {
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'feedbackItem': feedbackItem.toJson(),
+      'screenshotPath': screenshotPath,
+      'version': _serializationVersion,
+    };
+  }
+}
+
+/// Visible for testing
+extension SerializePersistedFeedbackItem on PersistedFeedbackItem {
+  Map<String, dynamic> toJson() {
+    return {
+      'deviceInfo': deviceInfo.toJson(),
+      'email': email,
+      'message': message,
+      'type': type,
+      'user': user,
+      'sdkVersion': sdkVersion,
+    };
+  }
+}
+
+/// Visible for testing
 extension SerializeDeviceInfo on DeviceInfo {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> uiValues = {};
@@ -174,18 +206,5 @@ extension SerializeDeviceInfo on DeviceInfo {
     }
 
     return uiValues;
-  }
-}
-
-extension SerializePersistedFeedbackItem on PersistedFeedbackItem {
-  Map<String, dynamic> toJson() {
-    return {
-      'deviceInfo': deviceInfo.toJson(),
-      'email': email,
-      'message': message,
-      'type': type,
-      'user': user,
-      'sdkVersion': sdkVersion,
-    };
   }
 }

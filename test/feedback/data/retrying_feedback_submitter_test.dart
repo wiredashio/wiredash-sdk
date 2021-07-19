@@ -9,9 +9,9 @@ import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
-import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 
 import '../../util/invocation_catcher.dart';
@@ -288,7 +288,7 @@ void main() {
         final lastSendCall = mockNetworkManager.sendFeedbackInvocations.latest;
         expect(lastSendCall[0], item);
         expect(lastSendCall['images'], hasLength(1));
-        expect((lastSendCall['images'] as List)[0], isA<ImageBlob>());
+        expect((lastSendCall['images'] as List?)?[0], isA<ImageBlob>());
       });
     });
 

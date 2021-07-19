@@ -10,8 +10,9 @@ import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/utils/uuid.dart';
-import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
+import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
 import '../../util/invocation_catcher.dart';
 
@@ -86,7 +87,7 @@ void main() {
 
       final latestCall = fakeSharedPreferences.setStringListInvocations.latest;
       expect(latestCall[0], 'io.wiredash.pending_feedback_items');
-      expect(latestCall[1], [json.encode(pendingItem.toJson())]);
+      expect(latestCall[1], [serializePendingFeedbackItem(pendingItem)]);
 
       expect(fileSystem.file('0.png').existsSync(), isTrue);
     });
@@ -144,9 +145,7 @@ void main() {
       expect(lastCall[0], 'io.wiredash.pending_feedback_items');
       expect(lastCall[1], [
         existingItem,
-        json.encode(
-          pendingFeedbackItem.toJson(),
-        )
+        serializePendingFeedbackItem(pendingFeedbackItem),
       ]);
 
       expect(
@@ -393,7 +392,7 @@ void main() {
       expect(
           caught.stack.toString(),
           stringContainsInOrder([
-            'PendingFeedbackItem.fromJson',
+            'deserializePendingFeedbackItem',
             'PendingFeedbackItemStorage.retrieveAllPendingItems',
           ]));
       // reset error reporter after successful assertion
@@ -418,7 +417,8 @@ void main() {
       // where saved
       final lastCall = fakeSharedPreferences.setStringListInvocations.latest;
       expect(lastCall[0], 'io.wiredash.pending_feedback_items');
-      expect(lastCall[1], [legalItem, json.encode(pendingItem.toJson())]);
+      expect(
+          lastCall[1], [legalItem, serializePendingFeedbackItem(pendingItem)]);
 
       // screenshot was deleted as well, leave nothing behind!
       expect(
