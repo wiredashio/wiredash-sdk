@@ -127,7 +127,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 curve: Curves.fastOutSlowIn,
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 225),
-                  reverseDuration: const Duration(milliseconds: 175),
+                  reverseDuration: const Duration(milliseconds: 170),
                   switchInCurve: Curves.fastOutSlowIn,
                   switchOutCurve: Curves.fastOutSlowIn,
                   child: KeyedSubtree(
