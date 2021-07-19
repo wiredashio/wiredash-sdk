@@ -64,9 +64,6 @@ class WiredashApi {
     final args = feedback.toFeedbackBody();
     args.addAll({'images': images.map((blob) => blob.data).toList()});
     request.body = jsonEncode(args);
-    // request.bodyFields =
-    //     args.map((key, value) => MapEntry(key, jsonEncode(value)));
-    print(request.body);
 
     final response = await _send(request);
     if (response.statusCode == 200) {
@@ -162,45 +159,119 @@ class ImageBlob {
 
 extension FeedbackBody on PersistedFeedbackItem {
   Map<String, dynamic> toFeedbackBody() {
-    // TODO better handle required values
-    final raw = <String, Object?>{
-      'deviceId': deviceInfo.deviceId,
-      'isDebugBuild': deviceInfo.appIsDebug,
-      // TODO
-      'labels': ['bug'],
-      'message': message,
-      'sdkVersion': sdkVersion,
-      // TODO can be null
-      'windowPixelRatio': deviceInfo.pixelRatio,
-      'windowSize': deviceInfo.physicalSize,
-      'windowTextScaleFactor': deviceInfo.textScaleFactor,
-      'appLocale': deviceInfo.locale,
-      'buildCommit': deviceInfo.buildCommit,
-      'buildNumber': deviceInfo.buildNumber,
-      'buildVersion': deviceInfo.appVersion,
-      // TODO
-      'images': [],
-      // TODO
-      'platformBrightness': null,
-      'platformDartVersion': deviceInfo.platformVersion,
-      'platformGestureInsets': deviceInfo.viewInsets,
-      // TODO how to distinguish app and platform locale?
-      'platformLocale': deviceInfo.locale,
-      'platformOS': deviceInfo.platformOS,
-      'platformOSVersion': deviceInfo.platformOSBuild,
-      // TODO get real value
-      'platformSupportedLocales': [deviceInfo.locale],
-      'platformUserAgent': deviceInfo.userAgent,
-      'userEmail': email,
-      // TODO
-      'userId': null,
-      'windowInsets': deviceInfo.viewInsets,
-      'windowPadding': deviceInfo.padding,
-    };
+    final Map<String, Object?> values = {};
 
-    raw.removeWhere(
-        (key, value) => value == null || value is String && value.isEmpty);
+    // Required values
+    values.addAll({
+      'deviceId': nonNull(deviceInfo.deviceId),
+      'isDebugBuild': nonNull(deviceInfo.appIsDebug),
+      'labels': [
+        // TODO
+      ],
+      'message': nonNull(message),
+      'sdkVersion': nonNull(sdkVersion),
+      'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
+      'windowSize': nonNull(deviceInfo.physicalSize),
+      'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
+    });
 
-    return raw.map((k, v) => MapEntry(k, v!));
+    // locale which is currently set in the app
+    // TODO value is from device, not from app, or is it?
+    // TODO how to distinguish app and platform locale?
+    final String? appLocale = null;
+    if (appLocale != null) {
+      values.addAll({'appLocale': appLocale});
+    }
+
+    values.addAll({
+      'platformLocale': nonNull(deviceInfo.platformLocale),
+      'platformSupportedLocales': nonNull(deviceInfo.platformSupportedLocales),
+    });
+
+    // User provided commit hash (String) (dart-define)
+    final buildCommit = deviceInfo.buildCommit;
+    if (buildCommit != null) {
+      values.addAll({'buildCommit': buildCommit});
+    }
+
+    // User provided build number (int as String) (dart-define)
+    final buildNumber = deviceInfo.buildNumber;
+    if (buildNumber != null) {
+      values.addAll({'buildNumber': buildNumber});
+    }
+    // User provided build version (semver) (dart-define)
+    // TODO rename appVersion?
+    final buildVersion = deviceInfo.appVersion;
+    if (buildVersion != null) {
+      values.addAll({'buildVersion': buildVersion});
+    }
+
+    // system brightness
+    values.addAll({
+      'platformBrightness': () {
+        final brightness = nonNull(deviceInfo.platformBrightness);
+        if (brightness == Brightness.dark) return 'dark';
+        if (brightness == Brightness.light) return 'light';
+        throw 'Unknown brightness value $brightness';
+      }()
+    });
+
+    // The version of the Dart runtime.
+    final platformDartVersion = deviceInfo.platformVersion;
+    if (platformDartVersion != null) {
+      values.addAll({'platformDartVersion': platformDartVersion});
+    }
+
+    final platformGestureInsets = deviceInfo.gestureInsets;
+    if (platformGestureInsets != null) {
+      values.addAll({'platformGestureInsets': platformGestureInsets});
+    }
+
+    final windowInsets = deviceInfo.viewInsets;
+    if (windowInsets != null) {
+      values.addAll({'windowInsets': windowInsets});
+    }
+
+    final windowPadding = deviceInfo.padding;
+    if (windowPadding != null) {
+      values.addAll({'windowPadding': windowPadding});
+    }
+
+    // OS name
+    final platformOS = deviceInfo.platformOS;
+    if (platformOS != null) {
+      values.addAll({'platformOS': platformOS});
+    }
+
+    // OS version (semver)
+    final platformOSVersion = deviceInfo.platformOSVersion;
+    if (platformOSVersion != null) {
+      values.addAll({'platformOSVersion': platformOSVersion});
+    }
+
+    // Web only
+    final platformUserAgent = deviceInfo.userAgent;
+    if (platformUserAgent != null) {
+      values.addAll({'platformUserAgent': platformUserAgent});
+    }
+
+    final userEmail = email;
+    if (userEmail != null) {
+      values.addAll({'userEmail': userEmail});
+    }
+
+    // TODO read from what users have set in the sdk
+    final String? userId = null;
+    if (userId != null) {
+      values.addAll({'userId': userId});
+    }
+
+    return values.map((k, v) => MapEntry(k, v));
   }
+}
+
+/// Explicitly defines a values a non null, making it a compile time error
+/// when [value] becomes nullable
+T nonNull<T extends Object>(T value) {
+  return value;
 }

@@ -2,6 +2,8 @@ import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/version.dart';
 
+export 'package:wiredash/src/common/device_info/device_info.dart';
+
 /// Contains all relevant feedback information, both user-provided and automatically
 /// inferred, that will be eventually sent to the Wiredash console and are in
 /// the meantime persisted on disk inside [PendingFeedbackItem].

@@ -4,7 +4,7 @@ class BuildInfoManager {
   final BuildInfo buildInfo;
   BuildInfoManager(this.buildInfo);
 
-  String? get deviceId => buildInfo.deviceId;
+  String get deviceId => buildInfo.deviceId;
 
   String? _buildVersion;
   String? get buildVersion => _buildVersion ?? buildInfo.buildVersion;

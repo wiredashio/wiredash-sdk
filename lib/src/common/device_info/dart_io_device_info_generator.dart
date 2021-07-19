@@ -19,7 +19,7 @@ class _DartIoDeviceInfoGenerator implements DeviceInfoGenerator {
     final base = DeviceInfoGenerator.baseDeviceInfo(buildInfo, window);
     return base.copyWith(
       platformOS: Platform.operatingSystem,
-      platformOSBuild: Platform.operatingSystemVersion,
+      platformOSVersion: Platform.operatingSystemVersion,
       platformVersion: Platform.version,
     );
   }

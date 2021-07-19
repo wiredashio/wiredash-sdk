@@ -29,7 +29,9 @@ abstract class DeviceInfoGenerator {
       buildNumber: buildInfo.buildNumber,
       buildCommit: buildInfo.buildCommit,
       deviceId: buildInfo.deviceId,
-      locale: window.locale.toString(),
+      platformLocale: window.locale.toLanguageTag(),
+      platformSupportedLocales:
+          window.locales.map((it) => it.toLanguageTag()).toList(),
       padding: [
         window.padding.left,
         window.padding.top,
@@ -44,6 +46,13 @@ abstract class DeviceInfoGenerator {
         window.viewInsets.top,
         window.viewInsets.right,
         window.viewInsets.bottom
+      ],
+      platformBrightness: window.platformBrightness,
+      gestureInsets: [
+        window.systemGestureInsets.left,
+        window.systemGestureInsets.top,
+        window.systemGestureInsets.right,
+        window.systemGestureInsets.bottom
       ],
     );
   }

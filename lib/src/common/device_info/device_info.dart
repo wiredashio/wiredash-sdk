@@ -1,15 +1,20 @@
+import 'dart:ui' show Brightness;
 import 'package:flutter/foundation.dart';
 
+export 'dart:ui' show Brightness;
+
 class DeviceInfo {
-  final bool? appIsDebug;
+  final bool appIsDebug;
   final String? appVersion;
   final String? buildNumber;
   final String? buildCommit;
-  final String? deviceId;
-  final String? locale;
+  final String deviceId;
+  final String platformLocale;
+  final List<String> platformSupportedLocales;
   final List<double>? padding;
-  final List<double>? physicalSize;
-  final double? pixelRatio;
+  final List<double> physicalSize;
+  final double pixelRatio;
+  final Brightness platformBrightness;
 
   /// A string representing the operating system or platform.
   ///
@@ -19,15 +24,17 @@ class DeviceInfo {
   /// A string representing the version of the operating system or platform.
   ///
   /// Platform.operatingSystemVersion
-  final String? platformOSBuild;
+  final String? platformOSVersion;
 
   /// The version of the current Dart runtime.
   ///
   /// Platform.version
   final String? platformVersion;
 
-  final double? textScaleFactor;
+  final double textScaleFactor;
   final List<double>? viewInsets;
+
+  final List<double>? gestureInsets;
 
   /// When in web, the full user agent String of the browser
   ///
@@ -35,21 +42,24 @@ class DeviceInfo {
   final String? userAgent;
 
   const DeviceInfo({
-    this.appIsDebug,
+    required this.appIsDebug,
     this.appVersion,
     this.buildNumber,
     this.buildCommit,
-    this.deviceId,
-    this.locale,
+    required this.deviceId,
+    required this.platformLocale,
+    required this.platformSupportedLocales,
     this.padding = const [],
     this.physicalSize = const [],
-    this.pixelRatio,
+    required this.pixelRatio,
     this.platformOS,
-    this.platformOSBuild,
+    this.platformOSVersion,
     this.platformVersion,
-    this.textScaleFactor,
+    required this.textScaleFactor,
     this.viewInsets = const [],
     this.userAgent,
+    required this.platformBrightness,
+    this.gestureInsets,
   });
 
   DeviceInfo copyWith({
@@ -58,16 +68,19 @@ class DeviceInfo {
     String? buildNumber,
     String? buildCommit,
     String? deviceId,
-    String? locale,
+    String? platformLocale,
+    List<String>? platformSupportedLocales,
     List<double>? padding,
     List<double>? physicalSize,
     double? pixelRatio,
     String? platformOS,
-    String? platformOSBuild,
+    String? platformOSVersion,
     String? platformVersion,
     double? textScaleFactor,
     List<double>? viewInsets,
     String? userAgent,
+    Brightness? platformBrightness,
+    List<double>? gestureInsets,
   }) {
     return DeviceInfo(
       appIsDebug: appIsDebug ?? this.appIsDebug,
@@ -75,16 +88,20 @@ class DeviceInfo {
       buildNumber: buildNumber ?? this.buildNumber,
       buildCommit: buildCommit ?? this.buildCommit,
       deviceId: deviceId ?? this.deviceId,
-      locale: locale ?? this.locale,
+      platformLocale: platformLocale ?? this.platformLocale,
+      platformSupportedLocales:
+          platformSupportedLocales ?? this.platformSupportedLocales,
       padding: padding ?? this.padding,
       physicalSize: physicalSize ?? this.physicalSize,
       pixelRatio: pixelRatio ?? this.pixelRatio,
       platformOS: platformOS ?? this.platformOS,
-      platformOSBuild: platformOSBuild ?? this.platformOSBuild,
+      platformOSVersion: platformOSVersion ?? this.platformOSVersion,
       platformVersion: platformVersion ?? this.platformVersion,
       textScaleFactor: textScaleFactor ?? this.textScaleFactor,
       viewInsets: viewInsets ?? this.viewInsets,
       userAgent: userAgent ?? this.userAgent,
+      platformBrightness: platformBrightness ?? this.platformBrightness,
+      gestureInsets: gestureInsets ?? this.gestureInsets,
     );
   }
 
@@ -96,16 +113,19 @@ class DeviceInfo {
         'buildNumber: $buildNumber, '
         'buildCommit: $buildCommit, '
         'deviceId: $deviceId, '
-        'locale: $locale, '
+        'platformLocale: $platformLocale, '
+        'platformSupportedLocales: $platformSupportedLocales, '
         'padding: $padding, '
         'physicalSize: $physicalSize, '
         'pixelRatio: $pixelRatio, '
         'platformOS: $platformOS, '
-        'platformOSBuild: $platformOSBuild, '
+        'platformOSBuild: $platformOSVersion, '
         'platformVersion: $platformVersion, '
         'textScaleFactor: $textScaleFactor, '
         'viewInsets: $viewInsets, '
         'userAgent: $userAgent, '
+        'platformBrightness: $platformBrightness, '
+        'gestureInsets: $gestureInsets, '
         '}';
   }
 
@@ -119,16 +139,20 @@ class DeviceInfo {
           buildNumber == other.buildNumber &&
           buildCommit == other.buildCommit &&
           deviceId == other.deviceId &&
-          locale == other.locale &&
+          platformLocale == other.platformLocale &&
+          listEquals(
+              platformSupportedLocales, other.platformSupportedLocales) &&
           listEquals(padding, other.padding) &&
           listEquals(physicalSize, other.physicalSize) &&
           pixelRatio == other.pixelRatio &&
           platformOS == other.platformOS &&
-          platformOSBuild == other.platformOSBuild &&
+          platformOSVersion == other.platformOSVersion &&
           platformVersion == other.platformVersion &&
           textScaleFactor == other.textScaleFactor &&
           listEquals(viewInsets, other.viewInsets) &&
-          userAgent == other.userAgent);
+          userAgent == other.userAgent &&
+          platformBrightness == other.platformBrightness &&
+          listEquals(gestureInsets, other.gestureInsets));
 
   @override
   int get hashCode =>
@@ -137,14 +161,17 @@ class DeviceInfo {
       buildNumber.hashCode ^
       buildCommit.hashCode ^
       deviceId.hashCode ^
-      locale.hashCode ^
+      platformLocale.hashCode ^
+      platformSupportedLocales.hashCode ^
       padding.hashCode ^
       physicalSize.hashCode ^
       pixelRatio.hashCode ^
       platformOS.hashCode ^
-      platformOSBuild.hashCode ^
+      platformOSVersion.hashCode ^
       platformVersion.hashCode ^
       textScaleFactor.hashCode ^
       viewInsets.hashCode ^
-      userAgent.hashCode;
+      userAgent.hashCode ^
+      platformBrightness.hashCode ^
+      gestureInsets.hashCode;
 }

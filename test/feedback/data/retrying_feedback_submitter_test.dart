@@ -112,7 +112,16 @@ void main() {
 
     test('submit() - persists the feedback item properly', () async {
       const item = PersistedFeedbackItem(
-        deviceInfo: DeviceInfo(),
+        deviceInfo: DeviceInfo(
+          deviceId: '1234',
+          appIsDebug: false,
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: "en_US",
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets: [0, 0, 0, 0],
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
@@ -136,7 +145,16 @@ void main() {
         'submit() - does not crash when screenshot file does not exist anymore for some reason',
         () async {
       const item = PersistedFeedbackItem(
-        deviceInfo: DeviceInfo(),
+        deviceInfo: DeviceInfo(
+          deviceId: '1234',
+          appIsDebug: false,
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: "en_US",
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets: [0, 0, 0, 0],
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
@@ -170,7 +188,16 @@ void main() {
     test('submit() - future completes before interacting with NetworkManager',
         () async {
       const item = PersistedFeedbackItem(
-        deviceInfo: DeviceInfo(),
+        deviceInfo: DeviceInfo(
+          deviceId: '1234',
+          appIsDebug: false,
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: "en_US",
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets: [0, 0, 0, 0],
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
@@ -186,7 +213,16 @@ void main() {
         'submit() - if successful, gets rid of the feedback item in the storage',
         () async {
       const item = PersistedFeedbackItem(
-        deviceInfo: DeviceInfo(),
+        deviceInfo: DeviceInfo(
+          deviceId: '1234',
+          appIsDebug: false,
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: "en_US",
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets: [0, 0, 0, 0],
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
@@ -214,7 +250,16 @@ void main() {
         'submit() - when has existing items and submits only the first one successfully, does not remove the failed items from storage',
         () async {
       const item = PersistedFeedbackItem(
-        deviceInfo: DeviceInfo(),
+        deviceInfo: DeviceInfo(
+          deviceId: '1234',
+          appIsDebug: false,
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: "en_US",
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets: [0, 0, 0, 0],
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
@@ -295,7 +340,16 @@ void main() {
     test('submit() - if fails, retries up to 8 times with exponential backoff',
         () async {
       const item = PersistedFeedbackItem(
-        deviceInfo: DeviceInfo(),
+        deviceInfo: DeviceInfo(
+          deviceId: '1234',
+          appIsDebug: false,
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: "en_US",
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets: [0, 0, 0, 0],
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
@@ -352,7 +406,16 @@ void main() {
     test('submit() - does not retry for UnauthenticatedWiredashApiException',
         () async {
       const item = PersistedFeedbackItem(
-        deviceInfo: DeviceInfo(),
+        deviceInfo: DeviceInfo(
+          deviceId: '1234',
+          appIsDebug: false,
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: "en_US",
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets: [0, 0, 0, 0],
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
@@ -397,7 +460,16 @@ void main() {
     test('submit() - does not retry when server reports missing properties',
         () async {
       const item = PersistedFeedbackItem(
-        deviceInfo: DeviceInfo(),
+        deviceInfo: DeviceInfo(
+          deviceId: '1234',
+          appIsDebug: false,
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: "en_US",
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets: [0, 0, 0, 0],
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',

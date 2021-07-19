@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:fake_async/fake_async.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
@@ -47,7 +48,16 @@ void main() {
     late MockGlobalKey<NavigatorState> mockNavigatorKey;
     late UserManager usermanager;
     final StaticDeviceInfoGenerator deviceInfoGenerator =
-        StaticDeviceInfoGenerator(const DeviceInfo(appVersion: 'test'));
+        StaticDeviceInfoGenerator(const DeviceInfo(
+      deviceId: '1234',
+      appIsDebug: false,
+      pixelRatio: 1.0,
+      textScaleFactor: 1.0,
+      platformLocale: "en_US",
+      platformSupportedLocales: ['en_US', 'de_DE'],
+      platformBrightness: Brightness.dark,
+      gestureInsets: [0, 0, 0, 0],
+    ));
     late MockRetryingFeedbackSubmitter mockRetryingFeedbackSubmitter;
     late FeedbackModel model;
 

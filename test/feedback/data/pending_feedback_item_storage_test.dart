@@ -75,7 +75,16 @@ void main() {
         uuidGenerator,
         () => storage.addPendingItem(
           const PersistedFeedbackItem(
-            deviceInfo: DeviceInfo(),
+            deviceInfo: DeviceInfo(
+              deviceId: '1234',
+              appIsDebug: false,
+              pixelRatio: 1.0,
+              textScaleFactor: 1.0,
+              platformLocale: "en_US",
+              platformSupportedLocales: ['en_US', 'de_DE'],
+              platformBrightness: Brightness.dark,
+              gestureInsets: [0, 0, 0, 0],
+            ),
             email: 'email@example.com',
             message: 'Hello world!',
             type: 'bug',
@@ -99,28 +108,31 @@ void main() {
           .writeAsBytes(kTransparentImage);
 
       final existingItem = json.encode({
-        'id': '1',
         'feedbackItem': {
           'deviceInfo': {
             'appIsDebug': true,
             'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+            'gestureInsets': [0.0, 0.0, 0.0, 0.0],
             'locale': 'en_US',
             'padding': [0.0, 66.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
+            'platformBrightness': 'dark',
             'platformOS': 'android',
             'platformOSBuild': 'RSR1.201013.001',
             'platformVersion':
                 '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+            'supportedLocales': ['en_US', 'de_DE'],
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
           'email': '<existing item email>',
           'message': '<existing item message>',
+          'sdkVersion': 1,
           'type': '<existing item type>',
           'user': '<existing item user>',
-          'sdkVersion': 1,
         },
+        'id': '1',
         'screenshotPath': '<existing item screenshot>',
         'version': 1,
       });
@@ -131,7 +143,16 @@ void main() {
         uuidGenerator,
         () => storage.addPendingItem(
           const PersistedFeedbackItem(
-            deviceInfo: DeviceInfo(),
+            deviceInfo: DeviceInfo(
+              deviceId: '1234',
+              appIsDebug: false,
+              pixelRatio: 1.0,
+              textScaleFactor: 1.0,
+              platformLocale: "en_US",
+              platformSupportedLocales: ['en_US', 'de_DE'],
+              platformBrightness: Brightness.dark,
+              gestureInsets: [0, 0, 0, 0],
+            ),
             email: 'email@example.com',
             message: 'Hello world!',
             type: 'bug',
@@ -171,6 +192,7 @@ void main() {
             'appIsDebug': true,
             'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
             'locale': 'en_US',
+            'supportedLocales': ['en_US', 'de_DE'],
             'padding': [0.0, 66.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
@@ -180,6 +202,8 @@ void main() {
                 '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
+            'gestureInsets': [0, 0, 0, 0],
+            'platformBrightness': 'dark',
           },
           'email': '<existing item email>',
           'message': '<existing item message>',
@@ -226,54 +250,60 @@ void main() {
       );
 
       final item1 = json.encode({
-        'id': '<id for item to be preserved>',
         'feedbackItem': {
           'deviceInfo': {
             'appIsDebug': true,
             'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+            'gestureInsets': [0.0, 0.0, 0.0, 0.0],
             'locale': 'en_US',
             'padding': [0.0, 66.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
+            'platformBrightness': 'dark',
             'platformOS': 'android',
             'platformOSBuild': 'RSR1.201013.001',
             'platformVersion':
                 '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+            'supportedLocales': ['en_US', 'de_DE'],
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
           'email': '<email for item to be preserved>',
           'message': '<message for item to be preserved>',
+          'sdkVersion': 1,
           'type': '<type for item to be preserved>',
           'user': '<item user for item to be preserved>',
-          'sdkVersion': 1,
         },
+        'id': '<id for item to be preserved>',
         'screenshotPath': '<screenshot for item to be preserved>',
         'version': 1,
       });
       final item2 = json.encode({
-        'id': '<existing item id>',
         'feedbackItem': {
           'deviceInfo': {
             'appIsDebug': true,
             'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
             'locale': 'en_US',
+            'gestureInsets': [0.0, 0.0, 0.0, 0.0],
             'padding': [0.0, 66.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
+            'platformBrightness': 'dark',
             'platformOS': 'android',
             'platformOSBuild': 'RSR1.201013.001',
             'platformVersion':
                 '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+            'supportedLocales': ['en_US', 'de_DE'],
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
           'email': '<existing item email>',
           'message': '<existing item message>',
+          'sdkVersion': 1,
           'type': '<existing item type>',
           'user': '<existing item user>',
-          'sdkVersion': 1,
         },
+        'id': '<existing item id>',
         'screenshotPath': '<existing item screenshot>',
         'version': 1,
       });
@@ -348,28 +378,31 @@ void main() {
       });
 
       final legalItem = json.encode({
-        'id': '<id for item to be preserved>',
         'feedbackItem': {
           'deviceInfo': {
             'appIsDebug': true,
             'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+            'gestureInsets': [0.0, 0.0, 0.0, 0.0],
             'locale': 'en_US',
             'padding': [0.0, 66.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
+            'platformBrightness': 'dark',
             'platformOS': 'android',
             'platformOSBuild': 'RSR1.201013.001',
             'platformVersion':
                 '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+            'supportedLocales': ['en_US', 'de_DE'],
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
           'email': '<email for item to be preserved>',
           'message': '<message for item to be preserved>',
+          'sdkVersion': 1,
           'type': '<type for item to be preserved>',
           'user': '<item user for item to be preserved>',
-          'sdkVersion': 1,
         },
+        'id': '<id for item to be preserved>',
         'screenshotPath': '<screenshot for item to be preserved>',
         'version': 1,
       });
@@ -403,7 +436,16 @@ void main() {
         uuidGenerator,
         () => storage.addPendingItem(
           const PersistedFeedbackItem(
-            deviceInfo: DeviceInfo(),
+            deviceInfo: DeviceInfo(
+              deviceId: '1234',
+              appIsDebug: false,
+              pixelRatio: 1.0,
+              textScaleFactor: 1.0,
+              platformLocale: "en_US",
+              platformSupportedLocales: ['en_US', 'de_DE'],
+              platformBrightness: Brightness.dark,
+              gestureInsets: [0.0, 0.0, 0.0, 0.0],
+            ),
             email: 'email@example.com',
             message: 'Hello world!',
             type: 'bug',

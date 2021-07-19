@@ -154,7 +154,7 @@ class WiredashState extends State<Wiredash> {
         projectId: widget.projectId,
         secret: widget.secret,
         deviceIdProvider: () async {
-          return buildInfoManager.deviceId!;
+          return buildInfoManager.deviceId;
         });
 
     userManager = UserManager();

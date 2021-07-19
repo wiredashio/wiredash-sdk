@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:wiredash/src/common/device_info/device_info.dart';
@@ -41,11 +42,15 @@ class PendingFeedbackItem {
   }
 }
 
+/// Deserializes feedbacks from json
+///
+/// Crashes hard when parsing fails
 PendingFeedbackItem deserializePendingFeedbackItem(String json) {
   final map = jsonDecode(json) as Map;
   final version = map['version'] as int?;
   if (version == null || version == 1) {
     // V1 is the initial version, where 'version' did not yet exist
+    // Some values are now required, and it will crash when mapping to the current model
     return PendingFeedbackItemParserV1.fromJson(map as Map<String, dynamic>);
   }
   throw 'Unkown version "$version" of PendingFeedbackItem';
@@ -84,12 +89,14 @@ class PersistedFeedbackItemParserV1 {
 class DeviceInfoParserV1 {
   static DeviceInfo fromJson(Map<String, dynamic> json) {
     return DeviceInfo(
-      appIsDebug: json['appIsDebug'] as bool?,
+      appIsDebug: json['appIsDebug'] as bool,
       appVersion: json['appVersion'] as String?,
       buildNumber: json['buildNumber'] as String?,
       buildCommit: json['buildCommit'] as String?,
-      deviceId: json['deviceId'] as String?,
-      locale: json['locale'] as String?,
+      deviceId: json['deviceId'] as String,
+      platformLocale: json['locale'] as String,
+      platformSupportedLocales:
+          (json['supportedLocales'] as List<dynamic>).cast<String>(),
       padding: (json['padding'] as List<dynamic>?)
               ?.cast<num>()
               .map((i) => i.toDouble())
@@ -100,17 +107,28 @@ class DeviceInfoParserV1 {
               .map((i) => i.toDouble())
               .toList(growable: false) ??
           [],
-      pixelRatio: (json['pixelRatio'] as num?)?.toDouble(),
+      pixelRatio: (json['pixelRatio'] as num).toDouble(),
       platformOS: json['platformOS'] as String?,
-      platformOSBuild: json['platformOSBuild'] as String?,
+      platformOSVersion: json['platformOSBuild'] as String?,
       platformVersion: json['platformVersion'] as String?,
-      textScaleFactor: (json['textScaleFactor'] as num?)?.toDouble(),
+      textScaleFactor: (json['textScaleFactor'] as num).toDouble(),
       viewInsets: (json['viewInsets'] as List<dynamic>?)
               ?.cast<num>()
               .map((i) => i.toDouble())
               .toList(growable: false) ??
           [],
+      gestureInsets: (json['gestureInsets'] as List<dynamic>?)
+              ?.cast<num>()
+              .map((i) => i.toDouble())
+              .toList(growable: false) ??
+          [],
       userAgent: json['userAgent'] as String?,
+      platformBrightness: () {
+        final value = json['platformBrightness'];
+        if (value == 'light') return Brightness.light;
+        if (value == 'dark') return Brightness.dark;
+        throw 'Unknown brightness value $value';
+      }(),
     );
   }
 }
@@ -118,93 +136,95 @@ class DeviceInfoParserV1 {
 /// Visible for testing
 extension SerializePendingFeedbackItem on PendingFeedbackItem {
   Map<String, dynamic> toJson() {
-    return {
+    return SplayTreeMap.from({
       'id': id,
       'feedbackItem': feedbackItem.toJson(),
       'screenshotPath': screenshotPath,
       'version': _serializationVersion,
-    };
+    });
   }
 }
 
 /// Visible for testing
 extension SerializePersistedFeedbackItem on PersistedFeedbackItem {
   Map<String, dynamic> toJson() {
-    return {
+    return SplayTreeMap.from({
       'deviceInfo': deviceInfo.toJson(),
       'email': email,
       'message': message,
       'type': type,
       'user': user,
       'sdkVersion': sdkVersion,
-    };
+    });
   }
 }
 
 /// Visible for testing
 extension SerializeDeviceInfo on DeviceInfo {
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> uiValues = {};
+    final values = SplayTreeMap<String, dynamic>.from({});
 
-    if (appIsDebug != null) {
-      uiValues['appIsDebug'] = appIsDebug;
-    }
+    values['appIsDebug'] = appIsDebug;
 
     if (appVersion != null) {
-      uiValues['appVersion'] = appVersion;
+      values['appVersion'] = appVersion;
     }
 
     if (buildNumber != null) {
-      uiValues['buildNumber'] = buildNumber;
+      values['buildNumber'] = buildNumber;
     }
 
     if (buildCommit != null) {
-      uiValues['buildCommit'] = buildCommit;
+      values['buildCommit'] = buildCommit;
     }
-    if (deviceId != null) {
-      uiValues['deviceId'] = deviceId;
-    }
+    values['deviceId'] = deviceId;
 
-    if (locale != null) {
-      uiValues['locale'] = locale.toString();
-    }
+    values['locale'] = platformLocale;
+
+    values['supportedLocales'] = platformSupportedLocales;
 
     if (padding != null && padding!.isNotEmpty) {
-      uiValues['padding'] = padding;
+      values['padding'] = padding;
     }
 
-    if (physicalSize != null && physicalSize!.isNotEmpty) {
-      uiValues['physicalSize'] = physicalSize;
+    if (physicalSize.isNotEmpty) {
+      values['physicalSize'] = physicalSize;
     }
 
-    if (pixelRatio != null) {
-      uiValues['pixelRatio'] = pixelRatio;
-    }
+    values['pixelRatio'] = pixelRatio;
 
     if (platformOS != null) {
-      uiValues['platformOS'] = platformOS;
+      values['platformOS'] = platformOS;
     }
 
-    if (platformOSBuild != null) {
-      uiValues['platformOSBuild'] = platformOSBuild;
+    if (platformOSVersion != null) {
+      values['platformOSBuild'] = platformOSVersion;
     }
 
     if (platformVersion != null) {
-      uiValues['platformVersion'] = platformVersion;
+      values['platformVersion'] = platformVersion;
     }
 
-    if (textScaleFactor != null) {
-      uiValues['textScaleFactor'] = textScaleFactor;
-    }
+    values['textScaleFactor'] = textScaleFactor;
 
     if (viewInsets != null && viewInsets!.isNotEmpty) {
-      uiValues['viewInsets'] = viewInsets;
+      values['viewInsets'] = viewInsets;
+    }
+
+    if (gestureInsets != null && gestureInsets!.isNotEmpty) {
+      values['gestureInsets'] = gestureInsets;
     }
 
     if (userAgent != null) {
-      uiValues['userAgent'] = userAgent;
+      values['userAgent'] = userAgent;
     }
 
-    return uiValues;
+    values['platformBrightness'] = () {
+      if (platformBrightness == Brightness.dark) return 'dark';
+      if (platformBrightness == Brightness.light) return 'light';
+      throw 'Unknown brightness value $platformBrightness';
+    }();
+
+    return values;
   }
 }
