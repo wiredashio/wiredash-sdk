@@ -255,7 +255,7 @@ extension FeedbackBody on PersistedFeedbackItem {
     }
 
     final userEmail = email;
-    if (userEmail != null) {
+    if (userEmail != null && userEmail.isNotEmpty) {
       values.addAll({'userEmail': userEmail});
     }
 
