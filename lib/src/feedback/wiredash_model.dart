@@ -20,7 +20,9 @@ class WiredashModel with ChangeNotifier {
   /// Also true during the wiredash enter/exit transition
   bool get isWiredashActive => _isWiredashVisible;
   bool _isWiredashVisible = false;
+  // ignore: unused_field
   bool _isWiredashOpening = false;
+  // ignore: unused_field
   bool _isWiredashClosing = false;
 
   bool get isAppInteractive => _isAppInteractive;

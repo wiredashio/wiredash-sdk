@@ -1,24 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/feedback/data/label.dart';
+import 'package:wiredash/src/feedback/ui/more_menu.dart';
 import 'package:wiredash/src/wiredash_backdrop.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
-
-class Label {
-  const Label({required this.id, required this.name});
-  final String id;
-  final String name;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Label &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          name == other.name;
-
-  @override
-  int get hashCode => id.hashCode ^ name.hashCode;
-}
 
 const _labels = [
   Label(id: 'aaa111', name: 'bug'),
@@ -38,13 +23,12 @@ class WiredashFeedbackFlow extends StatefulWidget {
 class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     with TickerProviderStateMixin {
   late final TextEditingController _controller;
-  late final ValueNotifier<Set<Label>> _selectedLabels;
+  final ValueNotifier<Set<Label>> _selectedLabels = ValueNotifier({});
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
-    _selectedLabels = ValueNotifier({});
   }
 
   @override
@@ -122,6 +106,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             animation: _controller,
             builder: (context, child) {
               return AnimatedSize(
+                // ignore: deprecated_member_use
                 vsync: this,
                 duration: const Duration(milliseconds: 450),
                 curve: Curves.fastOutSlowIn,
@@ -130,29 +115,29 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                   reverseDuration: const Duration(milliseconds: 170),
                   switchInCurve: Curves.fastOutSlowIn,
                   switchOutCurve: Curves.fastOutSlowIn,
-                  child: KeyedSubtree(
-                    key: ValueKey(_controller.text.isEmpty),
-                    child: _controller.text.isEmpty
-                        ? const _Links()
-                        : ValueListenableBuilder<Set<Label>>(
-                            valueListenable: _selectedLabels,
-                            builder: (context, selectedLabels, child) {
-                              return _Labels(
-                                isAnyLabelSelected: selectedLabels.isNotEmpty,
-                                isLabelSelected: selectedLabels.contains,
-                                toggleSelection: (label) {
-                                  setState(() {
-                                    if (selectedLabels.contains(label)) {
-                                      selectedLabels.remove(label);
-                                    } else {
-                                      selectedLabels.add(label);
-                                    }
-                                  });
-                                },
-                              );
-                            },
-                          ),
-                  ),
+                  child: () {
+                    if (_controller.text.isEmpty) {
+                      return const MoreMenu();
+                    }
+                    return ValueListenableBuilder<Set<Label>>(
+                      valueListenable: _selectedLabels,
+                      builder: (context, selectedLabels, child) {
+                        return _LabelRecommendations(
+                          isAnyLabelSelected: selectedLabels.isNotEmpty,
+                          isLabelSelected: selectedLabels.contains,
+                          toggleSelection: (label) {
+                            setState(() {
+                              if (selectedLabels.contains(label)) {
+                                selectedLabels.remove(label);
+                              } else {
+                                selectedLabels.add(label);
+                              }
+                            });
+                          },
+                        );
+                      },
+                    );
+                  }(),
                 ),
               );
             },
@@ -163,96 +148,8 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
   }
 }
 
-class _Links extends StatelessWidget {
-  const _Links({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      margin: const EdgeInsets.symmetric(
-        horizontal: WiredashBackdrop.feedbackInputHorizontalPadding,
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        // wiredash blue / 100
-        color: const Color(0xFFE8EEFB),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Wrap(
-        runAlignment: WrapAlignment.spaceEvenly,
-        alignment: WrapAlignment.spaceEvenly,
-        spacing: 16,
-        children: const [
-          _Link(
-            icon: Icon(Icons.hourglass_bottom_outlined),
-            label: Text('Future Lab'),
-          ),
-          _Link(
-            icon: Icon(Icons.task),
-            label: Text('Change Log'),
-          ),
-          _Link(
-            icon: Icon(Icons.search),
-            label: Text('FAQs'),
-          ),
-          _Link(
-            icon: Icon(Icons.hourglass_bottom_outlined),
-            label: Text('Future Lab'),
-          ),
-          _Link(
-            icon: Icon(Icons.task),
-            label: Text('Change Log'),
-          ),
-          _Link(
-            icon: Icon(Icons.search),
-            label: Text('FAQs'),
-          ),
-        ].toList(),
-      ),
-    );
-  }
-}
-
-class _Link extends StatelessWidget {
-  const _Link({required this.icon, required this.label, Key? key})
-      : super(key: key);
-
-  final Widget icon;
-  final Widget label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-      child: Column(
-        children: [
-          IconTheme.merge(
-            data: const IconThemeData(
-              size: 24,
-              // tint
-              color: Color(0xFF1A56DB),
-            ),
-            child: icon,
-          ),
-          const SizedBox(height: 8),
-          DefaultTextStyle.merge(
-            style: const TextStyle(
-              // tint
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF1A56DB),
-            ),
-            child: label,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Labels extends StatelessWidget {
-  const _Labels({
+class _LabelRecommendations extends StatelessWidget {
+  const _LabelRecommendations({
     required this.isAnyLabelSelected,
     required this.isLabelSelected,
     required this.toggleSelection,

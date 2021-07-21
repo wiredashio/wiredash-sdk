@@ -220,7 +220,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 // could be started
                 MeasureSize(
                   onChange: (size, bounds) {
-                    print("app $size $bounds");
+                    //print("app $size $bounds");
                   },
                   child: _buildBackdropAnimation(
                     context,
@@ -250,7 +250,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         final Offset? selfOffset = selfRenderBox?.localToGlobal(Offset.zero);
         final Size? size = selfRenderBox?.size;
 
-        // print(constraints);
         if (selfOffset != null && size != null) {
           final Rect rect = Rect.fromPoints(
               selfOffset, selfOffset.translate(size.width, size.height));
@@ -258,7 +257,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             WidgetsBinding.instance!.addPostFrameCallback((_) {
               setState(() {
                 savedRect = rect;
-                print(savedRect);
               });
             });
           }
