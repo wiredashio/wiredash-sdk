@@ -37,7 +37,6 @@ class DeviceIdGenerator {
         final recovered = prefs.getString(_prefsDeviceID);
         if (recovered != null) {
           // recovered deviceId from prefs
-          print("Recovered deviceId: $recovered");
           return recovered;
         }
       }
@@ -48,7 +47,6 @@ class DeviceIdGenerator {
 
     // first time generation or fallback in case of sharedPrefs error
     final _deviceId = uuidV4.generate();
-    print("Generated deviceId: $_deviceId");
     try {
       final prefs =
           await SharedPreferences.getInstance().timeout(_sharedPrefsTimeout);
