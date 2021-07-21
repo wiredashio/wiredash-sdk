@@ -175,14 +175,9 @@ extension FeedbackBody on PersistedFeedbackItem {
       'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
     });
 
-    // locale which is currently set in the app
-    final String? appLocale = appInfo.appLocale;
-    if (appLocale != null) {
-      values.addAll({'appLocale': appLocale});
-    }
-
     // TODO make 'em required on backend?
     values.addAll({
+      'appLocale': nonNull(appInfo.appLocale),
       'platformLocale': nonNull(deviceInfo.platformLocale),
       'platformSupportedLocales': nonNull(deviceInfo.platformSupportedLocales),
     });

@@ -4,3 +4,9 @@ analyzer:
   exclude:
     - example/**
     - lib/src/common/translation/l10n/**
+
+
+linter:
+  rules:
+    # Util classes are awesome!
+    avoid_classes_with_only_static_members: false

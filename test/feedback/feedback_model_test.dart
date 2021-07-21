@@ -37,6 +37,7 @@ class StaticDeviceInfoGenerator implements DeviceInfoGenerator {
 class StaticBuildInfoManager implements BuildInfoManager {
   StaticBuildInfoManager(this.buildInfo);
 
+  @override
   final BuildInfo buildInfo;
 
   @override
@@ -82,7 +83,7 @@ void main() {
       physicalSize: [800, 1200],
     ));
     final StaticBuildInfoManager buildInfoManager =
-        StaticBuildInfoManager(BuildInfo(
+        StaticBuildInfoManager(const BuildInfo(
       buildCommit: 'df321aa',
       buildNumber: '1.2.0',
       buildVersion: '42',

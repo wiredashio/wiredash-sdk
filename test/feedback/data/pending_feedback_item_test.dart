@@ -4,7 +4,7 @@ import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
 void main() {
-  const _full = const PendingFeedbackItem(
+  const _full = PendingFeedbackItem(
     id: 'abc123',
     screenshotPath: 'path/to/file.png',
     feedbackItem: PersistedFeedbackItem(
@@ -38,7 +38,7 @@ void main() {
     ),
   );
 
-  const _minimal = const PendingFeedbackItem(
+  const _minimal = PendingFeedbackItem(
     id: 'abc123',
     feedbackItem: PersistedFeedbackItem(
       appInfo: AppInfo(
