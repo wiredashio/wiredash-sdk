@@ -572,5 +572,52 @@ void main() {
         expect(fakePendingFeedbackItemStorage._currentItems, isEmpty);
       });
     });
+
+    test('submit() - does not retry when server reports unknown property',
+        () async {
+      const item = PersistedFeedbackItem(
+        appInfo: AppInfo(
+          appLocale: 'de_DE',
+        ),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
+        deviceId: '1234',
+        deviceInfo: DeviceInfo(
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: "en_US",
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+          physicalSize: Size(800, 1200),
+        ),
+        email: 'email@example.com',
+        message: 'test post pls ignore',
+        type: 'feedback',
+        userId: 'Testy McTestFace',
+      );
+
+      fakeAsync((async) {
+        mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
+          final response =
+              Response('{"message":""compilationMode" is not allowed"}', 400);
+          throw WiredashApiException(response: response);
+        };
+
+        retryingFeedbackSubmitter.submit(item, kTransparentImage);
+        async.elapse(const Duration(seconds: 1));
+
+        // Sending one feedback item should be retried no more than 8 times.
+        mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
+
+        // Item has beend deleted
+        expect(fakePendingFeedbackItemStorage._deletedItemIds, ['1']);
+        expect(fakePendingFeedbackItemStorage._currentItems, isEmpty);
+      });
+    });
   });
 }
