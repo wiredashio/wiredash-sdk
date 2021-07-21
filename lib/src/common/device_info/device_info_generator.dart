@@ -24,10 +24,17 @@ abstract class DeviceInfoGenerator {
       return locale ?? const Locale('en', 'US');
     }
 
+    List<Locale> windowLocales() {
+      // Flutter 1.26 (2.0.1) returns `List<Locale>?`, 1.27 `List<Locale>`
+      // ignore: unnecessary_nullable_for_final_variable_declarations
+      final List<Locale>? locales = window.locales;
+      return locales ?? [];
+    }
+
     return DeviceInfo(
       platformLocale: windowLocale().toLanguageTag(),
       platformSupportedLocales:
-          window.locales.map((it) => it.toLanguageTag()).toList(),
+          windowLocales().map((it) => it.toLanguageTag()).toList(),
       padding: window.padding,
       physicalSize: window.physicalSize,
       physicalGeometry: window.physicalGeometry,
