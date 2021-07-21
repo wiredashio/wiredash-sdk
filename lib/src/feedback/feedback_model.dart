@@ -104,7 +104,7 @@ class FeedbackModel with ChangeNotifier {
     loading = true;
     notifyListeners();
 
-    final deviceId = await _deviceIdGenerator.deviceId;
+    final deviceId = await _deviceIdGenerator.deviceId();
 
     final item = PersistedFeedbackItem(
       deviceId: deviceId,

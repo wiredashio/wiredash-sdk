@@ -30,6 +30,7 @@ class EnvBuildInfo {
   static String? get buildVersion => _buildVersion;
 }
 
+/// Compile time information about the app
 class BuildInfo {
   const BuildInfo({
     required this.compilationMode,
@@ -72,6 +73,7 @@ class BuildInfo {
   }
 }
 
+/// The compile mode the Flutter app was built with
 enum CompilationMode {
   /// [kReleaseMode]
   release,

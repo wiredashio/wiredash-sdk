@@ -53,7 +53,7 @@ class StaticDeviceIdGenerator implements DeviceIdGenerator {
   final String _deviceId;
 
   @override
-  Future<String> get deviceId async => _deviceId;
+  Future<String> deviceId() async => _deviceId;
 }
 
 class MockRetryingFeedbackSubmitter extends Fake

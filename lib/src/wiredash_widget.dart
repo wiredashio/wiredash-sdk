@@ -155,7 +155,7 @@ class WiredashState extends State<Wiredash> {
       httpClient: Client(),
       projectId: widget.projectId,
       secret: widget.secret,
-      deviceIdProvider: () => _deviceIdGenerator.deviceId,
+      deviceIdProvider: () => _deviceIdGenerator.deviceId(),
     );
 
     userManager = UserManager();
