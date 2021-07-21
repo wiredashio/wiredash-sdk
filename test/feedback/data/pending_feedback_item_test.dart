@@ -11,11 +11,14 @@ void main() {
     screenshotPath: 'path/to/file.png',
     feedbackItem: PersistedFeedbackItem(
       appInfo: AppInfo(
-        appIsDebug: true,
         appLocale: 'de_DE',
       ),
       buildInfo: BuildInfo(
-          buildVersion: '1.2.3', buildNumber: '543', buildCommit: 'abcdef12'),
+        buildVersion: '1.2.3',
+        buildNumber: '543',
+        buildCommit: 'abcdef12',
+        compilationMode: CompilationMode.profile,
+      ),
       deviceId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
       deviceInfo: DeviceInfo(
         pixelRatio: 2.75,
@@ -47,10 +50,9 @@ void main() {
     id: 'abc123',
     feedbackItem: PersistedFeedbackItem(
       appInfo: AppInfo(
-        appIsDebug: false,
         appLocale: 'en_US',
       ),
-      buildInfo: BuildInfo(),
+      buildInfo: BuildInfo(compilationMode: CompilationMode.profile),
       deviceId: '1234',
       deviceInfo: DeviceInfo(
         pixelRatio: 1.0,
@@ -80,13 +82,13 @@ void main() {
           'screenshotPath': 'path/to/file.png',
           'feedbackItem': {
             'appInfo': {
-              'appIsDebug': true,
               'appLocale': 'de_DE',
             },
             'buildInfo': {
               'buildVersion': '1.2.3',
               'buildNumber': '543',
               'buildCommit': 'abcdef12',
+              'compilationMode': 'profile',
             },
             'deviceInfo': {
               'padding': [0, 66, 0, 0],
@@ -128,8 +130,10 @@ void main() {
             'type': 'bug',
             'sdkVersion': 12,
             'appInfo': {
-              'appIsDebug': false,
               'appLocale': 'en_US',
+            },
+            'buildInfo': {
+              'compilationMode': 'profile',
             },
             'deviceInfo': {
               'deviceId': '1234',
@@ -160,13 +164,13 @@ void main() {
           'version': 1,
           'feedbackItem': {
             'appInfo': {
-              'appIsDebug': true,
               'appLocale': 'de_DE',
             },
             'buildInfo': {
               'buildVersion': '1.2.3',
               'buildNumber': '543',
               'buildCommit': 'abcdef12',
+              'compilationMode': 'profile',
             },
             'deviceInfo': {
               'padding': [0, 66, 0, 0],
@@ -205,10 +209,11 @@ void main() {
           'type': 'bug',
           'sdkVersion': 12,
           'appInfo': {
-            'appIsDebug': false,
             'appLocale': 'en_US',
           },
-          'buildInfo': {},
+          'buildInfo': {
+            'compilationMode': 'profile',
+          },
           'deviceInfo': {
             'pixelRatio': 1,
             'textScaleFactor': 1.0,

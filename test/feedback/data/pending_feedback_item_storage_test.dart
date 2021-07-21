@@ -77,10 +77,9 @@ void main() {
         () => storage.addPendingItem(
           const PersistedFeedbackItem(
             appInfo: AppInfo(
-              appIsDebug: false,
               appLocale: 'de_DE',
             ),
-            buildInfo: BuildInfo(),
+            buildInfo: BuildInfo(compilationMode: CompilationMode.release),
             deviceId: '1234',
             deviceInfo: DeviceInfo(
               pixelRatio: 1.0,
@@ -122,13 +121,13 @@ void main() {
       final existingItem = json.encode({
         'feedbackItem': {
           'appInfo': {
-            'appIsDebug': true,
             'appLocale': 'de_DE',
           },
           'buildInfo': {
             'buildCommit': 'abcdef12',
             'buildNumber': '543',
             'buildVersion': '1.2.3',
+            'compilationMode': 'release',
           },
           'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'deviceInfo': {
@@ -165,10 +164,10 @@ void main() {
         () => storage.addPendingItem(
           const PersistedFeedbackItem(
             appInfo: AppInfo(
-              appIsDebug: false,
               appLocale: 'de_DE',
             ),
             buildInfo: BuildInfo(
+              compilationMode: CompilationMode.release,
               buildCommit: 'abcdef13',
               buildNumber: '543',
               buildVersion: '1.2.3',
@@ -231,6 +230,7 @@ void main() {
             'buildCommit': 'abcdef12',
             'buildNumber': '543',
             'buildVersion': '1.2.3',
+            'compilationMode': 'release',
           },
           'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'deviceInfo': {
@@ -298,13 +298,13 @@ void main() {
       final item1 = json.encode({
         'feedbackItem': {
           'appInfo': {
-            'appIsDebug': true,
             'appLocale': 'de_DE',
           },
           'buildInfo': {
             'buildCommit': 'abcdef12',
             'buildNumber': '543',
             'buildVersion': '1.2.3',
+            'compilationMode': 'release',
           },
           'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'deviceInfo': {
@@ -343,6 +343,7 @@ void main() {
             'buildCommit': 'abcdef12',
             'buildNumber': '543',
             'buildVersion': '1.2.3',
+            'compilationMode': 'release',
           },
           'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'deviceInfo': {
@@ -444,13 +445,13 @@ void main() {
       final legalItem = json.encode({
         'feedbackItem': {
           'appInfo': {
-            'appIsDebug': true,
             'appLocale': 'de_DE',
           },
           'buildInfo': {
             'buildCommit': 'abcdef12',
             'buildNumber': '543',
             'buildVersion': '1.2.3',
+            'compilationMode': 'release',
           },
           'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'deviceInfo': {
@@ -510,10 +511,9 @@ void main() {
         () => storage.addPendingItem(
           const PersistedFeedbackItem(
             appInfo: AppInfo(
-              appIsDebug: false,
               appLocale: 'de_DE',
             ),
-            buildInfo: BuildInfo(),
+            buildInfo: BuildInfo(compilationMode: CompilationMode.release),
             deviceId: '1234',
             deviceInfo: DeviceInfo(
               pixelRatio: 1.0,

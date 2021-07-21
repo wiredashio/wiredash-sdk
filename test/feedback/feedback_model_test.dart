@@ -92,6 +92,7 @@ void main() {
       buildCommit: 'df321aa',
       buildNumber: '1.2.0',
       buildVersion: '42',
+      compilationMode: CompilationMode.profile,
     ));
     final DeviceIdGenerator deviceIdGenerator = StaticDeviceIdGenerator('125');
     late MockRetryingFeedbackSubmitter mockRetryingFeedbackSubmitter;

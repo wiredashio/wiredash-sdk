@@ -113,6 +113,12 @@ class PendingFeedbackItemParserV1 {
     final buildInfoJson =
         feedbackItemJson['buildInfo'] as Map<dynamic, dynamic>? ?? {};
     final buildInfo = BuildInfo(
+      compilationMode: () {
+        final mode = buildInfoJson['compilationMode'] as String;
+        if (mode == 'debug') return CompilationMode.debug;
+        if (mode == 'profile') return CompilationMode.profile;
+        return CompilationMode.release;
+      }(),
       buildCommit: buildInfoJson['buildCommit'] as String?,
       buildNumber: buildInfoJson['buildNumber'] as String?,
       buildVersion: buildInfoJson['buildVersion'] as String?,
@@ -120,7 +126,6 @@ class PendingFeedbackItemParserV1 {
 
     final appInfoJson = feedbackItemJson['appInfo'] as Map<dynamic, dynamic>;
     final appInfo = AppInfo(
-      appIsDebug: appInfoJson['appIsDebug'] as bool,
       appLocale: appInfoJson['appLocale'] as String,
     );
     final feedbackItem = PersistedFeedbackItem(
@@ -161,10 +166,10 @@ extension SerializePersistedFeedbackItem on PersistedFeedbackItem {
     return SplayTreeMap.from({
       'deviceInfo': deviceInfo.toJson(),
       'appInfo': SplayTreeMap.from({
-        'appIsDebug': appInfo.appIsDebug,
         'appLocale': appInfo.appLocale,
       }),
       'buildInfo': SplayTreeMap.from({
+        'compilationMode': buildInfo.compilationMode.jsonEncode(),
         if (buildInfo.buildVersion != null)
           'buildVersion': buildInfo.buildVersion,
         if (buildInfo.buildNumber != null) 'buildNumber': buildInfo.buildNumber,
@@ -295,5 +300,18 @@ extension on Brightness {
     if (this == Brightness.dark) return 'dark';
     if (this == Brightness.light) return 'light';
     throw 'Unknown brightness value $this';
+  }
+}
+
+extension on CompilationMode {
+  String jsonEncode() {
+    switch (this) {
+      case CompilationMode.release:
+        return 'release';
+      case CompilationMode.profile:
+        return 'profile';
+      case CompilationMode.debug:
+        return 'debug';
+    }
   }
 }

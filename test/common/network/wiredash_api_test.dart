@@ -11,10 +11,11 @@ void main() {
     test('toFeedbackBody()', () {
       final body = const PersistedFeedbackItem(
         appInfo: AppInfo(
-          appIsDebug: true,
           appLocale: 'de_DE',
         ),
-        buildInfo: BuildInfo(),
+        buildInfo: BuildInfo(
+          compilationMode: CompilationMode.debug,
+        ),
         deviceId: "8F821AB6-B3A7-41BA-882E-32D8367243C1",
         deviceInfo: DeviceInfo(
           platformLocale: "en_US",
@@ -46,6 +47,7 @@ void main() {
         {
           'appLocale': 'de_DE',
           'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+          'compilationMode': 'debug',
           'isDebugBuild': true,
           'labels': ['bug'],
           'message': 'Hello world!',
@@ -71,10 +73,11 @@ void main() {
     test('empty email should not be sent as empty string', () {
       final body = const PersistedFeedbackItem(
         appInfo: AppInfo(
-          appIsDebug: true,
           appLocale: 'de_DE',
         ),
-        buildInfo: BuildInfo(),
+        buildInfo: BuildInfo(
+          compilationMode: CompilationMode.release,
+        ),
         deviceId: "8F821AB6-B3A7-41BA-882E-32D8367243C1",
         deviceInfo: DeviceInfo(
           platformLocale: "en_US",
@@ -106,7 +109,8 @@ void main() {
         {
           'appLocale': 'de_DE',
           'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-          'isDebugBuild': true,
+          'compilationMode': 'release',
+          'isDebugBuild': false,
           'labels': ['bug'],
           'message': 'Hello world!',
           'sdkVersion': 1,

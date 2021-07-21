@@ -165,7 +165,9 @@ extension FeedbackBody on PersistedFeedbackItem {
     // Required values
     values.addAll({
       'deviceId': nonNull(deviceId),
-      'isDebugBuild': nonNull(appInfo.appIsDebug),
+      'isDebugBuild':
+          nonNull(buildInfo.compilationMode == CompilationMode.debug),
+      'compilationMode': nonNull(buildInfo.compilationMode).jsonEncode(),
       // TODO return correct label ids
       'labels': [nonNull(type)],
       'message': nonNull(message),
@@ -270,5 +272,18 @@ extension on Brightness {
     if (this == Brightness.dark) return 'dark';
     if (this == Brightness.light) return 'light';
     throw 'Unknown brightness value $this';
+  }
+}
+
+extension on CompilationMode {
+  String jsonEncode() {
+    switch (this) {
+      case CompilationMode.release:
+        return 'release';
+      case CompilationMode.profile:
+        return 'profile';
+      case CompilationMode.debug:
+        return 'debug';
+    }
   }
 }

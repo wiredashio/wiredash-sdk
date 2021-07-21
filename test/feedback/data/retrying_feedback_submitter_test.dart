@@ -118,10 +118,9 @@ void main() {
     test('submit() - persists the feedback item properly', () async {
       const item = PersistedFeedbackItem(
         appInfo: AppInfo(
-          appIsDebug: false,
           appLocale: 'de_DE',
         ),
-        buildInfo: BuildInfo(),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
         deviceId: '1234',
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
@@ -161,10 +160,9 @@ void main() {
         () async {
       const item = PersistedFeedbackItem(
         appInfo: AppInfo(
-          appIsDebug: false,
           appLocale: 'de_DE',
         ),
-        buildInfo: BuildInfo(),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
         deviceId: '1234',
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
@@ -214,10 +212,9 @@ void main() {
         () async {
       const item = PersistedFeedbackItem(
         appInfo: AppInfo(
-          appIsDebug: false,
           appLocale: 'de_DE',
         ),
-        buildInfo: BuildInfo(),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
         deviceId: '1234',
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
@@ -249,10 +246,9 @@ void main() {
         () async {
       const item = PersistedFeedbackItem(
         appInfo: AppInfo(
-          appIsDebug: false,
           appLocale: 'de_DE',
         ),
-        buildInfo: BuildInfo(),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
         deviceId: '1234',
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
@@ -296,10 +292,9 @@ void main() {
         () async {
       const item = PersistedFeedbackItem(
         appInfo: AppInfo(
-          appIsDebug: false,
           appLocale: 'de_DE',
         ),
-        buildInfo: BuildInfo(),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
         deviceId: '1234',
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
@@ -396,10 +391,9 @@ void main() {
         () async {
       const item = PersistedFeedbackItem(
         appInfo: AppInfo(
-          appIsDebug: false,
           appLocale: 'de_DE',
         ),
-        buildInfo: BuildInfo(),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
         deviceId: '1234',
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
@@ -472,10 +466,9 @@ void main() {
         () async {
       const item = PersistedFeedbackItem(
         appInfo: AppInfo(
-          appIsDebug: false,
           appLocale: 'de_DE',
         ),
-        buildInfo: BuildInfo(),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
         deviceId: '1234',
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
@@ -536,10 +529,9 @@ void main() {
         () async {
       const item = PersistedFeedbackItem(
         appInfo: AppInfo(
-          appIsDebug: false,
           appLocale: 'de_DE',
         ),
-        buildInfo: BuildInfo(),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
         deviceId: '1234',
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,

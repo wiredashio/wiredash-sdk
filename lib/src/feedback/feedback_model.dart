@@ -109,7 +109,6 @@ class FeedbackModel with ChangeNotifier {
     final item = PersistedFeedbackItem(
       deviceId: deviceId,
       appInfo: AppInfo(
-        appIsDebug: kDebugMode,
         appLocale: _appLocale,
       ),
       buildInfo: _buildInfoManager.buildInfo,

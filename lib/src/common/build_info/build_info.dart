@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Class retrieving basic build information about the app
 ///
 /// The properties can be defined in Flutter >=1.17 by passing
@@ -30,6 +32,7 @@ class EnvBuildInfo {
 
 class BuildInfo {
   const BuildInfo({
+    required this.compilationMode,
     this.buildVersion,
     this.buildNumber,
     this.buildCommit,
@@ -43,4 +46,39 @@ class BuildInfo {
 
   /// Commit hash of the build
   final String? buildCommit;
+
+  final CompilationMode compilationMode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BuildInfo &&
+          runtimeType == other.runtimeType &&
+          buildVersion == other.buildVersion &&
+          buildNumber == other.buildNumber &&
+          buildCommit == other.buildCommit &&
+          compilationMode == other.compilationMode;
+
+  @override
+  int get hashCode =>
+      buildVersion.hashCode ^
+      buildNumber.hashCode ^
+      buildCommit.hashCode ^
+      compilationMode.hashCode;
+
+  @override
+  String toString() {
+    return 'BuildInfo{compilationMode: $compilationMode, buildVersion: $buildVersion, buildNumber: $buildNumber, buildCommit: $buildCommit}';
+  }
+}
+
+enum CompilationMode {
+  /// [kReleaseMode]
+  release,
+
+  /// [kProfileMode]
+  profile,
+
+  /// [kDebugMode]
+  debug,
 }
