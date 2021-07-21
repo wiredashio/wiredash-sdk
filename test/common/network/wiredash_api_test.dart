@@ -61,7 +61,7 @@ void main() {
           'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
           'windowInsets': [0.0, 0.0, 0.0, 685.0],
           'windowPadding': [0.0, 66.0, 0.0, 0.0],
-          'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
+          // 'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
           'platformOS': 'android',
           'platformOSVersion': 'RSR1.201013.001',
           'userEmail': 'email@example.com'
@@ -121,7 +121,7 @@ void main() {
           'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
           'windowInsets': [0.0, 0.0, 0.0, 685.0],
           'windowPadding': [0.0, 66.0, 0.0, 0.0],
-          'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
+          // 'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
           'platformOS': 'android',
           'platformOSVersion': 'RSR1.201013.001',
         },

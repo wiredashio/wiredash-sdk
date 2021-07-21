@@ -184,7 +184,8 @@ extension FeedbackBody on PersistedFeedbackItem {
       'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
       'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
       'windowPadding': nonNull(deviceInfo.padding).toJson(),
-      'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
+      // TODO add to backend
+      // 'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
       'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode(),
     });
 
