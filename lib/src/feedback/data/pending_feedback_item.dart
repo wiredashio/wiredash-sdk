@@ -137,7 +137,7 @@ class PendingFeedbackItemParserV1 {
       message: feedbackItemJson['message'] as String,
       sdkVersion: feedbackItemJson['sdkVersion'] as int,
       type: feedbackItemJson['type'] as String,
-      user: feedbackItemJson['user'] as String?,
+      userId: feedbackItemJson['userId'] as String?,
     );
 
     return PendingFeedbackItem(
@@ -179,7 +179,7 @@ extension SerializePersistedFeedbackItem on PersistedFeedbackItem {
       if (email != null) 'email': email,
       'message': message,
       'type': type,
-      if (user != null) 'user': user,
+      if (userId != null) 'userId': userId,
       'sdkVersion': sdkVersion,
     });
   }

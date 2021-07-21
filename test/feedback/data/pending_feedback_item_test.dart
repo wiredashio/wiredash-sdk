@@ -41,7 +41,7 @@ void main() {
       email: 'email@example.com',
       message: 'Hello world!',
       type: 'bug',
-      user: 'Testy McTestFace',
+      userId: 'Testy McTestFace',
       sdkVersion: 1,
     ),
   );
@@ -112,7 +112,7 @@ void main() {
             'email': 'email@example.com',
             'message': 'Hello world!',
             'type': 'bug',
-            'user': 'Testy McTestFace',
+            'userId': 'Testy McTestFace',
             'sdkVersion': 1
           },
         }),
@@ -192,7 +192,7 @@ void main() {
             'email': 'email@example.com',
             'message': 'Hello world!',
             'type': 'bug',
-            'user': 'Testy McTestFace',
+            'userId': 'Testy McTestFace',
             'sdkVersion': 1,
           },
         },

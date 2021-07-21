@@ -165,6 +165,7 @@ extension FeedbackBody on PersistedFeedbackItem {
     // Required values
     values.addAll({
       'deviceId': nonNull(deviceId),
+      // TODO remove isDebugBuild and replace it with compilationMode on backend
       'isDebugBuild':
           nonNull(buildInfo.compilationMode == CompilationMode.debug),
       'compilationMode': nonNull(buildInfo.compilationMode).jsonEncode(),
@@ -232,10 +233,9 @@ extension FeedbackBody on PersistedFeedbackItem {
       values.addAll({'userEmail': userEmail});
     }
 
-    // TODO read from what users have set in the sdk
-    const String? userId = null;
-    if (userId != null) {
-      values.addAll({'userId': userId});
+    final String? _userId = userId;
+    if (_userId != null) {
+      values.addAll({'userId': _userId});
     }
 
     return values.map((k, v) => MapEntry(k, v));

@@ -22,7 +22,7 @@ class PersistedFeedbackItem {
     this.email,
     required this.message,
     required this.type,
-    this.user,
+    this.userId,
     this.sdkVersion = wiredashSdkVersion,
   });
 
@@ -33,7 +33,7 @@ class PersistedFeedbackItem {
   final String? email;
   final String message;
   final String type;
-  final String? user;
+  final String? userId;
   final int sdkVersion;
 
   @override
@@ -46,7 +46,7 @@ class PersistedFeedbackItem {
           email == other.email &&
           message == other.message &&
           type == other.type &&
-          user == other.user &&
+          userId == other.userId &&
           sdkVersion == other.sdkVersion;
 
   @override
@@ -56,7 +56,7 @@ class PersistedFeedbackItem {
       email.hashCode ^
       message.hashCode ^
       type.hashCode ^
-      user.hashCode ^
+      userId.hashCode ^
       sdkVersion.hashCode;
 
   @override
@@ -67,7 +67,7 @@ class PersistedFeedbackItem {
         'email: $email, '
         'message: $message, '
         'type: $type, '
-        'user: $user, '
+        'userId: $userId, '
         'sdkVersion: $sdkVersion, '
         '}';
   }

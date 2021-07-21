@@ -139,7 +139,7 @@ void main() {
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
-        user: 'Testy McTestFace',
+        userId: 'Testy McTestFace',
       );
 
       await retryingFeedbackSubmitter.submit(item, kTransparentImage);
@@ -181,7 +181,7 @@ void main() {
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
-        user: 'Testy McTestFace',
+        userId: 'Testy McTestFace',
       );
 
       fakeAsync((async) {
@@ -233,7 +233,7 @@ void main() {
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
-        user: 'Testy McTestFace',
+        userId: 'Testy McTestFace',
       );
 
       await retryingFeedbackSubmitter.submit(item, kTransparentImage);
@@ -267,7 +267,7 @@ void main() {
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
-        user: 'Testy McTestFace',
+        userId: 'Testy McTestFace',
       );
 
       fakeAsync((async) {
@@ -313,7 +313,7 @@ void main() {
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
-        user: 'Testy McTestFace',
+        userId: 'Testy McTestFace',
       );
 
       // Prepopulate storage with 2 existing items.
@@ -412,7 +412,7 @@ void main() {
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
-        user: 'Testy McTestFace',
+        userId: 'Testy McTestFace',
       );
 
       final initialTime = DateTime(2000, 01, 01, 00, 00, 00, 000);
@@ -487,7 +487,7 @@ void main() {
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
-        user: 'Testy McTestFace',
+        userId: 'Testy McTestFace',
       );
 
       final initialTime = DateTime(2000, 01, 01, 00, 00, 00, 000);
@@ -550,7 +550,7 @@ void main() {
         email: 'email@example.com',
         message: 'test post pls ignore',
         type: 'feedback',
-        user: 'Testy McTestFace',
+        userId: 'Testy McTestFace',
       );
 
       fakeAsync((async) {

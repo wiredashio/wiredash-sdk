@@ -116,7 +116,7 @@ class FeedbackModel with ChangeNotifier {
       email: _userManager.userEmail,
       message: feedbackMessage!,
       type: feedbackType.label,
-      user: _userManager.userId,
+      userId: _userManager.userId,
     );
 
     try {

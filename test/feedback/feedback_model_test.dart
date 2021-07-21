@@ -134,7 +134,7 @@ void main() {
 
         final item = lastSubmit['item']! as PersistedFeedbackItem;
         final screenshot = lastSubmit['screenshot']! as Uint8List;
-        expect(item.user, '<user id>');
+        expect(item.userId, '<user id>');
         expect(item.email, '<user email>');
         expect(item.deviceInfo, isNotNull);
         expect(item.appInfo, isNotNull);
