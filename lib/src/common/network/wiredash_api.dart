@@ -253,6 +253,7 @@ extension on WindowPadding {
 }
 
 extension on Rect {
+  // ignore: unused_element
   List<double> toJson() {
     return [left, top, right, bottom];
   }
