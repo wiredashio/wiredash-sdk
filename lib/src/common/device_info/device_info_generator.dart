@@ -1,4 +1,4 @@
-import 'dart:ui' show SingletonFlutterWindow;
+import 'dart:ui' show Locale, SingletonFlutterWindow;
 
 import 'package:wiredash/src/common/device_info/device_info.dart';
 
@@ -17,8 +17,15 @@ abstract class DeviceInfoGenerator {
 
   /// Collection of all [DeviceInfo] shared between all platforms
   static DeviceInfo baseDeviceInfo(SingletonFlutterWindow window) {
+    Locale windowLocale() {
+      // Flutter 1.26 (2.0.1) returns `Locale?`, 1.27 `Locale`
+      // ignore: unnecessary_nullable_for_final_variable_declarations
+      final Locale? locale = window.locale;
+      return locale ?? const Locale('en', 'US');
+    }
+
     return DeviceInfo(
-      platformLocale: window.locale.toLanguageTag(),
+      platformLocale: windowLocale().toLanguageTag(),
       platformSupportedLocales:
           window.locales.map((it) => it.toLanguageTag()).toList(),
       padding: window.padding,
