@@ -100,6 +100,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
     while (true) {
       attempt++;
       try {
+        // TODO don't upload images again when submission fails
         final ImageBlob? imageUri = await () async {
           final screenshotPath = item.screenshotPath;
           if (screenshotPath != null) {
@@ -128,13 +129,11 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
             'Wiredash project configuration is wrong, next retry after next app start');
         break;
       } on WiredashApiException catch (e, stack) {
-        if (e.message != null &&
-            e.message!.contains("fails because") &&
-            e.message!.contains("is required")) {
-          // some required property is missing. The item will never be delivered
+        if (e.response?.statusCode == 400) {
+          // The request is invalid. The feedback will never be delivered
           // to the server, therefore discard it.
           reportWiredashError(e, stack,
-              'Feedback has missing properties and can not be submitted to server');
+              'Feedback has missing properties and can not be submitted to server. Will be discarded');
           await _pendingFeedbackItemStorage.clearPendingItem(item.id);
           break;
         }

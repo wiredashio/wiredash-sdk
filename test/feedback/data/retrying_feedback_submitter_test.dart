@@ -557,7 +557,7 @@ void main() {
         mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
           final response = Response(
               '{"message": "child "deviceInfo" fails because [child "platformOS" fails because ["platformOS" is required]]"}',
-              401);
+              400);
           throw WiredashApiException(response: response);
         };
 
