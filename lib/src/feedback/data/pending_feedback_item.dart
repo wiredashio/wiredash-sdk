@@ -160,8 +160,7 @@ extension SerializePendingFeedbackItem on PendingFeedbackItem {
   }
 }
 
-/// Visible for testing
-extension SerializePersistedFeedbackItem on PersistedFeedbackItem {
+extension _SerializePersistedFeedbackItem on PersistedFeedbackItem {
   Map<String, dynamic> toJson() {
     return SplayTreeMap.from({
       'deviceInfo': deviceInfo.toJson(),
@@ -185,8 +184,7 @@ extension SerializePersistedFeedbackItem on PersistedFeedbackItem {
   }
 }
 
-/// Visible for testing
-extension SerializeDeviceInfo on DeviceInfo {
+extension _SerializeDeviceInfo on DeviceInfo {
   Map<String, dynamic> toJson() {
     final values = SplayTreeMap<String, dynamic>.from({});
 
