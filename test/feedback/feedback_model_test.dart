@@ -13,6 +13,7 @@ import 'package:wiredash/src/common/build_info/device_id_generator.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
+import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
@@ -79,8 +80,12 @@ void main() {
       platformLocale: "en_US",
       platformSupportedLocales: ['en_US', 'de_DE'],
       platformBrightness: Brightness.dark,
-      gestureInsets: [0, 0, 0, 0],
-      physicalSize: [800, 1200],
+      gestureInsets:
+          WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+      padding: WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+      viewInsets: WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+      physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+      physicalSize: Size(800, 1200),
     ));
     final StaticBuildInfoManager buildInfoManager =
         StaticBuildInfoManager(const BuildInfo(

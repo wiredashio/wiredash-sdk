@@ -1,4 +1,7 @@
+// ignore_for_file: avoid_redundant_argument_values
+
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:fake_async/fake_async.dart';
 import 'package:file/file.dart';
@@ -126,8 +129,13 @@ void main() {
           platformLocale: "en_US",
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
-          gestureInsets: [0, 0, 0, 0],
-          physicalSize: [800, 1200],
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+          physicalSize: Size(800, 1200),
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -164,8 +172,13 @@ void main() {
           platformLocale: "en_US",
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
-          gestureInsets: [0, 0, 0, 0],
-          physicalSize: [800, 1200],
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+          physicalSize: Size(800, 1200),
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -212,8 +225,13 @@ void main() {
           platformLocale: "en_US",
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
-          gestureInsets: [0, 0, 0, 0],
-          physicalSize: [800, 1200],
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+          physicalSize: Size(800, 1200),
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -242,8 +260,13 @@ void main() {
           platformLocale: "en_US",
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
-          gestureInsets: [0, 0, 0, 0],
-          physicalSize: [800, 1200],
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+          physicalSize: Size(800, 1200),
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -284,8 +307,13 @@ void main() {
           platformLocale: "en_US",
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
-          gestureInsets: [0, 0, 0, 0],
-          physicalSize: [800, 1200],
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+          physicalSize: Size(800, 1200),
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -379,8 +407,13 @@ void main() {
           platformLocale: "en_US",
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
-          gestureInsets: [0, 0, 0, 0],
-          physicalSize: [800, 1200],
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+          physicalSize: Size(800, 1200),
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -450,8 +483,13 @@ void main() {
           platformLocale: "en_US",
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
-          gestureInsets: [0, 0, 0, 0],
-          physicalSize: [800, 1200],
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+          physicalSize: Size(800, 1200),
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -509,8 +547,13 @@ void main() {
           platformLocale: "en_US",
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
-          gestureInsets: [0, 0, 0, 0],
-          physicalSize: [800, 1200],
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+          physicalSize: Size(800, 1200),
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
@@ -539,5 +582,3 @@ void main() {
     });
   });
 }
-
-// ignore_for_file: avoid_redundant_argument_values

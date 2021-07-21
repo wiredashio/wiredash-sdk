@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:wiredash/src/common/build_info/app_info.dart';
 import 'package:wiredash/src/common/build_info/build_info.dart';
@@ -71,39 +72,42 @@ class PendingFeedbackItemParserV1 {
 
     final deviceInfoJson =
         feedbackItemJson['deviceInfo'] as Map<dynamic, dynamic>;
+    final physicalSize = deviceInfoJson['physicalSize'] as List<dynamic>;
+    final physicalGeometry =
+        deviceInfoJson['physicalGeometry'] as List<dynamic>;
     final deviceInfo = DeviceInfo(
-      gestureInsets: (deviceInfoJson['gestureInsets'] as List<dynamic>?)
-          ?.cast<num>()
-          .map((i) => i.toDouble())
-          .toList(growable: false),
+      gestureInsets: WiredashWindowPadding.fromJson(
+          deviceInfoJson['gestureInsets'] as List<dynamic>),
       platformLocale: deviceInfoJson['platformLocale'] as String,
       platformSupportedLocales:
           (deviceInfoJson['platformSupportedLocales'] as List<dynamic>)
               .cast<String>(),
-      padding: (deviceInfoJson['padding'] as List<dynamic>?)
-          ?.cast<num>()
-          .map((i) => i.toDouble())
-          .toList(growable: false),
+      padding: WiredashWindowPadding.fromJson(
+          deviceInfoJson['padding'] as List<dynamic>),
       platformBrightness: () {
         final value = deviceInfoJson['platformBrightness'];
         if (value == 'light') return Brightness.light;
         if (value == 'dark') return Brightness.dark;
         throw 'Unknown brightness value $value';
       }(),
-      physicalSize: (deviceInfoJson['physicalSize'] as List<dynamic>)
-          .cast<num>()
-          .map((i) => i.toDouble())
-          .toList(growable: false),
+      physicalSize: Size(
+        (physicalSize[0] as num).toDouble(),
+        (physicalSize[1] as num).toDouble(),
+      ),
       pixelRatio: (deviceInfoJson['pixelRatio'] as num).toDouble(),
       platformOS: deviceInfoJson['platformOS'] as String?,
       platformOSVersion: deviceInfoJson['platformOSBuild'] as String?,
       platformVersion: deviceInfoJson['platformVersion'] as String?,
       textScaleFactor: (deviceInfoJson['textScaleFactor'] as num).toDouble(),
-      viewInsets: (deviceInfoJson['viewInsets'] as List<dynamic>?)
-          ?.cast<num>()
-          .map((i) => i.toDouble())
-          .toList(growable: false),
+      viewInsets: WiredashWindowPadding.fromJson(
+          deviceInfoJson['viewInsets'] as List<dynamic>),
       userAgent: deviceInfoJson['userAgent'] as String?,
+      physicalGeometry: Rect.fromLTRB(
+        (physicalGeometry[0] as num).toDouble(),
+        (physicalGeometry[1] as num).toDouble(),
+        (physicalGeometry[2] as num).toDouble(),
+        (physicalGeometry[3] as num).toDouble(),
+      ),
     );
 
     final buildInfoJson =
@@ -182,18 +186,13 @@ extension SerializeDeviceInfo on DeviceInfo {
     final values = SplayTreeMap<String, dynamic>.from({});
 
     values['platformLocale'] = platformLocale;
-
     values['platformSupportedLocales'] = platformSupportedLocales;
-
-    if (padding != null && padding!.isNotEmpty) {
-      values['padding'] = padding;
-    }
-
-    if (physicalSize.isNotEmpty) {
-      values['physicalSize'] = physicalSize;
-    }
-
+    values['padding'] = padding.toJson();
+    values['physicalSize'] = physicalSize.toJson();
+    values['physicalGeometry'] = physicalGeometry.toJson();
     values['pixelRatio'] = pixelRatio;
+    values['platformBrightness'] = platformBrightness.jsonEncode();
+    values['textScaleFactor'] = textScaleFactor;
 
     if (platformOS != null) {
       values['platformOS'] = platformOS;
@@ -207,26 +206,94 @@ extension SerializeDeviceInfo on DeviceInfo {
       values['platformVersion'] = platformVersion;
     }
 
-    values['textScaleFactor'] = textScaleFactor;
+    values['viewInsets'] = viewInsets.toJson();
 
-    if (viewInsets != null && viewInsets!.isNotEmpty) {
-      values['viewInsets'] = viewInsets;
-    }
-
-    if (gestureInsets != null && gestureInsets!.isNotEmpty) {
-      values['gestureInsets'] = gestureInsets;
-    }
+    values['gestureInsets'] = gestureInsets.toJson();
 
     if (userAgent != null) {
       values['userAgent'] = userAgent;
     }
 
-    values['platformBrightness'] = () {
-      if (platformBrightness == Brightness.dark) return 'dark';
-      if (platformBrightness == Brightness.light) return 'light';
-      throw 'Unknown brightness value $platformBrightness';
-    }();
-
     return values;
+  }
+}
+
+/// [WindowPadding] doesn't offer a public constructor
+class WiredashWindowPadding implements WindowPadding {
+  const WiredashWindowPadding({
+    required this.left,
+    required this.top,
+    required this.right,
+    required this.bottom,
+  });
+
+  factory WiredashWindowPadding.fromJson(List json) {
+    return WiredashWindowPadding(
+      left: (json[0] as num).toDouble(),
+      top: (json[1] as num).toDouble(),
+      right: (json[2] as num).toDouble(),
+      bottom: (json[3] as num).toDouble(),
+    );
+  }
+
+  /// The distance from the left edge to the first unpadded pixel, in physical pixels.
+  @override
+  final double left;
+
+  /// The distance from the top edge to the first unpadded pixel, in physical pixels.
+  @override
+  final double top;
+
+  /// The distance from the right edge to the first unpadded pixel, in physical pixels.
+  @override
+  final double right;
+
+  /// The distance from the bottom edge to the first unpadded pixel, in physical pixels.
+  @override
+  final double bottom;
+
+  @override
+  String toString() {
+    return 'WiredashWindowPadding{left: $left, top: $top, right: $right, bottom: $bottom}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WiredashWindowPadding &&
+          runtimeType == other.runtimeType &&
+          left == other.left &&
+          top == other.top &&
+          right == other.right &&
+          bottom == other.bottom;
+
+  @override
+  int get hashCode =>
+      left.hashCode ^ top.hashCode ^ right.hashCode ^ bottom.hashCode;
+}
+
+extension on WindowPadding {
+  List<double> toJson() {
+    return [left, top, right, bottom];
+  }
+}
+
+extension on Rect {
+  List<double> toJson() {
+    return [left, top, right, bottom];
+  }
+}
+
+extension on Size {
+  List<double> toJson() {
+    return [width, height];
+  }
+}
+
+extension on Brightness {
+  String jsonEncode() {
+    if (this == Brightness.dark) return 'dark';
+    if (this == Brightness.light) return 'light';
+    throw 'Unknown brightness value $this';
   }
 }

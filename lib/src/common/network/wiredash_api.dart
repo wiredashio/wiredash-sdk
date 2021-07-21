@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
@@ -165,79 +166,53 @@ extension FeedbackBody on PersistedFeedbackItem {
     values.addAll({
       'deviceId': nonNull(deviceId),
       'isDebugBuild': nonNull(appInfo.appIsDebug),
-      'labels': [
-        // TODO
-      ],
+      // TODO return correct label ids
+      'labels': [nonNull(type)],
       'message': nonNull(message),
       'sdkVersion': nonNull(sdkVersion),
       'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
-      'windowSize': nonNull(deviceInfo.physicalSize),
+      'windowSize': nonNull(deviceInfo.physicalSize).toJson(),
       'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
     });
 
-    // TODO make 'em required on backend?
+    // TODO double check on min Flutter version
+    // Not yet required but we can trust those are non null
     values.addAll({
       'appLocale': nonNull(appInfo.appLocale),
       'platformLocale': nonNull(deviceInfo.platformLocale),
       'platformSupportedLocales': nonNull(deviceInfo.platformSupportedLocales),
+      'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
+      'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
+      'windowPadding': nonNull(deviceInfo.padding).toJson(),
+      'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
+      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode(),
     });
 
-    // User provided commit hash (String) (dart-define)
     final buildCommit = buildInfo.buildCommit;
     if (buildCommit != null) {
       values.addAll({'buildCommit': buildCommit});
     }
 
-    // User provided build number (int as String) (dart-define)
     final buildNumber = buildInfo.buildNumber;
     if (buildNumber != null) {
       values.addAll({'buildNumber': buildNumber});
     }
-    // User provided build version (semver) (dart-define)
+
     final buildVersion = buildInfo.buildVersion;
     if (buildVersion != null) {
       values.addAll({'buildVersion': buildVersion});
     }
 
-    // TODO make required?
-    // system brightness
-    values.addAll({
-      'platformBrightness': () {
-        final brightness = nonNull(deviceInfo.platformBrightness);
-        if (brightness == Brightness.dark) return 'dark';
-        if (brightness == Brightness.light) return 'light';
-        throw 'Unknown brightness value $brightness';
-      }()
-    });
-
-    // The version of the Dart runtime.
     final platformDartVersion = deviceInfo.platformVersion;
     if (platformDartVersion != null) {
       values.addAll({'platformDartVersion': platformDartVersion});
     }
 
-    final platformGestureInsets = deviceInfo.gestureInsets;
-    if (platformGestureInsets != null) {
-      values.addAll({'platformGestureInsets': platformGestureInsets});
-    }
-
-    final windowInsets = deviceInfo.viewInsets;
-    if (windowInsets != null) {
-      values.addAll({'windowInsets': windowInsets});
-    }
-
-    final windowPadding = deviceInfo.padding;
-    if (windowPadding != null) {
-      values.addAll({'windowPadding': windowPadding});
-    }
-
-    // OS name
     final platformOS = deviceInfo.platformOS;
     if (platformOS != null) {
       values.addAll({'platformOS': platformOS});
     }
 
-    // OS version (semver)
     final platformOSVersion = deviceInfo.platformOSVersion;
     if (platformOSVersion != null) {
       values.addAll({'platformOSVersion': platformOSVersion});
@@ -255,7 +230,7 @@ extension FeedbackBody on PersistedFeedbackItem {
     }
 
     // TODO read from what users have set in the sdk
-    final String? userId = null;
+    const String? userId = null;
     if (userId != null) {
       values.addAll({'userId': userId});
     }
@@ -268,4 +243,30 @@ extension FeedbackBody on PersistedFeedbackItem {
 /// when [value] becomes nullable
 T nonNull<T extends Object>(T value) {
   return value;
+}
+
+extension on WindowPadding {
+  List<double> toJson() {
+    return [left, top, right, bottom];
+  }
+}
+
+extension on Rect {
+  List<double> toJson() {
+    return [left, top, right, bottom];
+  }
+}
+
+extension on Size {
+  List<double> toJson() {
+    return [width, height];
+  }
+}
+
+extension on Brightness {
+  String jsonEncode() {
+    if (this == Brightness.dark) return 'dark';
+    if (this == Brightness.light) return 'light';
+    throw 'Unknown brightness value $this';
+  }
 }

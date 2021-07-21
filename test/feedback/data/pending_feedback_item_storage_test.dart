@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -87,8 +88,14 @@ void main() {
               platformLocale: "en_US",
               platformSupportedLocales: ['en_US', 'de_DE'],
               platformBrightness: Brightness.dark,
-              gestureInsets: [0, 0, 0, 0],
-              physicalSize: [800, 1200],
+              gestureInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              padding:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              viewInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+              physicalSize: Size(800, 1200),
             ),
             email: 'email@example.com',
             message: 'Hello world!',
@@ -127,6 +134,7 @@ void main() {
           'deviceInfo': {
             'gestureInsets': [0.0, 0.0, 0.0, 0.0],
             'padding': [0.0, 66.0, 0.0, 0.0],
+            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
             'platformBrightness': 'dark',
@@ -172,8 +180,14 @@ void main() {
               platformLocale: "en_US",
               platformSupportedLocales: ['en_US', 'de_DE'],
               platformBrightness: Brightness.dark,
-              gestureInsets: [0, 0, 0, 0],
-              physicalSize: [800, 1200],
+              gestureInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              padding:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              viewInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+              physicalSize: Size(800, 1200),
             ),
             email: 'email@example.com',
             message: 'Hello world!',
@@ -223,6 +237,7 @@ void main() {
             'gestureInsets': [0.0, 0.0, 0.0, 0.0],
             'padding': [0.0, 66.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
+            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'pixelRatio': 2.75,
             'platformBrightness': 'dark',
             'platformLocale': "en_US",
@@ -295,6 +310,7 @@ void main() {
           'deviceInfo': {
             'gestureInsets': [0.0, 0.0, 0.0, 0.0],
             'padding': [0.0, 66.0, 0.0, 0.0],
+            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
             'platformBrightness': 'dark',
@@ -333,6 +349,7 @@ void main() {
             'gestureInsets': [0.0, 0.0, 0.0, 0.0],
             'padding': [0.0, 66.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
+            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'pixelRatio': 2.75,
             'platformBrightness': 'dark',
             'platformLocale': "en_US",
@@ -439,6 +456,7 @@ void main() {
           'deviceInfo': {
             'gestureInsets': [0.0, 0.0, 0.0, 0.0],
             'padding': [0.0, 66.0, 0.0, 0.0],
+            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
             'platformBrightness': 'dark',
@@ -503,8 +521,14 @@ void main() {
               platformLocale: "en_US",
               platformSupportedLocales: ['en_US', 'de_DE'],
               platformBrightness: Brightness.dark,
-              gestureInsets: [0.0, 0.0, 0.0, 0.0],
-              physicalSize: [800, 1200],
+              gestureInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              padding:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              viewInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+              physicalSize: Size(800, 1200),
             ),
             email: 'email@example.com',
             message: 'Hello world!',

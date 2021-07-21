@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:test/test.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
@@ -16,9 +18,6 @@ void main() {
           buildVersion: '1.2.3', buildNumber: '543', buildCommit: 'abcdef12'),
       deviceId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
       deviceInfo: DeviceInfo(
-        padding: [0, 66, 0, 0],
-        physicalSize: [1080, 2088],
-        viewInsets: [0, 0, 0, 685],
         pixelRatio: 2.75,
         platformOS: "android",
         platformOSVersion: "RSR1.201013.001",
@@ -28,7 +27,13 @@ void main() {
         platformLocale: "en_US",
         platformSupportedLocales: ['en_US', 'de_DE'],
         platformBrightness: Brightness.dark,
-        gestureInsets: [0, 0, 0, 0],
+        gestureInsets:
+            WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+        padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+        viewInsets:
+            WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+        physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+        physicalSize: Size(1080, 2088),
       ),
       email: 'email@example.com',
       message: 'Hello world!',
@@ -53,7 +58,13 @@ void main() {
         platformLocale: "en_US",
         platformSupportedLocales: ['en_US', 'de_DE'],
         platformBrightness: Brightness.dark,
-        physicalSize: [1280, 720],
+        gestureInsets:
+            WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+        padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+        viewInsets:
+            WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+        physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+        physicalSize: Size(1280, 720),
       ),
       message: 'Hello world!',
       type: 'bug',
@@ -80,7 +91,6 @@ void main() {
             'deviceInfo': {
               'padding': [0, 66, 0, 0],
               'physicalSize': [1080, 2088],
-              'viewInsets': [0, 0, 0, 685],
               'appIsDebug': true,
               'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
               'pixelRatio': 2.75,
@@ -93,6 +103,11 @@ void main() {
               'platformSupportedLocales': ['en_US', 'de_DE'],
               'platformBrightness': 'dark',
               'gestureInsets': [0, 0, 0, 0],
+              'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
+              'gestureInsets': [0.0, 0.0, 0.0, 0.0],
+              'viewInsets': [0, 0, 0, 685],
+              'padding': [0.0, 66, 0, 0.0],
+              'physicalSize': [1080, 2088],
             },
             'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
             'email': 'email@example.com',
@@ -128,6 +143,11 @@ void main() {
               'platformSupportedLocales': ['en_US', 'de_DE'],
               'platformBrightness': 'dark',
               'physicalSize': [1280, 720],
+              'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
+              'gestureInsets': [0.0, 0.0, 0.0, 0.0],
+              'viewInsets': [0.0, 0.0, 0.0, 685.0],
+              'padding': [0.0, 66, 0, 0.0],
+              'physicalSize': [1280, 720.0],
             }
           },
         }),
@@ -166,6 +186,10 @@ void main() {
               'platformVersion':
                   '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
               'textScaleFactor': 1,
+              'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
+              'gestureInsets': [0.0, 0.0, 0.0, 0.0],
+              'padding': [0.0, 66, 0, 0.0],
+              'physicalSize': [1080, 2088],
             },
             'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
             'email': 'email@example.com',
@@ -198,7 +222,11 @@ void main() {
             'platformLocale': 'en_US',
             'platformSupportedLocales': ['en_US', 'de_DE'],
             'platformBrightness': 'dark',
-            'physicalSize': [1280, 720],
+            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
+            'gestureInsets': [0.0, 0.0, 0.0, 0.0],
+            'viewInsets': [0.0, 0.0, 0.0, 685],
+            'padding': [0.0, 66, 0, 0.0],
+            'physicalSize': [1280.0, 720.0],
           }
         },
       });
