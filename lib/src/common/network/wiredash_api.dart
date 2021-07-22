@@ -9,12 +9,12 @@ import 'package:wiredash/src/version.dart';
 
 /// API client to communicate with the Wiredash servers
 class WiredashApi {
-  WiredashApi(
-      {required Client httpClient,
-      required String projectId,
-      required String secret,
-      required Future<String> Function() deviceIdProvider})
-      : _httpClient = httpClient,
+  WiredashApi({
+    required Client httpClient,
+    required String projectId,
+    required String secret,
+    required Future<String> Function() deviceIdProvider,
+  })  : _httpClient = httpClient,
         _projectId = projectId,
         _secret = secret,
         _deviceIdProvider = deviceIdProvider;
