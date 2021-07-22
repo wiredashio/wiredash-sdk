@@ -23,6 +23,10 @@ class DeviceIdGenerator {
     if (future != null) {
       return future;
     }
+
+    // caching the Future instead of the actual deviceId to make sure concurrent
+    // calls to deviceId(), before the future completes, returns the same value
+    // and doesn't generate the deviceId multiple times
     _deviceIdFuture = _loadDeviceID();
     return _deviceIdFuture!;
   }
