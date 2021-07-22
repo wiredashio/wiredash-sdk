@@ -3,13 +3,15 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/capture/capture.dart';
+import 'package:wiredash/src/common/build_info/app_info.dart';
+import 'package:wiredash/src/common/build_info/build_info_manager.dart';
+import 'package:wiredash/src/common/build_info/device_id_generator.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/dismissible_page_route.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
-
-import 'data/feedback_item.dart';
-import 'feedback_sheet.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
+import 'package:wiredash/src/feedback/feedback_sheet.dart';
 
 class FeedbackModel with ChangeNotifier {
   FeedbackModel(
@@ -18,6 +20,8 @@ class FeedbackModel with ChangeNotifier {
     this._userManager,
     this._feedbackSubmitter,
     this._deviceInfoGenerator,
+    this._buildInfoManager,
+    this._deviceIdGenerator,
   );
 
   final GlobalKey<CaptureState> _captureKey;
@@ -25,6 +29,17 @@ class FeedbackModel with ChangeNotifier {
   final UserManager _userManager;
   final FeedbackSubmitter _feedbackSubmitter;
   final DeviceInfoGenerator _deviceInfoGenerator;
+  final BuildInfoManager _buildInfoManager;
+  final DeviceIdGenerator _deviceIdGenerator;
+
+  String _appLocale = 'en_US';
+
+  String get appLocale => _appLocale;
+
+  set appLocale(String appLocale) {
+    _appLocale = appLocale;
+    notifyListeners();
+  }
 
   FeedbackType feedbackType = FeedbackType.bug;
   String? feedbackMessage;
@@ -89,12 +104,19 @@ class FeedbackModel with ChangeNotifier {
     loading = true;
     notifyListeners();
 
-    final item = FeedbackItem(
+    final deviceId = await _deviceIdGenerator.deviceId();
+
+    final item = PersistedFeedbackItem(
+      deviceId: deviceId,
+      appInfo: AppInfo(
+        appLocale: _appLocale,
+      ),
+      buildInfo: _buildInfoManager.buildInfo,
       deviceInfo: _deviceInfoGenerator.generate(),
       email: _userManager.userEmail,
       message: feedbackMessage!,
       type: feedbackType.label,
-      user: _userManager.userId,
+      userId: _userManager.userId,
     );
 
     try {

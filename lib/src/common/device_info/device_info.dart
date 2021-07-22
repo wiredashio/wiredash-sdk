@@ -1,33 +1,72 @@
+import 'dart:ui' show Brightness, WindowPadding;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+
+export 'dart:ui' show Brightness;
 
 class DeviceInfo {
-  final bool? appIsDebug;
-  final String? appVersion;
-  final String? buildNumber;
-  final String? buildCommit;
-  final String? deviceId;
-  final String? locale;
-  final List<double>? padding;
-  final List<double>? physicalSize;
-  final double? pixelRatio;
+  /// The primary locale enabled on the device
+  ///
+  /// https://api.flutter.dev/flutter/dart-ui/SingletonFlutterWindow/locale.html
+  final String platformLocale;
+
+  /// Locales the user enabled on their device
+  ///
+  /// https://api.flutter.dev/flutter/dart-ui/SingletonFlutterWindow/locales.html
+  final List<String> platformSupportedLocales;
+
+  /// Area not covered with system UI
+  ///
+  /// https://api.flutter.dev/flutter/dart-ui/FlutterView/padding.html
+  final WindowPadding padding;
+
+  /// The dimensions of the rectangle into which the scene rendered in this view will be drawn on the screen, in physical pixels.
+  ///
+  /// https://api.flutter.dev/flutter/dart-ui/FlutterView/physicalSize.html
+  final Size physicalSize;
+
+  /// The dimensions and location of the rectangle into which the scene rendered in this view will be drawn on the screen, in physical pixels.
+  ///
+  /// https://api.flutter.dev/flutter/dart-ui/FlutterView/physicalGeometry.html
+  final Rect physicalGeometry;
+
+  /// The number of device pixels for each logical pixel for the screen this view is displayed on.
+  ///
+  /// https://api.flutter.dev/flutter/dart-ui/FlutterView/devicePixelRatio.html
+  final double pixelRatio;
+
+  /// Is the system dark or light themed?
+  ///
+  /// https://api.flutter.dev/flutter/dart-ui/SingletonFlutterWindow/platformBrightness.html
+  final Brightness platformBrightness;
 
   /// A string representing the operating system or platform.
   ///
-  /// Platform.operatingSystem
+  /// https://api.flutter.dev/flutter/package-platform_platform/LocalPlatform/operatingSystem.html
   final String? platformOS;
 
   /// A string representing the version of the operating system or platform.
   ///
-  /// Platform.operatingSystemVersion
-  final String? platformOSBuild;
+  /// https://api.flutter.dev/flutter/package-platform_platform/LocalPlatform/operatingSystemVersion.html
+  final String? platformOSVersion;
 
   /// The version of the current Dart runtime.
   ///
-  /// Platform.version
+  /// https://api.flutter.dev/flutter/package-platform_platform/LocalPlatform/version.html
   final String? platformVersion;
 
-  final double? textScaleFactor;
-  final List<double>? viewInsets;
+  /// Text scale factor, default 1.0
+  ///
+  /// https://api.flutter.dev/flutter/dart-ui/SingletonFlutterWindow/textScaleFactor.html
+  final double textScaleFactor;
+
+  /// https://api.flutter.dev/flutter/dart-ui/FlutterView/viewInsets.html
+  final WindowPadding viewInsets;
+
+  /// Area where Android does not intercept i.e. for the back button gesture (swipe from the side of the screen)
+  ///
+  /// https://api.flutter.dev/flutter/dart-ui/FlutterView/systemGestureInsets.html
+  final WindowPadding gestureInsets;
 
   /// When in web, the full user agent String of the browser
   ///
@@ -35,77 +74,75 @@ class DeviceInfo {
   final String? userAgent;
 
   const DeviceInfo({
-    this.appIsDebug,
-    this.appVersion,
-    this.buildNumber,
-    this.buildCommit,
-    this.deviceId,
-    this.locale,
-    this.padding = const [],
-    this.physicalSize = const [],
-    this.pixelRatio,
+    required this.platformLocale,
+    required this.platformSupportedLocales,
+    required this.padding,
+    required this.physicalSize,
+    required this.physicalGeometry,
+    required this.pixelRatio,
     this.platformOS,
-    this.platformOSBuild,
+    this.platformOSVersion,
     this.platformVersion,
-    this.textScaleFactor,
-    this.viewInsets = const [],
+    required this.textScaleFactor,
+    required this.viewInsets,
     this.userAgent,
+    required this.platformBrightness,
+    required this.gestureInsets,
   });
 
   DeviceInfo copyWith({
-    bool? appIsDebug,
-    String? appVersion,
-    String? buildNumber,
-    String? buildCommit,
     String? deviceId,
-    String? locale,
-    List<double>? padding,
-    List<double>? physicalSize,
+    String? platformLocale,
+    List<String>? platformSupportedLocales,
+    WindowPadding? padding,
+    Size? physicalSize,
+    Rect? physicalGeometry,
     double? pixelRatio,
     String? platformOS,
-    String? platformOSBuild,
+    String? platformOSVersion,
     String? platformVersion,
     double? textScaleFactor,
-    List<double>? viewInsets,
+    WindowPadding? viewInsets,
     String? userAgent,
+    Brightness? platformBrightness,
+    WindowPadding? gestureInsets,
   }) {
     return DeviceInfo(
-      appIsDebug: appIsDebug ?? this.appIsDebug,
-      appVersion: appVersion ?? this.appVersion,
-      buildNumber: buildNumber ?? this.buildNumber,
-      buildCommit: buildCommit ?? this.buildCommit,
-      deviceId: deviceId ?? this.deviceId,
-      locale: locale ?? this.locale,
+      platformLocale: platformLocale ?? this.platformLocale,
+      platformSupportedLocales:
+          platformSupportedLocales ?? this.platformSupportedLocales,
       padding: padding ?? this.padding,
       physicalSize: physicalSize ?? this.physicalSize,
+      physicalGeometry: physicalGeometry ?? this.physicalGeometry,
       pixelRatio: pixelRatio ?? this.pixelRatio,
       platformOS: platformOS ?? this.platformOS,
-      platformOSBuild: platformOSBuild ?? this.platformOSBuild,
+      platformOSVersion: platformOSVersion ?? this.platformOSVersion,
       platformVersion: platformVersion ?? this.platformVersion,
       textScaleFactor: textScaleFactor ?? this.textScaleFactor,
       viewInsets: viewInsets ?? this.viewInsets,
       userAgent: userAgent ?? this.userAgent,
+      platformBrightness: platformBrightness ?? this.platformBrightness,
+      gestureInsets: gestureInsets ?? this.gestureInsets,
     );
   }
 
   @override
   String toString() {
     return 'DeviceInfo{'
-        'appIsDebug: $appIsDebug, '
-        'appVersion: $appVersion, '
-        'buildNumber: $buildNumber, '
-        'buildCommit: $buildCommit, '
-        'deviceId: $deviceId, '
-        'locale: $locale, '
+        'platformLocale: $platformLocale, '
+        'platformSupportedLocales: $platformSupportedLocales, '
         'padding: $padding, '
         'physicalSize: $physicalSize, '
+        'physicalGeometry: $physicalGeometry, '
         'pixelRatio: $pixelRatio, '
         'platformOS: $platformOS, '
-        'platformOSBuild: $platformOSBuild, '
+        'platformOSBuild: $platformOSVersion, '
         'platformVersion: $platformVersion, '
         'textScaleFactor: $textScaleFactor, '
         'viewInsets: $viewInsets, '
         'userAgent: $userAgent, '
+        'platformBrightness: $platformBrightness, '
+        'gestureInsets: $gestureInsets, '
         '}';
   }
 
@@ -114,134 +151,36 @@ class DeviceInfo {
       identical(this, other) ||
       (other is DeviceInfo &&
           runtimeType == other.runtimeType &&
-          appIsDebug == other.appIsDebug &&
-          appVersion == other.appVersion &&
-          buildNumber == other.buildNumber &&
-          buildCommit == other.buildCommit &&
-          deviceId == other.deviceId &&
-          locale == other.locale &&
-          listEquals(padding, other.padding) &&
-          listEquals(physicalSize, other.physicalSize) &&
+          platformLocale == other.platformLocale &&
+          listEquals(
+              platformSupportedLocales, other.platformSupportedLocales) &&
+          padding == other.padding &&
+          physicalSize == other.physicalSize &&
+          physicalGeometry == other.physicalGeometry &&
           pixelRatio == other.pixelRatio &&
           platformOS == other.platformOS &&
-          platformOSBuild == other.platformOSBuild &&
+          platformOSVersion == other.platformOSVersion &&
           platformVersion == other.platformVersion &&
           textScaleFactor == other.textScaleFactor &&
-          listEquals(viewInsets, other.viewInsets) &&
-          userAgent == other.userAgent);
+          viewInsets == other.viewInsets &&
+          userAgent == other.userAgent &&
+          platformBrightness == other.platformBrightness &&
+          gestureInsets == other.gestureInsets);
 
   @override
   int get hashCode =>
-      appIsDebug.hashCode ^
-      appVersion.hashCode ^
-      buildNumber.hashCode ^
-      buildCommit.hashCode ^
-      deviceId.hashCode ^
-      locale.hashCode ^
+      platformLocale.hashCode ^
+      hashList(platformSupportedLocales) ^
       padding.hashCode ^
       physicalSize.hashCode ^
+      physicalGeometry.hashCode ^
       pixelRatio.hashCode ^
       platformOS.hashCode ^
-      platformOSBuild.hashCode ^
+      platformOSVersion.hashCode ^
       platformVersion.hashCode ^
       textScaleFactor.hashCode ^
       viewInsets.hashCode ^
-      userAgent.hashCode;
-
-  factory DeviceInfo.fromJson(Map<String, dynamic> json) {
-    return DeviceInfo(
-      appIsDebug: json['appIsDebug'] as bool?,
-      appVersion: json['appVersion'] as String?,
-      buildNumber: json['buildNumber'] as String?,
-      buildCommit: json['buildCommit'] as String?,
-      deviceId: json['deviceId'] as String?,
-      locale: json['locale'] as String?,
-      padding: (json['padding'] as List<dynamic>?)
-              ?.cast<num>()
-              .map((i) => i.toDouble())
-              .toList(growable: false) ??
-          [],
-      physicalSize: (json['physicalSize'] as List<dynamic>?)
-              ?.cast<num>()
-              .map((i) => i.toDouble())
-              .toList(growable: false) ??
-          [],
-      pixelRatio: (json['pixelRatio'] as num?)?.toDouble(),
-      platformOS: json['platformOS'] as String?,
-      platformOSBuild: json['platformOSBuild'] as String?,
-      platformVersion: json['platformVersion'] as String?,
-      textScaleFactor: (json['textScaleFactor'] as num?)?.toDouble(),
-      viewInsets: (json['viewInsets'] as List<dynamic>?)
-              ?.cast<num>()
-              .map((i) => i.toDouble())
-              .toList(growable: false) ??
-          [],
-      userAgent: json['userAgent'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> uiValues = {};
-
-    if (appIsDebug != null) {
-      uiValues['appIsDebug'] = appIsDebug;
-    }
-
-    if (appVersion != null) {
-      uiValues['appVersion'] = appVersion;
-    }
-
-    if (buildNumber != null) {
-      uiValues['buildNumber'] = buildNumber;
-    }
-
-    if (buildCommit != null) {
-      uiValues['buildCommit'] = buildCommit;
-    }
-    if (deviceId != null) {
-      uiValues['deviceId'] = deviceId;
-    }
-
-    if (locale != null) {
-      uiValues['locale'] = locale.toString();
-    }
-
-    if (padding != null && padding!.isNotEmpty) {
-      uiValues['padding'] = padding;
-    }
-
-    if (physicalSize != null && physicalSize!.isNotEmpty) {
-      uiValues['physicalSize'] = physicalSize;
-    }
-
-    if (pixelRatio != null) {
-      uiValues['pixelRatio'] = pixelRatio;
-    }
-
-    if (platformOS != null) {
-      uiValues['platformOS'] = platformOS;
-    }
-
-    if (platformOSBuild != null) {
-      uiValues['platformOSBuild'] = platformOSBuild;
-    }
-
-    if (platformVersion != null) {
-      uiValues['platformVersion'] = platformVersion;
-    }
-
-    if (textScaleFactor != null) {
-      uiValues['textScaleFactor'] = textScaleFactor;
-    }
-
-    if (viewInsets != null && viewInsets!.isNotEmpty) {
-      uiValues['viewInsets'] = viewInsets;
-    }
-
-    if (userAgent != null) {
-      uiValues['userAgent'] = userAgent;
-    }
-
-    return uiValues;
-  }
+      userAgent.hashCode ^
+      platformBrightness.hashCode ^
+      gestureInsets.hashCode;
 }

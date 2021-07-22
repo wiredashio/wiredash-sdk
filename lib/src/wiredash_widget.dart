@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
+import 'package:wiredash/src/common/build_info/device_id_generator.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
@@ -14,7 +15,6 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
-import 'package:wiredash/src/common/utils/build_info.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/common/widgets/wiredash_scaffold.dart';
 import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
@@ -135,6 +135,8 @@ class WiredashState extends State<Wiredash> {
   late WiredashOptionsData _options;
   late WiredashThemeData _theme;
 
+  late DeviceIdGenerator _deviceIdGenerator;
+
   @override
   void initState() {
     super.initState();
@@ -146,16 +148,17 @@ class WiredashState extends State<Wiredash> {
     captureKey = GlobalKey<CaptureState>();
     navigatorKey = widget.navigatorKey;
 
-    _updateDependencies();
+    buildInfoManager = BuildInfoManager();
+    _deviceIdGenerator = DeviceIdGenerator();
 
     _api = WiredashApi(
       httpClient: Client(),
       projectId: widget.projectId,
       secret: widget.secret,
+      deviceIdProvider: () => _deviceIdGenerator.deviceId(),
     );
 
     userManager = UserManager();
-    buildInfoManager = BuildInfoManager(PlatformBuildInfo());
 
     const fileSystem = LocalFileSystem();
     final storage = PendingFeedbackItemStorage(
@@ -174,11 +177,12 @@ class WiredashState extends State<Wiredash> {
       navigatorKey,
       userManager,
       feedbackSubmitter,
-      DeviceInfoGenerator(
-        buildInfoManager,
-        WidgetsBinding.instance!.window,
-      ),
+      DeviceInfoGenerator(WidgetsBinding.instance!.window),
+      buildInfoManager,
+      _deviceIdGenerator,
     );
+
+    _updateDependencies();
   }
 
   @override
@@ -198,6 +202,7 @@ class WiredashState extends State<Wiredash> {
       _options = widget.options ?? WiredashOptionsData();
       _theme = widget.theme ?? WiredashThemeData();
     });
+    _feedbackModel.appLocale = _options.currentLocale.toLanguageTag();
   }
 
   @override
