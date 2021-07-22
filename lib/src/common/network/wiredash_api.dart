@@ -166,8 +166,6 @@ extension FeedbackBody on PersistedFeedbackItem {
     values.addAll({
       'deviceId': nonNull(deviceId),
       // TODO remove isDebugBuild and replace it with compilationMode on backend
-      'isDebugBuild':
-          nonNull(buildInfo.compilationMode == CompilationMode.debug),
       'compilationMode': nonNull(buildInfo.compilationMode).jsonEncode(),
       // TODO return correct label ids
       'labels': [nonNull(type)],
