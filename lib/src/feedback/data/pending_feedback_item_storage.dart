@@ -5,10 +5,10 @@ import 'package:file/file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/common/utils/uuid.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
-/// A temporary place for [FeedbackItem] classes and user-generated screenshot to
+/// A temporary place for [PersistedFeedbackItem] classes and user-generated screenshot to
 /// sit in until they get sent into the Wiredash console.
 class PendingFeedbackItemStorage {
   PendingFeedbackItemStorage(
@@ -31,10 +31,8 @@ class PendingFeedbackItemStorage {
     final List<PendingFeedbackItem> parsed = [];
     for (final item in items) {
       try {
-        // cast may fail for invalid entries
-        final map = json.decode(item) as Map<String, dynamic>;
         // parsing may fail for missing required properties
-        parsed.add(PendingFeedbackItem.fromJson(map));
+        parsed.add(deserializePendingFeedbackItem(item));
       } catch (e, stack) {
         // Usually this happens when we add new required properties without a migration
 
@@ -43,7 +41,8 @@ class PendingFeedbackItemStorage {
         reportWiredashError(e, stack, 'Could not parse item from disk $item');
         try {
           // Remove the associated screenshot right now.
-          final map = json.decode(item) as Map<String, dynamic>;
+          // This here is custom parsing and fails when the serialization changes
+          final map = jsonDecode(item) as Map<String, dynamic>;
           final screenshot = _fs.file(map['screenshotPath']);
           if (await screenshot.exists()) {
             await screenshot.delete();
@@ -62,7 +61,7 @@ class PendingFeedbackItemStorage {
   /// If [screenshot] is non-null, saves it in the application documents directory
   /// with a randomly generated filename.
   Future<PendingFeedbackItem> addPendingItem(
-    FeedbackItem item,
+    PersistedFeedbackItem item,
     Uint8List? screenshot,
   ) async {
     String? screenshotPath;
@@ -84,8 +83,9 @@ class PendingFeedbackItemStorage {
     final all = await retrieveAllPendingItems();
     final items = List.of(all)..add(pendingItem);
     final preferences = await _sharedPreferences();
-    preferences.setStringList(_feedbackItemsKey,
-        items.map((it) => json.encode(it.toJson())).toList());
+    final List<String> values =
+        items.map((it) => serializePendingFeedbackItem(it)).toList();
+    preferences.setStringList(_feedbackItemsKey, values);
 
     return pendingItem;
   }
@@ -107,8 +107,9 @@ class PendingFeedbackItemStorage {
         final updatedItems = List.of(await retrieveAllPendingItems());
         updatedItems.removeWhere((e) => e.id == item.id);
         final preferences = await _sharedPreferences();
-        await preferences.setStringList(_feedbackItemsKey,
-            updatedItems.map((e) => json.encode(e.toJson())).toList());
+        final List<String> values =
+            updatedItems.map((it) => serializePendingFeedbackItem(it)).toList();
+        await preferences.setStringList(_feedbackItemsKey, values);
         break;
       }
     }

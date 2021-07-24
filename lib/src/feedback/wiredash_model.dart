@@ -1,19 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
-import 'package:wiredash/src/common/utils/build_info.dart';
-import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
-import 'package:wiredash/src/wiredash_backdrop.dart';
+import 'package:wiredash/src/wiredash_widget.dart';
 
 class WiredashModel with ChangeNotifier {
-  WiredashModel(
-    this._feedbackSubmitter,
-    this._backdropController,
-  );
+  WiredashModel(this.state);
 
-  final BackdropController _backdropController;
-  final FeedbackSubmitter _feedbackSubmitter;
+  final WiredashState state;
 
   /// `true` when Wiredash is visible
   ///
@@ -28,8 +23,7 @@ class WiredashModel with ChangeNotifier {
   bool get isAppInteractive => _isAppInteractive;
   bool _isAppInteractive = false;
 
-  final BuildInfoManager buildInfoManager =
-      BuildInfoManager(PlatformBuildInfo());
+  final BuildInfoManager buildInfoManager = BuildInfoManager();
 
   // TODO save somewhere else
   String? userId;
@@ -40,7 +34,7 @@ class WiredashModel with ChangeNotifier {
   /// Usually only relevant for debug builds
   Future<void> clearPendingFeedbacks() async {
     debugPrint("Deleting pending feedbacks");
-    final submitter = _feedbackSubmitter;
+    final submitter = state.feedbackSubmitter;
     if (submitter is RetryingFeedbackSubmitter) {
       await submitter.deletePendingFeedbacks();
     }
@@ -54,7 +48,7 @@ class WiredashModel with ChangeNotifier {
     notifyListeners();
 
     // wait until fully opened
-    await _backdropController.showWiredash();
+    await state.backdropController.showWiredash();
     _isWiredashOpening = false;
     notifyListeners();
   }
@@ -65,27 +59,38 @@ class WiredashModel with ChangeNotifier {
     notifyListeners();
 
     // wait until fully closed
-    await _backdropController.hideWiredash();
+    await state.backdropController.hideWiredash();
     _isWiredashVisible = false;
     _isWiredashClosing = false;
     _isAppInteractive = true;
     notifyListeners();
   }
 
-  // Future<void> _sendFeedback() async {
-  //   final item = FeedbackItem(
-  //     deviceInfo: _deviceInfoGenerator.generate(),
-  //     email: _userManager.userEmail,
-  //     message: feedbackMessage!,
-  //     type: feedbackType.label,
-  //     user: _userManager.userId,
-  //   );
-  //
-  //   try {
-  //     await _feedbackSubmitter.submit(item, screenshot);
-  //   } catch (e) {
-  //   }
-  // }
+  // ignore: unused_element
+  Future<void> _sendFeedback() async {
+    final deviceId = await state.deviceIdGenerator.deviceId();
+
+    final item = PersistedFeedbackItem(
+      deviceId: deviceId,
+      appInfo: AppInfo(
+        appLocale: state.options.currentLocale.toLanguageTag(),
+      ),
+      buildInfo: state.buildInfoManager.buildInfo,
+      deviceInfo: state.deviceInfoGenerator.generate(),
+      email: userEmail,
+      // TODO collect message and labels
+      message: 'Message',
+      type: 'labelXYZ',
+      userId: userId,
+    );
+
+    try {
+      // TODO add screenshot
+      await state.feedbackSubmitter.submit(item, null);
+    } catch (e) {
+      // TODO show error UI
+    }
+  }
 }
 
 extension ChangeNotifierAsValueNotifier<C extends ChangeNotifier> on C {

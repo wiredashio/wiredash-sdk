@@ -33,10 +33,8 @@ class WiredashController {
   /// If these values are also provided through dart-define during compile time
   /// then they will be overwritten by this method
   void setBuildProperties({String? buildVersion, String? buildNumber}) {
-    _model.buildInfoManager.buildVersion =
-        buildVersion ?? _model.buildInfoManager.buildVersion;
-    _model.buildInfoManager.buildNumber =
-        buildNumber ?? _model.buildInfoManager.buildNumber;
+    _model.buildInfoManager.buildVersionOverride = buildVersion;
+    _model.buildInfoManager.buildNumberOverride = buildNumber;
   }
 
   /// This will open the Wiredash feedback sheet and start the feedback process.

@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/common/build_info/build_info_manager.dart';
+import 'package:wiredash/src/common/build_info/device_id_generator.dart';
+import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/options/wiredash_options_data.dart';
@@ -15,6 +18,7 @@ import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
+import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
@@ -124,16 +128,26 @@ class Wiredash extends StatefulWidget {
 class WiredashState extends State<Wiredash> {
   late WiredashModel _wiredashModel;
 
-  late WiredashOptionsData _options;
+  late WiredashOptionsData options;
   late WiredashThemeData _theme;
 
-  late BackdropController _backdropController;
+  late DeviceIdGenerator deviceIdGenerator;
+
+  late BackdropController backdropController;
+
+  late BuildInfoManager buildInfoManager;
+
+  late DeviceInfoGenerator deviceInfoGenerator;
+
+  late FeedbackSubmitter feedbackSubmitter;
 
   @override
   void initState() {
     super.initState();
 
-    _updateDependencies();
+    buildInfoManager = BuildInfoManager();
+    deviceIdGenerator = DeviceIdGenerator();
+    deviceInfoGenerator = DeviceInfoGenerator(window);
 
     const fileSystem = LocalFileSystem();
     final storage = PendingFeedbackItemStorage(
@@ -146,15 +160,18 @@ class WiredashState extends State<Wiredash> {
       httpClient: Client(),
       projectId: widget.projectId,
       secret: widget.secret,
+      deviceIdProvider: () => deviceIdGenerator.deviceId(),
     );
 
-    final feedbackSubmitter = kIsWeb
+    feedbackSubmitter = kIsWeb
         ? DirectFeedbackSubmitter(api)
         : (RetryingFeedbackSubmitter(fileSystem, storage, api)
           ..submitPendingFeedbackItems());
 
-    _backdropController = BackdropController();
-    _wiredashModel = WiredashModel(feedbackSubmitter, _backdropController);
+    backdropController = BackdropController();
+    _wiredashModel = WiredashModel(this);
+
+    _updateDependencies();
   }
 
   @override
@@ -182,7 +199,7 @@ class WiredashState extends State<Wiredash> {
     // TODO fix update _api
     // TODO validate everything gets updated
     setState(() {
-      _options = widget.options ?? WiredashOptionsData();
+      options = widget.options ?? WiredashOptionsData();
       _theme = widget.theme ?? WiredashThemeData();
     });
   }
@@ -192,7 +209,7 @@ class WiredashState extends State<Wiredash> {
     return WiredashProvider(
       wiredashModel: _wiredashModel,
       child: WiredashOptions(
-        data: _options,
+        data: options,
         child: WiredashLocalizations(
           // Both DefaultTextEditingShortcuts and DefaultTextEditingActions are
           // required to make text edits like deletion of characters possible on macOS
@@ -218,7 +235,7 @@ class WiredashState extends State<Wiredash> {
                         OverlayEntry(builder: (context) {
                           // use a stateful widget as direct child or hot reload will not work for that widget
                           return WiredashBackdrop(
-                            controller: _backdropController,
+                            controller: backdropController,
                             child: widget.child,
                           );
                         })

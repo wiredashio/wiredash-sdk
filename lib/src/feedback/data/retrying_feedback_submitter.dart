@@ -6,12 +6,12 @@ import 'package:file/file.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
-/// A class that knows how to "eventually send" a [FeedbackItem] and an associated
+/// A class that knows how to "eventually send" a [PersistedFeedbackItem] and an associated
 /// screenshot file, retrying appropriately when sending fails.
 class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   RetryingFeedbackSubmitter(
@@ -36,7 +36,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   ///
   /// If sending fails, uses exponential backoff and tries again up to 7 times.
   @override
-  Future<void> submit(FeedbackItem item, Uint8List? screenshot) async {
+  Future<void> submit(PersistedFeedbackItem item, Uint8List? screenshot) async {
     await _pendingFeedbackItemStorage.addPendingItem(item, screenshot);
 
     // Intentionally not "await"-ed. Since we've persisted the pending feedback
@@ -101,13 +101,25 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
     while (true) {
       attempt++;
       try {
-        final screenshotPath = item.screenshotPath;
-        final Uint8List? screenshot =
-            screenshotPath != null && await fs.file(screenshotPath).exists()
-                ? await fs.file(screenshotPath).readAsBytes()
-                : null;
+        // TODO don't upload images again when submission fails
+        final ImageBlob? imageUri = await () async {
+          final screenshotPath = item.screenshotPath;
+          if (screenshotPath != null) {
+            if (await fs.file(screenshotPath).exists()) {
+              final Uint8List screenshot =
+                  await fs.file(screenshotPath).readAsBytes();
+              return _api.sendImage(screenshot);
+            }
+          }
+          return null;
+        }();
+
         await _api.sendFeedback(
-            feedback: item.feedbackItem, screenshot: screenshot);
+          item.feedbackItem,
+          images: [
+            if (imageUri != null) imageUri,
+          ],
+        );
         // ignore: avoid_print
         print("Feedback submitted ✌️ ${item.feedbackItem.message}");
         await _pendingFeedbackItemStorage.clearPendingItem(item.id);
@@ -118,13 +130,11 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
             'Wiredash project configuration is wrong, next retry after next app start');
         break;
       } on WiredashApiException catch (e, stack) {
-        if (e.message != null &&
-            e.message!.contains("fails because") &&
-            e.message!.contains("is required")) {
-          // some required property is missing. The item will never be delivered
+        if (e.response?.statusCode == 400) {
+          // The request is invalid. The feedback will never be delivered
           // to the server, therefore discard it.
           reportWiredashError(e, stack,
-              'Feedback has missing properties and can not be submitted to server');
+              'Feedback has missing properties and can not be submitted to server. Will be discarded');
           await _pendingFeedbackItemStorage.clearPendingItem(item.id);
           break;
         }
