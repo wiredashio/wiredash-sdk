@@ -10,7 +10,7 @@ jobs:
   minVersion:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:1.26.0-17.5.pre
+      image: cirrusci/flutter:2.2.0-10.1.pre
     steps:
       - uses: actions/checkout@v2.3.4
         with:
