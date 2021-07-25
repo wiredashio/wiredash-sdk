@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/wiredash_backdrop.dart';
 
 /// Horizontal menu offering more Wiredash services besides feedback
@@ -11,9 +12,6 @@ class MoreMenu extends StatelessWidget {
     return Center(
       child: Container(
         alignment: Alignment.center,
-        margin: const EdgeInsets.symmetric(
-          horizontal: WiredashBackdrop.feedbackInputHorizontalPadding,
-        ),
         constraints: const BoxConstraints(maxWidth: 360),
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(

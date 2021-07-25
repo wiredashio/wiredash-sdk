@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/measure.dart';
+import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/snap.dart';
 import 'package:wiredash/src/sprung.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
@@ -19,8 +20,6 @@ class WiredashBackdrop extends StatefulWidget {
   /// The wrapped app
   final Widget child;
   final BackdropController? controller;
-
-  static const double feedbackInputHorizontalPadding = 32;
 
   static BackdropController of(BuildContext context) {
     final state = context.findAncestorStateOfType<_WiredashBackdropState>();
@@ -79,7 +78,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   AnimationStatus _animationStatus = AnimationStatus.dismissed;
   late final ScrollController _scrollController;
 
-  /// Controls reveleaing and hiding of Wiredash
+  /// Controls revealing and hiding of Wiredash
   ///
   /// forward() to open, reverse() to close
   late final AnimationController _backdropAnimationController;
@@ -94,6 +93,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   /// frame is drawn and the animation can start.
   bool _isLayoutingCompleted = false;
 
+  /// Position of the app relative to the whole backdrop layout
+  Rect? savedRect;
+
+  /// The "default" position of app to prevent flickering on first frame
+  static const double appStartingTopPosition = 220;
+
+  late Animation<double> _centerAnimation;
+
   @override
   void initState() {
     super.initState();
@@ -106,7 +113,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     )..addStatusListener(_animControllerStatusListener);
 
     final slightlyUnderdumped = Sprung(18);
-    final CurvedAnimation centerAnimation = CurvedAnimation(
+    _centerAnimation = CurvedAnimation(
       parent: _backdropAnimationController,
       curve: Interval(0.0, 1.0, curve: Sprung.overDamped),
       reverseCurve: slightlyUnderdumped.flipped,
@@ -117,14 +124,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       reverseCurve: slightlyUnderdumped.flipped,
     );
 
-    _scaleAppAnimation = Tween<double>(begin: 1, end: _calculateScaleFactor())
-        .animate(centerAnimation);
     _translateAppAnimation =
         Tween<double>(begin: -1, end: 0).animate(inlineAnimation);
     _appCornerRadiusAnimation = BorderRadiusTween(
       begin: BorderRadius.circular(0),
       end: BorderRadius.circular(20),
-    ).animate(centerAnimation);
+    ).animate(_centerAnimation);
   }
 
   /// returns the scale factor of
@@ -135,7 +140,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     final double targetContentWidth = screenSize.width -
         mediaQueryData.viewPadding.horizontal -
-        2 * WiredashBackdrop.feedbackInputHorizontalPadding;
+        2 * context.responsiveLayout.horizontalPadding;
 
     return targetContentWidth / screenSize.width;
   }
@@ -149,6 +154,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _scaleAppAnimation = Tween<double>(begin: 1, end: _calculateScaleFactor())
+        .animate(_centerAnimation);
+  }
+
+  @override
   void didUpdateWidget(WiredashBackdrop oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
@@ -156,8 +168,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       widget.controller?._state = this;
     }
   }
-
-  static const double appStartingPosition = 220;
 
   @override
   Widget build(BuildContext context) {
@@ -171,13 +181,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       return child;
     }
 
-    final model = context.wiredashModel!;
+    final model = context.wiredashModel;
     child = AbsorbPointer(
       absorbing: !model.isAppInteractive,
       child: child,
     );
 
-    final appTopPosition = savedRect?.top ?? appStartingPosition;
+    final appTopPosition = savedRect?.top ?? appStartingTopPosition;
     return Material(
       child: Container(
         decoration: const BoxDecoration(
@@ -233,8 +243,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       ),
     );
   }
-
-  Rect? savedRect;
 
   Widget _buildBackdropAnimation(BuildContext context, Widget child) {
     return AnimatedBuilder(

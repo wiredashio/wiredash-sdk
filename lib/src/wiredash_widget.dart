@@ -23,6 +23,7 @@ import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
 import 'package:wiredash/src/media_query_from_window.dart';
+import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/wiredash_backdrop.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
@@ -230,16 +231,19 @@ class WiredashState extends State<Wiredash> {
                         DefaultCupertinoLocalizations.delegate,
                         DefaultWidgetsLocalizations.delegate,
                       ],
-                      // Overlay is required for text edit functions such as copy/paste on mobile
-                      child: Overlay(initialEntries: [
-                        OverlayEntry(builder: (context) {
-                          // use a stateful widget as direct child or hot reload will not work for that widget
-                          return WiredashBackdrop(
-                            controller: backdropController,
-                            child: widget.child,
-                          );
-                        })
-                      ]),
+                      // Provide responsive layout information to the wiredash UI
+                      child: WiredashResponsiveLayout(
+                        // Overlay is required for text edit functions such as copy/paste on mobile
+                        child: Overlay(initialEntries: [
+                          OverlayEntry(builder: (context) {
+                            // use a stateful widget as direct child or hot reload will not work for that widget
+                            return WiredashBackdrop(
+                              controller: backdropController,
+                              child: widget.child,
+                            );
+                          })
+                        ]),
+                      ),
                     ),
                   ),
                 ),

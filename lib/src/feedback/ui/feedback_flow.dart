@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/ui/more_menu.dart';
-import 'package:wiredash/src/wiredash_backdrop.dart';
+import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
 const _labels = [
@@ -39,106 +39,124 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
 
   @override
   Widget build(BuildContext context) {
+    final Widget closeButton = Center(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => context.wiredashModel.hide(),
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(
+              'CLOSE',
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 10,
+                letterSpacing: 2,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    final Widget column1 = _FeedbackMessageInput(
+      controller: _controller,
+    );
+    final Widget column2 = AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return AnimatedSize(
+          // ignore: deprecated_member_use
+          vsync: this,
+          duration: const Duration(milliseconds: 450),
+          curve: Curves.fastOutSlowIn,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 225),
+            reverseDuration: const Duration(milliseconds: 170),
+            switchInCurve: Curves.fastOutSlowIn,
+            switchOutCurve: Curves.fastOutSlowIn,
+            child: Container(
+              constraints: BoxConstraints(
+                  minHeight: context.responsiveLayout.isDesktop ? 300 : 100),
+              alignment: Alignment.topCenter,
+              padding: EdgeInsets.only(
+                  top: context.responsiveLayout.isDesktop ? 100 : 0),
+              child: () {
+                if (_controller.text.isEmpty) {
+                  return const MoreMenu();
+                }
+                return ValueListenableBuilder<Set<Label>>(
+                  valueListenable: _selectedLabels,
+                  builder: (context, selectedLabels, child) {
+                    return _LabelRecommendations(
+                      isAnyLabelSelected: selectedLabels.isNotEmpty,
+                      isLabelSelected: selectedLabels.contains,
+                      toggleSelection: (label) {
+                        setState(() {
+                          if (selectedLabels.contains(label)) {
+                            selectedLabels.remove(label);
+                          } else {
+                            selectedLabels.add(label);
+                          }
+                        });
+                      },
+                    );
+                  },
+                );
+              }(),
+            ),
+          ),
+        );
+      },
+    );
+
     return SafeArea(
       bottom: false,
       minimum: const EdgeInsets.only(top: 12),
-      child: LayoutBuilder(builder: (context, constraints) {
-        bool isDesktop = constraints.maxWidth >= 800;
-
-        final Widget column1 = _FeedbackMessageInput(
-          controller: _controller,
-        );
-        final Widget column2 = AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return AnimatedSize(
-              // ignore: deprecated_member_use
-              vsync: this,
-              duration: const Duration(milliseconds: 450),
-              curve: Curves.fastOutSlowIn,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 225),
-                reverseDuration: const Duration(milliseconds: 170),
-                switchInCurve: Curves.fastOutSlowIn,
-                switchOutCurve: Curves.fastOutSlowIn,
-                child: Container(
-                  constraints: BoxConstraints(minHeight: isDesktop ? 300 : 100),
-                  alignment: Alignment.topCenter,
-                  padding: EdgeInsets.only(top: isDesktop ? 100 : 0),
-                  child: () {
-                    if (_controller.text.isEmpty) {
-                      return const MoreMenu();
-                    }
-                    return ValueListenableBuilder<Set<Label>>(
-                      valueListenable: _selectedLabels,
-                      builder: (context, selectedLabels, child) {
-                        return _LabelRecommendations(
-                          isAnyLabelSelected: selectedLabels.isNotEmpty,
-                          isLabelSelected: selectedLabels.contains,
-                          toggleSelection: (label) {
-                            setState(() {
-                              if (selectedLabels.contains(label)) {
-                                selectedLabels.remove(label);
-                              } else {
-                                selectedLabels.add(label);
-                              }
-                            });
-                          },
-                        );
-                      },
-                    );
-                  }(),
-                ),
-              ),
-            );
-          },
-        );
-
-        return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => context.wiredashModel!.hide(),
-                    borderRadius: BorderRadius.circular(20),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(
-                        'CLOSE',
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 10,
-                          letterSpacing: 2,
-                        ),
-                      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          closeButton,
+          () {
+            if (context.responsiveLayout.isDesktop) {
+              // desktop
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.responsiveLayout.horizontalPadding,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 1024),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(child: column1),
+                        const SizedBox(width: 32),
+                        Expanded(child: column2),
+                      ],
                     ),
                   ),
                 ),
-              ),
-              () {
-                if (isDesktop) {
-                  return Row(
-                    children: [
-                      Expanded(child: column1),
-                      Expanded(child: column2),
-                    ],
-                  );
-                } else {
-                  // mobile
-                  return Column(
-                    children: [
-                      column1,
-                      const SizedBox(height: 56),
-                      column2,
-                    ],
-                  );
-                }
-              }(),
-            ]);
-      }),
+              );
+            } else {
+              // mobile
+              return Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.responsiveLayout.horizontalPadding,
+                ),
+                child: Column(
+                  children: [
+                    column1,
+                    const SizedBox(height: 72),
+                    column2,
+                  ],
+                ),
+              );
+            }
+          }(),
+        ],
+      ),
     );
   }
 }
@@ -161,10 +179,8 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.only(
-            left: WiredashBackdrop.feedbackInputHorizontalPadding,
-            right: WiredashBackdrop.feedbackInputHorizontalPadding,
             top: 20,
           ),
           child: Text(
@@ -182,7 +198,7 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
           maxLength: 2048,
           buildCounter: _getCounterText,
           style: const TextStyle(fontSize: 14),
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             border: InputBorder.none,
             focusedBorder: InputBorder.none,
             enabledBorder: InputBorder.none,
@@ -190,8 +206,6 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
             errorBorder: InputBorder.none,
             hintText: 'e.g. there’s a bug when ... or I really enjoy ...',
             contentPadding: EdgeInsets.only(
-              left: WiredashBackdrop.feedbackInputHorizontalPadding,
-              right: WiredashBackdrop.feedbackInputHorizontalPadding,
               top: 16,
             ),
           ),
@@ -215,7 +229,8 @@ class _LabelRecommendations extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: Alignment.centerLeft,
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
