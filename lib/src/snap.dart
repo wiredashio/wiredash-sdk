@@ -237,11 +237,7 @@ class _PreventSnapArea implements Snap {
     this.minExtent,
     this.maxExtent, {
     double? delimiter,
-  })  : assert(
-            delimiter == null ||
-                (delimiter >= minExtent) && (delimiter <= maxExtent),
-            'The delimiter value should be between the minExtent and maxExtent'),
-        delimiter = delimiter ?? (minExtent + (maxExtent - minExtent) / 2);
+  }) : delimiter = delimiter ?? (minExtent + (maxExtent - minExtent) / 2);
 
   @override
   bool shouldApplyFor(ScrollMetrics position, double proposedEnd) {
