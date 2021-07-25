@@ -140,7 +140,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     final double targetContentWidth = screenSize.width -
         mediaQueryData.viewPadding.horizontal -
-        2 * context.responsiveLayout.horizontalPadding;
+        2 * context.responsiveLayout.horizontalMargin;
 
     return targetContentWidth / screenSize.width;
   }

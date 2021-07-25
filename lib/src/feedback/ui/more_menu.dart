@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/responsive_layout.dart';
-import 'package:wiredash/src/wiredash_backdrop.dart';
 
 /// Horizontal menu offering more Wiredash services besides feedback
 class MoreMenu extends StatelessWidget {

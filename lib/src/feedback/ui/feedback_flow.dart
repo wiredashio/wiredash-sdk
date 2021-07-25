@@ -59,6 +59,9 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         ),
       ),
     );
+    final bool isTwoColumnLayout =
+        context.responsiveLayout.device >= LayoutClass.smallTablet;
+
     final Widget column1 = _FeedbackMessageInput(
       controller: _controller,
     );
@@ -76,11 +79,10 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             switchInCurve: Curves.fastOutSlowIn,
             switchOutCurve: Curves.fastOutSlowIn,
             child: Container(
-              constraints: BoxConstraints(
-                  minHeight: context.responsiveLayout.isDesktop ? 300 : 100),
+              constraints:
+                  BoxConstraints(minHeight: isTwoColumnLayout ? 300 : 100),
               alignment: Alignment.topCenter,
-              padding: EdgeInsets.only(
-                  top: context.responsiveLayout.isDesktop ? 100 : 0),
+              padding: EdgeInsets.only(top: isTwoColumnLayout ? 100 : 0),
               child: () {
                 if (_controller.text.isEmpty) {
                   return const MoreMenu();
@@ -119,12 +121,12 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         children: [
           closeButton,
           () {
-            if (context.responsiveLayout.isDesktop) {
-              // desktop
+            if (isTwoColumnLayout) {
+              // two columns
               return Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: context.responsiveLayout.horizontalPadding,
+                    horizontal: context.responsiveLayout.horizontalMargin,
                   ),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 1024),
@@ -132,7 +134,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Expanded(child: column1),
-                        const SizedBox(width: 32),
+                        SizedBox(width: context.responsiveLayout.gutters),
                         Expanded(child: column2),
                       ],
                     ),
@@ -140,10 +142,10 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 ),
               );
             } else {
-              // mobile
+              // single column
               return Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: context.responsiveLayout.horizontalPadding,
+                  horizontal: context.responsiveLayout.horizontalMargin,
                 ),
                 child: Column(
                   children: [
@@ -175,11 +177,10 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
+        const Padding(
           padding: EdgeInsets.only(
             top: 20,
           ),
@@ -198,7 +199,7 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
           maxLength: 2048,
           buildCounter: _getCounterText,
           style: const TextStyle(fontSize: 14),
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             border: InputBorder.none,
             focusedBorder: InputBorder.none,
             enabledBorder: InputBorder.none,
