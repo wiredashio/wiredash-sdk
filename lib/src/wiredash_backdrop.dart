@@ -218,14 +218,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 // Position of the app in the listview.
                 // shown when layout is done and the entry animation
                 // could be started
-                MeasureSize(
-                  onChange: (size, bounds) {
-                    //print("app $size $bounds");
-                  },
-                  child: _buildBackdropAnimation(
-                    context,
-                    _isLayoutingCompleted ? child : const SizedBox.expand(),
-                  ),
+                _buildBackdropAnimation(
+                  context,
+                  _isLayoutingCompleted ? child : const SizedBox.expand(),
                 )
               ],
             ),
