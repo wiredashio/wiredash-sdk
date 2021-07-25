@@ -60,7 +60,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       ),
     );
     final bool isTwoColumnLayout =
-        context.responsiveLayout.device >= LayoutClass.smallTablet;
+        context.responsiveLayout.deviceClass >= DeviceClass.largeTablet;
 
     final Widget column1 = _FeedbackMessageInput(
       controller: _controller,
@@ -129,7 +129,8 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                     horizontal: context.responsiveLayout.horizontalMargin,
                   ),
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 1024),
+                    constraints: BoxConstraints(
+                        maxWidth: DeviceClass.largeDesktop.minWidth),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [

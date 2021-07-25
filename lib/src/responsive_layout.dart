@@ -38,22 +38,22 @@ class WiredashResponsiveLayout extends StatelessWidget {
       // MacBook Pro 16" 2019 (more space) width: 2048
       return WiredashResponsiveLayoutData(
         gutters: 24,
-        device: LayoutClass.desktop,
-        window: WindowSize.xlarge,
+        deviceClass: DeviceClass.largeDesktop,
         screenSize: size,
         isLandscape: isLandscape,
         horizontalMargin: 256,
+        maxBodyWidth: 1040,
       );
     }
     if (width >= 1600) {
       // MacBook Pro 16" 2019 (default scale) width: 1792
       return WiredashResponsiveLayoutData(
         gutters: 24,
-        device: LayoutClass.desktop,
-        window: WindowSize.large,
+        deviceClass: DeviceClass.largeDesktop,
         screenSize: size,
         isLandscape: isLandscape,
         horizontalMargin: 128,
+        maxBodyWidth: 1040,
       );
     }
     if (width >= 1440) {
@@ -61,11 +61,11 @@ class WiredashResponsiveLayout extends StatelessWidget {
       // MacBook Pro 15" 2018 width: 1440
       return WiredashResponsiveLayoutData(
         gutters: 24,
-        device: LayoutClass.desktop,
-        window: WindowSize.large,
+        deviceClass: DeviceClass.largeDesktop,
         screenSize: size,
         isLandscape: isLandscape,
         horizontalMargin: 128,
+        maxBodyWidth: 1040,
       );
     }
     if (width >= 1280) {
@@ -73,11 +73,11 @@ class WiredashResponsiveLayout extends StatelessWidget {
       // Macbook Pro 13" 2018: 1280
       return WiredashResponsiveLayoutData(
         gutters: 24,
-        device: LayoutClass.desktop,
-        window: WindowSize.medium,
+        deviceClass: DeviceClass.desktop,
         screenSize: size,
         isLandscape: isLandscape,
         horizontalMargin: 128,
+        maxBodyWidth: 1040,
       );
     }
     if (width >= 1024) {
@@ -85,100 +85,108 @@ class WiredashResponsiveLayout extends StatelessWidget {
       // iPad Pro 10.5 landscape with: 1112
       // iPad landscape with: 1024
       // iPad Pro 12" width: 1024
+      // 	Microsoft Surface Pro 3 width: 1024
       return WiredashResponsiveLayoutData(
         gutters: 24,
-        device: LayoutClass.desktop,
-        window: WindowSize.medium,
+        deviceClass: DeviceClass.desktop,
         screenSize: size,
         isLandscape: isLandscape,
         horizontalMargin: 64,
+        maxBodyWidth: 840,
       );
     }
     if (width >= 960) {
+      // 	Microsoft Surface Book width: 1000
       return WiredashResponsiveLayoutData(
         gutters: 24,
-        device: LayoutClass.largeTablet,
-        window: WindowSize.small,
+        deviceClass: DeviceClass.largeTablet,
         screenSize: size,
         isLandscape: isLandscape,
         horizontalMargin: 64,
+        maxBodyWidth: 840,
       );
     }
     if (width >= 840) {
       // Apple iPhone 12 Pro Max (2020) landscape width: 926
       // MacBook Pro 16" 2019 (default scale) split screen width: 896
+      // Samsung Galaxy Z Fold2 (2020) width: 884
       return WiredashResponsiveLayoutData(
         gutters: 24,
-        device: LayoutClass.largeTablet,
-        window: WindowSize.small,
+        deviceClass: DeviceClass.largeTablet,
         screenSize: size,
         isLandscape: isLandscape,
         horizontalMargin: 32,
+        maxBodyWidth: 840,
       );
     }
     if (width >= 720) {
-      // iPad portrait width: 768
-      // iPad Air 4 portrait width: 820
       // iPad Pro portrait width: 834
+      // iPad Air 4 portrait width: 820
+      // iPad portrait width: 768
       return WiredashResponsiveLayoutData(
         gutters: 24,
-        device: LayoutClass.largeTablet,
-        window: WindowSize.small,
+        deviceClass: DeviceClass.largeTablet,
         screenSize: size,
         isLandscape: isLandscape,
         horizontalMargin: 32,
+        maxBodyWidth: width,
       );
     }
     if (width >= 600) {
+      // Amazon Kindle Fire portrait width: 600
       return WiredashResponsiveLayoutData(
         gutters: 16,
-        device: LayoutClass.smallTablet,
-        window: WindowSize.small,
+        deviceClass: DeviceClass.smallTablet,
         screenSize: size,
         isLandscape: isLandscape,
         horizontalMargin: 32,
+        maxBodyWidth: width,
       );
     }
     if (width >= 480) {
+      // 	Sony Xperia Z4 portrait width: 534
       return WiredashResponsiveLayoutData(
         gutters: 16,
-        device: LayoutClass.largeHandset,
-        window: WindowSize.xsmall,
+        deviceClass: DeviceClass.largeHandset,
         screenSize: size,
         isLandscape: isLandscape,
         horizontalMargin: 32,
+        maxBodyWidth: width,
       );
     }
     if (width >= 400) {
       // iPhone 12 pro max (2020) width: 428
       // iPhone 6+, 6S+, 7+, 8+ width: 414
+      // Google Pixel 4 XL width: 412
       return WiredashResponsiveLayoutData(
         gutters: 16,
-        device: LayoutClass.largeHandset,
-        window: WindowSize.xsmall,
+        deviceClass: DeviceClass.largeHandset,
         screenSize: size,
         isLandscape: isLandscape,
         horizontalMargin: 32,
+        maxBodyWidth: width,
       );
     }
     if (width >= 360) {
+      // Pixel 4A/5 width: 393
+      // Samsung Galaxy S21 Ultra (2021) width: 384
       // iPhone 12 mini (2020) width: 360
       return WiredashResponsiveLayoutData(
         gutters: 16,
-        device: LayoutClass.mediumHandset,
-        window: WindowSize.xsmall,
+        deviceClass: DeviceClass.mediumHandset,
         screenSize: size,
         isLandscape: isLandscape,
         horizontalMargin: 16,
+        maxBodyWidth: width,
       );
     }
     return WiredashResponsiveLayoutData(
       gutters: 16,
-      device: LayoutClass.smallHandset,
-      window: WindowSize.xsmall,
+      deviceClass: DeviceClass.smallHandset,
       screenSize: size,
       isLandscape: isLandscape,
       horizontalMargin: 8,
+      maxBodyWidth: width,
     );
   }
 }
@@ -190,17 +198,15 @@ extension WiredashResponsiveLayoutExtension on BuildContext {
 
 class WiredashResponsiveLayoutData {
   const WiredashResponsiveLayoutData({
-    required this.window,
-    required this.device,
+    required this.deviceClass,
     required this.screenSize,
     required this.isLandscape,
     required this.gutters,
     required this.horizontalMargin,
+    required this.maxBodyWidth,
   });
 
-  final WindowSize window;
-
-  final LayoutClass device;
+  final DeviceClass deviceClass;
 
   final Size screenSize;
 
@@ -210,9 +216,11 @@ class WiredashResponsiveLayoutData {
 
   final double horizontalMargin;
 
+  final double maxBodyWidth;
+
   @override
   String toString() {
-    return 'WiredashResponsiveLayoutData{windowSize: $window, layoutClass: $device, screenSize: $screenSize, isLandscape: $isLandscape, gutter: $gutters, horizontalMargin: $horizontalMargin}';
+    return 'WiredashResponsiveLayoutData{layoutClass: $deviceClass, screenSize: $screenSize, isLandscape: $isLandscape, gutter: $gutters, horizontalMargin: $horizontalMargin, maxBodyWidth: $maxBodyWidth}';
   }
 
   @override
@@ -220,8 +228,7 @@ class WiredashResponsiveLayoutData {
       identical(this, other) ||
       other is WiredashResponsiveLayoutData &&
           runtimeType == other.runtimeType &&
-          window == other.window &&
-          device == other.device &&
+          deviceClass == other.deviceClass &&
           screenSize == other.screenSize &&
           isLandscape == other.isLandscape &&
           gutters == other.gutters &&
@@ -229,8 +236,7 @@ class WiredashResponsiveLayoutData {
 
   @override
   int get hashCode =>
-      window.hashCode ^
-      device.hashCode ^
+      deviceClass.hashCode ^
       screenSize.hashCode ^
       isLandscape.hashCode ^
       gutters.hashCode ^
@@ -251,51 +257,45 @@ class _ResponsiveLayoutInheritedWidget extends InheritedWidget {
       data != old.data;
 }
 
-enum WindowSize {
-  xsmall,
-  small,
-  medium,
-  large,
-  xlarge,
-}
+class DeviceClass {
+  const DeviceClass(this.minWidth, {this.name});
 
-enum LayoutClass {
-  smallHandset,
-  mediumHandset,
-  largeHandset,
-  smallTablet,
-  largeTablet,
-  desktop,
-}
+  final double minWidth;
+  final String? name;
 
-extension WindowSizeOperators on WindowSize {
-  int get value => WindowSize.values.indexOf(this);
+  static const smallHandset = DeviceClass(0, name: 'smallHandset');
+  static const mediumHandset = DeviceClass(360, name: 'mediumHandset');
+  static const largeHandset = DeviceClass(400, name: 'largeHandset');
+  static const smallTablet = DeviceClass(600, name: 'smallTablet');
+  static const largeTablet = DeviceClass(720, name: 'largeTablet');
+  static const desktop = DeviceClass(1024, name: 'desktop');
+  static const largeDesktop = DeviceClass(1440, name: 'largeDesktop');
 
-  /// Whether this [WindowSize] is larger than [other].
-  bool operator >(WindowSize other) => value > other.value;
+  /// Whether this [DeviceClass] is larger than [other].
+  bool operator >(DeviceClass other) => minWidth > other.minWidth;
 
-  /// Whether this [WindowSize] is larger than or equal to [other].
-  bool operator >=(WindowSize other) => value >= other.value;
+  /// Whether this [DeviceClass] is larger than or equal to [other].
+  bool operator >=(DeviceClass other) => minWidth >= other.minWidth;
 
-  /// Whether this [WindowSize] is smaller than [other].
-  bool operator <(WindowSize other) => value < other.value;
+  /// Whether this [DeviceClass] is smaller than [other].
+  bool operator <(DeviceClass other) => minWidth < other.minWidth;
 
   /// Whether this [WindowSize] is smaller than or equal to [other].
-  bool operator <=(WindowSize other) => value <= other.value;
-}
+  bool operator <=(DeviceClass other) => minWidth <= other.minWidth;
 
-extension LayoutClassOperators on LayoutClass {
-  int get value => LayoutClass.values.indexOf(this);
+  @override
+  String toString() {
+    return 'LayoutClass{${name ?? ''}minWidth: $minWidth}';
+  }
 
-  /// Whether this [LayoutClass] is larger than [other].
-  bool operator >(LayoutClass other) => value > other.value;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DeviceClass &&
+          runtimeType == other.runtimeType &&
+          minWidth == other.minWidth &&
+          name == other.name;
 
-  /// Whether this [LayoutClass] is larger than or equal to [other].
-  bool operator >=(LayoutClass other) => value >= other.value;
-
-  /// Whether this [LayoutClass] is smaller than [other].
-  bool operator <(LayoutClass other) => value < other.value;
-
-  /// Whether this [WindowSize] is smaller than or equal to [other].
-  bool operator <=(LayoutClass other) => value <= other.value;
+  @override
+  int get hashCode => minWidth.hashCode ^ name.hashCode;
 }
