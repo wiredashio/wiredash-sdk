@@ -8,36 +8,39 @@ class MoreMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      margin: const EdgeInsets.symmetric(
-        horizontal: WiredashBackdrop.feedbackInputHorizontalPadding,
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        // wiredash blue / 100
-        color: const Color(0xFFE8EEFB),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Wrap(
-        runAlignment: WrapAlignment.spaceEvenly,
-        alignment: WrapAlignment.spaceEvenly,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 16,
-        children: const [
-          _Link(
-            icon: Icon(Icons.list_alt_outlined),
-            label: Text('Change Log'),
-          ),
-          _Link(
-            icon: Icon(Icons.checklist_outlined),
-            label: Text('Surveys'),
-          ),
-          _Link(
-            icon: Icon(Icons.question_answer_outlined),
-            label: Text('FAQs'),
-          ),
-        ].toList(),
+    return Center(
+      child: Container(
+        alignment: Alignment.center,
+        margin: const EdgeInsets.symmetric(
+          horizontal: WiredashBackdrop.feedbackInputHorizontalPadding,
+        ),
+        constraints: const BoxConstraints(maxWidth: 360),
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          // wiredash blue / 100
+          color: const Color(0xFFE8EEFB),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Wrap(
+          runAlignment: WrapAlignment.spaceEvenly,
+          alignment: WrapAlignment.spaceEvenly,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 16,
+          children: const [
+            _Link(
+              icon: Icon(Icons.list_alt_outlined),
+              label: Text('Change Log'),
+            ),
+            _Link(
+              icon: Icon(Icons.checklist_outlined),
+              label: Text('Surveys'),
+            ),
+            _Link(
+              icon: Icon(Icons.question_answer_outlined),
+              label: Text('FAQs'),
+            ),
+          ].toList(),
+        ),
       ),
     );
   }

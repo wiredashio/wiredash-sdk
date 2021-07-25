@@ -22,8 +22,8 @@ class WiredashFeedbackFlow extends StatefulWidget {
 
 class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     with TickerProviderStateMixin {
-  late final TextEditingController _controller;
   final ValueNotifier<Set<Label>> _selectedLabels = ValueNotifier({});
+  late final TextEditingController _controller;
 
   @override
   void initState() {
@@ -42,79 +42,29 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     return SafeArea(
       bottom: false,
       minimum: const EdgeInsets.only(top: 12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () => context.wiredashModel!.hide(),
-                borderRadius: BorderRadius.circular(20),
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                    'CLOSE',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 10,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(
-              left: WiredashBackdrop.feedbackInputHorizontalPadding,
-              right: WiredashBackdrop.feedbackInputHorizontalPadding,
-              top: 20,
-            ),
-            child: Text(
-              'You got feedback for us?',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          TextField(
-            controller: _controller,
-            keyboardType: TextInputType.multiline,
-            maxLines: null,
-            maxLength: 2048,
-            buildCounter: _getCounterText,
-            style: const TextStyle(fontSize: 14),
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              disabledBorder: InputBorder.none,
-              errorBorder: InputBorder.none,
-              hintText: 'e.g. there’s a bug when ... or I really enjoy ...',
-              contentPadding: EdgeInsets.only(
-                left: WiredashBackdrop.feedbackInputHorizontalPadding,
-                right: WiredashBackdrop.feedbackInputHorizontalPadding,
-                top: 16,
-              ),
-            ),
-          ),
-          const SizedBox(height: 112),
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return AnimatedSize(
-                // ignore: deprecated_member_use
-                vsync: this,
-                duration: const Duration(milliseconds: 450),
-                curve: Curves.fastOutSlowIn,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 225),
-                  reverseDuration: const Duration(milliseconds: 170),
-                  switchInCurve: Curves.fastOutSlowIn,
-                  switchOutCurve: Curves.fastOutSlowIn,
+      child: LayoutBuilder(builder: (context, constraints) {
+        bool isDesktop = constraints.maxWidth >= 800;
+
+        final Widget column1 = _FeedbackMessageInput(
+          controller: _controller,
+        );
+        final Widget column2 = AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            return AnimatedSize(
+              // ignore: deprecated_member_use
+              vsync: this,
+              duration: const Duration(milliseconds: 450),
+              curve: Curves.fastOutSlowIn,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 225),
+                reverseDuration: const Duration(milliseconds: 170),
+                switchInCurve: Curves.fastOutSlowIn,
+                switchOutCurve: Curves.fastOutSlowIn,
+                child: Container(
+                  constraints: BoxConstraints(minHeight: isDesktop ? 300 : 100),
+                  alignment: Alignment.topCenter,
+                  padding: EdgeInsets.only(top: isDesktop ? 100 : 0),
                   child: () {
                     if (_controller.text.isEmpty) {
                       return const MoreMenu();
@@ -139,11 +89,114 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                     );
                   }(),
                 ),
-              );
-            },
+              ),
+            );
+          },
+        );
+
+        return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => context.wiredashModel!.hide(),
+                    borderRadius: BorderRadius.circular(20),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        'CLOSE',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 10,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              () {
+                if (isDesktop) {
+                  return Row(
+                    children: [
+                      Expanded(child: column1),
+                      Expanded(child: column2),
+                    ],
+                  );
+                } else {
+                  // mobile
+                  return Column(
+                    children: [
+                      column1,
+                      const SizedBox(height: 56),
+                      column2,
+                    ],
+                  );
+                }
+              }(),
+            ]);
+      }),
+    );
+  }
+}
+
+class _FeedbackMessageInput extends StatefulWidget {
+  const _FeedbackMessageInput({required this.controller, Key? key})
+      : super(key: key);
+
+  final TextEditingController controller;
+
+  @override
+  _FeedbackMessageInputState createState() => _FeedbackMessageInputState();
+}
+
+class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(
+            left: WiredashBackdrop.feedbackInputHorizontalPadding,
+            right: WiredashBackdrop.feedbackInputHorizontalPadding,
+            top: 20,
           ),
-        ],
-      ),
+          child: Text(
+            'You got feedback for us?',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        TextField(
+          controller: widget.controller,
+          keyboardType: TextInputType.multiline,
+          maxLines: null,
+          maxLength: 2048,
+          buildCounter: _getCounterText,
+          style: const TextStyle(fontSize: 14),
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
+            errorBorder: InputBorder.none,
+            hintText: 'e.g. there’s a bug when ... or I really enjoy ...',
+            contentPadding: EdgeInsets.only(
+              left: WiredashBackdrop.feedbackInputHorizontalPadding,
+              right: WiredashBackdrop.feedbackInputHorizontalPadding,
+              top: 16,
+            ),
+          ),
+        )
+      ],
     );
   }
 }
