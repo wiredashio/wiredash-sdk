@@ -228,10 +228,26 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 // Position of the app in the listview.
                 // shown when layout is done and the entry animation
                 // could be started
-                _buildBackdropAnimation(
-                  context,
-                  _isLayoutingCompleted ? child : const SizedBox.expand(),
-                )
+                if (_isLayoutingCompleted)
+                  IntrinsicHeight(
+                    child: Stack(
+                      children: [
+                        _buildAppPositioningAnimation(
+                          offset: Offset(0, 100),
+                          child: _buildAppFrame(
+                            child: child,
+                          ),
+                        ),
+                        Center(
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            color: Colors.red.withAlpha(20),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
               ],
             ),
             // shows app on top while waiting for layouting of the ListView
@@ -244,7 +260,41 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
   }
 
-  Widget _buildBackdropAnimation(BuildContext context, Widget child) {
+  Widget _buildAppFrame({required Widget child}) {
+    return AnimatedBuilder(
+      animation: _backdropAnimationController,
+      builder: (context, child) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: _appCornerRadiusAnimation.value,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF000000).withOpacity(0.04),
+                  offset: const Offset(0, 10),
+                  blurRadius: 10,
+                ),
+                BoxShadow(
+                  color: const Color(0xFF000000).withOpacity(0.10),
+                  offset: const Offset(0, 20),
+                  blurRadius: 25,
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: _appCornerRadiusAnimation.value,
+              child: child,
+            ),
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+
+  Widget _buildAppPositioningAnimation(
+      {required Widget child, required Offset offset}) {
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, child) {
@@ -265,38 +315,17 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           }
         }
 
+        print(_translateAppAnimation.value);
         return Transform(
-          alignment: Alignment.center,
+          alignment: Alignment.topCenter,
           transform: Matrix4.identity()
             ..scale(_scaleAppAnimation.value)
             ..translate(
-              0.0,
-              _translateAppAnimation.value * (selfOffset?.dy ?? 0),
+              0.0 + offset.dx,
+              (_translateAppAnimation.value * (selfOffset?.dy ?? 0)) +
+                  offset.dy * (1 + _translateAppAnimation.value),
             ),
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: _appCornerRadiusAnimation.value,
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF000000).withOpacity(0.04),
-                    offset: const Offset(0, 10),
-                    blurRadius: 10,
-                  ),
-                  BoxShadow(
-                    color: const Color(0xFF000000).withOpacity(0.10),
-                    offset: const Offset(0, 20),
-                    blurRadius: 25,
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: _appCornerRadiusAnimation.value,
-                child: child,
-              ),
-            ),
-          ),
+          child: child,
         );
       },
       child: child,
