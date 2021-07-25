@@ -105,10 +105,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       reverseDuration: WiredashBackdrop.exitDuration,
     )..addStatusListener(_animControllerStatusListener);
 
-    final slightlyUnderdumped = Sprung(14);
+    final slightlyUnderdumped = Sprung(18);
     final CurvedAnimation centerAnimation = CurvedAnimation(
       parent: _backdropAnimationController,
-      curve: Interval(0.0, 0.6, curve: Sprung.overDamped),
+      curve: Interval(0.0, 1.0, curve: Sprung.overDamped),
       reverseCurve: slightlyUnderdumped.flipped,
     );
     final CurvedAnimation inlineAnimation = CurvedAnimation(
