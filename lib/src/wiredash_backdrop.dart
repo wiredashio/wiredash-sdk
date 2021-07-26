@@ -238,6 +238,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                             child: child,
                           ),
                         ),
+                        // TODO place controls, like "take screenshot" on top or next to the app
                         Center(
                           child: Container(
                             width: 100,
@@ -260,6 +261,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
   }
 
+  /// Clips and adds shadow to the app
+  ///
+  /// Clipping is important because by default, widgets like [Banner] draw
+  /// outside of the viewport
   Widget _buildAppFrame({required Widget child}) {
     return AnimatedBuilder(
       animation: _backdropAnimationController,
@@ -293,8 +298,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
   }
 
-  Widget _buildAppPositioningAnimation(
-      {required Widget child, required Offset offset}) {
+  /// Animates the app from fullscreen to inline in the list
+  ///
+  /// [offset] moves the app inside the window sized area reserved for the app in the list
+  Widget _buildAppPositioningAnimation({
+    required Widget child,
+    required Offset offset,
+  }) {
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, child) {
@@ -315,7 +325,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           }
         }
 
-        print(_translateAppAnimation.value);
         return Transform(
           alignment: Alignment.topCenter,
           transform: Matrix4.identity()
