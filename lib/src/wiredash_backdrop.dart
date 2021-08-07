@@ -4,7 +4,9 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/measure.dart';
 import 'package:wiredash/src/responsive_layout.dart';
@@ -94,10 +96,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   bool _isLayoutingCompleted = false;
 
   /// Position of the app relative to the whole backdrop layout
-  Rect? savedRect;
+  Rect? _savedRect;
 
-  /// The "default" position of app to prevent flickering on first frame
-  static const double appStartingTopPosition = 220;
+  /// The "default" position of app used for the snap point calculation
+  ///
+  /// This is just an estimation, and makes sure there aren't multiple snap
+  /// points at location 0 with height 0
+  static const double appStartingTopPosition = 300;
 
   late Animation<double> _centerAnimation;
 
@@ -182,12 +187,16 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }
 
     final model = context.wiredashModel;
-    child = AbsorbPointer(
-      absorbing: !model.isAppInteractive,
-      child: child,
+    child = FocusScope(
+      canRequestFocus: false,
+      skipTraversal: true,
+      child: AbsorbPointer(
+        absorbing: !model.isAppInteractive,
+        child: child,
+      ),
     );
 
-    final appTopPosition = savedRect?.top ?? appStartingTopPosition;
+    final appTopPosition = _savedRect?.top ?? appStartingTopPosition;
     return Material(
       child: Container(
         decoration: const BoxDecoration(
@@ -205,6 +214,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           children: <Widget>[
             ListView(
               controller: _scrollController,
+              // TODO either disable manual scrolling at all or fix snapping when scolled with mouse wheel on desktop
               physics: SnapScrollPhysics(
                 parent: const AlwaysScrollableScrollPhysics(),
                 snaps: [
@@ -225,34 +235,58 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                   child: const WiredashFeedbackFlow(),
                 ),
 
-                // Position of the app in the listview.
-                // shown when layout is done and the entry animation
-                // could be started
-                if (_isLayoutingCompleted)
-                  IntrinsicHeight(
-                    child: Stack(
-                      children: [
-                        _buildAppPositioningAnimation(
-                          offset: Offset(0, 100),
-                          child: _buildAppFrame(
-                            child: child,
-                          ),
+                // Position of the app in the listview for measure, show child here when measured
+                IntrinsicHeight(
+                  child: Stack(
+                    children: [
+                      _buildAppPositioningAnimation(
+                        offset: Offset(0, 100),
+                        child: _buildAppFrame(
+                          child: _savedRect != null ? child : null,
                         ),
-                        // TODO place controls, like "take screenshot" on top or next to the app
-                        Center(
-                          child: Container(
-                            width: 100,
-                            height: 100,
-                            color: Colors.red.withAlpha(20),
-                          ),
-                        )
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
               ],
             ),
+
+            // Bottom action buttons
+            AnimatedOpacity(
+              opacity: () {
+                if (!_isLayoutingCompleted) return 0.0;
+                if (model.isWiredashOpening) return 1.0;
+                if (model.isWiredashClosing) return 0.0;
+                return model.isWiredashActive ? 1.0 : 0.0;
+              }(),
+              duration: const Duration(milliseconds: 250),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: SafeArea(
+                  minimum: const EdgeInsets.only(bottom: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      BigBlueButton(
+                        icon: Icon(Icons.check),
+                        text: Text('Screenshot'),
+                        onTap: () {
+                          print("tap");
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      BigBlueButton(
+                        icon: Icon(Icons.check),
+                        text: Text('Screenshot'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
             // shows app on top while waiting for layouting of the ListView
-            if (!_isLayoutingCompleted) ...<Widget>[
+            if (_savedRect == null) ...<Widget>[
               child,
             ],
           ],
@@ -265,7 +299,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   ///
   /// Clipping is important because by default, widgets like [Banner] draw
   /// outside of the viewport
-  Widget _buildAppFrame({required Widget child}) {
+  Widget _buildAppFrame({required Widget? child}) {
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, child) {
@@ -303,7 +337,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   /// [offset] moves the app inside the window sized area reserved for the app in the list
   Widget _buildAppPositioningAnimation({
     required Widget child,
-    required Offset offset,
+    Offset offset = Offset.zero,
   }) {
     return AnimatedBuilder(
       animation: _backdropAnimationController,
@@ -316,23 +350,26 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         if (selfOffset != null && size != null) {
           final Rect rect = Rect.fromPoints(
               selfOffset, selfOffset.translate(size.width, size.height));
-          if (savedRect != rect) {
+          if (_savedRect != rect) {
+            _savedRect = rect;
             WidgetsBinding.instance!.addPostFrameCallback((_) {
               setState(() {
-                savedRect = rect;
+                /* notify that _savedRect has changed */
               });
             });
           }
         }
 
+        final translationY =
+            (_translateAppAnimation.value * (_savedRect?.top ?? 0)) +
+                offset.dy * (1 + _translateAppAnimation.value);
         return Transform(
           alignment: Alignment.topCenter,
           transform: Matrix4.identity()
             ..scale(_scaleAppAnimation.value)
             ..translate(
-              0.0 + offset.dx,
-              (_translateAppAnimation.value * (selfOffset?.dy ?? 0)) +
-                  offset.dy * (1 + _translateAppAnimation.value),
+              offset.dx,
+              translationY,
             ),
           child: child,
         );
