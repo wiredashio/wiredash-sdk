@@ -25,6 +25,20 @@ class WiredashModel with ChangeNotifier {
 
   final BuildInfoManager buildInfoManager = BuildInfoManager();
 
+  String? get feedbackMessage => _feedbackMessage;
+  // TODO move in a separate class?
+  String? _feedbackMessage;
+
+  set feedbackMessage(String? feedbackMessage) {
+    final trimmed = feedbackMessage?.trim();
+    if (trimmed == '') {
+      _feedbackMessage = null;
+    } else {
+      _feedbackMessage = trimmed;
+    }
+    notifyListeners();
+  }
+
   // TODO save somewhere else
   String? userId;
   String? userEmail;
