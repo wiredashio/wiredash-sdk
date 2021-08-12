@@ -8,10 +8,16 @@ class WiredashProvider extends InheritedNotifier<WiredashModel> {
     required Widget child,
   }) : super(key: key, notifier: wiredashModel, child: child);
 
-  static WiredashModel of(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<WiredashProvider>()!
-        .notifier!;
+  static WiredashModel of(BuildContext context, {bool listen = true}) {
+    if (listen) {
+      return context
+          .dependOnInheritedWidgetOfExactType<WiredashProvider>()!
+          .notifier!;
+    } else {
+      return context
+          .findAncestorWidgetOfExactType<WiredashProvider>()!
+          .notifier!;
+    }
   }
 }
 

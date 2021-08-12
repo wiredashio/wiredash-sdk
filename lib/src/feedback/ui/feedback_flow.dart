@@ -28,8 +28,9 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController()
-      ..addListener(() {
+    _controller = TextEditingController(
+      text: WiredashProvider.of(context, listen: false).feedbackMessage,
+    )..addListener(() {
         final text = _controller.text;
         if (context.wiredashModel.feedbackMessage != text) {
           context.wiredashModel.feedbackMessage = text;
