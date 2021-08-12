@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/utils/color_ext.dart';
+
+const buttonBlue = Color(0xFF1A56DB);
 
 class BigBlueButton extends ImplicitlyAnimatedWidget {
   const BigBlueButton(
@@ -11,7 +14,7 @@ class BigBlueButton extends ImplicitlyAnimatedWidget {
       : super(
           key: key,
           curve: Curves.easeInOutCirc,
-          duration: const Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 150),
         );
 
   final Widget icon;
@@ -120,11 +123,16 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<BigBlueButton> {
     _colorTween = visitor(
       _colorTween,
       () {
-        if (_hovered) {
-          return _pressed ? Color(0xFF561A23) : Color(0xFF1A5623);
-        } else {
-          return _pressed ? Color(0xFF561ADB) : Color(0xFF1A56DB);
+        if (widget.onTap == null) {
+          return buttonBlue.lighten(0.3);
         }
+        if (_pressed) {
+          return buttonBlue.darken(0.1);
+        }
+        if (_hovered) {
+          return buttonBlue.darken(0.05);
+        }
+        return buttonBlue;
       }(),
       (dynamic value) => ColorTween(begin: value as Color?),
     ) as ColorTween?;
