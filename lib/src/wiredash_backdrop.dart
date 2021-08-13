@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/feedback/ui/base_click_target.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/measure.dart';
@@ -196,7 +197,21 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       ),
     );
 
-    final appTopPosition = _savedRect?.top ?? appStartingTopPosition;
+    final appTopPosition = () {
+      if (_savedRect != null) {
+        if (_scrollController.positions.length == 1) {
+          return _savedRect!.top + _scrollController.offset;
+        }
+        return _savedRect!.top;
+      }
+      return appStartingTopPosition;
+    }();
+
+    bool scrollable = false;
+    assert(() {
+      scrollable = false;
+      return true;
+    }());
     return Material(
       child: Container(
         decoration: const BoxDecoration(
@@ -215,15 +230,17 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             ListView(
               controller: _scrollController,
               // TODO either disable manual scrolling at all or fix snapping when scolled with mouse wheel on desktop
-              physics: SnapScrollPhysics(
-                parent: const AlwaysScrollableScrollPhysics(),
-                snaps: [
-                  Snap.avoidZone(0, appTopPosition,
-                      delimiter: math.min(appTopPosition * 2 / 3, 200)),
-                  // from app top all the way to the end of list and beyond
-                  Snap.avoidZone(appTopPosition, 9999),
-                ],
-              ),
+              physics: !scrollable
+                  ? NeverScrollableScrollPhysics()
+                  : SnapScrollPhysics(
+                      parent: const AlwaysScrollableScrollPhysics(),
+                      snaps: [
+                        Snap.avoidZone(0, appTopPosition,
+                            delimiter: math.min(appTopPosition * 2 / 3, 200)),
+                        // from app top all the way to the end of list and beyond
+                        Snap.avoidZone(appTopPosition, 9999),
+                      ],
+                    ),
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: <Widget>[
                 MeasureSize(
@@ -240,11 +257,33 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                   child: Stack(
                     children: [
                       _buildAppPositioningAnimation(
-                        offset: Offset(0, 100),
+                        offset: Offset(0, 50),
                         child: _buildAppFrame(
                           child: _savedRect != null ? child : null,
                         ),
                       ),
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: SafeArea(
+                          top: true,
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            child: context.wiredashModel.capturingScreenshot
+                                ? _ScrollToTopButton(
+                                    onTap: () {
+                                      context.wiredashModel.exitCaptureMode();
+                                      _scrollController.animateTo(
+                                        0,
+                                        duration:
+                                            const Duration(milliseconds: 200),
+                                        curve: Curves.easeInOutCubic,
+                                      );
+                                    },
+                                  )
+                                : const SizedBox(),
+                          ),
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -269,16 +308,23 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       BigBlueButton(
-                        icon: Icon(Icons.check),
-                        text: Text('Screenshot'),
+                        // TODO replace with real icon
+                        icon: const Icon(Icons.camera_alt_outlined),
+                        text: const Text('Screenshot'),
                         onTap: () {
-                          print("tap");
+                          context.wiredashModel.enterCaptureMode();
+                          _scrollController.animateTo(
+                            appTopPosition,
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeInOutCubic,
+                          );
                         },
                       ),
                       const SizedBox(width: 8),
                       BigBlueButton(
-                        icon: Icon(Icons.check),
-                        text: Text('Screenshot'),
+                        onTap: () {},
+                        icon: const Icon(Icons.check),
+                        text: const Text('Done'),
                       ),
                     ],
                   ),
@@ -376,6 +422,34 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         );
       },
       child: child,
+    );
+  }
+}
+
+class _ScrollToTopButton extends StatelessWidget {
+  _ScrollToTopButton({
+    Key? key,
+    this.onTap,
+  }) : super(key: key);
+
+  final void Function()? onTap;
+
+  static final _colorTween =
+      ColorTween(begin: Colors.black26, end: Colors.black54);
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedClickTarget(
+      onTap: onTap,
+      builder: (context, state, anims) {
+        final colorValue =
+            math.max(anims.hoveredAnim.value * 0.3, anims.pressedAnim.value);
+        return Icon(
+          Icons.keyboard_arrow_up_outlined,
+          size: 100,
+          color: _colorTween.lerp(colorValue),
+        );
+      },
     );
   }
 }

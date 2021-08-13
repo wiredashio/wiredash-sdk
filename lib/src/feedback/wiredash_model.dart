@@ -39,6 +39,9 @@ class WiredashModel with ChangeNotifier {
     notifyListeners();
   }
 
+  bool get capturingScreenshot => _capturingScreenshot;
+  bool _capturingScreenshot = false;
+
   // TODO save somewhere else
   String? userId;
   String? userEmail;
@@ -105,6 +108,16 @@ class WiredashModel with ChangeNotifier {
     } catch (e) {
       // TODO show error UI
     }
+  }
+
+  void enterCaptureMode() {
+    _capturingScreenshot = true;
+    notifyListeners();
+  }
+
+  void exitCaptureMode() {
+    _capturingScreenshot = false;
+    notifyListeners();
   }
 }
 

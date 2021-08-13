@@ -6,11 +6,9 @@ import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
 const _labels = [
-  Label(id: 'aaa111', name: 'bug'),
-  Label(id: 'bbb222', name: 'praise'),
-  Label(id: 'ccc333', name: 'feature request'),
-  Label(id: 'ddd444', name: 'something funny'),
-  Label(id: 'eee555', name: 'overmorrow'),
+  Label(id: 'bug', name: 'Bug'),
+  Label(id: 'improvement', name: 'Improvement'),
+  Label(id: 'praise', name: 'Praise 🎉'),
 ];
 
 class WiredashFeedbackFlow extends StatefulWidget {
@@ -289,6 +287,7 @@ class _Label extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 225),
         curve: Curves.ease,
+        constraints: BoxConstraints(maxHeight: 41, minHeight: 41),
         decoration: BoxDecoration(
           color: selected ? Colors.white : const Color(0xFFE8EEFB),
           borderRadius: BorderRadius.circular(10),
@@ -303,15 +302,19 @@ class _Label extends StatelessWidget {
                   color: Colors.transparent,
                 ),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        child: AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 225),
-          curve: Curves.ease,
-          style: TextStyle(
-            fontWeight: FontWeight.w800,
-            color: _resolveTextColor(), // gray / 500
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+        child: Align(
+          widthFactor: 1,
+          alignment: Alignment.center,
+          child: AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 225),
+            curve: Curves.ease,
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              color: _resolveTextColor(), // gray / 500
+            ),
+            child: Text(label.name),
           ),
-          child: Text(label.name),
         ),
       ),
     );

@@ -5,13 +5,13 @@ import 'package:wiredash/src/common/utils/color_ext.dart';
 const buttonBlue = Color(0xFF1A56DB);
 
 class BigBlueButton extends ImplicitlyAnimatedWidget {
-  const BigBlueButton(
-      {Key? key,
-      required this.icon,
-      required this.text,
-      this.focusNode,
-      this.onTap})
-      : super(
+  const BigBlueButton({
+    Key? key,
+    required this.icon,
+    required this.text,
+    this.focusNode,
+    this.onTap,
+  }) : super(
           key: key,
           curve: Curves.easeInOutCirc,
           duration: const Duration(milliseconds: 150),
