@@ -266,6 +266,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                         alignment: Alignment.topCenter,
                         child: SafeArea(
                           top: true,
+                          minimum: const EdgeInsets.only(top: 8),
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 200),
                             child: context.wiredashModel.capturingScreenshot
@@ -444,10 +445,18 @@ class _ScrollToTopButton extends StatelessWidget {
       builder: (context, state, anims) {
         final colorValue =
             math.max(anims.hoveredAnim.value * 0.3, anims.pressedAnim.value);
-        return Icon(
-          Icons.keyboard_arrow_up_outlined,
-          size: 100,
-          color: _colorTween.lerp(colorValue),
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Align(
+            alignment: Alignment.center,
+            widthFactor: 0.5,
+            heightFactor: 0.5,
+            child: Icon(
+              Icons.keyboard_arrow_up_outlined,
+              size: 100,
+              color: _colorTween.lerp(colorValue),
+            ),
+          ),
         );
       },
     );
