@@ -270,19 +270,22 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                           minimum: const EdgeInsets.only(top: 8),
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 200),
-                            child: context.wiredashModel.capturingScreenshot
-                                ? _ScrollToTopButton(
-                                    onTap: () {
-                                      context.wiredashModel.exitCaptureMode();
-                                      _scrollController.animateTo(
-                                        0,
-                                        duration:
-                                            const Duration(milliseconds: 200),
-                                        curve: Curves.easeInOutCubic,
-                                      );
-                                    },
-                                  )
-                                : const SizedBox(),
+                            child: () {
+                              if (context.wiredashModel.capturingScreenshot) {
+                                return _ScrollToTopButton(
+                                  onTap: () {
+                                    context.wiredashModel.exitCaptureMode();
+                                    _scrollController.animateTo(
+                                      0,
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      curve: Curves.easeInOutCubic,
+                                    );
+                                  },
+                                );
+                              }
+                              return const SizedBox();
+                            }(),
                           ),
                         ),
                       )
