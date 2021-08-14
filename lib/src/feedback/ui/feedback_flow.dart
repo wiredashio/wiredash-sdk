@@ -12,7 +12,9 @@ const _labels = [
 ];
 
 class WiredashFeedbackFlow extends StatefulWidget {
-  const WiredashFeedbackFlow({Key? key}) : super(key: key);
+  const WiredashFeedbackFlow({this.focusNode, Key? key}) : super(key: key);
+
+  final FocusNode? focusNode;
 
   @override
   State<WiredashFeedbackFlow> createState() => _WiredashFeedbackFlowState();
@@ -69,6 +71,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
 
     final Widget column1 = _FeedbackMessageInput(
       controller: _controller,
+      focusNode: widget.focusNode,
     );
     final Widget column2 = AnimatedBuilder(
       animation: _controller,
@@ -170,10 +173,12 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
 }
 
 class _FeedbackMessageInput extends StatefulWidget {
-  const _FeedbackMessageInput({required this.controller, Key? key})
+  const _FeedbackMessageInput(
+      {required this.controller, this.focusNode, Key? key})
       : super(key: key);
 
   final TextEditingController controller;
+  final FocusNode? focusNode;
 
   @override
   _FeedbackMessageInputState createState() => _FeedbackMessageInputState();
@@ -200,6 +205,7 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
         ),
         TextField(
           controller: widget.controller,
+          focusNode: widget.focusNode,
           keyboardType: TextInputType.multiline,
           maxLines: null,
           maxLength: 2048,
@@ -216,7 +222,7 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
               top: 16,
             ),
           ),
-        )
+        ),
       ],
     );
   }

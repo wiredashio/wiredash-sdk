@@ -39,12 +39,25 @@ class WiredashModel with ChangeNotifier {
     notifyListeners();
   }
 
+  String? get userEmail => _userEmail;
+  // TODO move in a separate class?
+  String? _userEmail;
+
+  set userEmail(String? userEmail) {
+    final trimmed = userEmail?.trim();
+    if (trimmed == '') {
+      _userEmail = null;
+    } else {
+      _userEmail = trimmed;
+    }
+    notifyListeners();
+  }
+
   bool get capturingScreenshot => _capturingScreenshot;
   bool _capturingScreenshot = false;
 
   // TODO save somewhere else
   String? userId;
-  String? userEmail;
 
   /// Deletes pending feedbacks
   ///

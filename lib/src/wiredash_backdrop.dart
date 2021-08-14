@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/ui/base_click_target.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
+import 'package:wiredash/src/feedback/ui/email_input.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/measure.dart';
 import 'package:wiredash/src/responsive_layout.dart';
@@ -108,6 +109,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   late Animation<double> _centerAnimation;
 
+  final FocusNode _feedbackFocusNode = FocusNode();
+  final FocusNode _emailFocusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -137,6 +141,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       begin: BorderRadius.circular(0),
       end: BorderRadius.circular(20),
     ).animate(_centerAnimation);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+    _backdropAnimationController.dispose();
+    _feedbackFocusNode.dispose();
+    _emailFocusNode.dispose();
   }
 
   /// returns the scale factor of
@@ -208,6 +221,23 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       return appStartingTopPosition;
     }();
 
+    final appBottomPosition = () {
+      if (_savedRect != null) {
+        return _savedRect!.bottom;
+      }
+      return appStartingTopPosition + MediaQuery.of(context).size.height;
+    }();
+    print("app position $appTopPosition - $appBottomPosition");
+
+    final scrollOffset = () {
+      if (_scrollController.positions.length == 1) {
+        return _scrollController.offset;
+      }
+    }();
+    print("scrollOffset $scrollOffset");
+
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
     bool scrollable = false;
     assert(() {
       scrollable = false;
@@ -238,8 +268,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                       snaps: [
                         Snap.avoidZone(0, appTopPosition,
                             delimiter: math.min(appTopPosition * 2 / 3, 200)),
-                        // from app top all the way to the end of list and beyond
-                        Snap.avoidZone(appTopPosition, 9999),
+                        Snap(appTopPosition),
+                        Snap(appBottomPosition),
                       ],
                     ),
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -250,7 +280,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                       // input changed size, trigger build to update
                     });
                   },
-                  child: const WiredashFeedbackFlow(),
+                  child: WiredashFeedbackFlow(
+                    focusNode: _feedbackFocusNode,
+                  ),
                 ),
 
                 // Position of the app in the listview for measure, show child here when measured
@@ -272,8 +304,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                             duration: const Duration(milliseconds: 200),
                             child: () {
                               if (context.wiredashModel.capturingScreenshot) {
+                                // TODO fix arrow only clickable within app frame bounds
                                 return _ScrollToTopButton(
                                   onTap: () {
+                                    print("Scroll to top");
                                     context.wiredashModel.exitCaptureMode();
                                     _scrollController.animateTo(
                                       0,
@@ -292,6 +326,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                     ],
                   ),
                 ),
+
+                EmailInput(
+                  focusNode: _emailFocusNode,
+                ),
+
+                // enough space so that bottom buttons don't hide content
+                SizedBox(height: 300),
+                SizedBox(height: bottomInset),
               ],
             ),
 
@@ -308,7 +350,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: SafeArea(
-                  minimum: const EdgeInsets.only(bottom: 20),
+                  minimum: EdgeInsets.only(
+                      bottom: bottomInset != 0 ? bottomInset : 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -321,16 +364,37 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                         text: const Text('Screenshot'),
                         onTap: () {
                           context.wiredashModel.enterCaptureMode();
-                          _scrollController.animateTo(
+                          _scrollController
+                              .animateTo(
                             appTopPosition,
                             duration: const Duration(milliseconds: 200),
                             curve: Curves.easeInOutCubic,
-                          );
+                          )
+                              .then((value) {
+                            setState(() {
+                              // refresh offsets
+                            });
+                          });
+                          _emailFocusNode.unfocus();
+                          _feedbackFocusNode.unfocus();
                         },
                       ),
                       const SizedBox(width: 8),
                       BigBlueButton(
-                        onTap: () {},
+                        onTap: () {
+                          _scrollController
+                              .animateTo(
+                            appBottomPosition,
+                            duration: const Duration(milliseconds: 600),
+                            curve: Curves.easeInOutCubic,
+                          )
+                              .then((value) {
+                            setState(() {
+                              // refresh offsets
+                            });
+                          });
+                          _emailFocusNode.requestFocus();
+                        },
                         icon: const Icon(
                           WiredashIcons.check,
                           size: 24,
