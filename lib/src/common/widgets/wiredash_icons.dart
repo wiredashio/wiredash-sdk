@@ -33,4 +33,20 @@ class WiredashIcons {
       IconData(0xe00D, fontFamily: 'wiredash-icons', fontPackage: 'wiredash');
   static const IconData trashcan =
       IconData(0xe00E, fontFamily: 'wiredash-icons', fontPackage: 'wiredash');
+  static const IconData check =
+      IconData(0xe00F, fontFamily: 'wiredash-icons', fontPackage: 'wiredash');
+  static const IconData retry =
+      IconData(0xe010, fontFamily: 'wiredash-icons', fontPackage: 'wiredash');
+  static const IconData arrowRight =
+      IconData(0xe011, fontFamily: 'wiredash-icons', fontPackage: 'wiredash');
+  static const IconData submit =
+      IconData(0xe012, fontFamily: 'wiredash-icons', fontPackage: 'wiredash');
+  static const IconData cevronUp =
+      IconData(0xe013, fontFamily: 'wiredash-icons', fontPackage: 'wiredash');
+  static const IconData cevronDownLight =
+      IconData(0xe014, fontFamily: 'wiredash-icons', fontPackage: 'wiredash');
+  static const IconData drawAction =
+      IconData(0xe015, fontFamily: 'wiredash-icons', fontPackage: 'wiredash');
+  static const IconData screenshotAction =
+      IconData(0xe016, fontFamily: 'wiredash-icons', fontPackage: 'wiredash');
 }

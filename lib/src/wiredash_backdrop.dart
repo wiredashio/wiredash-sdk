@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/ui/base_click_target.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
@@ -310,7 +311,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                     children: [
                       BigBlueButton(
                         // TODO replace with real icon
-                        icon: const Icon(Icons.camera_alt_outlined),
+                        icon: const Icon(
+                          WiredashIcons.screenshotAction,
+                          size: 28,
+                        ),
                         text: const Text('Screenshot'),
                         onTap: () {
                           context.wiredashModel.enterCaptureMode();
@@ -324,7 +328,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                       const SizedBox(width: 8),
                       BigBlueButton(
                         onTap: () {},
-                        icon: const Icon(Icons.check),
+                        icon: const Icon(
+                          WiredashIcons.check,
+                          size: 24,
+                        ),
                         text: const Text('Done'),
                       ),
                     ],
