@@ -61,6 +61,11 @@ class BackdropController {
         completer.complete();
       });
       await completer.future;
+      _state!._scrollController.animateTo(
+        MediaQuery.of(_state!.context).size.height - 100,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOutCubic,
+      );
       await openFuture;
     } else {
       _state!._backdropAnimationController.forward();
@@ -131,7 +136,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
     final CurvedAnimation inlineAnimation = CurvedAnimation(
       parent: _backdropAnimationController,
-      curve: Interval(0.4, 1.0, curve: slightlyUnderdumped),
+      curve: Interval(0.0, 1.0, curve: slightlyUnderdumped),
       reverseCurve: slightlyUnderdumped.flipped,
     );
 
@@ -275,17 +280,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                     ),
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: <Widget>[
-                MeasureSize(
-                  onChange: (size, bounds) {
-                    setState(() {
-                      // input changed size, trigger build to update
-                    });
-                  },
-                  child: WiredashFeedbackFlow(
-                    focusNode: _feedbackFocusNode,
-                  ),
-                ),
-
                 // Position of the app in the listview for measure, show child here when measured
                 IntrinsicHeight(
                   child: Stack(
@@ -325,6 +319,17 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                         ),
                       )
                     ],
+                  ),
+                ),
+
+                MeasureSize(
+                  onChange: (size, bounds) {
+                    setState(() {
+                      // input changed size, trigger build to update
+                    });
+                  },
+                  child: WiredashFeedbackFlow(
+                    focusNode: _feedbackFocusNode,
                   ),
                 ),
 

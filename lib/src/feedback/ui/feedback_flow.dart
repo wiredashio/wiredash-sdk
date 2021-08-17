@@ -46,26 +46,6 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
 
   @override
   Widget build(BuildContext context) {
-    final Widget closeButton = Center(
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => context.wiredashModel.hide(),
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              'CLOSE',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 10,
-                letterSpacing: 2,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
     final bool isTwoColumnLayout =
         context.responsiveLayout.deviceClass >= DeviceClass.largeTablet;
 
@@ -88,7 +68,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             switchOutCurve: Curves.fastOutSlowIn,
             child: Container(
               constraints:
-                  BoxConstraints(minHeight: isTwoColumnLayout ? 300 : 50),
+                  BoxConstraints(minHeight: isTwoColumnLayout ? 300 : 100),
               alignment: Alignment.topCenter,
               padding: EdgeInsets.only(top: isTwoColumnLayout ? 100 : 0),
               child: () {
@@ -121,54 +101,50 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       },
     );
 
-    return SafeArea(
-      bottom: false,
-      minimum: const EdgeInsets.only(top: 12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          closeButton,
-          () {
-            if (isTwoColumnLayout) {
-              // two columns
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.responsiveLayout.horizontalMargin,
-                  ),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                        maxWidth: DeviceClass.largeDesktop.minWidth),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(child: column1),
-                        SizedBox(width: context.responsiveLayout.gutters),
-                        Expanded(child: column2),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            } else {
-              // single column
-              return Padding(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        () {
+          if (isTwoColumnLayout) {
+            // two columns
+            return Center(
+              child: Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: context.responsiveLayout.horizontalMargin,
                 ),
-                child: Column(
-                  children: [
-                    column1,
-                    const SizedBox(height: 72),
-                    column2,
-                  ],
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: DeviceClass.largeDesktop.minWidth,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(child: column1),
+                      SizedBox(width: context.responsiveLayout.gutters),
+                      Expanded(child: column2),
+                    ],
+                  ),
                 ),
-              );
-            }
-          }(),
-        ],
-      ),
+              ),
+            );
+          } else {
+            // single column
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.responsiveLayout.horizontalMargin,
+              ),
+              child: Column(
+                children: [
+                  column1,
+                  const SizedBox(height: 36),
+                  column2,
+                ],
+              ),
+            );
+          }
+        }(),
+      ],
     );
   }
 }
@@ -193,9 +169,7 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.only(
-            top: 20,
-          ),
+          padding: EdgeInsets.only(top: 4),
           child: Text(
             'You got feedback for us?',
             style: TextStyle(
