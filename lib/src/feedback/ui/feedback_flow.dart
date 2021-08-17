@@ -67,6 +67,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             switchInCurve: Curves.fastOutSlowIn,
             switchOutCurve: Curves.fastOutSlowIn,
             child: Container(
+              key: ValueKey(_controller.text.isEmpty),
               constraints:
                   BoxConstraints(minHeight: isTwoColumnLayout ? 300 : 100),
               alignment: Alignment.topCenter,
