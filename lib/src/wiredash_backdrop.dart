@@ -206,7 +206,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       canRequestFocus: false,
       skipTraversal: true,
       child: AbsorbPointer(
-        absorbing: !model.isAppInteractive,
+        absorbing: false,
+        // absorbing: !model.isAppInteractive,
         child: child,
       ),
     );
@@ -238,9 +239,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
-    bool scrollable = false;
+    bool scrollable = true;
     assert(() {
-      scrollable = false;
+      scrollable = true;
       return true;
     }());
     return Material(

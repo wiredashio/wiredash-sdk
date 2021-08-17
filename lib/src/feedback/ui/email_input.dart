@@ -48,9 +48,7 @@ class _EmailInputState extends State<EmailInput> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.only(
-              top: 20,
-            ),
+            padding: EdgeInsets.only(top: 20),
             child: Text(
               'Email',
               style: TextStyle(
@@ -72,9 +70,7 @@ class _EmailInputState extends State<EmailInput> {
               disabledBorder: InputBorder.none,
               errorBorder: InputBorder.none,
               hintText: 'mail@wiredash.io',
-              contentPadding: EdgeInsets.only(
-                top: 16,
-              ),
+              contentPadding: EdgeInsets.only(top: 16),
             ),
           ),
         ],

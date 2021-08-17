@@ -88,7 +88,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             switchOutCurve: Curves.fastOutSlowIn,
             child: Container(
               constraints:
-                  BoxConstraints(minHeight: isTwoColumnLayout ? 300 : 100),
+                  BoxConstraints(minHeight: isTwoColumnLayout ? 300 : 50),
               alignment: Alignment.topCenter,
               padding: EdgeInsets.only(top: isTwoColumnLayout ? 100 : 0),
               child: () {
@@ -98,6 +98,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 return ValueListenableBuilder<Set<Label>>(
                   valueListenable: _selectedLabels,
                   builder: (context, selectedLabels, child) {
+                    // TODO fade in the labels from left to right
                     return _LabelRecommendations(
                       isAnyLabelSelected: selectedLabels.isNotEmpty,
                       isLabelSelected: selectedLabels.contains,
@@ -209,6 +210,7 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
           keyboardType: TextInputType.multiline,
           maxLines: null,
           maxLength: 2048,
+          autofocus: true,
           buildCounter: _getCounterText,
           style: const TextStyle(fontSize: 14),
           decoration: const InputDecoration(
