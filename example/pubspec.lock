@@ -239,7 +239,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.9.0"
+    version: "1.0.0-alpha.1"
   xdg_directories:
     dependency: transitive
     description:
