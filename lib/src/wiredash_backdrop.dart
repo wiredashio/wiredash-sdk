@@ -333,84 +333,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                   ),
                 ),
 
-                EmailInput(
-                  focusNode: _emailFocusNode,
-                ),
-
-                // enough space so that bottom buttons don't hide content
-                SizedBox(height: 300),
+                // keyboard inset
                 SizedBox(height: bottomInset),
               ],
-            ),
-
-            // Bottom action buttons
-            AnimatedOpacity(
-              opacity: () {
-                if (!_isLayoutingCompleted) return 0.0;
-                if (model.isWiredashClosing) return 0.0;
-                if (!model.isWiredashActive) return 0.0;
-                if (model.feedbackMessage != null) return 1.0;
-                return 0.0;
-              }(),
-              duration: const Duration(milliseconds: 250),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: SafeArea(
-                  minimum: EdgeInsets.only(
-                      bottom: bottomInset != 0 ? bottomInset : 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      BigBlueButton(
-                        // TODO replace with real icon
-                        icon: const Icon(
-                          WiredashIcons.screenshotAction,
-                          size: 28,
-                        ),
-                        text: const Text('Screenshot'),
-                        onTap: () {
-                          context.wiredashModel.enterCaptureMode();
-                          _scrollController
-                              .animateTo(
-                            appTopPosition,
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeInOutCubic,
-                          )
-                              .then((value) {
-                            setState(() {
-                              // refresh offsets
-                            });
-                          });
-                          _emailFocusNode.unfocus();
-                          _feedbackFocusNode.unfocus();
-                        },
-                      ),
-                      const SizedBox(width: 8),
-                      BigBlueButton(
-                        onTap: () {
-                          _scrollController
-                              .animateTo(
-                            appBottomPosition,
-                            duration: const Duration(milliseconds: 600),
-                            curve: Curves.easeInOutCubic,
-                          )
-                              .then((value) {
-                            setState(() {
-                              // refresh offsets
-                            });
-                          });
-                          _emailFocusNode.requestFocus();
-                        },
-                        icon: const Icon(
-                          WiredashIcons.check,
-                          size: 24,
-                        ),
-                        text: const Text('Done'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ),
 
             // shows app on top while waiting for layouting of the ListView

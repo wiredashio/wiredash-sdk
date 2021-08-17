@@ -97,8 +97,15 @@ class WiredashModel with ChangeNotifier {
     notifyListeners();
   }
 
-  // ignore: unused_element
-  Future<void> _sendFeedback() async {
+  Future<void> submitFeedback() async {
+    // during development
+    // TODO remove afterwards
+
+    _feedbackMessage = null;
+    _userEmail = null;
+    await hide();
+    return;
+
     final deviceId = await state.deviceIdGenerator.deviceId();
 
     final item = PersistedFeedbackItem(
@@ -110,8 +117,8 @@ class WiredashModel with ChangeNotifier {
       deviceInfo: state.deviceInfoGenerator.generate(),
       email: userEmail,
       // TODO collect message and labels
-      message: 'Message',
-      type: 'labelXYZ',
+      message: _feedbackMessage!,
+      type: 'bug',
       userId: userId,
     );
 

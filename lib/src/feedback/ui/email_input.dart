@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/feedback/data/label.dart';
-import 'package:wiredash/src/feedback/ui/more_menu.dart';
-import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
+import 'package:wiredash/src/responsive_layout.dart';
 
 class EmailInput extends StatefulWidget {
   const EmailInput({
@@ -42,7 +39,10 @@ class _EmailInputState extends State<EmailInput> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.responsiveLayout.horizontalMargin,
+        vertical: 8,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

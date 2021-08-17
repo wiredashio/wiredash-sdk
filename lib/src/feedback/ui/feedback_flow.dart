@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
+import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
+import 'package:wiredash/src/feedback/ui/email_input.dart';
 import 'package:wiredash/src/feedback/ui/more_menu.dart';
 import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
@@ -145,6 +148,26 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             );
           }
         }(),
+        const EmailInput(),
+        Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.responsiveLayout.horizontalMargin,
+              vertical: 16,
+            ),
+            child: BigBlueButton(
+              icon: Icon(WiredashIcons.submit),
+              text: Text("Submit"),
+              onTap: context.wiredashModel.feedbackMessage == null
+                  ? null
+                  : () {
+                      // TODO handle error
+                      context.wiredashModel.submitFeedback();
+                    },
+            ),
+          ),
+        ),
+        SizedBox(height: 100),
       ],
     );
   }
