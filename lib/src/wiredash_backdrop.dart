@@ -83,7 +83,8 @@ class BackdropController {
 
 class _WiredashBackdropState extends State<WiredashBackdrop>
     with TickerProviderStateMixin {
-  final GlobalKey _childAppKey = GlobalKey<State<StatefulWidget>>();
+  final GlobalKey _childAppKey =
+      GlobalKey<State<StatefulWidget>>(debugLabel: 'app');
 
   AnimationStatus _animationStatus = AnimationStatus.dismissed;
   late final ScrollController _scrollController;
@@ -121,7 +122,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   void initState() {
     super.initState();
     widget.controller?._state = this;
-    _scrollController = ScrollController();
+    _scrollController = ScrollController()
+      ..addListener(() {
+        if (_scrollController.positions.length == 1) {
+          setState(() {
+            _scrollOffset = _scrollController.offset;
+          });
+        }
+      });
     _backdropAnimationController = AnimationController(
       vsync: this,
       duration: WiredashBackdrop.enterDuration,
@@ -194,28 +202,19 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }
   }
 
+  double _scrollOffset = 0;
+
   @override
   Widget build(BuildContext context) {
-    Widget child = KeyedSubtree(
+    Widget app = KeyedSubtree(
       key: _childAppKey,
       child: widget.child,
     );
 
     if (_animationStatus == AnimationStatus.dismissed) {
       // animation is not yet started, show the app without being wrapped in Transforms
-      return child;
+      return app;
     }
-
-    final model = context.wiredashModel;
-    child = FocusScope(
-      canRequestFocus: false,
-      skipTraversal: true,
-      child: AbsorbPointer(
-        absorbing: false,
-        // absorbing: !model.isAppInteractive,
-        child: child,
-      ),
-    );
 
     final appTopPosition = () {
       if (_savedRect != null) {
@@ -233,22 +232,27 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       }
       return appStartingTopPosition + MediaQuery.of(context).size.height;
     }();
-    print("app position $appTopPosition - $appBottomPosition");
 
-    final scrollOffset = () {
-      if (_scrollController.positions.length == 1) {
-        return _scrollController.offset;
-      }
-    }();
-    print("scrollOffset $scrollOffset");
+    print("scrollOffset $_scrollOffset");
+    print('_savedRect=${_savedRect}');
+    // print("app position $appTopPosition - $appBottomPosition");
 
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
-    bool scrollable = true;
-    assert(() {
-      scrollable = true;
-      return true;
-    }());
+    final model = context.wiredashModel;
+    app = FocusScope(
+      debugLabel: 'wiredash app wrapper',
+      canRequestFocus: false,
+      // Users would be unable to leave the app once it got focus
+      skipTraversal: true,
+      child: AbsorbPointer(
+        absorbing: _scrollOffset > 0.0,
+        child: _KeepAppAlive(
+          child: app,
+        ),
+      ),
+    );
+
     return Material(
       child: Container(
         decoration: const BoxDecoration(
@@ -267,17 +271,17 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             ListView(
               controller: _scrollController,
               // TODO either disable manual scrolling at all or fix snapping when scolled with mouse wheel on desktop
-              physics: !scrollable
-                  ? NeverScrollableScrollPhysics()
-                  : SnapScrollPhysics(
-                      parent: const AlwaysScrollableScrollPhysics(),
-                      snaps: [
-                        Snap.avoidZone(0, appTopPosition,
-                            delimiter: math.min(appTopPosition * 2 / 3, 200)),
-                        Snap(appTopPosition),
-                        Snap(appBottomPosition),
-                      ],
-                    ),
+              physics: SnapScrollPhysics(
+                parent: const AlwaysScrollableScrollPhysics(),
+                snaps: [
+                  Snap.avoidZone(
+                    0,
+                    appBottomPosition,
+                    delimiter: appBottomPosition - appTopPosition,
+                  ),
+                  Snap(appBottomPosition + 10),
+                ],
+              ),
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: <Widget>[
                 // Position of the app in the listview for measure, show child here when measured
@@ -287,7 +291,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                       _buildAppPositioningAnimation(
                         offset: Offset(0, 50),
                         child: _buildAppFrame(
-                          child: _savedRect != null ? child : null,
+                          child: _savedRect != null ? app : null,
                         ),
                       ),
                       Align(
@@ -340,7 +344,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
             // shows app on top while waiting for layouting of the ListView
             if (_savedRect == null) ...<Widget>[
-              child,
+              app,
             ],
           ],
         ),
@@ -466,4 +470,25 @@ class _ScrollToTopButton extends StatelessWidget {
       },
     );
   }
+}
+
+/// Keeps the app alive, even when not in viewport
+class _KeepAppAlive extends StatefulWidget {
+  const _KeepAppAlive({Key? key, required this.child}) : super(key: key);
+
+  final Widget child;
+
+  @override
+  _KeepAppAliveState createState() => _KeepAppAliveState();
+}
+
+class _KeepAppAliveState extends State<_KeepAppAlive>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }

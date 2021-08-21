@@ -168,6 +168,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
           ),
         ),
         SizedBox(height: 100),
+        SizedBox(height: 1000),
       ],
     );
   }
