@@ -37,7 +37,9 @@ class SketcherController extends ChangeNotifier {
   }
 
   void updateGesture(Offset offset) {
-    _last?..addPoint(offset)..addPoint(offset);
+    _last
+      ?..addPoint(offset)
+      ..addPoint(offset);
     notifyListeners();
   }
 
