@@ -44,8 +44,6 @@ jobs:
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
         run: cd example && sudo --preserve-env=PATH env flutter build web
-      - name: Check formatting
-        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed .
 
   pr-beta:
     runs-on: ubuntu-latest
