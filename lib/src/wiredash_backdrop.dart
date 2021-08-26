@@ -270,7 +270,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           children: <Widget>[
             ListView(
               controller: _scrollController,
-              // TODO either disable manual scrolling at all or fix snapping when scolled with mouse wheel on desktop
+              // TODO fix snapping when scolled with mouse wheel on desktop
               physics: SnapScrollPhysics(
                 parent: const AlwaysScrollableScrollPhysics(),
                 snaps: [
@@ -302,12 +302,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 200),
                             child: () {
-                              if (context.wiredashModel.capturingScreenshot) {
+                              if (model.capturingScreenshot) {
                                 // TODO fix arrow only clickable within app frame bounds
                                 return _ScrollToTopButton(
                                   onTap: () {
                                     print("Scroll to top");
-                                    context.wiredashModel.exitCaptureMode();
+                                    model.exitCaptureMode();
                                     _scrollController.animateTo(
                                       0,
                                       duration:
