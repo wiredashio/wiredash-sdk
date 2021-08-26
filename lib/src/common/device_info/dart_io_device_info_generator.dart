@@ -27,6 +27,8 @@ class _DartIoDeviceInfoGenerator implements DeviceInfoGenerator {
 
 /// Called by [DeviceInfoGenerator] factory constructor
 DeviceInfoGenerator createDeviceInfoGenerator(
-    BuildInfoManager buildInfo, SingletonFlutterWindow window) {
+  BuildInfoManager buildInfo,
+  SingletonFlutterWindow window,
+) {
   return _DartIoDeviceInfoGenerator(buildInfo, window);
 }

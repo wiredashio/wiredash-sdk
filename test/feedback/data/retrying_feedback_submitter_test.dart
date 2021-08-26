@@ -24,10 +24,16 @@ class MockNetworkManager extends Fake implements WiredashApi {
       MethodInvocationCatcher('sendFeedback');
 
   @override
-  Future<void> sendFeedback(
-      {required FeedbackItem feedback, Uint8List? screenshot}) async {
+  Future<void> sendFeedback({
+    required FeedbackItem feedback,
+    Uint8List? screenshot,
+  }) async {
     await sendFeedbackInvocations.addMethodCall(
-        namedArgs: {'feedback': feedback, 'screenshot': screenshot});
+      namedArgs: {
+        'feedback': feedback,
+        'screenshot': screenshot,
+      },
+    );
   }
 }
 
@@ -50,7 +56,9 @@ class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
 
   @override
   Future<PendingFeedbackItem> addPendingItem(
-      FeedbackItem item, Uint8List? screenshot) async {
+    FeedbackItem item,
+    Uint8List? screenshot,
+  ) async {
     final id = _currentItems.length + 1;
 
     final screenshotName = '$id.png';
@@ -204,9 +212,13 @@ void main() {
 
       // Prepopulate storage with 2 existing items.
       await fakePendingFeedbackItemStorage.addPendingItem(
-          item, kTransparentImage);
+        item,
+        kTransparentImage,
+      );
       await fakePendingFeedbackItemStorage.addPendingItem(
-          item, kTransparentImage);
+        item,
+        kTransparentImage,
+      );
 
       // Make sure they exist.
       expect(await fileSystem.file('1.png').exists(), isTrue);
@@ -258,8 +270,9 @@ void main() {
         ]);
 
         expect(
-            mockNetworkManager.sendFeedbackInvocations.invocations.length > 1,
-            true);
+          mockNetworkManager.sendFeedbackInvocations.invocations.length > 1,
+          true,
+        );
         final lastCall = mockNetworkManager.sendFeedbackInvocations.latest;
         expect(lastCall['feedback'], item);
         expect(lastCall['screenshot'], kTransparentImage);
@@ -279,49 +292,53 @@ void main() {
       final initialTime = DateTime(2000, 01, 01, 00, 00, 00, 000);
       final retryLog = <DateTime>[];
 
-      fakeAsync((async) {
-        final clock = async.getClock(initialTime);
-        mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
-          retryLog.add(clock.now());
-          throw Exception();
-        };
+      fakeAsync(
+        (async) {
+          final clock = async.getClock(initialTime);
+          mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
+            retryLog.add(clock.now());
+            throw Exception();
+          };
 
-        retryingFeedbackSubmitter.submit(item, kTransparentImage);
+          retryingFeedbackSubmitter.submit(item, kTransparentImage);
 
-        // Hop on the time machine...
-        async.elapse(const Duration(minutes: 5));
+          // Hop on the time machine...
+          async.elapse(const Duration(minutes: 5));
 
-        // Sending one feedback item should be retried no more than 8 times.
-        final sendAttempts =
-            mockNetworkManager.sendFeedbackInvocations.invocations.where((iv) {
-          final matchItem = iv['feedback'] == item;
-          final matchImage =
-              equals(iv['screenshot']).matches(kTransparentImage, {});
-          return matchItem && matchImage;
-        });
-        expect(sendAttempts.length, 8);
+          // Sending one feedback item should be retried no more than 8 times.
+          final sendAttempts = mockNetworkManager
+              .sendFeedbackInvocations.invocations
+              .where((iv) {
+            final matchItem = iv['feedback'] == item;
+            final matchImage =
+                equals(iv['screenshot']).matches(kTransparentImage, {});
+            return matchItem && matchImage;
+          });
+          expect(sendAttempts.length, 8);
 
-        // Should've retried sending feedback at these very specific times.
-        expect(retryLog, [
-          DateTime(2000, 01, 01, 00, 00, 00, 000),
-          DateTime(2000, 01, 01, 00, 00, 02, 000),
-          DateTime(2000, 01, 01, 00, 00, 06, 000),
-          DateTime(2000, 01, 01, 00, 00, 14, 000),
-          DateTime(2000, 01, 01, 00, 00, 30, 000),
-          DateTime(2000, 01, 01, 00, 01, 00, 000),
-          DateTime(2000, 01, 01, 00, 01, 30, 000),
-          DateTime(2000, 01, 01, 00, 02, 00, 000),
-        ]);
+          // Should've retried sending feedback at these very specific times.
+          expect(retryLog, [
+            DateTime(2000, 01, 01, 00, 00, 00, 000),
+            DateTime(2000, 01, 01, 00, 00, 02, 000),
+            DateTime(2000, 01, 01, 00, 00, 06, 000),
+            DateTime(2000, 01, 01, 00, 00, 14, 000),
+            DateTime(2000, 01, 01, 00, 00, 30, 000),
+            DateTime(2000, 01, 01, 00, 01, 00, 000),
+            DateTime(2000, 01, 01, 00, 01, 30, 000),
+            DateTime(2000, 01, 01, 00, 02, 00, 000),
+          ]);
 
-        expect(fakePendingFeedbackItemStorage._deletedItemIds, isEmpty);
-        expect(fakePendingFeedbackItemStorage._currentItems, [
-          const PendingFeedbackItem(
-            id: '1',
-            feedbackItem: item,
-            screenshotPath: '1.png',
-          ),
-        ]);
-      }, initialTime: initialTime);
+          expect(fakePendingFeedbackItemStorage._deletedItemIds, isEmpty);
+          expect(fakePendingFeedbackItemStorage._currentItems, [
+            const PendingFeedbackItem(
+              id: '1',
+              feedbackItem: item,
+              screenshotPath: '1.png',
+            ),
+          ]);
+        },
+        initialTime: initialTime,
+      );
     });
 
     test('submit() - does not retry for UnauthenticatedWiredashApiException',
@@ -337,36 +354,42 @@ void main() {
       final initialTime = DateTime(2000, 01, 01, 00, 00, 00, 000);
       final retryLog = <DateTime>[];
 
-      fakeAsync((async) {
-        final clock = async.getClock(initialTime);
-        mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
-          retryLog.add(clock.now());
-          throw UnauthenticatedWiredashApiException(
-              Response("error", 401), 'projectX', 'abcdefg1234');
-        };
+      fakeAsync(
+        (async) {
+          final clock = async.getClock(initialTime);
+          mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
+            retryLog.add(clock.now());
+            throw UnauthenticatedWiredashApiException(
+              Response("error", 401),
+              'projectX',
+              'abcdefg1234',
+            );
+          };
 
-        retryingFeedbackSubmitter.submit(item, kTransparentImage);
+          retryingFeedbackSubmitter.submit(item, kTransparentImage);
 
-        // Hop on the time machine...
-        async.elapse(const Duration(minutes: 5));
+          // Hop on the time machine...
+          async.elapse(const Duration(minutes: 5));
 
-        // Sending one feedback item should be retried no more than 8 times.
-        mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
+          // Sending one feedback item should be retried no more than 8 times.
+          mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
 
-        // Log shows only one entry
-        expect(retryLog, [
-          DateTime(2000, 01, 01, 00, 00, 00, 000),
-        ]);
+          // Log shows only one entry
+          expect(retryLog, [
+            DateTime(2000, 01, 01, 00, 00, 00, 000),
+          ]);
 
-        expect(fakePendingFeedbackItemStorage._deletedItemIds, isEmpty);
-        expect(fakePendingFeedbackItemStorage._currentItems, [
-          const PendingFeedbackItem(
-            id: '1',
-            feedbackItem: item,
-            screenshotPath: '1.png',
-          ),
-        ]);
-      }, initialTime: initialTime);
+          expect(fakePendingFeedbackItemStorage._deletedItemIds, isEmpty);
+          expect(fakePendingFeedbackItemStorage._currentItems, [
+            const PendingFeedbackItem(
+              id: '1',
+              feedbackItem: item,
+              screenshotPath: '1.png',
+            ),
+          ]);
+        },
+        initialTime: initialTime,
+      );
     });
 
     test('submit() - does not retry when server reports missing properties',
@@ -382,8 +405,9 @@ void main() {
       fakeAsync((async) {
         mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
           final response = Response(
-              '{"message": "child "deviceInfo" fails because [child "platformOS" fails because ["platformOS" is required]]"}',
-              401);
+            '{"message": "child "deviceInfo" fails because [child "platformOS" fails because ["platformOS" is required]]"}',
+            401,
+          );
           throw WiredashApiException(response: response);
         };
 

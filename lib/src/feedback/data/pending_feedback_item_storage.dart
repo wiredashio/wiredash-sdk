@@ -50,7 +50,10 @@ class PendingFeedbackItemStorage {
           }
         } catch (e) {
           reportWiredashError(
-              e, stack, 'Could not delete screenshot for invalid item $item');
+            e,
+            stack,
+            'Could not delete screenshot for invalid item $item',
+          );
         }
       }
     }
@@ -84,8 +87,10 @@ class PendingFeedbackItemStorage {
     final all = await retrieveAllPendingItems();
     final items = List.of(all)..add(pendingItem);
     final preferences = await _sharedPreferences();
-    preferences.setStringList(_feedbackItemsKey,
-        items.map((it) => json.encode(it.toJson())).toList());
+    preferences.setStringList(
+      _feedbackItemsKey,
+      items.map((it) => json.encode(it.toJson())).toList(),
+    );
 
     return pendingItem;
   }
@@ -107,8 +112,10 @@ class PendingFeedbackItemStorage {
         final updatedItems = List.of(await retrieveAllPendingItems());
         updatedItems.removeWhere((e) => e.id == item.id);
         final preferences = await _sharedPreferences();
-        await preferences.setStringList(_feedbackItemsKey,
-            updatedItems.map((e) => json.encode(e.toJson())).toList());
+        await preferences.setStringList(
+          _feedbackItemsKey,
+          updatedItems.map((e) => json.encode(e.toJson())).toList(),
+        );
         break;
       }
     }

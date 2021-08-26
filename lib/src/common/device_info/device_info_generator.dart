@@ -14,7 +14,9 @@ abstract class DeviceInfoGenerator {
   /// Loads a [DeviceInfoGenerator] based on the environment by calling the
   /// optional imported createDeviceInfoGenerator function
   factory DeviceInfoGenerator(
-      BuildInfoManager buildInfo, SingletonFlutterWindow window) {
+    BuildInfoManager buildInfo,
+    SingletonFlutterWindow window,
+  ) {
     return createDeviceInfoGenerator(buildInfo, window);
   }
 

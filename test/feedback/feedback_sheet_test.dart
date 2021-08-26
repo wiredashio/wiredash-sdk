@@ -75,8 +75,11 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('2049 / 2048'), findsOneWidget);
 
-        await tester.scrollUntilVisible(findSaveButton, 100,
-            scrollable: find.byType(Scrollable).first);
+        await tester.scrollUntilVisible(
+          findSaveButton,
+          100,
+          scrollable: find.byType(Scrollable).first,
+        );
         await tester.tap(findSaveButton);
         await tester.pump();
 
@@ -125,7 +128,9 @@ void main() {
         );
 
         await tester.enterText(
-            findFeedbackInputField, 'amazing game!! 0/5 stars I love it');
+          findFeedbackInputField,
+          'amazing game!! 0/5 stars I love it',
+        );
 
         await tester.tap(findSaveButton);
         await tester.pump();

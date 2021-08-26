@@ -109,7 +109,9 @@ class FeedbackModel with ChangeNotifier {
   }
 
   void show() {
-    assert(_navigatorKey.currentState != null, '''
+    assert(
+      _navigatorKey.currentState != null,
+      '''
 Wiredash couldn't access your app's root navigator.
 
 This is likely to happen when you forget to add the navigator key to your 
@@ -136,7 +138,8 @@ If this did not fix the issue, please file an issue at
 https://github.com/wiredashio/wiredash-sdk/issues
 
 Thanks!
-''');
+''',
+    );
 
     if (_navigatorKey.currentState == null ||
         feedbackUiState == FeedbackUiState.capture ||

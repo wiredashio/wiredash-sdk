@@ -149,7 +149,9 @@ void main() {
       ]);
 
       expect(
-          fileSystem.file('<existing item screenshot>').existsSync(), isTrue);
+        fileSystem.file('<existing item screenshot>').existsSync(),
+        isTrue,
+      );
 
       expect(fileSystem.file('0.png').existsSync(), isTrue);
     });
@@ -372,7 +374,9 @@ void main() {
       });
 
       await fakeSharedPreferences.setStringList(
-          'io.wiredash.pending_feedback_items', [illegalItem, legalItem]);
+        'io.wiredash.pending_feedback_items',
+        [illegalItem, legalItem],
+      );
 
       final oldOnErrorHandler = FlutterError.onError;
       late FlutterErrorDetails caught;
@@ -387,11 +391,12 @@ void main() {
 
       // error was reported to Flutter.onError
       expect(
-          caught.stack.toString(),
-          stringContainsInOrder([
-            'PendingFeedbackItem.fromJson',
-            'PendingFeedbackItemStorage.retrieveAllPendingItems',
-          ]));
+        caught.stack.toString(),
+        stringContainsInOrder([
+          'PendingFeedbackItem.fromJson',
+          'PendingFeedbackItemStorage.retrieveAllPendingItems',
+        ]),
+      );
       // reset error reporter after successful assertion
       FlutterError.onError = oldOnErrorHandler;
 

@@ -39,12 +39,14 @@ class WiredashApi {
       if (screenshot != null) {
         return MultipartRequest('POST', uri)
           ..fields.addAll(argumentsNN)
-          ..files.add(MultipartFile.fromBytes(
-            'file',
-            screenshot,
-            filename: 'file',
-            contentType: MediaType('image', 'png'),
-          ));
+          ..files.add(
+            MultipartFile.fromBytes(
+              'file',
+              screenshot,
+              filename: 'file',
+              contentType: MediaType('image', 'png'),
+            ),
+          );
       }
       return Request('POST', uri)..bodyFields = argumentsNN;
     }();

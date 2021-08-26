@@ -57,7 +57,9 @@ class _InputComponentState extends State<InputComponent> {
   Widget build(BuildContext context) {
     final interactiveTextSelectionSupported =
         Localizations.of<MaterialLocalizations>(
-                context, MaterialLocalizations) !=
+              context,
+              MaterialLocalizations,
+            ) !=
             null;
 
     final wiredashTheme = WiredashTheme.of(context)!;

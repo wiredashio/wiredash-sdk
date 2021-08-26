@@ -102,7 +102,9 @@ class CaptureState extends State<Capture>
   void _updateDimensions() {
     final window = WidgetsBinding.instance!.window;
     _windowPadding = EdgeInsets.fromWindowPadding(
-        window.viewPadding, window.devicePixelRatio);
+      window.viewPadding,
+      window.devicePixelRatio,
+    );
     _screenSize = window.physicalSize / window.devicePixelRatio;
 
     final widthRestriction = Drawer.width + _windowPadding.horizontal;
@@ -111,18 +113,24 @@ class CaptureState extends State<Capture>
     final targetContentWidth = _screenSize.width - widthRestriction;
     final targetContentHeight = _screenSize.height - heightRestriction;
 
-    _scaleFactor = math.min(targetContentWidth / _screenSize.width,
-        targetContentHeight / _screenSize.height);
+    _scaleFactor = math.min(
+      targetContentWidth / _screenSize.width,
+      targetContentHeight / _screenSize.height,
+    );
 
     _contentBottomOffset = 80 + _windowPadding.bottom;
   }
 
   void _initAnimations() {
     final curvedScreenAnimation = CurvedAnimation(
-        parent: _animationControllerScreen, curve: Curves.fastOutSlowIn);
+      parent: _animationControllerScreen,
+      curve: Curves.fastOutSlowIn,
+    );
 
     final curvedDrawerAnimation = CurvedAnimation(
-        parent: _animationControllerDrawer, curve: Curves.fastOutSlowIn);
+      parent: _animationControllerDrawer,
+      curve: Curves.fastOutSlowIn,
+    );
 
     _scaleAnimation =
         Tween(begin: 1.0, end: _scaleFactor).animate(curvedScreenAnimation);

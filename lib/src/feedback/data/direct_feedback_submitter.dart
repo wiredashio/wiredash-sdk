@@ -19,8 +19,11 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
       print("Feedback submitted ✌️ ${item.message}");
     } on UnauthenticatedWiredashApiException catch (e, stack) {
       // Project configuration is off, retry at next app start
-      reportWiredashError(e, stack,
-          'Wiredash project configuration is wrong, next retry after next app start');
+      reportWiredashError(
+        e,
+        stack,
+        'Wiredash project configuration is wrong, next retry after next app start',
+      );
       rethrow;
     } on WiredashApiException catch (e, stack) {
       if (e.message != null &&
@@ -28,12 +31,18 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
           e.message!.contains("is required")) {
         // some required property is missing. The item will never be delivered
         // to the server, therefore discard it.
-        reportWiredashError(e, stack,
-            'Feedback has missing properties and can not be submitted to server');
+        reportWiredashError(
+          e,
+          stack,
+          'Feedback has missing properties and can not be submitted to server',
+        );
         rethrow;
       }
       reportWiredashError(
-          e, stack, 'Wiredash server error. Will retry after app restart');
+        e,
+        stack,
+        'Wiredash server error. Will retry after app restart',
+      );
       rethrow;
     }
   }

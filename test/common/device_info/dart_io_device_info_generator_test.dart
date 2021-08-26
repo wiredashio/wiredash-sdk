@@ -19,8 +19,12 @@ class _BuildInfoDataClass implements BuildInfo {
   @override
   final String? deviceId;
 
-  _BuildInfoDataClass(
-      {this.buildCommit, this.buildNumber, this.buildVersion, this.deviceId});
+  _BuildInfoDataClass({
+    this.buildCommit,
+    this.buildNumber,
+    this.buildVersion,
+    this.deviceId,
+  });
 }
 
 void main() {

@@ -26,6 +26,8 @@ class _DartHtmlDeviceInfoGenerator implements DeviceInfoGenerator {
 
 /// Called by [DeviceInfoGenerator] factory constructor in browsers
 DeviceInfoGenerator createDeviceInfoGenerator(
-    BuildInfoManager buildInfo, SingletonFlutterWindow window) {
+  BuildInfoManager buildInfo,
+  SingletonFlutterWindow window,
+) {
   return _DartHtmlDeviceInfoGenerator(buildInfo, window);
 }

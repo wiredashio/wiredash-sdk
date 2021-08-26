@@ -46,11 +46,13 @@ class _FeedbackPenState extends State<FeedbackPen>
     _slideAnimation = Tween<Offset>(
       begin: Offset.zero,
       end: const Offset(0, 1),
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-      reverseCurve: Curves.easeIn,
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOut,
+        reverseCurve: Curves.easeIn,
+      ),
+    );
   }
 
   @override

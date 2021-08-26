@@ -62,8 +62,11 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
   bool get popGestureInProgress => isPopGestureInProgress(this);
 
   @override
-  Widget buildPage(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation) {
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
     final Widget child = builder(context);
     final Widget result = Semantics(
       scopesRoute: true,
@@ -85,8 +88,12 @@ class DismissiblePageRoute<T> extends PageRoute<T> {
   }
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     return Semantics(
       container: true,
       child: WillPopScope(
@@ -246,7 +253,8 @@ class _DownGestureDetectorState<T> extends State<_DownGestureDetector<T>>
   void _handleDragEnd(DragEndDetails details) {
     assert(mounted);
     _downGestureController!.dragEnd(
-        details.velocity.pixelsPerSecond.dx / (context.size?.height ?? 1));
+      details.velocity.pixelsPerSecond.dx / (context.size?.height ?? 1),
+    );
     _downGestureController = null;
   }
 
@@ -261,8 +269,9 @@ class _DownGestureDetectorState<T> extends State<_DownGestureDetector<T>>
     return Container(
       alignment: Alignment.bottomCenter,
       margin: EdgeInsets.only(
-          bottom: WidgetsBinding.instance!.window.viewInsets.bottom /
-              WidgetsBinding.instance!.window.devicePixelRatio),
+        bottom: WidgetsBinding.instance!.window.viewInsets.bottom /
+            WidgetsBinding.instance!.window.devicePixelRatio,
+      ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
         child: SingleChildScrollView(
@@ -318,22 +327,32 @@ class _DownGestureController<T> {
 
     if (animateForward) {
       final time = lerpDouble(
-          _kMaxDroppedSwipePageForwardAnimationTime, 0, controller.value);
+        _kMaxDroppedSwipePageForwardAnimationTime,
+        0,
+        controller.value,
+      );
       final int droppedPageForwardAnimationTime =
           min(time?.floor() ?? 0, _kMaxPageBackAnimationTime);
-      controller.animateTo(1.0,
-          duration: Duration(milliseconds: droppedPageForwardAnimationTime),
-          curve: animationCurve);
+      controller.animateTo(
+        1.0,
+        duration: Duration(milliseconds: droppedPageForwardAnimationTime),
+        curve: animationCurve,
+      );
     } else {
       navigator.pop();
       onPagePopped?.call();
       if (controller.isAnimating) {
         final time = lerpDouble(
-            0, _kMaxDroppedSwipePageForwardAnimationTime, controller.value);
+          0,
+          _kMaxDroppedSwipePageForwardAnimationTime,
+          controller.value,
+        );
         final droppedPageBackAnimationTime = time?.floor() ?? 0;
-        controller.animateBack(0.0,
-            duration: Duration(milliseconds: droppedPageBackAnimationTime),
-            curve: animationCurve);
+        controller.animateBack(
+          0.0,
+          duration: Duration(milliseconds: droppedPageBackAnimationTime),
+          curve: animationCurve,
+        );
       }
     }
 
