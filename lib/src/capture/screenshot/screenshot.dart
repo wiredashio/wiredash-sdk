@@ -57,7 +57,9 @@ class ScreenshotState extends State<Screenshot> {
     }
 
     final image = MemoryImage(byteData.buffer.asUint8List());
-    await precacheImage(image, context);
+    if (mounted) {
+      await precacheImage(image, context);
+    }
     setState(() {
       _screenshotMemoryImage = image;
     });
