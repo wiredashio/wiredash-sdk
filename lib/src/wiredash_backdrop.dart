@@ -61,11 +61,6 @@ class BackdropController {
         completer.complete();
       });
       await completer.future;
-      _state!._scrollController.animateTo(
-        MediaQuery.of(_state!.context).size.height - 100,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeInOutCubic,
-      );
       await openFuture;
     } else {
       _state!._backdropAnimationController.forward();
@@ -118,6 +113,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   final FocusNode _feedbackFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
 
+  static const double _appPeak = 100;
+
   @override
   void initState() {
     super.initState();
@@ -149,7 +146,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
 
     _translateAppAnimation =
-        Tween<double>(begin: -1, end: 0).animate(inlineAnimation);
+        Tween<double>(begin: 0, end: 1).animate(inlineAnimation);
     _appCornerRadiusAnimation = BorderRadiusTween(
       begin: BorderRadius.circular(0),
       end: BorderRadius.circular(20),
@@ -216,27 +213,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       return app;
     }
 
-    final appTopPosition = () {
-      if (_savedRect != null) {
-        if (_scrollController.positions.length == 1) {
-          return _savedRect!.top + _scrollController.offset;
-        }
-        return _savedRect!.top;
-      }
-      return appStartingTopPosition;
-    }();
-
-    final appBottomPosition = () {
-      if (_savedRect != null) {
-        return _savedRect!.bottom;
-      }
-      return appStartingTopPosition + MediaQuery.of(context).size.height;
-    }();
-
-    print("scrollOffset $_scrollOffset");
-    print('_savedRect=${_savedRect}');
-    // print("app position $appTopPosition - $appBottomPosition");
-
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     final model = context.wiredashModel;
@@ -252,6 +228,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         ),
       ),
     );
+
+    final topInset = MediaQuery.of(context).viewInsets.top;
 
     return Material(
       child: Container(
@@ -270,59 +248,25 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           children: <Widget>[
             ListView(
               controller: _scrollController,
-              // TODO fix snapping when scolled with mouse wheel on desktop
-              physics: SnapScrollPhysics(
-                parent: const AlwaysScrollableScrollPhysics(),
-                snaps: [
-                  Snap.avoidZone(
-                    0,
-                    appBottomPosition,
-                    delimiter: appBottomPosition - appTopPosition,
-                  ),
-                  Snap(appBottomPosition + 10),
-                ],
-              ),
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: <Widget>[
+                SizedBox(height: topInset),
+                SizedBox(height: _appPeak),
                 // Position of the app in the listview for measure, show child here when measured
                 IntrinsicHeight(
-                  child: Stack(
-                    children: [
-                      _buildAppPositioningAnimation(
-                        offset: Offset(0, 50),
-                        child: _buildAppFrame(
-                          child: _savedRect != null ? app : null,
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: SafeArea(
-                          top: true,
-                          minimum: const EdgeInsets.only(top: 8),
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 200),
-                            child: () {
-                              if (model.capturingScreenshot) {
-                                // TODO fix arrow only clickable within app frame bounds
-                                return _ScrollToTopButton(
-                                  onTap: () {
-                                    print("Scroll to top");
-                                    model.exitCaptureMode();
-                                    _scrollController.animateTo(
-                                      0,
-                                      duration:
-                                          const Duration(milliseconds: 200),
-                                      curve: Curves.easeInOutCubic,
-                                    );
-                                  },
-                                );
-                              }
-                              return const SizedBox();
-                            }(),
-                          ),
-                        ),
-                      )
-                    ],
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      child: () {
+                        return _ScrollToTopButton(
+                          onTap: () {
+                            print("Scroll to top");
+                            model.hide();
+                          },
+                        );
+                      }(),
+                    ),
                   ),
                 ),
 
@@ -341,11 +285,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 SizedBox(height: bottomInset),
               ],
             ),
-
-            // shows app on top while waiting for layouting of the ListView
-            if (_savedRect == null) ...<Widget>[
-              app,
-            ],
+            _buildAppPositioningAnimation(
+              offset: Offset(0, 50),
+              child: _buildAppFrame(
+                child: _savedRect != null ? app : null,
+              ),
+            ),
           ],
         ),
       ),
@@ -399,27 +344,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, child) {
-        final RenderBox? selfRenderBox =
-            context.findRenderObject() as RenderBox?;
-        final Offset? selfOffset = selfRenderBox?.localToGlobal(Offset.zero);
-        final Size? size = selfRenderBox?.size;
+        final screenHeight = MediaQuery.of(context).size.height;
+        final topInset = MediaQuery.of(context).viewInsets.top;
 
-        if (selfOffset != null && size != null) {
-          final Rect rect = Rect.fromPoints(
-              selfOffset, selfOffset.translate(size.width, size.height));
-          if (_savedRect != rect) {
-            _savedRect = rect;
-            WidgetsBinding.instance!.addPostFrameCallback((_) {
-              setState(() {
-                /* notify that _savedRect has changed */
-              });
-            });
-          }
-        }
-
-        final translationY =
-            (_translateAppAnimation.value * (_savedRect?.top ?? 0)) +
-                offset.dy * (1 + _translateAppAnimation.value);
+        final translationY = (-screenHeight + _appPeak + topInset) *
+            (_translateAppAnimation.value);
         return Transform(
           alignment: Alignment.topCenter,
           transform: Matrix4.identity()
@@ -456,14 +385,13 @@ class _ScrollToTopButton extends StatelessWidget {
             math.max(anims.hoveredAnim.value * 0.3, anims.pressedAnim.value);
         return ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Align(
-            alignment: Alignment.center,
-            widthFactor: 0.5,
-            heightFactor: 0.5,
-            child: Icon(
-              Icons.keyboard_arrow_up_outlined,
-              size: 100,
-              color: _colorTween.lerp(colorValue),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Close',
+              style: TextStyle(
+                color: _colorTween.lerp(colorValue),
+              ),
             ),
           ),
         );
