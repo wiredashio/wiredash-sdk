@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
@@ -16,6 +18,8 @@ import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/snap.dart';
 import 'package:wiredash/src/sprung.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
+
+bool _firstOpenAnimOnMetal = !kIsWeb && (Platform.isIOS || Platform.isMacOS);
 
 /// The Wiredash UI behind the app
 class WiredashBackdrop extends StatefulWidget {
@@ -46,8 +50,18 @@ class BackdropController {
         AnimationStatus.dismissed) {
       // Wiredash is currently not shown
 
+      if (_firstOpenAnimOnMetal) {
+        // increase anim time on metal because shaders aren't cached yet
+        _firstOpenAnimOnMetal = false;
+        _state!._backdropAnimationController.duration =
+            WiredashBackdrop.enterDuration * 2;
+      } else {
+        _state!._backdropAnimationController.duration =
+            WiredashBackdrop.enterDuration;
+      }
+
       // 1) start animation, causes app to be rendered on top of stack
-      final openFuture = _state!._backdropAnimationController.forward();
+      final openFuture = _state!._backdropAnimationController.animateTo(0.01);
 
       // 2) Wait 1 frame until layout of the app in the list is known
       final completer = Completer();
@@ -62,6 +76,7 @@ class BackdropController {
       });
       await completer.future;
       await openFuture;
+      await _state!._backdropAnimationController.forward();
     } else {
       _state!._backdropAnimationController.forward();
     }
@@ -82,12 +97,24 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       GlobalKey<State<StatefulWidget>>(debugLabel: 'app');
 
   AnimationStatus _animationStatus = AnimationStatus.dismissed;
-  late final ScrollController _scrollController;
+  late final ScrollController _scrollController = ScrollController()
+    ..addListener(() {
+      if (_scrollController.positions.length == 1) {
+        setState(() {
+          _scrollOffset = _scrollController.offset;
+        });
+      }
+    });
 
   /// Controls revealing and hiding of Wiredash
   ///
   /// forward() to open, reverse() to close
-  late final AnimationController _backdropAnimationController;
+  late final AnimationController _backdropAnimationController =
+      AnimationController(
+    vsync: this,
+    duration: WiredashBackdrop.enterDuration,
+    reverseDuration: WiredashBackdrop.exitDuration,
+  );
 
   late Animation<double> _scaleAppAnimation;
   late Animation<double> _translateAppAnimation;
@@ -119,20 +146,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   void initState() {
     super.initState();
     widget.controller?._state = this;
-    _scrollController = ScrollController()
-      ..addListener(() {
-        if (_scrollController.positions.length == 1) {
-          setState(() {
-            _scrollOffset = _scrollController.offset;
-          });
-        }
-      });
-    _backdropAnimationController = AnimationController(
-      vsync: this,
-      duration: WiredashBackdrop.enterDuration,
-      reverseDuration: WiredashBackdrop.exitDuration,
-    )..addStatusListener(_animControllerStatusListener);
-
+    _backdropAnimationController
+        .addStatusListener(_animControllerStatusListener);
     final slightlyUnderdumped = Sprung(18);
     _centerAnimation = CurvedAnimation(
       parent: _backdropAnimationController,
@@ -222,7 +237,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       // Users would be unable to leave the app once it got focus
       skipTraversal: true,
       child: AbsorbPointer(
-        absorbing: _scrollOffset > 0.0,
+        absorbing: !model.isAppInteractive,
         child: _KeepAppAlive(
           child: app,
         ),
@@ -288,7 +303,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             _buildAppPositioningAnimation(
               offset: Offset(0, 50),
               child: _buildAppFrame(
-                child: _savedRect != null ? app : null,
+                child: app,
               ),
             ),
           ],
@@ -305,29 +320,43 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, child) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: _appCornerRadiusAnimation.value,
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF000000).withOpacity(0.04),
-                  offset: const Offset(0, 10),
-                  blurRadius: 10,
+        return Stack(
+          fit: StackFit.passthrough,
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: _appCornerRadiusAnimation.value,
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF000000).withOpacity(0.04),
+                      offset: const Offset(0, 10),
+                      blurRadius: 10,
+                    ),
+                    BoxShadow(
+                      color: const Color(0xFF000000).withOpacity(0.10),
+                      offset: const Offset(0, 20),
+                      blurRadius: 25,
+                    ),
+                  ],
                 ),
-                BoxShadow(
-                  color: const Color(0xFF000000).withOpacity(0.10),
-                  offset: const Offset(0, 20),
-                  blurRadius: 25,
+                child: ClipRRect(
+                  borderRadius: _appCornerRadiusAnimation.value,
+                  child: child,
                 ),
-              ],
+              ),
             ),
-            child: ClipRRect(
-              borderRadius: _appCornerRadiusAnimation.value,
-              child: child,
+            Positioned(
+              bottom: 8,
+              left: 0,
+              right: 0,
+              child: Icon(
+                WiredashIcons.cevronDownLight,
+                color: Colors.black26,
+              ),
             ),
-          ),
+          ],
         );
       },
       child: child,
@@ -343,12 +372,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }) {
     return AnimatedBuilder(
       animation: _backdropAnimationController,
-      builder: (context, child) {
+      builder: (context, app) {
         final screenHeight = MediaQuery.of(context).size.height;
         final topInset = MediaQuery.of(context).viewInsets.top;
 
         final translationY = (-screenHeight + _appPeak + topInset) *
-            (_translateAppAnimation.value);
+            _translateAppAnimation.value;
+        print(translationY);
         return Transform(
           alignment: Alignment.topCenter,
           transform: Matrix4.identity()
@@ -357,7 +387,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               offset.dx,
               translationY,
             ),
-          child: child,
+          child: app,
         );
       },
       child: child,
@@ -374,7 +404,7 @@ class _ScrollToTopButton extends StatelessWidget {
   final void Function()? onTap;
 
   static final _colorTween =
-      ColorTween(begin: Colors.black26, end: Colors.black54);
+      ColorTween(begin: Color(0xFF1A56DB), end: Colors.black54);
 
   @override
   Widget build(BuildContext context) {
@@ -388,7 +418,7 @@ class _ScrollToTopButton extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
-              'Close',
+              'Pull to Return',
               style: TextStyle(
                 color: _colorTween.lerp(colorValue),
               ),
