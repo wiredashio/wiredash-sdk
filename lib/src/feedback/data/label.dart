@@ -13,4 +13,9 @@ class Label {
 
   @override
   int get hashCode => id.hashCode ^ name.hashCode;
+
+  @override
+  String toString() {
+    return 'Label{name: $name, id: $id}';
+  }
 }

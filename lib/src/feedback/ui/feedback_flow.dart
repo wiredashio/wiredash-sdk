@@ -270,51 +270,44 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     );
 
     // submit
-    final part5 = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.responsiveLayout.horizontalMargin,
-            vertical: 16,
-          ),
-          child: Text(
-            'All information attached?',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.responsiveLayout.horizontalMargin,
-            vertical: 16,
-          ),
-          child: Text(
-            'Thank you for taking the time',
-            style: TextStyle(fontSize: 14),
-          ),
-        ),
-        Center(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: context.responsiveLayout.horizontalMargin,
-              vertical: 16,
-            ),
-            child: BigBlueButton(
-              icon: Icon(WiredashIcons.submit),
-              text: Text("Submit"),
-              onTap: context.wiredashModel.feedbackMessage == null
-                  ? null
-                  : () {
-                      // TODO handle error
-                      context.wiredashModel.submitFeedback();
-                    },
-            ),
+    final part5 = Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.responsiveLayout.horizontalMargin,
+        vertical: 16,
+      ),
+      child: Container(
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Summary',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Message: ${context.wiredashModel.feedbackMessage}\n'
+                '\n'
+                'Labels: ${_selectedLabels.value.map((e) => e.name)}\n'
+                '\n'
+                'Email: ${context.wiredashModel.userEmail}\n'
+                '\n'
+                'Screenshots: 0\n'
+                '\n'
+                'AppVersion: TODO\n'
+                'Browser Version: TODO\n'
+                'Whatever is useful\n',
+                style: TextStyle(fontSize: 14),
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
 
     return GestureDetector(
@@ -329,16 +322,67 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
           SingleChildScrollView(child: part2),
           SingleChildScrollView(child: part3),
           SingleChildScrollView(child: part4),
-          SingleChildScrollView(child: part5),
-          Container(
-            color: Colors.red,
-            height: 400,
-          ),
-          Container(
-            color: Colors.blue,
-            height: 400,
+          ScrollBox(child: part5),
+          ScrollBox(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.responsiveLayout.horizontalMargin,
+                  vertical: 16,
+                ),
+                child: BigBlueButton(
+                  icon: Icon(WiredashIcons.submit),
+                  text: Text("Submit"),
+                  onTap: context.wiredashModel.feedbackMessage == null
+                      ? null
+                      : () {
+                          // TODO handle error
+                          context.wiredashModel.submitFeedback();
+                        },
+                ),
+              ),
+            ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Scrollable area with scrollbar
+class ScrollBox extends StatefulWidget {
+  const ScrollBox({
+    Key? key,
+    required this.child,
+  }) : super(key: key);
+
+  final Widget child;
+
+  @override
+  State<ScrollBox> createState() => _ScrollBoxState();
+}
+
+class _ScrollBoxState extends State<ScrollBox> {
+  final _controller = ScrollController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      data: ThemeData(brightness: Brightness.light),
+      child: Scrollbar(
+        interactive: false,
+        controller: _controller,
+        isAlwaysShown: true,
+        child: SingleChildScrollView(
+          controller: _controller,
+          child: widget.child,
+        ),
       ),
     );
   }
