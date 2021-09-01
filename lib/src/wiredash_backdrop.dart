@@ -12,7 +12,6 @@ import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/ui/base_click_target.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
-import 'package:wiredash/src/measure.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
 import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/sprung.dart';
@@ -69,6 +68,7 @@ class BackdropController {
       });
       await completer.future;
       await openFuture;
+      _state!._feedbackFocusNode.requestFocus();
       await _state!._backdropAnimationController.forward();
     } else {
       _state!._backdropAnimationController.forward();
@@ -122,7 +122,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   final FocusNode _feedbackFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
 
-  static const double _appPeak = 100;
+  static const double _appPeak = 145;
 
   final slightlyUnderdumped = Sprung(18);
 
@@ -243,43 +243,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         // Stack allows placing the app on top while we're awaiting layout
         child: Stack(
           children: <Widget>[
-            ListView(
-              controller: _scrollController,
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              children: <Widget>[
-                SizedBox(height: topInset),
-                const SizedBox(height: _appPeak),
-                // Position of the app in the listview for measure, show child here when measured
-                IntrinsicHeight(
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 200),
-                      child: () {
-                        return _ScrollToTopButton(
-                          onTap: () {
-                            model.hide();
-                          },
-                        );
-                      }(),
-                    ),
-                  ),
-                ),
-
-                MeasureSize(
-                  onChange: (size, bounds) {
-                    setState(() {
-                      // input changed size, trigger build to update
-                    });
-                  },
-                  child: WiredashFeedbackFlow(
-                    focusNode: _feedbackFocusNode,
-                  ),
-                ),
-
-                // keyboard inset
-                SizedBox(height: bottomInset),
-              ],
+            WiredashFeedbackFlow(
+              focusNode: _feedbackFocusNode,
             ),
             _buildAppPositioningAnimation(
               // offset: Offset(0, 50),

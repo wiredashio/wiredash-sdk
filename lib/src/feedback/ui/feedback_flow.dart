@@ -6,6 +6,7 @@ import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/email_input.dart';
 import 'package:wiredash/src/feedback/ui/more_menu.dart';
 import 'package:wiredash/src/responsive_layout.dart';
+import 'package:wiredash/src/scroll_wizard.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
 const _labels = [
@@ -49,106 +50,252 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
 
   @override
   Widget build(BuildContext context) {
-    final bool isTwoColumnLayout =
-        context.responsiveLayout.deviceClass >= DeviceClass.largeTablet;
+    final scrollWizardController =
+        ScrollWizardController(viewportFraction: 0.4);
 
-    final Widget column1 = _FeedbackMessageInput(
-      controller: _controller,
-      focusNode: widget.focusNode,
-    );
-    final Widget column2 = AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return AnimatedSize(
-          // ignore: deprecated_member_use
-          vsync: this,
-          duration: const Duration(milliseconds: 450),
-          curve: Curves.fastOutSlowIn,
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 225),
-            reverseDuration: const Duration(milliseconds: 170),
-            switchInCurve: Curves.fastOutSlowIn,
-            switchOutCurve: Curves.fastOutSlowIn,
-            child: Container(
-              key: ValueKey(_controller.text.isEmpty),
-              constraints:
-                  BoxConstraints(minHeight: isTwoColumnLayout ? 300 : 100),
-              alignment: Alignment.topCenter,
-              padding: EdgeInsets.only(top: isTwoColumnLayout ? 100 : 0),
-              child: () {
-                if (_controller.text.isEmpty) {
-                  return const MoreMenu();
-                }
-                return ValueListenableBuilder<Set<Label>>(
-                  valueListenable: _selectedLabels,
-                  builder: (context, selectedLabels, child) {
-                    // TODO fade in the labels from left to right
-                    return _LabelRecommendations(
-                      isAnyLabelSelected: selectedLabels.isNotEmpty,
-                      isLabelSelected: selectedLabels.contains,
-                      toggleSelection: (label) {
-                        setState(() {
-                          if (selectedLabels.contains(label)) {
-                            selectedLabels.remove(label);
-                          } else {
-                            selectedLabels.add(label);
-                          }
-                        });
-                      },
-                    );
-                  },
-                );
-              }(),
-            ),
-          ),
-        );
-      },
-    );
+    void nextPage() {
+      scrollWizardController.nextPage(
+        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 300),
+      );
+    }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    // message
+    final part1 = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        () {
-          if (isTwoColumnLayout) {
-            // two columns
-            return Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.responsiveLayout.horizontalMargin,
-                ),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: DeviceClass.largeDesktop.minWidth,
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsiveLayout.horizontalMargin,
+          ),
+          child: _FeedbackMessageInput(
+            controller: _controller,
+            focusNode: widget.focusNode,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsiveLayout.horizontalMargin,
+          ),
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return AnimatedSize(
+                // ignore: deprecated_member_use
+                vsync: this,
+                duration: const Duration(milliseconds: 450),
+                curve: Curves.fastOutSlowIn,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 225),
+                  reverseDuration: const Duration(milliseconds: 170),
+                  switchInCurve: Curves.fastOutSlowIn,
+                  switchOutCurve: Curves.fastOutSlowIn,
+                  child: Container(
+                    key: ValueKey(_controller.text.isEmpty),
+                    child: () {
+                      if (_controller.text.isEmpty) {
+                        return const MoreMenu();
+                      }
+                      return Container(
+                        alignment: Alignment.topLeft,
+                        child: ElevatedButton(
+                          child: Icon(Icons.arrow_right_alt),
+                          onPressed: () {
+                            nextPage();
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          },
+                        ),
+                      );
+                    }(),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(child: column1),
-                      SizedBox(width: context.responsiveLayout.gutters),
-                      Expanded(child: column2),
-                    ],
-                  ),
                 ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+
+    // labels
+    final part2 = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsiveLayout.horizontalMargin,
+          ),
+          child: Text(
+            'What category fits best with your feedback?',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsiveLayout.horizontalMargin,
+            vertical: 16,
+          ),
+          child: ValueListenableBuilder<Set<Label>>(
+            valueListenable: _selectedLabels,
+            builder: (context, selectedLabels, child) {
+              return _LabelRecommendations(
+                isAnyLabelSelected: selectedLabels.isNotEmpty,
+                isLabelSelected: selectedLabels.contains,
+                toggleSelection: (label) {
+                  setState(() {
+                    if (selectedLabels.contains(label)) {
+                      selectedLabels.remove(label);
+                    } else {
+                      selectedLabels.add(label);
+                    }
+                  });
+                },
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsiveLayout.horizontalMargin,
+            vertical: 16,
+          ),
+          child: Row(
+            children: [
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color(0xFFC6D5F6)),
+                  foregroundColor: MaterialStateProperty.all(Color(0xFF1A56DB)),
+                ),
+                child: Text('Skip'),
+                onPressed: () {
+                  nextPage();
+                },
               ),
-            );
-          } else {
-            // single column
-            return Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.responsiveLayout.horizontalMargin,
+              SizedBox(width: 8),
+              ElevatedButton(
+                child: Icon(Icons.arrow_right_alt),
+                onPressed: () {
+                  nextPage();
+                },
               ),
-              child: Column(
-                children: [
-                  column1,
-                  const SizedBox(height: 36),
-                  column2,
-                ],
-              ),
-            );
-          }
-        }(),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    // email
+    final part3 = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         const EmailInput(),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsiveLayout.horizontalMargin,
+            vertical: 16,
+          ),
+          child: Row(
+            children: [
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color(0xFFC6D5F6)),
+                  foregroundColor: MaterialStateProperty.all(Color(0xFF1A56DB)),
+                ),
+                child: Text('Skip'),
+                onPressed: () {
+                  nextPage();
+                },
+              ),
+              SizedBox(width: 8),
+              ElevatedButton(
+                child: Icon(Icons.arrow_right_alt),
+                onPressed: () {
+                  nextPage();
+                  FocusManager.instance.primaryFocus?.unfocus();
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    // screenshot
+    final part4 = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsiveLayout.horizontalMargin,
+            vertical: 16,
+          ),
+          child: Text(
+            'For a better understanding. Do you want to take a screenshot of it?',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsiveLayout.horizontalMargin,
+            vertical: 16,
+          ),
+          child: Row(
+            children: [
+              ElevatedButton(
+                child: Text('Yes'),
+                onPressed: () {
+                  nextPage();
+                },
+              ),
+              SizedBox(width: 8),
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color(0xFFC6D5F6)),
+                  foregroundColor: MaterialStateProperty.all(Color(0xFF1A56DB)),
+                ),
+                child: Text('Skip'),
+                onPressed: () {
+                  nextPage();
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    // submit
+    final part5 = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsiveLayout.horizontalMargin,
+            vertical: 16,
+          ),
+          child: Text(
+            'All information attached?',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsiveLayout.horizontalMargin,
+            vertical: 16,
+          ),
+          child: Text(
+            'Thank you for taking the time',
+            style: TextStyle(fontSize: 14),
+          ),
+        ),
         Center(
           child: Padding(
             padding: EdgeInsets.symmetric(
@@ -167,9 +314,32 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             ),
           ),
         ),
-        SizedBox(height: 100),
-        SizedBox(height: 1000),
       ],
+    );
+
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: ScrollWizard(
+        controller: scrollWizardController,
+        scrollDirection: Axis.vertical,
+        children: [
+          SingleChildScrollView(child: part1),
+          SingleChildScrollView(child: part2),
+          SingleChildScrollView(child: part3),
+          SingleChildScrollView(child: part4),
+          SingleChildScrollView(child: part5),
+          Container(
+            color: Colors.red,
+            height: 400,
+          ),
+          Container(
+            color: Colors.blue,
+            height: 400,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -196,9 +366,9 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
         const Padding(
           padding: EdgeInsets.only(top: 4),
           child: Text(
-            'You got feedback for us?',
+            'Give us feedback',
             style: TextStyle(
-              fontSize: 17,
+              fontSize: 29,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -209,7 +379,6 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
           keyboardType: TextInputType.multiline,
           maxLines: null,
           maxLength: 2048,
-          autofocus: true,
           buildCounter: _getCounterText,
           style: const TextStyle(fontSize: 14),
           decoration: const InputDecoration(
