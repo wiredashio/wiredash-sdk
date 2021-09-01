@@ -5,17 +5,16 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/ui/base_click_target.dart';
-import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
-import 'package:wiredash/src/feedback/ui/email_input.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/measure.dart';
+import 'package:wiredash/src/pull_to_close_detector.dart';
 import 'package:wiredash/src/responsive_layout.dart';
-import 'package:wiredash/src/snap.dart';
 import 'package:wiredash/src/sprung.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
@@ -66,12 +65,6 @@ class BackdropController {
       // 2) Wait 1 frame until layout of the app in the list is known
       final completer = Completer();
       WidgetsBinding.instance?.addPostFrameCallback((_) {
-        // 3) Switch app from top of stack to be inlined in list
-        // ignore: invalid_use_of_protected_member
-        _state!.setState(() {
-          _state!._isLayoutingCompleted = true;
-        });
-
         completer.complete();
       });
       await completer.future;
@@ -84,10 +77,6 @@ class BackdropController {
 
   Future<void> hideWiredash() async {
     await _state!._backdropAnimationController.reverse();
-    // ignore: invalid_use_of_protected_member
-    _state!.setState(() {
-      _state!._isLayoutingCompleted = false;
-    });
   }
 }
 
@@ -97,14 +86,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       GlobalKey<State<StatefulWidget>>(debugLabel: 'app');
 
   AnimationStatus _animationStatus = AnimationStatus.dismissed;
-  late final ScrollController _scrollController = ScrollController()
-    ..addListener(() {
-      if (_scrollController.positions.length == 1) {
-        setState(() {
-          _scrollOffset = _scrollController.offset;
-        });
-      }
-    });
+  late final ScrollController _scrollController = ScrollController();
 
   /// Controls revealing and hiding of Wiredash
   ///
@@ -117,30 +99,32 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   );
 
   late Animation<double> _scaleAppAnimation;
-  late Animation<double> _translateAppAnimation;
-  late Animation<BorderRadius?> _appCornerRadiusAnimation;
+  late final Animation<BorderRadius?> _appCornerRadiusAnimation =
+      BorderRadiusTween(
+    begin: BorderRadius.circular(0),
+    end: BorderRadius.circular(20),
+  ).animate(_centerAnimation);
 
-  /// When opening wiredash layouting has not yet finished and we don't know
-  /// the exact location of the app in our layout. This flag is used to show the
-  /// app at current position (fully visible, fully expanded) until the first
-  /// frame is drawn and the animation can start.
-  bool _isLayoutingCompleted = false;
+  late final CurvedAnimation _inlineAnimation = CurvedAnimation(
+    parent: _backdropAnimationController,
+    curve: Sprung.overDamped,
+    reverseCurve: slightlyUnderdumped.flipped,
+  );
+  late final Animation<double> _translateAppAnimation =
+      Tween<double>(begin: 0, end: 1).animate(_inlineAnimation);
 
-  /// Position of the app relative to the whole backdrop layout
-  Rect? _savedRect;
-
-  /// The "default" position of app used for the snap point calculation
-  ///
-  /// This is just an estimation, and makes sure there aren't multiple snap
-  /// points at location 0 with height 0
-  static const double appStartingTopPosition = 300;
-
-  late Animation<double> _centerAnimation;
+  late final CurvedAnimation _centerAnimation = CurvedAnimation(
+    parent: _backdropAnimationController,
+    curve: slightlyUnderdumped,
+    reverseCurve: slightlyUnderdumped.flipped,
+  );
 
   final FocusNode _feedbackFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
 
   static const double _appPeak = 100;
+
+  final slightlyUnderdumped = Sprung(18);
 
   @override
   void initState() {
@@ -148,24 +132,24 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     widget.controller?._state = this;
     _backdropAnimationController
         .addStatusListener(_animControllerStatusListener);
-    final slightlyUnderdumped = Sprung(18);
-    _centerAnimation = CurvedAnimation(
-      parent: _backdropAnimationController,
-      curve: Interval(0.0, 1.0, curve: Sprung.overDamped),
-      reverseCurve: slightlyUnderdumped.flipped,
-    );
-    final CurvedAnimation inlineAnimation = CurvedAnimation(
-      parent: _backdropAnimationController,
-      curve: Interval(0.0, 1.0, curve: slightlyUnderdumped),
-      reverseCurve: slightlyUnderdumped.flipped,
-    );
 
-    _translateAppAnimation =
-        Tween<double>(begin: 0, end: 1).animate(inlineAnimation);
-    _appCornerRadiusAnimation = BorderRadiusTween(
-      begin: BorderRadius.circular(0),
-      end: BorderRadius.circular(20),
-    ).animate(_centerAnimation);
+    _animCurves();
+  }
+
+  /// switch to lame linear curves that match the finger location exactly
+  void _pullCurves() {
+    _centerAnimation.curve = Curves.linear;
+    _centerAnimation.reverseCurve = Curves.linear;
+    _inlineAnimation.curve = Curves.linear;
+    _inlineAnimation.reverseCurve = Curves.linear;
+  }
+
+  /// switch to cool bouncy curves
+  void _animCurves() {
+    _centerAnimation.curve = Sprung.overDamped;
+    _centerAnimation.reverseCurve = slightlyUnderdumped.flipped;
+    _inlineAnimation.curve = slightlyUnderdumped;
+    _inlineAnimation.reverseCurve = slightlyUnderdumped.flipped;
   }
 
   @override
@@ -213,8 +197,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       widget.controller?._state = this;
     }
   }
-
-  double _scrollOffset = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -266,7 +248,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: <Widget>[
                 SizedBox(height: topInset),
-                SizedBox(height: _appPeak),
+                const SizedBox(height: _appPeak),
                 // Position of the app in the listview for measure, show child here when measured
                 IntrinsicHeight(
                   child: Align(
@@ -276,7 +258,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                       child: () {
                         return _ScrollToTopButton(
                           onTap: () {
-                            print("Scroll to top");
                             model.hide();
                           },
                         );
@@ -301,10 +282,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               ],
             ),
             _buildAppPositioningAnimation(
-              offset: Offset(0, 50),
-              child: _buildAppFrame(
-                child: app,
-              ),
+              // offset: Offset(0, 50),
+              child: _buildAppFrame(child: app),
             ),
           ],
         ),
@@ -347,7 +326,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 ),
               ),
             ),
-            Positioned(
+            const Positioned(
               bottom: 8,
               left: 0,
               right: 0,
@@ -376,9 +355,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         final screenHeight = MediaQuery.of(context).size.height;
         final topInset = MediaQuery.of(context).viewInsets.top;
 
-        final translationY = (-screenHeight + _appPeak + topInset) *
-            _translateAppAnimation.value;
-        print(translationY);
+        final topPosition = -screenHeight + _appPeak + topInset;
+        final translationY = topPosition * _translateAppAnimation.value;
         return Transform(
           alignment: Alignment.topCenter,
           transform: Matrix4.identity()
@@ -387,7 +365,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               offset.dx,
               translationY,
             ),
-          child: app,
+          child: PullToCloseDetector(
+            animController: _backdropAnimationController,
+            distanceToBottom: translationY.abs(),
+            topPosition: topPosition.abs(),
+            onPullStart: () {
+              _pullCurves();
+            },
+            onPullEnd: () {
+              _animCurves();
+            },
+            child: app!,
+          ),
         );
       },
       child: child,
@@ -396,7 +385,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 }
 
 class _ScrollToTopButton extends StatelessWidget {
-  _ScrollToTopButton({
+  const _ScrollToTopButton({
     Key? key,
     this.onTap,
   }) : super(key: key);
@@ -404,7 +393,7 @@ class _ScrollToTopButton extends StatelessWidget {
   final void Function()? onTap;
 
   static final _colorTween =
-      ColorTween(begin: Color(0xFF1A56DB), end: Colors.black54);
+      ColorTween(begin: const Color(0xFF1A56DB), end: Colors.black54);
 
   @override
   Widget build(BuildContext context) {
@@ -444,6 +433,7 @@ class _KeepAppAliveState extends State<_KeepAppAlive>
     with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return widget.child;
   }
 

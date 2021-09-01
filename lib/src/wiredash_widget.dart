@@ -234,15 +234,19 @@ class WiredashState extends State<Wiredash> {
                       // Provide responsive layout information to the wiredash UI
                       child: WiredashResponsiveLayout(
                         // Overlay is required for text edit functions such as copy/paste on mobile
-                        child: Overlay(initialEntries: [
-                          OverlayEntry(builder: (context) {
-                            // use a stateful widget as direct child or hot reload will not work for that widget
-                            return WiredashBackdrop(
-                              controller: backdropController,
-                              child: widget.child,
-                            );
-                          })
-                        ]),
+                        child: Overlay(
+                          initialEntries: [
+                            OverlayEntry(
+                              builder: (context) {
+                                // use a stateful widget as direct child or hot reload will not work for that widget
+                                return WiredashBackdrop(
+                                  controller: backdropController,
+                                  child: widget.child,
+                                );
+                              },
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
