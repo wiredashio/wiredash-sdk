@@ -165,13 +165,13 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             if (pageOffset > -1 && pageOffset < 1) {
               print("offset $pageOffset");
             }
-            final animValue = pageOffset.abs();
+            final f = pageOffset.abs();
             return ColorFiltered(
               colorFilter: ColorFilter.matrix([
-                0.2126*animValue +(1-animValue), 0.7152*animValue, 0.0722*animValue, 0, 0,
-                0.2126*animValue, 0.7152*animValue+(1-animValue), 0.0722*animValue, 0, 0,
-                0.2126*animValue, 0.7152*animValue, 0.0722*animValue+(1-animValue), 0, 0,
-                0,0,0,1, 0,
+                0.2126 * f + (1 - f), 0.7152 * f, 0.0722 * f, 0, 0, //
+                0.2126 * f, 0.7152 * f + (1 - f), 0.0722 * f, 0, 0, //
+                0.2126 * f, 0.7152 * f, 0.0722 * f + (1 - f), 0, 0, //
+                0, 0, 0, 1 - (f / 2), 0, //
               ]),
               child: Padding(
                 padding: EdgeInsets.symmetric(
