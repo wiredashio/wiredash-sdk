@@ -167,8 +167,12 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             }
             final animValue = pageOffset.abs();
             return ColorFiltered(
-              colorFilter: ColorFilter.mode(
-                  Colors.grey.withOpacity(animValue), BlendMode.hue),
+              colorFilter: ColorFilter.matrix([
+                0.2126*animValue +(1-animValue), 0.7152*animValue, 0.0722*animValue, 0, 0,
+                0.2126*animValue, 0.7152*animValue+(1-animValue), 0.0722*animValue, 0, 0,
+                0.2126*animValue, 0.7152*animValue, 0.0722*animValue+(1-animValue), 0, 0,
+                0,0,0,1, 0,
+              ]),
               child: Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: context.responsiveLayout.horizontalMargin,
