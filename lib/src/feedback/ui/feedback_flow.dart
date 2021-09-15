@@ -5,6 +5,7 @@ import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/email_input.dart';
 import 'package:wiredash/src/feedback/ui/more_menu.dart';
+import 'package:wiredash/src/feedback/ui/step_form.dart';
 import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/scroll_wizard.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
@@ -160,7 +161,8 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
           animation: scrollWizardController,
           builder: (context, _) {
             const listIndex = 1;
-            final index = scrollWizardController.page ?? -2;
+            // final index = scrollWizardController.page ?? -2;
+            final index = -2;
             final pageOffset = index - listIndex;
             if (pageOffset > -1 && pageOffset < 1) {
               print("offset $pageOffset");
@@ -329,6 +331,33 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             ],
           ),
         ),
+      ),
+    );
+
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: StepForm(
+        builder: (index) {
+          print("building index $index");
+          if (index == 0) {
+            return part1;
+          }
+          if (index == 1) {
+            return part2;
+          }
+          if (index == 2) {
+            return part3;
+          }
+          if (index == 3) {
+            return part4;
+          }
+          if (index == 4) {
+            return part5;
+          }
+          return null;
+        },
       ),
     );
 

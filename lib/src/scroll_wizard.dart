@@ -9,6 +9,7 @@ import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
+@Deprecated('obsolete')
 class ScrollWizardController extends ScrollController {
   ScrollWizardController({
     this.initialPage = 0,
@@ -150,6 +151,7 @@ class ScrollWizardController extends ScrollController {
 ///
 /// The metrics are available on [ScrollNotification]s generated from
 /// [ScrollWizard]s.
+@Deprecated('obsolete')
 class PageMetrics extends FixedScrollMetrics {
   /// Creates an immutable snapshot of values associated with a [ScrollWizard].
   PageMetrics({
@@ -408,6 +410,7 @@ class _ForceImplicitScrollPhysics extends ScrollPhysics {
 ///  * [ScrollPhysics], the base class which defines the API for scrolling
 ///    physics.
 ///  * [ScrollWizard.physics], which can override the physics used by a page view.
+@Deprecated('obsolete')
 class PageScrollPhysics extends ScrollPhysics {
   /// Creates physics for a [ScrollWizard].
   const PageScrollPhysics({ScrollPhysics? parent}) : super(parent: parent);
@@ -463,6 +466,7 @@ class PageScrollPhysics extends ScrollPhysics {
 final ScrollWizardController _defaultPageController = ScrollWizardController();
 const PageScrollPhysics _kPagePhysics = PageScrollPhysics();
 
+@Deprecated('obsolete')
 class ScrollWizard extends StatefulWidget {
   /// Creates a scrollable list that works page by page from an explicit [List]
   /// of widgets.
