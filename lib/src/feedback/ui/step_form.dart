@@ -23,6 +23,7 @@ class _StepFormState extends State<StepForm> {
 
   double _offset = 0;
   int _activeIndex = 0;
+  double _centerOffset = 0;
 
   @override
   void initState() {
@@ -61,50 +62,42 @@ class _StepFormState extends State<StepForm> {
         builder: (context, constraints) {
           final activeHeight = _sizes[_activeIndex].height;
 
-          final centerOffset = () {
+          _centerOffset = () {
             if (activeHeight == 0) {
               // prevent division by zero
               return 0.0;
             }
             return (_offset - widget.topOffset) / activeHeight;
           }();
-          print("centerOffset $centerOffset");
+          print("centerOffset $_centerOffset");
 
           final widgetHeight = constraints.maxHeight;
           final topHeight = widget.topOffset;
           final bottomHeight = widgetHeight - topHeight;
 
+          Widget boxed({required Widget child, required int index}) {
+            return KeyedSubtree(
+              key: ValueKey(index),
+              child: SliverToBoxAdapter(
+                child: MeasureSize(
+                  child: child,
+                  onChange: (size, rect) {
+                    setState(() {
+                      _sizes[index] = rect;
+                    });
+                  },
+                ),
+              ),
+            );
+          }
+
           return Viewport(
             offset: ViewportOffset.fixed(-_offset),
             slivers: [
-              if (veryTop != null) SliverToBoxAdapter(child: veryTop),
-              if (top != null) SliverToBoxAdapter(child: top),
-              if (center != null)
-                SliverToBoxAdapter(
-                    child: MeasureSize(
-                  child: Container(
-                    child: center,
-                    color: Colors.green,
-                  ),
-                  onChange: (size, rect) {
-                    setState(() {
-                      _sizes[_activeIndex] = rect;
-                      print("center height: ${rect.height}");
-                    });
-                  },
-                )),
-              if (bottom != null)
-                SliverToBoxAdapter(
-                  child: MeasureSize(
-                    child: bottom,
-                    onChange: (size, rect) {
-                      setState(() {
-                        _sizes[bottomIndex] = rect;
-                        print("bottom height: ${rect.height}");
-                      });
-                    },
-                  ),
-                ),
+              if (veryTop != null) boxed(child: veryTop, index: veryTopIndex),
+              if (top != null) boxed(child: top, index: topIndex),
+              if (center != null) boxed(child: center, index: _activeIndex),
+              if (bottom != null) boxed(child: bottom, index: bottomIndex),
             ],
           );
         },
@@ -128,6 +121,15 @@ class _StepFormState extends State<StepForm> {
     // print(details);
     setState(() {
       _offset += details.delta.dy;
+      if (_centerOffset < -1) {
+        // mark next item as active
+        _activeIndex++;
+        _centerOffset = 0;
+      }
+      if (_centerOffset > 1 && _activeIndex > 0) {
+        _activeIndex--;
+        _centerOffset = 0;
+      }
       // print(_offset);
     });
   }
