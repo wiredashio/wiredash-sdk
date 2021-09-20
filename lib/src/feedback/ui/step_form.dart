@@ -67,7 +67,12 @@ class _StepFormState extends State<StepForm> {
               // prevent division by zero
               return 0.0;
             }
-            return (_offset - widget.topOffset) / activeHeight;
+            final activeIndexOffset = _sizes
+                .take(_activeIndex)
+                .fold<double>(0, (sum, item) => sum + item.bottom);
+
+            return (_offset - widget.topOffset + activeIndexOffset) /
+                activeHeight;
           }();
           print("centerOffset $_centerOffset");
 
