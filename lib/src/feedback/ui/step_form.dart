@@ -8,7 +8,7 @@ import 'package:wiredash/src/measure.dart';
 class StepForm extends StatefulWidget {
   const StepForm({
     Key? key,
-    this.topOffset = 300,
+    this.topOffset = 240,
     required this.builder,
   }) : super(key: key);
 
@@ -31,6 +31,14 @@ class _StepFormState extends State<StepForm> {
   void initState() {
     super.initState();
     _offset = widget.topOffset;
+  }
+
+  @override
+  void didUpdateWidget(covariant StepForm oldWidget) {
+    if (widget.topOffset != oldWidget.topOffset) {
+      _offset = _offset - oldWidget.topOffset + widget.topOffset;
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -63,30 +71,32 @@ class _StepFormState extends State<StepForm> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           print("_activeIndex: $_activeIndex");
+          // print("sizes: ${_sizes.map((e) => e.height)}");
+
+          final activeIndexOffset = _sizes
+              .take(_activeIndex)
+              .fold<double>(0, (sum, item) => sum + item.bottom);
           final activeHeight = _sizes[_activeIndex].height;
+          print(
+              "activeIndexOffset $activeIndexOffset, activeHeight $activeHeight");
 
           _centerOffset = () {
             if (activeHeight == 0) {
               // prevent division by zero
               return 0.0;
             }
-
-            final activeIndexOffset = _sizes
-                .take(_activeIndex)
-                .fold<double>(0, (sum, item) => sum + item.bottom);
-            print('activeIndexOffset: $activeIndexOffset');
-
             return (_offset - widget.topOffset + activeIndexOffset) /
                 activeHeight;
           }();
-          print("sizes: ${_sizes.map((e) => e.height)}");
-          print("centerOffset $_centerOffset");
 
-          final topItemsOutOfView = _sizes
-              .take(max(_activeIndex - 1, 0))
-              .fold<double>(0, (sum, item) => sum + item.bottom);
+          final activeOffset = _offset - widget.topOffset + activeIndexOffset;
 
-          print("topItemsOutOfView $topItemsOutOfView");
+          print("X $activeOffset");
+          // final topItemsOutOfView = _sizes
+          //     .take(max(_activeIndex - 1, 0))
+          //     .fold<double>(0, (sum, item) => sum + item.bottom);
+
+          // print("topItemsOutOfView $topItemsOutOfView");
 
           final widgetHeight = constraints.maxHeight;
           final topHeight = widget.topOffset;
@@ -96,30 +106,38 @@ class _StepFormState extends State<StepForm> {
             return KeyedSubtree(
               key: ValueKey(index),
               child: SliverToBoxAdapter(
-                child: Container(
-                  color: index == _activeIndex
-                      ? Colors.green.withAlpha(20)
-                      : Colors.transparent,
-                  child: MeasureSize(
-                    child: child,
-                    onChange: (size, rect) {
-                      setState(() {
-                        _sizes[index] = rect;
-                      });
-                    },
+                child: StepInheritedWidget(
+                  data: StepInformation(
+                    active: index == _activeIndex,
+                    animation: index == _activeIndex
+                        ? AlwaysStoppedAnimation<double>(_centerOffset)
+                        : AlwaysStoppedAnimation(index < _activeIndex ? 1 : 0),
+                  ),
+                  child: Container(
+                    color: index == _activeIndex
+                        ? Colors.green.withAlpha(20)
+                        : Colors.transparent,
+                    child: MeasureSize(
+                      child: child,
+                      onChange: (size, rect) {
+                        setState(() {
+                          _sizes[index] = rect;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),
             );
           }
 
-          print("_offset $_offset");
-          final activeIndexOffset = _sizes
+          // print("_offset $_offset");
+          final topItemsHeight = _sizes
               .take(max(_activeIndex - 2, 0))
               .fold<double>(0, (sum, item) => sum + item.bottom);
 
           return Viewport(
-            offset: ViewportOffset.fixed(-_offset - activeIndexOffset),
+            offset: ViewportOffset.fixed(-_offset - topItemsHeight),
             slivers: [
               if (veryTop != null) boxed(child: veryTop, index: veryTopIndex),
               if (top != null) boxed(child: top, index: topIndex),
@@ -152,24 +170,13 @@ class _StepFormState extends State<StepForm> {
       print("sizes: ${_sizes.map((e) => e.height)}");
 
       var index = 0;
-      double sum = 0;
+      double sum = widget.topOffset;
       while (sum >= _offset) {
         index++;
         sum -= _sizes[index].bottom;
       }
-      if (_activeIndex != index) {
-        _activeIndex = index;
-      }
-      // if (_centerOffset < -1) {
-      //   // mark next item as active
-      //   _activeIndex++;
-      //   _centerOffset = 0;
-      // }
-      // if (_centerOffset > 1 && _activeIndex > 0) {
-      //   _activeIndex--;
-      //   _centerOffset = 0;
-      // }
-      // print(_offset);
+      print("breakpoint: $sum");
+      _activeIndex = index;
     });
   }
 }
@@ -189,22 +196,21 @@ class StepInheritedWidget extends InheritedWidget {
 
 class StepInformation {
   final bool active;
+  final Animation<double> animation;
 
   const StepInformation({
     required this.active,
+    required this.animation,
   });
+
+  static StepInformation of(BuildContext context) {
+    final StepInheritedWidget? widget =
+        context.dependOnInheritedWidgetOfExactType<StepInheritedWidget>();
+    return widget!.data;
+  }
 }
 
 extension _IterableTakeLast<E> on Iterable<E> {
-  /// Returns a list containing last [n] elements.
-  ///
-  /// ```dart
-  /// val chars = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  /// print(chars.take(3)) // [1, 2, 3]
-  /// print(chars.takeWhile((it) => it < 5) // [1, 2, 3, 4]
-  /// print(chars.takeLast(2)) // [8, 9]
-  /// print(chars.takeLastWhile((it) => it > 5 }) // [6, 7, 8, 9]
-  /// ```
   List<E> takeLast(int n) {
     final list = this is List<E> ? this as List<E> : toList();
     return list.sublist(length - n);
