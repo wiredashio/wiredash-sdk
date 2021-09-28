@@ -164,10 +164,12 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             // final index = scrollWizardController.page ?? -2;
             final index = -2;
             final pageOffset = index - listIndex;
-            if (pageOffset > -1 && pageOffset < 1) {
-              print("offset $pageOffset");
-            }
-            final f = pageOffset.abs();
+            // if (pageOffset > -1 && pageOffset < 1) {
+            //   print("offset $pageOffset");
+            // }
+            final anim = StepInformation.of(context).animation;
+            final f = 1 - anim.value;
+
             return ColorFiltered(
               colorFilter: ColorFilter.matrix([
                 0.2126 * f + (1 - f), 0.7152 * f, 0.0722 * f, 0, 0, //
@@ -454,6 +456,8 @@ class _FeedbackMessageInput extends StatefulWidget {
 class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
   @override
   Widget build(BuildContext context) {
+    final anim = StepInformation.of(context).animation;
+    print("anim: ${anim.value}");
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,

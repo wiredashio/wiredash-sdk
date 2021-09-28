@@ -103,15 +103,31 @@ class _StepFormState extends State<StepForm> {
           final bottomHeight = widgetHeight - topHeight;
 
           Widget boxed({required Widget child, required int index}) {
+            final topHeight = _sizes
+                .take(index)
+                .fold<double>(0, (sum, item) => sum + item.bottom);
+
+            final double distanceToTopPosition =
+                _offset + topHeight - widget.topOffset;
+            // print("#${index} $distanceToTopPosition ="
+            //     " $_offset + $topHeight - ${widget.topOffset}");
+
+            final double animValue = () {
+              return 1.0 -
+                  max(0.0, min(1.0, (distanceToTopPosition / 100.0).abs()));
+            }();
+
+            // print("anim #$index: $animValue");
+
             return KeyedSubtree(
               key: ValueKey(index),
               child: SliverToBoxAdapter(
                 child: StepInheritedWidget(
                   data: StepInformation(
                     active: index == _activeIndex,
-                    animation: index == _activeIndex
-                        ? AlwaysStoppedAnimation<double>(_centerOffset)
-                        : AlwaysStoppedAnimation(index < _activeIndex ? 1 : 0),
+                    animation: animValue != null
+                        ? AlwaysStoppedAnimation<double>(animValue.abs())
+                        : AlwaysStoppedAnimation(1),
                   ),
                   child: Container(
                     color: index == _activeIndex
@@ -173,7 +189,11 @@ class _StepFormState extends State<StepForm> {
       double sum = widget.topOffset;
       while (sum >= _offset) {
         index++;
-        sum -= _sizes[index].bottom;
+        final height = _sizes[index].bottom;
+        if (height == 0) {
+          break;
+        }
+        sum -= height;
       }
       print("breakpoint: $sum");
       _activeIndex = index;
