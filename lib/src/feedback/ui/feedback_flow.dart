@@ -177,33 +177,36 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 0.2126 * f, 0.7152 * f, 0.0722 * f + (1 - f), 0, 0, //
                 0, 0, 0, 1 - (f / 2), 0, //
               ]),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.responsiveLayout.horizontalMargin,
-                  vertical: 16,
-                ),
-                child: Row(
-                  children: [
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Color(0xFFC6D5F6)),
-                        foregroundColor:
-                            MaterialStateProperty.all(Color(0xFF1A56DB)),
+              child: Visibility(
+                visible: f < 0.5,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.responsiveLayout.horizontalMargin,
+                    vertical: 16,
+                  ),
+                  child: Row(
+                    children: [
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Color(0xFFC6D5F6)),
+                          foregroundColor:
+                              MaterialStateProperty.all(Color(0xFF1A56DB)),
+                        ),
+                        child: Text('Skip'),
+                        onPressed: () {
+                          nextPage();
+                        },
                       ),
-                      child: Text('Skip'),
-                      onPressed: () {
-                        nextPage();
-                      },
-                    ),
-                    SizedBox(width: 8),
-                    ElevatedButton(
-                      child: Icon(Icons.arrow_right_alt),
-                      onPressed: () {
-                        nextPage();
-                      },
-                    ),
-                  ],
+                      SizedBox(width: 8),
+                      ElevatedButton(
+                        child: Icon(Icons.arrow_right_alt),
+                        onPressed: () {
+                          nextPage();
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );

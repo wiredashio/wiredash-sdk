@@ -27,6 +27,8 @@ class _StepFormState extends State<StepForm> {
   int _activeIndex = 0;
   double _centerOffset = 0;
 
+  double _line2 = 0.0;
+
   @override
   void initState() {
     super.initState();
@@ -152,13 +154,36 @@ class _StepFormState extends State<StepForm> {
               .take(max(_activeIndex - 2, 0))
               .fold<double>(0, (sum, item) => sum + item.bottom);
 
-          return Viewport(
-            offset: ViewportOffset.fixed(-_offset - topItemsHeight),
-            slivers: [
-              if (veryTop != null) boxed(child: veryTop, index: veryTopIndex),
-              if (top != null) boxed(child: top, index: topIndex),
-              if (center != null) boxed(child: center, index: _activeIndex),
-              if (bottom != null) boxed(child: bottom, index: bottomIndex),
+          return Stack(
+            children: [
+              Viewport(
+                offset: ViewportOffset.fixed(-_offset - topItemsHeight),
+                slivers: [
+                  if (veryTop != null)
+                    boxed(child: veryTop, index: veryTopIndex),
+                  if (top != null) boxed(child: top, index: topIndex),
+                  if (center != null) boxed(child: center, index: _activeIndex),
+                  if (bottom != null) boxed(child: bottom, index: bottomIndex),
+                ],
+              ),
+              Positioned(
+                top: widget.topOffset,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 1,
+                  color: Colors.black,
+                ),
+              ),
+              Positioned(
+                top: _line2,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 1,
+                  color: Colors.red,
+                ),
+              ),
             ],
           );
         },
@@ -188,11 +213,11 @@ class _StepFormState extends State<StepForm> {
       var index = 0;
       double sum = widget.topOffset;
       while (sum >= _offset) {
-        index++;
         final height = _sizes[index].bottom;
         if (height == 0) {
           break;
         }
+        index++;
         sum -= height;
       }
       print("breakpoint: $sum");
