@@ -267,19 +267,12 @@ class _StepFormState extends State<StepForm>
   }
 
   void _onVerticalDragEnd(DragEndDetails details) {
-    // print(details);
-    print(
-        Iterable.generate(_sizes.length, (i) => positionForIndex(i)).toList());
-
-    final topItemsHeight = positionForIndex(_activeIndex);
-
-    print(
-        "animate from ${vpOffset.pixels} to ${-topItemsHeight - widget.topOffset}");
-    // vpOffset.animateTo(
-    //   -topItemsHeight - widget.topOffset,
-    //   duration: Duration(milliseconds: 500),
-    //   curve: Curves.easeOutExpo,
-    // );
+    // TODO account for velocity
+    vpOffset.animateTo(
+      0,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeOutExpo,
+    );
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
@@ -296,7 +289,6 @@ class _StepFormState extends State<StepForm>
     print("vpOffset: $vpOffset");
     print("sizes: ${_sizes.map((e) => e.height)}");
 
-    var index = 0;
     final activeHeight = _sizes[_activeIndex].bottom;
     final offset = vpOffset.pixels;
     if (offset < 0) {
