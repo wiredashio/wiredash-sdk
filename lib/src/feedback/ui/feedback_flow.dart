@@ -169,6 +169,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             // }
             final anim = StepInformation.of(context).animation;
             final f = 1 - anim.value;
+            // print('f = $f');
 
             return ColorFiltered(
               colorFilter: ColorFilter.matrix([
@@ -178,7 +179,8 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 0, 0, 0, 1 - (f / 2), 0, //
               ]),
               child: Visibility(
-                visible: f < 0.5,
+                // visible: f < 0.5,
+                visible: true,
                 child: Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: context.responsiveLayout.horizontalMargin,
@@ -460,7 +462,7 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
   @override
   Widget build(BuildContext context) {
     final anim = StepInformation.of(context).animation;
-    print("anim: ${anim.value}");
+    // print("anim: ${anim.value}");
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,

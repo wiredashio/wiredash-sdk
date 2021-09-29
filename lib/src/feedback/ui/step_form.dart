@@ -20,25 +20,41 @@ class StepForm extends StatefulWidget {
   State<StepForm> createState() => _StepFormState();
 }
 
-class _StepFormState extends State<StepForm> {
+class _StepFormState extends State<StepForm>
+    with TickerProviderStateMixin<StepForm>
+    implements ScrollContext {
   final List<Rect> _sizes = [];
 
-  double _offset = 0;
+  late final ScrollController controller;
+  late final ViewportOffset vpOffset;
+  // double _offset = 0;
   int _activeIndex = 0;
   double _centerOffset = 0;
 
   double _line2 = 0.0;
 
+  List<Widget> children = [];
+
   @override
   void initState() {
     super.initState();
-    _offset = widget.topOffset;
+    // _offset = widget.topOffset;
+    controller = ScrollController(initialScrollOffset: -widget.topOffset);
+    vpOffset =
+        controller.createScrollPosition(BouncingScrollPhysics(), this, null);
+    vpOffset.addListener(() {
+      setState(() {
+        // print("vpOffset $vpOffset");
+      });
+    });
+    // vpOffset.correctBy(-widget.topOffset);
   }
 
   @override
   void didUpdateWidget(covariant StepForm oldWidget) {
     if (widget.topOffset != oldWidget.topOffset) {
-      _offset = _offset - oldWidget.topOffset + widget.topOffset;
+      // _offset = _offset - oldWidget.topOffset + widget.topOffset;
+      // vpOffset.jumpTo(vpOffset.pixels + oldWidget.topOffset - widget.topOffset);
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -53,22 +69,23 @@ class _StepFormState extends State<StepForm> {
       _sizes.addAll(Iterable.generate(missingRects, (_) => Rect.zero));
     }
 
-    Widget? veryTop;
-    if (veryTopIndex >= 0) {
-      veryTop = widget.builder(veryTopIndex);
-    }
-    Widget? top;
-    if (topIndex >= 0) {
-      top = widget.builder(topIndex);
-    }
-    Widget? center = widget.builder(_activeIndex);
-    Widget? bottom = widget.builder(bottomIndex);
+    // Widget? veryTop;
+    // if (veryTopIndex >= 0) {
+    //   veryTop = widget.builder(veryTopIndex);
+    // }
+    // Widget? top;
+    // if (topIndex >= 0) {
+    //   top = widget.builder(topIndex);
+    // }
+    // Widget? center = widget.builder(_activeIndex);
+    // Widget? bottom = widget.builder(bottomIndex);
 
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapCancel: _onTapCancel,
       onTapUp: _onTapUp,
       onVerticalDragUpdate: _onVerticalDragUpdate,
+      onVerticalDragEnd: _onVerticalDragEnd,
       behavior: HitTestBehavior.translucent,
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -79,21 +96,21 @@ class _StepFormState extends State<StepForm> {
               .take(_activeIndex)
               .fold<double>(0, (sum, item) => sum + item.bottom);
           final activeHeight = _sizes[_activeIndex].height;
-          print(
-              "activeIndexOffset $activeIndexOffset, activeHeight $activeHeight");
+          // print(
+          //     "activeIndexOffset $activeIndexOffset, activeHeight $activeHeight");
 
-          _centerOffset = () {
-            if (activeHeight == 0) {
-              // prevent division by zero
-              return 0.0;
-            }
-            return (_offset - widget.topOffset + activeIndexOffset) /
-                activeHeight;
-          }();
+          // _centerOffset = () {
+          //   if (activeHeight == 0) {
+          //     // prevent division by zero
+          //     return 0.0;
+          //   }
+          //   return (_offset - widget.topOffset + activeIndexOffset) /
+          //       activeHeight;
+          // }();
 
-          final activeOffset = _offset - widget.topOffset + activeIndexOffset;
+          // final activeOffset = _offset - widget.topOffset + activeIndexOffset;
 
-          print("X $activeOffset");
+          // print("offset $_offset");
           // final topItemsOutOfView = _sizes
           //     .take(max(_activeIndex - 1, 0))
           //     .fold<double>(0, (sum, item) => sum + item.bottom);
@@ -110,7 +127,7 @@ class _StepFormState extends State<StepForm> {
                 .fold<double>(0, (sum, item) => sum + item.bottom);
 
             final double distanceToTopPosition =
-                _offset + topHeight - widget.topOffset;
+                vpOffset.pixels + topHeight - widget.topOffset;
             // print("#${index} $distanceToTopPosition ="
             //     " $_offset + $topHeight - ${widget.topOffset}");
 
@@ -139,7 +156,15 @@ class _StepFormState extends State<StepForm> {
                       child: child,
                       onChange: (size, rect) {
                         setState(() {
+                          final missingRects = index + 1 - _sizes.length;
+                          if (missingRects > 0) {
+                            _sizes.addAll(Iterable.generate(
+                                missingRects, (_) => Rect.zero));
+                          }
                           _sizes[index] = rect;
+                          if (index == 2) {
+                            print("size changed to $size");
+                          }
                         });
                       },
                     ),
@@ -151,20 +176,42 @@ class _StepFormState extends State<StepForm> {
 
           // print("_offset $_offset");
           final topItemsHeight = _sizes
-              .take(max(_activeIndex - 2, 0))
+              .take(max(_activeIndex, 0))
               .fold<double>(0, (sum, item) => sum + item.bottom);
 
+          Iterable<Widget> buildChildren() sync* {
+            Widget? last;
+            int index = 0;
+            do {
+              last = widget.builder(index);
+              if (last != null) {
+                yield boxed(child: last, index: index);
+                index++;
+              }
+            } while (last != null);
+
+            // add one last item at the bottom
+            yield SliverToBoxAdapter(
+              key: ValueKey(index),
+              child: Container(
+                color: Colors.yellow,
+                height: widgetHeight / 2,
+              ),
+            );
+          }
+
+          children = buildChildren().toList();
+          // print("topItemsHeight $topItemsHeight");
+          // final vpoffset = ViewportOffset.fixed(
+          //     -_offset - topItemsHeight + widget.topOffset);
+          // print(vpoffset);
           return Stack(
             children: [
               Viewport(
-                offset: ViewportOffset.fixed(-_offset - topItemsHeight),
-                slivers: [
-                  if (veryTop != null)
-                    boxed(child: veryTop, index: veryTopIndex),
-                  if (top != null) boxed(child: top, index: topIndex),
-                  if (center != null) boxed(child: center, index: _activeIndex),
-                  if (bottom != null) boxed(child: bottom, index: bottomIndex),
-                ],
+                offset: vpOffset,
+                anchor: 0.26,
+                center: ValueKey(_activeIndex),
+                slivers: children,
               ),
               Positioned(
                 top: widget.topOffset,
@@ -192,38 +239,121 @@ class _StepFormState extends State<StepForm> {
   }
 
   void _onTapDown(TapDownDetails details) {
-    print(details);
+    // print(details);
   }
 
   void _onTapCancel() {
-    print('cancel');
+    // print('cancel');
   }
 
   void _onTapUp(TapUpDetails details) {
-    print(details);
+    // print(details);
+
+    final topItemsHeight = _sizes
+        .take(max(_activeIndex, 0))
+        .fold<double>(0, (sum, item) => sum + item.bottom);
+
+    // vpOffset.animateTo(
+    //   topItemsHeight,
+    //   duration: Duration(milliseconds: 500),
+    //   curve: Curves.easeOutExpo,
+    // );
+  }
+
+  double positionForIndex(int index) {
+    return _sizes
+        .take(max(index, 0))
+        .fold<double>(0, (sum, item) => sum + item.bottom);
+  }
+
+  void _onVerticalDragEnd(DragEndDetails details) {
+    // print(details);
+    print(
+        Iterable.generate(_sizes.length, (i) => positionForIndex(i)).toList());
+
+    final topItemsHeight = positionForIndex(_activeIndex);
+
+    print(
+        "animate from ${vpOffset.pixels} to ${-topItemsHeight - widget.topOffset}");
+    // vpOffset.animateTo(
+    //   -topItemsHeight - widget.topOffset,
+    //   duration: Duration(milliseconds: 500),
+    //   curve: Curves.easeOutExpo,
+    // );
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
     // print(details);
-    setState(() {
-      _offset += details.delta.dy;
-      print("_offset: $_offset");
-      print("sizes: ${_sizes.map((e) => e.height)}");
+    final oldTopItemsHeight = _sizes
+        .take(max(_activeIndex, 0))
+        .fold<double>(0, (sum, item) => sum + item.bottom);
 
-      var index = 0;
-      double sum = widget.topOffset;
-      while (sum >= _offset) {
-        final height = _sizes[index].bottom;
-        if (height == 0) {
-          break;
-        }
-        index++;
-        sum -= height;
-      }
-      print("breakpoint: $sum");
-      _activeIndex = index;
-    });
+    vpOffset.jumpTo(vpOffset.pixels - details.delta.dy);
+    print('vpOffset.pixels: ${vpOffset.pixels}');
+    // controller.position;
+    // _offset += details.delta.dy;
+    // print("_offset: $_offset");
+    print("vpOffset: $vpOffset");
+    print("sizes: ${_sizes.map((e) => e.height)}");
+
+    var index = 0;
+    final activeHeight = _sizes[_activeIndex].bottom;
+    final offset = vpOffset.pixels;
+    if (offset < 0) {
+      _activeIndex = max(0, _activeIndex - 1);
+    }
+    if (offset > activeHeight) {
+      _activeIndex = min(children.length - 1, _activeIndex + 1);
+    }
+
+    final pos = positionForIndex(_activeIndex);
+    // _line2 = pos;
+
+    print("breakpoint #$_activeIndex: ${pos}");
+    // _activeIndex = min(index, children.length - 1);
+    // print("Next index = $_activeIndex");
+
+    final newTopItemsHeight = _sizes
+        .take(max(_activeIndex, 0))
+        .fold<double>(0, (sum, item) => sum + item.bottom);
+
+    final diff = oldTopItemsHeight - newTopItemsHeight;
+    print("jump 1 item ($diff)");
+
+    vpOffset.jumpTo(vpOffset.pixels + diff);
   }
+
+  @override
+  AxisDirection get axisDirection => AxisDirection.down;
+
+  @override
+  BuildContext? get notificationContext => context;
+
+  @override
+  void saveOffset(double offset) {
+    // no state restauration
+  }
+
+  @override
+  void setCanDrag(bool value) {
+    // TODO
+  }
+
+  @override
+  void setIgnorePointer(bool value) {
+    // TODO
+  }
+
+  @override
+  void setSemanticsActions(Set<SemanticsAction> actions) {
+    // TODO
+  }
+
+  @override
+  BuildContext get storageContext => context;
+
+  @override
+  TickerProvider get vsync => this;
 }
 
 class StepInheritedWidget extends InheritedWidget {
