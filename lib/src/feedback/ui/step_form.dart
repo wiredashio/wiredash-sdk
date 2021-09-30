@@ -267,12 +267,36 @@ class _StepFormState extends State<StepForm>
   }
 
   void _onVerticalDragEnd(DragEndDetails details) {
-    // TODO account for velocity
-    vpOffset.animateTo(
-      0,
-      duration: Duration(milliseconds: 500),
-      curve: Curves.easeOutExpo,
-    );
+    print(details);
+    final oldTopItemsHeight = _sizes
+        .take(max(_activeIndex, 0))
+        .fold<double>(0, (sum, item) => sum + item.bottom);
+
+    final oldIndex = _activeIndex;
+
+    if (details.primaryVelocity! < -300) {
+      _activeIndex = min(children.length - 1, _activeIndex + 1);
+    } else if (details.primaryVelocity! > 300) {
+      _activeIndex = max(0, _activeIndex - 1);
+    }
+
+    final newTopItemsHeight = _sizes
+        .take(max(_activeIndex, 0))
+        .fold<double>(0, (sum, item) => sum + item.bottom);
+
+    final diff = oldTopItemsHeight - newTopItemsHeight;
+    // print("jump 1 item ($diff)");
+
+    vpOffset.jumpTo(vpOffset.pixels + diff);
+
+    if (oldIndex != _activeIndex) {
+      // TODO account for velocity
+      vpOffset.animateTo(
+        0,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeOutExpo,
+      );
+    }
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
