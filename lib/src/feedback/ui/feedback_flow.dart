@@ -124,6 +124,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         Padding(
           padding: EdgeInsets.symmetric(
             horizontal: context.responsiveLayout.horizontalMargin,
+            vertical: 16,
           ),
           child: Text(
             'What category fits best with your feedback?',

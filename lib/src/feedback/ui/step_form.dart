@@ -31,6 +31,8 @@ class _StepFormState extends State<StepForm>
   late final ViewportOffset vpOffset;
   int _activeIndex = 0;
 
+  double _activeItemHeight = 0;
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +55,7 @@ class _StepFormState extends State<StepForm>
       child: LayoutBuilder(
         builder: (context, constraints) {
           final widgetHeight = constraints.maxHeight;
+          _activeItemHeight = widgetHeight - widget.topOffset;
 
           Widget boxed({required Widget child, required int index}) {
             final topHeight = _sizes
@@ -79,10 +82,12 @@ class _StepFormState extends State<StepForm>
                         ? AlwaysStoppedAnimation<double>(animValue.abs())
                         : AlwaysStoppedAnimation(1),
                   ),
-                  child: Container(
-                    color: index == _activeIndex
-                        ? Colors.green.withAlpha(20)
-                        : Colors.transparent,
+                  child: AnimatedContainer(
+                    // alignment: Alignment.lerp(Alignment.topCenter,
+                    //     Alignment.bottomCenter, (distanceToTopPosition / 100)),
+                    constraints: BoxConstraints(minHeight: _activeItemHeight),
+                    duration: Duration(milliseconds: 200),
+                    curve: Curves.easeInOutCubic,
                     child: MeasureSize(
                       child: child,
                       onChange: (size, rect) {
@@ -93,9 +98,6 @@ class _StepFormState extends State<StepForm>
                                 missingRects, (_) => Rect.zero));
                           }
                           _sizes[index] = rect;
-                          if (index == 2) {
-                            // print("size changed to $size");
-                          }
                         });
                       },
                     ),
@@ -166,14 +168,14 @@ class _StepFormState extends State<StepForm>
 
     vpOffset.jumpTo(vpOffset.pixels + diff);
 
-    if (oldIndex != _activeIndex) {
-      // TODO account for velocity
-      vpOffset.animateTo(
-        0,
-        duration: Duration(milliseconds: 500),
-        curve: Curves.easeOutExpo,
-      );
-    }
+    // if (oldIndex != _activeIndex) {
+    // TODO account for velocity
+    vpOffset.animateTo(
+      0,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeOutExpo,
+    );
+    // }
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
@@ -197,7 +199,13 @@ class _StepFormState extends State<StepForm>
         .take(max(_activeIndex, 0))
         .fold<double>(0, (sum, item) => sum + item.bottom);
 
-    final diff = oldTopItemsHeight - newTopItemsHeight;
+    var diff = oldTopItemsHeight - newTopItemsHeight;
+    if (diff > 0) {
+      // diff -= _activeItemHeight;
+    }
+    if (diff < 0) {
+      // diff += _activeItemHeight;
+    }
 
     // keep scroll position now that the _activeIndex, and the center item of the Viewport changed
     vpOffset.jumpTo(vpOffset.pixels + diff);
