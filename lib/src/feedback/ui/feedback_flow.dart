@@ -347,6 +347,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: StepForm(
+        topOffset: 200,
         stepCount: 5,
         builder: (index) {
           // print("building index $index");
@@ -367,43 +368,6 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
           }
           throw 'Index out of bounds $index';
         },
-      ),
-    );
-
-    return GestureDetector(
-      onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: ScrollWizard(
-        controller: scrollWizardController,
-        scrollDirection: Axis.vertical,
-        children: [
-          SingleChildScrollView(child: part1),
-          SingleChildScrollView(child: part2),
-          SingleChildScrollView(child: part3),
-          SingleChildScrollView(child: part4),
-          ScrollBox(child: part5),
-          ScrollBox(
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.responsiveLayout.horizontalMargin,
-                  vertical: 16,
-                ),
-                child: BigBlueButton(
-                  icon: Icon(WiredashIcons.submit),
-                  text: Text("Submit"),
-                  onTap: context.wiredashModel.feedbackMessage == null
-                      ? null
-                      : () {
-                          // TODO handle error
-                          context.wiredashModel.submitFeedback();
-                        },
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

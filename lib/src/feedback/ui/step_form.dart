@@ -49,9 +49,10 @@ class _StepFormState extends State<StepForm>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: null,
       onVerticalDragUpdate: _onVerticalDragUpdate,
       onVerticalDragEnd: _onVerticalDragEnd,
-      behavior: HitTestBehavior.translucent,
+      behavior: HitTestBehavior.opaque,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final widgetHeight = constraints.maxHeight;
@@ -122,7 +123,7 @@ class _StepFormState extends State<StepForm>
             yield boxed(
               index: index,
               child: Container(
-                color: Colors.yellow,
+                color: Colors.transparent,
                 height: widgetHeight / 2,
               ),
             );
