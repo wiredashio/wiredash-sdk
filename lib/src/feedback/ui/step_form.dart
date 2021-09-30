@@ -9,11 +9,13 @@ class StepForm extends StatefulWidget {
   const StepForm({
     Key? key,
     this.topOffset = 240,
+    required this.stepCount,
     required this.builder,
   }) : super(key: key);
 
-  final Widget? Function(int index) builder;
+  final Widget Function(int index) builder;
 
+  final int stepCount;
   final double topOffset;
 
   @override
@@ -27,99 +29,30 @@ class _StepFormState extends State<StepForm>
 
   late final ScrollController controller;
   late final ViewportOffset vpOffset;
-  // double _offset = 0;
   int _activeIndex = 0;
-  double _centerOffset = 0;
-
-  double _line2 = 0.0;
-
-  List<Widget> children = [];
 
   @override
   void initState() {
     super.initState();
-    // _offset = widget.topOffset;
     controller = ScrollController(initialScrollOffset: -widget.topOffset);
     vpOffset =
         controller.createScrollPosition(BouncingScrollPhysics(), this, null);
     vpOffset.addListener(() {
       setState(() {
-        // print("vpOffset $vpOffset");
+        // continuously update the viewport offset when the scroll position changes
       });
     });
-    // vpOffset.correctBy(-widget.topOffset);
-  }
-
-  @override
-  void didUpdateWidget(covariant StepForm oldWidget) {
-    if (widget.topOffset != oldWidget.topOffset) {
-      // _offset = _offset - oldWidget.topOffset + widget.topOffset;
-      // vpOffset.jumpTo(vpOffset.pixels + oldWidget.topOffset - widget.topOffset);
-    }
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
-    int? veryTopIndex = _activeIndex - 2;
-    int? topIndex = _activeIndex - 1;
-    int bottomIndex = _activeIndex + 1;
-    final missingRects = bottomIndex + 1 - _sizes.length;
-    if (missingRects > 0) {
-      _sizes.addAll(Iterable.generate(missingRects, (_) => Rect.zero));
-    }
-
-    // Widget? veryTop;
-    // if (veryTopIndex >= 0) {
-    //   veryTop = widget.builder(veryTopIndex);
-    // }
-    // Widget? top;
-    // if (topIndex >= 0) {
-    //   top = widget.builder(topIndex);
-    // }
-    // Widget? center = widget.builder(_activeIndex);
-    // Widget? bottom = widget.builder(bottomIndex);
-
     return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapCancel: _onTapCancel,
-      onTapUp: _onTapUp,
       onVerticalDragUpdate: _onVerticalDragUpdate,
       onVerticalDragEnd: _onVerticalDragEnd,
       behavior: HitTestBehavior.translucent,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          print("_activeIndex: $_activeIndex");
-          // print("sizes: ${_sizes.map((e) => e.height)}");
-
-          final activeIndexOffset = _sizes
-              .take(_activeIndex)
-              .fold<double>(0, (sum, item) => sum + item.bottom);
-          final activeHeight = _sizes[_activeIndex].height;
-          // print(
-          //     "activeIndexOffset $activeIndexOffset, activeHeight $activeHeight");
-
-          // _centerOffset = () {
-          //   if (activeHeight == 0) {
-          //     // prevent division by zero
-          //     return 0.0;
-          //   }
-          //   return (_offset - widget.topOffset + activeIndexOffset) /
-          //       activeHeight;
-          // }();
-
-          // final activeOffset = _offset - widget.topOffset + activeIndexOffset;
-
-          // print("offset $_offset");
-          // final topItemsOutOfView = _sizes
-          //     .take(max(_activeIndex - 1, 0))
-          //     .fold<double>(0, (sum, item) => sum + item.bottom);
-
-          // print("topItemsOutOfView $topItemsOutOfView");
-
           final widgetHeight = constraints.maxHeight;
-          final topHeight = widget.topOffset;
-          final bottomHeight = widgetHeight - topHeight;
 
           Widget boxed({required Widget child, required int index}) {
             final topHeight = _sizes
@@ -128,8 +61,6 @@ class _StepFormState extends State<StepForm>
 
             final double distanceToTopPosition =
                 vpOffset.pixels + topHeight - widget.topOffset;
-            // print("#${index} $distanceToTopPosition ="
-            //     " $_offset + $topHeight - ${widget.topOffset}");
 
             final double animValue = () {
               return 1.0 -
@@ -163,7 +94,7 @@ class _StepFormState extends State<StepForm>
                           }
                           _sizes[index] = rect;
                           if (index == 2) {
-                            print("size changed to $size");
+                            // print("size changed to $size");
                           }
                         });
                       },
@@ -174,25 +105,20 @@ class _StepFormState extends State<StepForm>
             );
           }
 
-          // print("_offset $_offset");
-          final topItemsHeight = _sizes
-              .take(max(_activeIndex, 0))
-              .fold<double>(0, (sum, item) => sum + item.bottom);
-
           Iterable<Widget> buildChildren() sync* {
             Widget? last;
             int index = 0;
-            do {
+            while (index < widget.stepCount) {
               last = widget.builder(index);
               if (last != null) {
                 yield boxed(child: last, index: index);
                 index++;
               }
-            } while (last != null);
+            }
 
             // add one last item at the bottom
-            yield SliverToBoxAdapter(
-              key: ValueKey(index),
+            yield boxed(
+              index: index,
               child: Container(
                 color: Colors.yellow,
                 height: widgetHeight / 2,
@@ -200,74 +126,26 @@ class _StepFormState extends State<StepForm>
             );
           }
 
-          children = buildChildren().toList();
-          // print("topItemsHeight $topItemsHeight");
-          // final vpoffset = ViewportOffset.fixed(
-          //     -_offset - topItemsHeight + widget.topOffset);
-          // print(vpoffset);
-          return Stack(
-            children: [
-              Viewport(
-                offset: vpOffset,
-                anchor: 0.26,
-                center: ValueKey(_activeIndex),
-                slivers: children,
-              ),
-              Positioned(
-                top: widget.topOffset,
-                left: 0,
-                right: 0,
-                child: Container(
-                  height: 1,
-                  color: Colors.black,
-                ),
-              ),
-              Positioned(
-                top: _line2,
-                left: 0,
-                right: 0,
-                child: Container(
-                  height: 1,
-                  color: Colors.red,
-                ),
-              ),
-            ],
+          final children = buildChildren().toList();
+
+          return Viewport(
+            offset: vpOffset,
+            anchor: widget.topOffset / widgetHeight,
+            center: ValueKey(_activeIndex),
+            slivers: children,
           );
         },
       ),
     );
   }
 
-  void _onTapDown(TapDownDetails details) {
-    // print(details);
-  }
-
-  void _onTapCancel() {
-    // print('cancel');
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    // print(details);
-
-    final topItemsHeight = _sizes
-        .take(max(_activeIndex, 0))
-        .fold<double>(0, (sum, item) => sum + item.bottom);
-
-    // vpOffset.animateTo(
-    //   topItemsHeight,
-    //   duration: Duration(milliseconds: 500),
-    //   curve: Curves.easeOutExpo,
-    // );
-  }
-
-  double positionForIndex(int index) {
+  double _positionForIndex(int index) {
     return _sizes
         .take(max(index, 0))
         .fold<double>(0, (sum, item) => sum + item.bottom);
   }
 
   void _onVerticalDragEnd(DragEndDetails details) {
-    print(details);
     final oldTopItemsHeight = _sizes
         .take(max(_activeIndex, 0))
         .fold<double>(0, (sum, item) => sum + item.bottom);
@@ -275,7 +153,7 @@ class _StepFormState extends State<StepForm>
     final oldIndex = _activeIndex;
 
     if (details.primaryVelocity! < -300) {
-      _activeIndex = min(children.length - 1, _activeIndex + 1);
+      _activeIndex = min(widget.stepCount - 1, _activeIndex + 1);
     } else if (details.primaryVelocity! > 300) {
       _activeIndex = max(0, _activeIndex - 1);
     }
@@ -285,7 +163,6 @@ class _StepFormState extends State<StepForm>
         .fold<double>(0, (sum, item) => sum + item.bottom);
 
     final diff = oldTopItemsHeight - newTopItemsHeight;
-    // print("jump 1 item ($diff)");
 
     vpOffset.jumpTo(vpOffset.pixels + diff);
 
@@ -300,18 +177,12 @@ class _StepFormState extends State<StepForm>
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
-    // print(details);
     final oldTopItemsHeight = _sizes
         .take(max(_activeIndex, 0))
         .fold<double>(0, (sum, item) => sum + item.bottom);
 
+    // Account for finger movement
     vpOffset.jumpTo(vpOffset.pixels - details.delta.dy);
-    print('vpOffset.pixels: ${vpOffset.pixels}');
-    // controller.position;
-    // _offset += details.delta.dy;
-    // print("_offset: $_offset");
-    print("vpOffset: $vpOffset");
-    print("sizes: ${_sizes.map((e) => e.height)}");
 
     final activeHeight = _sizes[_activeIndex].bottom;
     final offset = vpOffset.pixels;
@@ -319,23 +190,16 @@ class _StepFormState extends State<StepForm>
       _activeIndex = max(0, _activeIndex - 1);
     }
     if (offset > activeHeight) {
-      _activeIndex = min(children.length - 1, _activeIndex + 1);
+      _activeIndex = min(widget.stepCount - 1, _activeIndex + 1);
     }
-
-    final pos = positionForIndex(_activeIndex);
-    // _line2 = pos;
-
-    print("breakpoint #$_activeIndex: ${pos}");
-    // _activeIndex = min(index, children.length - 1);
-    // print("Next index = $_activeIndex");
 
     final newTopItemsHeight = _sizes
         .take(max(_activeIndex, 0))
         .fold<double>(0, (sum, item) => sum + item.bottom);
 
     final diff = oldTopItemsHeight - newTopItemsHeight;
-    print("jump 1 item ($diff)");
 
+    // keep scroll position now that the _activeIndex, and the center item of the Viewport changed
     vpOffset.jumpTo(vpOffset.pixels + diff);
   }
 
@@ -352,17 +216,17 @@ class _StepFormState extends State<StepForm>
 
   @override
   void setCanDrag(bool value) {
-    // TODO
+    // don't persist anything
   }
 
   @override
   void setIgnorePointer(bool value) {
-    // TODO
+    // don't persist anything
   }
 
   @override
   void setSemanticsActions(Set<SemanticsAction> actions) {
-    // TODO
+    // don't persist anything
   }
 
   @override

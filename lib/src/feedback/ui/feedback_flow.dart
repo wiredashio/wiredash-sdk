@@ -346,6 +346,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: StepForm(
+        stepCount: 5,
         builder: (index) {
           // print("building index $index");
           if (index == 0) {
@@ -363,7 +364,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
           if (index == 4) {
             return part5;
           }
-          return null;
+          throw 'Index out of bounds $index';
         },
       ),
     );
