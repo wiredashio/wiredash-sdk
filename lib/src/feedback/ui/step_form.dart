@@ -28,7 +28,7 @@ class _StepFormState extends State<StepForm>
   final List<Rect> _sizes = [];
 
   late final ScrollController controller;
-  late final ViewportOffset vpOffset;
+  late final ScrollPosition scrollPosition;
   int _activeIndex = 0;
 
   double _activeItemHeight = 0;
@@ -37,9 +37,9 @@ class _StepFormState extends State<StepForm>
   void initState() {
     super.initState();
     controller = ScrollController(initialScrollOffset: -widget.topOffset);
-    vpOffset =
+    scrollPosition =
         controller.createScrollPosition(BouncingScrollPhysics(), this, null);
-    vpOffset.addListener(() {
+    scrollPosition.addListener(() {
       setState(() {
         // continuously update the viewport offset when the scroll position changes
       });
@@ -64,7 +64,7 @@ class _StepFormState extends State<StepForm>
                 .fold<double>(0, (sum, item) => sum + item.bottom);
 
             final double distanceToTopPosition =
-                vpOffset.pixels + topHeight - widget.topOffset;
+                scrollPosition.pixels + topHeight - widget.topOffset;
 
             final double animValue = () {
               return 1.0 -
@@ -76,31 +76,36 @@ class _StepFormState extends State<StepForm>
             return KeyedSubtree(
               key: ValueKey(index),
               child: SliverToBoxAdapter(
-                child: StepInheritedWidget(
-                  data: StepInformation(
-                    active: index == _activeIndex,
-                    animation: animValue != null
-                        ? AlwaysStoppedAnimation<double>(animValue.abs())
-                        : AlwaysStoppedAnimation(1),
-                  ),
-                  child: AnimatedContainer(
-                    // alignment: Alignment.lerp(Alignment.topCenter,
-                    //     Alignment.bottomCenter, (distanceToTopPosition / 100)),
-                    constraints: BoxConstraints(minHeight: _activeItemHeight),
-                    duration: Duration(milliseconds: 200),
-                    curve: Curves.easeInOutCubic,
-                    child: MeasureSize(
-                      child: child,
-                      onChange: (size, rect) {
-                        setState(() {
-                          final missingRects = index + 1 - _sizes.length;
-                          if (missingRects > 0) {
-                            _sizes.addAll(Iterable.generate(
-                                missingRects, (_) => Rect.zero));
-                          }
-                          _sizes[index] = rect;
-                        });
-                      },
+                child: Container(
+                  color: _activeIndex == index
+                      ? Colors.green.withAlpha(20)
+                      : Colors.transparent,
+                  child: StepInheritedWidget(
+                    data: StepInformation(
+                      active: index == _activeIndex,
+                      animation: animValue != null
+                          ? AlwaysStoppedAnimation<double>(animValue.abs())
+                          : AlwaysStoppedAnimation(1),
+                    ),
+                    child: AnimatedContainer(
+                      // alignment: Alignment.lerp(Alignment.topCenter,
+                      //     Alignment.bottomCenter, (distanceToTopPosition / 100)),
+                      constraints: BoxConstraints(minHeight: _activeItemHeight),
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeInOutCubic,
+                      child: MeasureSize(
+                        child: child,
+                        onChange: (size, rect) {
+                          setState(() {
+                            final missingRects = index + 1 - _sizes.length;
+                            if (missingRects > 0) {
+                              _sizes.addAll(Iterable.generate(
+                                  missingRects, (_) => Rect.zero));
+                            }
+                            _sizes[index] = rect;
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -132,7 +137,7 @@ class _StepFormState extends State<StepForm>
           final children = buildChildren().toList();
 
           return Viewport(
-            offset: vpOffset,
+            offset: scrollPosition,
             anchor: widget.topOffset / widgetHeight,
             center: ValueKey(_activeIndex),
             slivers: children,
@@ -167,16 +172,26 @@ class _StepFormState extends State<StepForm>
 
     final diff = oldTopItemsHeight - newTopItemsHeight;
 
-    vpOffset.jumpTo(vpOffset.pixels + diff);
+    scrollPosition.jumpTo(scrollPosition.pixels + diff);
 
-    // if (oldIndex != _activeIndex) {
-    // TODO account for velocity
-    vpOffset.animateTo(
+    try {
+      final sim = scrollPosition.physics
+          .createBallisticSimulation(scrollPosition, details.primaryVelocity!);
+      // null == idle
+      final x = sim?.x(1000);
+      print("Sim $x");
+    } catch (e, stack) {
+      print(e);
+      print(stack);
+    }
+
+    // TODO account for velocity, only eventually move to next item, allow
+    //  scrolling in the current item (i.e. when the summery gets long)
+    scrollPosition.animateTo(
       0,
       duration: Duration(milliseconds: 500),
       curve: Curves.easeOutExpo,
     );
-    // }
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
@@ -185,10 +200,10 @@ class _StepFormState extends State<StepForm>
         .fold<double>(0, (sum, item) => sum + item.bottom);
 
     // Account for finger movement
-    vpOffset.jumpTo(vpOffset.pixels - details.delta.dy);
+    scrollPosition.jumpTo(scrollPosition.pixels - details.delta.dy);
 
     final activeHeight = _sizes[_activeIndex].bottom;
-    final offset = vpOffset.pixels;
+    final offset = scrollPosition.pixels;
     if (offset < 0) {
       _activeIndex = max(0, _activeIndex - 1);
     }
@@ -209,7 +224,7 @@ class _StepFormState extends State<StepForm>
     }
 
     // keep scroll position now that the _activeIndex, and the center item of the Viewport changed
-    vpOffset.jumpTo(vpOffset.pixels + diff);
+    scrollPosition.jumpTo(scrollPosition.pixels + diff);
   }
 
   @override
