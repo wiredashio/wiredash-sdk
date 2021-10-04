@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
-import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/email_input.dart';
 import 'package:wiredash/src/feedback/ui/more_menu.dart';
 import 'package:wiredash/src/feedback/ui/step_form.dart';
@@ -25,8 +23,7 @@ class WiredashFeedbackFlow extends StatefulWidget {
   State<WiredashFeedbackFlow> createState() => _WiredashFeedbackFlowState();
 }
 
-class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
-    with TickerProviderStateMixin {
+class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow> with TickerProviderStateMixin {
   final ValueNotifier<Set<Label>> _selectedLabels = ValueNotifier({});
   late final TextEditingController _controller;
 
@@ -51,8 +48,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
 
   @override
   Widget build(BuildContext context) {
-    final scrollWizardController =
-        ScrollWizardController(viewportFraction: 0.4);
+    final scrollWizardController = ScrollWizardController(viewportFraction: 0.4);
 
     void nextPage() {
       scrollWizardController.nextPage(
@@ -100,7 +96,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                       return Container(
                         alignment: Alignment.topLeft,
                         child: ElevatedButton(
-                          child: Icon(Icons.arrow_right_alt),
+                          child: const Icon(Icons.arrow_right_alt),
                           onPressed: () {
                             nextPage();
                             FocusManager.instance.primaryFocus?.unfocus();
@@ -126,7 +122,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             horizontal: context.responsiveLayout.horizontalMargin,
             vertical: 16,
           ),
-          child: Text(
+          child: const Text(
             'What category fits best with your feedback?',
             style: TextStyle(
               fontSize: 17,
@@ -161,10 +157,10 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         AnimatedBuilder(
           animation: scrollWizardController,
           builder: (context, _) {
-            const listIndex = 1;
+            // const listIndex = 1;
             // final index = scrollWizardController.page ?? -2;
-            final index = -2;
-            final pageOffset = index - listIndex;
+            // final index = -2;
+            // final pageOffset = index - listIndex;
             // if (pageOffset > -1 && pageOffset < 1) {
             //   print("offset $pageOffset");
             // }
@@ -181,7 +177,6 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
               ]),
               child: Visibility(
                 // visible: f < 0.5,
-                visible: true,
                 child: Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: context.responsiveLayout.horizontalMargin,
@@ -191,19 +186,17 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                     children: [
                       ElevatedButton(
                         style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Color(0xFFC6D5F6)),
-                          foregroundColor:
-                              MaterialStateProperty.all(Color(0xFF1A56DB)),
+                          backgroundColor: MaterialStateProperty.all(const Color(0xFFC6D5F6)),
+                          foregroundColor: MaterialStateProperty.all(const Color(0xFF1A56DB)),
                         ),
-                        child: Text('Skip'),
+                        child: const Text('Skip'),
                         onPressed: () {
                           nextPage();
                         },
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       ElevatedButton(
-                        child: Icon(Icons.arrow_right_alt),
+                        child: const Icon(Icons.arrow_right_alt),
                         onPressed: () {
                           nextPage();
                         },
@@ -232,17 +225,17 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             children: [
               ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Color(0xFFC6D5F6)),
-                  foregroundColor: MaterialStateProperty.all(Color(0xFF1A56DB)),
+                  backgroundColor: MaterialStateProperty.all(const Color(0xFFC6D5F6)),
+                  foregroundColor: MaterialStateProperty.all(const Color(0xFF1A56DB)),
                 ),
-                child: Text('Skip'),
+                child: const Text('Skip'),
                 onPressed: () {
                   nextPage();
                 },
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               ElevatedButton(
-                child: Icon(Icons.arrow_right_alt),
+                child: const Icon(Icons.arrow_right_alt),
                 onPressed: () {
                   nextPage();
                   FocusManager.instance.primaryFocus?.unfocus();
@@ -263,7 +256,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             horizontal: context.responsiveLayout.horizontalMargin,
             vertical: 16,
           ),
-          child: Text(
+          child: const Text(
             'For a better understanding. Do you want to take a screenshot of it?',
             style: TextStyle(
               fontSize: 17,
@@ -279,18 +272,18 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
           child: Row(
             children: [
               ElevatedButton(
-                child: Text('Yes'),
+                child: const Text('Yes'),
                 onPressed: () {
                   nextPage();
                 },
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Color(0xFFC6D5F6)),
-                  foregroundColor: MaterialStateProperty.all(Color(0xFF1A56DB)),
+                  backgroundColor: MaterialStateProperty.all(const Color(0xFFC6D5F6)),
+                  foregroundColor: MaterialStateProperty.all(const Color(0xFF1A56DB)),
                 ),
-                child: Text('Skip'),
+                child: const Text('Skip'),
                 onPressed: () {
                   nextPage();
                 },
@@ -314,14 +307,14 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Summary',
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 'Message: ${context.wiredashModel.feedbackMessage}\n'
                 '\n'
@@ -334,7 +327,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 'AppVersion: TODO\n'
                 'Browser Version: TODO\n'
                 'Whatever is useful\n',
-                style: TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: 14),
               ),
             ],
           ),
@@ -413,9 +406,7 @@ class _ScrollBoxState extends State<ScrollBox> {
 }
 
 class _FeedbackMessageInput extends StatefulWidget {
-  const _FeedbackMessageInput(
-      {required this.controller, this.focusNode, Key? key})
-      : super(key: key);
+  const _FeedbackMessageInput({required this.controller, this.focusNode, Key? key}) : super(key: key);
 
   final TextEditingController controller;
   final FocusNode? focusNode;
@@ -427,7 +418,7 @@ class _FeedbackMessageInput extends StatefulWidget {
 class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
   @override
   Widget build(BuildContext context) {
-    final anim = StepInformation.of(context).animation;
+    // final anim = StepInformation.of(context).animation;
     // print("anim: ${anim.value}");
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -533,7 +524,7 @@ class _Label extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 225),
         curve: Curves.ease,
-        constraints: BoxConstraints(maxHeight: 41, minHeight: 41),
+        constraints: const BoxConstraints(maxHeight: 41, minHeight: 41),
         decoration: BoxDecoration(
           color: selected ? Colors.white : const Color(0xFFE8EEFB),
           borderRadius: BorderRadius.circular(10),
@@ -551,7 +542,6 @@ class _Label extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
         child: Align(
           widthFactor: 1,
-          alignment: Alignment.center,
           child: AnimatedDefaultTextStyle(
             duration: const Duration(milliseconds: 225),
             curve: Curves.ease,
@@ -595,8 +585,6 @@ Widget? _getCounterText(
 
   return Text(
     remaining > 150 ? '' : remaining.toString(),
-    style: WiredashTheme.of(context)!
-        .inputErrorStyle
-        .copyWith(color: _getCounterColor()),
+    style: WiredashTheme.of(context)!.inputErrorStyle.copyWith(color: _getCounterColor()),
   );
 }
