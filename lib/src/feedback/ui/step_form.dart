@@ -205,7 +205,7 @@ class _StepFormState extends State<StepForm>
     final activeHeight = _sizes[_activeIndex].bottom;
     final offset = scrollPosition.pixels;
     if (offset < 0) {
-      _activeIndex = max(0, _activeIndex - 1);
+      _activeIndex = max(0, _activeIndex);
     }
     if (offset > activeHeight) {
       _activeIndex = min(widget.stepCount - 1, _activeIndex + 1);
