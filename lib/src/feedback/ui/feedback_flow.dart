@@ -5,7 +5,6 @@ import 'package:wiredash/src/feedback/ui/email_input.dart';
 import 'package:wiredash/src/feedback/ui/more_menu.dart';
 import 'package:wiredash/src/feedback/ui/step_form.dart';
 import 'package:wiredash/src/responsive_layout.dart';
-import 'package:wiredash/src/scroll_wizard.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
 const _labels = [
@@ -48,14 +47,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow> with Ticker
 
   @override
   Widget build(BuildContext context) {
-    final scrollWizardController = ScrollWizardController(viewportFraction: 0.4);
-
-    void nextPage() {
-      scrollWizardController.nextPage(
-        curve: Curves.easeInOut,
-        duration: const Duration(milliseconds: 300),
-      );
-    }
+    void nextPage() {}
 
     // message
     final part1 = Column(
@@ -154,19 +146,10 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow> with Ticker
             },
           ),
         ),
-        AnimatedBuilder(
-          animation: scrollWizardController,
-          builder: (context, _) {
-            // const listIndex = 1;
-            // final index = scrollWizardController.page ?? -2;
-            // final index = -2;
-            // final pageOffset = index - listIndex;
-            // if (pageOffset > -1 && pageOffset < 1) {
-            //   print("offset $pageOffset");
-            // }
+        Builder(
+          builder: (context) {
             final anim = StepInformation.of(context).animation;
             final f = 1 - anim.value;
-            // print('f = $f');
 
             return ColorFiltered(
               colorFilter: ColorFilter.matrix([
