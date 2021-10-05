@@ -23,6 +23,7 @@ class WiredashFeedbackFlow extends StatefulWidget {
 }
 
 class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow> with TickerProviderStateMixin {
+  final GlobalKey<StepFormState> stepFormKey = GlobalKey<StepFormState>();
   final ValueNotifier<Set<Label>> _selectedLabels = ValueNotifier({});
   late final TextEditingController _controller;
 
@@ -47,7 +48,9 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow> with Ticker
 
   @override
   Widget build(BuildContext context) {
-    void nextPage() {}
+    void nextPage() {
+      stepFormKey.currentState?.moveToNextPage();
+    }
 
     // message
     final part1 = Column(
@@ -323,6 +326,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow> with Ticker
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: StepForm(
+        key: stepFormKey,
         topOffset: 200,
         stepCount: 5,
         builder: (index) {
