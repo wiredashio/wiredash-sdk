@@ -22,7 +22,8 @@ class WiredashFeedbackFlow extends StatefulWidget {
   State<WiredashFeedbackFlow> createState() => _WiredashFeedbackFlowState();
 }
 
-class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow> with TickerProviderStateMixin {
+class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
+    with TickerProviderStateMixin {
   final GlobalKey<StepFormState> stepFormKey = GlobalKey<StepFormState>();
   final ValueNotifier<Set<Label>> _selectedLabels = ValueNotifier({});
   late final TextEditingController _controller;
@@ -172,8 +173,10 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow> with Ticker
                     children: [
                       ElevatedButton(
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(const Color(0xFFC6D5F6)),
-                          foregroundColor: MaterialStateProperty.all(const Color(0xFF1A56DB)),
+                          backgroundColor: MaterialStateProperty.all(
+                              const Color(0xFFC6D5F6)),
+                          foregroundColor: MaterialStateProperty.all(
+                              const Color(0xFF1A56DB)),
                         ),
                         child: const Text('Skip'),
                         onPressed: () {
@@ -211,8 +214,10 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow> with Ticker
             children: [
               ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(const Color(0xFFC6D5F6)),
-                  foregroundColor: MaterialStateProperty.all(const Color(0xFF1A56DB)),
+                  backgroundColor:
+                      MaterialStateProperty.all(const Color(0xFFC6D5F6)),
+                  foregroundColor:
+                      MaterialStateProperty.all(const Color(0xFF1A56DB)),
                 ),
                 child: const Text('Skip'),
                 onPressed: () {
@@ -266,8 +271,10 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow> with Ticker
               const SizedBox(width: 8),
               ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(const Color(0xFFC6D5F6)),
-                  foregroundColor: MaterialStateProperty.all(const Color(0xFF1A56DB)),
+                  backgroundColor:
+                      MaterialStateProperty.all(const Color(0xFFC6D5F6)),
+                  foregroundColor:
+                      MaterialStateProperty.all(const Color(0xFF1A56DB)),
                 ),
                 child: const Text('Skip'),
                 onPressed: () {
@@ -393,7 +400,9 @@ class _ScrollBoxState extends State<ScrollBox> {
 }
 
 class _FeedbackMessageInput extends StatefulWidget {
-  const _FeedbackMessageInput({required this.controller, this.focusNode, Key? key}) : super(key: key);
+  const _FeedbackMessageInput(
+      {required this.controller, this.focusNode, Key? key})
+      : super(key: key);
 
   final TextEditingController controller;
   final FocusNode? focusNode;
@@ -572,6 +581,8 @@ Widget? _getCounterText(
 
   return Text(
     remaining > 150 ? '' : remaining.toString(),
-    style: WiredashTheme.of(context)!.inputErrorStyle.copyWith(color: _getCounterColor()),
+    style: WiredashTheme.of(context)!
+        .inputErrorStyle
+        .copyWith(color: _getCounterColor()),
   );
 }

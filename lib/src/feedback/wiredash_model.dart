@@ -15,8 +15,10 @@ class WiredashModel with ChangeNotifier {
   /// Also true during the wiredash enter/exit transition
   bool get isWiredashActive => _isWiredashVisible;
   bool _isWiredashVisible = false;
+
   bool get isWiredashOpening => _isWiredashOpening;
   bool _isWiredashOpening = false;
+
   bool get isWiredashClosing => _isWiredashClosing;
   bool _isWiredashClosing = false;
 
@@ -26,6 +28,7 @@ class WiredashModel with ChangeNotifier {
   final BuildInfoManager buildInfoManager = BuildInfoManager();
 
   String? get feedbackMessage => _feedbackMessage;
+
   // TODO move in a separate class?
   String? _feedbackMessage;
 
@@ -40,6 +43,7 @@ class WiredashModel with ChangeNotifier {
   }
 
   String? get userEmail => _userEmail;
+
   // TODO move in a separate class?
   String? _userEmail;
 

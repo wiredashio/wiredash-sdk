@@ -11,7 +11,8 @@ class MediaQueryFromWindow extends StatefulWidget {
   MediaQueryFromWindowsState createState() => MediaQueryFromWindowsState();
 }
 
-class MediaQueryFromWindowsState extends State<MediaQueryFromWindow> with WidgetsBindingObserver {
+class MediaQueryFromWindowsState extends State<MediaQueryFromWindow>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -60,7 +61,8 @@ class MediaQueryFromWindowsState extends State<MediaQueryFromWindow> with Widget
 
   @override
   Widget build(BuildContext context) {
-    MediaQueryData data = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+    MediaQueryData data =
+        MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
     if (!kReleaseMode) {
       data = data.copyWith(platformBrightness: debugBrightnessOverride);
     }

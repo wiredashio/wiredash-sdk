@@ -22,7 +22,9 @@ class StepForm extends StatefulWidget {
   State<StepForm> createState() => StepFormState();
 }
 
-class StepFormState extends State<StepForm> with TickerProviderStateMixin<StepForm> implements ScrollContext {
+class StepFormState extends State<StepForm>
+    with TickerProviderStateMixin<StepForm>
+    implements ScrollContext {
   final List<Rect> _sizes = [];
 
   late final ScrollController controller;
@@ -35,7 +37,8 @@ class StepFormState extends State<StepForm> with TickerProviderStateMixin<StepFo
   void initState() {
     super.initState();
     controller = ScrollController(initialScrollOffset: -widget.topOffset);
-    scrollPosition = controller.createScrollPosition(const BouncingScrollPhysics(), this, null);
+    scrollPosition = controller.createScrollPosition(
+        const BouncingScrollPhysics(), this, null);
     scrollPosition.addListener(() {
       setState(() {
         // continuously update the viewport offset when the scroll position changes
@@ -55,12 +58,16 @@ class StepFormState extends State<StepForm> with TickerProviderStateMixin<StepFo
           _activeItemHeight = widgetHeight - widget.topOffset;
 
           Widget boxed({required Widget child, required int index}) {
-            final topHeight = _sizes.take(index).fold<double>(0, (sum, item) => sum + item.bottom);
+            final topHeight = _sizes
+                .take(index)
+                .fold<double>(0, (sum, item) => sum + item.bottom);
 
-            final double distanceToTopPosition = scrollPosition.pixels + topHeight - widget.topOffset;
+            final double distanceToTopPosition =
+                scrollPosition.pixels + topHeight - widget.topOffset;
 
             final double animValue = () {
-              return 1.0 - max(0.0, min(1.0, (distanceToTopPosition / 100.0).abs()));
+              return 1.0 -
+                  max(0.0, min(1.0, (distanceToTopPosition / 100.0).abs()));
             }();
 
             // print("anim #$index: $animValue");
@@ -69,7 +76,7 @@ class StepFormState extends State<StepForm> with TickerProviderStateMixin<StepFo
               key: ValueKey(index),
               child: SliverToBoxAdapter(
                 child: Container(
-                  color: _activeIndex == index ? Colors.green.withAlpha(20) : Colors.transparent,
+                  //color: _activeIndex == index ? Colors.green.withAlpha(20) : Colors.transparent,
                   child: StepInheritedWidget(
                     data: StepInformation(
                       active: index == _activeIndex,
@@ -89,7 +96,8 @@ class StepFormState extends State<StepForm> with TickerProviderStateMixin<StepFo
                           setState(() {
                             final missingRects = index + 1 - _sizes.length;
                             if (missingRects > 0) {
-                              _sizes.addAll(Iterable.generate(missingRects, (_) => Rect.zero));
+                              _sizes.addAll(Iterable.generate(
+                                  missingRects, (_) => Rect.zero));
                             }
                             _sizes[index] = rect;
                           });
@@ -147,7 +155,9 @@ class StepFormState extends State<StepForm> with TickerProviderStateMixin<StepFo
   }
 
   double _positionForIndex(int index) {
-    return _sizes.take(max(index, 0)).fold<double>(0, (sum, item) => sum + item.bottom);
+    return _sizes
+        .take(max(index, 0))
+        .fold<double>(0, (sum, item) => sum + item.bottom);
   }
 
   void _onVerticalDragEnd(DragEndDetails details) {
@@ -164,7 +174,9 @@ class StepFormState extends State<StepForm> with TickerProviderStateMixin<StepFo
   }
 
   double _calculateTopItemsHeight() {
-    return _sizes.take(max(_activeIndex, 0)).fold<double>(0, (sum, item) => sum + item.bottom);
+    return _sizes
+        .take(max(_activeIndex, 0))
+        .fold<double>(0, (sum, item) => sum + item.bottom);
   }
 
   void _animateToNextPage(double oldTopItemsHeight, double velocity) {
@@ -175,7 +187,8 @@ class StepFormState extends State<StepForm> with TickerProviderStateMixin<StepFo
     scrollPosition.jumpTo(scrollPosition.pixels + diff);
 
     try {
-      final sim = scrollPosition.physics.createBallisticSimulation(scrollPosition, velocity);
+      final sim = scrollPosition.physics
+          .createBallisticSimulation(scrollPosition, velocity);
       // null == idle
       final x = sim?.x(1000);
       print("Sim $x");
@@ -194,7 +207,9 @@ class StepFormState extends State<StepForm> with TickerProviderStateMixin<StepFo
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
-    final oldTopItemsHeight = _sizes.take(max(_activeIndex, 0)).fold<double>(0, (sum, item) => sum + item.bottom);
+    final oldTopItemsHeight = _sizes
+        .take(max(_activeIndex, 0))
+        .fold<double>(0, (sum, item) => sum + item.bottom);
 
     // Account for finger movement
     scrollPosition.jumpTo(scrollPosition.pixels - details.delta.dy);
@@ -208,7 +223,9 @@ class StepFormState extends State<StepForm> with TickerProviderStateMixin<StepFo
       _activeIndex = min(widget.stepCount - 1, _activeIndex + 1);
     }
 
-    final newTopItemsHeight = _sizes.take(max(_activeIndex, 0)).fold<double>(0, (sum, item) => sum + item.bottom);
+    final newTopItemsHeight = _sizes
+        .take(max(_activeIndex, 0))
+        .fold<double>(0, (sum, item) => sum + item.bottom);
 
     var diff = oldTopItemsHeight - newTopItemsHeight;
     if (diff > 0) {
@@ -278,7 +295,8 @@ class StepInformation {
   });
 
   static StepInformation of(BuildContext context) {
-    final StepInheritedWidget? widget = context.dependOnInheritedWidgetOfExactType<StepInheritedWidget>();
+    final StepInheritedWidget? widget =
+        context.dependOnInheritedWidgetOfExactType<StepInheritedWidget>();
     return widget!.data;
   }
 }

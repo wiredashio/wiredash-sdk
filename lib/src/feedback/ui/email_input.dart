@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/src/wiredash_provider.dart';
 import 'package:wiredash/src/responsive_layout.dart';
+import 'package:wiredash/src/wiredash_provider.dart';
 
 class EmailInput extends StatefulWidget {
   const EmailInput({

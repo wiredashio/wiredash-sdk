@@ -14,6 +14,7 @@ mixin _SnapScrollPhysics on ScrollPhysics {
 
 abstract class SnapScrollPhysics extends ScrollPhysics with _SnapScrollPhysics {
   static bool typeOne = true;
+
   factory SnapScrollPhysics({
     ScrollPhysics? parent,
     List<Snap> snaps = const [],

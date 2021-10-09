@@ -97,6 +97,7 @@ class WiredashApi {
 /// Generic error from the Wiredash API
 class WiredashApiException implements Exception {
   WiredashApiException({String? message, this.response}) : _message = message;
+
   String? get message {
     final String? bodyMessage = () {
       try {
