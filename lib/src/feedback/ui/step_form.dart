@@ -64,7 +64,7 @@ class StepFormState extends State<StepForm>
                     .fold<double>(0, (sum, item) => sum + item.bottom);
 
             final double distanceToCenterTop =
-                scrollPosition.pixels + topHeight;
+                scrollPosition.pixels - topHeight;
 
             if (index < 2) {
               print(
@@ -72,7 +72,7 @@ class StepFormState extends State<StepForm>
             }
             final double animValue = () {
               return 1.0 -
-                  max(0.0, min(1.0, (distanceToCenterTop / 100.0).abs()));
+                  max(0.0, min(1.0, (distanceToCenterTop / 200.0).abs()));
             }();
 
             // print("anim #$index: $animValue");
