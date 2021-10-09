@@ -31,8 +31,6 @@ class StepFormState extends State<StepForm>
   late final ScrollPosition scrollPosition;
   int _activeIndex = 0;
 
-  double _activeItemHeight = 0;
-
   @override
   void initState() {
     super.initState();
@@ -55,28 +53,42 @@ class StepFormState extends State<StepForm>
       child: LayoutBuilder(
         builder: (context, constraints) {
           final widgetHeight = constraints.maxHeight;
-          _activeItemHeight = widgetHeight - widget.topOffset;
+          final itemHeight = widgetHeight - widget.topOffset;
 
           Widget boxed({required Widget child, required int index}) {
-            final topHeight = _sizes
-                .take(index)
-                .fold<double>(0, (sum, item) => sum + item.bottom);
+            final topHeight = index <= _activeIndex
+                ? 0
+                : _sizes
+                    .skip(max(0, index - 1))
+                    .take(1)
+                    .fold<double>(0, (sum, item) => sum + item.bottom);
 
-            final double distanceToTopPosition =
-                scrollPosition.pixels + topHeight - widget.topOffset;
+            final double distanceToCenterTop =
+                scrollPosition.pixels + topHeight;
 
+            if (index < 2) {
+              print(
+                  "#$index $distanceToCenterTop = ${scrollPosition.pixels} + $topHeight");
+            }
             final double animValue = () {
               return 1.0 -
-                  max(0.0, min(1.0, (distanceToTopPosition / 100.0).abs()));
+                  max(0.0, min(1.0, (distanceToCenterTop / 100.0).abs()));
             }();
 
             // print("anim #$index: $animValue");
+            double alignAtBottomY = 0;
+            if (distanceToCenterTop > 0) {
+              // scrolled beyond distanceToCenterTop, item should align to bottom
+              // alignAtBottomY = distanceToCenterTop / 2;
+            }
 
             return KeyedSubtree(
               key: ValueKey(index),
               child: SliverToBoxAdapter(
                 child: Container(
-                  //color: _activeIndex == index ? Colors.green.withAlpha(20) : Colors.transparent,
+                  color: _activeIndex == index
+                      ? Colors.green.withAlpha(20)
+                      : Colors.transparent,
                   child: StepInheritedWidget(
                     data: StepInformation(
                       active: index == _activeIndex,
@@ -84,24 +96,29 @@ class StepFormState extends State<StepForm>
                           ? AlwaysStoppedAnimation<double>(animValue.abs())
                           : const AlwaysStoppedAnimation(1),
                     ),
-                    child: AnimatedContainer(
-                      // alignment: Alignment.lerp(Alignment.topCenter,
-                      //     Alignment.bottomCenter, (distanceToTopPosition / 100)),
-                      constraints: BoxConstraints(minHeight: _activeItemHeight),
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeInOutCubic,
-                      child: MeasureSize(
-                        child: child,
-                        onChange: (size, rect) {
-                          setState(() {
-                            final missingRects = index + 1 - _sizes.length;
-                            if (missingRects > 0) {
-                              _sizes.addAll(Iterable.generate(
-                                  missingRects, (_) => Rect.zero));
-                            }
-                            _sizes[index] = rect;
-                          });
-                        },
+                    child: Container(
+                      // alignment: Alignment.lerp(
+                      //     Alignment.topCenter,
+                      //     Alignment.bottomCenter,
+                      //     -distanceToCenterTop.clamp(0.0, 100.0) / 100),
+                      constraints: BoxConstraints(minHeight: itemHeight),
+                      // duration: const Duration(milliseconds: 200),
+                      // curve: Curves.easeInOutCubic,
+                      child: Transform.translate(
+                        offset: Offset(0, alignAtBottomY),
+                        child: MeasureSize(
+                          child: child,
+                          onChange: (size, rect) {
+                            setState(() {
+                              final missingRects = index + 1 - _sizes.length;
+                              if (missingRects > 0) {
+                                _sizes.addAll(Iterable.generate(
+                                    missingRects, (_) => Rect.zero));
+                              }
+                              _sizes[index] = rect;
+                            });
+                          },
+                        ),
                       ),
                     ),
                   ),
