@@ -31,6 +31,8 @@ class StepFormState extends State<StepForm>
   late final ScrollPosition scrollPosition;
   int _activeIndex = 0;
 
+  double _minItemHeight = 0.0;
+
   @override
   void initState() {
     super.initState();
@@ -53,20 +55,15 @@ class StepFormState extends State<StepForm>
       child: LayoutBuilder(
         builder: (context, constraints) {
           final widgetHeight = constraints.maxHeight;
-          final itemHeight = widgetHeight - widget.topOffset;
+          _minItemHeight = widgetHeight - widget.topOffset;
 
           Widget boxed({required Widget child, required int index}) {
-            final topHeight = index <= _activeIndex
-                ? 0
-                : _sizes
-                    .skip(max(0, index - 1))
-                    .take(1)
-                    .fold<double>(0, (sum, item) => sum + item.bottom);
+            final topHeight = (index - _activeIndex) * _minItemHeight;
 
             final double distanceToCenterTop =
                 scrollPosition.pixels - topHeight;
 
-            if (index < 2) {
+            if (index < 3) {
               print(
                   "#$index $distanceToCenterTop = ${scrollPosition.pixels} + $topHeight");
             }
@@ -80,6 +77,23 @@ class StepFormState extends State<StepForm>
             if (distanceToCenterTop > 0) {
               // scrolled beyond distanceToCenterTop, item should align to bottom
               // alignAtBottomY = distanceToCenterTop / 2;
+              final actualItemHeight = _sizes[index].bottom;
+              final floatingSpace = _minItemHeight - actualItemHeight;
+
+              if (distanceToCenterTop < actualItemHeight) {
+                // just scroll
+              } else {
+                alignAtBottomY = distanceToCenterTop - actualItemHeight;
+                if (distanceToCenterTop > _minItemHeight) {
+                  alignAtBottomY -= distanceToCenterTop - _minItemHeight;
+                }
+              }
+
+              // alignAtBottomY = floatingSpace - distanceToCenterTop;
+
+              if (index == 0) {
+                print("translate #$index $floatingSpace $distanceToCenterTop");
+              }
             }
 
             return KeyedSubtree(
@@ -101,23 +115,26 @@ class StepFormState extends State<StepForm>
                       //     Alignment.topCenter,
                       //     Alignment.bottomCenter,
                       //     -distanceToCenterTop.clamp(0.0, 100.0) / 100),
-                      constraints: BoxConstraints(minHeight: itemHeight),
+                      constraints: BoxConstraints(minHeight: _minItemHeight),
                       // duration: const Duration(milliseconds: 200),
                       // curve: Curves.easeInOutCubic,
                       child: Transform.translate(
                         offset: Offset(0, alignAtBottomY),
-                        child: MeasureSize(
-                          child: child,
-                          onChange: (size, rect) {
-                            setState(() {
-                              final missingRects = index + 1 - _sizes.length;
-                              if (missingRects > 0) {
-                                _sizes.addAll(Iterable.generate(
-                                    missingRects, (_) => Rect.zero));
-                              }
-                              _sizes[index] = rect;
-                            });
-                          },
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: MeasureSize(
+                            child: child,
+                            onChange: (size, rect) {
+                              setState(() {
+                                final missingRects = index + 1 - _sizes.length;
+                                if (missingRects > 0) {
+                                  _sizes.addAll(Iterable.generate(
+                                      missingRects, (_) => Rect.zero));
+                                }
+                                _sizes[index] = rect;
+                              });
+                            },
+                          ),
                         ),
                       ),
                     ),
@@ -172,9 +189,10 @@ class StepFormState extends State<StepForm>
   }
 
   double _positionForIndex(int index) {
-    return _sizes
-        .take(max(index, 0))
-        .fold<double>(0, (sum, item) => sum + item.bottom);
+    return index * _minItemHeight;
+    // return _sizes
+    //     .take(max(index, 0))
+    //     .fold<double>(0, (sum, item) => sum + item.bottom);
   }
 
   void _onVerticalDragEnd(DragEndDetails details) {
@@ -191,9 +209,10 @@ class StepFormState extends State<StepForm>
   }
 
   double _calculateTopItemsHeight() {
-    return _sizes
-        .take(max(_activeIndex, 0))
-        .fold<double>(0, (sum, item) => sum + item.bottom);
+    return max(_activeIndex, 0) * _minItemHeight;
+    // return _sizes
+    //     .take(max(_activeIndex, 0))
+    //     .fold<double>(0, (sum, item) => sum + item.bottom);
   }
 
   void _animateToNextPage(double oldTopItemsHeight, double velocity) {
@@ -224,25 +243,27 @@ class StepFormState extends State<StepForm>
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
-    final oldTopItemsHeight = _sizes
-        .take(max(_activeIndex, 0))
-        .fold<double>(0, (sum, item) => sum + item.bottom);
+    final oldTopItemsHeight = _calculateTopItemsHeight();
+
+    // final oldTopItemsHeight = _sizes
+    //     .take(max(_activeIndex, 0))
+    //     .fold<double>(0, (sum, item) => sum + item.bottom);
 
     // Account for finger movement
     scrollPosition.jumpTo(scrollPosition.pixels - details.delta.dy);
 
-    final activeHeight = _sizes[_activeIndex].bottom;
     final offset = scrollPosition.pixels;
     if (offset < 0) {
       _activeIndex = max(0, _activeIndex);
     }
-    if (offset > activeHeight) {
+    if (offset > _minItemHeight) {
       _activeIndex = min(widget.stepCount - 1, _activeIndex + 1);
     }
 
-    final newTopItemsHeight = _sizes
-        .take(max(_activeIndex, 0))
-        .fold<double>(0, (sum, item) => sum + item.bottom);
+    final newTopItemsHeight = _calculateTopItemsHeight();
+    // final newTopItemsHeight = _sizes
+    //     .take(max(_activeIndex, 0))
+    //     .fold<double>(0, (sum, item) => sum + item.bottom);
 
     var diff = oldTopItemsHeight - newTopItemsHeight;
     if (diff > 0) {
