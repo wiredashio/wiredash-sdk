@@ -70,6 +70,9 @@ class StepFormState extends State<StepForm>
             final double distanceToCenterTop =
                 scrollPosition.pixels - indexOffset;
             final double animValue = () {
+              if (_activeIndex == index) {
+                return 1.0;
+              }
               return 1.0 -
                   max(0.0, min(1.0, (distanceToCenterTop / 200.0).abs()));
             }();
@@ -77,17 +80,25 @@ class StepFormState extends State<StepForm>
             double alignAtBottomY = 0;
             if (distanceToCenterTop > 0) {
               // scrolled beyond distanceToCenterTop, item should align to bottom
-              // alignAtBottomY = distanceToCenterTop / 2;
-              final actualItemHeight = _intrinsicItemSizes[index].bottom;
-              final floatingSpace = _minItemHeight - actualItemHeight;
+              final intrinsicItemHeight = _intrinsicItemSizes[index].bottom;
+              final expandedItemHeight = _expandedItemSizes[index].bottom;
 
-              if (distanceToCenterTop < actualItemHeight) {
-                // just scroll
-              } else {
-                alignAtBottomY = distanceToCenterTop - actualItemHeight;
-                if (distanceToCenterTop > _minItemHeight) {
-                  alignAtBottomY -= distanceToCenterTop - _minItemHeight;
+              if (distanceToCenterTop > intrinsicItemHeight) {
+                // fixate item in viewport
+                alignAtBottomY = distanceToCenterTop - intrinsicItemHeight;
+
+                // if (index == 0) {
+                //   print("intrinsicItemHeight $intrinsicItemHeight");
+                //   print("expandedItemHeight $expandedItemHeight");
+                //   print("distanceToCenterTop $distanceToCenterTop");
+                //   print("_minItemHeight $_minItemHeight");
+                // }
+                // item below pushes it out of viewport
+                if (distanceToCenterTop > expandedItemHeight) {
+                  alignAtBottomY -= distanceToCenterTop - expandedItemHeight;
                 }
+              } else {
+                // just scroll
               }
             }
 
