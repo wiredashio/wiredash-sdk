@@ -25,13 +25,15 @@ class StepForm extends StatefulWidget {
 class StepFormState extends State<StepForm>
     with TickerProviderStateMixin<StepForm>
     implements ScrollContext {
-  final List<Rect> _sizes = [];
+  /// The true natural sizes of each item
+  final List<Rect> _intrinsicItemSizes = [];
+
+  /// The item size with min height [_minItemHeight]
+  final List<Rect> _expandedItemSizes = [];
 
   late final ScrollController controller;
   late final ScrollPosition scrollPosition;
   int _activeIndex = 0;
-
-  double _minItemHeight = 0.0;
 
   @override
   void initState() {
@@ -55,29 +57,27 @@ class StepFormState extends State<StepForm>
       child: LayoutBuilder(
         builder: (context, constraints) {
           final widgetHeight = constraints.maxHeight;
-          _minItemHeight = widgetHeight - widget.topOffset;
+          final _minItemHeight = widgetHeight - widget.topOffset;
 
           Widget boxed({required Widget child, required int index}) {
-            final topHeight = (index - _activeIndex) * _minItemHeight;
+            final activePos = _positionForIndex(_activeIndex);
+            final indexPos = _positionForIndex(index);
+            final indexOffset = indexPos - activePos;
+            // print(
+            //     "#$index${index == _activeIndex ? "A" : ""} $indexOffset = $indexPos - $activePos");
 
             final double distanceToCenterTop =
-                scrollPosition.pixels - topHeight;
-
-            if (index < 3) {
-              print(
-                  "#$index $distanceToCenterTop = ${scrollPosition.pixels} + $topHeight");
-            }
+                scrollPosition.pixels - indexOffset;
             final double animValue = () {
               return 1.0 -
                   max(0.0, min(1.0, (distanceToCenterTop / 200.0).abs()));
             }();
 
-            // print("anim #$index: $animValue");
             double alignAtBottomY = 0;
             if (distanceToCenterTop > 0) {
               // scrolled beyond distanceToCenterTop, item should align to bottom
               // alignAtBottomY = distanceToCenterTop / 2;
-              final actualItemHeight = _sizes[index].bottom;
+              final actualItemHeight = _intrinsicItemSizes[index].bottom;
               final floatingSpace = _minItemHeight - actualItemHeight;
 
               if (distanceToCenterTop < actualItemHeight) {
@@ -87,12 +87,6 @@ class StepFormState extends State<StepForm>
                 if (distanceToCenterTop > _minItemHeight) {
                   alignAtBottomY -= distanceToCenterTop - _minItemHeight;
                 }
-              }
-
-              // alignAtBottomY = floatingSpace - distanceToCenterTop;
-
-              if (index == 0) {
-                print("translate #$index $floatingSpace $distanceToCenterTop");
               }
             }
 
@@ -110,30 +104,39 @@ class StepFormState extends State<StepForm>
                           ? AlwaysStoppedAnimation<double>(animValue.abs())
                           : const AlwaysStoppedAnimation(1),
                     ),
-                    child: Container(
-                      // alignment: Alignment.lerp(
-                      //     Alignment.topCenter,
-                      //     Alignment.bottomCenter,
-                      //     -distanceToCenterTop.clamp(0.0, 100.0) / 100),
-                      constraints: BoxConstraints(minHeight: _minItemHeight),
-                      // duration: const Duration(milliseconds: 200),
-                      // curve: Curves.easeInOutCubic,
-                      child: Transform.translate(
-                        offset: Offset(0, alignAtBottomY),
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: MeasureSize(
-                            child: child,
-                            onChange: (size, rect) {
-                              setState(() {
-                                final missingRects = index + 1 - _sizes.length;
-                                if (missingRects > 0) {
-                                  _sizes.addAll(Iterable.generate(
-                                      missingRects, (_) => Rect.zero));
-                                }
-                                _sizes[index] = rect;
-                              });
-                            },
+                    child: MeasureSize(
+                      onChange: (size, rect) {
+                        setState(() {
+                          final missingRects =
+                              index + 1 - _expandedItemSizes.length;
+                          if (missingRects > 0) {
+                            _expandedItemSizes.addAll(Iterable.generate(
+                                missingRects, (_) => Rect.zero));
+                          }
+                          _expandedItemSizes[index] = rect;
+                        });
+                      },
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: _minItemHeight),
+                        child: Transform.translate(
+                          offset: Offset(0, alignAtBottomY),
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: MeasureSize(
+                              child: child,
+                              onChange: (size, rect) {
+                                setState(() {
+                                  final missingRects =
+                                      index + 1 - _intrinsicItemSizes.length;
+                                  if (missingRects > 0) {
+                                    _intrinsicItemSizes.addAll(
+                                        Iterable.generate(
+                                            missingRects, (_) => Rect.zero));
+                                  }
+                                  _intrinsicItemSizes[index] = rect;
+                                });
+                              },
+                            ),
                           ),
                         ),
                       ),
@@ -188,31 +191,112 @@ class StepFormState extends State<StepForm>
     }
   }
 
-  double _positionForIndex(int index) {
-    return index * _minItemHeight;
-    // return _sizes
-    //     .take(max(index, 0))
-    //     .fold<double>(0, (sum, item) => sum + item.bottom);
-  }
-
   void _onVerticalDragEnd(DragEndDetails details) {
-    final oldTopItemsHeight = _calculateTopItemsHeight();
+    final prevPosition = _positionForIndex(_activeIndex - 1);
+    final activePosition = _positionForIndex(_activeIndex);
+    final nextPosition = _positionForIndex(_activeIndex + 1);
+    final scrollOffsetY = scrollPosition.pixels;
+    final activeHeight = _expandedItemSizes[_activeIndex].bottom;
+    final intrinsicHeight = _intrinsicItemSizes[_activeIndex].bottom;
+    print(
+        "START: ${scrollOffsetY} (${scrollOffsetY + activePosition}), top: $activePosition");
+    print(
+        "prev: ${prevPosition}, active: ${activePosition} ($intrinsicHeight/$activeHeight), next: ${nextPosition}");
 
     final primaryVelocity = details.primaryVelocity!;
-    if (primaryVelocity < -300) {
-      _activeIndex = min(widget.stepCount - 1, _activeIndex + 1);
-    } else if (primaryVelocity > 300) {
-      _activeIndex = max(0, _activeIndex - 1);
+    print("velocity: $primaryVelocity ${primaryVelocity < 0 ? "UP" : "DOWN"} ");
+
+    final double scrollTo = () {
+      try {
+        final sim = scrollPosition.physics
+            .createBallisticSimulation(scrollPosition, -primaryVelocity);
+        // print("x0.1: ${sim?.x(0.1)}");
+        // print("x0.2: ${sim?.x(0.2)}");
+        // print("x0.3: ${sim?.x(0.3)}");
+        // print("x0.4: ${sim?.x(0.4)}");
+        // print("x1: ${sim?.x(1)}");
+        // print("x1000: ${sim?.x(1000)}");
+        // print("x100000: ${sim?.x(100000)}");
+
+        // 0.4s
+        final x = sim?.x(0.4);
+
+        // null == idle
+        return x ?? 0.0;
+      } catch (e, stack) {
+        print(e);
+        print(stack);
+      }
+      return 0.0;
+    }();
+
+    final simulatedY = scrollTo;
+    print("simulatedY: ${simulatedY} ($simulatedY)");
+
+    bool jumpToNext = false;
+    bool jumpToPrev = false;
+    if (primaryVelocity < 0) {
+      // scroll up
+      if (_activeIndex + 1 < widget.stepCount) {
+        final nextItemTop = _positionForIndex(_activeIndex + 1);
+        print(
+            "UP top: $activePosition, next: $nextItemTop, y: ${scrollOffsetY}");
+        if (simulatedY > intrinsicHeight) {
+          jumpToNext = true;
+          setState(() {
+            _activeIndex = _activeIndex + 1;
+          });
+        }
+      }
+    } else if (primaryVelocity > 0) {
+      // scroll down
+      if (_activeIndex > 0) {
+        final prevItemTop = _positionForIndex(_activeIndex - 1);
+        print(
+            "DOWN top: $activePosition, prev: $prevItemTop, y: ${scrollOffsetY}");
+        if (simulatedY < 0) {
+          jumpToPrev = true;
+          setState(() {
+            _activeIndex = _activeIndex - 1;
+          });
+        }
+      }
     }
 
-    _animateToNextPage(oldTopItemsHeight, primaryVelocity);
+    // if (primaryVelocity < -300) {
+    //   _activeIndex = min(widget.stepCount - 1, _activeIndex + 1);
+    // } else if (primaryVelocity > 300) {
+    //   _activeIndex = max(0, _activeIndex - 1);
+    // }
+
+    final newTopItemsHeight = _calculateTopItemsHeight();
+    final diff = activePosition - newTopItemsHeight;
+    scrollPosition.jumpTo(scrollPosition.pixels + diff);
+
+    if (jumpToPrev || jumpToNext) {
+      print("END: 0 (index change $_activeIndex)");
+      scrollPosition.animateTo(
+        0,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOutExpo,
+      );
+    } else {
+      final end = simulatedY;
+      print("END: $end");
+      scrollPosition.animateTo(
+        end,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutExpo,
+      );
+    }
   }
 
-  double _calculateTopItemsHeight() {
-    return max(_activeIndex, 0) * _minItemHeight;
-    // return _sizes
-    //     .take(max(_activeIndex, 0))
-    //     .fold<double>(0, (sum, item) => sum + item.bottom);
+  double _calculateTopItemsHeight() => _positionForIndex(_activeIndex);
+
+  double _positionForIndex(int index) {
+    return _expandedItemSizes
+        .take(max(index, 0))
+        .fold<double>(0, (sum, item) => sum + item.bottom);
   }
 
   void _animateToNextPage(double oldTopItemsHeight, double velocity) {
@@ -226,7 +310,7 @@ class StepFormState extends State<StepForm>
       final sim = scrollPosition.physics
           .createBallisticSimulation(scrollPosition, velocity);
       // null == idle
-      final x = sim?.x(1000);
+      final x = sim?.x(double.infinity);
       print("Sim $x");
     } catch (e, stack) {
       print(e);
@@ -244,10 +328,7 @@ class StepFormState extends State<StepForm>
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
     final oldTopItemsHeight = _calculateTopItemsHeight();
-
-    // final oldTopItemsHeight = _sizes
-    //     .take(max(_activeIndex, 0))
-    //     .fold<double>(0, (sum, item) => sum + item.bottom);
+    print("top: ${oldTopItemsHeight}");
 
     // Account for finger movement
     scrollPosition.jumpTo(scrollPosition.pixels - details.delta.dy);
@@ -256,14 +337,19 @@ class StepFormState extends State<StepForm>
     if (offset < 0) {
       _activeIndex = max(0, _activeIndex);
     }
-    if (offset > _minItemHeight) {
-      _activeIndex = min(widget.stepCount - 1, _activeIndex + 1);
+    if (offset > 0) {
+      final nextIndex = _activeIndex + 1;
+      print("nextIndex $nextIndex, ${widget.stepCount}");
+      if (nextIndex < widget.stepCount) {
+        final next = _positionForIndex(nextIndex);
+        print("next: $next, offset $offset");
+        if (offset + oldTopItemsHeight > next) {
+          _activeIndex = min(widget.stepCount - 1, nextIndex);
+        }
+      }
     }
 
     final newTopItemsHeight = _calculateTopItemsHeight();
-    // final newTopItemsHeight = _sizes
-    //     .take(max(_activeIndex, 0))
-    //     .fold<double>(0, (sum, item) => sum + item.bottom);
 
     var diff = oldTopItemsHeight - newTopItemsHeight;
     if (diff > 0) {

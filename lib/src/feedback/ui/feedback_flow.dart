@@ -126,6 +126,21 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             ),
           ),
         ),
+        Container(
+          height: 500,
+          width: 100,
+          color: Colors.red,
+        ),
+        Container(
+          height: 500,
+          width: 100,
+          color: Colors.green,
+        ),
+        Container(
+          height: 500,
+          width: 100,
+          color: Colors.yellow,
+        ),
         Padding(
           padding: EdgeInsets.symmetric(
             horizontal: context.responsiveLayout.horizontalMargin,
