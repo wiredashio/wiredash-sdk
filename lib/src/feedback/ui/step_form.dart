@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -94,7 +95,7 @@ class StepFormState extends State<StepForm>
               key: ValueKey(index),
               child: SliverToBoxAdapter(
                 child: Container(
-                  color: _activeIndex == index
+                  color: kDebugMode && _activeIndex == index
                       ? Colors.green.withAlpha(20)
                       : Colors.transparent,
                   child: StepInheritedWidget(
@@ -170,12 +171,32 @@ class StepFormState extends State<StepForm>
 
           final children = buildChildren().toList();
 
-          return Viewport(
+          Widget child = Viewport(
             offset: scrollPosition,
             anchor: widget.topOffset / widgetHeight,
             center: ValueKey(_activeIndex),
             slivers: children,
           );
+
+          // add topOffset line
+          if (kDebugMode) {
+            child = Stack(
+              children: [
+                child,
+                Positioned(
+                  top: widget.topOffset,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    height: 1,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            );
+          }
+
+          return child;
         },
       ),
     );
