@@ -53,6 +53,7 @@ class StepFormState extends State<StepForm>
   Widget build(BuildContext context) {
     return GestureDetector(
       onVerticalDragUpdate: _onVerticalDragUpdate,
+      onVerticalDragStart: _onVerticalDragStart,
       onVerticalDragEnd: _onVerticalDragEnd,
       behavior: HitTestBehavior.opaque,
       child: LayoutBuilder(
@@ -282,7 +283,15 @@ class StepFormState extends State<StepForm>
     bool jumpToNext = false;
     bool jumpToPrev = false;
     bool jumpToCurrentTop = false;
-    if (primaryVelocity < 0) {
+    if (primaryVelocity == 0) {
+      if (scrollOffsetY < 0) {
+        // currently at top of active item. Not matter what, never jump to next item.
+        // At this point it's only possible to go back to the current or up to
+        // the previous item. Since an up scroll is detected, always jump back to current.
+        jumpToCurrentTop = true;
+        print("jumpToCurrentTop");
+      }
+    } else if (primaryVelocity < 0) {
       // scroll up
       if (_activeIndex + 1 < widget.stepCount) {
         final nextItemTop = _positionForIndex(_activeIndex + 1);
@@ -295,7 +304,7 @@ class StepFormState extends State<StepForm>
           // At this point it's only possible to go back to the current or up to
           // the previous item. Since an up scroll is detected, always jump back to current.
           jumpToCurrentTop = true;
-          print("jumpToCurrentTop");
+          print("jumpToCurrentTop up gesture");
         } else if (simulatedY != null && simulatedY > intrinsicActiveHeight) {
           jumpToNext = true;
           setState(() {
@@ -306,12 +315,18 @@ class StepFormState extends State<StepForm>
       }
     } else if (primaryVelocity > 0) {
       // scroll down
+      print("_dragStartScrollPosition $_dragStartScrollPosition");
+
       if (_activeIndex > 0) {
         final prevItemTop = _positionForIndex(_activeIndex - 1);
         print(
             "DOWN top: $activePosition, prev: $prevItemTop, y: ${scrollOffsetY}");
-        if (simulatedY != null && simulatedY < 0) {
+        if (_dragStartScrollPosition == activeHeight) {
+          // last item, at bottom, jump back to top
+          jumpToCurrentTop = true;
+        } else if (simulatedY != null && simulatedY < 0) {
           jumpToPrev = true;
+          print("jumpToPrev");
           setState(() {
             _activeIndex = _activeIndex - 1;
           });
@@ -382,6 +397,11 @@ class StepFormState extends State<StepForm>
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeOutExpo,
     );
+  }
+
+  double _dragStartScrollPosition = 0.0;
+  void _onVerticalDragStart(DragStartDetails details) {
+    _dragStartScrollPosition = scrollPosition.pixels;
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
