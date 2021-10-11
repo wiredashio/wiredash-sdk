@@ -229,16 +229,17 @@ class StepFormState extends State<StepForm>
     final nextPosition = _positionForIndex(_activeIndex + 1);
     final scrollOffsetY = scrollPosition.pixels;
     final activeHeight = _expandedItemSizes[_activeIndex].bottom;
-    final intrinsicHeight = _intrinsicItemSizes[_activeIndex].bottom;
+    final intrinsicActiveHeight = _intrinsicItemSizes[_activeIndex].bottom;
     print(
         "START: ${scrollOffsetY} (${scrollOffsetY + activePosition}), top: $activePosition");
     print(
-        "prev: ${prevPosition}, active: ${activePosition} ($intrinsicHeight/$activeHeight), next: ${nextPosition}");
+        "prev: ${prevPosition}, active: ${activePosition} ($intrinsicActiveHeight/$activeHeight), next: ${nextPosition}");
 
     final primaryVelocity = details.primaryVelocity!;
     print("velocity: $primaryVelocity ${primaryVelocity < 0 ? "UP" : "DOWN"} ");
 
-    final double scrollTo = () {
+    Duration scrollDuration = Duration(milliseconds: 600);
+    final double? simulatedY = () {
       try {
         final sim = scrollPosition.physics
             .createBallisticSimulation(scrollPosition, -primaryVelocity);
@@ -250,34 +251,57 @@ class StepFormState extends State<StepForm>
         // print("x1000: ${sim?.x(1000)}");
         // print("x100000: ${sim?.x(100000)}");
 
-        // 0.4s
-        final x = sim?.x(0.4);
+        for (int i = 0; i < 15; i++) {
+          final t = 0.1 * pow(1.3, i);
+          final done = sim?.isDone(t);
+          print("$i $t $done");
+          if (done == null) {
+            break;
+          }
+          if (done) {
+            final ms = (t * 1000).toInt();
+            scrollDuration = Duration(milliseconds: ms);
+            print("$scrollDuration ");
+            break;
+          }
+        }
+
+        final x = sim?.x(scrollDuration.inMilliseconds / 1000);
 
         // null == idle
-        return x ?? 0.0;
+        return x;
       } catch (e, stack) {
         print(e);
         print(stack);
+        return null;
       }
-      return 0.0;
     }();
 
-    final simulatedY = scrollTo;
-    print("simulatedY: ${simulatedY} ($simulatedY)");
+    print("simulatedY: $simulatedY");
 
     bool jumpToNext = false;
     bool jumpToPrev = false;
+    bool jumpToCurrentTop = false;
     if (primaryVelocity < 0) {
       // scroll up
       if (_activeIndex + 1 < widget.stepCount) {
         final nextItemTop = _positionForIndex(_activeIndex + 1);
         print(
             "UP top: $activePosition, next: $nextItemTop, y: ${scrollOffsetY}");
-        if (simulatedY > intrinsicHeight) {
+        print(
+            "$simulatedY > $intrinsicActiveHeight = ${simulatedY != null && simulatedY > intrinsicActiveHeight}");
+        if (scrollOffsetY < 0) {
+          // currently at top of active item. Not matter what, never jump to next item.
+          // At this point it's only possible to go back to the current or up to
+          // the previous item. Since an up scroll is detected, always jump back to current.
+          jumpToCurrentTop = true;
+          print("jumpToCurrentTop");
+        } else if (simulatedY != null && simulatedY > intrinsicActiveHeight) {
           jumpToNext = true;
           setState(() {
             _activeIndex = _activeIndex + 1;
           });
+          print("jumpToNext $_activeIndex");
         }
       }
     } else if (primaryVelocity > 0) {
@@ -286,7 +310,7 @@ class StepFormState extends State<StepForm>
         final prevItemTop = _positionForIndex(_activeIndex - 1);
         print(
             "DOWN top: $activePosition, prev: $prevItemTop, y: ${scrollOffsetY}");
-        if (simulatedY < 0) {
+        if (simulatedY != null && simulatedY < 0) {
           jumpToPrev = true;
           setState(() {
             _activeIndex = _activeIndex - 1;
@@ -305,21 +329,23 @@ class StepFormState extends State<StepForm>
     final diff = activePosition - newTopItemsHeight;
     scrollPosition.jumpTo(scrollPosition.pixels + diff);
 
-    if (jumpToPrev || jumpToNext) {
+    if (jumpToPrev || jumpToNext || jumpToCurrentTop) {
       print("END: 0 (index change $_activeIndex)");
       scrollPosition.animateTo(
         0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeOutExpo,
+        duration: Duration(milliseconds: 600),
+        curve: Curves.easeOut,
       );
-    } else {
+    } else if (simulatedY != null) {
       final end = simulatedY;
       print("END: $end");
       scrollPosition.animateTo(
         end,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutExpo,
+        duration: scrollDuration,
+        curve: Curves.easeOut,
       );
+    } else {
+      print("No end scroll");
     }
   }
 
