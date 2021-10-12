@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
+import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/email_input.dart';
 import 'package:wiredash/src/feedback/ui/more_menu.dart';
 import 'package:wiredash/src/feedback/ui/step_form.dart';
@@ -325,6 +327,16 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 'Browser Version: TODO\n'
                 'Whatever is useful\n',
                 style: const TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: BigBlueButton(
+                  icon: Icon(WiredashIcons.submit),
+                  text: Text('Submit'),
+                  onTap: () {
+                    context.wiredashModel.submitFeedback();
+                  },
+                ),
               ),
             ],
           ),
