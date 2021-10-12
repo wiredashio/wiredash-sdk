@@ -42,11 +42,20 @@ class StepFormState extends State<StepForm>
     controller = ScrollController(initialScrollOffset: -widget.topOffset);
     scrollPosition = controller.createScrollPosition(
         const BouncingScrollPhysics(), this, null);
-    scrollPosition.addListener(() {
-      setState(() {
-        // continuously update the viewport offset when the scroll position changes
-      });
+    scrollPosition.addListener(_rebuild);
+  }
+
+  void _rebuild() {
+    setState(() {
+      // continuously update the viewport offset when the scroll position changes
     });
+  }
+
+  @override
+  void dispose() {
+    scrollPosition.removeListener(_rebuild);
+    controller.dispose();
+    super.dispose();
   }
 
   @override
