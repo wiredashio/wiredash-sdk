@@ -375,7 +375,7 @@ class StepFormState extends State<StepForm>
       print("END: 0 (index change $_activeIndex)");
       scrollPosition.animateTo(
         0,
-        duration: Duration(milliseconds: 400),
+        duration: Duration(milliseconds: 800),
         curve: Curves.easeOut,
       );
     } else if (simulatedY != null) {
@@ -421,8 +421,8 @@ class StepFormState extends State<StepForm>
     //  scrolling in the current item (i.e. when the summery gets long)
     scrollPosition.animateTo(
       0,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeOutExpo,
+      duration: const Duration(milliseconds: 800),
+      curve: Curves.easeOutQuad,
     );
   }
 

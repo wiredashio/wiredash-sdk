@@ -354,7 +354,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         stepCount: 5,
         builder: (context, index) {
           // print("building index $index");
-          final step = () {
+          final stepWidget = () {
             if (index == 0) {
               return part1;
             }
@@ -372,9 +372,13 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             }
             throw 'Index out of bounds $index';
           }();
-          return GreyScale(
-            greyScale: StepInformation.of(context).animation.value,
-            child: step,
+          final step = StepInformation.of(context);
+          return AbsorbPointer(
+            absorbing: !step.active,
+            child: GreyScale(
+              greyScale: step.animation.value,
+              child: stepWidget,
+            ),
           );
         },
       ),
