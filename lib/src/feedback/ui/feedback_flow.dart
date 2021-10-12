@@ -153,47 +153,33 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         ),
         Builder(
           builder: (context) {
-            final anim = StepInformation.of(context).animation;
-            final f = 1 - anim.value;
-
-            return ColorFiltered(
-              colorFilter: ColorFilter.matrix([
-                0.2126 * f + (1 - f), 0.7152 * f, 0.0722 * f, 0, 0, //
-                0.2126 * f, 0.7152 * f + (1 - f), 0.0722 * f, 0, 0, //
-                0.2126 * f, 0.7152 * f, 0.0722 * f + (1 - f), 0, 0, //
-                0, 0, 0, 1 - (f / 2), 0, //
-              ]),
-              child: Visibility(
-                // visible: f < 0.5,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.responsiveLayout.horizontalMargin,
-                    vertical: 16,
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.responsiveLayout.horizontalMargin,
+                vertical: 16,
+              ),
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0xFFC6D5F6)),
+                      foregroundColor:
+                          MaterialStateProperty.all(const Color(0xFF1A56DB)),
+                    ),
+                    child: const Text('Skip'),
+                    onPressed: () {
+                      nextPage();
+                    },
                   ),
-                  child: Row(
-                    children: [
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              const Color(0xFFC6D5F6)),
-                          foregroundColor: MaterialStateProperty.all(
-                              const Color(0xFF1A56DB)),
-                        ),
-                        child: const Text('Skip'),
-                        onPressed: () {
-                          nextPage();
-                        },
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        child: const Icon(Icons.arrow_right_alt),
-                        onPressed: () {
-                          nextPage();
-                        },
-                      ),
-                    ],
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    child: const Icon(Icons.arrow_right_alt),
+                    onPressed: () {
+                      nextPage();
+                    },
                   ),
-                ),
+                ],
               ),
             );
           },
@@ -207,7 +193,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       children: [
         const EmailInput(),
         Container(
-          height: 700,
+          height: 600,
           child: Center(
             child: Transform.rotate(
               angle: math.pi / 2,
@@ -216,7 +202,13 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             ),
           ),
         ),
-        Text("Item continues here"),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsiveLayout.horizontalMargin,
+            vertical: 16,
+          ),
+          child: Text("Item continues here"),
+        ),
         Padding(
           padding: EdgeInsets.symmetric(
             horizontal: context.responsiveLayout.horizontalMargin,
@@ -348,26 +340,54 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         key: stepFormKey,
         topOffset: 200,
         stepCount: 5,
-        builder: (index) {
+        builder: (context, index) {
           // print("building index $index");
-          if (index == 0) {
-            return part1;
-          }
-          if (index == 1) {
-            return part2;
-          }
-          if (index == 2) {
-            return part3;
-          }
-          if (index == 3) {
-            return part4;
-          }
-          if (index == 4) {
-            return part5;
-          }
-          throw 'Index out of bounds $index';
+          final step = () {
+            if (index == 0) {
+              return part1;
+            }
+            if (index == 1) {
+              return part2;
+            }
+            if (index == 2) {
+              return part3;
+            }
+            if (index == 3) {
+              return part4;
+            }
+            if (index == 4) {
+              return part5;
+            }
+            throw 'Index out of bounds $index';
+          }();
+          return GreyScale(
+            greyScale: StepInformation.of(context).animation.value,
+            child: step,
+          );
         },
       ),
+    );
+  }
+}
+
+class GreyScale extends StatelessWidget {
+  const GreyScale({required this.greyScale, Key? key, this.child})
+      : super(key: key);
+
+  final Widget? child;
+  final double greyScale;
+
+  @override
+  Widget build(BuildContext context) {
+    final f = 1 - greyScale;
+    return ColorFiltered(
+      colorFilter: ColorFilter.matrix([
+        0.2126 * f + (1 - f), 0.7152 * f, 0.0722 * f, 0, 0, //
+        0.2126 * f, 0.7152 * f + (1 - f), 0.0722 * f, 0, 0, //
+        0.2126 * f, 0.7152 * f, 0.0722 * f + (1 - f), 0, 0, //
+        0, 0, 0, 1 - (f / 2), 0, //
+      ]),
+      child: child,
     );
   }
 }

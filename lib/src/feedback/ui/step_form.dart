@@ -14,7 +14,7 @@ class StepForm extends StatefulWidget {
     required this.builder,
   }) : super(key: key);
 
-  final Widget Function(int index) builder;
+  final Widget Function(BuildContext context, int index) builder;
 
   final int stepCount;
   final double topOffset;
@@ -70,12 +70,28 @@ class StepFormState extends State<StepForm>
 
             final double distanceToCenterTop =
                 scrollPosition.pixels - indexOffset;
+
+            final intrinsicItemHeight = () {
+              if (distanceToCenterTop < 0) {
+                return 0;
+              }
+              return _intrinsicItemSizes[index].bottom;
+            }();
+            const fadeDistance = 200.0;
+            final double distanceToCenterBottom =
+                distanceToCenterTop - intrinsicItemHeight + fadeDistance;
             final double animValue = () {
-              if (_activeIndex == index) {
+              if (distanceToCenterTop < 0 || distanceToCenterBottom < 0) {
                 return 1.0;
               }
-              return 1.0 -
-                  max(0.0, min(1.0, (distanceToCenterTop / 200.0).abs()));
+              final top = 1.0 -
+                  max(0.0,
+                      min(1.0, (distanceToCenterTop / fadeDistance).abs()));
+
+              final bottom = 1.0 -
+                  max(0.0,
+                      min(1.0, (distanceToCenterBottom / fadeDistance).abs()));
+              return max(top, bottom);
             }();
 
             double alignAtBottomY = 0;
@@ -161,14 +177,16 @@ class StepFormState extends State<StepForm>
           }
 
           Iterable<Widget> buildChildren() sync* {
-            Widget? last;
             int index = 0;
             while (index < widget.stepCount) {
-              last = widget.builder(index);
-              if (last != null) {
-                yield boxed(child: last, index: index);
-                index++;
-              }
+              final i = index;
+              yield boxed(
+                index: i,
+                child: Builder(builder: (context) {
+                  return widget.builder(context, i);
+                }),
+              );
+              index++;
             }
 
             // add one last item at the bottom
@@ -348,7 +366,7 @@ class StepFormState extends State<StepForm>
       print("END: 0 (index change $_activeIndex)");
       scrollPosition.animateTo(
         0,
-        duration: Duration(milliseconds: 600),
+        duration: Duration(milliseconds: 400),
         curve: Curves.easeOut,
       );
     } else if (simulatedY != null) {
