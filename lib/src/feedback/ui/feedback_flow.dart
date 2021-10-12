@@ -6,6 +6,7 @@ import 'package:wiredash/src/feedback/ui/more_menu.dart';
 import 'package:wiredash/src/feedback/ui/step_form.dart';
 import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
+import 'dart:math' as math;
 
 const _labels = [
   Label(id: 'bug', name: 'Bug'),
@@ -126,21 +127,6 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             ),
           ),
         ),
-        Container(
-          height: 500,
-          width: 100,
-          color: Colors.red,
-        ),
-        Container(
-          height: 500,
-          width: 100,
-          color: Colors.green,
-        ),
-        Container(
-          height: 500,
-          width: 100,
-          color: Colors.yellow,
-        ),
         Padding(
           padding: EdgeInsets.symmetric(
             horizontal: context.responsiveLayout.horizontalMargin,
@@ -220,6 +206,17 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const EmailInput(),
+        Container(
+          height: 700,
+          child: Center(
+            child: Transform.rotate(
+              angle: math.pi / 2,
+              child: Text(
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit"),
+            ),
+          ),
+        ),
+        Text("Item continues here"),
         Padding(
           padding: EdgeInsets.symmetric(
             horizontal: context.responsiveLayout.horizontalMargin,
