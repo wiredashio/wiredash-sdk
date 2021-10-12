@@ -36,8 +36,8 @@ class WiredashBackdrop extends StatefulWidget {
   @override
   State<WiredashBackdrop> createState() => _WiredashBackdropState();
 
-  static const Duration enterDuration = Duration(milliseconds: 800);
-  static const Duration exitDuration = Duration(milliseconds: 400);
+  static const Duration enterDuration = Duration(milliseconds: 1000);
+  static const Duration exitDuration = Duration(milliseconds: 1000);
 }
 
 class BackdropController {
@@ -48,15 +48,15 @@ class BackdropController {
         AnimationStatus.dismissed) {
       // Wiredash is currently not shown
 
-      if (_firstOpenAnimOnMetal) {
-        // increase anim time on metal because shaders aren't cached yet
-        _firstOpenAnimOnMetal = false;
-        _state!._backdropAnimationController.duration =
-            WiredashBackdrop.enterDuration * 2;
-      } else {
-        _state!._backdropAnimationController.duration =
-            WiredashBackdrop.enterDuration;
-      }
+      // if (_firstOpenAnimOnMetal) {
+      //   // increase anim time on metal because shaders aren't cached yet
+      //   _firstOpenAnimOnMetal = false;
+      //   _state!._backdropAnimationController.duration =
+      //       WiredashBackdrop.enterDuration * 2;
+      // } else {
+      //   _state!._backdropAnimationController.duration =
+      //       WiredashBackdrop.enterDuration;
+      // }
 
       // 1) start animation, causes app to be rendered on top of stack
       final openFuture = _state!._backdropAnimationController.animateTo(0.01);
@@ -330,17 +330,24 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               offset.dx,
               translationY,
             ),
-          child: PullToCloseDetector(
-            animController: _backdropAnimationController,
-            distanceToBottom: translationY.abs(),
-            topPosition: topPosition.abs(),
-            onPullStart: () {
+          child: GestureDetector(
+            onTap: () async {
               _pullCurves();
-            },
-            onPullEnd: () {
+              await context.wiredashModel.hide();
               _animCurves();
             },
-            child: app!,
+            child: PullToCloseDetector(
+              animController: _backdropAnimationController,
+              distanceToBottom: translationY.abs(),
+              topPosition: topPosition.abs(),
+              onPullStart: () {
+                _pullCurves();
+              },
+              onPullEnd: () {
+                _animCurves();
+              },
+              child: app!,
+            ),
           ),
         );
       },
