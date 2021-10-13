@@ -351,7 +351,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       },
       child: LarryPageView(
         key: stepFormKey,
-        viewPadding: EdgeInsets.only(top: 250),
+        viewInsets: EdgeInsets.only(top: 150),
         stepCount: 5,
         builder: (context, index) {
           // print("building index $index");

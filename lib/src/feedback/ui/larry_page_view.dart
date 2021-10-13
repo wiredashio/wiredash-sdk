@@ -7,18 +7,26 @@ import 'package:flutter/physics.dart';
 import 'package:flutter/rendering.dart';
 import 'package:wiredash/src/measure.dart';
 
+/// A vertical [PageView] that fades items out and in
+///
+/// Use [viewInsets] to move the page into a fully visible area
 class LarryPageView extends StatefulWidget {
   const LarryPageView({
     Key? key,
-    this.viewPadding = EdgeInsets.zero,
+    this.viewInsets = EdgeInsets.zero,
     required this.stepCount,
     required this.builder,
   }) : super(key: key);
 
   final Widget Function(BuildContext context, int index) builder;
 
+  /// Number of items to be returned by [builder]
   final int stepCount;
-  final EdgeInsets viewPadding;
+
+  /// The area which the page should *not* cover
+  ///
+  /// The item, when animating out/in still uses that space
+  final EdgeInsets viewInsets;
 
   @override
   State<LarryPageView> createState() => LarryPageViewState();
