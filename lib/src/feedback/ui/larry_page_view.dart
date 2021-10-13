@@ -53,14 +53,20 @@ class LarryPageViewState extends State<LarryPageView>
   /// the page.
   bool _animatingPageOut = false;
 
+  double get _childOffset => _childScrollController.position.pixels;
+
+  late ScrollController _childScrollController;
+
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      lowerBound: -double.infinity,
-      upperBound: double.infinity,
+      value: 0,
+      lowerBound: -double.maxFinite,
+      upperBound: double.maxFinite,
     )..addListener(_onOffsetChanged);
+    _childScrollController = ScrollController();
   }
 
   @override
@@ -103,6 +109,7 @@ class LarryPageViewState extends State<LarryPageView>
                   child: Opacity(
                     opacity: opacity,
                     child: SingleChildScrollView(
+                      controller: _childScrollController,
                       child: child,
                     ),
                   ),
@@ -140,6 +147,7 @@ class LarryPageViewState extends State<LarryPageView>
 
   void _onVerticalDragEnd(DragEndDetails details) {
     final primaryVelocity = details.primaryVelocity!;
+    print("child scroll offset: $_childOffset");
     print("velocity: $primaryVelocity ${primaryVelocity < 0 ? "UP" : "DOWN"} ");
 
     bool jumpToZero = false;
@@ -210,6 +218,8 @@ class LarryPageViewState extends State<LarryPageView>
         if (_page + 1 < widget.stepCount) {
           print("SpringSimulation to 0 (> 200)");
           _page++;
+          _childScrollController.dispose();
+          _childScrollController = ScrollController();
           _offset = -_switchDistance;
           _animatingPageOut = false;
           final sim = SpringSimulation(spring, _offset, 0, inVelocity);
@@ -222,6 +232,8 @@ class LarryPageViewState extends State<LarryPageView>
         if (_page > 0) {
           print("SpringSimulation to 0 (< -200)");
           _page--;
+          _childScrollController.dispose();
+          _childScrollController = ScrollController();
           _offset = _switchDistance;
           _animatingPageOut = false;
           final sim = SpringSimulation(spring, _offset, 0, -inVelocity);
