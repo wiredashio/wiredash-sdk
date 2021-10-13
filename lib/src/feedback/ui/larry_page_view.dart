@@ -33,8 +33,7 @@ class LarryPageView extends StatefulWidget {
 }
 
 class LarryPageViewState extends State<LarryPageView>
-    with TickerProviderStateMixin<LarryPageView>
-    implements ScrollContext {
+    with TickerProviderStateMixin<LarryPageView> {
   late final AnimationController controller;
   int _activeIndex = 0;
   double _offset = 0;
@@ -107,7 +106,7 @@ class LarryPageViewState extends State<LarryPageView>
         builder: (context, constraints) {
           final widgetHeight = constraints.maxHeight;
           final _minItemHeight =
-              widgetHeight - widget.viewPadding.top - widget.viewPadding.bottom;
+              widgetHeight - widget.viewInsets.top - widget.viewInsets.bottom;
 
           Widget boxed({required Widget child, required int index}) {
             const fadeDistance = 160.0;
@@ -147,7 +146,7 @@ class LarryPageViewState extends State<LarryPageView>
 
           child = Viewport(
             offset: ViewportOffset.fixed(_offset),
-            anchor: widget.viewPadding.top / widgetHeight,
+            anchor: widget.viewInsets.top / widgetHeight,
             slivers: [
               SliverToBoxAdapter(
                 child: child,
@@ -223,38 +222,6 @@ class LarryPageViewState extends State<LarryPageView>
       _offset = _offset - details.delta.dy;
     });
   }
-
-  @override
-  AxisDirection get axisDirection => AxisDirection.down;
-
-  @override
-  BuildContext? get notificationContext => context;
-
-  @override
-  void saveOffset(double offset) {
-    // no state restauration
-  }
-
-  @override
-  void setCanDrag(bool value) {
-    // don't persist anything
-  }
-
-  @override
-  void setIgnorePointer(bool value) {
-    // don't persist anything
-  }
-
-  @override
-  void setSemanticsActions(Set<SemanticsAction> actions) {
-    // don't persist anything
-  }
-
-  @override
-  BuildContext get storageContext => context;
-
-  @override
-  TickerProvider get vsync => this;
 }
 
 class StepInheritedWidget extends InheritedWidget {
