@@ -56,29 +56,30 @@ class LarryPageViewState extends State<LarryPageView>
             print("_animToZero = $_animToZero");
             final spring =
                 SpringDescription(mass: 30, stiffness: 1, damping: 1);
-            if (_offset > 200) {
+            final double switchDistance = 200;
+            final delay = Duration(milliseconds: 150);
+            final double inVelocity = 3000;
+            if (_offset > switchDistance) {
               if (_activeIndex + 1 < widget.stepCount) {
                 print("SpringSimulation to 0 (> 200)");
                 _activeIndex++;
-                _offset = -400;
+                _offset = -switchDistance;
                 _animToZero = true;
-                final sim =
-                    SpringSimulation(spring, _offset, 0, controller.velocity);
+                final sim = SpringSimulation(spring, _offset, 0, inVelocity);
                 // TODO cancel on touch...
-                Future.delayed(Duration(milliseconds: 200)).then((value) {
+                Future.delayed(delay).then((value) {
                   controller.animateWith(sim);
                 });
               }
-            } else if (_offset < -200) {
+            } else if (_offset < -switchDistance) {
               if (_activeIndex > 0) {
                 print("SpringSimulation to 0 (< -200)");
                 _activeIndex--;
-                _offset = 400;
+                _offset = switchDistance;
                 _animToZero = true;
-                final sim =
-                    SpringSimulation(spring, _offset, 0, controller.velocity);
+                final sim = SpringSimulation(spring, _offset, 0, -inVelocity);
                 // TODO cancel on touch...
-                Future.delayed(Duration(milliseconds: 200)).then((value) {
+                Future.delayed(delay).then((value) {
                   controller.animateWith(sim);
                 });
               }
@@ -131,11 +132,12 @@ class LarryPageViewState extends State<LarryPageView>
               }
               return _intrinsicItemSizes[index].bottom;
             }();
-            const fadeDistance = 200.0;
+            const fadeDistance = 160.0;
             final double distanceToCenterBottom =
                 distanceToCenterTop - intrinsicItemHeight + fadeDistance;
 
-            final opacity = 1 - _offset.abs().clamp(0, 200) / 200.0;
+            final opacity =
+                1 - _offset.abs().clamp(0, fadeDistance) / fadeDistance;
 
             return KeyedSubtree(
               key: ValueKey(index),
@@ -161,11 +163,13 @@ class LarryPageViewState extends State<LarryPageView>
                       });
                     },
                     child: ConstrainedBox(
-                      constraints: BoxConstraints(minHeight: _minItemHeight),
+                      constraints: BoxConstraints(
+                        minHeight: _minItemHeight,
+                        maxHeight: _minItemHeight,
+                      ),
                       child: Opacity(
                         opacity: opacity,
                         child: MeasureSize(
-                          child: child,
                           onChange: (size, rect) {
                             setState(() {
                               final missingRects =
@@ -177,6 +181,9 @@ class LarryPageViewState extends State<LarryPageView>
                               _intrinsicItemSizes[index] = rect;
                             });
                           },
+                          child: SingleChildScrollView(
+                            child: child,
+                          ),
                         ),
                       ),
                     ),
