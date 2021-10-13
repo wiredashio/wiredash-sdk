@@ -128,54 +128,8 @@ class LarryPageViewState extends State<LarryPageView>
             const fadeDistance = 200.0;
             final double distanceToCenterBottom =
                 distanceToCenterTop - intrinsicItemHeight + fadeDistance;
-            final double animValue = () {
-              if (distanceToCenterTop < 0 || distanceToCenterBottom < 0) {
-                return 1.0;
-              }
-              final top = 1.0 -
-                  max(0.0,
-                      min(1.0, (distanceToCenterTop / fadeDistance).abs()));
 
-              final bottom = 1.0 -
-                  max(0.0,
-                      min(1.0, (distanceToCenterBottom / fadeDistance).abs()));
-              return max(top, bottom);
-            }();
-
-            double alignAtBottomY = 0;
-            if (distanceToCenterTop > 0) {
-              // scrolled beyond distanceToCenterTop, item should align to bottom
-              final intrinsicItemHeight = () {
-                if (_intrinsicItemSizes.length - 1 < index) {
-                  return 0;
-                }
-                return _intrinsicItemSizes[index].bottom;
-              }();
-              final expandedItemHeight = () {
-                if (_expandedItemSizes.length - 1 < index) {
-                  return 0;
-                }
-                return _expandedItemSizes[index].bottom;
-              }();
-
-              if (distanceToCenterTop > intrinsicItemHeight) {
-                // fixate item in viewport
-                alignAtBottomY = distanceToCenterTop - intrinsicItemHeight;
-
-                // if (index == 0) {
-                //   print("intrinsicItemHeight $intrinsicItemHeight");
-                //   print("expandedItemHeight $expandedItemHeight");
-                //   print("distanceToCenterTop $distanceToCenterTop");
-                //   print("_minItemHeight $_minItemHeight");
-                // }
-                // item below pushes it out of viewport
-                if (distanceToCenterTop > expandedItemHeight) {
-                  alignAtBottomY -= distanceToCenterTop - expandedItemHeight;
-                }
-              } else {
-                // just scroll
-              }
-            }
+            final opacity = 1 - _offset.abs().clamp(0, 200) / 200.0;
 
             return KeyedSubtree(
               key: ValueKey(index),
@@ -186,9 +140,7 @@ class LarryPageViewState extends State<LarryPageView>
                 child: StepInheritedWidget(
                   data: StepInformation(
                     active: index == _activeIndex,
-                    animation: animValue != null
-                        ? AlwaysStoppedAnimation<double>(animValue.abs())
-                        : const AlwaysStoppedAnimation(1),
+                    animation: AlwaysStoppedAnimation<double>(opacity),
                   ),
                   child: MeasureSize(
                     onChange: (size, rect) {
@@ -204,24 +156,21 @@ class LarryPageViewState extends State<LarryPageView>
                     },
                     child: ConstrainedBox(
                       constraints: BoxConstraints(minHeight: _minItemHeight),
-                      child: Transform.translate(
-                        offset: Offset(0, alignAtBottomY),
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: MeasureSize(
-                            child: child,
-                            onChange: (size, rect) {
-                              setState(() {
-                                final missingRects =
-                                    index + 1 - _intrinsicItemSizes.length;
-                                if (missingRects > 0) {
-                                  _intrinsicItemSizes.addAll(Iterable.generate(
-                                      missingRects, (_) => Rect.zero));
-                                }
-                                _intrinsicItemSizes[index] = rect;
-                              });
-                            },
-                          ),
+                      child: Opacity(
+                        opacity: opacity,
+                        child: MeasureSize(
+                          child: child,
+                          onChange: (size, rect) {
+                            setState(() {
+                              final missingRects =
+                                  index + 1 - _intrinsicItemSizes.length;
+                              if (missingRects > 0) {
+                                _intrinsicItemSizes.addAll(Iterable.generate(
+                                    missingRects, (_) => Rect.zero));
+                              }
+                              _intrinsicItemSizes[index] = rect;
+                            });
+                          },
                         ),
                       ),
                     ),
@@ -479,6 +428,7 @@ class LarryPageViewState extends State<LarryPageView>
 
   double _dragStartScrollPosition = 0.0;
   void _onVerticalDragStart(DragStartDetails details) {
+    controller.stop();
     _dragStartScrollPosition = _offset;
   }
 
