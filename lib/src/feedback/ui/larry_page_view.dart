@@ -34,64 +34,38 @@ class LarryPageView extends StatefulWidget {
 
 class LarryPageViewState extends State<LarryPageView>
     with TickerProviderStateMixin<LarryPageView> {
-  late final AnimationController controller;
-  int _activeIndex = 0;
+  /// Drives the scroll animation once the finger leaves the screen
+  late final AnimationController _controller;
+
+  /// The index of the current [page]
+  ///
+  /// starting at 0 up to `widget.stepCount - 1`
+  int _page = 0;
+
+  /// The Y scroll position, the [Offset] the [ViewPort] is moved
   double _offset = 0;
 
-  bool _animToZero = false;
+  /// The distance the page has to be scrolled before it switches to the next page
+  static const double _switchDistance = 200;
+
+  /// [true] while the page is ballistic scrolling outwards (after the finger
+  /// left the screen), waiting for [_switchDistance] to be reached switching
+  /// the page.
+  bool _animatingPageOut = false;
 
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(
+    _controller = AnimationController(
       vsync: this,
       lowerBound: -double.infinity,
       upperBound: double.infinity,
-    )..addListener(_rebuildOnAutoScroll);
-  }
-
-  void _rebuildOnAutoScroll() {
-    setState(() {
-      _offset = controller.value;
-    });
-
-    if (!_animToZero) {
-      print("_animToZero = $_animToZero");
-      final spring = SpringDescription(mass: 30, stiffness: 1, damping: 1);
-      final double switchDistance = 200;
-      final delay = Duration(milliseconds: 150);
-      final double inVelocity = 3000;
-      if (_offset > switchDistance) {
-        if (_activeIndex + 1 < widget.stepCount) {
-          print("SpringSimulation to 0 (> 200)");
-          _activeIndex++;
-          _offset = -switchDistance;
-          _animToZero = true;
-          final sim = SpringSimulation(spring, _offset, 0, inVelocity);
-          // TODO cancel on touch...
-          Future.delayed(delay).then((value) {
-            controller.animateWith(sim);
-          });
-        }
-      } else if (_offset < -switchDistance) {
-        if (_activeIndex > 0) {
-          print("SpringSimulation to 0 (< -200)");
-          _activeIndex--;
-          _offset = switchDistance;
-          _animToZero = true;
-          final sim = SpringSimulation(spring, _offset, 0, -inVelocity);
-          // TODO cancel on touch...
-          Future.delayed(delay).then((value) {
-            controller.animateWith(sim);
-          });
-        }
-      }
-    }
+    )..addListener(_onOffsetChanged);
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -118,7 +92,7 @@ class LarryPageViewState extends State<LarryPageView>
               key: ValueKey(index),
               child: StepInheritedWidget(
                 data: StepInformation(
-                  active: index == _activeIndex,
+                  active: index == _page,
                   animation: AlwaysStoppedAnimation<double>(opacity),
                 ),
                 child: ConstrainedBox(
@@ -138,9 +112,9 @@ class LarryPageViewState extends State<LarryPageView>
           }
 
           Widget child = boxed(
-            index: _activeIndex,
+            index: _page,
             child: Builder(builder: (context) {
-              return widget.builder(context, _activeIndex);
+              return widget.builder(context, _page);
             }),
           );
 
@@ -173,23 +147,22 @@ class LarryPageViewState extends State<LarryPageView>
     if (primaryVelocity.abs() > 1000) {
       if (primaryVelocity < 0) {
         // scroll up
-        if (_activeIndex + 1 < widget.stepCount) {
+        if (_page + 1 < widget.stepCount) {
           print("anim out top");
-          final sim = ClampingScrollSimulation(
-              velocity: -primaryVelocity, position: _offset);
-          controller.animateWith(sim);
-          _animToZero = false;
+          final sim = FrictionSimulation(1, -primaryVelocity, _offset);
+          _controller.animateWith(sim);
+          _animatingPageOut = true;
         } else {
           jumpToZero = true;
         }
       }
       if (primaryVelocity > 0) {
-        if (_activeIndex > 0) {
+        if (_page > 0) {
           print("anim out bottom");
           final sim = ClampingScrollSimulation(
               velocity: -primaryVelocity, position: _offset);
-          controller.animateWith(sim);
-          _animToZero = false;
+          _controller.animateWith(sim);
+          _animatingPageOut = true;
         } else {
           jumpToZero = true;
         }
@@ -200,20 +173,19 @@ class LarryPageViewState extends State<LarryPageView>
     }
 
     if (jumpToZero) {
-      print("jump to zero");
-      _animToZero = true;
+      _animatingPageOut = false;
       final sim = SpringSimulation(
         SpringDescription(mass: 30, stiffness: 1, damping: 1),
         _offset,
         0,
         -primaryVelocity,
       );
-      controller.animateWith(sim);
+      _controller.animateWith(sim);
     }
   }
 
   void _onVerticalDragStart(DragStartDetails details) {
-    controller.stop();
+    _controller.stop();
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
@@ -221,6 +193,45 @@ class LarryPageViewState extends State<LarryPageView>
     setState(() {
       _offset = _offset - details.delta.dy;
     });
+  }
+
+  /// Called when the [_controller] is animating, meaning the [_offset] changes
+  /// based on a [Simulation]
+  void _onOffsetChanged() {
+    setState(() {
+      _offset = _controller.value;
+    });
+
+    if (_animatingPageOut) {
+      final spring = SpringDescription(mass: 30, stiffness: 1, damping: 1);
+      final delay = Duration(milliseconds: 150);
+      final double inVelocity = 3000;
+      if (_offset > _switchDistance) {
+        if (_page + 1 < widget.stepCount) {
+          print("SpringSimulation to 0 (> 200)");
+          _page++;
+          _offset = -_switchDistance;
+          _animatingPageOut = false;
+          final sim = SpringSimulation(spring, _offset, 0, inVelocity);
+          // TODO cancel on touch...
+          Future.delayed(delay).then((value) {
+            _controller.animateWith(sim);
+          });
+        }
+      } else if (_offset < -_switchDistance) {
+        if (_page > 0) {
+          print("SpringSimulation to 0 (< -200)");
+          _page--;
+          _offset = _switchDistance;
+          _animatingPageOut = false;
+          final sim = SpringSimulation(spring, _offset, 0, -inVelocity);
+          // TODO cancel on touch...
+          Future.delayed(delay).then((value) {
+            _controller.animateWith(sim);
+          });
+        }
+      }
+    }
   }
 }
 
