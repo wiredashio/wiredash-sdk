@@ -64,7 +64,10 @@ class LarryPageViewState extends State<LarryPageView>
                 _animToZero = true;
                 final sim =
                     SpringSimulation(spring, _offset, 0, controller.velocity);
-                controller.animateWith(sim);
+                // TODO cancel on touch...
+                Future.delayed(Duration(milliseconds: 200)).then((value) {
+                  controller.animateWith(sim);
+                });
               }
             } else if (_offset < -200) {
               if (_activeIndex > 0) {
@@ -74,7 +77,10 @@ class LarryPageViewState extends State<LarryPageView>
                 _animToZero = true;
                 final sim =
                     SpringSimulation(spring, _offset, 0, controller.velocity);
-                controller.animateWith(sim);
+                // TODO cancel on touch...
+                Future.delayed(Duration(milliseconds: 200)).then((value) {
+                  controller.animateWith(sim);
+                });
               }
             }
           }
@@ -269,34 +275,38 @@ class LarryPageViewState extends State<LarryPageView>
 
     // print("simulatedY: $simulatedY");
 
-    bool jumpToNext = false;
-    bool jumpToPrev = false;
-    bool jumpToCurrentTop = false;
+    bool jumpToZero = false;
 
     if (primaryVelocity.abs() > 1000) {
       if (primaryVelocity < 0) {
         // scroll up
-        jumpToNext = true;
         if (_activeIndex + 1 < widget.stepCount) {
           print("anim out top");
           final sim = ClampingScrollSimulation(
               velocity: -primaryVelocity, position: _offset);
           controller.animateWith(sim);
           _animToZero = false;
+        } else {
+          jumpToZero = true;
         }
       }
       if (primaryVelocity > 0) {
-        jumpToPrev = true;
         if (_activeIndex > 0) {
           print("anim out bottom");
           final sim = ClampingScrollSimulation(
               velocity: -primaryVelocity, position: _offset);
           controller.animateWith(sim);
           _animToZero = false;
+        } else {
+          jumpToZero = true;
         }
       }
     } else {
       // jump back to 0
+      jumpToZero = true;
+    }
+
+    if (jumpToZero) {
       print("jump to zero");
       _animToZero = true;
       final sim = SpringSimulation(
