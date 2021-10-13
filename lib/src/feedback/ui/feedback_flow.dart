@@ -4,8 +4,8 @@ import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/email_input.dart';
+import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 import 'package:wiredash/src/feedback/ui/more_menu.dart';
-import 'package:wiredash/src/feedback/ui/step_form.dart';
 import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 import 'dart:math' as math;
@@ -27,7 +27,8 @@ class WiredashFeedbackFlow extends StatefulWidget {
 
 class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     with TickerProviderStateMixin {
-  final GlobalKey<StepFormState> stepFormKey = GlobalKey<StepFormState>();
+  final GlobalKey<LarryPageViewState> stepFormKey =
+      GlobalKey<LarryPageViewState>();
   final ValueNotifier<Set<Label>> _selectedLabels = ValueNotifier({});
   late final TextEditingController _controller;
 
@@ -348,9 +349,9 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
       },
-      child: StepForm(
+      child: LarryPageView(
         key: stepFormKey,
-        topOffset: 200,
+        viewPadding: EdgeInsets.only(top: 250),
         stepCount: 5,
         builder: (context, index) {
           // print("building index $index");

@@ -433,7 +433,6 @@ class StepFormState extends State<StepForm>
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
     final oldTopItemsHeight = _calculateTopItemsHeight();
-    print("top: ${oldTopItemsHeight}");
 
     // Account for finger movement
     scrollPosition.jumpTo(scrollPosition.pixels - details.delta.dy);
