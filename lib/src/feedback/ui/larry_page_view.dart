@@ -1,11 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/rendering.dart';
-import 'package:wiredash/src/measure.dart';
 
 /// A vertical [PageView] that fades items out and in
 ///
@@ -53,9 +50,13 @@ class LarryPageViewState extends State<LarryPageView>
   /// the page.
   bool _animatingPageOut = false;
 
-  double get _childOffset => _childScrollController.position.pixels;
+  /// Controls the inner [SingleChildScrollView] of the current page
+  ScrollController _childScrollController = ScrollController();
 
-  late ScrollController _childScrollController;
+  /// Calculates the velocity of the inner [SingleChildScrollView] during
+  /// overscroll
+  final VelocityTracker _innerVelocityTracker =
+      VelocityTracker.withKind(PointerDeviceKind.touch);
 
   @override
   void initState() {
@@ -66,12 +67,12 @@ class LarryPageViewState extends State<LarryPageView>
       lowerBound: -double.maxFinite,
       upperBound: double.maxFinite,
     )..addListener(_onOffsetChanged);
-    _childScrollController = ScrollController();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _childScrollController.dispose();
     super.dispose();
   }
 
@@ -108,9 +109,12 @@ class LarryPageViewState extends State<LarryPageView>
                   ),
                   child: Opacity(
                     opacity: opacity,
-                    child: SingleChildScrollView(
-                      controller: _childScrollController,
-                      child: child,
+                    child: NotificationListener<ScrollNotification>(
+                      onNotification: _onInnerScroll,
+                      child: SingleChildScrollView(
+                        controller: _childScrollController,
+                        child: child,
+                      ),
                     ),
                   ),
                 ),
@@ -120,11 +124,12 @@ class LarryPageViewState extends State<LarryPageView>
 
           Widget child = boxed(
             index: _page,
-            child: Builder(builder: (context) {
-              return widget.builder(context, _page);
-            }),
+            child: Builder(
+              builder: (context) => widget.builder(context, _page),
+            ),
           );
 
+          // ignore: join_return_with_assignment
           child = Viewport(
             offset: ViewportOffset.fixed(_offset),
             anchor: widget.viewInsets.top / widgetHeight,
@@ -145,10 +150,121 @@ class LarryPageViewState extends State<LarryPageView>
     // TODO
   }
 
+  bool _startedInnerScrollOnTopEdge = false;
+  bool _startedInnerScrollOnBottomEdge = false;
+  bool _outerScrollUp = false;
+  bool _outerScrollDown = false;
+  bool _waitForEnd = false;
+
+  /// Called when the inner scrollview scrolls
+  ///
+  /// Drives [_controller] on overscroll
+  bool _onInnerScroll(n) {
+    // 1. the start event has to happen on the top or bottom edge to trigger
+    // the outer scroll
+    if (n is ScrollStartNotification) {
+      if (n.dragDetails?.kind != PointerDeviceKind.touch) {
+        // only allow outer scroll when using the touch screen
+        return false;
+      }
+      if (n.metrics.pixels <= n.metrics.minScrollExtent) {
+        // start at very top
+        _startedInnerScrollOnTopEdge = true;
+      }
+      if (n.metrics.pixels >= n.metrics.maxScrollExtent) {
+        // start at very bottom
+        _startedInnerScrollOnBottomEdge = true;
+      }
+
+      final details = n.dragDetails;
+      if (details != null && details.sourceTimeStamp != null) {
+        _innerVelocityTracker.addPosition(
+          details.sourceTimeStamp!,
+          details.localPosition,
+        );
+        _onVerticalDragStart(details);
+      }
+      return false;
+    }
+    // 2. The direction of the scroll must immediately face towards overscroll
+    // later direction changes are ignored
+    if (n is UserScrollNotification) {
+      if (_outerScrollUp || _outerScrollDown) {
+        return false;
+      }
+      if (_startedInnerScrollOnTopEdge &&
+          n.direction == ScrollDirection.forward) {
+        _outerScrollUp = true;
+      }
+      if (_startedInnerScrollOnBottomEdge &&
+          n.direction == ScrollDirection.reverse) {
+        _outerScrollDown = true;
+      }
+    }
+    // 3. forward overscroll events to pageview
+    if (n is ScrollUpdateNotification) {
+      if (_waitForEnd == true) {
+        // already detected that the user started a fling, called _onVerticalDragEnd
+        return false;
+      }
+
+      final details = n.dragDetails;
+      if (details == null) {
+        // when there are no details, this even is not from a user scroll event
+        // but from a simulation. This happens after the user lifted the finger
+        _waitForEnd = true;
+        // calculate current velocity and drive the pageview with a simulation
+        final velocity = _innerVelocityTracker.getVelocity();
+        final end = DragEndDetails(
+          velocity: velocity,
+          primaryVelocity: velocity.pixelsPerSecond.dy,
+        );
+        _onVerticalDragEnd(end);
+      } else {
+        // with details just behave normally when scrolled inside the scrollview.
+
+        // detect overscroll event and forward those to the pageview scroll mechanism
+        if (_outerScrollUp && n.metrics.pixels <= n.metrics.minScrollExtent) {
+          // Keep visual position of inner scroll view at top
+          _childScrollController.position
+              .correctPixels(n.metrics.minScrollExtent);
+          // scroll outer scrollview and keep track of the velocity
+          _onVerticalDragUpdate(details);
+          _innerVelocityTracker.addPosition(
+            details.sourceTimeStamp!,
+            details.localPosition,
+          );
+        }
+        if (_outerScrollDown && n.metrics.pixels >= n.metrics.maxScrollExtent) {
+          // Keep visual position of inner scroll view at bottom
+          _childScrollController.position
+              .correctPixels(n.metrics.maxScrollExtent);
+          // scroll outer scrollview and keep track of the velocity
+          _onVerticalDragUpdate(details);
+          _innerVelocityTracker.addPosition(
+            details.sourceTimeStamp!,
+            details.localPosition,
+          );
+        }
+      }
+      return false;
+    }
+
+    if (n is ScrollEndNotification) {
+      // reset all values as they where before the touch
+      _startedInnerScrollOnBottomEdge = false;
+      _startedInnerScrollOnTopEdge = false;
+      _outerScrollUp = false;
+      _outerScrollDown = false;
+      _waitForEnd = false;
+      return false;
+    }
+
+    return false;
+  }
+
   void _onVerticalDragEnd(DragEndDetails details) {
     final primaryVelocity = details.primaryVelocity!;
-    print("child scroll offset: $_childOffset");
-    print("velocity: $primaryVelocity ${primaryVelocity < 0 ? "UP" : "DOWN"} ");
 
     bool jumpToZero = false;
 
@@ -156,7 +272,6 @@ class LarryPageViewState extends State<LarryPageView>
       if (primaryVelocity < 0) {
         // scroll up
         if (_page + 1 < widget.stepCount) {
-          print("anim out top");
           final sim = FrictionSimulation(1, -primaryVelocity, _offset);
           _controller.animateWith(sim);
           _animatingPageOut = true;
@@ -166,9 +281,10 @@ class LarryPageViewState extends State<LarryPageView>
       }
       if (primaryVelocity > 0) {
         if (_page > 0) {
-          print("anim out bottom");
           final sim = ClampingScrollSimulation(
-              velocity: -primaryVelocity, position: _offset);
+            velocity: -primaryVelocity,
+            position: _offset,
+          );
           _controller.animateWith(sim);
           _animatingPageOut = true;
         } else {
@@ -183,7 +299,7 @@ class LarryPageViewState extends State<LarryPageView>
     if (jumpToZero) {
       _animatingPageOut = false;
       final sim = SpringSimulation(
-        SpringDescription(mass: 30, stiffness: 1, damping: 1),
+        const SpringDescription(mass: 30, stiffness: 1, damping: 1),
         _offset,
         0,
         -primaryVelocity,
@@ -211,12 +327,11 @@ class LarryPageViewState extends State<LarryPageView>
     });
 
     if (_animatingPageOut) {
-      final spring = SpringDescription(mass: 30, stiffness: 1, damping: 1);
-      final delay = Duration(milliseconds: 150);
-      final double inVelocity = 3000;
+      const spring = SpringDescription(mass: 30, stiffness: 1, damping: 1);
+      const delay = Duration(milliseconds: 150);
+      const double inVelocity = 3000;
       if (_offset > _switchDistance) {
         if (_page + 1 < widget.stepCount) {
-          print("SpringSimulation to 0 (> 200)");
           _page++;
           _childScrollController.dispose();
           _childScrollController = ScrollController();
@@ -230,7 +345,6 @@ class LarryPageViewState extends State<LarryPageView>
         }
       } else if (_offset < -_switchDistance) {
         if (_page > 0) {
-          print("SpringSimulation to 0 (< -200)");
           _page--;
           _childScrollController.dispose();
           _childScrollController = ScrollController();
@@ -273,12 +387,5 @@ class StepInformation {
     final StepInheritedWidget? widget =
         context.dependOnInheritedWidgetOfExactType<StepInheritedWidget>();
     return widget!.data;
-  }
-}
-
-extension _IterableTakeLast<E> on Iterable<E> {
-  List<E> takeLast(int n) {
-    final list = this is List<E> ? this as List<E> : toList();
-    return list.sublist(length - n);
   }
 }
