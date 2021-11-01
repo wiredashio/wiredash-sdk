@@ -113,6 +113,9 @@ class LarryPageViewState extends State<LarryPageView>
                       onNotification: _onInnerScroll,
                       child: SingleChildScrollView(
                         controller: _childScrollController,
+                        // BouncingScrollPhysics is required on all platforms or
+                        // the overscroll detection wouldn't work
+                        physics: const BouncingScrollPhysics(),
                         child: child,
                       ),
                     ),
