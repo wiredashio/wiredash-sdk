@@ -243,8 +243,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         // Stack allows placing the app on top while we're awaiting layout
         child: Stack(
           children: <Widget>[
-            WiredashFeedbackFlow(
-              focusNode: _feedbackFocusNode,
+            Padding(
+              // Don't show content behind keyboard
+              padding: EdgeInsets.only(bottom: bottomInset),
+              child: WiredashFeedbackFlow(
+                focusNode: _feedbackFocusNode,
+              ),
             ),
             _buildAppPositioningAnimation(
               // offset: Offset(0, 50),
