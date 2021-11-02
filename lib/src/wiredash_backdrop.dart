@@ -340,6 +340,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         ),
       ),
     );
+    final mediaQueryData = MediaQuery.of(context);
+    final bottomInset = mediaQueryData.viewInsets.bottom;
 
     return Material(
       child: Container(
