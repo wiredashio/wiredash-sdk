@@ -209,6 +209,25 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }
   }
 
+  @override
+  void reassemble() {
+    super.reassemble();
+    print("reassemble");
+    final oldAppUp = _rectAppUp;
+    final oldAppIntermediate = _rectAppIntermediate;
+    _calculateRects();
+    if (oldAppUp != _rectAppUp &&
+        _backdropStatus == WiredashBackdropStatus.open) {
+      _backdropStatus = WiredashBackdropStatus.closed;
+      _animateToOpen();
+    }
+    if (oldAppIntermediate != _rectAppIntermediate &&
+        _backdropStatus == WiredashBackdropStatus.intermediate) {
+      _backdropStatus = WiredashBackdropStatus.closed;
+      _animateToIntermediate();
+    }
+  }
+
   /// (re-)calculates the rects for the different states
   void _calculateRects() {
     final mediaQueryData =
