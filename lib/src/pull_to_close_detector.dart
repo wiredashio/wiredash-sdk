@@ -14,6 +14,8 @@ class PullToCloseDetector extends StatefulWidget {
     required this.topPosition,
     this.onPullStart,
     this.onPullEnd,
+    this.onClosed,
+    this.onClosing,
   }) : super(key: key);
 
   final Widget child;
@@ -28,6 +30,12 @@ class PullToCloseDetector extends StatefulWidget {
   final void Function()? onPullStart;
 
   final void Function()? onPullEnd;
+
+  final void Function()? onClosed;
+
+  /// called when the pull to close is detected and the controller will be
+  /// forwarded to the final close state.
+  final void Function()? onClosing;
 
   @override
   _PullToCloseDetectorState createState() => _PullToCloseDetectorState();
@@ -84,11 +92,14 @@ class _PullToCloseDetectorState extends State<PullToCloseDetector> {
 
     if (velocity > 0) {
       final completeDuration = widget.animController.reverseDuration!;
+      widget.onClosing?.call();
+      // TODO replace with simulation
       await widget.animController.animateBack(
         0.0,
         duration: completeDuration * widget.animController.value,
         curve: Curves.easeOut,
       );
+      widget.onClosed?.call();
     } else {
       final completeDuration = widget.animController.duration!;
       await widget.animController.animateTo(

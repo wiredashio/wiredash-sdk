@@ -85,12 +85,22 @@ class WiredashModel with ChangeNotifier {
 
   /// Closes wiredash
   Future<void> hide() async {
-    _isWiredashOpening = false;
-    _isWiredashClosing = true;
-    notifyListeners();
+    detectClosing();
 
     // wait until fully closed
     await state.backdropController.animateToClosed();
+    detectClosed();
+  }
+
+  /// Wiredash is about to close, actually starting the closing animation
+  void detectClosing() {
+    _isWiredashOpening = false;
+    _isWiredashClosing = true;
+    notifyListeners();
+  }
+
+  /// Wiredash fully closed
+  void detectClosed() {
     _isWiredashVisible = false;
     _isWiredashClosing = false;
     _isAppInteractive = true;

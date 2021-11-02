@@ -56,38 +56,6 @@ class WiredashBackdrop extends StatefulWidget {
 class BackdropController {
   _WiredashBackdropState? _state;
 
-  Future<void> showWiredash() async {
-    // if (_state!._backdropAnimationController.status ==
-    //     AnimationStatus.dismissed) {
-    //   // Wiredash is currently not shown
-    //
-    //   // if (_firstOpenAnimOnMetal) {
-    //   //   // increase anim time on metal because shaders aren't cached yet
-    //   //   _firstOpenAnimOnMetal = false;
-    //   //   _state!._backdropAnimationController.duration =
-    //   //       WiredashBackdrop.enterDuration * 2;
-    //   // } else {
-    //   //   _state!._backdropAnimationController.duration =
-    //   //       WiredashBackdrop.enterDuration;
-    //   // }
-    //
-    //   // 1) start animation, causes app to be rendered on top of stack
-    //   // final openFuture = _state!._backdropAnimationController.animateTo(0.01);
-    //
-    //   // 2) Wait 1 frame until layout of the app in the list is known
-    //   // final completer = Completer();
-    //    //WidgetsBinding.instance?.addPostFrameCallback((_) {
-    //   //  completer.complete();
-    //  // });
-    //   //await completer.future;
-    //   //await openFuture;
-    //   _state!._feedbackFocusNode.requestFocus();
-    //   await _state!._backdropAnimationController.forward();
-    // } else {
-    //   _state!._backdropAnimationController.forward();
-    // }
-  }
-
   Future<void> animateToOpen() async {
     await _state!._animateToOpen();
   }
@@ -436,13 +404,26 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 ),
               ),
             ),
-            const Positioned(
+            Positioned(
               bottom: 8,
               left: 0,
               right: 0,
-              child: Icon(
-                WiredashIcons.cevronDownLight,
-                color: Colors.black26,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 300),
+                opacity: () {
+                  if (context.wiredashModel.isWiredashClosing) {
+                    return 0.0;
+                  }
+                  if (context.wiredashModel.isWiredashActive ||
+                      context.wiredashModel.isWiredashOpening) {
+                    return 1.0;
+                  }
+                  return 0.0;
+                }(),
+                child: Icon(
+                  WiredashIcons.cevronDownLight,
+                  color: Colors.black26,
+                ),
               ),
             ),
           ],
@@ -482,6 +463,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               },
               onPullEnd: () {
                 _animCurves();
+              },
+              onClosed: () async {
+                context.wiredashModel.detectClosed();
+              },
+              onClosing: () {
+                context.wiredashModel.detectClosing();
               },
               child: app!,
             ),
