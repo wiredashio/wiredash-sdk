@@ -191,7 +191,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   @override
   void reassemble() {
     super.reassemble();
-    print("reassemble");
     final oldAppUp = _rectAppUp;
     final oldAppIntermediate = _rectAppIntermediate;
     _calculateRects();
@@ -516,12 +515,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 _animCurves();
               },
               onClosed: () async {
-                print('closed');
                 context.wiredashModel.detectClosed();
                 _backdropStatus = WiredashBackdropStatus.closed;
               },
               onClosing: () {
-                print('closing');
                 context.wiredashModel.detectClosing();
                 _backdropStatus = WiredashBackdropStatus.closing;
               },
