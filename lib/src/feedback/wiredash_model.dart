@@ -78,7 +78,7 @@ class WiredashModel with ChangeNotifier {
     notifyListeners();
 
     // wait until fully opened
-    await state.backdropController.showWiredash();
+    await state.backdropController.animateToOpen();
     _isWiredashOpening = false;
     notifyListeners();
   }
@@ -90,7 +90,7 @@ class WiredashModel with ChangeNotifier {
     notifyListeners();
 
     // wait until fully closed
-    await state.backdropController.hideWiredash();
+    await state.backdropController.animateToClosed();
     _isWiredashVisible = false;
     _isWiredashClosing = false;
     _isAppInteractive = true;
