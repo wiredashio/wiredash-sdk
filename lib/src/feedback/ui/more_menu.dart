@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/wiredash_provider.dart';
 
 /// Horizontal menu offering more Wiredash services besides feedback
 class MoreMenu extends StatelessWidget {
@@ -22,16 +23,19 @@ class MoreMenu extends StatelessWidget {
           alignment: WrapAlignment.spaceEvenly,
           crossAxisAlignment: WrapCrossAlignment.center,
           spacing: 16,
-          children: const [
+          children: [
             _Link(
               icon: Icon(Icons.list_alt_outlined),
               label: Text('Change Log'),
+              onTap: () {
+                context.wiredashModel.enterCaptureMode();
+              },
             ),
-            _Link(
+            const _Link(
               icon: Icon(Icons.checklist_outlined),
               label: Text('Surveys'),
             ),
-            _Link(
+            const _Link(
               icon: Icon(Icons.question_answer_outlined),
               label: Text('FAQs'),
             ),
@@ -43,37 +47,45 @@ class MoreMenu extends StatelessWidget {
 }
 
 class _Link extends StatelessWidget {
-  const _Link({required this.icon, required this.label, Key? key})
-      : super(key: key);
+  const _Link({
+    required this.icon,
+    required this.label,
+    Key? key,
+    this.onTap,
+  }) : super(key: key);
 
   final Widget icon;
   final Widget label;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-      child: Column(
-        children: [
-          IconTheme.merge(
-            data: const IconThemeData(
-              size: 24,
-              // tint
-              color: Color(0xFF1A56DB),
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+        child: Column(
+          children: [
+            IconTheme.merge(
+              data: const IconThemeData(
+                size: 24,
+                // tint
+                color: Color(0xFF1A56DB),
+              ),
+              child: icon,
             ),
-            child: icon,
-          ),
-          const SizedBox(height: 8),
-          DefaultTextStyle.merge(
-            style: const TextStyle(
-              // tint
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF1A56DB),
+            const SizedBox(height: 8),
+            DefaultTextStyle.merge(
+              style: const TextStyle(
+                // tint
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF1A56DB),
+              ),
+              child: label,
             ),
-            child: label,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

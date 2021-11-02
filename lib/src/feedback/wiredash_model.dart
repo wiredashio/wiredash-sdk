@@ -142,11 +142,13 @@ class WiredashModel with ChangeNotifier {
 
   void enterCaptureMode() {
     _capturingScreenshot = true;
+    state.backdropController.animateToIntermediate();
     notifyListeners();
   }
 
   void exitCaptureMode() {
     _capturingScreenshot = false;
+    state.backdropController.animateToOpen();
     notifyListeners();
   }
 }
