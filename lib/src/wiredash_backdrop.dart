@@ -222,21 +222,22 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final _maxIntermediateHeight =
         screenSize.height - mediaQueryData.viewPadding.vertical;
     final _biggestPossibleIntermediateScaleFactor = math.min(
-        _maxIntermediateWidth / screenSize.width,
-        _maxIntermediateHeight / screenSize.height);
+      _maxIntermediateWidth / screenSize.width,
+      _maxIntermediateHeight / screenSize.height,
+    );
 
     // TODO: Offset the center based on viewPaddings
     _rectAppIntermediate = Rect.fromCenter(
-        center: screenSize.center(Offset.zero),
-        width: screenSize.width * _biggestPossibleIntermediateScaleFactor,
-        height: screenSize.height * _biggestPossibleIntermediateScaleFactor);
+      center: screenSize.center(Offset.zero),
+      width: screenSize.width * _biggestPossibleIntermediateScaleFactor,
+      height: screenSize.height * _biggestPossibleIntermediateScaleFactor,
+    );
 
-    _rectAppUp = _rectAppIntermediate.translate(
-        0,
-        -screenSize.height +
-            _rectAppIntermediate.top +
-            _appPeak +
-            mediaQueryData.viewPadding.top);
+    final translateY = -screenSize.height +
+        _rectAppIntermediate.top +
+        _appPeak -
+        mediaQueryData.viewPadding.top;
+    _rectAppUp = _rectAppIntermediate.translate(0, translateY);
 
     _rectAppDown =
         Rect.fromPoints(Offset.zero, screenSize.bottomRight(Offset.zero));
@@ -278,6 +279,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           begin: BorderRadius.circular(20),
           end: BorderRadius.circular(20),
         ).animate(_driverAnimation);
+        break;
+      case WiredashBackdropStatus.closed:
+        // nothing to to here
+        break;
+      case WiredashBackdropStatus.intermediate:
+        // nothing to to here
         break;
     }
   }
