@@ -94,7 +94,7 @@ class WiredashModel with ChangeNotifier {
 
   Future<void> enterCaptureMode() async {
     detectEnterCaptureMode();
-    await state.backdropController.animateToIntermediate();
+    await state.backdropController.animateToCentered();
   }
 
   Future<void> exitCaptureMode() async {

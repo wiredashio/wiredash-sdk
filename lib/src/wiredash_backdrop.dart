@@ -27,17 +27,17 @@ enum WiredashBackdropStatus {
   /// The app is transitioning from [closing] to [open]
   opening,
 
-  /// the app is pinned to the top, mostly hidden and non-interactive
+  /// the app is pinned to the bottom, partially hidden and non-interactive
   open,
 
-  /// The app is transitioning from [open] to [intermediate]
-  openingIntermediate,
+  /// The app is transitioning from [open] to [centered]
+  openingCentered,
 
-  /// The app is transitioning from [intermediate] to [open]
-  closingIntermediate,
+  /// The app is transitioning from [centered] to [open]
+  closingCentered,
 
   /// The app in floating in the center for screenshots
-  intermediate,
+  centered,
 }
 
 /// The Wiredash UI behind the app
@@ -70,8 +70,8 @@ class BackdropController {
     await _state!._animateToOpen();
   }
 
-  Future<void> animateToIntermediate() async {
-    await _state!._animateToIntermediate();
+  Future<void> animateToCentered() async {
+    await _state!._animateToCentered();
   }
 
   Future<void> animateToClosed() async {
@@ -121,9 +121,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   final slightlyUnderdumped = Sprung(18);
 
   /// calculated positions for the different backdrop positions / states
-  Rect _rectAppUp = Rect.zero;
-  Rect _rectAppIntermediate = Rect.zero;
   Rect _rectAppDown = Rect.zero;
+  Rect _rectAppCentered = Rect.zero;
+  Rect _rectAppClosed = Rect.zero;
 
   /// The area the content is obstructed by the keyboard, notches or the app overlaying
   EdgeInsets _contentViewPadding = EdgeInsets.zero;
@@ -162,8 +162,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   Future<void> _animateToOpen() async {
     if (_backdropStatus == WiredashBackdropStatus.closed) {
       _backdropStatus = WiredashBackdropStatus.opening;
-    } else if (_backdropStatus == WiredashBackdropStatus.intermediate) {
-      _backdropStatus = WiredashBackdropStatus.closingIntermediate;
+    } else if (_backdropStatus == WiredashBackdropStatus.centered) {
+      _backdropStatus = WiredashBackdropStatus.closingCentered;
     } else {
       throw "can't animate from state $_backdropStatus to `open`";
     }
@@ -173,8 +173,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     await _backdropAnimationController.forward(from: 0);
   }
 
-  Future<void> _animateToIntermediate() async {
-    _backdropStatus = WiredashBackdropStatus.openingIntermediate;
+  Future<void> _animateToCentered() async {
+    _backdropStatus = WiredashBackdropStatus.openingCentered;
     _swapAnimation();
 
     await _backdropAnimationController.forward(from: 0);
@@ -190,18 +190,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   @override
   void reassemble() {
     super.reassemble();
-    final oldAppUp = _rectAppUp;
-    final oldAppIntermediate = _rectAppIntermediate;
+    final oldAppUp = _rectAppDown;
+    final oldAppCentered = _rectAppCentered;
     _calculateRects();
-    if (oldAppUp != _rectAppUp &&
+    if (oldAppUp != _rectAppDown &&
         _backdropStatus == WiredashBackdropStatus.open) {
       _backdropStatus = WiredashBackdropStatus.closed;
       _animateToOpen();
     }
-    if (oldAppIntermediate != _rectAppIntermediate &&
-        _backdropStatus == WiredashBackdropStatus.intermediate) {
+    if (oldAppCentered != _rectAppCentered &&
+        _backdropStatus == WiredashBackdropStatus.centered) {
       _backdropStatus = WiredashBackdropStatus.closed;
-      _animateToIntermediate();
+      _animateToCentered();
     }
   }
 
@@ -209,31 +209,31 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   void _calculateRects() {
     final Size screenSize = _mediaQueryData.size;
 
-    final _maxIntermediateWidth = screenSize.width -
+    final _maxCenteredWidth = screenSize.width -
         (context.responsiveLayout.horizontalMargin * 2 -
                 _mediaQueryData.viewPadding.horizontal)
             .abs();
-    final _maxIntermediateHeight =
+    final _maxCenteredHeight =
         screenSize.height - _mediaQueryData.viewPadding.vertical;
-    final _biggestPossibleIntermediateScaleFactor = math.min(
-      _maxIntermediateWidth / screenSize.width,
-      _maxIntermediateHeight / screenSize.height,
+    final _biggestPossibleCenteredScaleFactor = math.min(
+      _maxCenteredWidth / screenSize.width,
+      _maxCenteredHeight / screenSize.height,
     );
 
     // TODO: Offset the center based on viewPaddings
-    _rectAppIntermediate = Rect.fromCenter(
+    _rectAppCentered = Rect.fromCenter(
       center: screenSize.center(Offset.zero),
-      width: screenSize.width * _biggestPossibleIntermediateScaleFactor,
-      height: screenSize.height * _biggestPossibleIntermediateScaleFactor,
+      width: screenSize.width * _biggestPossibleCenteredScaleFactor,
+      height: screenSize.height * _biggestPossibleCenteredScaleFactor,
     );
 
     final contentHeight = math.max(screenSize.height * 0.4, 300.0);
-    final width = screenSize.width * _biggestPossibleIntermediateScaleFactor;
-    _rectAppUp = Rect.fromLTWH(
+    final width = screenSize.width * _biggestPossibleCenteredScaleFactor;
+    _rectAppDown = Rect.fromLTWH(
       (screenSize.width - width) / 2,
       contentHeight,
       width,
-      screenSize.height * _biggestPossibleIntermediateScaleFactor,
+      screenSize.height * _biggestPossibleCenteredScaleFactor,
     );
     _contentViewPadding = EdgeInsets.fromLTRB(
       _mediaQueryData.padding.left,
@@ -242,7 +242,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       screenSize.height - contentHeight,
     );
 
-    _rectAppDown =
+    _rectAppClosed =
         Rect.fromPoints(Offset.zero, screenSize.bottomRight(Offset.zero));
   }
 
@@ -251,7 +251,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     _backdropAnimationController.stop(canceled: false);
     switch (_backdropStatus) {
       case WiredashBackdropStatus.open:
-        _transformAnimation = RectTween(begin: _rectAppUp, end: _rectAppUp)
+        _transformAnimation = RectTween(begin: _rectAppDown, end: _rectAppDown)
             .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(20),
@@ -260,17 +260,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         break;
 
       case WiredashBackdropStatus.closed:
-        _transformAnimation = RectTween(begin: _rectAppDown, end: _rectAppDown)
-            .animate(_driverAnimation);
+        _transformAnimation =
+            RectTween(begin: _rectAppClosed, end: _rectAppClosed)
+                .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(0),
           end: BorderRadius.circular(0),
         ).animate(_driverAnimation);
         break;
 
-      case WiredashBackdropStatus.intermediate:
+      case WiredashBackdropStatus.centered:
         _transformAnimation =
-            RectTween(begin: _rectAppIntermediate, end: _rectAppIntermediate)
+            RectTween(begin: _rectAppCentered, end: _rectAppCentered)
                 .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(20),
@@ -279,8 +280,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         break;
 
       case WiredashBackdropStatus.opening:
-        _transformAnimation = RectTween(begin: _rectAppDown, end: _rectAppUp)
-            .animate(_driverAnimation);
+        _transformAnimation =
+            RectTween(begin: _rectAppClosed, end: _rectAppDown)
+                .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(0),
           end: BorderRadius.circular(20),
@@ -288,17 +290,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         break;
 
       case WiredashBackdropStatus.closing:
-        _transformAnimation = RectTween(begin: _rectAppUp, end: _rectAppDown)
-            .animate(_driverAnimation);
+        _transformAnimation =
+            RectTween(begin: _rectAppDown, end: _rectAppClosed)
+                .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(20),
           end: BorderRadius.circular(0),
         ).animate(_driverAnimation);
         break;
 
-      case WiredashBackdropStatus.openingIntermediate:
+      case WiredashBackdropStatus.openingCentered:
         _transformAnimation =
-            RectTween(begin: _rectAppUp, end: _rectAppIntermediate)
+            RectTween(begin: _rectAppDown, end: _rectAppCentered)
                 .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(20),
@@ -306,9 +309,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         ).animate(_driverAnimation);
         break;
 
-      case WiredashBackdropStatus.closingIntermediate:
+      case WiredashBackdropStatus.closingCentered:
         _transformAnimation =
-            RectTween(begin: _rectAppIntermediate, end: _rectAppUp)
+            RectTween(begin: _rectAppCentered, end: _rectAppDown)
                 .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(20),
@@ -326,10 +329,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       if (_backdropStatus == WiredashBackdropStatus.opening) {
         _backdropStatus = WiredashBackdropStatus.open;
       }
-      if (_backdropStatus == WiredashBackdropStatus.openingIntermediate) {
-        _backdropStatus = WiredashBackdropStatus.intermediate;
+      if (_backdropStatus == WiredashBackdropStatus.openingCentered) {
+        _backdropStatus = WiredashBackdropStatus.centered;
       }
-      if (_backdropStatus == WiredashBackdropStatus.closingIntermediate) {
+      if (_backdropStatus == WiredashBackdropStatus.closingCentered) {
         _backdropStatus = WiredashBackdropStatus.open;
       }
       if (_backdropStatus == WiredashBackdropStatus.closing) {
@@ -447,7 +450,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               child: BigBlueButton(
                 child: Icon(WiredashIcons.drawAction),
                 onTap: () {
-                  if (_backdropStatus == WiredashBackdropStatus.intermediate) {
+                  if (_backdropStatus == WiredashBackdropStatus.centered) {
                     context.wiredashModel.exitCaptureMode();
                   }
                 },
