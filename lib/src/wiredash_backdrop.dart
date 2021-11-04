@@ -473,6 +473,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 300),
                 opacity: () {
+                  if (context.wiredashModel.isWiredashClosing) {
+                    return 0.0;
+                  }
                   if (!context.wiredashModel.isAppInteractive) {
                     return 1.0;
                   }
