@@ -108,6 +108,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     reverseCurve: Curves.easeOutCubic,
   );
 
+  /// Detect window size changes in [didChangeDependencies]
+  MediaQueryData _mediaQueryData = MediaQueryData();
+
   final FocusNode _feedbackFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
 
@@ -152,16 +155,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }
 
   Future<void> _animateToOpen() async {
-    assert(_backdropStatus == WiredashBackdropStatus.closed ||
-        _backdropStatus == WiredashBackdropStatus.intermediate);
-
     if (_backdropStatus == WiredashBackdropStatus.closed) {
       _backdropStatus = WiredashBackdropStatus.opening;
-    }
-    if (_backdropStatus == WiredashBackdropStatus.intermediate) {
+    } else if (_backdropStatus == WiredashBackdropStatus.intermediate) {
       _backdropStatus = WiredashBackdropStatus.closingIntermediate;
+    } else {
+      throw "can't animate from state $_backdropStatus to `open`";
     }
-    _calculateRects();
     _swapAnimation();
 
     _feedbackFocusNode.requestFocus();
@@ -169,20 +169,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }
 
   Future<void> _animateToIntermediate() async {
-    assert(_backdropStatus == WiredashBackdropStatus.open);
-
     _backdropStatus = WiredashBackdropStatus.openingIntermediate;
-    _calculateRects();
     _swapAnimation();
 
     await _backdropAnimationController.forward(from: 0);
   }
 
   Future<void> _animateToClosed() async {
-    assert(_backdropStatus == WiredashBackdropStatus.open);
-
     _backdropStatus = WiredashBackdropStatus.closing;
-    _calculateRects();
     _swapAnimation();
 
     await _backdropAnimationController.forward(from: 0);
@@ -208,16 +202,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// (re-)calculates the rects for the different states
   void _calculateRects() {
-    final mediaQueryData =
-        MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-    final Size screenSize = mediaQueryData.size;
+    final Size screenSize = _mediaQueryData.size;
 
     final _maxIntermediateWidth = screenSize.width -
         (context.responsiveLayout.horizontalMargin * 2 -
-                mediaQueryData.viewPadding.horizontal)
+                _mediaQueryData.viewPadding.horizontal)
             .abs();
     final _maxIntermediateHeight =
-        screenSize.height - mediaQueryData.viewPadding.vertical;
+        screenSize.height - _mediaQueryData.viewPadding.vertical;
     final _biggestPossibleIntermediateScaleFactor = math.min(
       _maxIntermediateWidth / screenSize.width,
       _maxIntermediateHeight / screenSize.height,
@@ -233,7 +225,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final translateY = -screenSize.height +
         _rectAppIntermediate.top +
         _appPeak -
-        mediaQueryData.viewPadding.top;
+        _mediaQueryData.viewPadding.top;
     _rectAppUp = _rectAppIntermediate.translate(0, translateY);
 
     _rectAppDown =
@@ -242,14 +234,34 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// Sets the correct animation for the current [_backdropStatus]
   void _swapAnimation() {
+    _backdropAnimationController.stop(canceled: false);
     switch (_backdropStatus) {
       case WiredashBackdropStatus.open:
+        _transformAnimation = RectTween(begin: _rectAppUp, end: _rectAppUp)
+            .animate(_driverAnimation);
+        _cornerRadiusAnimation = BorderRadiusTween(
+          begin: BorderRadius.circular(20),
+          end: BorderRadius.circular(20),
+        ).animate(_driverAnimation);
+        break;
+
       case WiredashBackdropStatus.closed:
+        _transformAnimation = RectTween(begin: _rectAppDown, end: _rectAppDown)
+            .animate(_driverAnimation);
+        _cornerRadiusAnimation = BorderRadiusTween(
+          begin: BorderRadius.circular(0),
+          end: BorderRadius.circular(0),
+        ).animate(_driverAnimation);
+        break;
+
       case WiredashBackdropStatus.intermediate:
-        // final states, no animation for those
-        assert(() {
-          throw "not animating from state ${_backdropStatus}";
-        }());
+        _transformAnimation =
+            RectTween(begin: _rectAppIntermediate, end: _rectAppIntermediate)
+                .animate(_driverAnimation);
+        _cornerRadiusAnimation = BorderRadiusTween(
+          begin: BorderRadius.circular(20),
+          end: BorderRadius.circular(20),
+        ).animate(_driverAnimation);
         break;
 
       case WiredashBackdropStatus.opening:
@@ -315,7 +327,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _calculateRects();
+    final mq = MediaQuery.of(context);
+    if (mq.size != _mediaQueryData.size) {
+      _calculateRects();
+      _swapAnimation();
+    }
+    _mediaQueryData = mq;
   }
 
   @override
