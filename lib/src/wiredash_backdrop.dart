@@ -327,12 +327,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final mq = MediaQuery.of(context);
-    if (mq.size != _mediaQueryData.size) {
+    final oldMq = _mediaQueryData;
+    final newMq = MediaQuery.of(context);
+    _mediaQueryData = newMq;
+    if (newMq.size != oldMq.size) {
       _calculateRects();
       _swapAnimation();
     }
-    _mediaQueryData = mq;
   }
 
   @override
@@ -362,11 +363,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       canRequestFocus: false,
       // Users would be unable to leave the app once it got focus
       skipTraversal: true,
-      child: AbsorbPointer(
-        absorbing: !model.isAppInteractive,
-        child: _KeepAppAlive(
-          child: app,
-        ),
+      child: _KeepAppAlive(
+        child: app,
       ),
     );
     final mediaQueryData = MediaQuery.of(context);
@@ -395,7 +393,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               ),
             ),
             _buildAppPositioningAnimation(
-              // offset: Offset(0, 50),
               child: _buildAppFrame(child: app),
             ),
             Positioned(
@@ -422,7 +419,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                   onTap: () {
                     if (_backdropStatus ==
                         WiredashBackdropStatus.intermediate) {
-                      _animateToOpen();
+                      context.wiredashModel.exitCaptureMode();
                     }
                   },
                 ),
@@ -446,7 +443,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           fit: StackFit.passthrough,
           children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height,
+              height: _mediaQueryData.size.height,
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: _cornerRadiusAnimation.value,
@@ -476,11 +473,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 300),
                 opacity: () {
-                  if (context.wiredashModel.isWiredashClosing) {
-                    return 0.0;
-                  }
-                  if (context.wiredashModel.isWiredashActive ||
-                      context.wiredashModel.isWiredashOpening) {
+                  if (!context.wiredashModel.isAppInteractive) {
                     return 1.0;
                   }
                   return 0.0;
@@ -505,44 +498,57 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, app) {
-        final screenHeight = MediaQuery.of(context).size.height;
-        final topInset = MediaQuery.of(context).viewInsets.top;
+        final screenHeight = _mediaQueryData.size.height;
+        final topInset = _mediaQueryData.viewInsets.top;
 
         final topPosition = -screenHeight + _appPeak + topInset;
         final translationY = topPosition * _driverAnimation.value;
 
-        return Positioned.fromRect(
-          rect: _transformAnimation.value!,
-          child: GestureDetector(
+        app = AbsorbPointer(
+          absorbing: !context.wiredashModel.isAppInteractive,
+          child: app!,
+        );
+
+        if (!context.wiredashModel.isAppInteractive) {
+          app = PullToCloseDetector(
+            animController: _backdropAnimationController,
+            distanceToBottom: translationY.abs(),
+            topPosition: topPosition.abs(),
+            onPullStart: () {
+              _backdropStatus = WiredashBackdropStatus.opening;
+              _swapAnimation();
+              _pullCurves();
+            },
+            onPullEnd: () {
+              _animCurves();
+            },
+            onClosed: () async {
+              context.wiredashModel.detectClosed();
+              _backdropStatus = WiredashBackdropStatus.closed;
+            },
+            onClosing: () {
+              context.wiredashModel.detectClosing();
+              _backdropStatus = WiredashBackdropStatus.closing;
+            },
+            child: app,
+          );
+
+          app = GestureDetector(
             onTap: () async {
               _pullCurves();
               await context.wiredashModel.hide();
               _animCurves();
             },
-            child: PullToCloseDetector(
-              animController: _backdropAnimationController,
-              distanceToBottom: translationY.abs(),
-              topPosition: topPosition.abs(),
-              onPullStart: () {
-                _backdropStatus = WiredashBackdropStatus.opening;
-                _swapAnimation();
-                _pullCurves();
-              },
-              onPullEnd: () {
-                _animCurves();
-              },
-              onClosed: () async {
-                context.wiredashModel.detectClosed();
-                _backdropStatus = WiredashBackdropStatus.closed;
-              },
-              onClosing: () {
-                context.wiredashModel.detectClosing();
-                _backdropStatus = WiredashBackdropStatus.closing;
-              },
-              child: app!,
-            ),
-          ),
+            child: app,
+          );
+        }
+
+        app = Positioned.fromRect(
+          rect: _transformAnimation.value!,
+          child: app,
         );
+
+        return app;
       },
       child: child,
     );

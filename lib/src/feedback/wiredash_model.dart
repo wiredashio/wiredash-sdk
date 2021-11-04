@@ -92,6 +92,16 @@ class WiredashModel with ChangeNotifier {
     detectClosed();
   }
 
+  Future<void> enterCaptureMode() async {
+    detectEnterCaptureMode();
+    await state.backdropController.animateToIntermediate();
+  }
+
+  Future<void> exitCaptureMode() async {
+    detectExitCaptureMode();
+    await state.backdropController.animateToOpen();
+  }
+
   /// Wiredash is about to close, actually starting the closing animation
   void detectClosing() {
     _isWiredashOpening = false;
@@ -104,6 +114,18 @@ class WiredashModel with ChangeNotifier {
     _isWiredashVisible = false;
     _isWiredashClosing = false;
     _isAppInteractive = true;
+    notifyListeners();
+  }
+
+  void detectEnterCaptureMode() {
+    _capturingScreenshot = true;
+    _isAppInteractive = true;
+    notifyListeners();
+  }
+
+  void detectExitCaptureMode() {
+    _capturingScreenshot = false;
+    _isAppInteractive = false;
     notifyListeners();
   }
 
@@ -138,18 +160,6 @@ class WiredashModel with ChangeNotifier {
     } catch (e) {
       // TODO show error UI
     }
-  }
-
-  void enterCaptureMode() {
-    _capturingScreenshot = true;
-    state.backdropController.animateToIntermediate();
-    notifyListeners();
-  }
-
-  void exitCaptureMode() {
-    _capturingScreenshot = false;
-    state.backdropController.animateToOpen();
-    notifyListeners();
   }
 }
 
