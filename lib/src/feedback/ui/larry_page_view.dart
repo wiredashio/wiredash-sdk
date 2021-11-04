@@ -13,9 +13,14 @@ class LarryPageView extends StatefulWidget {
     this.viewInsets = EdgeInsets.zero,
     required this.stepCount,
     required this.builder,
+    this.onPageChanged,
+    this.initialPage = 0,
   }) : super(key: key);
 
   final Widget Function(BuildContext context, int index) builder;
+
+  /// called when the page changes
+  final void Function(int index)? onPageChanged;
 
   /// Number of items to be returned by [builder]
   final int stepCount;
@@ -24,6 +29,8 @@ class LarryPageView extends StatefulWidget {
   ///
   /// The item, when animating out/in still uses that space
   final EdgeInsets viewInsets;
+
+  final int initialPage;
 
   @override
   State<LarryPageView> createState() => LarryPageViewState();
@@ -74,6 +81,7 @@ class LarryPageViewState extends State<LarryPageView>
   @override
   void initState() {
     super.initState();
+    _page = widget.initialPage;
     _controller = AnimationController(
       vsync: this,
       value: 0,
@@ -348,6 +356,7 @@ class LarryPageViewState extends State<LarryPageView>
           _childScrollController = ScrollController();
           _offset = -_pageSwitchDistance;
           _animatingPageOut = false;
+          widget.onPageChanged?.call(_page);
           final sim =
               SpringSimulation(_pageSpring, _offset, 0, _pageEnterVelocity);
           // TODO cancel on touch...
@@ -362,6 +371,7 @@ class LarryPageViewState extends State<LarryPageView>
           _childScrollController = ScrollController();
           _offset = _pageSwitchDistance;
           _animatingPageOut = false;
+          widget.onPageChanged?.call(_page);
           final sim =
               SpringSimulation(_pageSpring, _offset, 0, -_pageEnterVelocity);
           // TODO cancel on touch...

@@ -343,6 +343,9 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         key: stepFormKey,
         viewInsets: MediaQuery.of(context).padding,
         stepCount: 5,
+        onPageChanged: (index) {
+          print("Current page #$index");
+        },
         builder: (context, index) {
           // print("building index $index");
           final stepWidget = () {
