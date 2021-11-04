@@ -74,7 +74,6 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<BigBlueButton> {
                   ),
                   child: GestureDetector(
                     onTap: widget.onTap,
-                    onVerticalDragStart: (_) {},
                     onTapDown: (_) {
                       if (!_enabled) return;
                       _pressed = true;
