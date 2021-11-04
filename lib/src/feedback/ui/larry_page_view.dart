@@ -133,6 +133,7 @@ class LarryPageViewState extends State<LarryPageView>
                     child: NotificationListener<ScrollNotification>(
                       onNotification: _onInnerScroll,
                       child: SingleChildScrollView(
+                        clipBehavior: Clip.none,
                         controller: _childScrollController,
                         // BouncingScrollPhysics is required on all platforms or
                         // the overscroll detection wouldn't work
@@ -155,6 +156,7 @@ class LarryPageViewState extends State<LarryPageView>
 
           // ignore: join_return_with_assignment
           child = Viewport(
+            clipBehavior: Clip.none,
             offset: ViewportOffset.fixed(_offset),
             anchor: widget.viewInsets.top / widgetHeight,
             slivers: [
