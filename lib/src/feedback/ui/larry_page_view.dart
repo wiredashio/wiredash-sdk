@@ -42,11 +42,8 @@ class LarryPageViewState extends State<LarryPageView>
   /// The Y scroll position, the [Offset] the [ViewPort] is moved
   double _offset = 0;
 
-  /// The distance the page has to be scrolled before it switches to the next page
-  static const double _switchDistance = 200;
-
   /// [true] while the page is ballistic scrolling outwards (after the finger
-  /// left the screen), waiting for [_switchDistance] to be reached switching
+  /// left the screen), waiting for [_pageSwitchDistance] to be reached switching
   /// the page.
   bool _animatingPageOut = false;
 
@@ -57,6 +54,22 @@ class LarryPageViewState extends State<LarryPageView>
   /// overscroll
   final VelocityTracker _innerVelocityTracker =
       VelocityTracker.withKind(PointerDeviceKind.touch);
+
+  /// The distance a page has to be moved before it switches to the next page
+  static const double _pageSwitchDistance = 200;
+
+  /// Spring used when switching pages
+  static const _pageSpring =
+      SpringDescription(mass: 30, stiffness: 1, damping: 1);
+
+  /// Fixed velocity for pages animating in
+  static const double _pageEnterVelocity = 3000;
+
+  /// Acceleration when
+  static const double _pageExitAcceleration = 10;
+
+  /// delay between fading out a page and entering the new one
+  static const _pageEnterDelay = Duration(milliseconds: 150);
 
   @override
   void initState() {
@@ -149,10 +162,6 @@ class LarryPageViewState extends State<LarryPageView>
     );
   }
 
-  void moveToNextPage() {
-    // TODO
-  }
-
   bool _startedInnerScrollOnTopEdge = false;
   bool _startedInnerScrollOnBottomEdge = false;
   bool _outerScrollUp = false;
@@ -203,6 +212,7 @@ class LarryPageViewState extends State<LarryPageView>
           n.direction == ScrollDirection.reverse) {
         _outerScrollDown = true;
       }
+      return true;
     }
     // 3. forward overscroll events to pageview
     if (n is ScrollUpdateNotification) {
@@ -330,37 +340,60 @@ class LarryPageViewState extends State<LarryPageView>
     });
 
     if (_animatingPageOut) {
-      const spring = SpringDescription(mass: 30, stiffness: 1, damping: 1);
-      const delay = Duration(milliseconds: 150);
-      const double inVelocity = 3000;
-      if (_offset > _switchDistance) {
+      if (_offset > _pageSwitchDistance) {
         if (_page + 1 < widget.stepCount) {
           _page++;
           _childScrollController.dispose();
           _childScrollController = ScrollController();
-          _offset = -_switchDistance;
+          _offset = -_pageSwitchDistance;
           _animatingPageOut = false;
-          final sim = SpringSimulation(spring, _offset, 0, inVelocity);
+          final sim =
+              SpringSimulation(_pageSpring, _offset, 0, _pageEnterVelocity);
           // TODO cancel on touch...
-          Future.delayed(delay).then((value) {
+          Future.delayed(_pageEnterDelay).then((value) {
             _controller.animateWith(sim);
           });
         }
-      } else if (_offset < -_switchDistance) {
+      } else if (_offset < -_pageSwitchDistance) {
         if (_page > 0) {
           _page--;
           _childScrollController.dispose();
           _childScrollController = ScrollController();
-          _offset = _switchDistance;
+          _offset = _pageSwitchDistance;
           _animatingPageOut = false;
-          final sim = SpringSimulation(spring, _offset, 0, -inVelocity);
+          final sim =
+              SpringSimulation(_pageSpring, _offset, 0, -_pageEnterVelocity);
           // TODO cancel on touch...
-          Future.delayed(delay).then((value) {
+          Future.delayed(_pageEnterDelay).then((value) {
             _controller.animateWith(sim);
           });
         }
       }
     }
+  }
+
+  void moveToNextPage() {
+    if (_page + 1 >= widget.stepCount) {
+      return;
+    }
+    setState(() {
+      _animatingPageOut = true;
+    });
+    final outSim =
+        GravitySimulation(10, 0, _pageSwitchDistance, _pageEnterVelocity);
+    _controller.animateWith(outSim);
+  }
+
+  void moveToPreviousPage() {
+    if (_page <= 0) {
+      return;
+    }
+    setState(() {
+      _animatingPageOut = true;
+    });
+    final outSim =
+        GravitySimulation(10, 0, -_pageSwitchDistance, _pageEnterVelocity);
+    _controller.animateWith(outSim);
   }
 }
 
