@@ -10,8 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
+import 'package:wiredash/src/feedback/ui/app_overlay.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
+import 'package:wiredash/src/feedback/ui/screenshot_decoration.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
 import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/sprung.dart';
@@ -404,39 +406,57 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             _buildAppPositioningAnimation(
               child: _buildAppFrame(child: app),
             ),
-            Positioned(
-              bottom: 16,
-              left: 16,
-              right: 16,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 300),
-                opacity: () {
-                  if (_backdropStatus ==
-                      WiredashBackdropStatus.closingIntermediate) {
-                    return 0.0;
-                  }
-                  if (_backdropStatus == WiredashBackdropStatus.intermediate ||
-                      _backdropStatus ==
-                          WiredashBackdropStatus.openingIntermediate) {
-                    return 1.0;
-                  }
-                  return 0.0;
-                }(),
-                child: BigBlueButton(
-                  child: Icon(WiredashIcons.check),
-                  text: Text('Close'),
-                  onTap: () {
-                    if (_backdropStatus ==
-                        WiredashBackdropStatus.intermediate) {
-                      context.wiredashModel.exitCaptureMode();
-                    }
-                  },
-                ),
-              ),
-            ),
+            _buildAppOverlay(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAppOverlay() {
+    return AnimatedBuilder(
+      animation: _backdropAnimationController,
+      builder: (context, child) {
+        return Stack(
+          children: [
+            Positioned(
+              top: _transformAnimation.value!.bottom - 208,
+              left: _transformAnimation.value!.left,
+              right: _transformAnimation.value!.left,
+              child: Container(
+                height: 200,
+                margin: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.white,
+                ),
+                child: Text('Screenshot Intro Text Bla bla'),
+              ),
+            ),
+            Positioned.fromRect(
+              rect: _transformAnimation.value!,
+              child: Container(
+                height: 200,
+                margin: const EdgeInsets.all(4),
+                decoration: ScreenshotDecoration(20, 8, 2),
+              ),
+            ),
+            Positioned(
+              top: _transformAnimation.value!.bottom - 26,
+              left: _transformAnimation.value!.left,
+              right: _transformAnimation.value!.left,
+              child: BigBlueButton(
+                child: Icon(WiredashIcons.drawAction),
+                onTap: () {
+                  if (_backdropStatus == WiredashBackdropStatus.intermediate) {
+                    context.wiredashModel.exitCaptureMode();
+                  }
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
