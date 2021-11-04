@@ -460,14 +460,11 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 4),
+         Padding(
+          padding: const EdgeInsets.only(top: 4),
           child: Text(
             'Give us feedback',
-            style: TextStyle(
-              fontSize: 29,
-              fontWeight: FontWeight.w800,
-            ),
+            style: context.responsiveLayout.titleTextStyle,
           ),
         ),
         TextField(
@@ -478,7 +475,7 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
           maxLength: 2048,
           buildCounter: _getCounterText,
           minLines: 3,
-          style: const TextStyle(fontSize: 15),
+          style: context.responsiveLayout.bodyTextStyle,
           decoration: const InputDecoration(
             border: InputBorder.none,
             focusedBorder: InputBorder.none,

@@ -43,6 +43,15 @@ class WiredashResponsiveLayout extends StatelessWidget {
         isLandscape: isLandscape,
         horizontalMargin: 256,
         maxBodyWidth: 1040,
+        titleTextStyle: const TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w800,
+        ),
+        subtitleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+        ),
+        bodyTextStyle: const TextStyle(fontSize: 19),
       );
     }
     if (width >= 1600) {
@@ -54,6 +63,15 @@ class WiredashResponsiveLayout extends StatelessWidget {
         isLandscape: isLandscape,
         horizontalMargin: 128,
         maxBodyWidth: 1040,
+        titleTextStyle: const TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w800,
+        ),
+        subtitleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+        ),
+        bodyTextStyle: const TextStyle(fontSize: 19),
       );
     }
     if (width >= 1440) {
@@ -66,6 +84,15 @@ class WiredashResponsiveLayout extends StatelessWidget {
         isLandscape: isLandscape,
         horizontalMargin: 128,
         maxBodyWidth: 1040,
+        titleTextStyle: const TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w800,
+        ),
+        subtitleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+        ),
+        bodyTextStyle: const TextStyle(fontSize: 19),
       );
     }
     if (width >= 1280) {
@@ -78,6 +105,15 @@ class WiredashResponsiveLayout extends StatelessWidget {
         isLandscape: isLandscape,
         horizontalMargin: 128,
         maxBodyWidth: 1040,
+        titleTextStyle: const TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w800,
+        ),
+        subtitleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+        ),
+        bodyTextStyle: const TextStyle(fontSize: 19),
       );
     }
     if (width >= 1024) {
@@ -93,6 +129,15 @@ class WiredashResponsiveLayout extends StatelessWidget {
         isLandscape: isLandscape,
         horizontalMargin: 64,
         maxBodyWidth: 840,
+        titleTextStyle: const TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w800,
+        ),
+        subtitleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+        ),
+        bodyTextStyle: const TextStyle(fontSize: 19),
       );
     }
     if (width >= 960) {
@@ -104,6 +149,15 @@ class WiredashResponsiveLayout extends StatelessWidget {
         isLandscape: isLandscape,
         horizontalMargin: 64,
         maxBodyWidth: 840,
+        titleTextStyle: const TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w800,
+        ),
+        subtitleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+        ),
+        bodyTextStyle: const TextStyle(fontSize: 19),
       );
     }
     if (width >= 840) {
@@ -117,6 +171,15 @@ class WiredashResponsiveLayout extends StatelessWidget {
         isLandscape: isLandscape,
         horizontalMargin: 32,
         maxBodyWidth: 840,
+        titleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w800,
+        ),
+        subtitleTextStyle: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
+        ),
+        bodyTextStyle: const TextStyle(fontSize: 16),
       );
     }
     if (width >= 720) {
@@ -130,6 +193,15 @@ class WiredashResponsiveLayout extends StatelessWidget {
         isLandscape: isLandscape,
         horizontalMargin: 32,
         maxBodyWidth: width,
+        titleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w800,
+        ),
+        subtitleTextStyle: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
+        ),
+        bodyTextStyle: const TextStyle(fontSize: 16),
       );
     }
     if (width >= 600) {
@@ -141,6 +213,15 @@ class WiredashResponsiveLayout extends StatelessWidget {
         isLandscape: isLandscape,
         horizontalMargin: 32,
         maxBodyWidth: width,
+        titleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w800,
+        ),
+        subtitleTextStyle: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
+        ),
+        bodyTextStyle: const TextStyle(fontSize: 16),
       );
     }
     if (width >= 480) {
@@ -152,6 +233,15 @@ class WiredashResponsiveLayout extends StatelessWidget {
         isLandscape: isLandscape,
         horizontalMargin: 32,
         maxBodyWidth: width,
+        titleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w800,
+        ),
+        subtitleTextStyle: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
+        ),
+        bodyTextStyle: const TextStyle(fontSize: 16),
       );
     }
     if (width >= 400) {
@@ -165,6 +255,15 @@ class WiredashResponsiveLayout extends StatelessWidget {
         isLandscape: isLandscape,
         horizontalMargin: 32,
         maxBodyWidth: width,
+        titleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w800,
+        ),
+        subtitleTextStyle: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
+        ),
+        bodyTextStyle: const TextStyle(fontSize: 16),
       );
     }
     if (width >= 360) {
@@ -178,6 +277,15 @@ class WiredashResponsiveLayout extends StatelessWidget {
         isLandscape: isLandscape,
         horizontalMargin: 16,
         maxBodyWidth: width,
+        titleTextStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w800,
+        ),
+        subtitleTextStyle: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
+        ),
+        bodyTextStyle: const TextStyle(fontSize: 16),
       );
     }
     return WiredashResponsiveLayoutData(
@@ -187,6 +295,15 @@ class WiredashResponsiveLayout extends StatelessWidget {
       isLandscape: isLandscape,
       horizontalMargin: 8,
       maxBodyWidth: width,
+      titleTextStyle: const TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w800,
+      ),
+      subtitleTextStyle: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w800,
+      ),
+      bodyTextStyle: const TextStyle(fontSize: 16),
     );
   }
 }
@@ -204,6 +321,9 @@ class WiredashResponsiveLayoutData {
     required this.gutters,
     required this.horizontalMargin,
     required this.maxBodyWidth,
+    required this.titleTextStyle,
+    required this.subtitleTextStyle,
+    required this.bodyTextStyle,
   });
 
   final DeviceClass deviceClass;
@@ -217,6 +337,12 @@ class WiredashResponsiveLayoutData {
   final double horizontalMargin;
 
   final double maxBodyWidth;
+
+  final TextStyle titleTextStyle;
+
+  final TextStyle subtitleTextStyle;
+
+  final TextStyle bodyTextStyle;
 
   @override
   String toString() {
