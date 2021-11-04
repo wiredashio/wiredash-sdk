@@ -4,6 +4,7 @@ import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/email_input.dart';
+import 'package:wiredash/src/feedback/ui/grey_scale_filter.dart';
 import 'package:wiredash/src/feedback/ui/labeled_button.dart';
 import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 import 'package:wiredash/src/feedback/ui/more_menu.dart';
@@ -365,7 +366,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
           final step = StepInformation.of(context);
           return AbsorbPointer(
             absorbing: !step.active,
-            child: GreyScale(
+            child: GreyScaleFilter(
               greyScale: step.animation.value,
               child: stepWidget,
             ),
@@ -377,28 +378,6 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
 
   void _nextPage() {
     stepFormKey.currentState?.moveToNextPage();
-  }
-}
-
-class GreyScale extends StatelessWidget {
-  const GreyScale({required this.greyScale, Key? key, this.child})
-      : super(key: key);
-
-  final Widget? child;
-  final double greyScale;
-
-  @override
-  Widget build(BuildContext context) {
-    final f = 1 - greyScale;
-    return ColorFiltered(
-      colorFilter: ColorFilter.matrix([
-        0.2126 * f + (1 - f), 0.7152 * f, 0.0722 * f, 0, 0, //
-        0.2126 * f, 0.7152 * f + (1 - f), 0.0722 * f, 0, 0, //
-        0.2126 * f, 0.7152 * f, 0.0722 * f + (1 - f), 0, 0, //
-        0, 0, 0, 1 - (f / 2), 0, //
-      ]),
-      child: child,
-    );
   }
 }
 
@@ -456,8 +435,6 @@ class _FeedbackMessageInput extends StatefulWidget {
 class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
   @override
   Widget build(BuildContext context) {
-    // final anim = StepInformation.of(context).animation;
-    // print("anim: ${anim.value}");
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
