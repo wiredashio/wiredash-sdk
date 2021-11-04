@@ -414,7 +414,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                   return 0.0;
                 }(),
                 child: BigBlueButton(
-                  icon: Icon(WiredashIcons.check),
+                  child: Icon(WiredashIcons.check),
                   text: Text('Close'),
                   onTap: () {
                     if (_backdropStatus ==

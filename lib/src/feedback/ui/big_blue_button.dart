@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/utils/color_ext.dart';
 
-const buttonBlue = Color(0xFF1A56DB);
+const _buttonBlue = Color(0xFF1A56DB);
 
 class BigBlueButton extends ImplicitlyAnimatedWidget {
   const BigBlueButton({
     Key? key,
-    required this.icon,
+    required this.child,
     this.text,
     this.focusNode,
     this.onTap,
@@ -17,7 +17,7 @@ class BigBlueButton extends ImplicitlyAnimatedWidget {
           duration: const Duration(milliseconds: 150),
         );
 
-  final Widget icon;
+  final Widget child;
   final Widget? text;
   final FocusNode? focusNode;
   final void Function()? onTap;
@@ -74,6 +74,7 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<BigBlueButton> {
                   ),
                   child: GestureDetector(
                     onTap: widget.onTap,
+                    onVerticalDragStart: (_) {},
                     onTapDown: (_) {
                       if (!_enabled) return;
                       _pressed = true;
@@ -93,7 +94,18 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<BigBlueButton> {
                       data: const IconThemeData(color: Color(0xffffffff)),
                       child: ScaleTransition(
                         scale: _iconScaleTween!.animate(animation),
-                        child: widget.icon,
+                        child: DefaultTextStyle(
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            height: 1,
+                            // TODO add Inter font?
+                            fontWeight: FontWeight.w800,
+                          ),
+                          child: Center(
+                            child: widget.child,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -125,15 +137,15 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<BigBlueButton> {
       _colorTween,
       () {
         if (widget.onTap == null) {
-          return buttonBlue.lighten(0.3);
+          return _buttonBlue.lighten(0.3);
         }
         if (_pressed) {
-          return buttonBlue.darken(0.1);
+          return _buttonBlue.darken(0.1);
         }
         if (_hovered) {
-          return buttonBlue.darken(0.05);
+          return _buttonBlue.darken(0.05);
         }
-        return buttonBlue;
+        return _buttonBlue;
       }(),
       (dynamic value) => ColorTween(begin: value as Color?),
     ) as ColorTween?;

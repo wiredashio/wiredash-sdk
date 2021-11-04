@@ -4,11 +4,11 @@ import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/email_input.dart';
+import 'package:wiredash/src/feedback/ui/labeled_button.dart';
 import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 import 'package:wiredash/src/feedback/ui/more_menu.dart';
 import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
-import 'dart:math' as math;
 
 const _labels = [
   Label(id: 'bug', name: 'Bug'),
@@ -97,7 +97,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                         alignment: Alignment.topLeft,
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: BigBlueButton(
-                          icon: const Icon(Icons.arrow_right_alt),
+                          child: const Icon(Icons.arrow_right_alt),
                           onTap: () {
                             nextPage();
                             FocusManager.instance.primaryFocus?.unfocus();
@@ -115,31 +115,31 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     );
 
     // labels
-    final part2 = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.responsiveLayout.horizontalMargin,
-            vertical: 16,
-          ),
-          child: const Text(
-            'What category fits best with your feedback?',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
+    final part2 = ValueListenableBuilder<Set<Label>>(
+      valueListenable: _selectedLabels,
+      builder: (context, selectedLabels, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.responsiveLayout.horizontalMargin,
+                vertical: 16,
+              ),
+              child: const Text(
+                'What category fits best with your feedback?',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.responsiveLayout.horizontalMargin,
-            vertical: 16,
-          ),
-          child: ValueListenableBuilder<Set<Label>>(
-            valueListenable: _selectedLabels,
-            builder: (context, selectedLabels, child) {
-              return _LabelRecommendations(
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.responsiveLayout.horizontalMargin,
+                vertical: 16,
+              ),
+              child: _LabelRecommendations(
                 isAnyLabelSelected: selectedLabels.isNotEmpty,
                 isLabelSelected: selectedLabels.contains,
                 toggleSelection: (label) {
@@ -151,44 +151,49 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                     }
                   });
                 },
-              );
-            },
-          ),
-        ),
-        Builder(
-          builder: (context) {
-            return Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.responsiveLayout.horizontalMargin,
-                vertical: 16,
               ),
-              child: Row(
-                children: [
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0xFFC6D5F6)),
-                      foregroundColor:
-                          MaterialStateProperty.all(const Color(0xFF1A56DB)),
+            ),
+            Builder(
+              builder: (context) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.responsiveLayout.horizontalMargin,
+                    vertical: 16,
+                  ),
+                  child: AnimatedSize(
+                    duration: const Duration(milliseconds: 225),
+                    vsync: this,
+                    clipBehavior: Clip.none,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 225),
+                      reverseDuration: const Duration(milliseconds: 170),
+                      switchInCurve: Curves.fastOutSlowIn,
+                      switchOutCurve: Curves.fastOutSlowIn,
+                      child: () {
+                        if (selectedLabels.isEmpty) {
+                          return LabeledButton(
+                            child: const Text('Skip'),
+                            onTap: () {
+                              nextPage();
+                            },
+                          );
+                        }
+
+                        return BigBlueButton(
+                          child: const Icon(Icons.arrow_right_alt),
+                          onTap: () {
+                            nextPage();
+                          },
+                        );
+                      }(),
                     ),
-                    child: const Text('Skip'),
-                    onPressed: () {
-                      nextPage();
-                    },
                   ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    child: const Icon(Icons.arrow_right_alt),
-                    onPressed: () {
-                      nextPage();
-                    },
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ],
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
 
     // email
@@ -196,51 +201,38 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const EmailInput(),
-        Container(
-          height: 600,
-          child: Center(
-            child: Transform.rotate(
-              angle: math.pi / 2,
-              child: Text(
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit"),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsiveLayout.horizontalMargin,
+            vertical: 16,
+          ),
+          child: AnimatedSize(
+            duration: const Duration(milliseconds: 225),
+            vsync: this,
+            clipBehavior: Clip.none,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 225),
+              reverseDuration: const Duration(milliseconds: 170),
+              switchInCurve: Curves.fastOutSlowIn,
+              switchOutCurve: Curves.fastOutSlowIn,
+              child: () {
+                if (context.wiredashModel.userEmail?.isEmpty != false) {
+                  return LabeledButton(
+                    child: const Text('Skip'),
+                    onTap: () {
+                      nextPage();
+                    },
+                  );
+                }
+
+                return BigBlueButton(
+                  child: const Icon(Icons.arrow_right_alt),
+                  onTap: () {
+                    nextPage();
+                  },
+                );
+              }(),
             ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.responsiveLayout.horizontalMargin,
-            vertical: 16,
-          ),
-          child: Text("Item continues here"),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.responsiveLayout.horizontalMargin,
-            vertical: 16,
-          ),
-          child: Row(
-            children: [
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(const Color(0xFFC6D5F6)),
-                  foregroundColor:
-                      MaterialStateProperty.all(const Color(0xFF1A56DB)),
-                ),
-                child: const Text('Skip'),
-                onPressed: () {
-                  nextPage();
-                },
-              ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                child: const Icon(Icons.arrow_right_alt),
-                onPressed: () {
-                  nextPage();
-                  FocusManager.instance.primaryFocus?.unfocus();
-                },
-              ),
-            ],
           ),
         ),
       ],
@@ -268,24 +260,22 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             horizontal: context.responsiveLayout.horizontalMargin,
             vertical: 16,
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ElevatedButton(
-                child: const Text('Yes'),
-                onPressed: () {
-                  nextPage();
+              BigBlueButton(
+                child: Text("Yes"),
+                onTap: () {
+                  context.wiredashModel.enterCaptureMode();
                 },
               ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(const Color(0xFFC6D5F6)),
-                  foregroundColor:
-                      MaterialStateProperty.all(const Color(0xFF1A56DB)),
+              const SizedBox(height: 64),
+              LabeledButton(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Text("I'm done"),
                 ),
-                child: const Text('Skip'),
-                onPressed: () {
+                onTap: () {
                   nextPage();
                 },
               ),
@@ -333,7 +323,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
               const SizedBox(height: 16),
               Center(
                 child: BigBlueButton(
-                  icon: Icon(WiredashIcons.submit),
+                  child: Icon(WiredashIcons.submit),
                   text: Text('Submit'),
                   onTap: () {
                     context.wiredashModel.submitFeedback();
