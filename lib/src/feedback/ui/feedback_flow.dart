@@ -53,17 +53,15 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
 
   @override
   Widget build(BuildContext context) {
-    void nextPage() {
-      stepFormKey.currentState?.moveToNextPage();
-    }
-
     // message
     final part1 = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.responsiveLayout.horizontalMargin,
+          padding: EdgeInsets.only(
+            top: context.responsiveLayout.horizontalMargin,
+            left: context.responsiveLayout.horizontalMargin,
+            right: context.responsiveLayout.horizontalMargin,
           ),
           child: _FeedbackMessageInput(
             controller: _controller,
@@ -99,7 +97,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                         child: BigBlueButton(
                           child: const Icon(Icons.arrow_right_alt),
                           onTap: () {
-                            nextPage();
+                            _nextPage();
                             FocusManager.instance.primaryFocus?.unfocus();
                           },
                         ),
@@ -174,7 +172,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                           return LabeledButton(
                             child: const Text('Skip'),
                             onTap: () {
-                              nextPage();
+                              _nextPage();
                             },
                           );
                         }
@@ -182,7 +180,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                         return BigBlueButton(
                           child: const Icon(Icons.arrow_right_alt),
                           onTap: () {
-                            nextPage();
+                            _nextPage();
                           },
                         );
                       }(),
@@ -220,7 +218,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                   return LabeledButton(
                     child: const Text('Skip'),
                     onTap: () {
-                      nextPage();
+                      _nextPage();
                     },
                   );
                 }
@@ -228,7 +226,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 return BigBlueButton(
                   child: const Icon(Icons.arrow_right_alt),
                   onTap: () {
-                    nextPage();
+                    _nextPage();
                   },
                 );
               }(),
@@ -276,7 +274,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                   child: Text("I'm done"),
                 ),
                 onTap: () {
-                  nextPage();
+                  _nextPage();
                 },
               ),
             ],
@@ -342,7 +340,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       },
       child: LarryPageView(
         key: stepFormKey,
-        viewInsets: const EdgeInsets.only(top: 100, bottom: 200),
+        viewInsets: MediaQuery.of(context).padding,
         stepCount: 5,
         builder: (context, index) {
           // print("building index $index");
@@ -375,6 +373,10 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         },
       ),
     );
+  }
+
+  void _nextPage() {
+    stepFormKey.currentState?.moveToNextPage();
   }
 }
 
@@ -460,7 +462,7 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-         Padding(
+        Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Text(
             'Give us feedback',

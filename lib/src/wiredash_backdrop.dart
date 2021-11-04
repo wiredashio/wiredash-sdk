@@ -17,8 +17,6 @@ import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/sprung.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
-bool _firstOpenAnimOnMetal = !kIsWeb && (Platform.isIOS || Platform.isMacOS);
-
 enum WiredashBackdropStatus {
   closed,
 
@@ -43,8 +41,11 @@ enum WiredashBackdropStatus {
 
 /// The Wiredash UI behind the app
 class WiredashBackdrop extends StatefulWidget {
-  const WiredashBackdrop({Key? key, required this.child, this.controller})
-      : super(key: key);
+  const WiredashBackdrop({
+    Key? key,
+    required this.child,
+    this.controller,
+  }) : super(key: key);
 
   /// The wrapped app
   final Widget child;
@@ -122,6 +123,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   Rect _rectAppUp = Rect.zero;
   Rect _rectAppIntermediate = Rect.zero;
   Rect _rectAppDown = Rect.zero;
+
+  /// The area the content is obstructed by the keyboard, notches or the app overlaying
+  EdgeInsets _contentViewPadding = EdgeInsets.zero;
 
   @override
   void initState() {
@@ -222,11 +226,20 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       height: screenSize.height * _biggestPossibleIntermediateScaleFactor,
     );
 
-    final translateY = -screenSize.height +
-        _rectAppIntermediate.top +
-        _appPeak -
-        _mediaQueryData.viewPadding.top;
-    _rectAppUp = _rectAppIntermediate.translate(0, 370);
+    final contentHeight = math.max(screenSize.height * 0.4, 300.0);
+    final width = screenSize.width * _biggestPossibleIntermediateScaleFactor;
+    _rectAppUp = Rect.fromLTWH(
+      (screenSize.width - width) / 2,
+      contentHeight,
+      width,
+      screenSize.height * _biggestPossibleIntermediateScaleFactor,
+    );
+    _contentViewPadding = EdgeInsets.fromLTRB(
+      _mediaQueryData.padding.left,
+      _mediaQueryData.padding.top,
+      _mediaQueryData.padding.right,
+      screenSize.height - contentHeight,
+    );
 
     _rectAppDown =
         Rect.fromPoints(Offset.zero, screenSize.bottomRight(Offset.zero));
@@ -357,7 +370,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       return app;
     }
 
-    final model = context.wiredashModel;
     app = FocusScope(
       debugLabel: 'wiredash app wrapper',
       canRequestFocus: false,
@@ -367,8 +379,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         child: app,
       ),
     );
-    final mediaQueryData = MediaQuery.of(context);
-    final bottomInset = mediaQueryData.viewInsets.bottom;
 
     return Material(
       child: Container(
@@ -385,9 +395,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         // Stack allows placing the app on top while we're awaiting layout
         child: Stack(
           children: <Widget>[
-            Padding(
-              // Don't show content behind keyboard
-              padding: EdgeInsets.only(bottom: bottomInset),
+            MediaQuery(
+              data: _mediaQueryData.copyWith(padding: _contentViewPadding),
               child: WiredashFeedbackFlow(
                 focusNode: _feedbackFocusNode,
               ),
@@ -424,7 +433,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                   },
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -502,9 +511,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       animation: _backdropAnimationController,
       builder: (context, app) {
         final screenHeight = _mediaQueryData.size.height;
-        final topInset = _mediaQueryData.viewInsets.top;
+        final topPadding = _mediaQueryData.padding.top;
 
-        final topPosition = -screenHeight + topInset;
+        final topPosition = -screenHeight + topPadding;
         final translationY = topPosition * _driverAnimation.value;
 
         app = AbsorbPointer(
