@@ -175,10 +175,11 @@ class LarryPageViewState extends State<LarryPageView>
     // 1. the start event has to happen on the top or bottom edge to trigger
     // the outer scroll
     if (n is ScrollStartNotification) {
-      if (n.dragDetails?.kind != PointerDeviceKind.touch) {
-        // only allow outer scroll when using the touch screen
-        return false;
-      }
+      // TODO allow scrolling with mouse wheel only on desktop
+      // if (n.dragDetails?.kind != PointerDeviceKind.touch) {
+      //  // only allow outer scroll when using the touch screen
+      //  // return false;
+      // }
       if (n.metrics.pixels <= n.metrics.minScrollExtent) {
         // start at very top
         _startedInnerScrollOnTopEdge = true;
