@@ -8,7 +8,7 @@ class BigBlueButton extends ImplicitlyAnimatedWidget {
   const BigBlueButton({
     Key? key,
     required this.icon,
-    required this.text,
+    this.text,
     this.focusNode,
     this.onTap,
   }) : super(
@@ -18,7 +18,7 @@ class BigBlueButton extends ImplicitlyAnimatedWidget {
         );
 
   final Widget icon;
-  final Widget text;
+  final Widget? text;
   final FocusNode? focusNode;
   final void Function()? onTap;
 
@@ -100,18 +100,19 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<BigBlueButton> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DefaultTextStyle(
-                style: TextStyle(
-                  color: _colorTween!.evaluate(animation)!,
-                  fontSize: 10,
-                  // TODO add Inter font?
-                  fontWeight: FontWeight.w400,
+            if (widget.text != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DefaultTextStyle(
+                  style: TextStyle(
+                    color: _colorTween!.evaluate(animation)!,
+                    fontSize: 10,
+                    // TODO add Inter font?
+                    fontWeight: FontWeight.w400,
+                  ),
+                  child: widget.text!,
                 ),
-                child: widget.text,
               ),
-            ),
           ],
         ),
       ),

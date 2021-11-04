@@ -95,9 +95,10 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                       }
                       return Container(
                         alignment: Alignment.topLeft,
-                        child: ElevatedButton(
-                          child: const Icon(Icons.arrow_right_alt),
-                          onPressed: () {
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: BigBlueButton(
+                          icon: const Icon(Icons.arrow_right_alt),
+                          onTap: () {
                             nextPage();
                             FocusManager.instance.primaryFocus?.unfocus();
                           },
@@ -475,7 +476,7 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
             'Give us feedback',
             style: TextStyle(
               fontSize: 29,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ),
@@ -486,7 +487,8 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
           maxLines: null,
           maxLength: 2048,
           buildCounter: _getCounterText,
-          style: const TextStyle(fontSize: 14),
+          minLines: 3,
+          style: const TextStyle(fontSize: 15),
           decoration: const InputDecoration(
             border: InputBorder.none,
             focusedBorder: InputBorder.none,
