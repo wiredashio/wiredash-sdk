@@ -226,7 +226,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _rectAppIntermediate.top +
         _appPeak -
         _mediaQueryData.viewPadding.top;
-    _rectAppUp = _rectAppIntermediate.translate(0, translateY);
+    _rectAppUp = _rectAppIntermediate.translate(0, 370);
 
     _rectAppDown =
         Rect.fromPoints(Offset.zero, screenSize.bottomRight(Offset.zero));
@@ -504,7 +504,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         final screenHeight = _mediaQueryData.size.height;
         final topInset = _mediaQueryData.viewInsets.top;
 
-        final topPosition = -screenHeight + _appPeak + topInset;
+        final topPosition = -screenHeight + topInset;
         final translationY = topPosition * _driverAnimation.value;
 
         app = AbsorbPointer(
