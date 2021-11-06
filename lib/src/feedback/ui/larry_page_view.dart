@@ -304,6 +304,7 @@ class LarryPageViewState extends State<LarryPageView>
 
     if (primaryVelocity.abs() > 1000) {
       if (primaryVelocity < 0) {
+        // TODO check where the double jump is coming from
         // scroll up
         if (_page + 1 < widget.stepCount) {
           final sim = FrictionSimulation(1, -primaryVelocity, _offset);
