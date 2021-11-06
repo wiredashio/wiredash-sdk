@@ -33,6 +33,8 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
   final ValueNotifier<Set<Label>> _selectedLabels = ValueNotifier({});
   late final TextEditingController _controller;
 
+  int _page = 0;
+
   @override
   void initState() {
     super.initState();
@@ -94,7 +96,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                       }
                       return Container(
                         alignment: Alignment.topLeft,
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         child: BigBlueButton(
                           child: const Icon(Icons.arrow_right_alt),
                           onTap: () {
@@ -343,11 +345,15 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         key: stepFormKey,
         viewInsets: MediaQuery.of(context).padding,
         stepCount: 5,
+        initialPage: _page,
         onPageChanged: (index) {
           print("Current page #$index");
+          setState(() {
+            _page = index;
+          });
         },
-        builder: (context, index) {
-          // print("building index $index");
+        builder: (context, innerScrollController) {
+          final index = _page;
           final stepWidget = () {
             if (index == 0) {
               return part1;
@@ -367,11 +373,11 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             throw 'Index out of bounds $index';
           }();
           final step = StepInformation.of(context);
-          return AbsorbPointer(
-            absorbing: !step.active,
-            child: GreyScaleFilter(
-              greyScale: step.animation.value,
+          return GreyScaleFilter(
+            greyScale: step.animation.value,
+            child: ScrollBox(
               child: stepWidget,
+              controller: innerScrollController,
             ),
           );
         },
@@ -389,33 +395,27 @@ class ScrollBox extends StatefulWidget {
   const ScrollBox({
     Key? key,
     required this.child,
+    required this.controller,
   }) : super(key: key);
 
   final Widget child;
+  final ScrollController controller;
 
   @override
   State<ScrollBox> createState() => _ScrollBoxState();
 }
 
 class _ScrollBoxState extends State<ScrollBox> {
-  final _controller = ScrollController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Theme(
       data: ThemeData(brightness: Brightness.light),
       child: Scrollbar(
         interactive: false,
-        controller: _controller,
+        controller: widget.controller,
         isAlwaysShown: true,
         child: SingleChildScrollView(
-          controller: _controller,
+          controller: widget.controller,
           child: widget.child,
         ),
       ),

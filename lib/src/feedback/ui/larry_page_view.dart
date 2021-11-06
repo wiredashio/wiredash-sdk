@@ -17,7 +17,8 @@ class LarryPageView extends StatefulWidget {
     this.initialPage = 0,
   }) : super(key: key);
 
-  final Widget Function(BuildContext context, int index) builder;
+  final Widget Function(
+      BuildContext context, ScrollController innerScrollController) builder;
 
   /// called when the page changes
   final void Function(int index)? onPageChanged;
@@ -78,6 +79,11 @@ class LarryPageViewState extends State<LarryPageView>
   /// delay between fading out a page and entering the new one
   static const _pageEnterDelay = Duration(milliseconds: 150);
 
+  /// Distance the page has to travel to be fully invisible
+  ///
+  /// Should be smaller than [_pageSwitchDistance]
+  static const _fadeDistance = 160.0;
+
   @override
   void initState() {
     super.initState();
@@ -106,51 +112,57 @@ class LarryPageViewState extends State<LarryPageView>
       behavior: HitTestBehavior.opaque,
       child: LayoutBuilder(
         builder: (context, constraints) {
+          Widget child = Builder(
+            builder: (context) {
+              return widget.builder(
+                context,
+                _childScrollController,
+              );
+            },
+          );
+
           final widgetHeight = constraints.maxHeight;
           final _minItemHeight =
               widgetHeight - widget.viewInsets.top - widget.viewInsets.bottom;
 
-          Widget boxed({required Widget child, required int index}) {
-            const fadeDistance = 160.0;
+          final double opacity = () {
+            if (_page == 0 && _offset < 0) {
+              // first item
+              return 1.0;
+            }
+            if (_page == widget.stepCount - 1 && _offset > 0) {
+              // last item
+              return 1.0;
+            }
+            return 1 - _offset.abs().clamp(0, _fadeDistance) / _fadeDistance;
+          }();
 
-            final opacity =
-                1 - _offset.abs().clamp(0, fadeDistance) / fadeDistance;
-
-            return KeyedSubtree(
-              key: ValueKey(index),
-              child: StepInheritedWidget(
-                data: StepInformation(
-                  active: index == _page,
-                  animation: AlwaysStoppedAnimation<double>(opacity),
+          child = KeyedSubtree(
+            key: ValueKey(_page),
+            child: StepInheritedWidget(
+              data: StepInformation(
+                index: _page,
+                animation: AlwaysStoppedAnimation<double>(opacity),
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: _minItemHeight,
+                  maxHeight: _minItemHeight,
                 ),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: _minItemHeight,
-                    maxHeight: _minItemHeight,
-                  ),
-                  child: Opacity(
-                    opacity: opacity,
-                    child: NotificationListener<ScrollNotification>(
-                      onNotification: _onInnerScroll,
-                      child: SingleChildScrollView(
-                        clipBehavior: Clip.none,
-                        controller: _childScrollController,
-                        // BouncingScrollPhysics is required on all platforms or
-                        // the overscroll detection wouldn't work
-                        physics: const BouncingScrollPhysics(),
-                        child: child,
-                      ),
+                child: Opacity(
+                  opacity: opacity,
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: _onInnerScroll,
+                    child: ScrollConfiguration(
+                      // BouncingScrollPhysics is required on all platforms or
+                      // the overscroll detection wouldn't work
+                      behavior: const ScrollBehavior()
+                          .copyWith(physics: const BouncingScrollPhysics()),
+                      child: child,
                     ),
                   ),
                 ),
               ),
-            );
-          }
-
-          Widget child = boxed(
-            index: _page,
-            child: Builder(
-              builder: (context) => widget.builder(context, _page),
             ),
           );
 
@@ -392,8 +404,8 @@ class LarryPageViewState extends State<LarryPageView>
     setState(() {
       _animatingPageOut = true;
     });
-    final outSim =
-        GravitySimulation(10, 0, _pageSwitchDistance, _pageEnterVelocity);
+    final outSim = GravitySimulation(
+        _pageExitAcceleration, 0, _pageSwitchDistance, _pageEnterVelocity);
     _controller.animateWith(outSim);
   }
 
@@ -404,8 +416,8 @@ class LarryPageViewState extends State<LarryPageView>
     setState(() {
       _animatingPageOut = true;
     });
-    final outSim =
-        GravitySimulation(10, 0, -_pageSwitchDistance, _pageEnterVelocity);
+    final outSim = GravitySimulation(
+        _pageExitAcceleration, 0, -_pageSwitchDistance, _pageEnterVelocity);
     _controller.animateWith(outSim);
   }
 }
@@ -424,12 +436,12 @@ class StepInheritedWidget extends InheritedWidget {
 }
 
 class StepInformation {
-  final bool active;
   final Animation<double> animation;
+  final int index;
 
   const StepInformation({
-    required this.active,
     required this.animation,
+    required this.index,
   });
 
   static StepInformation of(BuildContext context) {
