@@ -25,8 +25,8 @@ class MoreMenu extends StatelessWidget {
           spacing: 16,
           children: [
             _Link(
-              icon: Icon(Icons.list_alt_outlined),
-              label: Text('Change Log'),
+              icon: const Icon(Icons.list_alt_outlined),
+              label: const Text('Change Log'),
               onTap: () {
                 context.wiredashModel.enterCaptureMode();
               },

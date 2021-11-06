@@ -87,7 +87,7 @@ class _PullToCloseDetectorState extends State<PullToCloseDetector> {
     _distanceToBottom = newDistanceToBottom;
   }
 
-  void _handleDragEnd(DragEndDetails details) async {
+  Future<void> _handleDragEnd(DragEndDetails details) async {
     final velocity = details.primaryVelocity ?? 0;
 
     if (velocity > 0) {
@@ -111,7 +111,7 @@ class _PullToCloseDetectorState extends State<PullToCloseDetector> {
     widget.onPullEnd?.call();
   }
 
-  void _handleDragCancel() async {
+  Future<void> _handleDragCancel() async {
     assert(mounted);
     await widget.animController.animateBack(
       1.0,

@@ -526,9 +526,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }
 
   /// Animates the app from fullscreen to inline in the list
-  Widget _buildAppPositioningAnimation({
-    required Widget child,
-  }) {
+  Widget _buildAppPositioningAnimation({required Widget child}) {
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, app) {

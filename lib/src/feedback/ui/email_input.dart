@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/src/wiredash_provider.dart';
 import 'package:wiredash/src/responsive_layout.dart';
+import 'package:wiredash/src/wiredash_provider.dart';
 
 class EmailInput extends StatefulWidget {
   const EmailInput({
@@ -60,7 +60,6 @@ class _EmailInputState extends State<EmailInput> {
           TextField(
             controller: _controller,
             keyboardType: TextInputType.emailAddress,
-            maxLines: 1,
             focusNode: widget.focusNode,
             style: const TextStyle(fontSize: 14),
             decoration: const InputDecoration(

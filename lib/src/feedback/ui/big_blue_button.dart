@@ -94,7 +94,7 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<BigBlueButton> {
                       child: ScaleTransition(
                         scale: _iconScaleTween!.animate(animation),
                         child: DefaultTextStyle(
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 14,
                             height: 1,
@@ -116,7 +116,7 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<BigBlueButton> {
                 padding: const EdgeInsets.all(8.0),
                 child: DefaultTextStyle(
                   style: TextStyle(
-                    color: _colorTween!.evaluate(animation)!,
+                    color: _colorTween!.evaluate(animation),
                     fontSize: 10,
                     // TODO add Inter font?
                     fontWeight: FontWeight.w400,
@@ -139,6 +139,7 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<BigBlueButton> {
           return _buttonBlue.lighten(0.3);
         }
         if (_pressed) {
+          // ignore: avoid_redundant_argument_values
           return _buttonBlue.darken(0.1);
         }
         if (_hovered) {
