@@ -31,90 +31,10 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
   final GlobalKey<LarryPageViewState> stepFormKey =
       GlobalKey<LarryPageViewState>();
   final ValueNotifier<Set<Label>> _selectedLabels = ValueNotifier({});
-  late final TextEditingController _controller;
-
   int _page = 0;
 
   @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(
-      text: WiredashProvider.of(context, listen: false).feedbackMessage,
-    )..addListener(() {
-        final text = _controller.text;
-        if (context.wiredashModel.feedbackMessage != text) {
-          context.wiredashModel.feedbackMessage = text;
-        }
-      });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // message
-    final part1 = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(
-            top: context.responsiveLayout.horizontalMargin,
-            left: context.responsiveLayout.horizontalMargin,
-            right: context.responsiveLayout.horizontalMargin,
-          ),
-          child: _FeedbackMessageInput(
-            controller: _controller,
-            focusNode: widget.focusNode,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.responsiveLayout.horizontalMargin,
-          ),
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return AnimatedSize(
-                // ignore: deprecated_member_use
-                vsync: this,
-                duration: const Duration(milliseconds: 450),
-                curve: Curves.fastOutSlowIn,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 225),
-                  reverseDuration: const Duration(milliseconds: 170),
-                  switchInCurve: Curves.fastOutSlowIn,
-                  switchOutCurve: Curves.fastOutSlowIn,
-                  child: Container(
-                    key: ValueKey(_controller.text.isEmpty),
-                    child: () {
-                      if (_controller.text.isEmpty) {
-                        return const MoreMenu();
-                      }
-                      return Container(
-                        alignment: Alignment.topLeft,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: BigBlueButton(
-                          child: const Icon(Icons.arrow_right_alt),
-                          onTap: () {
-                            _nextPage();
-                            FocusManager.instance.primaryFocus?.unfocus();
-                          },
-                        ),
-                      );
-                    }(),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-
     // labels
     final part2 = ValueListenableBuilder<Set<Label>>(
       valueListenable: _selectedLabels,
@@ -175,7 +95,9 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                           return LabeledButton(
                             child: const Text('Skip'),
                             onTap: () {
-                              _nextPage();
+                              StepInformation.of(context)
+                                  .pageView
+                                  .moveToNextPage();
                             },
                           );
                         }
@@ -183,7 +105,9 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                         return BigBlueButton(
                           child: const Icon(Icons.arrow_right_alt),
                           onTap: () {
-                            _nextPage();
+                            StepInformation.of(context)
+                                .pageView
+                                .moveToNextPage();
                           },
                         );
                       }(),
@@ -221,7 +145,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                   return LabeledButton(
                     child: const Text('Skip'),
                     onTap: () {
-                      _nextPage();
+                      StepInformation.of(context).pageView.moveToNextPage();
                     },
                   );
                 }
@@ -229,7 +153,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 return BigBlueButton(
                   child: const Icon(Icons.arrow_right_alt),
                   onTap: () {
-                    _nextPage();
+                    StepInformation.of(context).pageView.moveToNextPage();
                   },
                 );
               }(),
@@ -277,7 +201,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                   child: Text("I'm done"),
                 ),
                 onTap: () {
-                  _nextPage();
+                  StepInformation.of(context).pageView.moveToNextPage();
                 },
               ),
             ],
@@ -342,7 +266,6 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: LarryPageView(
-        key: stepFormKey,
         viewInsets: MediaQuery.of(context).padding,
         stepCount: 5,
         initialPage: _page,
@@ -352,41 +275,42 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             _page = index;
           });
         },
-        builder: (context, innerScrollController) {
+        builder: (context) {
           final index = _page;
           final stepWidget = () {
             if (index == 0) {
-              return part1;
+              return FeedbackMessageStepPage();
             }
             if (index == 1) {
-              return part2;
+              return ScrollBox(
+                child: part2,
+              );
             }
             if (index == 2) {
-              return part3;
+              return ScrollBox(
+                child: part3,
+              );
             }
             if (index == 3) {
-              return part4;
+              return ScrollBox(
+                child: part4,
+              );
             }
             if (index == 4) {
-              return part5;
+              return ScrollBox(
+                child: part5,
+              );
             }
             throw 'Index out of bounds $index';
           }();
           final step = StepInformation.of(context);
           return GreyScaleFilter(
             greyScale: step.animation.value,
-            child: ScrollBox(
-              child: stepWidget,
-              controller: innerScrollController,
-            ),
+            child: stepWidget,
           );
         },
       ),
     );
-  }
-
-  void _nextPage() {
-    stepFormKey.currentState?.moveToNextPage();
   }
 }
 
@@ -395,11 +319,9 @@ class ScrollBox extends StatefulWidget {
   const ScrollBox({
     Key? key,
     required this.child,
-    required this.controller,
   }) : super(key: key);
 
   final Widget child;
-  final ScrollController controller;
 
   @override
   State<ScrollBox> createState() => _ScrollBoxState();
@@ -408,14 +330,15 @@ class ScrollBox extends StatefulWidget {
 class _ScrollBoxState extends State<ScrollBox> {
   @override
   Widget build(BuildContext context) {
+    final controller = StepInformation.of(context).innerScrollController;
     return Theme(
       data: ThemeData(brightness: Brightness.light),
       child: Scrollbar(
         interactive: false,
-        controller: widget.controller,
+        controller: controller,
         isAlwaysShown: true,
         child: SingleChildScrollView(
-          controller: widget.controller,
+          controller: controller,
           child: widget.child,
         ),
       ),
@@ -423,13 +346,148 @@ class _ScrollBoxState extends State<ScrollBox> {
   }
 }
 
+class StepPageScaffold extends StatelessWidget {
+  const StepPageScaffold({
+    required this.body,
+    this.bottomBarBuilder,
+    Key? key,
+  }) : super(key: key);
+
+  final Widget body;
+  final Widget Function(BuildContext context)? bottomBarBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          Expanded(
+            child: ScrollBox(
+              child: body,
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              switchInCurve: Curves.fastOutSlowIn,
+              switchOutCurve: Curves.fastOutSlowIn,
+              child: bottomBarBuilder?.call(context),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class FeedbackMessageStepPage extends StatefulWidget {
+  const FeedbackMessageStepPage({Key? key}) : super(key: key);
+
+  @override
+  State<FeedbackMessageStepPage> createState() =>
+      _FeedbackMessageStepPageState();
+}
+
+class _FeedbackMessageStepPageState extends State<FeedbackMessageStepPage>
+    with TickerProviderStateMixin {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(
+      text: WiredashProvider.of(context, listen: false).feedbackMessage,
+    )..addListener(() {
+        final text = _controller.text;
+        if (context.wiredashModel.feedbackMessage != text) {
+          context.wiredashModel.feedbackMessage = text;
+        }
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StepPageScaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+              top: context.responsiveLayout.horizontalMargin,
+              left: context.responsiveLayout.horizontalMargin,
+              right: context.responsiveLayout.horizontalMargin,
+            ),
+            child: _FeedbackMessageInput(
+              controller: _controller,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.responsiveLayout.horizontalMargin,
+            ),
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return AnimatedSize(
+                  // ignore: deprecated_member_use
+                  vsync: this,
+                  duration: const Duration(milliseconds: 450),
+                  curve: Curves.fastOutSlowIn,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 225),
+                    reverseDuration: const Duration(milliseconds: 170),
+                    switchInCurve: Curves.fastOutSlowIn,
+                    switchOutCurve: Curves.fastOutSlowIn,
+                    child: Container(
+                      key: ValueKey(_controller.text.isEmpty),
+                      child: () {
+                        if (_controller.text.isEmpty) {
+                          return const MoreMenu();
+                        }
+                        return const SizedBox();
+                      }(),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+      bottomBarBuilder: (context) {
+        if (_controller.text.isEmpty) {
+          return const SizedBox();
+        }
+        return Container(
+          alignment: Alignment.topLeft,
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+          child: BigBlueButton(
+            child: const Icon(Icons.arrow_right_alt),
+            onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+              StepInformation.of(context).pageView.moveToNextPage();
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
 class _FeedbackMessageInput extends StatefulWidget {
-  const _FeedbackMessageInput(
-      {required this.controller, this.focusNode, Key? key})
+  const _FeedbackMessageInput({required this.controller, Key? key})
       : super(key: key);
 
   final TextEditingController controller;
-  final FocusNode? focusNode;
 
   @override
   _FeedbackMessageInputState createState() => _FeedbackMessageInputState();
@@ -451,7 +509,6 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
         ),
         TextField(
           controller: widget.controller,
-          focusNode: widget.focusNode,
           keyboardType: TextInputType.multiline,
           maxLines: null,
           maxLength: 2048,

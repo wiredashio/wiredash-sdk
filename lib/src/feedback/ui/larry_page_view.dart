@@ -17,8 +17,7 @@ class LarryPageView extends StatefulWidget {
     this.initialPage = 0,
   }) : super(key: key);
 
-  final Widget Function(
-      BuildContext context, ScrollController innerScrollController) builder;
+  final Widget Function(BuildContext context) builder;
 
   /// called when the page changes
   final void Function(int index)? onPageChanged;
@@ -114,10 +113,7 @@ class LarryPageViewState extends State<LarryPageView>
         builder: (context, constraints) {
           Widget child = Builder(
             builder: (context) {
-              return widget.builder(
-                context,
-                _childScrollController,
-              );
+              return widget.builder(context);
             },
           );
 
@@ -143,6 +139,8 @@ class LarryPageViewState extends State<LarryPageView>
               data: StepInformation(
                 index: _page,
                 animation: AlwaysStoppedAnimation<double>(opacity),
+                pageView: this,
+                innerScrollController: _childScrollController,
               ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
@@ -438,10 +436,14 @@ class StepInheritedWidget extends InheritedWidget {
 class StepInformation {
   final Animation<double> animation;
   final int index;
+  final LarryPageViewState pageView;
+  final ScrollController innerScrollController;
 
   const StepInformation({
     required this.animation,
     required this.index,
+    required this.pageView,
+    required this.innerScrollController,
   });
 
   static StepInformation of(BuildContext context) {
