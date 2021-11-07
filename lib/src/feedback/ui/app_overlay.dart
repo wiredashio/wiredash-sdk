@@ -202,26 +202,42 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
   Widget _buildDialog() {
     return Stack(
       children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 12),
-            GradientShader(child: Icon(WiredashIcons.spotlightDraw)),
-            const SizedBox(height: 12),
-            GradientShader(
-              child: Text(
-                'Navigate the app, then take a screenshot',
+        Align(
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GradientShader(
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xff03A4E5),
+                    Color(0xff35F1D7),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 12),
+                    Icon(WiredashIcons.spotlightDraw),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Navigate the app, then take a screenshot',
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                'Give us something visual to get a better understanding',
                 textAlign: TextAlign.center,
               ),
-            ),
-            Text(
-              'Give us something visual to get a better understanding',
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            Text('down'),
-            const SizedBox(height: 12),
-          ],
+              const SizedBox(height: 12),
+              Text('down'),
+              const SizedBox(height: 12),
+            ],
+          ),
         ),
         Positioned(
           right: 0,

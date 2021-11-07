@@ -1,16 +1,15 @@
 import 'package:flutter/widgets.dart';
 
 class GradientShader extends StatelessWidget {
-  const GradientShader({Key? key, required this.child}) : super(key: key);
+  const GradientShader({
+    Key? key,
+    required this.gradient,
+    required this.child,
+  }) : super(key: key);
 
   final Widget child;
 
-  LinearGradient get gradient => const LinearGradient(
-        colors: [
-          Color(0xff03A4E5),
-          Color(0xff35F1D7),
-        ],
-      );
+  final Gradient gradient;
 
   @override
   Widget build(BuildContext context) {
