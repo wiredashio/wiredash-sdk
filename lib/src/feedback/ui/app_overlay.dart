@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -15,16 +17,21 @@ class AppOverlay extends StatefulWidget {
 
   final BorderRadius borderRadius;
 
+  /// The position of the app displayed in the layer below this overlay
   final Rect appRect;
 
   @override
   _AppOverlayState createState() => _AppOverlayState();
 }
 
-enum AppOverlayStatus { none, interactive, drawing }
+enum AppOverlayStatus {
+  none,
+  interactive,
+  drawing,
+}
 
 class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
-  Widget? _currentlyShownDialog;
+  InAppSheetInheritedWidget? _currentlyShownDialog;
 
   late AnimationController _dialogAnimationController;
   late AnimationController _drawingAnimationController;
@@ -35,6 +42,8 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
   late Animation<double> _dialogScaleAnimation;
   late Animation<double> _screenshotFlashAnimation;
   late Animation<double> _screenshotBorderAnimation;
+
+  InAppSheet? _drawIntroInAppSheet;
 
   @override
   void initState() {
@@ -103,17 +112,27 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
         children: [
           BigBlueButton(
             child: Icon(WiredashIcons.feature),
-            onTap: () {
-              showDialog(Builder(builder: (context) {
-                return _buildDialog();
-              }));
+            onTap: () async {
+              if (_drawIntroInAppSheet?.isDismissed == false) {
+                _drawIntroInAppSheet!.dismiss();
+                _drawIntroInAppSheet = null;
+              } else {
+                _drawIntroInAppSheet = showInAppSheet((_) {
+                  return const DrawIntroSheet();
+                });
+              }
             },
           ),
           const SizedBox(width: 8),
           BigBlueButton(
             child: Icon(WiredashIcons.screenshotAction),
             onTap: () {
-              switchToDrawingMode();
+              if (_status == AppOverlayStatus.drawing) {
+                switchToInteractiveMode();
+              } else if (_status == AppOverlayStatus.interactive ||
+                  _status == AppOverlayStatus.none) {
+                switchToDrawingMode();
+              }
             },
           ),
         ],
@@ -123,24 +142,26 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
 
   Widget _buildPositionedScreenshotDecoration() {
     return AnimatedBuilder(
-        animation: _screenshotBorderAnimation,
-        builder: (context, animation) {
-          return Positioned.fromRect(
-            rect: widget.appRect,
-            child: IgnorePointer(
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: DecoratedBox(
-                    decoration: ScreenshotDecoration(
-                      widget.borderRadius.topLeft.x,
-                      6,
-                      _screenshotBorderAnimation.value,
-                    ),
-                    child: SizedBox.fromSize(size: widget.appRect.size)),
+      animation: _screenshotBorderAnimation,
+      builder: (context, animation) {
+        return Positioned.fromRect(
+          rect: widget.appRect,
+          child: IgnorePointer(
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: DecoratedBox(
+                decoration: ScreenshotDecoration(
+                  widget.borderRadius.topLeft.x,
+                  6,
+                  _screenshotBorderAnimation.value,
+                ),
+                child: SizedBox.fromSize(size: widget.appRect.size),
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildPositionedScreenshotFlash() {
@@ -199,7 +220,61 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildDialog() {
+  InAppSheet showInAppSheet(Widget Function(BuildContext context) builder) {
+    final sheet = InAppSheet(
+      onDismiss: () async {
+        await _dialogAnimationController.reverse();
+
+        setState(() {
+          _currentlyShownDialog = null;
+        });
+      },
+    );
+
+    void addNewSheet() {
+      setState(() {
+        _currentlyShownDialog = InAppSheetInheritedWidget(
+          sheet: sheet,
+          child: Builder(builder: builder),
+        );
+        _dialogAnimationController.forward(from: 0);
+      });
+    }
+
+    final oldDialog = _currentlyShownDialog;
+    if (oldDialog != null) {
+      _dialogAnimationController.reverse().then((_) {
+        addNewSheet();
+      });
+    } else {
+      addNewSheet();
+    }
+
+    return sheet;
+  }
+
+  Future<void> switchToInteractiveMode() async {
+    setState(() {
+      _status = AppOverlayStatus.interactive;
+      _drawingAnimationController.reverse();
+    });
+  }
+
+  Future<void> switchToDrawingMode() async {
+    setState(() {
+      _status = AppOverlayStatus.drawing;
+      _drawingAnimationController.forward(from: 0);
+    });
+  }
+}
+
+class DrawIntroSheet extends StatelessWidget {
+  const DrawIntroSheet({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: [
         Align(
@@ -242,46 +317,48 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
         Positioned(
           right: 0,
           child: MaterialButton(
-            onPressed: _dismissDialog,
+            onPressed: () {
+              InAppSheet.of(context).dismiss();
+            },
             child: Text('Close'),
           ),
         )
       ],
     );
   }
+}
 
-  Future<void> _dismissDialog() async {
-    if (_currentlyShownDialog != null) {
-      await _dialogAnimationController.reverse();
+class InAppSheet {
+  InAppSheet({
+    required FutureOr<void> Function() onDismiss,
+  }) : _onDismiss = onDismiss;
 
-      setState(() {
-        _currentlyShownDialog = null;
-      });
-    }
+  FutureOr<void> Function() _onDismiss;
+
+  Future<void> dismiss() async {
+    await _onDismiss();
+    _dismissed = true;
   }
 
-  Future<void> showDialog(Widget child) async {
-    await _dismissDialog();
+  bool get isDismissed => _dismissed;
+  bool _dismissed = false;
 
-    setState(() {
-      _currentlyShownDialog = child;
-      _dialogAnimationController.forward(from: 0);
-    });
+  static InAppSheet of(BuildContext context) {
+    final InAppSheetInheritedWidget? widget =
+        context.dependOnInheritedWidgetOfExactType<InAppSheetInheritedWidget>();
+    return widget!.sheet;
   }
+}
 
-  Future<void> switchToInteractiveMode() async {
-    setState(() {
-      _status = AppOverlayStatus.interactive;
-      _drawingAnimationController.reverse();
-    });
-  }
+class InAppSheetInheritedWidget extends InheritedWidget {
+  const InAppSheetInheritedWidget({
+    Key? key,
+    required this.sheet,
+    required Widget child,
+  }) : super(key: key, child: child);
 
-  Future<void> switchToDrawingMode() async {
-    _dismissDialog();
+  final InAppSheet sheet;
 
-    setState(() {
-      _status = AppOverlayStatus.drawing;
-      _drawingAnimationController.forward(from: 0);
-    });
-  }
+  @override
+  bool updateShouldNotify(InAppSheetInheritedWidget old) => sheet != old.sheet;
 }
