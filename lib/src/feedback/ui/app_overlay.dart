@@ -104,7 +104,9 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
           BigBlueButton(
             child: Icon(WiredashIcons.feature),
             onTap: () {
-              showDialog(_buildDialog());
+              showDialog(Builder(builder: (context) {
+                return _buildDialog();
+              }));
             },
           ),
           const SizedBox(width: 8),
