@@ -21,12 +21,14 @@ import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
 import 'package:wiredash/src/media_query_from_window.dart';
 import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/wiredash_backdrop.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
-import 'package:wiredash/src/wiredash_provider.dart';
+import 'package:wiredash/src/wiredash_model_provider.dart';
 
 /// Capture in-app user feedback, wishes, ratings and much more
 ///
@@ -128,6 +130,7 @@ class Wiredash extends StatefulWidget {
 
 class WiredashState extends State<Wiredash> {
   late WiredashModel _wiredashModel;
+  late FeedbackModel _feedbackModel;
 
   late WiredashOptionsData options;
   late WiredashThemeData _theme;
@@ -154,7 +157,7 @@ class WiredashState extends State<Wiredash> {
     final storage = PendingFeedbackItemStorage(
       fileSystem,
       SharedPreferences.getInstance,
-      () async => (await getApplicationDocumentsDirectory()).path,
+          () async => (await getApplicationDocumentsDirectory()).path,
     );
 
     final api = WiredashApi(
@@ -167,10 +170,12 @@ class WiredashState extends State<Wiredash> {
     feedbackSubmitter = kIsWeb
         ? DirectFeedbackSubmitter(api)
         : (RetryingFeedbackSubmitter(fileSystem, storage, api)
-          ..submitPendingFeedbackItems());
+      ..submitPendingFeedbackItems());
 
     backdropController = BackdropController();
+
     _wiredashModel = WiredashModel(this);
+    _feedbackModel = FeedbackModel(this);
 
     _updateDependencies();
   }
@@ -207,45 +212,48 @@ class WiredashState extends State<Wiredash> {
 
   @override
   Widget build(BuildContext context) {
-    return WiredashProvider(
+    return WiredashModelProvider(
       wiredashModel: _wiredashModel,
-      child: WiredashOptions(
-        data: options,
-        child: WiredashLocalizations(
-          // Both DefaultTextEditingShortcuts and DefaultTextEditingActions are
-          // required to make text edits like deletion of characters possible on macOS
-          child: DefaultTextEditingShortcuts(
-            child: DefaultTextEditingActions(
-              child: WiredashTheme(
-                data: _theme,
-                child: MediaQueryFromWindow(
-                  // Directionality required for all Text widgets
-                  child: Directionality(
-                    textDirection:
-                        widget.options?.textDirection ?? TextDirection.ltr,
-                    // Localizations required for all Flutter UI widgets
-                    child: Localizations(
-                      locale: widget.options?.currentLocale ?? window.locale,
-                      delegates: const [
-                        DefaultMaterialLocalizations.delegate,
-                        DefaultCupertinoLocalizations.delegate,
-                        DefaultWidgetsLocalizations.delegate,
-                      ],
-                      // Provide responsive layout information to the wiredash UI
-                      child: WiredashResponsiveLayout(
-                        // Overlay is required for text edit functions such as copy/paste on mobile
-                        child: Overlay(
-                          initialEntries: [
-                            OverlayEntry(
-                              builder: (context) {
-                                // use a stateful widget as direct child or hot reload will not work for that widget
-                                return WiredashBackdrop(
-                                  controller: backdropController,
-                                  child: widget.child,
-                                );
-                              },
-                            )
-                          ],
+      child: FeedbackModelProvider(
+        feedbackModel: _feedbackModel,
+        child: WiredashOptions(
+          data: options,
+          child: WiredashLocalizations(
+            // Both DefaultTextEditingShortcuts and DefaultTextEditingActions are
+            // required to make text edits like deletion of characters possible on macOS
+            child: DefaultTextEditingShortcuts(
+              child: DefaultTextEditingActions(
+                child: WiredashTheme(
+                  data: _theme,
+                  child: MediaQueryFromWindow(
+                    // Directionality required for all Text widgets
+                    child: Directionality(
+                      textDirection:
+                      widget.options?.textDirection ?? TextDirection.ltr,
+                      // Localizations required for all Flutter UI widgets
+                      child: Localizations(
+                        locale: widget.options?.currentLocale ?? window.locale,
+                        delegates: const [
+                          DefaultMaterialLocalizations.delegate,
+                          DefaultCupertinoLocalizations.delegate,
+                          DefaultWidgetsLocalizations.delegate,
+                        ],
+                        // Provide responsive layout information to the wiredash UI
+                        child: WiredashResponsiveLayout(
+                          // Overlay is required for text edit functions such as copy/paste on mobile
+                          child: Overlay(
+                            initialEntries: [
+                              OverlayEntry(
+                                builder: (context) {
+                                  // use a stateful widget as direct child or hot reload will not work for that widget
+                                  return WiredashBackdrop(
+                                    controller: backdropController,
+                                    child: widget.child,
+                                  );
+                                },
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -262,4 +270,4 @@ class WiredashState extends State<Wiredash> {
 
 @visibleForTesting
 ProjectCredentialValidator debugProjectCredentialValidator =
-    const ProjectCredentialValidator();
+const ProjectCredentialValidator();

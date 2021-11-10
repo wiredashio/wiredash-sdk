@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
 
-class WiredashProvider extends InheritedNotifier<WiredashModel> {
-  const WiredashProvider({
+class WiredashModelProvider extends InheritedNotifier<WiredashModel> {
+  const WiredashModelProvider({
     Key? key,
     required WiredashModel wiredashModel,
     required Widget child,
@@ -11,16 +11,16 @@ class WiredashProvider extends InheritedNotifier<WiredashModel> {
   static WiredashModel of(BuildContext context, {bool listen = true}) {
     if (listen) {
       return context
-          .dependOnInheritedWidgetOfExactType<WiredashProvider>()!
+          .dependOnInheritedWidgetOfExactType<WiredashModelProvider>()!
           .notifier!;
     } else {
       return context
-          .findAncestorWidgetOfExactType<WiredashProvider>()!
+          .findAncestorWidgetOfExactType<WiredashModelProvider>()!
           .notifier!;
     }
   }
 }
 
 extension WiredashExtensions on BuildContext {
-  WiredashModel get wiredashModel => WiredashProvider.of(this);
+  WiredashModel get wiredashModel => WiredashModelProvider.of(this);
 }

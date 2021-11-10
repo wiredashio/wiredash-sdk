@@ -24,8 +24,9 @@ class WiredashController {
   /// email input field but it's up to the user to decide if he want's to
   /// include his email with the feedback.
   void setUserProperties({String? userId, String? userEmail}) {
-    _model.userId = userId ?? _model.userId;
-    _model.userEmail = userEmail ?? _model.userEmail;
+    // TODO implement user properties
+    // _model.userId = userId ?? _model.userId;
+    // _model.userEmail = userEmail ?? _model.userEmail;
   }
 
   /// Use this method to attach custom [buildVersion] and [buildNumber]
@@ -33,8 +34,9 @@ class WiredashController {
   /// If these values are also provided through dart-define during compile time
   /// then they will be overwritten by this method
   void setBuildProperties({String? buildVersion, String? buildNumber}) {
-    _model.buildInfoManager.buildVersionOverride = buildVersion;
-    _model.buildInfoManager.buildNumberOverride = buildNumber;
+    // TODO implement user properties
+    // _model.buildInfoManager.buildVersionOverride = buildVersion;
+    // _model.buildInfoManager.buildNumberOverride = buildNumber;
   }
 
   /// This will open the Wiredash feedback sheet and start the feedback process.
@@ -56,6 +58,6 @@ class WiredashController {
   /// The [Confidential] widget can automatically hide sensitive widgets from
   /// being recorded in a feedback screenshot.
   ValueNotifier<bool> get visible {
-    return _model.asValueNotifier((c) => c.isWiredashActive);
+    return _model.asValueNotifier((c) => c.state.backdropController.isAppInteractive);
   }
 }

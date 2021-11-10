@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/screenshot_decoration.dart';
-import 'package:wiredash/src/gradient_shader.dart';
+import 'package:wiredash/src/common/widgets/gradient_shader.dart';
 
 class AppOverlay extends StatefulWidget {
   const AppOverlay({
@@ -96,46 +98,49 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
         _buildPositionedDialog(),
         _buildPositionedScreenshotFlash(),
         _buildPositionedScreenshotDecoration(),
-        _buildButtons()
+        _buildButtons(),
       ],
     );
   }
 
   Widget _buildButtons() {
-    return Positioned(
-      top: widget.appRect.bottom - 26,
-      left: widget.appRect.left,
-      right: widget.appRect.left,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          BigBlueButton(
-            child: Icon(WiredashIcons.feature),
-            onTap: () async {
-              if (_drawIntroInAppSheet?.isDismissed == false) {
-                _drawIntroInAppSheet!.dismiss();
-                _drawIntroInAppSheet = null;
-              } else {
-                _drawIntroInAppSheet = showInAppSheet((_) {
-                  return const DrawIntroSheet();
-                });
-              }
-            },
-          ),
-          const SizedBox(width: 8),
-          BigBlueButton(
-            child: Icon(WiredashIcons.screenshotAction),
-            onTap: () {
-              if (_status == AppOverlayStatus.drawing) {
-                switchToInteractiveMode();
-              } else if (_status == AppOverlayStatus.interactive ||
-                  _status == AppOverlayStatus.none) {
-                switchToDrawingMode();
-              }
-            },
-          ),
-        ],
+    return Visibility(
+      visible: context.feedbackModel.screenshotStatus != FeedbackScreenshotStatus.none,
+      child: Positioned(
+        top: widget.appRect.bottom - 26,
+        left: widget.appRect.left,
+        right: widget.appRect.left,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BigBlueButton(
+              child: Icon(WiredashIcons.feature),
+              onTap: () async {
+                if (_drawIntroInAppSheet?.isDismissed == false) {
+                  _drawIntroInAppSheet!.dismiss();
+                  _drawIntroInAppSheet = null;
+                } else {
+                  _drawIntroInAppSheet = showInAppSheet((_) {
+                    return const DrawIntroSheet();
+                  });
+                }
+              },
+            ),
+            const SizedBox(width: 8),
+            BigBlueButton(
+              child: Icon(WiredashIcons.screenshotAction),
+              onTap: () {
+                if (_status == AppOverlayStatus.drawing) {
+                  switchToInteractiveMode();
+                } else if (_status == AppOverlayStatus.interactive ||
+                    _status == AppOverlayStatus.none) {
+                  switchToDrawingMode();
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

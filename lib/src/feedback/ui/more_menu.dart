@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/wiredash_provider.dart';
+import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 
 /// Horizontal menu offering more Wiredash services besides feedback
 class MoreMenu extends StatelessWidget {
@@ -28,7 +28,7 @@ class MoreMenu extends StatelessWidget {
               icon: const Icon(Icons.list_alt_outlined),
               label: const Text('Change Log'),
               onTap: () {
-                context.wiredashModel.enterCaptureMode();
+                context.feedbackModel.enterCaptureMode();
               },
             ),
             const _Link(

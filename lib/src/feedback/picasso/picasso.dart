@@ -1,6 +1,11 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/feedback/picasso/sketcher.dart';
 import 'package:wiredash/src/feedback/picasso/stroke.dart';
 
@@ -159,5 +164,27 @@ class _PicassoState extends State<Picasso> {
   void setPaint({Color color = Colors.black, double width = 5}) {
     _selectedColor = color;
     _selectedWidth = width;
+  }
+
+  Future<ui.Image> paintOntoImage(ui.Image image) async {
+    final imageSize = Size(image.width.toDouble(), image.height.toDouble());
+    final recording = ui.PictureRecorder();
+    final canvas = Canvas(
+      recording,
+      Rect.fromLTWH(0.0, 0.0, imageSize.width, imageSize.height),
+    )..drawImage(image, Offset.zero, Paint());
+    // ..scale(imageSize.width / size.width, imageSize.height / size.height);
+
+    Sketcher(strokes: _strokes).paint(canvas, imageSize);
+
+    final masterpiece = await recording.endRecording().toImage(
+          imageSize.width.toInt(),
+          imageSize.height.toInt(),
+        );
+
+    return masterpiece;
+
+    // final bytes = await masterpiece.toByteData(format: ui.ImageByteFormat.png);
+    // return bytes!.buffer.asUint8List();
   }
 }

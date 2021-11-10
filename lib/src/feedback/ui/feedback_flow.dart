@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
+import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/email_input.dart';
 import 'package:wiredash/src/feedback/ui/grey_scale_filter.dart';
@@ -9,7 +10,6 @@ import 'package:wiredash/src/feedback/ui/labeled_button.dart';
 import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 import 'package:wiredash/src/feedback/ui/more_menu.dart';
 import 'package:wiredash/src/responsive_layout.dart';
-import 'package:wiredash/src/wiredash_provider.dart';
 
 const _labels = [
   Label(id: 'bug', name: 'Bug'),
@@ -142,7 +142,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 switchInCurve: Curves.fastOutSlowIn,
                 switchOutCurve: Curves.fastOutSlowIn,
                 child: () {
-                  if (context.wiredashModel.userEmail?.isEmpty != false) {
+                  if (context.feedbackModel.userEmail?.isEmpty != false) {
                     return LabeledButton(
                       child: const Text('Skip'),
                       onTap: () {
@@ -194,7 +194,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 BigBlueButton(
                   child: Text("Yes"),
                   onTap: () {
-                    context.wiredashModel.enterCaptureMode();
+                    context.feedbackModel.enterCaptureMode();
                   },
                 ),
                 const SizedBox(height: 64),
@@ -237,11 +237,11 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Message: ${context.wiredashModel.feedbackMessage}\n'
+                  'Message: ${context.feedbackModel.feedbackMessage}\n'
                   '\n'
                   'Labels: ${_selectedLabels.value.map((e) => e.name)}\n'
                   '\n'
-                  'Email: ${context.wiredashModel.userEmail}\n'
+                  'Email: ${context.feedbackModel.userEmail}\n'
                   '\n'
                   'Screenshots: 0\n'
                   '\n'
@@ -256,7 +256,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                     child: Icon(WiredashIcons.submit),
                     text: Text('Submit'),
                     onTap: () {
-                      context.wiredashModel.submitFeedback();
+                      context.feedbackModel.submitFeedback();
                     },
                   ),
                 ),
@@ -400,11 +400,11 @@ class _FeedbackMessageStepPageState extends State<FeedbackMessageStepPage>
   void initState() {
     super.initState();
     _controller = TextEditingController(
-      text: WiredashProvider.of(context, listen: false).feedbackMessage,
+      text: FeedbackModelProvider.of(context, listen: false).feedbackMessage,
     )..addListener(() {
         final text = _controller.text;
-        if (context.wiredashModel.feedbackMessage != text) {
-          context.wiredashModel.feedbackMessage = text;
+        if (context.feedbackModel.feedbackMessage != text) {
+          context.feedbackModel.feedbackMessage = text;
         }
       });
   }

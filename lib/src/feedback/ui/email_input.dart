@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/responsive_layout.dart';
-import 'package:wiredash/src/wiredash_provider.dart';
 
 class EmailInput extends StatefulWidget {
   const EmailInput({
@@ -21,11 +21,11 @@ class _EmailInputState extends State<EmailInput> {
   void initState() {
     super.initState();
     _controller = TextEditingController(
-      text: WiredashProvider.of(context, listen: false).userEmail,
+      text: FeedbackModelProvider.of(context, listen: false).userEmail,
     )..addListener(() {
         final text = _controller.text;
-        if (context.wiredashModel.userEmail != text) {
-          context.wiredashModel.userEmail = text;
+        if (context.feedbackModel.userEmail != text) {
+          context.feedbackModel.userEmail = text;
         }
       });
   }

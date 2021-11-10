@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -11,13 +10,11 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/ui/app_overlay.dart';
-import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
-import 'package:wiredash/src/feedback/ui/screenshot_decoration.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
 import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/sprung.dart';
-import 'package:wiredash/src/wiredash_provider.dart';
+import 'package:wiredash/src/wiredash_model_provider.dart';
 
 enum WiredashBackdropStatus {
   closed,
@@ -46,16 +43,16 @@ class WiredashBackdrop extends StatefulWidget {
   const WiredashBackdrop({
     Key? key,
     required this.child,
-    this.controller,
+    required this.controller,
   }) : super(key: key);
 
   /// The wrapped app
   final Widget child;
-  final BackdropController? controller;
+  final BackdropController controller;
 
   static BackdropController of(BuildContext context) {
     final state = context.findAncestorStateOfType<_WiredashBackdropState>();
-    return BackdropController().._state = state;
+    return state!.widget.controller;
   }
 
   @override
@@ -64,19 +61,43 @@ class WiredashBackdrop extends StatefulWidget {
   static const Duration animationDuration = Duration(milliseconds: 500);
 }
 
-class BackdropController {
+class BackdropController extends ChangeNotifier {
   _WiredashBackdropState? _state;
+  WiredashBackdropStatus _backdropStatus = WiredashBackdropStatus.closed;
+
+  bool get isWiredashActive => _backdropStatus != WiredashBackdropStatus.closed;
+
+  bool get isAppInteractive => _isAppInteractive;
+  bool _isAppInteractive = false;
+
+  Animation<Rect?> get appPosition => _state!._transformAnimation;
+
+  WiredashBackdropStatus get backdropStatus => _backdropStatus;
+
+  set backdropStatus(WiredashBackdropStatus value) {
+    _backdropStatus = value;
+    notifyListeners();
+  }
 
   Future<void> animateToOpen() async {
+    _isAppInteractive = false;
+    notifyListeners();
+
     await _state!._animateToOpen();
   }
 
   Future<void> animateToCentered() async {
     await _state!._animateToCentered();
+
+    _isAppInteractive = true;
+    notifyListeners();
   }
 
   Future<void> animateToClosed() async {
     await _state!._animateToClosed();
+
+    _isAppInteractive = true;
+    notifyListeners();
   }
 }
 
@@ -84,8 +105,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     with TickerProviderStateMixin {
   final GlobalKey _childAppKey =
       GlobalKey<State<StatefulWidget>>(debugLabel: 'app');
-
-  WiredashBackdropStatus _backdropStatus = WiredashBackdropStatus.closed;
 
   late final ScrollController _scrollController = ScrollController();
 
@@ -129,6 +148,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   /// The area the content is obstructed by the keyboard, notches or the app overlaying
   EdgeInsets _contentViewPadding = EdgeInsets.zero;
 
+  WiredashBackdropStatus get _backdropStatus =>
+      widget.controller.backdropStatus;
+
+  set _backdropStatus(WiredashBackdropStatus value) =>
+      widget.controller.backdropStatus = value;
+
   @override
   void initState() {
     super.initState();
@@ -136,6 +161,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     _backdropAnimationController
         .addStatusListener(_animControllerStatusListener);
 
+    widget.controller.addListener(_markAsDirty);
     _animCurves();
   }
 
@@ -326,7 +352,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     if (status != AnimationStatus.completed) {
       return;
     }
-    setState(() {
       if (_backdropStatus == WiredashBackdropStatus.opening) {
         _backdropStatus = WiredashBackdropStatus.open;
       }
@@ -339,7 +364,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       if (_backdropStatus == WiredashBackdropStatus.closing) {
         _backdropStatus = WiredashBackdropStatus.closed;
       }
-    });
   }
 
   @override
@@ -359,8 +383,16 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller?._state = null;
+      oldWidget.controller.removeListener(_markAsDirty);
       widget.controller?._state = this;
+      widget.controller.addListener(_markAsDirty);
     }
+  }
+
+  void _markAsDirty() {
+    setState(() {
+
+    });
   }
 
   @override
@@ -470,10 +502,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 300),
                 opacity: () {
-                  if (context.wiredashModel.isWiredashClosing) {
+                  if (_backdropStatus == WiredashBackdropStatus.closing) {
                     return 0.0;
                   }
-                  if (!context.wiredashModel.isAppInteractive) {
+                  if (!widget.controller.isAppInteractive) {
                     return 1.0;
                   }
                   return 0.0;
@@ -503,11 +535,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         final translationY = topPosition * _driverAnimation.value;
 
         app = AbsorbPointer(
-          absorbing: !context.wiredashModel.isAppInteractive,
-          child: app!,
+          absorbing: !widget.controller.isAppInteractive,
+          child: app,
         );
 
-        if (!context.wiredashModel.isAppInteractive) {
+        if (!widget.controller.isAppInteractive) {
           app = PullToCloseDetector(
             animController: _backdropAnimationController,
             distanceToBottom: translationY.abs(),
@@ -521,11 +553,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               _animCurves();
             },
             onClosed: () async {
-              context.wiredashModel.detectClosed();
               _backdropStatus = WiredashBackdropStatus.closed;
             },
             onClosing: () {
-              context.wiredashModel.detectClosing();
               _backdropStatus = WiredashBackdropStatus.closing;
             },
             child: app,
