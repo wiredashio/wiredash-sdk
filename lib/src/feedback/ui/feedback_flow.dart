@@ -269,7 +269,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
 
     return GestureDetector(
       onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
+        Focus.of(context).unfocus();
       },
       child: LarryPageView(
         viewInsets: MediaQuery.of(context).padding,
