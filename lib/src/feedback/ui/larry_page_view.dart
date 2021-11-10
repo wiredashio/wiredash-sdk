@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -78,6 +80,9 @@ class LarryPageViewState extends State<LarryPageView>
   /// delay between fading out a page and entering the new one
   static const _pageEnterDelay = Duration(milliseconds: 150);
 
+  /// Timer used to delay the entry of the incoming page by [_pageEnterDelay]
+  Timer? _nextPageTimer;
+
   /// Distance the page has to travel to be fully invisible
   ///
   /// Should be smaller than [_pageSwitchDistance]
@@ -99,6 +104,7 @@ class LarryPageViewState extends State<LarryPageView>
   void dispose() {
     _controller.dispose();
     _childScrollController.dispose();
+    _nextPageTimer?.cancel();
     super.dispose();
   }
 
@@ -122,6 +128,10 @@ class LarryPageViewState extends State<LarryPageView>
               widgetHeight - widget.viewInsets.top - widget.viewInsets.bottom;
 
           final double opacity = () {
+            if (_nextPageTimer != null) {
+              // hide next page, while delaying in-animation
+              return 0.0;
+            }
             if (_page == 0 && _offset < 0) {
               // first item
               return 1.0;
@@ -372,9 +382,10 @@ class LarryPageViewState extends State<LarryPageView>
           widget.onPageChanged?.call(_page);
           final sim =
               SpringSimulation(_pageSpring, _offset, 0, _pageEnterVelocity);
-          // TODO cancel on touch...
-          Future.delayed(_pageEnterDelay).then((value) {
+          _nextPageTimer?.cancel();
+          _nextPageTimer = Timer(_pageEnterDelay, () {
             _controller.animateWith(sim);
+            _nextPageTimer = null;
           });
         }
       } else if (_offset < -_pageSwitchDistance) {
@@ -387,9 +398,10 @@ class LarryPageViewState extends State<LarryPageView>
           widget.onPageChanged?.call(_page);
           final sim =
               SpringSimulation(_pageSpring, _offset, 0, -_pageEnterVelocity);
-          // TODO cancel on touch...
-          Future.delayed(_pageEnterDelay).then((value) {
+          _nextPageTimer?.cancel();
+          _nextPageTimer = Timer(_pageEnterDelay, () {
             _controller.animateWith(sim);
+            _nextPageTimer = null;
           });
         }
       }
