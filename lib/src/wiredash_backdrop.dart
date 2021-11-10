@@ -157,7 +157,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   @override
   void initState() {
     super.initState();
-    widget.controller?._state = this;
+    widget.controller._state = this;
     _backdropAnimationController
         .addStatusListener(_animControllerStatusListener);
 
@@ -352,18 +352,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     if (status != AnimationStatus.completed) {
       return;
     }
-      if (_backdropStatus == WiredashBackdropStatus.opening) {
-        _backdropStatus = WiredashBackdropStatus.open;
-      }
-      if (_backdropStatus == WiredashBackdropStatus.openingCentered) {
-        _backdropStatus = WiredashBackdropStatus.centered;
-      }
-      if (_backdropStatus == WiredashBackdropStatus.closingCentered) {
-        _backdropStatus = WiredashBackdropStatus.open;
-      }
-      if (_backdropStatus == WiredashBackdropStatus.closing) {
-        _backdropStatus = WiredashBackdropStatus.closed;
-      }
+    if (_backdropStatus == WiredashBackdropStatus.opening) {
+      _backdropStatus = WiredashBackdropStatus.open;
+    }
+    if (_backdropStatus == WiredashBackdropStatus.openingCentered) {
+      _backdropStatus = WiredashBackdropStatus.centered;
+    }
+    if (_backdropStatus == WiredashBackdropStatus.closingCentered) {
+      _backdropStatus = WiredashBackdropStatus.open;
+    }
+    if (_backdropStatus == WiredashBackdropStatus.closing) {
+      _backdropStatus = WiredashBackdropStatus.closed;
+    }
   }
 
   @override
@@ -382,17 +382,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   void didUpdateWidget(WiredashBackdrop oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
-      oldWidget.controller?._state = null;
+      oldWidget.controller._state = null;
       oldWidget.controller.removeListener(_markAsDirty);
-      widget.controller?._state = this;
+      widget.controller._state = this;
       widget.controller.addListener(_markAsDirty);
     }
   }
 
   void _markAsDirty() {
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
