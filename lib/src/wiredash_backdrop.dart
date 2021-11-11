@@ -133,9 +133,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   /// Detect window size changes in [didChangeDependencies]
   MediaQueryData _mediaQueryData = MediaQueryData();
 
-  final FocusNode _feedbackFocusNode = FocusNode();
-  final FocusNode _emailFocusNode = FocusNode();
-
   static const double _appPeak = 130;
 
   final slightlyUnderdumped = Sprung(18);
@@ -153,6 +150,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   set _backdropStatus(WiredashBackdropStatus value) =>
       widget.controller.backdropStatus = value;
+
+  final FocusScopeNode _backdropContentFocusNode = FocusScopeNode();
 
   @override
   void initState() {
@@ -182,8 +181,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     super.dispose();
     _scrollController.dispose();
     _backdropAnimationController.dispose();
-    _feedbackFocusNode.dispose();
-    _emailFocusNode.dispose();
+    _backdropContentFocusNode.dispose();
   }
 
   Future<void> _animateToOpen() async {
@@ -196,7 +194,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }
     _swapAnimation();
 
-    _feedbackFocusNode.requestFocus();
     await _backdropAnimationController.forward(from: 0);
   }
 
@@ -432,8 +429,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           children: <Widget>[
             MediaQuery(
               data: _mediaQueryData.copyWith(padding: _contentViewPadding),
-              child: WiredashFeedbackFlow(
-                focusNode: _feedbackFocusNode,
+              // Every TextField, has to be placed in a FocusScope (usually provided by a Route)
+              // Without it, the TextField crashes when removed from the widget tree
+              child: FocusScope(
+                debugLabel: 'backdrop content',
+                node: _backdropContentFocusNode,
+                child: WiredashFeedbackFlow(),
               ),
             ),
             _buildAppPositioningAnimation(

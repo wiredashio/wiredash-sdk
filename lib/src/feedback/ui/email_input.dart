@@ -4,11 +4,8 @@ import 'package:wiredash/src/responsive_layout.dart';
 
 class EmailInput extends StatefulWidget {
   const EmailInput({
-    this.focusNode,
     Key? key,
   }) : super(key: key);
-
-  final FocusNode? focusNode;
 
   @override
   _EmailInputState createState() => _EmailInputState();
@@ -60,7 +57,6 @@ class _EmailInputState extends State<EmailInput> {
           TextField(
             controller: _controller,
             keyboardType: TextInputType.emailAddress,
-            focusNode: widget.focusNode,
             style: const TextStyle(fontSize: 14),
             decoration: const InputDecoration(
               border: InputBorder.none,

@@ -8,7 +8,6 @@ class LabeledButton extends ImplicitlyAnimatedWidget {
   const LabeledButton({
     Key? key,
     required this.child,
-    this.focusNode,
     this.onTap,
     this.padding,
   }) : super(
@@ -18,7 +17,6 @@ class LabeledButton extends ImplicitlyAnimatedWidget {
         );
 
   final Widget child;
-  final FocusNode? focusNode;
   final void Function()? onTap;
   final EdgeInsetsGeometry? padding;
 
@@ -52,7 +50,6 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<LabeledButton> {
         didUpdateWidget(widget);
       },
       child: Focus(
-        focusNode: widget.focusNode,
         onFocusChange: (focused) {
           _focused = focused;
           didUpdateWidget(widget);

@@ -18,9 +18,7 @@ const _labels = [
 ];
 
 class WiredashFeedbackFlow extends StatefulWidget {
-  const WiredashFeedbackFlow({this.focusNode, Key? key}) : super(key: key);
-
-  final FocusNode? focusNode;
+  const WiredashFeedbackFlow({Key? key}) : super(key: key);
 
   @override
   State<WiredashFeedbackFlow> createState() => _WiredashFeedbackFlowState();
@@ -269,7 +267,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
 
     return GestureDetector(
       onTap: () {
-        Focus.of(context).unfocus();
+        Focus.maybeOf(context)?.unfocus();
       },
       child: LarryPageView(
         viewInsets: MediaQuery.of(context).padding,
@@ -474,7 +472,7 @@ class _FeedbackMessageStepPageState extends State<FeedbackMessageStepPage>
           child: BigBlueButton(
             child: const Icon(Icons.arrow_right_alt),
             onTap: () {
-              FocusManager.instance.primaryFocus?.unfocus();
+              Focus.maybeOf(context)?.unfocus();
               StepInformation.of(context).pageView.moveToNextPage();
             },
           ),

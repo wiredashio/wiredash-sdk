@@ -7,13 +7,11 @@ const buttonBlue = Color(0xFF1A56DB);
 class BaseClickTarget extends StatefulWidget {
   const BaseClickTarget({
     Key? key,
-    this.focusNode,
     this.onTap,
     required this.builder,
     this.child,
   }) : super(key: key);
 
-  final FocusNode? focusNode;
   final void Function()? onTap;
   final Widget Function(BuildContext context, TargetState state, Widget? child)
       builder;
@@ -56,7 +54,6 @@ class _BaseClickTargetState extends State<BaseClickTarget> {
         });
       },
       child: Focus(
-        focusNode: widget.focusNode,
         onFocusChange: (focused) {
           setState(() {
             _focused = focused;
@@ -195,7 +192,6 @@ class _AnimatedClickTargetState extends State<AnimatedClickTarget>
 
     return BaseClickTarget(
       onTap: widget.onTap,
-      focusNode: widget.focusNode,
       builder: (context, state, child) {
         if (state.focused && _focusedController.isDismissed) {
           _focusedController.forward();

@@ -9,7 +9,6 @@ class BigBlueButton extends ImplicitlyAnimatedWidget {
     Key? key,
     required this.child,
     this.text,
-    this.focusNode,
     this.onTap,
   }) : super(
           key: key,
@@ -19,7 +18,6 @@ class BigBlueButton extends ImplicitlyAnimatedWidget {
 
   final Widget child;
   final Widget? text;
-  final FocusNode? focusNode;
   final void Function()? onTap;
 
   @override
@@ -52,7 +50,6 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<BigBlueButton> {
         didUpdateWidget(widget);
       },
       child: Focus(
-        focusNode: widget.focusNode,
         onFocusChange: (focused) {
           _focused = focused;
           didUpdateWidget(widget);
