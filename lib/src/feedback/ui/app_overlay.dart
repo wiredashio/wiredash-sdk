@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/widgets/gradient_shader.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
-import 'package:wiredash/src/feedback/ui/screenshot_decoration.dart';
-import 'package:wiredash/src/common/widgets/gradient_shader.dart';
+import 'package:wiredash/src/feedback/ui/screenshot_border_decoration.dart';
 
 class AppOverlay extends StatefulWidget {
   const AppOverlay({
@@ -43,7 +43,9 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
   late Animation<double> _dialogFadeAnimation;
   late Animation<double> _dialogScaleAnimation;
   late Animation<double> _screenshotFlashAnimation;
-  late Animation<double> _screenshotBorderAnimation;
+  late Animation<double> _screenshotBorderThicknessAnimation;
+  late Animation<double> _screenshotCornerExtentAnimation;
+  late Animation<Color?> _screenshotBorderColorAnimation;
 
   InAppSheet? _drawIntroInAppSheet;
 
@@ -58,7 +60,7 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
 
     _drawingAnimationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 450),
+      duration: const Duration(milliseconds: 800),
     );
 
     final dialogAnimation = CurvedAnimation(
@@ -72,14 +74,31 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
     _screenshotFlashAnimation = Tween(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(
         parent: _drawingAnimationController,
-        curve: Curves.ease,
+        curve: const Interval(0.0, 0.7, curve: Curves.ease),
       ),
     );
 
-    _screenshotBorderAnimation = Tween(begin: 2.0, end: 6.0).animate(
+    _screenshotBorderThicknessAnimation = Tween(begin: 2.0, end: 6.0).animate(
       CurvedAnimation(
         parent: _drawingAnimationController,
-        curve: Curves.easeOutCubic,
+        curve: const Interval(0.7, 1.0, curve: Curves.easeInOutExpo),
+      ),
+    );
+
+    _screenshotCornerExtentAnimation = Tween(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _drawingAnimationController,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeInOutExpo),
+      ),
+    );
+
+    _screenshotBorderColorAnimation = ColorTween(
+      begin: const Color(0xFF1A56DB),
+      end: const Color(0xFF1A56DB),
+    ).animate(
+      CurvedAnimation(
+        parent: _drawingAnimationController,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeInOutCubic),
       ),
     );
   }
@@ -105,7 +124,8 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
 
   Widget _buildButtons() {
     return Visibility(
-      visible: context.feedbackModel.screenshotStatus != FeedbackScreenshotStatus.none,
+      visible: context.feedbackModel.screenshotStatus !=
+          FeedbackScreenshotStatus.none,
       child: Positioned(
         top: widget.appRect.bottom - 26,
         left: widget.appRect.left,
@@ -147,21 +167,23 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
 
   Widget _buildPositionedScreenshotDecoration() {
     return AnimatedBuilder(
-      animation: _screenshotBorderAnimation,
+      animation: _drawingAnimationController,
       builder: (context, animation) {
         return Positioned.fromRect(
           rect: widget.appRect,
           child: IgnorePointer(
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: DecoratedBox(
-                decoration: ScreenshotDecoration(
-                  widget.borderRadius.topLeft.x,
-                  6,
-                  _screenshotBorderAnimation.value,
-                ),
-                child: SizedBox.fromSize(size: widget.appRect.size),
+            child: DecoratedBox(
+              decoration: ScreenshotBorderDecoration(
+                cornerRadius: widget.borderRadius.topLeft.x,
+                cornerStrokeWidth: 6,
+                cornerExtensionLength: Tween(
+                        begin: 20.0,
+                        end: MediaQuery.of(context).size.shortestSide / 4)
+                    .evaluate(_screenshotCornerExtentAnimation),
+                edgeStrokeWidth: _screenshotBorderThicknessAnimation.value,
+                color: _screenshotBorderColorAnimation.value!,
               ),
+              child: SizedBox.fromSize(size: widget.appRect.size),
             ),
           ),
         );
@@ -208,8 +230,8 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
                 color: Colors.white,
-                boxShadow: [
-                  const BoxShadow(
+                boxShadow: const [
+                  BoxShadow(
                     offset: Offset(0, 2),
                     blurRadius: 1,
                     spreadRadius: 1,
@@ -283,10 +305,8 @@ class DrawIntroSheet extends StatelessWidget {
     return Stack(
       children: [
         Align(
-          alignment: Alignment.center,
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GradientShader(
                 gradient: const LinearGradient(
@@ -296,12 +316,11 @@ class DrawIntroSheet extends StatelessWidget {
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 12),
+                  children: const [
+                    SizedBox(height: 12),
                     Icon(WiredashIcons.spotlightDraw),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Text(
                       'Navigate the app, then take a screenshot',
                       textAlign: TextAlign.center,
@@ -309,12 +328,12 @@ class DrawIntroSheet extends StatelessWidget {
                   ],
                 ),
               ),
-              Text(
+              const Text(
                 'Give us something visual to get a better understanding',
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
-              Text('down'),
+              const Text('down'),
               const SizedBox(height: 12),
             ],
           ),
@@ -325,7 +344,7 @@ class DrawIntroSheet extends StatelessWidget {
             onPressed: () {
               InAppSheet.of(context).dismiss();
             },
-            child: Text('Close'),
+            child: const Text('Close'),
           ),
         )
       ],
@@ -338,7 +357,7 @@ class InAppSheet {
     required FutureOr<void> Function() onDismiss,
   }) : _onDismiss = onDismiss;
 
-  FutureOr<void> Function() _onDismiss;
+  final FutureOr<void> Function() _onDismiss;
 
   Future<void> dismiss() async {
     await _onDismiss();
