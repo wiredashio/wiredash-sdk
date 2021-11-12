@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -17,8 +16,8 @@ class Picasso extends StatefulWidget {
 }
 
 class _PicassoState extends State<Picasso> {
-  List<Stroke> _strokes = <Stroke>[];
-  List<Stroke> _undoneStrokes = <Stroke>[];
+  List<Stroke> _strokes = const [];
+  List<Stroke> _undoneStrokes = const [];
   Stroke? _currentStroke;
 
   final _strokesStreamController = StreamController<List<Stroke?>>.broadcast();
@@ -81,20 +80,20 @@ class _PicassoState extends State<Picasso> {
   Widget _buildDebugMenu() {
     return Column(
       children: [
-        SizedBox(height: 120),
+        const SizedBox(height: 120),
         Row(
           children: [
             MaterialButton(
               onPressed: undo,
-              child: Text('Undo'),
+              child: const Text('Undo'),
             ),
             MaterialButton(
               onPressed: redo,
-              child: Text('Redo'),
+              child: const Text('Redo'),
             ),
             MaterialButton(
               onPressed: clear,
-              child: Text('Clear'),
+              child: const Text('Clear'),
             ),
           ],
         ),
@@ -102,11 +101,11 @@ class _PicassoState extends State<Picasso> {
           children: [
             MaterialButton(
               onPressed: () => setPaint(color: Colors.red, width: 8),
-              child: Text('Choose fat red'),
+              child: const Text('Choose fat red'),
             ),
             MaterialButton(
               onPressed: () => setPaint(color: Colors.green, width: 2),
-              child: Text('Choose thin green'),
+              child: const Text('Choose thin green'),
             ),
           ],
         )
@@ -132,7 +131,7 @@ class _PicassoState extends State<Picasso> {
   }
 
   void _onPanEnd(DragEndDetails details) {
-    _strokes = List.from(_strokes)..add(_currentStroke!);
+    _strokes = List.unmodifiable([..._strokes, _currentStroke!]);
     _strokesStreamController.add(_strokes);
   }
 
@@ -140,7 +139,7 @@ class _PicassoState extends State<Picasso> {
     _currentStroke = null;
     _currentStrokeStreamController.add(_currentStroke);
 
-    _strokes = [];
+    _strokes = const [];
     _strokesStreamController.add(_strokes);
   }
 
@@ -149,14 +148,20 @@ class _PicassoState extends State<Picasso> {
     _currentStrokeStreamController.add(_currentStroke);
 
     if (_strokes.isNotEmpty) {
-      _undoneStrokes.add(_strokes.removeLast());
+      final strokes = _strokes.toList();
+      final lastStroke = strokes.removeLast();
+      _strokes = List.unmodifiable(strokes);
+      _undoneStrokes.add(lastStroke);
       _strokesStreamController.add(_strokes);
     }
   }
 
   void redo() {
     if (_undoneStrokes.isNotEmpty) {
-      _strokes.add(_undoneStrokes.removeLast());
+      final undoneStroke = _undoneStrokes.toList();
+      final lastUndoneStroke = undoneStroke.removeLast();
+      _undoneStrokes = List.unmodifiable(undoneStroke);
+      _strokes = List.unmodifiable([_strokes, lastUndoneStroke]);
       _strokesStreamController.add(_strokes);
     }
   }
