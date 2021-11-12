@@ -1,5 +1,3 @@
-import 'package:flutter/gestures.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/capture/sketcher/gesture.dart';
 import 'package:wiredash/src/capture/sketcher/sketch_painter.dart';

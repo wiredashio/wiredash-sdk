@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';

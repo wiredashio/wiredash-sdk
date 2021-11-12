@@ -2,10 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' show lerpDouble;
 
-import 'package:flutter/animation.dart' show Curves;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 const double _kMinFlingVelocity = 0.5;
