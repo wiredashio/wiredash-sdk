@@ -26,26 +26,13 @@ class AppOverlay extends StatefulWidget {
   _AppOverlayState createState() => _AppOverlayState();
 }
 
-enum AppOverlayStatus {
-  none,
-  interactive,
-  drawing,
-}
-
 class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
   InAppSheetInheritedWidget? _currentlyShownDialog;
 
   late AnimationController _dialogAnimationController;
-  late AnimationController _drawingAnimationController;
-
-  AppOverlayStatus _status = AppOverlayStatus.none;
 
   late Animation<double> _dialogFadeAnimation;
   late Animation<double> _dialogScaleAnimation;
-  late Animation<double> _screenshotFlashAnimation;
-  late Animation<double> _screenshotBorderThicknessAnimation;
-  late Animation<double> _screenshotCornerExtentAnimation;
-  late Animation<Color?> _screenshotBorderColorAnimation;
 
   InAppSheet? _drawIntroInAppSheet;
 
@@ -58,11 +45,6 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 450),
     );
 
-    _drawingAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-
     final dialogAnimation = CurvedAnimation(
         parent: _dialogAnimationController,
         curve: Curves.easeOutExpo,
@@ -70,43 +52,11 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
 
     _dialogFadeAnimation = Tween(begin: .0, end: 1.0).animate(dialogAnimation);
     _dialogScaleAnimation = Tween(begin: .8, end: 1.0).animate(dialogAnimation);
-
-    _screenshotFlashAnimation = Tween(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(
-        parent: _drawingAnimationController,
-        curve: const Interval(0.0, 0.7, curve: Curves.ease),
-      ),
-    );
-
-    _screenshotBorderThicknessAnimation = Tween(begin: 2.0, end: 6.0).animate(
-      CurvedAnimation(
-        parent: _drawingAnimationController,
-        curve: const Interval(0.7, 1.0, curve: Curves.easeInOutExpo),
-      ),
-    );
-
-    _screenshotCornerExtentAnimation = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _drawingAnimationController,
-        curve: const Interval(0.5, 1.0, curve: Curves.easeInOutExpo),
-      ),
-    );
-
-    _screenshotBorderColorAnimation = ColorTween(
-      begin: const Color(0xFF1A56DB),
-      end: const Color(0xFF1A56DB),
-    ).animate(
-      CurvedAnimation(
-        parent: _drawingAnimationController,
-        curve: const Interval(0.5, 1.0, curve: Curves.easeInOutCubic),
-      ),
-    );
   }
 
   @override
   void dispose() {
     _dialogAnimationController.dispose();
-    _drawingAnimationController.dispose();
     super.dispose();
   }
 
@@ -115,7 +65,6 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
     return Stack(
       children: [
         _buildPositionedDialog(),
-        _buildPositionedScreenshotFlash(),
         _buildPositionedScreenshotDecoration(),
         _buildButtons(),
       ],
@@ -130,85 +79,26 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
         top: widget.appRect.bottom - 26,
         left: widget.appRect.left,
         right: widget.appRect.left,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            BigBlueButton(
-              child: const Icon(WiredashIcons.feature),
-              onTap: () async {
-                if (_drawIntroInAppSheet?.isDismissed == false) {
-                  _drawIntroInAppSheet!.dismiss();
-                  _drawIntroInAppSheet = null;
-                } else {
-                  _drawIntroInAppSheet = showInAppSheet((_) {
-                    return const DrawIntroSheet();
-                  });
-                }
-              },
-            ),
-            const SizedBox(width: 8),
-            BigBlueButton(
-              child: const Icon(WiredashIcons.screenshotAction),
-              onTap: () {
-                if (_status == AppOverlayStatus.drawing) {
-                  switchToInteractiveMode();
-                } else if (_status == AppOverlayStatus.interactive ||
-                    _status == AppOverlayStatus.none) {
-                  switchToDrawingMode();
-                }
-              },
-            ),
-          ],
+        child: AnimatedScreenshotButtons(
+          status: context.feedbackModel.screenshotStatus,
         ),
       ),
     );
   }
 
   Widget _buildPositionedScreenshotDecoration() {
-    return AnimatedBuilder(
-      animation: _drawingAnimationController,
-      builder: (context, animation) {
-        return Positioned.fromRect(
-          rect: widget.appRect,
-          child: IgnorePointer(
-            child: DecoratedBox(
-              decoration: ScreenshotBorderDecoration(
-                cornerRadius: widget.borderRadius.topLeft.x,
-                cornerStrokeWidth: 6,
-                cornerExtensionLength: Tween(
-                        begin: 20.0,
-                        end: MediaQuery.of(context).size.shortestSide / 4)
-                    .evaluate(_screenshotCornerExtentAnimation),
-                edgeStrokeWidth: _screenshotBorderThicknessAnimation.value,
-                color: _screenshotBorderColorAnimation.value!,
-              ),
-              child: SizedBox.fromSize(size: widget.appRect.size),
-            ),
-          ),
-        );
-      },
-    );
-  }
+    final isScreenshotTaken = context.feedbackModel.screenshotStatus ==
+            FeedbackScreenshotStatus.screenshotting ||
+        context.feedbackModel.screenshotStatus ==
+            FeedbackScreenshotStatus.drawing;
 
-  Widget _buildPositionedScreenshotFlash() {
-    if (_status == AppOverlayStatus.drawing) {
-      return Positioned.fromRect(
-        rect: widget.appRect,
-        child: FadeTransition(
-          opacity: _screenshotFlashAnimation,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: const Color(0xffffffff),
-              borderRadius: widget.borderRadius,
-            ),
-            child: const SizedBox.expand(),
-          ),
-        ),
-      );
-    } else {
-      return const SizedBox.expand();
-    }
+    return Positioned.fromRect(
+      rect: widget.appRect,
+      child: AnimatedScreenshotBorder(
+        screenshotTaken: isScreenshotTaken,
+        cornerRadius: 20,
+      ),
+    );
   }
 
   Widget _buildPositionedDialog() {
@@ -279,19 +169,217 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
 
     return sheet;
   }
+}
 
-  Future<void> switchToInteractiveMode() async {
-    setState(() {
-      _status = AppOverlayStatus.interactive;
-      _drawingAnimationController.reverse();
-    });
+class AnimatedScreenshotButtons extends StatefulWidget {
+  const AnimatedScreenshotButtons({Key? key, required this.status})
+      : super(key: key);
+
+  final FeedbackScreenshotStatus status;
+
+  @override
+  _AnimatedScreenshotButtonsState createState() =>
+      _AnimatedScreenshotButtonsState();
+}
+
+class _AnimatedScreenshotButtonsState extends State<AnimatedScreenshotButtons>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  late Animation<Offset> _leftButtonAnimation;
+  late Animation<Offset> _rightButtonAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    const delayedCurve = Interval(0.5, 1.0, curve: Curves.easeOutCubic);
+
+    _leftButtonAnimation =
+        Tween(begin: const Offset(.5, 0), end: Offset.zero).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: delayedCurve,
+      ),
+    );
+
+    _rightButtonAnimation =
+        Tween(begin: const Offset(-.5, 0), end: Offset.zero).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: delayedCurve,
+      ),
+    );
   }
 
-  Future<void> switchToDrawingMode() async {
-    setState(() {
-      _status = AppOverlayStatus.drawing;
-      _drawingAnimationController.forward(from: 0);
-    });
+  @override
+  void didUpdateWidget(covariant AnimatedScreenshotButtons oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.status == FeedbackScreenshotStatus.drawing) {
+      _controller.forward();
+    } else {
+      _controller.reverse();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SlideTransition(
+          position: _leftButtonAnimation,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 4),
+            child: BigBlueButton(
+              child: Icon(WiredashIcons.feature),
+              onTap: () {},
+            ),
+          ),
+        ),
+        SlideTransition(
+          position: _rightButtonAnimation,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 4),
+            child: BigBlueButton(
+              child: Icon(WiredashIcons.screenshotAction),
+              onTap: context.feedbackModel.takeScreenshot,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AnimatedScreenshotBorder extends StatefulWidget {
+  const AnimatedScreenshotBorder(
+      {Key? key, required this.screenshotTaken, required this.cornerRadius})
+      : super(key: key);
+
+  final bool screenshotTaken;
+  final double cornerRadius;
+
+  @override
+  _AnimatedScreenshotBorderState createState() =>
+      _AnimatedScreenshotBorderState();
+}
+
+class _AnimatedScreenshotBorderState extends State<AnimatedScreenshotBorder>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  late Animation<double> _screenshotFlashAnimation;
+  late Animation<double> _screenshotBorderThicknessAnimation;
+  late Animation<double> _screenshotCornerExtentAnimation;
+  late Animation<Color?> _screenshotBorderColorAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+
+    _screenshotFlashAnimation = Tween(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.ease,
+      ),
+    );
+
+    _screenshotBorderThicknessAnimation = Tween(begin: 2.0, end: 6.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.7, 1.0, curve: Curves.easeInOutExpo),
+      ),
+    );
+
+    _screenshotCornerExtentAnimation = Tween(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeInOutExpo),
+      ),
+    );
+
+    _screenshotBorderColorAnimation = ColorTween(
+      begin: const Color(0xFF1A56DB),
+      end: const Color(0xFF1A56DB),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeInOutCubic),
+      ),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant AnimatedScreenshotBorder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.screenshotTaken) {
+      _controller.forward();
+    } else {
+      _controller.reverse();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      child: _buildScreenshotFlash(),
+      builder: (context, child) {
+        return IgnorePointer(
+          child: DecoratedBox(
+            decoration: ScreenshotBorderDecoration(
+              cornerRadius: widget.cornerRadius,
+              cornerStrokeWidth: 6,
+              cornerExtensionLength: Tween(
+                      begin: 20.0,
+                      end: MediaQuery.of(context).size.shortestSide / 4)
+                  .evaluate(_screenshotCornerExtentAnimation),
+              edgeStrokeWidth: _screenshotBorderThicknessAnimation.value,
+              color: _screenshotBorderColorAnimation.value!,
+            ),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildScreenshotFlash() {
+    if (widget.screenshotTaken) {
+      return FadeTransition(
+        opacity: _screenshotFlashAnimation,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: const Color(0xffffffff),
+            borderRadius: BorderRadius.circular(widget.cornerRadius),
+          ),
+          child: const SizedBox.expand(),
+        ),
+      );
+    } else {
+      return const SizedBox.expand();
+    }
   }
 }
 
