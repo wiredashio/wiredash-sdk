@@ -131,9 +131,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   );
 
   /// Detect window size changes in [didChangeDependencies]
-  MediaQueryData _mediaQueryData = MediaQueryData();
-
-  static const double _appPeak = 130;
+  MediaQueryData _mediaQueryData = const MediaQueryData();
 
   final slightlyUnderdumped = Sprung(18);
 
@@ -434,7 +432,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               child: FocusScope(
                 debugLabel: 'backdrop content',
                 node: _backdropContentFocusNode,
-                child: WiredashFeedbackFlow(),
+                child: const WiredashFeedbackFlow(),
               ),
             ),
             _buildAppPositioningAnimation(
@@ -509,7 +507,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                   }
                   return 0.0;
                 }(),
-                child: Icon(
+                child: const Icon(
                   WiredashIcons.cevronDownLight,
                   color: Colors.black26,
                 ),
@@ -570,6 +568,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           );
         }
 
+        // ignore: join_return_with_assignment
         app = Positioned.fromRect(
           rect: _transformAnimation.value!,
           child: app,

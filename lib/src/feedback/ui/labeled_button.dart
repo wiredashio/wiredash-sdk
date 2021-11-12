@@ -124,6 +124,7 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<LabeledButton> {
           return _lightBlue.lighten(0.3);
         }
         if (_pressed) {
+          // ignore: avoid_redundant_argument_values
           return _lightBlue.darken(0.1);
         }
         if (_hovered) {

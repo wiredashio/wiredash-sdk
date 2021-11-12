@@ -9,18 +9,19 @@ enum FeedbackScreenshotStatus {
   none,
   navigating,
   screenshotting,
-  drawing
+  drawing,
 }
 
 class FeedbackModel with ChangeNotifier {
-  FeedbackModel(this._wiredashState);
+  FeedbackModel(WiredashState state) : _wiredashState = state;
 
-  WiredashState _wiredashState;
+  final WiredashState _wiredashState;
   FeedbackScreenshotStatus _screenshotStatus = FeedbackScreenshotStatus.none;
   FeedbackScreenshotStatus get screenshotStatus => _screenshotStatus;
 
   final BuildInfoManager buildInfoManager = BuildInfoManager();
 
+  // ignore: unused_field
   final List<Uint8List> _screenshots = [];
 
   String? get feedbackMessage => _feedbackMessage;
@@ -69,7 +70,6 @@ class FeedbackModel with ChangeNotifier {
 
     // TODO Show dialog help drawing
   }
-
 
   Future<void> saveScreenshot() async {
     // TODO merge screenshot & drawing

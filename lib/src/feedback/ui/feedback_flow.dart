@@ -81,6 +81,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                   ),
                   child: AnimatedSize(
                     duration: const Duration(milliseconds: 225),
+                    // ignore: deprecated_member_use
                     vsync: this,
                     clipBehavior: Clip.none,
                     child: AnimatedSwitcher(
@@ -132,6 +133,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             ),
             child: AnimatedSize(
               duration: const Duration(milliseconds: 225),
+              // ignore: deprecated_member_use
               vsync: this,
               clipBehavior: Clip.none,
               child: AnimatedSwitcher(
@@ -190,15 +192,15 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BigBlueButton(
-                  child: Text("Yes"),
+                  child: const Text("Yes"),
                   onTap: () {
                     context.feedbackModel.enterCaptureMode();
                   },
                 ),
                 const SizedBox(height: 64),
                 LabeledButton(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12.0),
                     child: Text("I'm done"),
                   ),
                   onTap: () {
@@ -251,11 +253,11 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 const SizedBox(height: 16),
                 Center(
                   child: BigBlueButton(
-                    child: Icon(WiredashIcons.submit),
-                    text: Text('Submit'),
+                    text: const Text('Submit'),
                     onTap: () {
                       context.feedbackModel.submitFeedback();
                     },
+                    child: const Icon(WiredashIcons.submit),
                   ),
                 ),
               ],
@@ -274,7 +276,6 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         stepCount: 5,
         initialPage: _page,
         onPageChanged: (index) {
-          print("Current page #$index");
           setState(() {
             _page = index;
           });
@@ -283,7 +284,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
           final index = _page;
           final stepWidget = () {
             if (index == 0) {
-              return FeedbackMessageStepPage();
+              return const FeedbackMessageStepPage();
             }
             if (index == 1) {
               return ScrollBox(
@@ -362,22 +363,20 @@ class StepPageScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Expanded(
-            child: ScrollBox(
-              child: body,
-            ),
+    return Column(
+      children: [
+        Expanded(
+          child: ScrollBox(
+            child: body,
           ),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
-            switchInCurve: Curves.fastOutSlowIn,
-            switchOutCurve: Curves.fastOutSlowIn,
-            child: bottomBarBuilder?.call(context),
-          )
-        ],
-      ),
+        ),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          switchInCurve: Curves.fastOutSlowIn,
+          switchOutCurve: Curves.fastOutSlowIn,
+          child: bottomBarBuilder?.call(context),
+        )
+      ],
     );
   }
 }

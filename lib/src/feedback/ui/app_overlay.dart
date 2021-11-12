@@ -115,7 +115,7 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
           mainAxisSize: MainAxisSize.min,
           children: [
             BigBlueButton(
-              child: Icon(WiredashIcons.feature),
+              child: const Icon(WiredashIcons.feature),
               onTap: () async {
                 if (_drawIntroInAppSheet?.isDismissed == false) {
                   _drawIntroInAppSheet!.dismiss();
@@ -129,7 +129,7 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
             ),
             const SizedBox(width: 8),
             BigBlueButton(
-              child: Icon(WiredashIcons.screenshotAction),
+              child: const Icon(WiredashIcons.screenshotAction),
               onTap: () {
                 if (_status == AppOverlayStatus.drawing) {
                   switchToInteractiveMode();
