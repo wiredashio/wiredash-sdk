@@ -9,10 +9,61 @@ import 'package:wiredash/src/feedback/picasso/sketcher.dart';
 import 'package:wiredash/src/feedback/picasso/stroke.dart';
 
 class Picasso extends StatefulWidget {
-  const Picasso({Key? key}) : super(key: key);
+  const Picasso({
+    Key? key,
+    required this.controller,
+    required this.child,
+  }) : super(key: key);
+
+  final PicassoController controller;
+  final Widget child;
 
   @override
   _PicassoState createState() => _PicassoState();
+}
+
+class PicassoController extends ChangeNotifier {
+  late _PicassoState? _state;
+
+  bool _isActive = false;
+  Color _color = Colors.black;
+  double _strokeWidth = 5.0;
+
+  bool get isActive => _isActive;
+  set isActive(bool value) {
+    _isActive = isActive;
+    notifyListeners();
+  }
+
+  Color get color => _color;
+
+  set color(Color value) {
+    _color = value;
+    notifyListeners();
+  }
+
+  double get strokeWidth => _strokeWidth;
+
+  set strokeWidth(double value) {
+    _strokeWidth = value;
+    notifyListeners();
+  }
+
+  void clear() {
+    _state!._clear();
+  }
+
+  void undo() {
+    _state!._undo();
+  }
+
+  void redo() {
+    _state!._redo();
+  }
+
+  Future<ui.Image> paintDrawingOntoImage(ui.Image image) async {
+    return _state!._paintOntoImage(image);
+  }
 }
 
 class _PicassoState extends State<Picasso> {
@@ -23,16 +74,32 @@ class _PicassoState extends State<Picasso> {
   final _strokesStreamController = StreamController<List<Stroke?>>.broadcast();
   final _currentStrokeStreamController = StreamController<Stroke?>.broadcast();
 
-  Color _selectedColor = Colors.black;
-  double _selectedWidth = 5.0;
+  @override
+  void initState() {
+    super.initState();
+    widget.controller._state = this;
+    widget.controller.addListener(_updateWithControllerConfig);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_updateWithControllerConfig);
+    super.dispose();
+  }
+
+  void _updateWithControllerConfig() {
+    setState(() {
+      // Empty setState call to update activated state
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        buildAllPreviousStrokes(context),
-        buildCurrentStroke(context),
-        _buildDebugMenu(),
+        widget.child,
+        if (widget.controller.isActive) buildAllPreviousStrokes(context),
+        if (widget.controller.isActive) buildCurrentStroke(context),
       ],
     );
   }
@@ -76,48 +143,15 @@ class _PicassoState extends State<Picasso> {
     );
   }
 
-  /// Just a crappy debug menu for quick testing, will get removed real soon
-  Widget _buildDebugMenu() {
-    return Column(
-      children: [
-        const SizedBox(height: 120),
-        Row(
-          children: [
-            MaterialButton(
-              onPressed: undo,
-              child: const Text('Undo'),
-            ),
-            MaterialButton(
-              onPressed: redo,
-              child: const Text('Redo'),
-            ),
-            MaterialButton(
-              onPressed: clear,
-              child: const Text('Clear'),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            MaterialButton(
-              onPressed: () => setPaint(color: Colors.red, width: 8),
-              child: const Text('Choose fat red'),
-            ),
-            MaterialButton(
-              onPressed: () => setPaint(color: Colors.green, width: 2),
-              child: const Text('Choose thin green'),
-            ),
-          ],
-        )
-      ],
-    );
-  }
-
   void _onPanStart(DragStartDetails details) {
     final box = context.findRenderObject()! as RenderBox;
     final point = box.globalToLocal(details.globalPosition);
-    _currentStroke =
-        Stroke(StrokeType.dot, [point], _selectedColor, _selectedWidth);
+    _currentStroke = Stroke(
+      StrokeType.dot,
+      [point],
+      widget.controller.color,
+      widget.controller.strokeWidth,
+    );
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
@@ -125,8 +159,12 @@ class _PicassoState extends State<Picasso> {
     final point = box.globalToLocal(details.globalPosition);
 
     final path = List<Offset>.from(_currentStroke!.path)..add(point);
-    _currentStroke =
-        Stroke(StrokeType.line, path, _selectedColor, _selectedWidth);
+    _currentStroke = Stroke(
+      StrokeType.line,
+      path,
+      widget.controller.color,
+      widget.controller.strokeWidth,
+    );
     _currentStrokeStreamController.add(_currentStroke);
   }
 
@@ -135,7 +173,7 @@ class _PicassoState extends State<Picasso> {
     _strokesStreamController.add(_strokes);
   }
 
-  void clear() {
+  void _clear() {
     _currentStroke = null;
     _currentStrokeStreamController.add(_currentStroke);
 
@@ -143,7 +181,7 @@ class _PicassoState extends State<Picasso> {
     _strokesStreamController.add(_strokes);
   }
 
-  void undo() {
+  void _undo() {
     _currentStroke = null;
     _currentStrokeStreamController.add(_currentStroke);
 
@@ -156,7 +194,7 @@ class _PicassoState extends State<Picasso> {
     }
   }
 
-  void redo() {
+  void _redo() {
     if (_undoneStrokes.isNotEmpty) {
       final undoneStroke = _undoneStrokes.toList();
       final lastUndoneStroke = undoneStroke.removeLast();
@@ -166,12 +204,7 @@ class _PicassoState extends State<Picasso> {
     }
   }
 
-  void setPaint({Color color = Colors.black, double width = 5}) {
-    _selectedColor = color;
-    _selectedWidth = width;
-  }
-
-  Future<ui.Image> paintOntoImage(ui.Image image) async {
+  Future<ui.Image> _paintOntoImage(ui.Image image) async {
     final imageSize = Size(image.width.toDouble(), image.height.toDouble());
     final recording = ui.PictureRecorder();
     final canvas = Canvas(

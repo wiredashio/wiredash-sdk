@@ -17,12 +17,14 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
+import 'package:wiredash/src/common/widgets/screencapture.dart';
 import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
+import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
 import 'package:wiredash/src/media_query_from_window.dart';
 import 'package:wiredash/src/responsive_layout.dart';
@@ -139,6 +141,8 @@ class WiredashState extends State<Wiredash> {
   late DeviceIdGenerator deviceIdGenerator;
 
   late BackdropController backdropController;
+  late PicassoController picassoController;
+  late ScreencaptureController screencaptureController;
 
   late BuildInfoManager buildInfoManager;
 
@@ -174,6 +178,8 @@ class WiredashState extends State<Wiredash> {
           ..submitPendingFeedbackItems());
 
     backdropController = BackdropController();
+    picassoController = PicassoController();
+    screencaptureController = ScreencaptureController();
 
     _wiredashModel = WiredashModel(this);
     _feedbackModel = FeedbackModel(this);
@@ -249,7 +255,13 @@ class WiredashState extends State<Wiredash> {
                                   // use a stateful widget as direct child or hot reload will not work for that widget
                                   return WiredashBackdrop(
                                     controller: backdropController,
-                                    child: widget.child,
+                                    child: Picasso(
+                                      controller: picassoController,
+                                      child: Screencapture(
+                                        controller: screencaptureController,
+                                        child: widget.child,
+                                      ),
+                                    ),
                                   );
                                 },
                               )
