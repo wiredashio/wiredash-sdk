@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/wiredash_backdrop.dart';
 
@@ -18,9 +19,10 @@ class PullToCloseDetector extends StatefulWidget {
     required this.distanceToEdge,
     required this.openedPosition,
     this.onPullStart,
-    this.onPullEnd,
     this.onClosed,
     this.onClosing,
+    this.onOpening,
+    this.onOpened,
     this.closeDirection = CloseDirection.downwards,
   }) : super(key: key);
 
@@ -38,9 +40,11 @@ class PullToCloseDetector extends StatefulWidget {
 
   final void Function()? onPullStart;
 
-  final void Function()? onPullEnd;
-
   final void Function()? onClosed;
+
+  final void Function()? onOpened;
+
+  final void Function()? onOpening;
 
   /// called when the pull to close is detected and the controller will be
   /// forwarded to the final close state.
@@ -78,6 +82,7 @@ class _PullToCloseDetectorState extends State<PullToCloseDetector> {
   void didUpdateWidget(covariant PullToCloseDetector oldWidget) {
     if (oldWidget.distanceToEdge != widget.distanceToEdge) {
       _distanceToClosed = widget.distanceToEdge;
+      print("update _distanceToClosed $_distanceToClosed");
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -89,53 +94,63 @@ class _PullToCloseDetectorState extends State<PullToCloseDetector> {
   void _handleDragUpdate(DragUpdateDetails details) {
     assert(mounted);
 
+    print("anim ${widget.animController.value}");
+    print(" widget.openedPosition ${widget.openedPosition}");
+    print("_distanceToClosed = $_distanceToClosed");
     final delta = details.delta.dy;
     final newDistanceToBottom = () {
+      return _distanceToClosed - delta;
       if (widget.closeDirection == CloseDirection.downwards) {
         return _distanceToClosed - delta;
-      } else {
-        return _distanceToClosed + delta;
-      }
+      } else {}
     }();
+    print("newDistanceToBottom = $newDistanceToBottom");
     final diff = newDistanceToBottom / widget.openedPosition;
+    print("diff = $diff");
     widget.animController.value = diff;
+    print("new anim ${widget.animController.value}");
     _distanceToClosed = newDistanceToBottom;
   }
 
   Future<void> _handleDragEnd(DragEndDetails details) async {
     final velocity = details.primaryVelocity ?? 0;
 
-    print(velocity);
     if (widget.closeDirection == CloseDirection.downwards && velocity > 0 ||
         widget.closeDirection == CloseDirection.upwards && velocity < 0) {
-      final completeDuration = widget.animController.reverseDuration!;
       widget.onClosing?.call();
-      // TODO replace with simulation
-      await widget.animController.animateBack(
+      final sim = SpringSimulation(
+        const SpringDescription(mass: 30, stiffness: 1, damping: 1),
+        widget.animController.value,
         0.0,
-        duration: completeDuration * widget.animController.value,
-        curve: Curves.easeOut,
+        -velocity / widget.openedPosition,
       );
-      widget.onClosed?.call();
+      // widget.animController.stop(canceled: true);
+      print("close with simulation");
+      widget.animController.animateWith(sim).then((value) {
+        // TODO cancel eventually
+        widget.onClosed?.call();
+      });
     } else {
+      print("open again");
+      widget.onOpening?.call();
       final completeDuration = widget.animController.duration!;
       await widget.animController.animateTo(
         1.0,
         duration: completeDuration * (1 - widget.animController.value),
         curve: Curves.easeOut,
       );
+      widget.onOpened?.call();
     }
-    widget.onPullEnd?.call();
   }
 
   Future<void> _handleDragCancel() async {
     assert(mounted);
+    // TODO solve with simulation
     await widget.animController.animateBack(
       1.0,
       duration: widget.animController.duration,
       curve: Curves.easeOut,
     );
-    widget.onPullEnd?.call();
   }
 
   @override

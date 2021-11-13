@@ -113,7 +113,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       AnimationController(
     vsync: this,
     duration: WiredashBackdrop.animationDuration,
-    reverseDuration: WiredashBackdrop.animationDuration,
   );
 
   /// Used for re-positioning the app on the screen
@@ -132,8 +131,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// Detect window size changes in [didChangeDependencies]
   MediaQueryData _mediaQueryData = const MediaQueryData();
-
-  final slightlyUnderdumped = Sprung(18);
 
   /// calculated positions for the different backdrop positions / states
   Rect _rectAppDown = Rect.zero;
@@ -171,7 +168,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   /// switch to cool bouncy curves
   void _animCurves() {
     _driverAnimation.curve = Curves.easeOutCubic;
-    // _driverAnimation.reverseCurve = slightlyUnderdumped.flipped;
   }
 
   @override
@@ -270,6 +266,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// Sets the correct animation for the current [_backdropStatus]
   void _swapAnimation() {
+    print("swapAnim $_backdropStatus");
     _backdropAnimationController.stop(canceled: false);
     switch (_backdropStatus) {
       case WiredashBackdropStatus.open:
@@ -347,18 +344,21 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     if (status != AnimationStatus.completed) {
       return;
     }
-    if (_backdropStatus == WiredashBackdropStatus.opening) {
-      _backdropStatus = WiredashBackdropStatus.open;
-    }
-    if (_backdropStatus == WiredashBackdropStatus.openingCentered) {
-      _backdropStatus = WiredashBackdropStatus.centered;
-    }
-    if (_backdropStatus == WiredashBackdropStatus.closingCentered) {
-      _backdropStatus = WiredashBackdropStatus.open;
-    }
-    if (_backdropStatus == WiredashBackdropStatus.closing) {
-      _backdropStatus = WiredashBackdropStatus.closed;
-    }
+    print("completed : $status");
+    setState(() {
+      if (_backdropStatus == WiredashBackdropStatus.opening) {
+        _backdropStatus = WiredashBackdropStatus.open;
+      }
+      if (_backdropStatus == WiredashBackdropStatus.openingCentered) {
+        _backdropStatus = WiredashBackdropStatus.centered;
+      }
+      if (_backdropStatus == WiredashBackdropStatus.closingCentered) {
+        _backdropStatus = WiredashBackdropStatus.open;
+      }
+      if (_backdropStatus == WiredashBackdropStatus.closing) {
+        _backdropStatus = WiredashBackdropStatus.closed;
+      }
+    });
   }
 
   @override
@@ -525,11 +525,25 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, app) {
-        final screenHeight = _mediaQueryData.size.height;
-        final topPadding = _mediaQueryData.padding.top;
+        final openedPosition = _rectAppDown.top;
+        final openedFraction = () {
+          switch (_backdropStatus) {
+            case WiredashBackdropStatus.centered:
+            case WiredashBackdropStatus.closed:
+            case WiredashBackdropStatus.open:
+              return 1;
+            case WiredashBackdropStatus.closingCentered:
+            case WiredashBackdropStatus.closing:
+              return _driverAnimation.value;
+            case WiredashBackdropStatus.openingCentered:
+            case WiredashBackdropStatus.opening:
+              return _driverAnimation.value;
+          }
+        }();
 
-        final topPosition = -screenHeight + topPadding;
-        final translationY = topPosition * _driverAnimation.value;
+        final appTranslationY = openedPosition * openedFraction;
+
+        // print("$appTranslationY ${_backdropAnimationController.value}");
 
         app = AbsorbPointer(
           absorbing: !widget.controller.isAppInteractive,
@@ -539,22 +553,33 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         if (!widget.controller.isAppInteractive) {
           app = PullToCloseDetector(
             animController: _backdropAnimationController,
-            distanceToEdge: translationY.abs(),
-            openedPosition: topPosition.abs(),
+            distanceToEdge: appTranslationY.abs(),
+            openedPosition: openedPosition.abs(),
             closeDirection: CloseDirection.upwards,
             onPullStart: () {
-              _backdropStatus = WiredashBackdropStatus.opening;
+              _backdropStatus = WiredashBackdropStatus.closing;
               _swapAnimation();
               _pullCurves();
             },
-            onPullEnd: () {
+            onOpened: () {
+              _backdropStatus = WiredashBackdropStatus.open;
+              _swapAnimation();
               _animCurves();
             },
-            onClosed: () async {
+            onOpening: () {
+              _backdropStatus = WiredashBackdropStatus.opening;
+              _swapAnimation();
+              _animCurves();
+            },
+            onClosed: () {
               _backdropStatus = WiredashBackdropStatus.closed;
+              _swapAnimation();
+              _animCurves();
             },
             onClosing: () {
               _backdropStatus = WiredashBackdropStatus.closing;
+              _swapAnimation();
+              _animCurves();
             },
             child: app,
           );
