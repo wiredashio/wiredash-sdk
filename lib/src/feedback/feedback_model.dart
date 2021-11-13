@@ -17,6 +17,7 @@ class FeedbackModel with ChangeNotifier {
 
   final WiredashState _wiredashState;
   FeedbackScreenshotStatus _screenshotStatus = FeedbackScreenshotStatus.none;
+
   FeedbackScreenshotStatus get screenshotStatus => _screenshotStatus;
 
   final BuildInfoManager buildInfoManager = BuildInfoManager();
@@ -63,19 +64,28 @@ class FeedbackModel with ChangeNotifier {
     _screenshotStatus = FeedbackScreenshotStatus.screenshotting;
     notifyListeners();
 
-    // TODO GRAB SCREENSHOT
+    await _wiredashState.screencaptureController.captureScreen();
 
     _screenshotStatus = FeedbackScreenshotStatus.drawing;
     notifyListeners();
 
+    _wiredashState.picassoController.isActive = true;
     // TODO Show dialog help drawing
   }
 
   Future<void> saveScreenshot() async {
-    // TODO merge screenshot & drawing
+    final mergedPainting =
+        await _wiredashState.picassoController.paintDrawingOntoImage(
+      _wiredashState.screencaptureController.screenshot!,
+    );
+
+    // TODO do something with merged drawing
+
+    await _wiredashState.backdropController.animateToOpen();
+
+    _wiredashState.screencaptureController.releaseScreen();
 
     _screenshotStatus = FeedbackScreenshotStatus.none;
-    // _screenshots.add(value);
     notifyListeners();
   }
 
