@@ -98,13 +98,13 @@ class _PicassoState extends State<Picasso> {
     return Stack(
       children: [
         widget.child,
-        if (widget.controller.isActive) buildAllPreviousStrokes(context),
-        if (widget.controller.isActive) buildCurrentStroke(context),
+        if (widget.controller.isActive) _buildAllPreviousStrokes(context),
+        if (widget.controller.isActive) _buildCurrentStroke(context),
       ],
     );
   }
 
-  Widget buildCurrentStroke(BuildContext context) {
+  Widget _buildCurrentStroke(BuildContext context) {
     return GestureDetector(
       onPanStart: _onPanStart,
       onPanUpdate: _onPanUpdate,
@@ -126,7 +126,7 @@ class _PicassoState extends State<Picasso> {
     );
   }
 
-  Widget buildAllPreviousStrokes(BuildContext context) {
+  Widget _buildAllPreviousStrokes(BuildContext context) {
     return RepaintBoundary(
       child: SizedBox.expand(
         child: StreamBuilder<List<Stroke?>>(
