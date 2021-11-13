@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/wiredash_backdrop.dart';
 
+enum CloseDirection {
+  upwards,
+  downwards,
+}
+
 /// Enables a pull to close gesture for the minimized app while
 /// [WiredashBackdrop] is open
 class PullToCloseDetector extends StatefulWidget {
@@ -10,22 +15,26 @@ class PullToCloseDetector extends StatefulWidget {
     Key? key,
     required this.animController,
     required this.child,
-    required this.distanceToBottom,
-    required this.topPosition,
+    required this.distanceToEdge,
+    required this.openedPosition,
     this.onPullStart,
     this.onPullEnd,
     this.onClosed,
     this.onClosing,
+    this.closeDirection = CloseDirection.downwards,
   }) : super(key: key);
 
   final Widget child;
 
   final AnimationController animController;
 
-  // the remaining distance to bottom (closed)
-  final double distanceToBottom;
+  final CloseDirection closeDirection;
 
-  final double topPosition;
+  /// The remaining distance to the edge of the screen to be fully closed
+  final double distanceToEdge;
+
+  /// The position of the draggable at the fully opened position.
+  final double openedPosition;
 
   final void Function()? onPullStart;
 
@@ -53,7 +62,7 @@ class _PullToCloseDetectorState extends State<PullToCloseDetector> {
   void initState() {
     super.initState();
 
-    _distanceToBottom = widget.distanceToBottom;
+    _distanceToClosed = widget.distanceToEdge;
   }
 
   @override
@@ -63,12 +72,12 @@ class _PullToCloseDetectorState extends State<PullToCloseDetector> {
   }
 
   // internal cache because the touch events update faster than the widgetTree rebuilds
-  double _distanceToBottom = 0.0;
+  double _distanceToClosed = 0.0;
 
   @override
   void didUpdateWidget(covariant PullToCloseDetector oldWidget) {
-    if (oldWidget.distanceToBottom != widget.distanceToBottom) {
-      _distanceToBottom = widget.distanceToBottom;
+    if (oldWidget.distanceToEdge != widget.distanceToEdge) {
+      _distanceToClosed = widget.distanceToEdge;
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -81,16 +90,24 @@ class _PullToCloseDetectorState extends State<PullToCloseDetector> {
     assert(mounted);
 
     final delta = details.delta.dy;
-    final newDistanceToBottom = _distanceToBottom - delta;
-    final diff = newDistanceToBottom / widget.topPosition;
+    final newDistanceToBottom = () {
+      if (widget.closeDirection == CloseDirection.downwards) {
+        return _distanceToClosed - delta;
+      } else {
+        return _distanceToClosed + delta;
+      }
+    }();
+    final diff = newDistanceToBottom / widget.openedPosition;
     widget.animController.value = diff;
-    _distanceToBottom = newDistanceToBottom;
+    _distanceToClosed = newDistanceToBottom;
   }
 
   Future<void> _handleDragEnd(DragEndDetails details) async {
     final velocity = details.primaryVelocity ?? 0;
 
-    if (velocity > 0) {
+    print(velocity);
+    if (widget.closeDirection == CloseDirection.downwards && velocity > 0 ||
+        widget.closeDirection == CloseDirection.upwards && velocity < 0) {
       final completeDuration = widget.animController.reverseDuration!;
       widget.onClosing?.call();
       // TODO replace with simulation

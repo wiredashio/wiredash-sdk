@@ -539,8 +539,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         if (!widget.controller.isAppInteractive) {
           app = PullToCloseDetector(
             animController: _backdropAnimationController,
-            distanceToBottom: translationY.abs(),
-            topPosition: topPosition.abs(),
+            distanceToEdge: translationY.abs(),
+            openedPosition: topPosition.abs(),
+            closeDirection: CloseDirection.upwards,
             onPullStart: () {
               _backdropStatus = WiredashBackdropStatus.opening;
               _swapAnimation();
