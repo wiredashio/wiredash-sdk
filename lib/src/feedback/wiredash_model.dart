@@ -21,7 +21,7 @@ class WiredashModel with ChangeNotifier {
 
   /// Opens wiredash behind the app
   Future<void> show() async {
-    if(state.backdropController.isWiredashActive) return;
+    if (state.backdropController.isWiredashActive) return;
     await state.backdropController.animateToOpen();
   }
 

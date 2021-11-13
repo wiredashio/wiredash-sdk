@@ -124,6 +124,7 @@ class Wiredash extends StatefulWidget {
   static WiredashController? of(BuildContext context) {
     final state = context.findAncestorStateOfType<WiredashState>();
     if (state == null) return null;
+
     return WiredashController(state._wiredashModel);
   }
 }
@@ -157,7 +158,7 @@ class WiredashState extends State<Wiredash> {
     final storage = PendingFeedbackItemStorage(
       fileSystem,
       SharedPreferences.getInstance,
-          () async => (await getApplicationDocumentsDirectory()).path,
+      () async => (await getApplicationDocumentsDirectory()).path,
     );
 
     final api = WiredashApi(
@@ -170,7 +171,7 @@ class WiredashState extends State<Wiredash> {
     feedbackSubmitter = kIsWeb
         ? DirectFeedbackSubmitter(api)
         : (RetryingFeedbackSubmitter(fileSystem, storage, api)
-      ..submitPendingFeedbackItems());
+          ..submitPendingFeedbackItems());
 
     backdropController = BackdropController();
 
@@ -229,7 +230,7 @@ class WiredashState extends State<Wiredash> {
                     // Directionality required for all Text widgets
                     child: Directionality(
                       textDirection:
-                      widget.options?.textDirection ?? TextDirection.ltr,
+                          widget.options?.textDirection ?? TextDirection.ltr,
                       // Localizations required for all Flutter UI widgets
                       child: Localizations(
                         locale: widget.options?.currentLocale ?? window.locale,
@@ -270,4 +271,4 @@ class WiredashState extends State<Wiredash> {
 
 @visibleForTesting
 ProjectCredentialValidator debugProjectCredentialValidator =
-const ProjectCredentialValidator();
+    const ProjectCredentialValidator();
