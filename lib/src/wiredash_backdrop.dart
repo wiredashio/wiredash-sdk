@@ -192,21 +192,21 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }
     _swapAnimation();
 
-    await _backdropAnimationController.forward(from: 0);
+    await _backdropAnimationController.forward();
   }
 
   Future<void> _animateToCentered() async {
     _backdropStatus = WiredashBackdropStatus.openingCentered;
     _swapAnimation();
 
-    await _backdropAnimationController.forward(from: 0);
+    await _backdropAnimationController.forward();
   }
 
   Future<void> _animateToClosed() async {
     _backdropStatus = WiredashBackdropStatus.closing;
     _swapAnimation();
 
-    await _backdropAnimationController.forward(from: 0);
+    await _backdropAnimationController.forward();
   }
 
   @override
