@@ -186,8 +186,9 @@ class _AnimatedScreenshotButtonsState extends State<AnimatedScreenshotButtons>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
-  late Animation<Offset> _leftButtonAnimation;
-  late Animation<Offset> _rightButtonAnimation;
+  late Animation<double> _leftButtonFadeAnimation;
+  late Animation<Offset> _leftButtonTranslateAnimation;
+  late Animation<Offset> _rightButtonTranslateAnimation;
 
   @override
   void initState() {
@@ -196,7 +197,10 @@ class _AnimatedScreenshotButtonsState extends State<AnimatedScreenshotButtons>
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
     const delayedCurve = Interval(0.5, 1.0, curve: Curves.easeOutCubic);
 
-    _leftButtonAnimation =
+    _leftButtonFadeAnimation =
+        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic);
+
+    _leftButtonTranslateAnimation =
         Tween(begin: const Offset(.5, 0), end: Offset.zero).animate(
       CurvedAnimation(
         parent: _controller,
@@ -204,7 +208,7 @@ class _AnimatedScreenshotButtonsState extends State<AnimatedScreenshotButtons>
       ),
     );
 
-    _rightButtonAnimation =
+    _rightButtonTranslateAnimation =
         Tween(begin: const Offset(-.5, 0), end: Offset.zero).animate(
       CurvedAnimation(
         parent: _controller,
@@ -237,27 +241,55 @@ class _AnimatedScreenshotButtonsState extends State<AnimatedScreenshotButtons>
       mainAxisSize: MainAxisSize.min,
       children: [
         SlideTransition(
-          position: _leftButtonAnimation,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 4),
-            child: BigBlueButton(
-              child: Icon(WiredashIcons.feature),
-              onTap: () {},
+          position: _leftButtonTranslateAnimation,
+          child: FadeTransition(
+            opacity: _leftButtonFadeAnimation,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: BigBlueButton(
+                child: Icon(WiredashIcons.feature),
+                onTap: context.feedbackModel.enterCaptureMode,
+              ),
             ),
           ),
         ),
         SlideTransition(
-          position: _rightButtonAnimation,
+          position: _rightButtonTranslateAnimation,
           child: Padding(
-            padding: const EdgeInsets.only(left: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: BigBlueButton(
-              child: Icon(WiredashIcons.screenshotAction),
-              onTap: context.feedbackModel.takeScreenshot,
+              onTap: _onNextStepTap,
+              child: Icon(_getNextStepIconData()),
             ),
           ),
         ),
       ],
     );
+  }
+
+  void _onNextStepTap() {
+    switch (widget.status) {
+      case FeedbackScreenshotStatus.none:
+      case FeedbackScreenshotStatus.navigating:
+        context.feedbackModel.takeScreenshot();
+        break;
+      case FeedbackScreenshotStatus.screenshotting:
+        break;
+      case FeedbackScreenshotStatus.drawing:
+        context.feedbackModel.saveScreenshot();
+        break;
+    }
+  }
+
+  IconData _getNextStepIconData() {
+    switch (widget.status) {
+      case FeedbackScreenshotStatus.none:
+      case FeedbackScreenshotStatus.navigating:
+      case FeedbackScreenshotStatus.screenshotting:
+        return WiredashIcons.screenshotAction;
+      case FeedbackScreenshotStatus.drawing:
+        return WiredashIcons.check;
+    }
   }
 }
 
