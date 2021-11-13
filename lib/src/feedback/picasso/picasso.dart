@@ -31,7 +31,7 @@ class PicassoController extends ChangeNotifier {
 
   bool get isActive => _isActive;
   set isActive(bool value) {
-    _isActive = isActive;
+    _isActive = value;
     notifyListeners();
   }
 
