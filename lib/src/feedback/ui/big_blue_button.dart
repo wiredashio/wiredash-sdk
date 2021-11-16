@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/utils/color_ext.dart';
@@ -30,9 +31,7 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<BigBlueButton> {
   Tween<double>? _buttonScaleTween;
 
   bool _focused = false;
-
   bool _pressed = false;
-
   bool _hovered = false;
 
   bool get _enabled => widget.onTap != null;
@@ -41,90 +40,82 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<BigBlueButton> {
   Widget build(BuildContext context) {
     return MouseRegion(
       cursor: _enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
-      onEnter: (event) {
-        _hovered = true;
-        didUpdateWidget(widget);
-      },
-      onExit: (event) {
-        _hovered = false;
-        didUpdateWidget(widget);
-      },
+      onEnter: _onMouseEnterEvent,
+      onExit: _onMouseExitEvent,
       child: Focus(
         onFocusChange: (focused) {
           _focused = focused;
           didUpdateWidget(widget);
         },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 48,
-              width: 80,
-              child: Padding(
-                padding: EdgeInsets.all(_buttonScaleTween!.evaluate(animation)),
-                child: PhysicalShape(
-                  color: _colorTween!.evaluate(animation)!,
-                  elevation: _focused ? 2 : 0,
-                  clipper: ShapeBorderClipper(
-                    shape: const StadiumBorder(),
-                    textDirection: Directionality.maybeOf(context),
-                  ),
-                  child: GestureDetector(
-                    onTap: widget.onTap,
-                    onTapDown: (_) {
-                      if (!_enabled) return;
-                      _pressed = true;
-                      didUpdateWidget(widget);
-                    },
-                    onTapUp: (_) {
-                      _pressed = false;
-                      didUpdateWidget(widget);
-                    },
-                    onTapCancel: () {
-                      _pressed = false;
-                      didUpdateWidget(widget);
-                    },
-                    behavior: HitTestBehavior.opaque,
-                    excludeFromSemantics: true,
-                    child: IconTheme(
-                      data: const IconThemeData(color: Color(0xffffffff)),
-                      child: ScaleTransition(
-                        scale: _iconScaleTween!.animate(animation),
-                        child: DefaultTextStyle(
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            height: 1,
-                            // TODO add Inter font?
-                            fontWeight: FontWeight.w800,
-                          ),
-                          child: Center(
-                            child: widget.child,
-                          ),
-                        ),
+        child: SizedBox(
+          height: 48,
+          width: 80,
+          child: Padding(
+            padding: EdgeInsets.all(_buttonScaleTween!.evaluate(animation)),
+            child: PhysicalShape(
+              color: _colorTween!.evaluate(animation)!,
+              elevation: _focused ? 2 : 0,
+              clipper: ShapeBorderClipper(
+                shape: const StadiumBorder(),
+                textDirection: Directionality.maybeOf(context),
+              ),
+              child: GestureDetector(
+                onTap: widget.onTap,
+                onTapDown: _onTapDown,
+                onTapUp: _onTapUp,
+                onTapCancel: _onTapCancel,
+                behavior: HitTestBehavior.opaque,
+                excludeFromSemantics: true,
+                child: IconTheme(
+                  data: const IconThemeData(color: Color(0xffffffff)),
+                  child: ScaleTransition(
+                    scale: _iconScaleTween!.animate(animation),
+                    child: DefaultTextStyle(
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        height: 1,
+                        // TODO add Inter font?
+                        fontWeight: FontWeight.w800,
+                      ),
+                      child: Center(
+                        child: widget.child,
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-            if (widget.text != null)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: DefaultTextStyle(
-                  style: TextStyle(
-                    color: _colorTween!.evaluate(animation),
-                    fontSize: 10,
-                    // TODO add Inter font?
-                    fontWeight: FontWeight.w400,
-                  ),
-                  child: widget.text!,
-                ),
-              ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  void _onMouseEnterEvent(PointerEnterEvent event) {
+    _hovered = true;
+    didUpdateWidget(widget);
+  }
+
+  void _onMouseExitEvent(PointerExitEvent event) {
+    _hovered = false;
+    didUpdateWidget(widget);
+  }
+
+  void _onTapDown(TapDownDetails details) {
+    if (!_enabled) return;
+    _pressed = true;
+    didUpdateWidget(widget);
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    _pressed = false;
+    didUpdateWidget(widget);
+  }
+
+  void _onTapCancel() {
+    _pressed = false;
+    didUpdateWidget(widget);
   }
 
   @override
