@@ -14,41 +14,33 @@ enum CloseDirection {
 class PullToCloseDetector extends StatefulWidget {
   const PullToCloseDetector({
     Key? key,
-    required this.animController,
     required this.child,
-    required this.distanceToEdge,
-    required this.openedPosition,
+    // required this.distanceToEdge,
+    // required this.openedPosition,
     this.onPullStart,
-    this.onClosed,
-    this.onClosing,
-    this.onOpening,
-    this.onOpened,
+    required this.onPull,
+    required this.startCloseSimulation,
+    required this.startReopenSimulation,
     this.closeDirection = CloseDirection.downwards,
   }) : super(key: key);
 
   final Widget child;
 
-  final AnimationController animController;
-
   final CloseDirection closeDirection;
 
-  /// The remaining distance to the edge of the screen to be fully closed
-  final double distanceToEdge;
+  // /// The remaining distance to the edge of the screen to be fully closed
+  // final double distanceToEdge;
+  //
+  // /// The position of the draggable at the fully opened position.
+  // final double openedPosition;
 
-  /// The position of the draggable at the fully opened position.
-  final double openedPosition;
+  final void Function(double delta) onPull;
 
   final void Function()? onPullStart;
 
-  final void Function()? onClosed;
+  final void Function(double velocity) startCloseSimulation;
 
-  final void Function()? onOpened;
-
-  final void Function()? onOpening;
-
-  /// called when the pull to close is detected and the controller will be
-  /// forwarded to the final close state.
-  final void Function()? onClosing;
+  final void Function(double velocity) startReopenSimulation;
 
   @override
   _PullToCloseDetectorState createState() => _PullToCloseDetectorState();
@@ -65,8 +57,6 @@ class _PullToCloseDetectorState extends State<PullToCloseDetector> {
   @override
   void initState() {
     super.initState();
-
-    _distanceToClosed = widget.distanceToEdge;
   }
 
   @override
@@ -75,41 +65,16 @@ class _PullToCloseDetectorState extends State<PullToCloseDetector> {
     super.dispose();
   }
 
-  // internal cache because the touch events update faster than the widgetTree rebuilds
-  double _distanceToClosed = 0.0;
-
-  @override
-  void didUpdateWidget(covariant PullToCloseDetector oldWidget) {
-    if (oldWidget.distanceToEdge != widget.distanceToEdge) {
-      _distanceToClosed = widget.distanceToEdge;
-      print("update _distanceToClosed $_distanceToClosed");
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
   void _handleDragStart(DragStartDetails details) {
     widget.onPullStart?.call();
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
-    assert(mounted);
-
-    print("anim ${widget.animController.value}");
-    print(" widget.openedPosition ${widget.openedPosition}");
-    print("_distanceToClosed = $_distanceToClosed");
-    final delta = details.delta.dy;
-    final newDistanceToBottom = () {
-      return _distanceToClosed - delta;
-      if (widget.closeDirection == CloseDirection.downwards) {
-        return _distanceToClosed - delta;
-      } else {}
-    }();
-    print("newDistanceToBottom = $newDistanceToBottom");
-    final diff = newDistanceToBottom / widget.openedPosition;
-    print("diff = $diff");
-    widget.animController.value = diff;
-    print("new anim ${widget.animController.value}");
-    _distanceToClosed = newDistanceToBottom;
+    var delta = details.delta.dy;
+    if (widget.closeDirection == CloseDirection.downwards) {
+      delta *= -1;
+    }
+    widget.onPull(delta);
   }
 
   Future<void> _handleDragEnd(DragEndDetails details) async {
@@ -117,40 +82,21 @@ class _PullToCloseDetectorState extends State<PullToCloseDetector> {
 
     if (widget.closeDirection == CloseDirection.downwards && velocity > 0 ||
         widget.closeDirection == CloseDirection.upwards && velocity < 0) {
-      widget.onClosing?.call();
-      final sim = SpringSimulation(
-        const SpringDescription(mass: 30, stiffness: 1, damping: 1),
-        widget.animController.value,
-        0.0,
-        -velocity / widget.openedPosition,
-      );
-      // widget.animController.stop(canceled: true);
-      print("close with simulation");
-      widget.animController.animateWith(sim).then((value) {
-        // TODO cancel eventually
-        widget.onClosed?.call();
-      });
+      widget.startCloseSimulation(velocity);
+
+      // final sim = SpringSimulation(
+      //   const SpringDescription(mass: 30, stiffness: 1, damping: 1),
+      //   widget.animController.value,
+      //   0.0,
+      //   -velocity / widget.openedPosition,
+      // );
     } else {
-      print("open again");
-      widget.onOpening?.call();
-      final completeDuration = widget.animController.duration!;
-      await widget.animController.animateTo(
-        1.0,
-        duration: completeDuration * (1 - widget.animController.value),
-        curve: Curves.easeOut,
-      );
-      widget.onOpened?.call();
+      widget.startReopenSimulation(velocity);
     }
   }
 
   Future<void> _handleDragCancel() async {
-    assert(mounted);
-    // TODO solve with simulation
-    await widget.animController.animateBack(
-      1.0,
-      duration: widget.animController.duration,
-      curve: Curves.easeOut,
-    );
+    widget.startReopenSimulation(0);
   }
 
   @override

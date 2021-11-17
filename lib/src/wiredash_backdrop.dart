@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/ui/app_overlay.dart';
@@ -148,12 +149,23 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   final FocusScopeNode _backdropContentFocusNode = FocusScopeNode();
 
+  late AnimationController _pullAppYController;
+
+  bool _pulling = false;
+
   @override
   void initState() {
     super.initState();
     widget.controller._state = this;
     _backdropAnimationController
         .addStatusListener(_animControllerStatusListener);
+    _backdropAnimationController.addListener(_markAsDirty);
+    _pullAppYController = AnimationController(
+      vsync: this,
+      lowerBound: double.negativeInfinity,
+      upperBound: double.infinity,
+      value: 0,
+    )..addListener(_markAsDirty);
 
     widget.controller.addListener(_markAsDirty);
     _animCurves();
@@ -309,9 +321,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         break;
 
       case WiredashBackdropStatus.closing:
+        print("before ${_transformAnimation.value!.top}");
         _transformAnimation =
             RectTween(begin: _rectAppDown, end: _rectAppClosed)
                 .animate(_driverAnimation);
+        _backdropAnimationController.value = 0.0;
+        print("after ${_transformAnimation.value!.top}");
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(20),
           end: BorderRadius.circular(0),
@@ -344,6 +359,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     if (status != AnimationStatus.completed) {
       return;
     }
+    if (_pulling) {
+      return;
+    }
     print("completed : $status");
     setState(() {
       if (_backdropStatus == WiredashBackdropStatus.opening) {
@@ -359,6 +377,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _backdropStatus = WiredashBackdropStatus.closed;
       }
     });
+    print("now: $_backdropStatus");
   }
 
   @override
@@ -525,6 +544,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, app) {
+        print("position ${_driverAnimation.value}");
         final openedPosition = _rectAppDown.top;
         final openedFraction = () {
           switch (_backdropStatus) {
@@ -534,7 +554,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               return 1;
             case WiredashBackdropStatus.closingCentered:
             case WiredashBackdropStatus.closing:
-              return _driverAnimation.value;
+              return 1 - _driverAnimation.value;
             case WiredashBackdropStatus.openingCentered:
             case WiredashBackdropStatus.opening:
               return _driverAnimation.value;
@@ -552,34 +572,59 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
         if (!widget.controller.isAppInteractive) {
           app = PullToCloseDetector(
-            animController: _backdropAnimationController,
-            distanceToEdge: appTranslationY.abs(),
-            openedPosition: openedPosition.abs(),
             closeDirection: CloseDirection.upwards,
             onPullStart: () {
+              _pulling = true;
               _backdropStatus = WiredashBackdropStatus.closing;
               _swapAnimation();
               _pullCurves();
+              _pullAppYController.value = 0.0;
             },
-            onOpened: () {
-              _backdropStatus = WiredashBackdropStatus.open;
-              _swapAnimation();
-              _animCurves();
+            onPull: (delta) {
+              print("delta $delta");
+              setState(() {
+                _pullAppYController.value += delta;
+              });
             },
-            onOpening: () {
-              _backdropStatus = WiredashBackdropStatus.opening;
-              _swapAnimation();
-              _animCurves();
-            },
-            onClosed: () {
-              _backdropStatus = WiredashBackdropStatus.closed;
-              _swapAnimation();
-              _animCurves();
-            },
-            onClosing: () {
+            startCloseSimulation: (velocity) async {
+              print("-> Close");
+              _pulling = false;
               _backdropStatus = WiredashBackdropStatus.closing;
               _swapAnimation();
               _animCurves();
+              final simApp = SpringSimulation(
+                const SpringDescription(mass: 30, stiffness: 1, damping: 1),
+                _backdropAnimationController.value,
+                1.0,
+                -velocity / openedPosition,
+              );
+              final a1 = _backdropAnimationController.animateWith(simApp);
+              final a2 = _pullAppYController.animateTo(0,
+                  curve: Curves.easeOutExpo,
+                  duration: Duration(milliseconds: 400));
+              await Future.wait([a1, a2]);
+              _backdropStatus = WiredashBackdropStatus.closed;
+              _swapAnimation();
+            },
+            startReopenSimulation: (velocity) async {
+              print("-> Reopen");
+              _pulling = false;
+              _backdropStatus = WiredashBackdropStatus.opening;
+              _swapAnimation();
+              _animCurves();
+              final simApp = SpringSimulation(
+                const SpringDescription(mass: 30, stiffness: 1, damping: 1),
+                1 - _backdropAnimationController.value,
+                1.0,
+                -velocity / openedPosition,
+              );
+              final a1 = _backdropAnimationController.animateWith(simApp);
+              final a2 = _pullAppYController.animateTo(0,
+                  curve: Curves.easeOutExpo,
+                  duration: Duration(milliseconds: 400));
+              await Future.wait([a1, a2]);
+              _backdropStatus = WiredashBackdropStatus.open;
+              _swapAnimation();
             },
             child: app,
           );
@@ -597,7 +642,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         // ignore: join_return_with_assignment
         app = Positioned.fromRect(
           rect: _transformAnimation.value!,
-          child: app,
+          child: Transform.translate(
+            offset: Offset(0, _pullAppYController.value),
+            child: app,
+          ),
         );
 
         return app;
