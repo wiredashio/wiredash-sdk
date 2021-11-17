@@ -465,9 +465,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, child) {
-        return AppOverlay(
-          appRect: _transformAnimation.value!,
-          borderRadius: BorderRadius.circular(20),
+        return Transform.translate(
+          offset: Offset(0, _pullAppYController.value),
+          child: AppOverlay(
+            appRect: _transformAnimation.value!,
+            borderRadius: BorderRadius.circular(20),
+          ),
         );
       },
     );
