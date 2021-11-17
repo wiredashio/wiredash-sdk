@@ -127,7 +127,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   late final CurvedAnimation _driverAnimation = CurvedAnimation(
     parent: _backdropAnimationController,
     curve: Curves.easeOutCubic,
-    reverseCurve: Curves.easeOutCubic,
   );
 
   /// Detect window size changes in [didChangeDependencies]
@@ -174,7 +173,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   /// switch to lame linear curves that match the finger location exactly
   void _pullCurves() {
     _driverAnimation.curve = Curves.linear;
-    _driverAnimation.reverseCurve = Curves.linear;
   }
 
   /// switch to cool bouncy curves
@@ -278,8 +276,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// Sets the correct animation for the current [_backdropStatus]
   void _swapAnimation() {
-    print("swapAnim $_backdropStatus");
-    _backdropAnimationController.stop(canceled: false);
+    _backdropAnimationController.reset();
     switch (_backdropStatus) {
       case WiredashBackdropStatus.open:
         _transformAnimation = RectTween(begin: _rectAppDown, end: _rectAppDown)
