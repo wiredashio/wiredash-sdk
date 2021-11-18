@@ -46,9 +46,12 @@ flutter:
         default_package: wiredash
 
   fonts:
-    - family: LexendDeca
+    - family: Inter
       fonts:
-        - asset: lib/assets/fonts/LexendDeca-Regular.ttf
+        - asset: lib/assets/fonts/Inter-Regular.ttf
+        - weight: 400
+        - asset: lib/assets/fonts/Inter-Bold.ttf
+        - weight: 800
     - family: wiredash-icons
       fonts:
         - asset: lib/assets/fonts/Wiredash-Icons.ttf
