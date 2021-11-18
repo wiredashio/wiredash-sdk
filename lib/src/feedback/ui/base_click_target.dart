@@ -144,8 +144,10 @@ class AnimatedClickTarget extends StatefulWidget {
   final FocusNode? focusNode;
   final void Function()? onTap;
   final Widget Function(
-          BuildContext context, TargetState state, TargetStateAnimations anims)
-      builder;
+    BuildContext context,
+    TargetState state,
+    TargetStateAnimations anims,
+  ) builder;
   final Duration duration;
 
   @override

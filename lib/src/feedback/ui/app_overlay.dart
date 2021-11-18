@@ -34,8 +34,6 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
   late Animation<double> _dialogFadeAnimation;
   late Animation<double> _dialogScaleAnimation;
 
-  InAppSheet? _drawIntroInAppSheet;
-
   @override
   void initState() {
     super.initState();
@@ -46,9 +44,10 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
     );
 
     final dialogAnimation = CurvedAnimation(
-        parent: _dialogAnimationController,
-        curve: Curves.easeOutExpo,
-        reverseCurve: Curves.easeInExpo);
+      parent: _dialogAnimationController,
+      curve: Curves.easeOutExpo,
+      reverseCurve: Curves.easeInExpo,
+    );
 
     _dialogFadeAnimation = Tween(begin: .0, end: 1.0).animate(dialogAnimation);
     _dialogScaleAnimation = Tween(begin: .8, end: 1.0).animate(dialogAnimation);
@@ -247,8 +246,8 @@ class _AnimatedScreenshotButtonsState extends State<AnimatedScreenshotButtons>
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: BigBlueButton(
-                child: Icon(WiredashIcons.feature),
                 onTap: context.feedbackModel.enterCaptureMode,
+                child: const Icon(WiredashIcons.feature),
               ),
             ),
           ),
@@ -294,9 +293,11 @@ class _AnimatedScreenshotButtonsState extends State<AnimatedScreenshotButtons>
 }
 
 class AnimatedScreenshotBorder extends StatefulWidget {
-  const AnimatedScreenshotBorder(
-      {Key? key, required this.screenshotTaken, required this.cornerRadius})
-      : super(key: key);
+  const AnimatedScreenshotBorder({
+    Key? key,
+    required this.screenshotTaken,
+    required this.cornerRadius,
+  }) : super(key: key);
 
   final bool screenshotTaken;
   final double cornerRadius;
@@ -384,9 +385,9 @@ class _AnimatedScreenshotBorderState extends State<AnimatedScreenshotBorder>
               cornerRadius: widget.cornerRadius,
               cornerStrokeWidth: 6,
               cornerExtensionLength: Tween(
-                      begin: 20.0,
-                      end: MediaQuery.of(context).size.shortestSide / 4)
-                  .evaluate(_screenshotCornerExtentAnimation),
+                begin: 20.0,
+                end: MediaQuery.of(context).size.shortestSide / 4,
+              ).evaluate(_screenshotCornerExtentAnimation),
               edgeStrokeWidth: _screenshotBorderThicknessAnimation.value,
               color: _screenshotBorderColorAnimation.value!,
             ),

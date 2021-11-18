@@ -40,9 +40,12 @@ extension ChangeNotifierAsValueNotifier<C extends ChangeNotifier> on C {
       valueNotifier.notifyListeners();
     }
 
-    valueNotifier = _DisposableValueNotifier(selector(this), onDispose: () {
-      removeListener(onChange);
-    });
+    valueNotifier = _DisposableValueNotifier(
+      selector(this),
+      onDispose: () {
+        removeListener(onChange);
+      },
+    );
     addListener(onChange);
 
     return valueNotifier;

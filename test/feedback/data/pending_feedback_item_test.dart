@@ -35,7 +35,7 @@ void main() {
         padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
         viewInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-        physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+        physicalGeometry: Rect.zero,
         physicalSize: Size(1080, 2088),
       ),
       email: 'email@example.com',
@@ -65,7 +65,7 @@ void main() {
         padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
         viewInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-        physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+        physicalGeometry: Rect.zero,
         physicalSize: Size(1280, 720),
       ),
       message: 'Hello world!',

@@ -77,13 +77,15 @@ class PendingFeedbackItemParserV1 {
         deviceInfoJson['physicalGeometry'] as List<dynamic>;
     final deviceInfo = DeviceInfo(
       gestureInsets: WiredashWindowPadding.fromJson(
-          deviceInfoJson['gestureInsets'] as List<dynamic>),
+        deviceInfoJson['gestureInsets'] as List<dynamic>,
+      ),
       platformLocale: deviceInfoJson['platformLocale'] as String,
       platformSupportedLocales:
           (deviceInfoJson['platformSupportedLocales'] as List<dynamic>)
               .cast<String>(),
       padding: WiredashWindowPadding.fromJson(
-          deviceInfoJson['padding'] as List<dynamic>),
+        deviceInfoJson['padding'] as List<dynamic>,
+      ),
       platformBrightness: () {
         final value = deviceInfoJson['platformBrightness'];
         if (value == 'light') return Brightness.light;
@@ -100,7 +102,8 @@ class PendingFeedbackItemParserV1 {
       platformVersion: deviceInfoJson['platformVersion'] as String?,
       textScaleFactor: (deviceInfoJson['textScaleFactor'] as num).toDouble(),
       viewInsets: WiredashWindowPadding.fromJson(
-          deviceInfoJson['viewInsets'] as List<dynamic>),
+        deviceInfoJson['viewInsets'] as List<dynamic>,
+      ),
       userAgent: deviceInfoJson['userAgent'] as String?,
       physicalGeometry: Rect.fromLTRB(
         (physicalGeometry[0] as num).toDouble(),

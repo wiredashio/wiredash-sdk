@@ -74,6 +74,7 @@ class FeedbackModel with ChangeNotifier {
   }
 
   Future<void> saveScreenshot() async {
+    // ignore: unused_local_variable
     final mergedPainting =
         await _wiredashState.picassoController.paintDrawingOntoImage(
       _wiredashState.screencaptureController.screenshot!,

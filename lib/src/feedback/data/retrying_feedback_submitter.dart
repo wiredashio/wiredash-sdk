@@ -126,33 +126,48 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
         break;
       } on UnauthenticatedWiredashApiException catch (e, stack) {
         // Project configuration is off, retry at next app start
-        reportWiredashError(e, stack,
-            'Wiredash project configuration is wrong, next retry after next app start');
+        reportWiredashError(
+          e,
+          stack,
+          'Wiredash project configuration is wrong, next retry after next app start',
+        );
         break;
       } on WiredashApiException catch (e, stack) {
         if (e.response?.statusCode == 400) {
           // The request is invalid. The feedback will never be delivered
           // to the server, therefore discard it.
-          reportWiredashError(e, stack,
-              'Feedback has missing properties and can not be submitted to server. Will be discarded');
+          reportWiredashError(
+            e,
+            stack,
+            'Feedback has missing properties and can not be submitted to server. Will be discarded',
+          );
           await _pendingFeedbackItemStorage.clearPendingItem(item.id);
           break;
         }
         reportWiredashError(
-            e, stack, 'Wiredash server error. Will retry after app restart');
+          e,
+          stack,
+          'Wiredash server error. Will retry after app restart',
+        );
         break;
       } catch (e, stack) {
         if (attempt >= _maxAttempts) {
           // Exit after max attempts
           reportWiredashError(
-              e, stack, 'Could not send feedback after $attempt retries');
+            e,
+            stack,
+            'Could not send feedback after $attempt retries',
+          );
           break;
         }
 
         // Report error and retry with exponential backoff
-        reportWiredashError(e, stack,
-            'Could not send feedback to server after $attempt retries. Retrying...',
-            debugOnly: true);
+        reportWiredashError(
+          e,
+          stack,
+          'Could not send feedback to server after $attempt retries. Retrying...',
+          debugOnly: true,
+        );
         await Future.delayed(_exponentialBackoff(attempt));
       }
     }

@@ -131,67 +131,84 @@ class WiredashThemeData {
   String? get packageName => fontFamily == _fontFamily ? _packageName : null;
 
   TextStyle get titleStyle => TextStyle(
-      package: packageName,
-      fontFamily: fontFamily,
-      fontSize: 24,
-      color: white,
-      fontWeight: FontWeight.bold);
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 24,
+        color: white,
+        fontWeight: FontWeight.bold,
+      );
 
   TextStyle get subtitleStyle => TextStyle(
-      package: packageName, fontFamily: fontFamily, fontSize: 14, color: white);
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 14,
+        color: white,
+      );
 
   TextStyle get body1Style => TextStyle(
-      package: packageName,
-      fontFamily: fontFamily,
-      fontSize: 12,
-      color: primaryTextColor,
-      fontWeight: FontWeight.bold);
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 12,
+        color: primaryTextColor,
+        fontWeight: FontWeight.bold,
+      );
 
   TextStyle get body2Style => TextStyle(
-      package: packageName,
-      fontFamily: fontFamily,
-      fontSize: 12,
-      color: secondaryTextColor);
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 12,
+        color: secondaryTextColor,
+      );
 
   TextStyle get inputTextStyle => TextStyle(
-      package: packageName,
-      fontFamily: fontFamily,
-      fontSize: 14,
-      color: primaryTextColor);
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 14,
+        color: primaryTextColor,
+      );
 
   TextStyle get inputHintStyle => TextStyle(
-      package: packageName,
-      fontFamily: fontFamily,
-      fontSize: 14,
-      color: tertiaryTextColor);
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 14,
+        color: tertiaryTextColor,
+      );
 
   TextStyle get inputErrorStyle => TextStyle(
-      package: packageName,
-      fontFamily: fontFamily,
-      fontSize: 12,
-      color: errorColor);
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 12,
+        color: errorColor,
+      );
 
   TextStyle get buttonStyle => TextStyle(
-      package: packageName,
-      fontFamily: fontFamily,
-      fontSize: 14,
-      fontWeight: FontWeight.bold,
-      color: primaryColor);
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        color: primaryColor,
+      );
 
   TextStyle get buttonCancel => TextStyle(
-      package: packageName,
-      fontFamily: fontFamily,
-      fontSize: 14,
-      color: tertiaryTextColor);
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 14,
+        color: tertiaryTextColor,
+      );
 
   TextStyle get spotlightTitleStyle => TextStyle(
-      package: packageName,
-      fontFamily: fontFamily,
-      fontSize: 18,
-      letterSpacing: 1.4,
-      color: white,
-      fontWeight: FontWeight.bold);
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 18,
+        letterSpacing: 1.4,
+        color: white,
+        fontWeight: FontWeight.bold,
+      );
 
   TextStyle get spotlightTextStyle => TextStyle(
-      package: packageName, fontFamily: fontFamily, fontSize: 15, color: white);
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 15,
+        color: white,
+      );
 }

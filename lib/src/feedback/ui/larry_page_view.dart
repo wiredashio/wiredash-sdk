@@ -416,7 +416,11 @@ class LarryPageViewState extends State<LarryPageView>
       _animatingPageOut = true;
     });
     final outSim = GravitySimulation(
-        _pageExitAcceleration, 0, _pageSwitchDistance, _pageEnterVelocity);
+      _pageExitAcceleration,
+      0,
+      _pageSwitchDistance,
+      _pageEnterVelocity,
+    );
     _controller.animateWith(outSim);
   }
 
@@ -428,7 +432,11 @@ class LarryPageViewState extends State<LarryPageView>
       _animatingPageOut = true;
     });
     final outSim = GravitySimulation(
-        _pageExitAcceleration, 0, -_pageSwitchDistance, _pageEnterVelocity);
+      _pageExitAcceleration,
+      0,
+      -_pageSwitchDistance,
+      _pageEnterVelocity,
+    );
     _controller.animateWith(outSim);
   }
 }

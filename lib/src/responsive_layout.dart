@@ -14,10 +14,12 @@ class WiredashResponsiveLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final data = _calcBreakpoints(constraints);
-      return _ResponsiveLayoutInheritedWidget(data: data, child: child);
-    });
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final data = _calcBreakpoints(constraints);
+        return _ResponsiveLayoutInheritedWidget(data: data, child: child);
+      },
+    );
   }
 
   /// Better use the extension `context.responsiveLayout`
@@ -28,7 +30,8 @@ class WiredashResponsiveLayout extends StatelessWidget {
   }
 
   static WiredashResponsiveLayoutData _calcBreakpoints(
-      BoxConstraints constraints) {
+    BoxConstraints constraints,
+  ) {
     final normalized = constraints.normalize();
     final width = normalized.maxWidth;
     final size = Size(normalized.maxWidth, normalized.maxHeight);

@@ -155,15 +155,16 @@ class _ScreenshotDecorationPainter extends BoxPainter {
       -halfArcWidth,
     );
     path.arcTo(
-        Rect.fromLTWH(
-          _cornerRadius + _cornerExtensionLength - _borderThickness / 2,
-          -halfArcWidth,
-          _borderThickness,
-          _borderThickness,
-        ),
-        math.pi * 1.5,
-        math.pi,
-        false);
+      Rect.fromLTWH(
+        _cornerRadius + _cornerExtensionLength - _borderThickness / 2,
+        -halfArcWidth,
+        _borderThickness,
+        _borderThickness,
+      ),
+      math.pi * 1.5,
+      math.pi,
+      false,
+    );
     path.lineTo(
       _cornerRadius + _cornerExtensionLength,
       halfArcWidth,
@@ -173,15 +174,16 @@ class _ScreenshotDecorationPainter extends BoxPainter {
       halfArcWidth,
     );
     path.arcTo(
-        Rect.fromLTWH(
-          halfArcWidth,
-          halfArcWidth,
-          (_cornerRadius - halfArcWidth) * 2,
-          (_cornerRadius - halfArcWidth) * 2,
-        ),
-        math.pi * 1.5,
-        -math.pi / 2,
-        false);
+      Rect.fromLTWH(
+        halfArcWidth,
+        halfArcWidth,
+        (_cornerRadius - halfArcWidth) * 2,
+        (_cornerRadius - halfArcWidth) * 2,
+      ),
+      math.pi * 1.5,
+      -math.pi / 2,
+      false,
+    );
     path.lineTo(
       halfArcWidth,
       _cornerRadius,
@@ -191,15 +193,16 @@ class _ScreenshotDecorationPainter extends BoxPainter {
       _cornerRadius + _cornerExtensionLength,
     );
     path.arcTo(
-        Rect.fromLTWH(
-          -_borderThickness / 2,
-          _cornerExtensionLength + _cornerRadius - halfArcWidth,
-          _borderThickness,
-          _borderThickness,
-        ),
-        math.pi * 2,
-        math.pi,
-        false);
+      Rect.fromLTWH(
+        -_borderThickness / 2,
+        _cornerExtensionLength + _cornerRadius - halfArcWidth,
+        _borderThickness,
+        _borderThickness,
+      ),
+      math.pi * 2,
+      math.pi,
+      false,
+    );
     path.close();
 
     return path;

@@ -14,7 +14,6 @@ import 'package:wiredash/src/feedback/ui/app_overlay.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
 import 'package:wiredash/src/responsive_layout.dart';
-import 'package:wiredash/src/sprung.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
 
 enum WiredashBackdropStatus {
@@ -318,12 +317,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         break;
 
       case WiredashBackdropStatus.closing:
-        print("before ${_transformAnimation.value!.top}");
         _transformAnimation =
             RectTween(begin: _rectAppDown, end: _rectAppClosed)
                 .animate(_driverAnimation);
         _backdropAnimationController.value = 0.0;
-        print("after ${_transformAnimation.value!.top}");
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(20),
           end: BorderRadius.circular(0),
@@ -359,7 +356,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     if (_pulling) {
       return;
     }
-    print("completed : $status");
     setState(() {
       if (_backdropStatus == WiredashBackdropStatus.opening) {
         _backdropStatus = WiredashBackdropStatus.open;
@@ -374,7 +370,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _backdropStatus = WiredashBackdropStatus.closed;
       }
     });
-    print("now: $_backdropStatus");
   }
 
   @override
@@ -544,26 +539,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, app) {
-        print("position ${_driverAnimation.value}");
         final openedPosition = _rectAppDown.top;
-        final openedFraction = () {
-          switch (_backdropStatus) {
-            case WiredashBackdropStatus.centered:
-            case WiredashBackdropStatus.closed:
-            case WiredashBackdropStatus.open:
-              return 1;
-            case WiredashBackdropStatus.closingCentered:
-            case WiredashBackdropStatus.closing:
-              return 1 - _driverAnimation.value;
-            case WiredashBackdropStatus.openingCentered:
-            case WiredashBackdropStatus.opening:
-              return _driverAnimation.value;
-          }
-        }();
-
-        final appTranslationY = openedPosition * openedFraction;
-
-        // print("$appTranslationY ${_backdropAnimationController.value}");
 
         app = AbsorbPointer(
           absorbing: !widget.controller.isAppInteractive,
@@ -581,13 +557,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               _pullAppYController.value = 0.0;
             },
             onPull: (delta) {
-              print("delta $delta");
               setState(() {
                 _pullAppYController.value += delta;
               });
             },
             startCloseSimulation: (velocity) async {
-              print("-> Close");
               _pulling = false;
               _backdropStatus = WiredashBackdropStatus.closing;
               _swapAnimation();
@@ -599,15 +573,16 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 -velocity / openedPosition,
               );
               final a1 = _backdropAnimationController.animateWith(simApp);
-              final a2 = _pullAppYController.animateTo(0,
-                  curve: Curves.easeOutExpo,
-                  duration: Duration(milliseconds: 400));
+              final a2 = _pullAppYController.animateTo(
+                0,
+                curve: Curves.easeOutExpo,
+                duration: const Duration(milliseconds: 400),
+              );
               await Future.wait([a1, a2]);
               _backdropStatus = WiredashBackdropStatus.closed;
               _swapAnimation();
             },
             startReopenSimulation: (velocity) async {
-              print("-> Reopen");
               _pulling = false;
               _backdropStatus = WiredashBackdropStatus.opening;
               _swapAnimation();
@@ -619,9 +594,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 -velocity / openedPosition,
               );
               final a1 = _backdropAnimationController.animateWith(simApp);
-              final a2 = _pullAppYController.animateTo(0,
-                  curve: Curves.easeOutExpo,
-                  duration: Duration(milliseconds: 400));
+              final a2 = _pullAppYController.animateTo(
+                0,
+                curve: Curves.easeOutExpo,
+                duration: const Duration(milliseconds: 400),
+              );
               await Future.wait([a1, a2]);
               _backdropStatus = WiredashBackdropStatus.open;
               _swapAnimation();

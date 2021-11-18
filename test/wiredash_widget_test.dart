@@ -116,13 +116,15 @@ void main() {
           secret: 'test',
           navigatorKey: navigatorKey,
           child: MaterialApp(
-            home: Builder(builder: (context) {
-              return Scaffold(
-                floatingActionButton: FloatingActionButton(
-                  onPressed: Wiredash.of(context)!.show,
-                ),
-              );
-            }),
+            home: Builder(
+              builder: (context) {
+                return Scaffold(
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: Wiredash.of(context)!.show,
+                  ),
+                );
+              },
+            ),
             navigatorKey: navigatorKey,
           ),
         ),
@@ -137,7 +139,8 @@ void main() {
 
       // Go to capture mode
       await tester.tap(
-          find.byKey(const ValueKey('wiredash.sdk.intro.report_a_bug_button')));
+        find.byKey(const ValueKey('wiredash.sdk.intro.report_a_bug_button')),
+      );
       await tester.pumpAndSettle();
       // TODO add assertion again
       // expect(find.byType(Capture), findsOneWidget);
@@ -157,8 +160,10 @@ class _MockProjectCredentialValidator extends Fake
       MethodInvocationCatcher('validate');
 
   @override
-  Future<void> validate(
-      {required String projectId, required String secret}) async {
+  Future<void> validate({
+    required String projectId,
+    required String secret,
+  }) async {
     validateInvocations
         .addMethodCall(namedArgs: {'projectId': projectId, 'secret': secret});
   }

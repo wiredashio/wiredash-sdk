@@ -121,151 +121,157 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     );
 
     // email
-    final part3 = Builder(builder: (context) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const EmailInput(),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: context.responsiveLayout.horizontalMargin,
-              vertical: 16,
-            ),
-            child: AnimatedSize(
-              duration: const Duration(milliseconds: 225),
-              // ignore: deprecated_member_use
-              vsync: this,
-              clipBehavior: Clip.none,
-              child: AnimatedSwitcher(
+    final part3 = Builder(
+      builder: (context) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const EmailInput(),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.responsiveLayout.horizontalMargin,
+                vertical: 16,
+              ),
+              child: AnimatedSize(
                 duration: const Duration(milliseconds: 225),
-                reverseDuration: const Duration(milliseconds: 170),
-                switchInCurve: Curves.fastOutSlowIn,
-                switchOutCurve: Curves.fastOutSlowIn,
-                child: () {
-                  if (context.feedbackModel.userEmail?.isEmpty != false) {
-                    return LabeledButton(
-                      child: const Text('Skip'),
+                // ignore: deprecated_member_use
+                vsync: this,
+                clipBehavior: Clip.none,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 225),
+                  reverseDuration: const Duration(milliseconds: 170),
+                  switchInCurve: Curves.fastOutSlowIn,
+                  switchOutCurve: Curves.fastOutSlowIn,
+                  child: () {
+                    if (context.feedbackModel.userEmail?.isEmpty != false) {
+                      return LabeledButton(
+                        child: const Text('Skip'),
+                        onTap: () {
+                          StepInformation.of(context).pageView.moveToNextPage();
+                        },
+                      );
+                    }
+
+                    return BigBlueButton(
+                      child: const Icon(Icons.arrow_right_alt),
                       onTap: () {
                         StepInformation.of(context).pageView.moveToNextPage();
                       },
                     );
-                  }
+                  }(),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
 
-                  return BigBlueButton(
-                    child: const Icon(Icons.arrow_right_alt),
+    // screenshot
+    final part4 = Builder(
+      builder: (context) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.responsiveLayout.horizontalMargin,
+                vertical: 16,
+              ),
+              child: const Text(
+                'For a better understanding. Do you want to take a screenshot of it?',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.responsiveLayout.horizontalMargin,
+                vertical: 16,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BigBlueButton(
+                    child: const Text("Yes"),
+                    onTap: () {
+                      context.feedbackModel.enterCaptureMode();
+                    },
+                  ),
+                  const SizedBox(height: 64),
+                  LabeledButton(
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Text("I'm done"),
+                    ),
                     onTap: () {
                       StepInformation.of(context).pageView.moveToNextPage();
                     },
-                  );
-                }(),
-              ),
-            ),
-          ),
-        ],
-      );
-    });
-
-    // screenshot
-    final part4 = Builder(builder: (context) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: context.responsiveLayout.horizontalMargin,
-              vertical: 16,
-            ),
-            child: const Text(
-              'For a better understanding. Do you want to take a screenshot of it?',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: context.responsiveLayout.horizontalMargin,
-              vertical: 16,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BigBlueButton(
-                  child: const Text("Yes"),
-                  onTap: () {
-                    context.feedbackModel.enterCaptureMode();
-                  },
-                ),
-                const SizedBox(height: 64),
-                LabeledButton(
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Text("I'm done"),
                   ),
-                  onTap: () {
-                    StepInformation.of(context).pageView.moveToNextPage();
-                  },
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      );
-    });
+          ],
+        );
+      },
+    );
 
     // submit
-    final part5 = Builder(builder: (context) {
-      return Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: context.responsiveLayout.horizontalMargin,
-          vertical: 16,
-        ),
-        child: Container(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Summary',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
+    final part5 = Builder(
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsiveLayout.horizontalMargin,
+            vertical: 16,
+          ),
+          child: Container(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Summary',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Message: ${context.feedbackModel.feedbackMessage}\n'
-                  '\n'
-                  'Labels: ${_selectedLabels.value.map((e) => e.name)}\n'
-                  '\n'
-                  'Email: ${context.feedbackModel.userEmail}\n'
-                  '\n'
-                  'Screenshots: 0\n'
-                  '\n'
-                  'AppVersion: TODO\n'
-                  'Browser Version: TODO\n'
-                  'Whatever is useful\n',
-                  style: const TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 16),
-                Center(
-                  child: BigBlueButton(
-                    text: const Text('Submit'),
-                    onTap: () {
-                      context.feedbackModel.submitFeedback();
-                    },
-                    child: const Icon(WiredashIcons.submit),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Message: ${context.feedbackModel.feedbackMessage}\n'
+                    '\n'
+                    'Labels: ${_selectedLabels.value.map((e) => e.name)}\n'
+                    '\n'
+                    'Email: ${context.feedbackModel.userEmail}\n'
+                    '\n'
+                    'Screenshots: 0\n'
+                    '\n'
+                    'AppVersion: TODO\n'
+                    'Browser Version: TODO\n'
+                    'Whatever is useful\n',
+                    style: const TextStyle(fontSize: 14),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  Center(
+                    child: BigBlueButton(
+                      text: const Text('Submit'),
+                      onTap: () {
+                        context.feedbackModel.submitFeedback();
+                      },
+                      child: const Icon(WiredashIcons.submit),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
 
     return GestureDetector(
       onTap: () {
