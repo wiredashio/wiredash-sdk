@@ -36,3 +36,7 @@ class _InheritedWiredashTheme extends InheritedWidget {
   bool updateShouldNotify(_InheritedWiredashTheme oldWidget) =>
       theme != oldWidget.theme;
 }
+
+extension WiredashThemeExtension on BuildContext {
+  WiredashThemeData? get theme => WiredashTheme.of(this);
+}
