@@ -25,20 +25,20 @@ class WiredashThemeData {
             primaryBackgroundColor ?? const Color(0xffffffff),
         secondaryBackgroundColor:
             secondaryBackgroundColor ?? const Color(0xfff5f6f8),
-        errorColor: errorColor ?? const Color(0xffd41121),
+        errorColor: errorColor ?? const Color(0xffff5c6a),
         fontFamily: fontFamily ?? _fontFamily,
       );
     } else {
       return WiredashThemeData._(
         brightness: brightness,
-        primaryColor: primaryColor ?? const Color(0xff03A4E5),
-        secondaryColor: secondaryColor ?? const Color(0xff35F1D7),
-        primaryTextColor: primaryTextColor ?? const Color(0xfffafafa),
-        secondaryTextColor: secondaryTextColor ?? const Color(0xff9ba9bc),
+        primaryColor: primaryColor ?? const Color(0xff1A56DB),
+        secondaryColor: secondaryColor ?? const Color(0xffE8EEFB),
+        primaryTextColor: primaryTextColor ?? const Color(0xff030A1C),
+        secondaryTextColor: secondaryTextColor ?? const Color(0xff8C93A2),
         primaryBackgroundColor:
-            primaryBackgroundColor ?? const Color(0xff3c4042),
+            primaryBackgroundColor ?? const Color(0xffffffff),
         secondaryBackgroundColor:
-            secondaryBackgroundColor ?? const Color(0xff2b2b2b),
+            secondaryBackgroundColor ?? const Color(0xfff5f6f8),
         errorColor: errorColor ?? const Color(0xffff5c6a),
         fontFamily: fontFamily ?? _fontFamily,
       );
