@@ -86,16 +86,16 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(BigBlueButton));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 1));
 
       await tester.tap(find.text('Skip'));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 1));
 
       await tester.tap(find.text('Skip'));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 1));
 
       await tester.tap(find.text('Yes'));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 1));
 
       // Click the screenshot button
       await tester.tap(find.byIcon(WiredashIcons.screenshotAction));
