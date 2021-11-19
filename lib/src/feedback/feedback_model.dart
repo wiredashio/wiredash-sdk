@@ -64,7 +64,7 @@ class FeedbackModel with ChangeNotifier {
     _screenshotStatus = FeedbackScreenshotStatus.screenshotting;
     notifyListeners();
 
-    await _wiredashState.screencaptureController.captureScreen();
+    await _wiredashState.screenCaptureController.captureScreen();
 
     _screenshotStatus = FeedbackScreenshotStatus.drawing;
     notifyListeners();
@@ -77,14 +77,14 @@ class FeedbackModel with ChangeNotifier {
     // ignore: unused_local_variable
     final mergedPainting =
         await _wiredashState.picassoController.paintDrawingOntoImage(
-      _wiredashState.screencaptureController.screenshot!,
+      _wiredashState.screenCaptureController.screenshot!,
     );
 
     // TODO do something with merged drawing
 
     await _wiredashState.backdropController.animateToOpen();
 
-    _wiredashState.screencaptureController.releaseScreen();
+    _wiredashState.screenCaptureController.releaseScreen();
 
     _screenshotStatus = FeedbackScreenshotStatus.none;
     notifyListeners();

@@ -4,22 +4,22 @@ import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-class Screencapture extends StatefulWidget {
-  const Screencapture({
+class ScreenCapture extends StatefulWidget {
+  const ScreenCapture({
     Key? key,
     required this.controller,
     required this.child,
   }) : super(key: key);
 
-  final ScreencaptureController controller;
+  final ScreenCaptureController controller;
   final Widget child;
 
   @override
-  _ScreencaptureState createState() => _ScreencaptureState();
+  _ScreenCaptureState createState() => _ScreenCaptureState();
 }
 
-class ScreencaptureController extends ChangeNotifier {
-  late _ScreencaptureState? _state;
+class ScreenCaptureController extends ChangeNotifier {
+  late _ScreenCaptureState? _state;
 
   ui.Image? get screenshot => _screenshot;
   ui.Image? _screenshot;
@@ -35,7 +35,7 @@ class ScreencaptureController extends ChangeNotifier {
   }
 }
 
-class _ScreencaptureState extends State<Screencapture> {
+class _ScreenCaptureState extends State<ScreenCapture> {
   final _repaintBoundaryGlobalKey = GlobalKey();
   MemoryImage? _screenshotMemoryImage;
 

@@ -3,6 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
+import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
+import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
+import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -53,68 +56,11 @@ void main() {
       },
     );
 
-    testWidgets(
-        'only one feedback flow will be launched at a time - intro mode',
-        (tester) async {
-      final navigatorKey = GlobalKey<NavigatorState>();
-      WiredashController? controller;
-
+    testWidgets('Capture a screenshot', (tester) async {
       await tester.pumpWidget(
         Wiredash(
           projectId: 'test',
           secret: 'test',
-          navigatorKey: navigatorKey,
-          child: MaterialApp(
-            home: const SizedBox(),
-            navigatorKey: navigatorKey,
-            builder: (context, child) {
-              controller = Wiredash.of(context);
-              return child!;
-            },
-          ),
-        ),
-      );
-
-      expect(controller, isNotNull);
-      expect(find.byType(FeedbackSheet), findsNothing);
-
-      // Calling controller.show() once should bring out the FeedbackSheet.
-      controller!.show();
-      await tester.pump();
-      await tester.pump();
-      expect(find.byType(FeedbackSheet), findsOneWidget);
-
-      // Further calls to controller.show() should not bring out additional
-      // FeedbackSheets - there should still be only one.
-      controller!.show();
-      controller!.show();
-      controller!.show();
-      await tester.pump();
-      await tester.pump();
-      expect(find.byType(FeedbackSheet), findsOneWidget);
-
-      // Hide the FeedbackSheet
-      navigatorKey.currentState!.pop();
-      await tester.pump();
-      expect(find.byType(FeedbackSheet), findsNothing);
-
-      // Calling controller.show() should bring out a FeedbackSheet normally.
-      controller!.show();
-      await tester.pump();
-      await tester.pump();
-      expect(find.byType(FeedbackSheet), findsOneWidget);
-    });
-
-    testWidgets(
-        'only one feedback flow will be launched at a time - in capture mode',
-        (tester) async {
-      final navigatorKey = GlobalKey<NavigatorState>();
-
-      await tester.pumpWidget(
-        Wiredash(
-          projectId: 'test',
-          secret: 'test',
-          navigatorKey: navigatorKey,
           child: MaterialApp(
             home: Builder(
               builder: (context) {
@@ -125,31 +71,47 @@ void main() {
                 );
               },
             ),
-            navigatorKey: navigatorKey,
           ),
         ),
       );
 
-      expect(find.byType(FeedbackSheet), findsNothing);
+      expect(find.byType(WiredashFeedbackFlow), findsNothing);
 
-      // Open the FeedbackSheet.
+      // Open Wiredash
       await tester.tap(find.byType(FloatingActionButton));
       await tester.pumpAndSettle();
-      expect(find.byType(FeedbackSheet), findsOneWidget);
+      expect(find.byType(WiredashFeedbackFlow), findsOneWidget);
 
-      // Go to capture mode
-      await tester.tap(
-        find.byKey(const ValueKey('wiredash.sdk.intro.report_a_bug_button')),
-      );
+      await tester.enterText(find.byType(TextField), 'asdfasdf');
       await tester.pumpAndSettle();
-      // TODO add assertion again
-      // expect(find.byType(Capture), findsOneWidget);
 
-      // Tapping the FeedbackSheet again does nothing
-      await tester.tap(find.byType(FloatingActionButton));
+      await tester.tap(find.byType(BigBlueButton));
       await tester.pumpAndSettle();
-      // FeedbackSheet doesn't open
-      expect(find.byType(FeedbackSheet), findsNothing);
+
+      await tester.tap(find.text('Skip'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Skip'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Yes'));
+      await tester.pumpAndSettle();
+
+      // Click the screenshot button
+      await tester.tap(find.byIcon(WiredashIcons.screenshotAction));
+
+      final saveScreenshotButtonFinder = find.byIcon(WiredashIcons.check);
+
+      while (saveScreenshotButtonFinder.evaluate().isEmpty) {
+        // Wait for screenshot (in real time until calculation is done)
+        await tester
+            .runAsync(() => Future.delayed(const Duration(milliseconds: 200)));
+        await tester.pumpAndSettle();
+      }
+
+      // Check for save screenshot button
+      expect(saveScreenshotButtonFinder, findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
     });
   });
 }
@@ -168,5 +130,3 @@ class _MockProjectCredentialValidator extends Fake
         .addMethodCall(namedArgs: {'projectId': projectId, 'secret': secret});
   }
 }
-
-class FeedbackSheet {}

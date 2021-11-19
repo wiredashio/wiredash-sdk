@@ -14,7 +14,6 @@ import 'package:wiredash/src/feedback/ui/app_overlay.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
 import 'package:wiredash/src/responsive_layout.dart';
-import 'package:wiredash/src/wiredash_model_provider.dart';
 
 enum WiredashBackdropStatus {
   closed,
@@ -103,9 +102,6 @@ class BackdropController extends ChangeNotifier {
 
 class _WiredashBackdropState extends State<WiredashBackdrop>
     with TickerProviderStateMixin {
-  final GlobalKey _childAppKey =
-      GlobalKey<State<StatefulWidget>>(debugLabel: 'app');
-
   late final ScrollController _scrollController = ScrollController();
 
   /// Main animation controller
@@ -181,10 +177,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   @override
   void dispose() {
-    super.dispose();
     _scrollController.dispose();
     _backdropAnimationController.dispose();
     _backdropContentFocusNode.dispose();
+    super.dispose();
   }
 
   Future<void> _animateToOpen() async {
@@ -401,10 +397,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   @override
   Widget build(BuildContext context) {
-    Widget app = KeyedSubtree(
-      key: _childAppKey,
-      child: widget.child,
-    );
+    Widget app = widget.child;
 
     if (_backdropStatus == WiredashBackdropStatus.closed) {
       // Wiredash is closed, show the app without being wrapped in Transforms
@@ -419,6 +412,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       child: _KeepAppAlive(
         child: app,
       ),
+    );
+
+    final content = MediaQuery(
+      data: _mediaQueryData.copyWith(padding: _contentViewPadding),
+      // TODO check if this has to be wrapped with a FocusScope
+      child: const WiredashFeedbackFlow(),
     );
 
     return Material(
@@ -436,18 +435,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         // Stack allows placing the app on top while we're awaiting layout
         child: Stack(
           children: <Widget>[
-            MediaQuery(
-              data: _mediaQueryData.copyWith(padding: _contentViewPadding),
-              // Every TextField, has to be placed in a FocusScope (usually provided by a Route)
-              // Without it, the TextField crashes when removed from the widget tree
-              child: FocusScope(
-                debugLabel: 'backdrop content',
-                node: _backdropContentFocusNode,
-                child: const WiredashFeedbackFlow(),
-              ),
-            ),
+            content,
             _buildAppPositioningAnimation(
-              child: _buildAppFrame(child: app),
+              child: _buildAppFrame(
+                child: app,
+              ),
             ),
             _buildAppOverlay(),
           ],
@@ -609,7 +601,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           app = GestureDetector(
             onTap: () async {
               _pullCurves();
-              await context.wiredashModel.hide();
+              await widget.controller.animateToClosed();
               _animCurves();
             },
             child: app,

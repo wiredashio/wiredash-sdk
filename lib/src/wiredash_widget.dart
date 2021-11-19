@@ -26,7 +26,7 @@ import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
-import 'package:wiredash/src/media_query_from_window.dart';
+import 'package:wiredash/src/not_a_widgets_app.dart';
 import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/wiredash_backdrop.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
@@ -76,14 +76,14 @@ class Wiredash extends StatefulWidget {
     Key? key,
     required this.projectId,
     required this.secret,
-    required this.navigatorKey,
+    this.navigatorKey,
     this.options,
     this.theme,
     required this.child,
   }) : super(key: key);
 
   /// Reference to the app [Navigator] to show the Wiredash bottom sheet
-  final GlobalKey<NavigatorState> navigatorKey;
+  final GlobalKey<NavigatorState>? navigatorKey;
 
   /// Your Wiredash projectId
   final String projectId;
@@ -142,13 +142,20 @@ class WiredashState extends State<Wiredash> {
 
   late BackdropController backdropController;
   late PicassoController picassoController;
-  late ScreencaptureController screencaptureController;
+  late ScreenCaptureController screenCaptureController;
 
   late BuildInfoManager buildInfoManager;
 
   late DeviceInfoGenerator deviceInfoGenerator;
 
   late FeedbackSubmitter feedbackSubmitter;
+
+  final GlobalKey _appKey = GlobalKey<State<StatefulWidget>>(debugLabel: 'app');
+
+  final GlobalKey _backdropKey =
+      GlobalKey<State<StatefulWidget>>(debugLabel: 'backdrop');
+
+  bool _isWiredashClosed = true;
 
   @override
   void initState() {
@@ -177,9 +184,15 @@ class WiredashState extends State<Wiredash> {
         : (RetryingFeedbackSubmitter(fileSystem, storage, api)
           ..submitPendingFeedbackItems());
 
-    backdropController = BackdropController();
+    backdropController = BackdropController()
+      ..addListener(() {
+        setState(() {
+          _isWiredashClosed = backdropController.backdropStatus ==
+              WiredashBackdropStatus.closed;
+        });
+      });
     picassoController = PicassoController();
-    screencaptureController = ScreencaptureController();
+    screenCaptureController = ScreenCaptureController();
 
     _wiredashModel = WiredashModel(this);
     _feedbackModel = FeedbackModel(this);
@@ -190,6 +203,7 @@ class WiredashState extends State<Wiredash> {
   @override
   void dispose() {
     _wiredashModel.dispose();
+    _feedbackModel.dispose();
     super.dispose();
   }
 
@@ -219,62 +233,59 @@ class WiredashState extends State<Wiredash> {
 
   @override
   Widget build(BuildContext context) {
+    // Assign app an key so it doesn't lose state when wrapped, unwrapped with widgets
+    final Widget app = KeyedSubtree(
+      key: _appKey,
+      child: widget.child,
+    );
+
+    final appBuilder = Builder(
+      builder: (context) {
+        Widget widget = app;
+        // Only wrap when active to get as little side-effect as possible.
+        if (!_isWiredashClosed) {
+          // This is the place to wrap the app itself, not the whole backdrop
+          widget = Picasso(
+            controller: picassoController,
+            child: ScreenCapture(
+              controller: screenCaptureController,
+              child: widget,
+            ),
+          );
+        }
+
+        return widget;
+      },
+    );
+
+    final Widget backdrop = NotAWidgetsApp(
+      locale: widget.options?.currentLocale,
+      textDirection: widget.options?.textDirection,
+      // Provide responsive layout information to the wiredash UI
+      child: WiredashResponsiveLayout(
+        // Localize Wiredash
+        child: WiredashLocalizations(
+          // Style wiredash using the users provided theme
+          child: WiredashTheme(
+            data: _theme,
+            child: WiredashBackdrop(
+              key: _backdropKey,
+              controller: backdropController,
+              child: appBuilder,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Finally provide the models to wiredash and the UI
     return WiredashModelProvider(
       wiredashModel: _wiredashModel,
       child: FeedbackModelProvider(
         feedbackModel: _feedbackModel,
         child: WiredashOptions(
           data: options,
-          child: WiredashLocalizations(
-            // Both DefaultTextEditingShortcuts and DefaultTextEditingActions are
-            // required to make text edits like deletion of characters possible on macOS
-            child: DefaultTextEditingShortcuts(
-              child: DefaultTextEditingActions(
-                child: WiredashTheme(
-                  data: _theme,
-                  child: MediaQueryFromWindow(
-                    // Directionality required for all Text widgets
-                    child: Directionality(
-                      textDirection:
-                          widget.options?.textDirection ?? TextDirection.ltr,
-                      // Localizations required for all Flutter UI widgets
-                      child: Localizations(
-                        locale: widget.options?.currentLocale ?? window.locale,
-                        delegates: const [
-                          DefaultMaterialLocalizations.delegate,
-                          DefaultCupertinoLocalizations.delegate,
-                          DefaultWidgetsLocalizations.delegate,
-                        ],
-                        // Provide responsive layout information to the wiredash UI
-                        child: WiredashResponsiveLayout(
-                          // Overlay is required for text edit functions such as copy/paste on mobile
-                          child: Overlay(
-                            initialEntries: [
-                              OverlayEntry(
-                                builder: (context) {
-                                  // use a stateful widget as direct child or hot reload will not work for that widget
-                                  return WiredashBackdrop(
-                                    controller: backdropController,
-                                    child: Picasso(
-                                      controller: picassoController,
-                                      child: Screencapture(
-                                        controller: screencaptureController,
-                                        child: widget.child,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          child: backdrop,
         ),
       ),
     );
