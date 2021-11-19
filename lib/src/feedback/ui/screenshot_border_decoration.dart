@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 /// Draws a border with prominent corners (thicker)
 class ScreenshotBorderDecoration extends Decoration {
   const ScreenshotBorderDecoration({
-    required this.cornerRadius,
+    required this.borderRadius,
     required this.cornerStrokeWidth,
     required this.edgeStrokeWidth,
     this.cornerExtensionLength = 8.0,
@@ -14,14 +14,14 @@ class ScreenshotBorderDecoration extends Decoration {
 
   final double cornerStrokeWidth;
   final double edgeStrokeWidth;
-  final double cornerRadius;
+  final BorderRadius borderRadius;
   final double cornerExtensionLength;
   final Color color;
 
   @override
   BoxPainter createBoxPainter([VoidCallback? onChanged]) {
     return _ScreenshotDecorationPainter(
-      cornerRadius,
+      borderRadius,
       cornerStrokeWidth,
       edgeStrokeWidth,
       cornerExtensionLength,
@@ -32,7 +32,7 @@ class ScreenshotBorderDecoration extends Decoration {
 
 class _ScreenshotDecorationPainter extends BoxPainter {
   _ScreenshotDecorationPainter(
-    this._cornerRadius,
+    this._borderRadius,
     this._borderThickness,
     this._edgeThickness,
     this._cornerExtensionLength,
@@ -41,7 +41,7 @@ class _ScreenshotDecorationPainter extends BoxPainter {
 
   final double _borderThickness;
   final double _edgeThickness;
-  final double _cornerRadius;
+  final BorderRadius _borderRadius;
   final double _cornerExtensionLength;
   final Color _color;
 
@@ -55,6 +55,8 @@ class _ScreenshotDecorationPainter extends BoxPainter {
     final arcPaint = Paint()
       ..color = _color
       ..style = PaintingStyle.fill;
+
+    final double _cornerRadius = _borderRadius.topLeft.x;
 
     // Create one of the corner arcs, it will be redrawn for all 4 corners
     final cornerArc = _createCornerArcPath();
@@ -125,6 +127,7 @@ class _ScreenshotDecorationPainter extends BoxPainter {
 
   Path _createCornerArcPath() {
     final halfArcWidth = _borderThickness / 2;
+    final double _cornerRadius = _borderRadius.topLeft.x;
 
     final path = Path();
     path.moveTo(

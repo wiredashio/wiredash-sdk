@@ -95,7 +95,7 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
       rect: widget.appRect,
       child: AnimatedScreenshotBorder(
         screenshotTaken: isScreenshotTaken,
-        cornerRadius: 20,
+        borderRadius: widget.borderRadius,
       ),
     );
   }
@@ -296,11 +296,11 @@ class AnimatedScreenshotBorder extends StatefulWidget {
   const AnimatedScreenshotBorder({
     Key? key,
     required this.screenshotTaken,
-    required this.cornerRadius,
+    required this.borderRadius,
   }) : super(key: key);
 
   final bool screenshotTaken;
-  final double cornerRadius;
+  final BorderRadius borderRadius;
 
   @override
   _AnimatedScreenshotBorderState createState() =>
@@ -379,18 +379,26 @@ class _AnimatedScreenshotBorderState extends State<AnimatedScreenshotBorder>
       animation: _controller,
       child: _buildScreenshotFlash(),
       builder: (context, child) {
+        final inScreenshotMode = context.feedbackModel.screenshotStatus ==
+                FeedbackScreenshotStatus.navigating ||
+            context.feedbackModel.screenshotStatus ==
+                FeedbackScreenshotStatus.screenshotting ||
+            context.feedbackModel.screenshotStatus ==
+                FeedbackScreenshotStatus.drawing;
         return IgnorePointer(
           child: DecoratedBox(
-            decoration: ScreenshotBorderDecoration(
-              cornerRadius: widget.cornerRadius,
-              cornerStrokeWidth: 6,
-              cornerExtensionLength: Tween(
-                begin: 20.0,
-                end: MediaQuery.of(context).size.shortestSide / 4,
-              ).evaluate(_screenshotCornerExtentAnimation),
-              edgeStrokeWidth: _screenshotBorderThicknessAnimation.value,
-              color: _screenshotBorderColorAnimation.value!,
-            ),
+            decoration: inScreenshotMode
+                ? ScreenshotBorderDecoration(
+                    borderRadius: widget.borderRadius,
+                    cornerStrokeWidth: 6,
+                    cornerExtensionLength: Tween(
+                      begin: 20.0,
+                      end: MediaQuery.of(context).size.shortestSide / 4,
+                    ).evaluate(_screenshotCornerExtentAnimation),
+                    edgeStrokeWidth: _screenshotBorderThicknessAnimation.value,
+                    color: _screenshotBorderColorAnimation.value!,
+                  )
+                : const BoxDecoration(),
             child: child,
           ),
         );
@@ -405,7 +413,7 @@ class _AnimatedScreenshotBorderState extends State<AnimatedScreenshotBorder>
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: const Color(0xffffffff),
-            borderRadius: BorderRadius.circular(widget.cornerRadius),
+            borderRadius: widget.borderRadius,
           ),
           child: const SizedBox.expand(),
         ),

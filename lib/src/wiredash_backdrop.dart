@@ -456,7 +456,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           offset: Offset(0, _pullAppYController.value),
           child: AppOverlay(
             appRect: _transformAnimation.value!,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: _cornerRadiusAnimation.value!,
           ),
         );
       },
@@ -473,6 +473,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       builder: (context, child) {
         return Stack(
           fit: StackFit.passthrough,
+          clipBehavior: Clip.none,
           children: [
             SizedBox(
               height: _mediaQueryData.size.height,
