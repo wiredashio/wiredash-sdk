@@ -1,64 +1,83 @@
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/utils/color_ext.dart';
+import 'package:wiredash/src/common/widgets/animated_shape.dart';
 import 'package:wiredash/src/common/widgets/tron_icon.dart';
 
-enum TronButtonStyle { primary, secondary, custom }
-
-class TronButton extends ImplicitlyAnimatedWidget {
+class TronButton extends StatefulWidget {
   const TronButton({
     required this.icon,
     required this.label,
     this.onTap,
-    this.color, // TODO discuss TronButtonStyle vs text / icon colors
-    this.style = TronButtonStyle.primary,
+    this.color,
     Key? key,
-  }) : super(
-          key: key,
-          curve: Curves.easeOutCubic,
-          duration: const Duration(milliseconds: 300),
-        );
+  }) : super(key: key);
 
   final Color? color;
   final IconData icon;
   final String label;
-  final TronButtonStyle style;
   final VoidCallback? onTap;
 
   @override
   _TronButtonState createState() => _TronButtonState();
 }
 
-class _TronButtonState extends AnimatedWidgetBaseState<TronButton> {
-  ColorTween? _buttonColorTween;
-  Tween<double>? _iconScaleTween;
-  Tween<double>? _buttonScaleTween;
+class _TronButtonState extends State<TronButton>
+    with SingleTickerProviderStateMixin {
+  static const _duration = Duration(milliseconds: 150);
+  late AnimationController _controller;
 
-  bool _focused = false;
+  late Animation<double> _buttonScaleAnimation;
+  late Animation<double> _iconScaleAnimation;
+
+  bool _focused = false; // TODO implement 
   bool _pressed = false;
   bool _hovered = false;
 
   bool get _enabled => widget.onTap != null;
 
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: _duration);
+
+    _buttonScaleAnimation = Tween(begin: 1.0, end: 0.9).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+    _iconScaleAnimation = Tween(begin: 1.0, end: 1.15).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   Color get _buttonColor {
-    switch (widget.style) {
-      case TronButtonStyle.primary:
-        return const Color(0xff1A56DB);
-      case TronButtonStyle.secondary:
-        return const Color(0xffE8EEFB);
+    final buttonColor = widget.color ?? const Color(0xff1A56DB);
+
+    if (widget.onTap == null) {
+      return buttonColor.lighten(0.3);
     }
 
-    return widget.color ?? const Color(0xff1A56DB);
+    if (_pressed) {
+      // ignore: avoid_redundant_argument_values
+      return buttonColor.darken(0.1);
+    }
+
+    if (_hovered) {
+      return buttonColor.darken(0.05);
+    }
+
+    return buttonColor;
   }
 
   Color get _iconColor {
-    switch (widget.style) {
-      case TronButtonStyle.primary:
-        return const Color(0xffE8EEFB);
-      case TronButtonStyle.secondary:
-        return const Color(0xff1A56DB);
+    // TODO define bright / dark icon colors in theme
+    if(_buttonColor.brightness == Brightness.light) {
+      return const Color(0xff1A56DB);
     }
-
     return const Color(0xffE8EEFB);
   }
 
@@ -82,13 +101,10 @@ class _TronButtonState extends AnimatedWidgetBaseState<TronButton> {
             height: 48,
             width: 80,
             child: ScaleTransition(
-              scale: _buttonScaleTween!.animate(animation),
-              child: PhysicalShape(
-                color: _buttonColorTween!.evaluate(animation)!,
-                elevation: _focused ? 2 : 0,
-                clipper: const ShapeBorderClipper(
-                  shape: StadiumBorder(),
-                ),
+              scale: _buttonScaleAnimation,
+              child: AnimatedShape(
+                color: _buttonColor,
+                shape: const StadiumBorder(),
                 child: GestureDetector(
                   onTapDown: _handleTapDown,
                   onTap: _simulateTap,
@@ -97,7 +113,7 @@ class _TronButtonState extends AnimatedWidgetBaseState<TronButton> {
                   behavior: HitTestBehavior.opaque,
                   excludeFromSemantics: true,
                   child: ScaleTransition(
-                    scale: _iconScaleTween!.animate(animation),
+                    scale: _iconScaleAnimation,
                     child: TronIcon(
                       widget.icon,
                       color: _iconColor,
@@ -113,78 +129,63 @@ class _TronButtonState extends AnimatedWidgetBaseState<TronButton> {
   }
 
   Future<void> _simulateTap() async {
-    if (widget.onTap == null) return;
+    if (widget.onTap == null || _controller.isAnimating) return;
     widget.onTap!.call();
 
-    _pressed = true;
-    didUpdateWidget(widget);
-    await Future.delayed(widget.duration);
-    _pressed = false;
-    didUpdateWidget(widget);
+    setState(() {
+      _pressed = true;
+      _controller.forward();
+    });
+
+    await Future.delayed(_duration);
+
+    setState(() {
+      _pressed = false;
+      _controller.reverse();
+    });
   }
 
   void _handleFocusUpdate(bool focused) {
-    _focused = focused;
-    didUpdateWidget(widget);
+    setState(() {
+      _focused = focused;
+    });
   }
 
   void _handleMouseEnter(PointerEnterEvent event) {
-    _hovered = true;
-    didUpdateWidget(widget);
+    setState(() {
+      _hovered = true;
+    });
   }
 
   void _handleMouseExit(PointerExitEvent event) {
-    _hovered = false;
-    didUpdateWidget(widget);
+    setState(() {
+      _hovered = false;
+    });
   }
 
   void _handleTapDown(TapDownDetails details) {
     if (!_enabled) return;
-    _pressed = true;
-    didUpdateWidget(widget);
+
+    setState(() {
+      _pressed = true;
+      _controller.forward();
+    });
   }
 
   void _handleTapUp(TapUpDetails details) {
-    _pressed = false;
+    if (!_enabled) return;
     widget.onTap?.call();
-    didUpdateWidget(widget);
+
+    setState(() {
+      _pressed = false;
+      _controller.reverse();
+    });
   }
 
   void _handleTapCancel() {
-    _pressed = false;
-    didUpdateWidget(widget);
-  }
-
-  @override
-  void forEachTween(TweenVisitor<dynamic> visitor) {
-    _buttonColorTween = visitor(
-      _buttonColorTween,
-      () {
-        if (widget.onTap == null) {
-          return _buttonColor.lighten(0.3);
-        }
-        if (_pressed) {
-          // ignore: avoid_redundant_argument_values
-          return _buttonColor.darken(0.1);
-        }
-        if (_hovered) {
-          return _buttonColor.darken(0.05);
-        }
-        return _buttonColor;
-      }(),
-      (dynamic value) => ColorTween(begin: value as Color?),
-    ) as ColorTween?;
-
-    _iconScaleTween = visitor(
-      _iconScaleTween,
-      _pressed ? 1.2 : 1.0,
-      (dynamic value) => Tween<double>(begin: value as double?),
-    ) as Tween<double>?;
-
-    _buttonScaleTween = visitor(
-      _buttonScaleTween,
-      _pressed ? .90 : 1.0,
-      (dynamic value) => Tween<double>(begin: value as double?),
-    ) as Tween<double>?;
+    setState(() {
+      _pressed = false;
+      _controller.reverse();
+    });
   }
 }
