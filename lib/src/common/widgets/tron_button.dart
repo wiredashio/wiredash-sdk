@@ -31,7 +31,7 @@ class _TronButtonState extends State<TronButton>
   late Animation<double> _buttonScaleAnimation;
   late Animation<double> _iconScaleAnimation;
 
-  bool _focused = false; // TODO implement 
+  bool _focused = false; // TODO implement
   bool _pressed = false;
   bool _hovered = false;
 
@@ -43,9 +43,11 @@ class _TronButtonState extends State<TronButton>
     _controller = AnimationController(vsync: this, duration: _duration);
 
     _buttonScaleAnimation = Tween(begin: 1.0, end: 0.9).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+    );
     _iconScaleAnimation = Tween(begin: 1.0, end: 1.15).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+    );
   }
 
   @override
@@ -75,7 +77,7 @@ class _TronButtonState extends State<TronButton>
 
   Color get _iconColor {
     // TODO define bright / dark icon colors in theme
-    if(_buttonColor.brightness == Brightness.light) {
+    if (_buttonColor.brightness == Brightness.light) {
       return const Color(0xff1A56DB);
     }
     return const Color(0xffE8EEFB);
