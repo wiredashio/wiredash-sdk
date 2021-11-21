@@ -21,4 +21,14 @@ extension ColorBrightness on Color {
 
     return hslLight.toColor();
   }
+
+  Brightness get brightness {
+    final grayscale = (0.299 * red) + (0.587 * green) + (0.114 * blue);
+
+    if (grayscale > 128) {
+      return Brightness.light;
+    } else {
+      return Brightness.dark;
+    }
+  }
 }
