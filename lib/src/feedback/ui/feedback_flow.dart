@@ -262,7 +262,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                       onTap: () {
                         context.feedbackModel.submitFeedback();
                       },
-                      child: const Icon(WiredashIcons.submit),
+                      child: const Icon(Wirecons.save),
                     ),
                   ),
                 ],

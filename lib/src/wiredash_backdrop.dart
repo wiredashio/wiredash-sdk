@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
+import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/ui/app_overlay.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
@@ -515,7 +515,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                   return 0.0;
                 }(),
                 child: const Icon(
-                  WiredashIcons.cevronDownLight,
+                  Wirecons.cheveron_down,
                   color: Colors.black26,
                 ),
               ),

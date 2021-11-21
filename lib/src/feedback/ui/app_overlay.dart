@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/widgets/gradient_shader.dart';
-import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
+import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
@@ -247,7 +247,7 @@ class _AnimatedScreenshotButtonsState extends State<AnimatedScreenshotButtons>
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: BigBlueButton(
                 onTap: context.feedbackModel.enterCaptureMode,
-                child: const Icon(WiredashIcons.feature),
+                child: const Icon(Wirecons.camera),
               ),
             ),
           ),
@@ -285,9 +285,9 @@ class _AnimatedScreenshotButtonsState extends State<AnimatedScreenshotButtons>
       case FeedbackScreenshotStatus.none:
       case FeedbackScreenshotStatus.navigating:
       case FeedbackScreenshotStatus.screenshotting:
-        return WiredashIcons.screenshotAction;
+        return Wirecons.camera;
       case FeedbackScreenshotStatus.drawing:
-        return WiredashIcons.check;
+        return Wirecons.check;
     }
   }
 }
@@ -448,7 +448,7 @@ class DrawIntroSheet extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: const [
                     SizedBox(height: 12),
-                    Icon(WiredashIcons.spotlightDraw),
+                    Icon(Wirecons.pencil),
                     SizedBox(height: 12),
                     Text(
                       'Navigate the app, then take a screenshot',

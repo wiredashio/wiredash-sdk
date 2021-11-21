@@ -52,6 +52,6 @@ flutter:
         - weight: 400
         - asset: lib/assets/fonts/Inter-Bold.ttf
         - weight: 800
-    - family: wiredash-icons
+    - family: Wirecons
       fonts:
-        - asset: lib/assets/fonts/Wiredash-Icons.ttf
+        - asset: lib/assets/fonts/Wirecons.ttf
