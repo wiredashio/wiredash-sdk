@@ -59,7 +59,7 @@ class _TronButtonState extends State<TronButton>
   Color get _buttonColor {
     final buttonColor = widget.color ?? const Color(0xff1A56DB);
 
-    if (widget.onTap == null) {
+    if (!_enabled) {
       return buttonColor.lighten(0.3);
     }
 
@@ -97,6 +97,7 @@ class _TronButtonState extends State<TronButton>
         onExit: _handleMouseExit,
         child: Semantics(
           button: true,
+          enabled: _enabled,
           label: widget.label,
           onTap: widget.onTap == null ? null : _simulateTap,
           child: SizedBox(
