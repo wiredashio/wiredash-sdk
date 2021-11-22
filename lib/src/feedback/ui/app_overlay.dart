@@ -377,7 +377,6 @@ class _AnimatedScreenshotBorderState extends State<AnimatedScreenshotBorder>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _controller,
-      child: _buildScreenshotFlash(),
       builder: (context, child) {
         final inScreenshotMode = context.feedbackModel.screenshotStatus ==
                 FeedbackScreenshotStatus.navigating ||
@@ -403,6 +402,7 @@ class _AnimatedScreenshotBorderState extends State<AnimatedScreenshotBorder>
           ),
         );
       },
+      child: _buildScreenshotFlash(),
     );
   }
 

@@ -92,22 +92,22 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                       child: () {
                         if (selectedLabels.isEmpty) {
                           return LabeledButton(
-                            child: const Text('Skip'),
                             onTap: () {
                               StepInformation.of(context)
                                   .pageView
                                   .moveToNextPage();
                             },
+                            child: const Text('Skip'),
                           );
                         }
 
                         return BigBlueButton(
-                          child: const Icon(Icons.arrow_right_alt),
                           onTap: () {
                             StepInformation.of(context)
                                 .pageView
                                 .moveToNextPage();
                           },
+                          child: const Icon(Icons.arrow_right_alt),
                         );
                       }(),
                     ),
@@ -145,18 +145,18 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                   child: () {
                     if (context.feedbackModel.userEmail?.isEmpty != false) {
                       return LabeledButton(
-                        child: const Text('Skip'),
                         onTap: () {
                           StepInformation.of(context).pageView.moveToNextPage();
                         },
+                        child: const Text('Skip'),
                       );
                     }
 
                     return BigBlueButton(
-                      child: const Icon(Icons.arrow_right_alt),
                       onTap: () {
                         StepInformation.of(context).pageView.moveToNextPage();
                       },
+                      child: const Icon(Icons.arrow_right_alt),
                     );
                   }(),
                 ),
@@ -195,20 +195,20 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   BigBlueButton(
-                    child: const Text("Yes"),
                     onTap: () {
                       context.feedbackModel.enterCaptureMode();
                     },
+                    child: const Text("Yes"),
                   ),
                   const SizedBox(height: 64),
                   LabeledButton(
+                    onTap: () {
+                      StepInformation.of(context).pageView.moveToNextPage();
+                    },
                     child: const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 12.0),
                       child: Text("I'm done"),
                     ),
-                    onTap: () {
-                      StepInformation.of(context).pageView.moveToNextPage();
-                    },
                   ),
                 ],
               ),
@@ -475,11 +475,11 @@ class _FeedbackMessageStepPageState extends State<FeedbackMessageStepPage>
           alignment: Alignment.topLeft,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
           child: BigBlueButton(
-            child: const Icon(Icons.arrow_right_alt),
             onTap: () {
               Focus.maybeOf(context)?.unfocus();
               StepInformation.of(context).pageView.moveToNextPage();
             },
+            child: const Icon(Icons.arrow_right_alt),
           ),
         );
       },
