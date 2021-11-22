@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
-import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
+import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
@@ -101,15 +101,15 @@ void main() {
       await tester.waitUntil(find.text('Yes'), findsOneWidget);
 
       await tester.tap(find.text('Yes'));
-      await tester.pumpAndSettle();
+      await tester.pumpHardAndSettle();
 
       // Click the screenshot button
-      await tester.tap(find.byIcon(WiredashIcons.screenshotAction));
+      await tester.tap(find.byIcon(Wirecons.camera));
       await tester.pumpAndSettle();
-      await tester.waitUntil(find.byIcon(WiredashIcons.check), findsOneWidget);
+      await tester.waitUntil(find.byIcon(Wirecons.check), findsOneWidget);
 
       // Check for save screenshot button
-      expect(find.byIcon(WiredashIcons.check), findsOneWidget);
+      expect(find.byIcon(Wirecons.check), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
     });
   });
@@ -120,16 +120,18 @@ extension on WidgetTester {
   Future<void> pumpHardAndSettle() async {
     await pumpAndSettle();
     // pump event queue, trigger timers
-    await runAsync(() => Future.delayed(Duration(milliseconds: 1)));
+    await runAsync(() => Future.delayed(const Duration(milliseconds: 1)));
     await pumpAndSettle();
   }
 
   Future<void> waitUntil(Finder finder, Matcher matcher) async {
     await pumpAndSettle();
+    // ignore: literal_only_boolean_expressions
     while (true) {
       if (matcher.matches(finder, {})) {
         break;
       }
+      // ignore: avoid_print
       print('Waiting for\nFinder: $finder to match\nMatcher: $matcher');
       await pumpHardAndSettle();
     }

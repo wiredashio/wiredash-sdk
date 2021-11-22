@@ -31,6 +31,7 @@ class _TronButtonState extends State<TronButton>
   late Animation<double> _buttonScaleAnimation;
   late Animation<double> _iconScaleAnimation;
 
+  // ignore: unused_field
   bool _focused = false; // TODO implement
   bool _pressed = false;
   bool _hovered = false;

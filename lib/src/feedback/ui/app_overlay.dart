@@ -247,7 +247,7 @@ class _AnimatedScreenshotButtonsState extends State<AnimatedScreenshotButtons>
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: BigBlueButton(
                 onTap: context.feedbackModel.enterCaptureMode,
-                child: const Icon(Wirecons.camera),
+                child: const Icon(Wirecons.pencil),
               ),
             ),
           ),
