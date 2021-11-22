@@ -47,7 +47,7 @@ class _AnimatedShapeState extends AnimatedWidgetBaseState<AnimatedShape> {
     _borderTween = visitor(
       _borderTween,
       widget.shape,
-          (dynamic value) => ShapeBorderTween(begin: value as ShapeBorder),
+      (dynamic value) => ShapeBorderTween(begin: value as ShapeBorder),
     ) as ShapeBorderTween?;
   }
 }
