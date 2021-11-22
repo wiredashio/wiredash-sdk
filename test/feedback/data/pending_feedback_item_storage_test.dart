@@ -93,7 +93,7 @@ void main() {
                   WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
               viewInsets:
                   WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-              physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+              physicalGeometry: Rect.zero,
               physicalSize: Size(800, 1200),
             ),
             email: 'email@example.com',
@@ -185,7 +185,7 @@ void main() {
                   WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
               viewInsets:
                   WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-              physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+              physicalGeometry: Rect.zero,
               physicalSize: Size(800, 1200),
             ),
             email: 'email@example.com',
@@ -205,7 +205,9 @@ void main() {
       ]);
 
       expect(
-          fileSystem.file('<existing item screenshot>').existsSync(), isTrue);
+        fileSystem.file('<existing item screenshot>').existsSync(),
+        isTrue,
+      );
 
       expect(fileSystem.file('0.png').existsSync(), isTrue);
     });
@@ -482,7 +484,9 @@ void main() {
       });
 
       await fakeSharedPreferences.setStringList(
-          'io.wiredash.pending_feedback_items', [illegalItem, legalItem]);
+        'io.wiredash.pending_feedback_items',
+        [illegalItem, legalItem],
+      );
 
       final oldOnErrorHandler = FlutterError.onError;
       late FlutterErrorDetails caught;
@@ -497,11 +501,12 @@ void main() {
 
       // error was reported to Flutter.onError
       expect(
-          caught.stack.toString(),
-          stringContainsInOrder([
-            'deserializePendingFeedbackItem',
-            'PendingFeedbackItemStorage.retrieveAllPendingItems',
-          ]));
+        caught.stack.toString(),
+        stringContainsInOrder([
+          'deserializePendingFeedbackItem',
+          'PendingFeedbackItemStorage.retrieveAllPendingItems',
+        ]),
+      );
       // reset error reporter after successful assertion
       FlutterError.onError = oldOnErrorHandler;
 
@@ -527,7 +532,7 @@ void main() {
                   WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
               viewInsets:
                   WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-              physicalGeometry: Rect.fromLTRB(0, 0, 0, 0),
+              physicalGeometry: Rect.zero,
               physicalSize: Size(800, 1200),
             ),
             email: 'email@example.com',
@@ -544,7 +549,9 @@ void main() {
       final lastCall = fakeSharedPreferences.setStringListInvocations.latest;
       expect(lastCall[0], 'io.wiredash.pending_feedback_items');
       expect(
-          lastCall[1], [legalItem, serializePendingFeedbackItem(pendingItem)]);
+        lastCall[1],
+        [legalItem, serializePendingFeedbackItem(pendingItem)],
+      );
 
       // screenshot was deleted as well, leave nothing behind!
       expect(

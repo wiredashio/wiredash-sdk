@@ -1,4 +1,5 @@
 import 'dart:ui' show Brightness, WindowPadding;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
@@ -153,7 +154,9 @@ class DeviceInfo {
           runtimeType == other.runtimeType &&
           platformLocale == other.platformLocale &&
           listEquals(
-              platformSupportedLocales, other.platformSupportedLocales) &&
+            platformSupportedLocales,
+            other.platformSupportedLocales,
+          ) &&
           padding == other.padding &&
           physicalSize == other.physicalSize &&
           physicalGeometry == other.physicalGeometry &&

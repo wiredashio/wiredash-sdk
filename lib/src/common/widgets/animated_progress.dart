@@ -29,8 +29,11 @@ class _AnimatedProgressState extends State<AnimatedProgress>
   void didUpdateWidget(AnimatedProgress oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.value != oldWidget.value) {
-      _progressAnimation.animateTo(widget.value,
-          duration: const Duration(milliseconds: 450), curve: Curves.ease);
+      _progressAnimation.animateTo(
+        widget.value,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.ease,
+      );
     }
   }
 

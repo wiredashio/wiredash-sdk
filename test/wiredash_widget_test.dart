@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
-import 'package:wiredash/src/capture/capture.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
-import 'package:wiredash/src/feedback/feedback_sheet.dart';
+import 'package:wiredash/src/common/widgets/wirecons.dart';
+import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
+import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -56,101 +58,84 @@ void main() {
       },
     );
 
-    testWidgets(
-        'only one feedback flow will be launched at a time - intro mode',
-        (tester) async {
-      final navigatorKey = GlobalKey<NavigatorState>();
-      WiredashController? controller;
-
+    testWidgets('Capture a screenshot', (tester) async {
       await tester.pumpWidget(
         Wiredash(
           projectId: 'test',
           secret: 'test',
-          navigatorKey: navigatorKey,
           child: MaterialApp(
-            home: const SizedBox(),
-            navigatorKey: navigatorKey,
-            builder: (context, child) {
-              controller = Wiredash.of(context);
-              return child!;
-            },
+            home: Builder(
+              builder: (context) {
+                return Scaffold(
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: Wiredash.of(context)!.show,
+                  ),
+                );
+              },
+            ),
           ),
         ),
       );
 
-      expect(controller, isNotNull);
-      expect(find.byType(FeedbackSheet), findsNothing);
+      expect(find.byType(WiredashFeedbackFlow), findsNothing);
 
-      // Calling controller.show() once should bring out the FeedbackSheet.
-      controller!.show();
-      await tester.pump();
-      await tester.pump();
-      expect(find.byType(FeedbackSheet), findsOneWidget);
-
-      // Further calls to controller.show() should not bring out additional
-      // FeedbackSheets - there should still be only one.
-      controller!.show();
-      controller!.show();
-      controller!.show();
-      await tester.pump();
-      await tester.pump();
-      expect(find.byType(FeedbackSheet), findsOneWidget);
-
-      // Hide the FeedbackSheet
-      navigatorKey.currentState!.pop();
-      await tester.pump();
-      expect(find.byType(FeedbackSheet), findsNothing);
-
-      // Calling controller.show() should bring out a FeedbackSheet normally.
-      controller!.show();
-      await tester.pump();
-      await tester.pump();
-      expect(find.byType(FeedbackSheet), findsOneWidget);
-    });
-
-    testWidgets(
-        'only one feedback flow will be launched at a time - in capture mode',
-        (tester) async {
-      final navigatorKey = GlobalKey<NavigatorState>();
-
-      await tester.pumpWidget(
-        Wiredash(
-          projectId: 'test',
-          secret: 'test',
-          navigatorKey: navigatorKey,
-          child: MaterialApp(
-            home: Builder(builder: (context) {
-              return Scaffold(
-                floatingActionButton: FloatingActionButton(
-                  onPressed: Wiredash.of(context)!.show,
-                ),
-              );
-            }),
-            navigatorKey: navigatorKey,
-          ),
-        ),
-      );
-
-      expect(find.byType(FeedbackSheet), findsNothing);
-
-      // Open the FeedbackSheet.
+      // Open Wiredash
       await tester.tap(find.byType(FloatingActionButton));
       await tester.pumpAndSettle();
-      expect(find.byType(FeedbackSheet), findsOneWidget);
+      expect(find.byType(WiredashFeedbackFlow), findsOneWidget);
 
-      // Go to capture mode
-      await tester.tap(
-          find.byKey(const ValueKey('wiredash.sdk.intro.report_a_bug_button')));
+      await tester.enterText(find.byType(TextField), 'asdfasdf');
       await tester.pumpAndSettle();
-      expect(find.byType(Capture), findsOneWidget);
+      await tester.waitUntil(find.byType(BigBlueButton), findsOneWidget);
 
-      // Tapping the FeedbackSheet again does nothing
-      await tester.tap(find.byType(FloatingActionButton));
+      await tester.tap(find.byType(BigBlueButton));
+      await tester.pumpHardAndSettle();
+      await tester.waitUntil(find.text('Skip'), findsOneWidget);
+
+      await tester.tap(find.text('Skip'));
+      await tester.pumpHardAndSettle();
+      await tester.waitUntil(find.text('Skip'), findsOneWidget);
+
+      await tester.tap(find.text('Skip'));
+      await tester.pumpHardAndSettle();
+      await tester.waitUntil(find.text('Yes'), findsOneWidget);
+
+      await tester.tap(find.text('Yes'));
+      await tester.pumpHardAndSettle();
+
+      // Click the screenshot button
+      await tester.tap(find.byIcon(Wirecons.camera));
       await tester.pumpAndSettle();
-      // FeedbackSheet doesn't open
-      expect(find.byType(FeedbackSheet), findsNothing);
+      await tester.waitUntil(find.byIcon(Wirecons.check), findsOneWidget);
+
+      // Check for save screenshot button
+      expect(find.byIcon(Wirecons.check), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
     });
   });
+}
+
+extension on WidgetTester {
+  /// Pumps and also drains the event queue, then pumps again and settles
+  Future<void> pumpHardAndSettle() async {
+    await pumpAndSettle();
+    // pump event queue, trigger timers
+    await runAsync(() => Future.delayed(const Duration(milliseconds: 1)));
+    await pumpAndSettle();
+  }
+
+  Future<void> waitUntil(Finder finder, Matcher matcher) async {
+    await pumpAndSettle();
+    // ignore: literal_only_boolean_expressions
+    while (true) {
+      if (matcher.matches(finder, {})) {
+        break;
+      }
+      // ignore: avoid_print
+      print('Waiting for\nFinder: $finder to match\nMatcher: $matcher');
+      await pumpHardAndSettle();
+    }
+  }
 }
 
 class _MockProjectCredentialValidator extends Fake
@@ -159,8 +144,10 @@ class _MockProjectCredentialValidator extends Fake
       MethodInvocationCatcher('validate');
 
   @override
-  Future<void> validate(
-      {required String projectId, required String secret}) async {
+  Future<void> validate({
+    required String projectId,
+    required String secret,
+  }) async {
     validateInvocations
         .addMethodCall(namedArgs: {'projectId': projectId, 'secret': secret});
   }

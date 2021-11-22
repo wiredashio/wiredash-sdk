@@ -28,7 +28,9 @@ class _AnimatedFadeInState extends State<AnimatedFadeIn>
       value: 1.0,
     );
     _fadeAnimation = CurvedAnimation(
-        parent: _animationController, curve: Curves.fastOutSlowIn);
+      parent: _animationController,
+      curve: Curves.fastOutSlowIn,
+    );
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:wiredash/src/feedback/wiredash_model.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 
 /// Use this controller to interact with [Wiredash]
@@ -10,20 +11,22 @@ import 'package:wiredash/src/wiredash_widget.dart';
 ///
 /// Add user information
 /// ```dart
-/// Wiredash.of(context).setIdentifiers(appVersion: "1.4.3");
+/// Wiredash.of(context)
+///     .setBuildProperties(buildVersion: "1.4.3", buildNumber: "42");
 /// ```
 class WiredashController {
-  WiredashController(this._state);
+  WiredashController(this._model);
 
-  final WiredashState _state;
+  final WiredashModel _model;
 
   /// Use this method to provide custom [userId]
   /// to the feedback. The [userEmail] parameter can be used to prefill the
   /// email input field but it's up to the user to decide if he want's to
   /// include his email with the feedback.
   void setUserProperties({String? userId, String? userEmail}) {
-    _state.userManager.userId = userId ?? _state.userManager.userId;
-    _state.userManager.userEmail = userEmail ?? _state.userManager.userEmail;
+    // TODO implement user properties
+    // _model.userId = userId ?? _model.userId;
+    // _model.userEmail = userEmail ?? _model.userEmail;
   }
 
   /// Use this method to attach custom [buildVersion] and [buildNumber]
@@ -31,8 +34,9 @@ class WiredashController {
   /// If these values are also provided through dart-define during compile time
   /// then they will be overwritten by this method
   void setBuildProperties({String? buildVersion, String? buildNumber}) {
-    _state.buildInfoManager.buildVersionOverride = buildVersion;
-    _state.buildInfoManager.buildNumberOverride = buildNumber;
+    // TODO implement user properties
+    // _model.buildInfoManager.buildVersionOverride = buildVersion;
+    // _model.buildInfoManager.buildNumberOverride = buildNumber;
   }
 
   /// This will open the Wiredash feedback sheet and start the feedback process.
@@ -44,7 +48,7 @@ class WiredashController {
   ///
   /// If a Wiredash feedback flow is already active (=a feedback sheet is open),
   /// does nothing.
-  void show() => _state.show();
+  void show() => _model.show();
 
   /// A [ValueNotifier] representing the current state of the capture UI. Use
   /// this to change your app's configuration when the user is in the process
@@ -53,5 +57,8 @@ class WiredashController {
   ///
   /// The [Confidential] widget can automatically hide sensitive widgets from
   /// being recorded in a feedback screenshot.
-  ValueNotifier<bool> get visible => _state.captureKey.currentState!.visible;
+  ValueNotifier<bool> get visible {
+    return _model
+        .asValueNotifier((c) => c.state.backdropController.isAppInteractive);
+  }
 }

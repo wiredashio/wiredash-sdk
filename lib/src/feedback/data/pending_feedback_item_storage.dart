@@ -49,7 +49,10 @@ class PendingFeedbackItemStorage {
           }
         } catch (e) {
           reportWiredashError(
-              e, stack, 'Could not delete screenshot for invalid item $item');
+            e,
+            stack,
+            'Could not delete screenshot for invalid item $item',
+          );
         }
       }
     }

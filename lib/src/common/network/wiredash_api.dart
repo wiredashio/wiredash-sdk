@@ -20,6 +20,8 @@ class WiredashApi {
         _deviceIdProvider = deviceIdProvider;
 
   final Client _httpClient;
+
+  // TODO make mutable
   final String _projectId;
   final String _secret;
   final Future<String> Function() _deviceIdProvider;
@@ -32,13 +34,13 @@ class WiredashApi {
   /// POST /sendImage
   Future<ImageBlob> sendImage(Uint8List screenshot) async {
     final uri = Uri.parse('$_host/sendImage');
-    final req = MultipartRequest('POST', uri)
-      ..files.add(MultipartFile.fromBytes(
-        'file',
-        screenshot,
-        filename: 'file',
-        contentType: MediaType('image', 'png'),
-      ));
+    final multipartFile = MultipartFile.fromBytes(
+      'file',
+      screenshot,
+      filename: 'file',
+      contentType: MediaType('image', 'png'),
+    );
+    final req = MultipartRequest('POST', uri)..files.add(multipartFile);
     final response = await _send(req);
     if (response.statusCode != 200) {
       throw WiredashApiException(
@@ -56,8 +58,10 @@ class WiredashApi {
   /// Reports a feedback
   ///
   /// POST /feedback
-  Future<void> sendFeedback(PersistedFeedbackItem feedback,
-      {List<ImageBlob> images = const []}) async {
+  Future<void> sendFeedback(
+    PersistedFeedbackItem feedback, {
+    List<ImageBlob> images = const [],
+  }) async {
     final uri = Uri.parse('$_host/sendFeedback');
     final Request request = Request('POST', uri);
     request.headers["Content-Type"] = "application/json";
@@ -95,6 +99,7 @@ class WiredashApi {
 /// Generic error from the Wiredash API
 class WiredashApiException implements Exception {
   WiredashApiException({String? message, this.response}) : _message = message;
+
   String? get message {
     final String? bodyMessage = () {
       try {

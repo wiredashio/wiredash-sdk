@@ -1,202 +1,125 @@
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/capture/capture.dart';
-import 'package:wiredash/src/common/build_info/app_info.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
-import 'package:wiredash/src/common/build_info/device_id_generator.dart';
-import 'package:wiredash/src/common/device_info/device_info_generator.dart';
-import 'package:wiredash/src/common/user/user_manager.dart';
-import 'package:wiredash/src/common/widgets/dismissible_page_route.dart';
-import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
-import 'package:wiredash/src/feedback/feedback_sheet.dart';
+import 'package:wiredash/src/wiredash_widget.dart';
+
+enum FeedbackScreenshotStatus {
+  none,
+  navigating,
+  screenshotting,
+  drawing,
+}
 
 class FeedbackModel with ChangeNotifier {
-  FeedbackModel(
-    this._captureKey,
-    this._navigatorKey,
-    this._userManager,
-    this._feedbackSubmitter,
-    this._deviceInfoGenerator,
-    this._buildInfoManager,
-    this._deviceIdGenerator,
-  );
+  FeedbackModel(WiredashState state) : _wiredashState = state;
 
-  final GlobalKey<CaptureState> _captureKey;
-  final GlobalKey<NavigatorState> _navigatorKey;
-  final UserManager _userManager;
-  final FeedbackSubmitter _feedbackSubmitter;
-  final DeviceInfoGenerator _deviceInfoGenerator;
-  final BuildInfoManager _buildInfoManager;
-  final DeviceIdGenerator _deviceIdGenerator;
+  final WiredashState _wiredashState;
+  FeedbackScreenshotStatus _screenshotStatus = FeedbackScreenshotStatus.none;
 
-  String _appLocale = 'en_US';
+  FeedbackScreenshotStatus get screenshotStatus => _screenshotStatus;
 
-  String get appLocale => _appLocale;
+  final BuildInfoManager buildInfoManager = BuildInfoManager();
 
-  set appLocale(String appLocale) {
-    _appLocale = appLocale;
-    notifyListeners();
-  }
+  // ignore: unused_field
+  final List<Uint8List> _screenshots = [];
 
-  FeedbackType feedbackType = FeedbackType.bug;
-  String? feedbackMessage;
-  Uint8List? screenshot;
+  String? get feedbackMessage => _feedbackMessage;
+  String? _feedbackMessage;
 
-  FeedbackUiState _feedbackUiState = FeedbackUiState.hidden;
+  String? get userEmail => _userEmail;
+  String? _userEmail;
 
-  FeedbackUiState get feedbackUiState => _feedbackUiState;
-
-  set feedbackUiState(FeedbackUiState newValue) {
-    if (_feedbackUiState == newValue) return;
-    _feedbackUiState = newValue;
-    _handleUiChange();
-    notifyListeners();
-  }
-
-  bool _loading = false;
-
-  bool get loading => _loading;
-
-  set loading(bool newValue) {
-    if (_loading == newValue) return;
-    _loading = newValue;
-    notifyListeners();
-  }
-
-  void _handleUiChange() {
-    switch (_feedbackUiState) {
-      case FeedbackUiState.intro:
-        _clearFeedback();
-        break;
-      case FeedbackUiState.capture:
-        _captureKey.currentState!.show().then((image) {
-          screenshot = image;
-          _feedbackUiState = FeedbackUiState.feedback;
-          _navigatorKey.currentState!.push(
-            DismissiblePageRoute(
-              builder: (context) => const FeedbackSheet(),
-              background: image,
-              onPagePopped: () {
-                feedbackUiState = FeedbackUiState.hidden;
-              },
-            ),
-          );
-        });
-        break;
-      case FeedbackUiState.submit:
-        _sendFeedback();
-        break;
-      default:
-      // do nothing
+  set feedbackMessage(String? feedbackMessage) {
+    final trimmed = feedbackMessage?.trim();
+    if (trimmed == '') {
+      _feedbackMessage = null;
+    } else {
+      _feedbackMessage = trimmed;
     }
-  }
-
-  void _clearFeedback() {
-    feedbackMessage = null;
-    screenshot = null;
     notifyListeners();
   }
 
-  Future<void> _sendFeedback() async {
-    loading = true;
+  set userEmail(String? userEmail) {
+    final trimmed = userEmail?.trim();
+    if (trimmed == '') {
+      _userEmail = null;
+    } else {
+      _userEmail = trimmed;
+    }
+    notifyListeners();
+  }
+
+  Future<void> enterCaptureMode() async {
+    _screenshotStatus = FeedbackScreenshotStatus.navigating;
     notifyListeners();
 
-    final deviceId = await _deviceIdGenerator.deviceId();
+    await _wiredashState.backdropController.animateToCentered();
+
+    // TODO Show dialog help screenshot
+  }
+
+  Future<void> takeScreenshot() async {
+    _screenshotStatus = FeedbackScreenshotStatus.screenshotting;
+    notifyListeners();
+
+    await _wiredashState.screenCaptureController.captureScreen();
+
+    _screenshotStatus = FeedbackScreenshotStatus.drawing;
+    notifyListeners();
+
+    _wiredashState.picassoController.isActive = true;
+    // TODO Show dialog help drawing
+  }
+
+  Future<void> saveScreenshot() async {
+    // ignore: unused_local_variable
+    final mergedPainting =
+        await _wiredashState.picassoController.paintDrawingOntoImage(
+      _wiredashState.screenCaptureController.screenshot!,
+    );
+
+    // TODO do something with merged drawing
+
+    await _wiredashState.backdropController.animateToOpen();
+
+    _wiredashState.screenCaptureController.releaseScreen();
+
+    _screenshotStatus = FeedbackScreenshotStatus.none;
+    notifyListeners();
+  }
+
+  Future<void> submitFeedback() async {
+    // during development
+    // TODO remove afterwards
+
+    _feedbackMessage = null;
+    _userEmail = null;
+    // await hide();
+    // return;
+
+    final deviceId = await _wiredashState.deviceIdGenerator.deviceId();
 
     final item = PersistedFeedbackItem(
       deviceId: deviceId,
       appInfo: AppInfo(
-        appLocale: _appLocale,
+        appLocale: _wiredashState.options.currentLocale.toLanguageTag(),
       ),
-      buildInfo: _buildInfoManager.buildInfo,
-      deviceInfo: _deviceInfoGenerator.generate(),
-      email: _userManager.userEmail,
-      message: feedbackMessage!,
-      type: feedbackType.label,
-      userId: _userManager.userId,
+      buildInfo: _wiredashState.buildInfoManager.buildInfo,
+      deviceInfo: _wiredashState.deviceInfoGenerator.generate(),
+      email: userEmail,
+      // TODO collect message and labels
+      message: _feedbackMessage!,
+      type: 'bug',
+      userId: 'test', // TODO use real user id
     );
 
     try {
-      await _feedbackSubmitter.submit(item, screenshot);
-      _clearFeedback();
-      _feedbackUiState = FeedbackUiState.submitted;
+      // TODO add screenshot
+      await _wiredashState.feedbackSubmitter.submit(item, null);
     } catch (e) {
-      _feedbackUiState = FeedbackUiState.submissionError;
+      // TODO show error UI
     }
-    loading = false;
-    notifyListeners();
   }
-
-  void show() {
-    assert(_navigatorKey.currentState != null, '''
-Wiredash couldn't access your app's root navigator.
-
-This is likely to happen when you forget to add the navigator key to your 
-Material- / Cupertino- or WidgetsApp widget. 
-
-To fix this, simply assign the same GlobalKey you assigned to Wiredash 
-to your Material- / Cupertino- or WidgetsApp widget, like so:
-
-return Wiredash(
-  projectId: "YOUR-PROJECT-ID",
-  secret: "YOUR-SECRET",
-  navigatorKey: _navigatorKey, // <-- should be the same
-  child: MaterialApp(
-    navigatorKey: _navigatorKey, // <-- should be the same
-    title: 'Flutter Demo',
-    home: ...
-  ),
-);
-
-For more info on how to setup Wiredash, check out 
-https://github.com/wiredashio/wiredash-sdk
-
-If this did not fix the issue, please file an issue at 
-https://github.com/wiredashio/wiredash-sdk/issues
-
-Thanks!
-''');
-
-    if (_navigatorKey.currentState == null ||
-        feedbackUiState == FeedbackUiState.capture ||
-        feedbackUiState != FeedbackUiState.hidden) return;
-
-    feedbackUiState = FeedbackUiState.intro;
-    final route = DismissiblePageRoute(
-      builder: (context) => const FeedbackSheet(),
-      onPagePopped: () => feedbackUiState = FeedbackUiState.hidden,
-    );
-    _navigatorKey.currentState!.push(route).then((_) {
-      if (_feedbackUiState == FeedbackUiState.capture) {
-        // The capture mode pops this route but it stays in capture mode
-        // and doesn't switch to hidden
-        return;
-      }
-      _feedbackUiState = FeedbackUiState.hidden;
-    });
-  }
-}
-
-enum FeedbackType { bug, improvement, praise }
-
-extension FeedbackTypeMembers on FeedbackType {
-  String get label => const {
-        FeedbackType.bug: "bug",
-        FeedbackType.improvement: "improvement",
-        FeedbackType.praise: "praise",
-      }[this]!;
-}
-
-enum FeedbackUiState {
-  hidden,
-  intro,
-  capture,
-  feedback,
-  email,
-  submit,
-  submitted,
-  submissionError,
 }
