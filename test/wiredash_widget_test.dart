@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -84,36 +86,54 @@ void main() {
 
       await tester.enterText(find.byType(TextField), 'asdfasdf');
       await tester.pumpAndSettle();
+      await tester.waitUntil(find.byType(BigBlueButton), findsOneWidget);
 
       await tester.tap(find.byType(BigBlueButton));
-      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await tester.pumpHardAndSettle();
+      await tester.waitUntil(find.text('Skip'), findsOneWidget);
 
       await tester.tap(find.text('Skip'));
-      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await tester.pumpHardAndSettle();
+      await tester.waitUntil(find.text('Skip'), findsOneWidget);
 
       await tester.tap(find.text('Skip'));
-      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await tester.pumpHardAndSettle();
+      await tester.waitUntil(find.text('Yes'), findsOneWidget);
 
       await tester.tap(find.text('Yes'));
-      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
 
       // Click the screenshot button
       await tester.tap(find.byIcon(WiredashIcons.screenshotAction));
-
-      final saveScreenshotButtonFinder = find.byIcon(WiredashIcons.check);
-
-      while (saveScreenshotButtonFinder.evaluate().isEmpty) {
-        // Wait for screenshot (in real time until calculation is done)
-        await tester
-            .runAsync(() => Future.delayed(const Duration(milliseconds: 200)));
-        await tester.pumpAndSettle();
-      }
+      await tester.pumpAndSettle();
+      await tester.waitUntil(find.byIcon(WiredashIcons.check), findsOneWidget);
 
       // Check for save screenshot button
-      expect(saveScreenshotButtonFinder, findsOneWidget);
+      expect(find.byIcon(WiredashIcons.check), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
     });
   });
+}
+
+extension on WidgetTester {
+  /// Pumps and also drains the event queue, then pumps again and settles
+  Future<void> pumpHardAndSettle() async {
+    await pumpAndSettle();
+    // pump event queue, trigger timers
+    await runAsync(() => Future.delayed(Duration(milliseconds: 1)));
+    await pumpAndSettle();
+  }
+
+  Future<void> waitUntil(Finder finder, Matcher matcher) async {
+    await pumpAndSettle();
+    while (true) {
+      if (matcher.matches(finder, {})) {
+        break;
+      }
+      print('Waiting for\nFinder: $finder to match\nMatcher: $matcher');
+      await pumpHardAndSettle();
+    }
+  }
 }
 
 class _MockProjectCredentialValidator extends Fake
