@@ -91,21 +91,37 @@ class FeedbackModel with ChangeNotifier {
   }
 
   Future<void> submitFeedback() async {
-    // during development
-    // TODO remove afterwards
+    // TODO remove before release
+    bool fakeSubmit = true;
+    assert(
+      () {
+        fakeSubmit = false;
+        return true;
+      }(),
+    );
+    if (fakeSubmit) {
+      await _wiredashState.backdropController.animateToClosed();
+      _wiredashState.discardFeedback();
+      return;
+    } else {
+      try {
+        final item = await createFeedback();
+        await _wiredashState.feedbackSubmitter.submit(item, null);
+      } catch (e) {
+        // TODO show error UI
+      }
+    }
+  }
 
-    _feedbackMessage = null;
-    _userEmail = null;
-    // await hide();
-    // return;
-
+  Future<PersistedFeedbackItem> createFeedback() async {
     final deviceId = await _wiredashState.deviceIdGenerator.deviceId();
 
-    final item = PersistedFeedbackItem(
+    return PersistedFeedbackItem(
       deviceId: deviceId,
       appInfo: AppInfo(
         appLocale: _wiredashState.options.currentLocale.toLanguageTag(),
       ),
+      // TODO add screenshot
       buildInfo: _wiredashState.buildInfoManager.buildInfo,
       deviceInfo: _wiredashState.deviceInfoGenerator.generate(),
       email: userEmail,
@@ -114,12 +130,5 @@ class FeedbackModel with ChangeNotifier {
       type: 'bug',
       userId: 'test', // TODO use real user id
     );
-
-    try {
-      // TODO add screenshot
-      await _wiredashState.feedbackSubmitter.submit(item, null);
-    } catch (e) {
-      // TODO show error UI
-    }
   }
 }
