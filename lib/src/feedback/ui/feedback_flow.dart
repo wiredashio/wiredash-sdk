@@ -42,22 +42,22 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
               return const Step1FeedbackMessage();
             }
             if (index == 1) {
-              return ScrollBox(
+              return const ScrollBox(
                 child: Step2Labels(),
               );
             }
             if (index == 2) {
-              return ScrollBox(
+              return const ScrollBox(
                 child: Step3Email(),
               );
             }
             if (index == 3) {
-              return ScrollBox(
+              return const ScrollBox(
                 child: Step4Screenshot(),
               );
             }
             if (index == 4) {
-              return ScrollBox(
+              return const ScrollBox(
                 child: Step5Submit(),
               );
             }
