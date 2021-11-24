@@ -290,6 +290,19 @@ class WiredashState extends State<Wiredash> {
       ),
     );
   }
+
+  /// discards the current feedback and starts over
+  void discardFeedback() {
+    final old = _feedbackModel;
+    setState(() {
+      _feedbackModel = FeedbackModel(this);
+    });
+    // dispose old one after next frame. disposing it earlier would prevent the
+    // FeedbackModelProvider from correctly remove the listeners
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      old.dispose();
+    });
+  }
 }
 
 @visibleForTesting

@@ -94,9 +94,8 @@ class FeedbackModel with ChangeNotifier {
     // during development
     // TODO remove afterwards
 
-    _feedbackMessage = null;
-    _userEmail = null;
     await _wiredashState.backdropController.animateToClosed();
+    _wiredashState.discardFeedback();
     return;
 
     final deviceId = await _wiredashState.deviceIdGenerator.deviceId();
