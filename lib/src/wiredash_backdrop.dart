@@ -250,7 +250,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       height: screenSize.height * _biggestPossibleCenteredScaleFactor,
     );
 
-    final contentHeight = math.max(screenSize.height * 0.4, 300.0);
+    final contentHeight = math.max(screenSize.height * 0.5, 300.0);
     final width = screenSize.width * _biggestPossibleCenteredScaleFactor;
     _rectAppDown = Rect.fromLTWH(
       (screenSize.width - width) / 2,
@@ -609,11 +609,21 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           );
         }
 
-        // ignore: join_return_with_assignment
-        app = Positioned.fromRect(
-          rect: _transformAnimation.value!,
-          child: Transform.translate(
-            offset: Offset(0, _pullAppYController.value),
+        // the difference of height between open and closed rect
+        final heightDifference =
+            _rectAppClosed.height - _transformAnimation.value!.height;
+        final yTranslation = _pullAppYController.value +
+            _transformAnimation.value!.top -
+            heightDifference;
+        // The scale the app should be scaled to, compared to fullscreen
+        final appScale =
+            _transformAnimation.value!.width / _rectAppClosed.width;
+
+        app = Transform.translate(
+          offset: Offset(0, yTranslation),
+          child: Transform.scale(
+            scale: appScale,
+            alignment: Alignment.bottomCenter,
             child: app,
           ),
         );
