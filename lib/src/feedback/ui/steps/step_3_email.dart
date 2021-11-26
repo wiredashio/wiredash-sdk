@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/labeled_button.dart';
 import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
-import 'package:wiredash/src/responsive_layout.dart';
 
 class Step3Email extends StatefulWidget {
   const Step3Email({Key? key}) : super(key: key);
@@ -22,7 +22,7 @@ class _Step3EmailState extends State<Step3Email> with TickerProviderStateMixin {
         const EmailInput(),
         Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: context.responsiveLayout.horizontalMargin,
+            horizontal: context.theme.horizontalPadding,
             vertical: 16,
           ),
           child: AnimatedSize(
@@ -95,7 +95,7 @@ class _EmailInputState extends State<EmailInput> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: context.responsiveLayout.horizontalMargin,
+        horizontal: context.theme.horizontalPadding,
         vertical: 8,
       ),
       child: Column(

@@ -9,11 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/ui/app_overlay.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
-import 'package:wiredash/src/responsive_layout.dart';
 
 enum WiredashBackdropStatus {
   closed,
@@ -233,7 +233,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final Size screenSize = _mediaQueryData.size;
 
     final _maxCenteredWidth = screenSize.width -
-        (context.responsiveLayout.horizontalMargin * 2 -
+        (context.theme.horizontalPadding * 2 -
                 _mediaQueryData.viewPadding.horizontal)
             .abs();
     final _maxCenteredHeight =

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/labeled_button.dart';
 import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
-import 'package:wiredash/src/responsive_layout.dart';
 
 const _labels = [
   Label(id: 'bug', name: 'Bug'),
@@ -34,7 +34,7 @@ class _Step2LabelsState extends State<Step2Labels>
           children: [
             Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: context.responsiveLayout.horizontalMargin,
+                horizontal: context.theme.horizontalPadding,
                 vertical: 16,
               ),
               child: const Text(
@@ -47,7 +47,7 @@ class _Step2LabelsState extends State<Step2Labels>
             ),
             Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: context.responsiveLayout.horizontalMargin,
+                horizontal: context.theme.horizontalPadding,
                 vertical: 16,
               ),
               child: _LabelRecommendations(
@@ -68,7 +68,7 @@ class _Step2LabelsState extends State<Step2Labels>
               builder: (context) {
                 return Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: context.responsiveLayout.horizontalMargin,
+                    horizontal: context.theme.horizontalPadding,
                     vertical: 16,
                   ),
                   child: AnimatedSize(

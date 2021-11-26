@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/labeled_button.dart';
 import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
-import 'package:wiredash/src/responsive_layout.dart';
 
 class Step4Screenshot extends StatefulWidget {
   const Step4Screenshot({Key? key}) : super(key: key);
@@ -20,7 +20,7 @@ class _Step4ScreenshotState extends State<Step4Screenshot> {
       children: [
         Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: context.responsiveLayout.horizontalMargin,
+            horizontal: context.theme.horizontalPadding,
             vertical: 16,
           ),
           child: const Text(
@@ -33,7 +33,7 @@ class _Step4ScreenshotState extends State<Step4Screenshot> {
         ),
         Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: context.responsiveLayout.horizontalMargin,
+            horizontal: context.theme.horizontalPadding,
             vertical: 16,
           ),
           child: Column(

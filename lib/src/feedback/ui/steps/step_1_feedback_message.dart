@@ -6,7 +6,6 @@ import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 import 'package:wiredash/src/feedback/ui/more_menu.dart';
-import 'package:wiredash/src/responsive_layout.dart';
 
 class Step1FeedbackMessage extends StatefulWidget {
   const Step1FeedbackMessage({Key? key}) : super(key: key);
@@ -46,9 +45,9 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
         children: [
           Padding(
             padding: EdgeInsets.only(
-              top: context.responsiveLayout.horizontalMargin,
-              left: context.responsiveLayout.horizontalMargin,
-              right: context.responsiveLayout.horizontalMargin,
+              top: context.theme.horizontalPadding,
+              left: context.theme.horizontalPadding,
+              right: context.theme.horizontalPadding,
             ),
             child: _FeedbackMessageInput(
               controller: _controller,
@@ -56,7 +55,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
           ),
           Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: context.responsiveLayout.horizontalMargin,
+              horizontal: context.theme.horizontalPadding,
             ),
             child: AnimatedBuilder(
               animation: _controller,
@@ -128,7 +127,7 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
           padding: const EdgeInsets.only(top: 4),
           child: Text(
             'Give us feedback',
-            style: context.responsiveLayout.titleTextStyle,
+            style: context.theme.titleStyle,
           ),
         ),
         TextField(
@@ -138,7 +137,7 @@ class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
           maxLength: 2048,
           buildCounter: _getCounterText,
           minLines: 3,
-          style: context.responsiveLayout.bodyTextStyle,
+          style: context.theme.bodyStyle,
           decoration: const InputDecoration(
             border: InputBorder.none,
             focusedBorder: InputBorder.none,

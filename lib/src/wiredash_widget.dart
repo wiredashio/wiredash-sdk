@@ -25,9 +25,9 @@ import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
+import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
 import 'package:wiredash/src/not_a_widgets_app.dart';
-import 'package:wiredash/src/responsive_layout.dart';
 import 'package:wiredash/src/wiredash_backdrop.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
@@ -261,18 +261,19 @@ class WiredashState extends State<Wiredash> {
     final Widget backdrop = NotAWidgetsApp(
       locale: widget.options?.currentLocale,
       textDirection: widget.options?.textDirection,
-      // Provide responsive layout information to the wiredash UI
-      child: WiredashResponsiveLayout(
-        // Localize Wiredash
-        child: WiredashLocalizations(
-          // Style wiredash using the users provided theme
-          child: WiredashTheme(
-            data: _theme,
-            child: WiredashBackdrop(
-              key: _backdropKey,
-              controller: backdropController,
-              child: appBuilder,
-            ),
+      child: WiredashLocalizations(
+        // Style wiredash using the users provided theme
+        child: WiredashTheme(
+          data: _theme,
+          child: Stack(
+            children: [
+              WiredashBackdrop(
+                key: _backdropKey,
+                controller: backdropController,
+                child: appBuilder,
+              ),
+              const FeedbackNavigation(),
+            ],
           ),
         ),
       ),
