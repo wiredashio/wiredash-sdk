@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/theme/device_class.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 
 class WiredashTheme extends StatelessWidget {
@@ -13,13 +14,34 @@ class WiredashTheme extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _InheritedWiredashTheme(theme: this, child: child);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final deviceClass = _calculateDeviceClass(constraints);
+        // TODO copyWith new deviceClass
+        return _InheritedWiredashTheme(theme: this, child: child);
+      },
+    );
   }
 
   static WiredashThemeData? of(BuildContext context) {
     final _InheritedWiredashTheme? inheritedTheme =
         context.dependOnInheritedWidgetOfExactType<_InheritedWiredashTheme>();
     return inheritedTheme?.theme.data;
+  }
+
+  static DeviceClass _calculateDeviceClass(BoxConstraints constraints) {
+    final normalized = constraints.normalize();
+    final width = normalized.maxWidth;
+    final size = Size(normalized.maxWidth, normalized.maxHeight);
+    final isLandscape = normalized.maxWidth > normalized.maxHeight;
+
+    if (width >= 1440) return DeviceClass.desktopLarge;
+    if (width >= 1024) return DeviceClass.desktopSmall;
+    if (width >= 720) return DeviceClass.tabletLarge;
+    if (width >= 600) return DeviceClass.tabletSmall;
+    if (width >= 400) return DeviceClass.handsetLarge;
+    if (width >= 360) return DeviceClass.handsetMedium;
+    return DeviceClass.handsetSmall;
   }
 }
 
@@ -38,5 +60,5 @@ class _InheritedWiredashTheme extends InheritedWidget {
 }
 
 extension WiredashThemeExtension on BuildContext {
-  WiredashThemeData? get theme => WiredashTheme.of(this);
+  WiredashThemeData get theme => WiredashTheme.of(this)!;
 }

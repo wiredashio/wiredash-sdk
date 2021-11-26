@@ -1,10 +1,12 @@
 import 'dart:ui' show Brightness;
 
 import 'package:flutter/rendering.dart';
+import 'package:wiredash/src/common/theme/device_class.dart';
 
 class WiredashThemeData {
   factory WiredashThemeData({
     Brightness brightness = Brightness.light,
+    DeviceClass deviceClass = DeviceClass.handsetLarge,
     Color? primaryColor,
     Color? secondaryColor,
     Color? primaryTextColor,
@@ -17,6 +19,7 @@ class WiredashThemeData {
     if (brightness == Brightness.light) {
       return WiredashThemeData._(
         brightness: brightness,
+        deviceClass: deviceClass,
         primaryColor: primaryColor ?? const Color(0xff1A56DB),
         secondaryColor: secondaryColor ?? const Color(0xffE8EEFB),
         primaryTextColor: primaryTextColor ?? const Color(0xff030A1C),
@@ -31,6 +34,7 @@ class WiredashThemeData {
     } else {
       return WiredashThemeData._(
         brightness: brightness,
+        deviceClass: deviceClass,
         primaryColor: primaryColor ?? const Color(0xff1A56DB),
         secondaryColor: secondaryColor ?? const Color(0xffE8EEFB),
         primaryTextColor: primaryTextColor ?? const Color(0xff030A1C),
@@ -47,6 +51,7 @@ class WiredashThemeData {
 
   WiredashThemeData._({
     required this.brightness,
+    required this.deviceClass,
     required this.primaryColor,
     required this.secondaryColor,
     required this.primaryTextColor,
@@ -68,6 +73,8 @@ class WiredashThemeData {
   final Color primaryBackgroundColor;
   final Color secondaryBackgroundColor;
   final Color errorColor;
+
+  final DeviceClass deviceClass;
 
   final String fontFamily;
 
@@ -121,4 +128,16 @@ class WiredashThemeData {
         fontSize: 12,
         color: errorColor,
       );
+
+  double get horizontalPadding {
+    switch(deviceClass) {
+      case DeviceClass.handsetSmall: return 8;
+      case DeviceClass.handsetMedium:  return 16;
+      case DeviceClass.handsetLarge:  return 32;
+      case DeviceClass.tabletSmall:  return 64;
+      case DeviceClass.tabletLarge:  return 64;
+      case DeviceClass.desktopSmall: return 128;
+      case DeviceClass.desktopLarge: return 128;
+    }
+  }
 }
