@@ -569,8 +569,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               final a2 = _pullAppYController.animateTo(
                 0,
                 curve: Curves.easeOutExpo,
-                duration: const Duration(milliseconds: 400),
+                duration: const Duration(milliseconds: 600),
               );
+              widget.controller._isAppInteractive = true;
               await Future.wait([a1, a2]);
               _backdropStatus = WiredashBackdropStatus.closed;
               _swapAnimation();
@@ -590,7 +591,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               final a2 = _pullAppYController.animateTo(
                 0,
                 curve: Curves.easeOutExpo,
-                duration: const Duration(milliseconds: 400),
+                duration: const Duration(milliseconds: 600),
               );
               await Future.wait([a1, a2]);
               _backdropStatus = WiredashBackdropStatus.open;
@@ -619,6 +620,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         final appScale =
             _transformAnimation.value!.width / _rectAppClosed.width;
 
+        // ignore: join_return_with_assignment
         app = Transform.translate(
           offset: Offset(0, yTranslation),
           child: Transform.scale(
