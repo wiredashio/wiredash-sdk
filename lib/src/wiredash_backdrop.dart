@@ -11,6 +11,7 @@ import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/feedback/ui/app_overlay.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
+import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
 import 'package:wiredash/src/responsive_layout.dart';
 
@@ -480,48 +481,50 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
 
     return Material(
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: AlignmentDirectional.topCenter,
-            end: AlignmentDirectional.bottomCenter,
-            colors: <Color>[
-              Colors.white,
-              Color(0xFFE8EEFB),
+      child: SemiTransparentStatusBar(
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: AlignmentDirectional.topCenter,
+              end: AlignmentDirectional.bottomCenter,
+              colors: <Color>[
+                Colors.white,
+                Color(0xFFE8EEFB),
+              ],
+            ),
+          ),
+          // Stack allows placing the app on top while we're awaiting layout
+          child: Stack(
+            children: <Widget>[
+              content,
+              _buildAppPositioningAnimation(
+                child: _buildAppFrame(
+                  child: app,
+                ),
+              ),
+              _buildAppOverlay(),
+              Positioned.fromRect(
+                rect: _rectNavigationButtons,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        // TODO
+                      },
+                      child: const Text("Prev"),
+                    ),
+                    OutlinedButton(
+                      onPressed: () {
+                        // TODO
+                      },
+                      child: const Text("Next"),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
-        ),
-        // Stack allows placing the app on top while we're awaiting layout
-        child: Stack(
-          children: <Widget>[
-            content,
-            _buildAppPositioningAnimation(
-              child: _buildAppFrame(
-                child: app,
-              ),
-            ),
-            _buildAppOverlay(),
-            Positioned.fromRect(
-              rect: _rectNavigationButtons,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  OutlinedButton(
-                    onPressed: () {
-                      // TODO
-                    },
-                    child: const Text("Prev"),
-                  ),
-                  OutlinedButton(
-                    onPressed: () {
-                      // TODO
-                    },
-                    child: const Text("Next"),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ),
       ),
     );
