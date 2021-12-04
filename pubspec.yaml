@@ -32,6 +32,19 @@ flutter:
     - packages/wiredash/assets/images/logo_white.png
     - packages/wiredash/assets/images/pen.png
 
+  plugin:
+    platforms:
+      android:
+        default_package: wiredash
+      ios:
+        default_package: wiredash
+      linux:
+        default_package: wiredash
+      macos:
+        default_package: wiredash
+      web:
+        default_package: wiredash
+
   fonts:
     - family: Inter
       fonts:
