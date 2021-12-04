@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/ui/app_overlay.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
@@ -612,7 +611,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                       color: Colors.black12,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 2),
+                          horizontal: 16,
+                          vertical: 2,
+                        ),
                         child: Stack(
                           children: [
                             Positioned.fill(
