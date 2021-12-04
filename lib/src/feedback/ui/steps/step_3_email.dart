@@ -38,71 +38,73 @@ class _Step3EmailState extends State<Step3Email> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Text(
-                  'Email',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
+      child: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text(
+                    'Email',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              TextField(
-                controller: _controller,
-                keyboardType: TextInputType.emailAddress,
-                style: const TextStyle(fontSize: 14),
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  hintText: 'mail@wiredash.io',
-                  contentPadding: EdgeInsets.only(top: 16),
+                TextField(
+                  controller: _controller,
+                  keyboardType: TextInputType.emailAddress,
+                  style: const TextStyle(fontSize: 14),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    hintText: 'mail@wiredash.io',
+                    contentPadding: EdgeInsets.only(top: 16),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 32),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 225),
-            // ignore: deprecated_member_use
-            vsync: this,
-            clipBehavior: Clip.none,
-            child: AnimatedSwitcher(
+              ],
+            ),
+            const SizedBox(height: 32),
+            AnimatedSize(
               duration: const Duration(milliseconds: 225),
-              reverseDuration: const Duration(milliseconds: 170),
-              switchInCurve: Curves.fastOutSlowIn,
-              switchOutCurve: Curves.fastOutSlowIn,
-              child: () {
-                if (context.feedbackModel.userEmail?.isEmpty != false) {
-                  return LabeledButton(
+              // ignore: deprecated_member_use
+              vsync: this,
+              clipBehavior: Clip.none,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 225),
+                reverseDuration: const Duration(milliseconds: 170),
+                switchInCurve: Curves.fastOutSlowIn,
+                switchOutCurve: Curves.fastOutSlowIn,
+                child: () {
+                  if (context.feedbackModel.userEmail?.isEmpty != false) {
+                    return LabeledButton(
+                      onTap: () {
+                        StepInformation.of(context).pageView.moveToNextPage();
+                      },
+                      child: const Text('Skip'),
+                    );
+                  }
+
+                  return BigBlueButton(
                     onTap: () {
                       StepInformation.of(context).pageView.moveToNextPage();
                     },
-                    child: const Text('Skip'),
+                    child: const Icon(Icons.arrow_right_alt),
                   );
-                }
-
-                return BigBlueButton(
-                  onTap: () {
-                    StepInformation.of(context).pageView.moveToNextPage();
-                  },
-                  child: const Icon(Icons.arrow_right_alt),
-                );
-              }(),
+                }(),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

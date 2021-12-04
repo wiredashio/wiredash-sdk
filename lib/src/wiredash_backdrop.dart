@@ -9,9 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/ui/app_overlay.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
+import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
 import 'package:wiredash/src/responsive_layout.dart';
 
@@ -481,48 +481,50 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
 
     return Material(
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: AlignmentDirectional.topCenter,
-            end: AlignmentDirectional.bottomCenter,
-            colors: <Color>[
-              Colors.white,
-              Color(0xFFE8EEFB),
+      child: SemiTransparentStatusBar(
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: AlignmentDirectional.topCenter,
+              end: AlignmentDirectional.bottomCenter,
+              colors: <Color>[
+                Colors.white,
+                Color(0xFFE8EEFB),
+              ],
+            ),
+          ),
+          // Stack allows placing the app on top while we're awaiting layout
+          child: Stack(
+            children: <Widget>[
+              content,
+              _buildAppPositioningAnimation(
+                child: _buildAppFrame(
+                  child: app,
+                ),
+              ),
+              _buildAppOverlay(),
+              Positioned.fromRect(
+                rect: _rectNavigationButtons,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        // TODO
+                      },
+                      child: const Text("Prev"),
+                    ),
+                    OutlinedButton(
+                      onPressed: () {
+                        // TODO
+                      },
+                      child: const Text("Next"),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
-        ),
-        // Stack allows placing the app on top while we're awaiting layout
-        child: Stack(
-          children: <Widget>[
-            content,
-            _buildAppPositioningAnimation(
-              child: _buildAppFrame(
-                child: app,
-              ),
-            ),
-            _buildAppOverlay(),
-            Positioned.fromRect(
-              rect: _rectNavigationButtons,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  OutlinedButton(
-                    onPressed: () {
-                      // TODO
-                    },
-                    child: const Text("Prev"),
-                  ),
-                  OutlinedButton(
-                    onPressed: () {
-                      // TODO
-                    },
-                    child: const Text("Next"),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -551,56 +553,101 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, child) {
-        return Stack(
-          fit: StackFit.passthrough,
-          clipBehavior: Clip.none,
-          children: [
-            SizedBox(
-              height: _mediaQueryData.size.height,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: _cornerRadiusAnimation.value,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF000000).withOpacity(0.04),
-                      offset: const Offset(0, 10),
-                      blurRadius: 10,
-                    ),
-                    BoxShadow(
-                      color: const Color(0xFF000000).withOpacity(0.10),
-                      offset: const Offset(0, 20),
-                      blurRadius: 25,
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: _cornerRadiusAnimation.value,
+        final double barContentHeight =
+            math.min(12, _mediaQueryData.viewPadding.top);
+        return ClipRRect(
+          borderRadius: _cornerRadiusAnimation.value,
+          child: Stack(
+            fit: StackFit.passthrough,
+            clipBehavior: Clip.none,
+            children: [
+              SizedBox(
+                height: _mediaQueryData.size.height,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: _cornerRadiusAnimation.value,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF000000).withOpacity(0.04),
+                        offset: const Offset(0, 10),
+                        blurRadius: 10,
+                      ),
+                      BoxShadow(
+                        color: const Color(0xFF000000).withOpacity(0.10),
+                        offset: const Offset(0, 20),
+                        blurRadius: 25,
+                      ),
+                    ],
+                  ),
                   child: child,
                 ),
               ),
-            ),
-            Positioned(
-              bottom: 8,
-              left: 0,
-              right: 0,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 300),
-                opacity: () {
-                  if (_backdropStatus == WiredashBackdropStatus.closing) {
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: _mediaQueryData.viewPadding.top,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 300),
+                  opacity: () {
+                    if (_backdropStatus == WiredashBackdropStatus.closing) {
+                      return 0.0;
+                    }
+                    if (!widget.controller.isAppInteractive) {
+                      return 1.0;
+                    }
                     return 0.0;
-                  }
-                  if (!widget.controller.isAppInteractive) {
-                    return 1.0;
-                  }
-                  return 0.0;
-                }(),
-                child: const Icon(
-                  Wirecons.cheveron_down,
-                  color: Colors.black26,
+                  }(),
+                  child: DefaultTextStyle(
+                    style: TextStyle(
+                      shadows: const [
+                        Shadow(
+                          offset: Offset(2, 2),
+                          blurRadius: 2,
+                          color: Color.fromARGB(30, 0, 0, 0),
+                        ),
+                      ],
+                      color: Colors.white,
+                      fontSize: barContentHeight,
+                    ),
+                    child: Container(
+                      color: Colors.black12,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 2,
+                        ),
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: Opacity(
+                                opacity: 0.5,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Image.asset(
+                                      'assets/images/logo_white.png',
+                                      package: 'wiredash',
+                                      height: barContentHeight,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Text('Wiredash'),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const Center(
+                              child: Text('Return to App'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
       child: child,

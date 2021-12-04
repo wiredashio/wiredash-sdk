@@ -27,77 +27,79 @@ class _Step2LabelsState extends State<Step2Labels>
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      child: ValueListenableBuilder<Set<Label>>(
-        valueListenable: _selectedLabels,
-        builder: (context, selectedLabels, child) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'What category fits best with your feedback?',
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
+      child: SafeArea(
+        child: ValueListenableBuilder<Set<Label>>(
+          valueListenable: _selectedLabels,
+          builder: (context, selectedLabels, child) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'What category fits best with your feedback?',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              // TODO replace with automatic scaled spacing from theme
-              const SizedBox(height: 32),
-              _LabelRecommendations(
-                isAnyLabelSelected: selectedLabels.isNotEmpty,
-                isLabelSelected: selectedLabels.contains,
-                toggleSelection: (label) {
-                  setState(() {
-                    if (selectedLabels.contains(label)) {
-                      selectedLabels.remove(label);
-                    } else {
-                      selectedLabels.add(label);
-                    }
-                  });
-                },
-              ),
-              const SizedBox(height: 32),
-              Builder(
-                builder: (context) {
-                  return AnimatedSize(
-                    duration: const Duration(milliseconds: 225),
-                    // ignore: deprecated_member_use
-                    vsync: this,
-                    clipBehavior: Clip.none,
-                    child: AnimatedSwitcher(
+                // TODO replace with automatic scaled spacing from theme
+                const SizedBox(height: 32),
+                _LabelRecommendations(
+                  isAnyLabelSelected: selectedLabels.isNotEmpty,
+                  isLabelSelected: selectedLabels.contains,
+                  toggleSelection: (label) {
+                    setState(() {
+                      if (selectedLabels.contains(label)) {
+                        selectedLabels.remove(label);
+                      } else {
+                        selectedLabels.add(label);
+                      }
+                    });
+                  },
+                ),
+                const SizedBox(height: 32),
+                Builder(
+                  builder: (context) {
+                    return AnimatedSize(
                       duration: const Duration(milliseconds: 225),
-                      reverseDuration: const Duration(milliseconds: 170),
-                      switchInCurve: Curves.fastOutSlowIn,
-                      switchOutCurve: Curves.fastOutSlowIn,
-                      child: () {
-                        if (selectedLabels.isEmpty) {
-                          return LabeledButton(
+                      // ignore: deprecated_member_use
+                      vsync: this,
+                      clipBehavior: Clip.none,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 225),
+                        reverseDuration: const Duration(milliseconds: 170),
+                        switchInCurve: Curves.fastOutSlowIn,
+                        switchOutCurve: Curves.fastOutSlowIn,
+                        child: () {
+                          if (selectedLabels.isEmpty) {
+                            return LabeledButton(
+                              onTap: () {
+                                StepInformation.of(context)
+                                    .pageView
+                                    .moveToNextPage();
+                              },
+                              child: const Text('Skip'),
+                            );
+                          }
+
+                          return BigBlueButton(
                             onTap: () {
                               StepInformation.of(context)
                                   .pageView
                                   .moveToNextPage();
                             },
-                            child: const Text('Skip'),
+                            // TODO don't use material icon
+                            child: const Icon(Icons.arrow_right_alt),
                           );
-                        }
-
-                        return BigBlueButton(
-                          onTap: () {
-                            StepInformation.of(context)
-                                .pageView
-                                .moveToNextPage();
-                          },
-                          // TODO don't use material icon
-                          child: const Icon(Icons.arrow_right_alt),
-                        );
-                      }(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          );
-        },
+                        }(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

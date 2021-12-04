@@ -85,6 +85,7 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
           // fourthPenColor: Colors.deepPurpleAccent,
           ),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         navigatorKey: _navigatorKey,
         home: const _HomePage(),
       ),

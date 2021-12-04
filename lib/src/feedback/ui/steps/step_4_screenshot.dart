@@ -17,35 +17,37 @@ class _Step4ScreenshotState extends State<Step4Screenshot> {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            'For a better understanding. Do you want to take a screenshot of it?',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'For a better understanding. Do you want to take a screenshot of it?',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(height: 32),
-          BigBlueButton(
-            onTap: () {
-              context.feedbackModel.enterCaptureMode();
-            },
-            child: const Text("Yes"),
-          ),
-          const SizedBox(height: 64),
-          LabeledButton(
-            onTap: () {
-              StepInformation.of(context).pageView.moveToNextPage();
-            },
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
-              child: Text("I'm done"),
+            const SizedBox(height: 32),
+            BigBlueButton(
+              onTap: () {
+                context.feedbackModel.enterCaptureMode();
+              },
+              child: const Text("Yes"),
             ),
-          ),
-        ],
+            const SizedBox(height: 64),
+            LabeledButton(
+              onTap: () {
+                StepInformation.of(context).pageView.moveToNextPage();
+              },
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.0),
+                child: Text("I'm done"),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

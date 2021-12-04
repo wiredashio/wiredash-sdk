@@ -40,78 +40,82 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // reduce size when it doesn't fit
-          Flexible(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(
-                    'Give us feedback',
-                    style: context.responsiveLayout.titleTextStyle,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // reduce size when it doesn't fit
+            Flexible(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      'Give us feedback',
+                      style: context.responsiveLayout.titleTextStyle,
+                    ),
                   ),
-                ),
-                Flexible(
-                  child: ScrollBox(
-                    child: TextField(
-                      controller: _controller,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      maxLength: 2048,
-                      buildCounter: _getCounterText,
-                      minLines: 3,
-                      style: context.responsiveLayout.bodyTextStyle,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        errorBorder: InputBorder.none,
-                        hintText:
-                            'e.g. there’s a bug when ... or I really enjoy ...',
-                        contentPadding: EdgeInsets.only(top: 16),
+                  Flexible(
+                    child: ScrollBox(
+                      child: TextField(
+                        controller: _controller,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        maxLength: 2048,
+                        buildCounter: _getCounterText,
+                        minLines: 3,
+                        style: context.responsiveLayout.bodyTextStyle,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          hintText:
+                              'e.g. there’s a bug when ... or I really enjoy ...',
+                          contentPadding: EdgeInsets.only(top: 16),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return AnimatedSize(
-                // ignore: deprecated_member_use
-                vsync: this,
-                duration: const Duration(milliseconds: 450),
-                curve: Curves.fastOutSlowIn,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 225),
-                  reverseDuration: const Duration(milliseconds: 170),
-                  switchInCurve: Curves.fastOutSlowIn,
-                  switchOutCurve: Curves.fastOutSlowIn,
-                  child: Container(
-                    key: ValueKey(_controller.text.isEmpty),
-                    child: () {
-                      return BigBlueButton(
-                        onTap: () {
-                          StepInformation.of(context).pageView.moveToNextPage();
-                        },
-                        child: const Text('next'),
-                      );
-                    }(),
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return AnimatedSize(
+                  // ignore: deprecated_member_use
+                  vsync: this,
+                  duration: const Duration(milliseconds: 450),
+                  curve: Curves.fastOutSlowIn,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 225),
+                    reverseDuration: const Duration(milliseconds: 170),
+                    switchInCurve: Curves.fastOutSlowIn,
+                    switchOutCurve: Curves.fastOutSlowIn,
+                    child: Container(
+                      key: ValueKey(_controller.text.isEmpty),
+                      child: () {
+                        return BigBlueButton(
+                          onTap: () {
+                            StepInformation.of(context)
+                                .pageView
+                                .moveToNextPage();
+                          },
+                          child: const Text('next'),
+                        );
+                      }(),
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-        ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
