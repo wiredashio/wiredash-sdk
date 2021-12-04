@@ -139,4 +139,16 @@ class CustomDemoTranslations extends WiredashTranslations {
 
   @override
   String get undoButtonLabel => 'Undo the latest change';
+
+  @override
+  String get feedbackStateErrorMsg => 'Please try to send your feedback again';
+
+  @override
+  String get feedbackStateErrorTitle => "Oops, that didn't work!";
+
+  @override
+  String get feedbackSubmitRetryMsg => 'Submit your feedback again';
+
+  @override
+  String get feedbackSubmitRetryTitle => 'Retry';
 }
