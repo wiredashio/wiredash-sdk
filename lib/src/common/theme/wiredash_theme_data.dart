@@ -83,7 +83,7 @@ class WiredashThemeData {
 
   String? get packageName => fontFamily == _fontFamily ? _packageName : null;
 
-  TextStyle get headlineStyle => TextStyle(
+  TextStyle get headlineTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
         fontSize: 28,
@@ -91,7 +91,7 @@ class WiredashThemeData {
         fontWeight: FontWeight.bold,
       );
 
-  TextStyle get titleStyle => TextStyle(
+  TextStyle get titleTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
         fontSize: 20,
@@ -99,7 +99,7 @@ class WiredashThemeData {
         fontWeight: FontWeight.bold,
       );
 
-  TextStyle get bodyStyle => TextStyle(
+  TextStyle get bodyTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
         fontSize: 16,
@@ -107,7 +107,7 @@ class WiredashThemeData {
         fontWeight: FontWeight.normal,
       );
 
-  TextStyle get captionStyle => TextStyle(
+  TextStyle get captionTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
         fontSize: 10,
@@ -115,14 +115,14 @@ class WiredashThemeData {
         fontWeight: FontWeight.normal,
       );
 
-  TextStyle get inputStyle => TextStyle(
+  TextStyle get inputTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
         fontSize: 14,
         color: primaryTextColor,
       );
 
-  TextStyle get inputErrorStyle => TextStyle(
+  TextStyle get inputErrorTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
         fontSize: 12,
@@ -130,14 +130,21 @@ class WiredashThemeData {
       );
 
   double get horizontalPadding {
-    switch(deviceClass) {
-      case DeviceClass.handsetSmall: return 8;
-      case DeviceClass.handsetMedium:  return 16;
-      case DeviceClass.handsetLarge:  return 32;
-      case DeviceClass.tabletSmall:  return 64;
-      case DeviceClass.tabletLarge:  return 64;
-      case DeviceClass.desktopSmall: return 128;
-      case DeviceClass.desktopLarge: return 128;
+    switch (deviceClass) {
+      case DeviceClass.handsetSmall:
+        return 8;
+      case DeviceClass.handsetMedium:
+        return 16;
+      case DeviceClass.handsetLarge:
+        return 32;
+      case DeviceClass.tabletSmall:
+        return 64;
+      case DeviceClass.tabletLarge:
+        return 64;
+      case DeviceClass.desktopSmall:
+        return 128;
+      case DeviceClass.desktopLarge:
+        return 128;
     }
   }
 }

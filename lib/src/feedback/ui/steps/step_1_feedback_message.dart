@@ -54,7 +54,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       'Give us feedback',
-                      style: context.theme.titleStyle,
+                      style: context.theme.titleTextStyle,
                     ),
                   ),
                   Flexible(
@@ -66,7 +66,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                         maxLength: 2048,
                         buildCounter: _getCounterText,
                         minLines: 3,
-                        style: context.theme.bodyStyle,
+                        style: context.theme.bodyTextStyle,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           focusedBorder: InputBorder.none,
@@ -149,7 +149,7 @@ Widget? _getCounterText(
   return Text(
     remaining > 150 ? '' : remaining.toString(),
     style: WiredashTheme.of(context)!
-        .inputErrorStyle
+        .inputErrorTextStyle
         .copyWith(color: _getCounterColor()),
   );
 }
