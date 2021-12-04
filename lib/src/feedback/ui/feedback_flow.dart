@@ -108,12 +108,10 @@ class _ScrollBoxState extends State<ScrollBox> {
 class StepPageScaffold extends StatelessWidget {
   const StepPageScaffold({
     required this.body,
-    this.safeAreaForNavigationButtons,
     Key? key,
   }) : super(key: key);
 
   final Widget body;
-  final bool? safeAreaForNavigationButtons;
 
   @override
   Widget build(BuildContext context) {
