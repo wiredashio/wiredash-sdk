@@ -27,7 +27,6 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         Focus.maybeOf(context)?.unfocus();
       },
       child: LarryPageView(
-        viewInsets: MediaQuery.of(context).padding,
         stepCount: 5,
         initialPage: _page,
         onPageChanged: (index) {
@@ -109,29 +108,30 @@ class _ScrollBoxState extends State<ScrollBox> {
 class StepPageScaffold extends StatelessWidget {
   const StepPageScaffold({
     required this.body,
-    this.bottomBarBuilder,
+    this.safeAreaForNavigationButtons,
     Key? key,
   }) : super(key: key);
 
   final Widget body;
-  final Widget Function(BuildContext context)? bottomBarBuilder;
+  final bool? safeAreaForNavigationButtons;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: ScrollBox(
-            child: body,
-          ),
+    return Center(
+      child: Container(
+        color: Colors.green.withOpacity(0.1),
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: body,
+              ),
+            ),
+            // if (safeAreaForNavigationButtons != false)
+            //   SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
+          ],
         ),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 250),
-          switchInCurve: Curves.fastOutSlowIn,
-          switchOutCurve: Curves.fastOutSlowIn,
-          child: bottomBarBuilder?.call(context),
-        )
-      ],
+      ),
     );
   }
 }

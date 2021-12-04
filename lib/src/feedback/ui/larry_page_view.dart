@@ -12,7 +12,6 @@ import 'package:flutter/rendering.dart';
 class LarryPageView extends StatefulWidget {
   const LarryPageView({
     Key? key,
-    this.viewInsets = EdgeInsets.zero,
     required this.stepCount,
     required this.builder,
     this.onPageChanged,
@@ -26,11 +25,6 @@ class LarryPageView extends StatefulWidget {
 
   /// Number of items to be returned by [builder]
   final int stepCount;
-
-  /// The area which the page should *not* cover
-  ///
-  /// The item, when animating out/in still uses that space
-  final EdgeInsets viewInsets;
 
   final int initialPage;
 
@@ -124,8 +118,7 @@ class LarryPageViewState extends State<LarryPageView>
           );
 
           final widgetHeight = constraints.maxHeight;
-          final _minItemHeight =
-              widgetHeight - widget.viewInsets.top - widget.viewInsets.bottom;
+          final _minItemHeight = widgetHeight;
 
           final double opacity = () {
             if (_nextPageTimer != null) {
@@ -178,7 +171,6 @@ class LarryPageViewState extends State<LarryPageView>
           child = Viewport(
             clipBehavior: Clip.none,
             offset: ViewportOffset.fixed(_offset),
-            anchor: widget.viewInsets.top / widgetHeight,
             slivers: [
               SliverToBoxAdapter(
                 child: child,
