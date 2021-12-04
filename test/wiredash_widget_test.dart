@@ -110,7 +110,6 @@ void main() {
 
       // Check for save screenshot button
       expect(find.byIcon(Wirecons.check), findsOneWidget);
-      await tester.pumpWidget(const SizedBox());
     });
   });
 }
@@ -132,7 +131,7 @@ extension on WidgetTester {
         break;
       }
       // ignore: avoid_print
-      print('Waiting for\nFinder: $finder to match\nMatcher: $matcher');
+      print('Waiting for\n\tFinder: $finder to match\n\tMatcher: $matcher');
       await pumpHardAndSettle();
     }
   }

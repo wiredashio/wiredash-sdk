@@ -11,7 +11,6 @@ import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/ui/app_overlay.dart';
-import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
 import 'package:wiredash/src/responsive_layout.dart';
@@ -141,8 +140,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   set _backdropStatus(WiredashBackdropStatus value) =>
       widget.controller.backdropStatus = value;
 
-  final FocusScopeNode _backdropContentFocusNode = FocusScopeNode();
-
   late AnimationController _pullAppYController;
 
   bool _pulling = false;
@@ -179,7 +176,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   void dispose() {
     _scrollController.dispose();
     _backdropAnimationController.dispose();
-    _backdropContentFocusNode.dispose();
     super.dispose();
   }
 
@@ -463,9 +459,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       return app;
     }
 
-    app = FocusScope(
+    app = Focus(
       debugLabel: 'wiredash app wrapper',
-      canRequestFocus: false,
+      canRequestFocus: widget.controller._isAppInteractive,
       // Users would be unable to leave the app once it got focus
       skipTraversal: true,
       child: _KeepAppAlive(
@@ -477,7 +473,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       rect: _rectContentArea,
       child: MediaQuery(
         data: _mediaQueryData.removePadding(removeBottom: true),
-        child: const FocusScope(
+        child: const Focus(
           debugLabel: 'wiredash-content',
           child: WiredashFeedbackFlow(),
         ),
@@ -511,14 +507,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  BigBlueButton(
-                    onTap: () {
+                  OutlinedButton(
+                    onPressed: () {
                       // TODO
                     },
                     child: const Text("Prev"),
                   ),
-                  BigBlueButton(
-                    onTap: () {
+                  OutlinedButton(
+                    onPressed: () {
                       // TODO
                     },
                     child: const Text("Next"),

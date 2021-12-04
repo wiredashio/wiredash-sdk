@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
+import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
+import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 import 'package:wiredash/src/responsive_layout.dart';
 
 class Step1FeedbackMessage extends StatefulWidget {
@@ -96,10 +98,12 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                   child: Container(
                     key: ValueKey(_controller.text.isEmpty),
                     child: () {
-                      // if (_controller.text.isEmpty) {
-                      //   return const MoreMenu();
-                      // }
-                      return const SizedBox();
+                      return BigBlueButton(
+                        child: const Text('next'),
+                        onTap: () {
+                          StepInformation.of(context).pageView.moveToNextPage();
+                        },
+                      );
                     }(),
                   ),
                 ),
