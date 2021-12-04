@@ -262,26 +262,30 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       height: screenSize.height * centerScaleFactor,
     );
 
-    const double minAppPeakHeight = 56;
-    const double buttonBarHeight = 128;
-
-    print("______");
-    print("padding ${_mediaQueryData.padding}");
-    print("viewInsets ${_mediaQueryData.viewInsets}");
-    print("viewPadding ${_mediaQueryData.viewPadding}");
-    print("size ${_mediaQueryData.size}");
-
     // iPhone SE is 320 width
     const minSquare = Size(320, 320);
     const maxSquare = Size(640, 640);
+    const double minAppPeakHeight = 56;
 
-    final halfHeight = _mediaQueryData.size.height / 2;
+    final bool isTablet = screenSize.width > 1280;
+    final bool isTallScreen = screenSize.height > 800;
+
+    final double buttonBarHeight = isTallScreen ? 128 : 64;
     final bool isKeyboardOpen = _mediaQueryData.viewInsets.bottom > 100;
-    final keyboardHeight =
-        isKeyboardOpen ? _mediaQueryData.viewInsets.bottom : 0;
 
-    final contentHeightWithButtons =
-        math.max(math.min(halfHeight, maxSquare.height), minSquare.height);
+    // center the navigation buttons
+    var preferredAppHeight = _mediaQueryData.size.height * 0.5;
+    if (!isKeyboardOpen) {
+      preferredAppHeight -= minAppPeakHeight;
+      preferredAppHeight -= buttonBarHeight / 2;
+    }
+    final preferredContentHeight =
+        _mediaQueryData.size.height - preferredAppHeight;
+
+    final contentHeightWithButtons = math.max(
+      math.min(preferredContentHeight, maxSquare.height),
+      minSquare.height,
+    );
     // On super small screen (landscape phones) scale to 0 and
     // make 100% sure the appPeak is visible
     final double contentHeight =
@@ -314,8 +318,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       appWidth,
       screenSize.height * centerScaleFactor,
     );
-
-    final bool isTablet = screenSize.width > 1280;
 
     _rectNavigationButtons = Rect.fromLTWH(
       isTablet ? _rectAppOutOfFocus.left : _rectContentArea.left,
@@ -434,9 +436,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   void didChangeDependencies() {
     super.didChangeDependencies();
     final oldMq = _mediaQueryData;
-    final newMq = MediaQuery.of(context)
-        // fake keyboard
-        .copyWith(viewInsets: const EdgeInsets.only(bottom: 150));
+    final newMq = MediaQuery.of(context);
     _mediaQueryData = newMq;
     if (newMq.size != oldMq.size ||
         // keyboard detection
@@ -485,12 +485,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       rect: _rectContentArea,
       child: MediaQuery(
         data: _mediaQueryData.copyWith(padding: _contentViewPadding),
-        child: FocusScope(
+        child: const FocusScope(
           debugLabel: 'wiredash-content',
-          child: Container(
-            // color: Colors.red.withOpacity(0.1),
-            child: const WiredashFeedbackFlow(),
-          ),
+          child: WiredashFeedbackFlow(),
         ),
       ),
     );
@@ -526,20 +523,29 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   BigBlueButton(
-                    child: Text("Prev"),
+                    child: const Text("Prev"),
                     onTap: () {
                       // TODO
                     },
                   ),
                   BigBlueButton(
-                    child: Text("Next"),
+                    child: const Text("Next"),
                     onTap: () {
                       // TODO
                     },
                   ),
                 ],
               ),
-            )
+            ),
+            Positioned(
+              bottom: 0,
+              height: _mediaQueryData.viewInsets.bottom,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: Colors.black26,
+              ),
+            ),
           ],
         ),
       ),
