@@ -598,7 +598,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                   }(),
                   child: DefaultTextStyle(
                     style: TextStyle(
-                      shadows: [
+                      shadows: const [
                         Shadow(
                           offset: Offset(2, 2),
                           blurRadius: 2,
@@ -610,26 +610,33 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                     ),
                     child: Container(
                       color: Colors.black12,
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: Row(
-                              children: [
-                                SizedBox(width: 16),
-                                Image.asset(
-                                  'assets/images/logo_white.png',
-                                  package: 'wiredash',
-                                  height: barContentHeight,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 2),
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: Opacity(
+                                opacity: 0.5,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Image.asset(
+                                      'assets/images/logo_white.png',
+                                      package: 'wiredash',
+                                      height: barContentHeight,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Text('Wiredash'),
+                                  ],
                                 ),
-                                SizedBox(width: 8),
-                                Text('Wiredash'),
-                              ],
+                              ),
                             ),
-                          ),
-                          Center(
-                            child: Text('Return to App'),
-                          ),
-                        ],
+                            const Center(
+                              child: Text('Return to App'),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
