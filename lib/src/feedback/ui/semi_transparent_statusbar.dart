@@ -9,7 +9,10 @@ import 'package:wiredash/src/wiredash_model_provider.dart';
 ///
 /// Usually, the [Scaffold] draws it, be we try to avoid material widgets in Wiredash.
 class SemiTransparentStatusBar extends StatelessWidget {
-  const SemiTransparentStatusBar({required this.child});
+  const SemiTransparentStatusBar({
+    Key? key,
+    required this.child,
+  }) : super(key: key);
 
   final Widget child;
 
