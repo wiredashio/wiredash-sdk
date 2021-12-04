@@ -44,6 +44,8 @@ flutter:
         default_package: wiredash
       web:
         default_package: wiredash
+      windows:
+        default_package: wiredash
 
   fonts:
     - family: Inter

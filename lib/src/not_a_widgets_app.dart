@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/media_query_from_window.dart';
 
-/// Wrapper for widgets like [TextField] that expect a [WidgetsApp] as parent,
-/// that don't have [WidgetsApp] as parent
+/// Wrapper for widgets like [TextField] that expect,
+/// but don't have a [WidgetsApp] as parent.
 class NotAWidgetsApp extends StatelessWidget {
   const NotAWidgetsApp({
     required this.child,
@@ -52,10 +52,11 @@ class NotAWidgetsApp extends StatelessWidget {
 
     // Both DefaultTextEditingShortcuts and DefaultTextEditingActions are
     // required to make text edits like deletion of characters possible on macOS
+    widget = DefaultTextEditingActions(
+      child: widget,
+    );
     widget = DefaultTextEditingShortcuts(
-      child: DefaultTextEditingActions(
-        child: widget,
-      ),
+      child: widget,
     );
 
     // Inject a MediaQuery with information from the app window

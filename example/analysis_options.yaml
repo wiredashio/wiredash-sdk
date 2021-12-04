@@ -1,0 +1,11 @@
+include: package:lint/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - 'lib/src/generated_plugin_registrant.dart'
+
+
+linter:
+  rules:
+    depend_on_referenced_packages: false
+    prefer_const_constructors: false

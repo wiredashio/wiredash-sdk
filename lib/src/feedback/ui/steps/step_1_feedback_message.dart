@@ -5,7 +5,6 @@ import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
-import 'package:wiredash/src/feedback/ui/more_menu.dart';
 
 class Step1FeedbackMessage extends StatefulWidget {
   const Step1FeedbackMessage({Key? key}) : super(key: key);
@@ -40,24 +39,51 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(
-              top: context.theme.horizontalPadding,
-              left: context.theme.horizontalPadding,
-              right: context.theme.horizontalPadding,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // reduce size when it doesn't fit
+            Flexible(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      'Give us feedback',
+                      style: context.theme.titleStyle,
+                    ),
+                  ),
+                  Flexible(
+                    child: ScrollBox(
+                      child: TextField(
+                        controller: _controller,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        maxLength: 2048,
+                        buildCounter: _getCounterText,
+                        minLines: 3,
+                        style: context.theme.bodyStyle,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          hintText:
+                              'e.g. there’s a bug when ... or I really enjoy ...',
+                          contentPadding: EdgeInsets.only(top: 16),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: _FeedbackMessageInput(
-              controller: _controller,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: context.theme.horizontalPadding,
-            ),
-            child: AnimatedBuilder(
+            AnimatedBuilder(
               animation: _controller,
               builder: (context, child) {
                 return AnimatedSize(
@@ -73,118 +99,57 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                     child: Container(
                       key: ValueKey(_controller.text.isEmpty),
                       child: () {
-                        if (_controller.text.isEmpty) {
-                          return const MoreMenu();
-                        }
-                        return const SizedBox();
+                        return BigBlueButton(
+                          onTap: () {
+                            StepInformation.of(context)
+                                .pageView
+                                .moveToNextPage();
+                          },
+                          child: const Text('next'),
+                        );
                       }(),
                     ),
                   ),
                 );
               },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-      bottomBarBuilder: (context) {
-        if (_controller.text.isEmpty) {
-          return const SizedBox();
-        }
-        return Container(
-          alignment: Alignment.topLeft,
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-          child: BigBlueButton(
-            onTap: () {
-              Focus.maybeOf(context)?.unfocus();
-              StepInformation.of(context).pageView.moveToNextPage();
-            },
-            child: const Icon(Icons.arrow_right_alt),
-          ),
-        );
-      },
     );
   }
 }
 
-class _FeedbackMessageInput extends StatefulWidget {
-  const _FeedbackMessageInput({required this.controller, Key? key})
-      : super(key: key);
+Widget? _getCounterText(
+  /// The build context for the TextField.
+  BuildContext context, {
 
-  final TextEditingController controller;
+  /// The length of the string currently in the input.
+  required int currentLength,
 
-  @override
-  _FeedbackMessageInputState createState() => _FeedbackMessageInputState();
-}
+  /// The maximum string length that can be entered into the TextField.
+  required int? maxLength,
 
-class _FeedbackMessageInputState extends State<_FeedbackMessageInput> {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Text(
-            'Give us feedback',
-            style: context.theme.titleStyle,
-          ),
-        ),
-        TextField(
-          controller: widget.controller,
-          keyboardType: TextInputType.multiline,
-          maxLines: null,
-          maxLength: 2048,
-          buildCounter: _getCounterText,
-          minLines: 3,
-          style: context.theme.bodyStyle,
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            focusedBorder: InputBorder.none,
-            enabledBorder: InputBorder.none,
-            disabledBorder: InputBorder.none,
-            errorBorder: InputBorder.none,
-            hintText: 'e.g. there’s a bug when ... or I really enjoy ...',
-            contentPadding: EdgeInsets.only(
-              top: 16,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  /// Whether or not the TextField is currently focused.  Mainly provided for
+  /// the [liveRegion] parameter in the [Semantics] widget for accessibility.
+  required bool isFocused,
+}) {
+  final max = maxLength ?? 2048;
+  final remaining = max - currentLength;
 
-  Widget? _getCounterText(
-    /// The build context for the TextField.
-    BuildContext context, {
-
-    /// The length of the string currently in the input.
-    required int currentLength,
-
-    /// The maximum string length that can be entered into the TextField.
-    required int? maxLength,
-
-    /// Whether or not the TextField is currently focused.  Mainly provided for
-    /// the [liveRegion] parameter in the [Semantics] widget for accessibility.
-    required bool isFocused,
-  }) {
-    final max = maxLength ?? 2048;
-    final remaining = max - currentLength;
-
-    Color _getCounterColor() {
-      if (remaining >= 150) {
-        return Colors.green.shade400.withOpacity(0.8);
-      } else if (remaining >= 50) {
-        return Colors.orange.withOpacity(0.8);
-      }
-      return Theme.of(context).errorColor;
+  Color _getCounterColor() {
+    if (remaining >= 150) {
+      return Colors.green.shade400.withOpacity(0.8);
+    } else if (remaining >= 50) {
+      return Colors.orange.withOpacity(0.8);
     }
-
-    return Text(
-      remaining > 150 ? '' : remaining.toString(),
-      style: WiredashTheme.of(context)!
-          .inputErrorStyle
-          .copyWith(color: _getCounterColor()),
-    );
+    return Theme.of(context).errorColor;
   }
+
+  return Text(
+    remaining > 150 ? '' : remaining.toString(),
+    style: WiredashTheme.of(context)!
+        .inputErrorStyle
+        .copyWith(color: _getCounterColor()),
+  );
 }

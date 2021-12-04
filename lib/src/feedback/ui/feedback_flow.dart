@@ -27,7 +27,6 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         Focus.maybeOf(context)?.unfocus();
       },
       child: LarryPageView(
-        viewInsets: MediaQuery.of(context).padding,
         stepCount: 5,
         initialPage: _page,
         onPageChanged: (index) {
@@ -42,24 +41,16 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
               return const Step1FeedbackMessage();
             }
             if (index == 1) {
-              return const ScrollBox(
-                child: Step2Labels(),
-              );
+              return const Step2Labels();
             }
             if (index == 2) {
-              return const ScrollBox(
-                child: Step3Email(),
-              );
+              return const Step3Email();
             }
             if (index == 3) {
-              return const ScrollBox(
-                child: Step4Screenshot(),
-              );
+              return const Step4Screenshot();
             }
             if (index == 4) {
-              return const ScrollBox(
-                child: Step5Submit(),
-              );
+              return const Step5Submit();
             }
             throw 'Index out of bounds $index';
           }();
@@ -108,30 +99,17 @@ class _ScrollBoxState extends State<ScrollBox> {
 
 class StepPageScaffold extends StatelessWidget {
   const StepPageScaffold({
-    required this.body,
-    this.bottomBarBuilder,
+    required this.child,
     Key? key,
   }) : super(key: key);
 
-  final Widget body;
-  final Widget Function(BuildContext context)? bottomBarBuilder;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: ScrollBox(
-            child: body,
-          ),
-        ),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 250),
-          switchInCurve: Curves.fastOutSlowIn,
-          switchOutCurve: Curves.fastOutSlowIn,
-          child: bottomBarBuilder?.call(context),
-        )
-      ],
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: child,
     );
   }
 }

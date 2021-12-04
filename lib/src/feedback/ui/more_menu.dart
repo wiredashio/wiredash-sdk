@@ -62,28 +62,32 @@ class _Link extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-        child: Column(
-          children: [
-            IconTheme.merge(
-              data: const IconThemeData(
-                size: 24,
-                // tint
-                color: Color(0xFF1A56DB),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+        child: SizedBox(
+          width: 72,
+          child: Column(
+            children: [
+              IconTheme.merge(
+                data: const IconThemeData(
+                  size: 24,
+                  // tint
+                  color: Color(0xFF1A56DB),
+                ),
+                child: icon,
               ),
-              child: icon,
-            ),
-            const SizedBox(height: 8),
-            DefaultTextStyle.merge(
-              style: const TextStyle(
-                // tint
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF1A56DB),
+              const SizedBox(height: 8),
+              DefaultTextStyle.merge(
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  // tint
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF1A56DB),
+                ),
+                child: label,
               ),
-              child: label,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

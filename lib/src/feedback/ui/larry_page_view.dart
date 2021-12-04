@@ -12,7 +12,6 @@ import 'package:flutter/rendering.dart';
 class LarryPageView extends StatefulWidget {
   const LarryPageView({
     Key? key,
-    this.viewInsets = EdgeInsets.zero,
     required this.stepCount,
     required this.builder,
     this.onPageChanged,
@@ -26,11 +25,6 @@ class LarryPageView extends StatefulWidget {
 
   /// Number of items to be returned by [builder]
   final int stepCount;
-
-  /// The area which the page should *not* cover
-  ///
-  /// The item, when animating out/in still uses that space
-  final EdgeInsets viewInsets;
 
   final int initialPage;
 
@@ -124,8 +118,13 @@ class LarryPageViewState extends State<LarryPageView>
           );
 
           final widgetHeight = constraints.maxHeight;
-          final _minItemHeight =
-              widgetHeight - widget.viewInsets.top - widget.viewInsets.bottom;
+          final _minItemHeight = widgetHeight;
+
+          // constrain content area to a fixed size
+          child = SizedBox(
+            height: _minItemHeight,
+            child: child,
+          );
 
           final double opacity = () {
             if (_nextPageTimer != null) {
@@ -152,22 +151,16 @@ class LarryPageViewState extends State<LarryPageView>
                 pageView: this,
                 innerScrollController: _childScrollController,
               ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: _minItemHeight,
-                  maxHeight: _minItemHeight,
-                ),
-                child: Opacity(
-                  opacity: opacity,
-                  child: NotificationListener<ScrollNotification>(
-                    onNotification: _onInnerScroll,
-                    child: ScrollConfiguration(
-                      // BouncingScrollPhysics is required on all platforms or
-                      // the overscroll detection wouldn't work
-                      behavior: const ScrollBehavior()
-                          .copyWith(physics: const BouncingScrollPhysics()),
-                      child: child,
-                    ),
+              child: Opacity(
+                opacity: opacity,
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: _onInnerScroll,
+                  child: ScrollConfiguration(
+                    // BouncingScrollPhysics is required on all platforms or
+                    // the overscroll detection wouldn't work
+                    behavior: const ScrollBehavior()
+                        .copyWith(physics: const BouncingScrollPhysics()),
+                    child: child,
                   ),
                 ),
               ),
@@ -178,7 +171,6 @@ class LarryPageViewState extends State<LarryPageView>
           child = Viewport(
             clipBehavior: Clip.none,
             offset: ViewportOffset.fixed(_offset),
-            anchor: widget.viewInsets.top / widgetHeight,
             slivers: [
               SliverToBoxAdapter(
                 child: child,

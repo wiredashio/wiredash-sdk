@@ -25,8 +25,10 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 750));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 750),
+    );
   }
 
   @override
@@ -150,7 +152,9 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           icon: Wirecons.pencil,
           iconOffset: const Offset(.15, 0),
           label: 'Change paint',
-          onTap: () => print('Open paint menu'),
+          onTap: () {
+            debugPrint('Open paint menu');
+          },
         );
       case FeedbackFlowStatus.screenshotsOverview:
         _controller.reverse();

@@ -87,9 +87,9 @@ class _TronProgressIndicatorState extends State<TronProgressIndicator>
           height: _size,
           child: CustomPaint(
             painter: _TronProgressPainter(
-              context.theme!.primaryColor,
+              context.theme.primaryColor,
               _currentProgress,
-              context.theme!.primaryColor.withAlpha(64),
+              context.theme.primaryColor.withAlpha(64),
               _nextProgress,
             ),
           ),
