@@ -135,11 +135,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   Rect _rectContentArea = Rect.zero;
   Rect _rectNavigationButtons = Rect.zero;
 
-  /// The area the content is obstructed by the keyboard or wiredash navigation buttons
-  ///
-  /// Will be used by [SafeArea]
-  EdgeInsets _contentViewPadding = EdgeInsets.zero;
-
   WiredashBackdropStatus get _backdropStatus =>
       widget.controller.backdropStatus;
 
@@ -326,8 +321,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       buttonBarHeight,
     );
 
-    _contentViewPadding = EdgeInsets.only(bottom: buttonBarHeight);
-
     _rectAppFillsScreen =
         Rect.fromPoints(Offset.zero, screenSize.bottomRight(Offset.zero));
   }
@@ -480,11 +473,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       ),
     );
 
-    // TODO check if this has to be wrapped with a FocusScope
     final content = Positioned.fromRect(
       rect: _rectContentArea,
       child: MediaQuery(
-        data: _mediaQueryData.copyWith(padding: _contentViewPadding),
+        data: _mediaQueryData.removePadding(removeBottom: true),
         child: const FocusScope(
           debugLabel: 'wiredash-content',
           child: WiredashFeedbackFlow(),
@@ -508,12 +500,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         child: Stack(
           children: <Widget>[
             content,
-            Opacity(
-              opacity: 0.5,
-              child: _buildAppPositioningAnimation(
-                child: _buildAppFrame(
-                  child: app,
-                ),
+            _buildAppPositioningAnimation(
+              child: _buildAppFrame(
+                child: app,
               ),
             ),
             _buildAppOverlay(),
@@ -523,27 +512,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   BigBlueButton(
-                    child: const Text("Prev"),
                     onTap: () {
                       // TODO
                     },
+                    child: const Text("Prev"),
                   ),
                   BigBlueButton(
-                    child: const Text("Next"),
                     onTap: () {
                       // TODO
                     },
+                    child: const Text("Next"),
                   ),
                 ],
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              height: _mediaQueryData.viewInsets.bottom,
-              left: 0,
-              right: 0,
-              child: Container(
-                color: Colors.black26,
               ),
             ),
           ],

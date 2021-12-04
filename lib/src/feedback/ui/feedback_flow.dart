@@ -118,19 +118,14 @@ class StepPageScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        color: Colors.green.withOpacity(0.1),
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: body,
-              ),
+      child: Column(
+        children: [
+          Expanded(
+            child: Center(
+              child: body,
             ),
-            // if (safeAreaForNavigationButtons != false)
-            //   SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
