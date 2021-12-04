@@ -11,11 +11,13 @@ class TronButton extends StatefulWidget {
     required this.label,
     this.onTap,
     this.color,
+    this.iconOffset = Offset.zero,
     Key? key,
   }) : super(key: key);
 
   final Color? color;
   final IconData icon;
+  final Offset iconOffset;
   final String label;
   final VoidCallback? onTap;
 
@@ -118,9 +120,13 @@ class _TronButtonState extends State<TronButton>
                   excludeFromSemantics: true,
                   child: ScaleTransition(
                     scale: _iconScaleAnimation,
-                    child: TronIcon(
-                      widget.icon,
-                      color: _iconColor,
+                    child: AnimatedSlide(
+                      duration: _duration,
+                      offset: widget.iconOffset,
+                      child: TronIcon(
+                        widget.icon,
+                        color: _iconColor,
+                      ),
                     ),
                   ),
                 ),
