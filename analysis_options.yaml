@@ -2,6 +2,7 @@ include: package:lint/analysis_options_package.yaml
 
 analyzer:
   exclude:
+    - example/**
     - lib/src/common/translation/l10n/**
 
 
