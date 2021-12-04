@@ -99,10 +99,10 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                     key: ValueKey(_controller.text.isEmpty),
                     child: () {
                       return BigBlueButton(
-                        child: const Text('next'),
                         onTap: () {
                           StepInformation.of(context).pageView.moveToNextPage();
                         },
+                        child: const Text('next'),
                       );
                     }(),
                   ),
