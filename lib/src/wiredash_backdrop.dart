@@ -551,56 +551,92 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, child) {
-        return Stack(
-          fit: StackFit.passthrough,
-          clipBehavior: Clip.none,
-          children: [
-            SizedBox(
-              height: _mediaQueryData.size.height,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: _cornerRadiusAnimation.value,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF000000).withOpacity(0.04),
-                      offset: const Offset(0, 10),
-                      blurRadius: 10,
-                    ),
-                    BoxShadow(
-                      color: const Color(0xFF000000).withOpacity(0.10),
-                      offset: const Offset(0, 20),
-                      blurRadius: 25,
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: _cornerRadiusAnimation.value,
+        final double barContentHeight =
+            math.min(12, _mediaQueryData.viewPadding.top);
+        return ClipRRect(
+          borderRadius: _cornerRadiusAnimation.value,
+          child: Stack(
+            fit: StackFit.passthrough,
+            clipBehavior: Clip.none,
+            children: [
+              SizedBox(
+                height: _mediaQueryData.size.height,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: _cornerRadiusAnimation.value,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF000000).withOpacity(0.04),
+                        offset: const Offset(0, 10),
+                        blurRadius: 10,
+                      ),
+                      BoxShadow(
+                        color: const Color(0xFF000000).withOpacity(0.10),
+                        offset: const Offset(0, 20),
+                        blurRadius: 25,
+                      ),
+                    ],
+                  ),
                   child: child,
                 ),
               ),
-            ),
-            Positioned(
-              bottom: 8,
-              left: 0,
-              right: 0,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 300),
-                opacity: () {
-                  if (_backdropStatus == WiredashBackdropStatus.closing) {
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: _mediaQueryData.viewPadding.top,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 300),
+                  opacity: () {
+                    if (_backdropStatus == WiredashBackdropStatus.closing) {
+                      return 0.0;
+                    }
+                    if (!widget.controller.isAppInteractive) {
+                      return 1.0;
+                    }
                     return 0.0;
-                  }
-                  if (!widget.controller.isAppInteractive) {
-                    return 1.0;
-                  }
-                  return 0.0;
-                }(),
-                child: const Icon(
-                  Wirecons.cheveron_down,
-                  color: Colors.black26,
+                  }(),
+                  child: DefaultTextStyle(
+                    style: TextStyle(
+                      shadows: [
+                        Shadow(
+                          offset: Offset(2, 2),
+                          blurRadius: 2,
+                          color: Color.fromARGB(30, 0, 0, 0),
+                        ),
+                      ],
+                      color: Colors.white,
+                      fontSize: barContentHeight,
+                    ),
+                    child: Container(
+                      color: Colors.black12,
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: Row(
+                              children: [
+                                SizedBox(width: 16),
+                                Image.asset(
+                                  'assets/images/logo_white.png',
+                                  package: 'wiredash',
+                                  height: barContentHeight,
+                                ),
+                                SizedBox(width: 8),
+                                Text('Wiredash'),
+                              ],
+                            ),
+                          ),
+                          Center(
+                            child: Text('Return to App'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
       child: child,
