@@ -40,10 +40,11 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      body: Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // reduce size when it doesn't fit
           Flexible(
             child: Column(
               mainAxisSize: MainAxisSize.min,

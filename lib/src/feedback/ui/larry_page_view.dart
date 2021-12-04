@@ -120,6 +120,12 @@ class LarryPageViewState extends State<LarryPageView>
           final widgetHeight = constraints.maxHeight;
           final _minItemHeight = widgetHeight;
 
+          // constrain content area to a fixed size
+          child = SizedBox(
+            height: _minItemHeight,
+            child: child,
+          );
+
           final double opacity = () {
             if (_nextPageTimer != null) {
               // hide next page, while delaying in-animation
@@ -145,22 +151,16 @@ class LarryPageViewState extends State<LarryPageView>
                 pageView: this,
                 innerScrollController: _childScrollController,
               ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: _minItemHeight,
-                  maxHeight: _minItemHeight,
-                ),
-                child: Opacity(
-                  opacity: opacity,
-                  child: NotificationListener<ScrollNotification>(
-                    onNotification: _onInnerScroll,
-                    child: ScrollConfiguration(
-                      // BouncingScrollPhysics is required on all platforms or
-                      // the overscroll detection wouldn't work
-                      behavior: const ScrollBehavior()
-                          .copyWith(physics: const BouncingScrollPhysics()),
-                      child: child,
-                    ),
+              child: Opacity(
+                opacity: opacity,
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: _onInnerScroll,
+                  child: ScrollConfiguration(
+                    // BouncingScrollPhysics is required on all platforms or
+                    // the overscroll detection wouldn't work
+                    behavior: const ScrollBehavior()
+                        .copyWith(physics: const BouncingScrollPhysics()),
+                    child: child,
                   ),
                 ),
               ),

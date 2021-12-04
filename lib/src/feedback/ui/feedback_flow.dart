@@ -41,24 +41,16 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
               return const Step1FeedbackMessage();
             }
             if (index == 1) {
-              return const ScrollBox(
-                child: Step2Labels(),
-              );
+              return const Step2Labels();
             }
             if (index == 2) {
-              return const ScrollBox(
-                child: Step3Email(),
-              );
+              return const Step3Email();
             }
             if (index == 3) {
-              return const ScrollBox(
-                child: Step4Screenshot(),
-              );
+              return const Step4Screenshot();
             }
             if (index == 4) {
-              return const ScrollBox(
-                child: Step5Submit(),
-              );
+              return const Step5Submit();
             }
             throw 'Index out of bounds $index';
           }();
@@ -107,24 +99,17 @@ class _ScrollBoxState extends State<ScrollBox> {
 
 class StepPageScaffold extends StatelessWidget {
   const StepPageScaffold({
-    required this.body,
+    required this.child,
     Key? key,
   }) : super(key: key);
 
-  final Widget body;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          Expanded(
-            child: Center(
-              child: body,
-            ),
-          ),
-        ],
-      ),
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: child,
     );
   }
 }

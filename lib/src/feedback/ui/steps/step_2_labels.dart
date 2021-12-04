@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
+import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/labeled_button.dart';
 import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
-import 'package:wiredash/src/responsive_layout.dart';
 
 const _labels = [
   Label(id: 'bug', name: 'Bug'),
@@ -26,31 +26,24 @@ class _Step2LabelsState extends State<Step2Labels>
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Set<Label>>(
-      valueListenable: _selectedLabels,
-      builder: (context, selectedLabels, child) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.responsiveLayout.horizontalMargin,
-                vertical: 16,
-              ),
-              child: const Text(
+    return StepPageScaffold(
+      child: ValueListenableBuilder<Set<Label>>(
+        valueListenable: _selectedLabels,
+        builder: (context, selectedLabels, child) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
                 'What category fits best with your feedback?',
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.responsiveLayout.horizontalMargin,
-                vertical: 16,
-              ),
-              child: _LabelRecommendations(
+              // TODO replace with automatic scaled spacing from theme
+              const SizedBox(height: 32),
+              _LabelRecommendations(
                 isAnyLabelSelected: selectedLabels.isNotEmpty,
                 isLabelSelected: selectedLabels.contains,
                 toggleSelection: (label) {
@@ -63,15 +56,10 @@ class _Step2LabelsState extends State<Step2Labels>
                   });
                 },
               ),
-            ),
-            Builder(
-              builder: (context) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.responsiveLayout.horizontalMargin,
-                    vertical: 16,
-                  ),
-                  child: AnimatedSize(
+              const SizedBox(height: 32),
+              Builder(
+                builder: (context) {
+                  return AnimatedSize(
                     duration: const Duration(milliseconds: 225),
                     // ignore: deprecated_member_use
                     vsync: this,
@@ -104,13 +92,13 @@ class _Step2LabelsState extends State<Step2Labels>
                         );
                       }(),
                     ),
-                  ),
-                );
-              },
-            ),
-          ],
-        );
-      },
+                  );
+                },
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
