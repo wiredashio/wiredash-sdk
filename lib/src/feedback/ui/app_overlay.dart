@@ -7,7 +7,6 @@ import 'package:wiredash/src/common/widgets/gradient_shader.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
-import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/screenshot_border_decoration.dart';
 
 class AppOverlay extends StatefulWidget {
@@ -65,31 +64,15 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
       children: [
         _buildPositionedDialog(),
         _buildPositionedScreenshotDecoration(),
-        _buildButtons(),
       ],
     );
   }
 
-  Widget _buildButtons() {
-    return Visibility(
-      visible: context.feedbackModel.screenshotStatus !=
-          FeedbackScreenshotStatus.none,
-      child: Positioned(
-        top: widget.appRect.bottom - 26,
-        left: widget.appRect.left,
-        right: widget.appRect.left,
-        child: AnimatedScreenshotButtons(
-          status: context.feedbackModel.screenshotStatus,
-        ),
-      ),
-    );
-  }
-
   Widget _buildPositionedScreenshotDecoration() {
-    final isScreenshotTaken = context.feedbackModel.screenshotStatus ==
-            FeedbackScreenshotStatus.screenshotting ||
-        context.feedbackModel.screenshotStatus ==
-            FeedbackScreenshotStatus.drawing;
+    final isScreenshotTaken = context.feedbackModel.feedbackFlowStatus ==
+            FeedbackFlowStatus.screenshotCapturing ||
+        context.feedbackModel.feedbackFlowStatus ==
+            FeedbackFlowStatus.screenshotDrawing;
 
     return Positioned.fromRect(
       rect: widget.appRect,
@@ -170,127 +153,102 @@ class _AppOverlayState extends State<AppOverlay> with TickerProviderStateMixin {
   }
 }
 
-class AnimatedScreenshotButtons extends StatefulWidget {
-  const AnimatedScreenshotButtons({Key? key, required this.status})
-      : super(key: key);
-
-  final FeedbackScreenshotStatus status;
-
-  @override
-  _AnimatedScreenshotButtonsState createState() =>
-      _AnimatedScreenshotButtonsState();
-}
-
-class _AnimatedScreenshotButtonsState extends State<AnimatedScreenshotButtons>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  late Animation<double> _leftButtonFadeAnimation;
-  late Animation<Offset> _leftButtonTranslateAnimation;
-  late Animation<Offset> _rightButtonTranslateAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 1));
-    const delayedCurve = Interval(0.5, 1.0, curve: Curves.easeOutCubic);
-
-    _leftButtonFadeAnimation =
-        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic);
-
-    _leftButtonTranslateAnimation =
-        Tween(begin: const Offset(.5, 0), end: Offset.zero).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: delayedCurve,
-      ),
-    );
-
-    _rightButtonTranslateAnimation =
-        Tween(begin: const Offset(-.5, 0), end: Offset.zero).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: delayedCurve,
-      ),
-    );
-  }
-
-  @override
-  void didUpdateWidget(covariant AnimatedScreenshotButtons oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.status == FeedbackScreenshotStatus.drawing) {
-      _controller.forward();
-    } else {
-      _controller.reverse();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SlideTransition(
-          position: _leftButtonTranslateAnimation,
-          child: FadeTransition(
-            opacity: _leftButtonFadeAnimation,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: BigBlueButton(
-                onTap: context.feedbackModel.enterCaptureMode,
-                child: const Icon(Wirecons.pencil),
-              ),
-            ),
-          ),
-        ),
-        SlideTransition(
-          position: _rightButtonTranslateAnimation,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: BigBlueButton(
-              onTap: _onNextStepTap,
-              child: Icon(_getNextStepIconData()),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _onNextStepTap() {
-    switch (widget.status) {
-      case FeedbackScreenshotStatus.none:
-      case FeedbackScreenshotStatus.navigating:
-        context.feedbackModel.takeScreenshot();
-        break;
-      case FeedbackScreenshotStatus.screenshotting:
-        break;
-      case FeedbackScreenshotStatus.drawing:
-        context.feedbackModel.saveScreenshot();
-        break;
-    }
-  }
-
-  IconData _getNextStepIconData() {
-    switch (widget.status) {
-      case FeedbackScreenshotStatus.none:
-      case FeedbackScreenshotStatus.navigating:
-      case FeedbackScreenshotStatus.screenshotting:
-        return Wirecons.camera;
-      case FeedbackScreenshotStatus.drawing:
-        return Wirecons.check;
-    }
-  }
-}
+// class AnimatedScreenshotButtons extends StatefulWidget {
+//   const AnimatedScreenshotButtons({Key? key, required this.status})
+//       : super(key: key);
+//
+//   final FeedbackScreenshotStatus status;
+//
+//   @override
+//   _AnimatedScreenshotButtonsState createState() =>
+//       _AnimatedScreenshotButtonsState();
+// }
+//
+// class _AnimatedScreenshotButtonsState extends State<AnimatedScreenshotButtons>
+//     with SingleTickerProviderStateMixin {
+//   late AnimationController _controller;
+//
+//   late Animation<double> _leftButtonFadeAnimation;
+//   late Animation<Offset> _leftButtonTranslateAnimation;
+//   late Animation<Offset> _rightButtonTranslateAnimation;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _controller =
+//         AnimationController(vsync: this, duration: const Duration(seconds: 1));
+//     const delayedCurve = Interval(0.5, 1.0, curve: Curves.easeOutCubic);
+//
+//     _leftButtonFadeAnimation =
+//         CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic);
+//
+//     _leftButtonTranslateAnimation =
+//         Tween(begin: const Offset(.5, 0), end: Offset.zero).animate(
+//       CurvedAnimation(
+//         parent: _controller,
+//         curve: delayedCurve,
+//       ),
+//     );
+//
+//     _rightButtonTranslateAnimation =
+//         Tween(begin: const Offset(-.5, 0), end: Offset.zero).animate(
+//       CurvedAnimation(
+//         parent: _controller,
+//         curve: delayedCurve,
+//       ),
+//     );
+//   }
+//
+//   @override
+//   void didUpdateWidget(covariant AnimatedScreenshotButtons oldWidget) {
+//     super.didUpdateWidget(oldWidget);
+//
+//     if (widget.status == FeedbackScreenshotStatus.drawing) {
+//       _controller.forward();
+//     } else {
+//       _controller.reverse();
+//     }
+//   }
+//
+//   @override
+//   void dispose() {
+//     _controller.dispose();
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.center,
+//       mainAxisSize: MainAxisSize.min,
+//       children: [
+//         SlideTransition(
+//           position: _leftButtonTranslateAnimation,
+//           child: FadeTransition(
+//             opacity: _leftButtonFadeAnimation,
+//             child: Padding(
+//               padding: const EdgeInsets.symmetric(horizontal: 4),
+//               child: BigBlueButton(
+//                 onTap: context.feedbackModel.enterCaptureMode,
+//                 child: const Icon(Wirecons.pencil),
+//               ),
+//             ),
+//           ),
+//         ),
+//         SlideTransition(
+//           position: _rightButtonTranslateAnimation,
+//           child: Padding(
+//             padding: const EdgeInsets.symmetric(horizontal: 4),
+//             child: BigBlueButton(
+//               onTap: _onNextStepTap,
+//               child: Icon(_getNextStepIconData()),
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
 
 class AnimatedScreenshotBorder extends StatefulWidget {
   const AnimatedScreenshotBorder({
@@ -378,12 +336,14 @@ class _AnimatedScreenshotBorderState extends State<AnimatedScreenshotBorder>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        final inScreenshotMode = context.feedbackModel.screenshotStatus ==
-                FeedbackScreenshotStatus.navigating ||
-            context.feedbackModel.screenshotStatus ==
-                FeedbackScreenshotStatus.screenshotting ||
-            context.feedbackModel.screenshotStatus ==
-                FeedbackScreenshotStatus.drawing;
+        final inScreenshotMode = context.feedbackModel.feedbackFlowStatus ==
+                FeedbackFlowStatus.screenshotNavigating ||
+            context.feedbackModel.feedbackFlowStatus ==
+                FeedbackFlowStatus.screenshotCapturing ||
+            context.feedbackModel.feedbackFlowStatus ==
+                FeedbackFlowStatus.screenshotDrawing ||
+            context.feedbackModel.feedbackFlowStatus ==
+                FeedbackFlowStatus.screenshotSaving;
         return IgnorePointer(
           child: DecoratedBox(
             decoration: inScreenshotMode

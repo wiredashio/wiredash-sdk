@@ -41,7 +41,7 @@ class _Step4ScreenshotState extends State<Step4Screenshot> {
             children: [
               BigBlueButton(
                 onTap: () {
-                  context.feedbackModel.enterCaptureMode();
+                  print('Unused');
                 },
                 child: const Text("Yes"),
               ),

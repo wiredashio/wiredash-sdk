@@ -1,35 +1,46 @@
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
+import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 
-enum FeedbackScreenshotStatus {
+enum FeedbackFlowStatus {
   none,
-  navigating,
-  screenshotting,
-  drawing,
+  message,
+  labels,
+  screenshotsOverview,
+  screenshotNavigating,
+  screenshotCapturing,
+  screenshotDrawing,
+  screenshotSaving,
+  email
 }
 
 class FeedbackModel with ChangeNotifier {
   FeedbackModel(WiredashState state) : _wiredashState = state;
 
   final WiredashState _wiredashState;
-  FeedbackScreenshotStatus _screenshotStatus = FeedbackScreenshotStatus.none;
+  FeedbackFlowStatus _feedbackFlowStatus = FeedbackFlowStatus.message;
 
-  FeedbackScreenshotStatus get screenshotStatus => _screenshotStatus;
+  FeedbackFlowStatus get feedbackFlowStatus => _feedbackFlowStatus;
+
+  PicassoController get picassoController => _wiredashState.picassoController;
 
   final BuildInfoManager buildInfoManager = BuildInfoManager();
-
-  // ignore: unused_field
-  final List<Uint8List> _screenshots = [];
 
   String? get feedbackMessage => _feedbackMessage;
   String? _feedbackMessage;
 
+  ui.Image? _screenshot;
+
   String? get userEmail => _userEmail;
   String? _userEmail;
+
+  bool get isActive => _feedbackFlowStatus != FeedbackFlowStatus.none;
+  bool get hasScreenshots => _screenshot != null;
 
   set feedbackMessage(String? feedbackMessage) {
     final trimmed = feedbackMessage?.trim();
@@ -51,43 +62,68 @@ class FeedbackModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> enterCaptureMode() async {
-    _screenshotStatus = FeedbackScreenshotStatus.navigating;
-    notifyListeners();
+  Future<void> goToStep(FeedbackFlowStatus newStatus) async {
+    switch (newStatus) {
+      case FeedbackFlowStatus.none:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
+        break;
+      case FeedbackFlowStatus.message:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
+        break;
+      case FeedbackFlowStatus.labels:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
+        break;
+      case FeedbackFlowStatus.screenshotsOverview:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
 
-    await _wiredashState.backdropController.animateToCentered();
+        await _wiredashState.backdropController.animateToOpen();
+        break;
+      case FeedbackFlowStatus.screenshotNavigating:
+        _feedbackFlowStatus = newStatus;
+        picassoController.isActive = false;
+        notifyListeners();
 
-    // TODO Show dialog help screenshot
-  }
+        await _wiredashState.backdropController.animateToCentered();
+        break;
+      case FeedbackFlowStatus.screenshotCapturing:
+        _feedbackFlowStatus = newStatus;
+        picassoController.isActive = false;
+        notifyListeners();
 
-  Future<void> takeScreenshot() async {
-    _screenshotStatus = FeedbackScreenshotStatus.screenshotting;
-    notifyListeners();
+        await _wiredashState.screenCaptureController.captureScreen();
+        await goToStep(FeedbackFlowStatus.screenshotDrawing);
+        break;
+      case FeedbackFlowStatus.screenshotDrawing:
+        _feedbackFlowStatus = newStatus;
+        picassoController.isActive = true;
+        notifyListeners();
+        break;
+      case FeedbackFlowStatus.screenshotSaving:
+        _feedbackFlowStatus = newStatus;
+        picassoController.isActive = false;
+        notifyListeners();
 
-    await _wiredashState.screenCaptureController.captureScreen();
+        _screenshot =
+            await _wiredashState.picassoController.paintDrawingOntoImage(
+          _wiredashState.screenCaptureController.screenshot!,
+        );
+        notifyListeners();
 
-    _screenshotStatus = FeedbackScreenshotStatus.drawing;
-    notifyListeners();
+        await _wiredashState.backdropController.animateToOpen();
+        _wiredashState.screenCaptureController.releaseScreen();
 
-    _wiredashState.picassoController.isActive = true;
-    // TODO Show dialog help drawing
-  }
-
-  Future<void> saveScreenshot() async {
-    // ignore: unused_local_variable
-    final mergedPainting =
-        await _wiredashState.picassoController.paintDrawingOntoImage(
-      _wiredashState.screenCaptureController.screenshot!,
-    );
-
-    // TODO do something with merged drawing
-
-    await _wiredashState.backdropController.animateToOpen();
-
-    _wiredashState.screenCaptureController.releaseScreen();
-
-    _screenshotStatus = FeedbackScreenshotStatus.none;
-    notifyListeners();
+        await goToStep(FeedbackFlowStatus.screenshotsOverview);
+        break;
+      case FeedbackFlowStatus.email:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
+        await _wiredashState.backdropController.animateToOpen();
+        break;
+    }
   }
 
   Future<void> submitFeedback() async {

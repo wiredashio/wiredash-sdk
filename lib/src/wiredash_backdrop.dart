@@ -83,6 +83,7 @@ class BackdropController extends ChangeNotifier {
     notifyListeners();
 
     await _state!._animateToOpen();
+    notifyListeners();
   }
 
   Future<void> animateToCentered() async {
@@ -189,7 +190,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     } else if (_backdropStatus == WiredashBackdropStatus.centered) {
       _backdropStatus = WiredashBackdropStatus.closingCentered;
     } else {
-      throw "can't animate from state $_backdropStatus to `open`";
+      // no need for animating, we're already in a desired state
+      return;
     }
     _swapAnimation();
 
