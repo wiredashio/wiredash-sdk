@@ -128,20 +128,17 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   MediaQueryData _mediaQueryData = const MediaQueryData();
 
   /// calculated positions for the different backdrop positions / states
-  Rect _rectAppDown = Rect.zero;
+  Rect _rectAppOutOfFocus = Rect.zero;
   Rect _rectAppCentered = Rect.zero;
-  Rect _rectAppClosed = Rect.zero;
-
-  /// The area the content is obstructed by the keyboard, notches or the app overlaying
-  EdgeInsets _contentViewPadding = EdgeInsets.zero;
+  Rect _rectAppFillsScreen = Rect.zero;
+  Rect _rectContentArea = Rect.zero;
+  Rect _rectNavigationButtons = Rect.zero;
 
   WiredashBackdropStatus get _backdropStatus =>
       widget.controller.backdropStatus;
 
   set _backdropStatus(WiredashBackdropStatus value) =>
       widget.controller.backdropStatus = value;
-
-  final FocusScopeNode _backdropContentFocusNode = FocusScopeNode();
 
   late AnimationController _pullAppYController;
 
@@ -179,7 +176,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   void dispose() {
     _scrollController.dispose();
     _backdropAnimationController.dispose();
-    _backdropContentFocusNode.dispose();
     super.dispose();
   }
 
@@ -213,10 +209,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   @override
   void reassemble() {
     super.reassemble();
-    final oldAppUp = _rectAppDown;
+    final oldAppOutOfFocus = _rectAppOutOfFocus;
     final oldAppCentered = _rectAppCentered;
     _calculateRects();
-    if (oldAppUp != _rectAppDown &&
+    if (oldAppOutOfFocus != _rectAppOutOfFocus &&
         _backdropStatus == WiredashBackdropStatus.open) {
       _backdropStatus = WiredashBackdropStatus.closed;
       _animateToOpen();
@@ -232,40 +228,96 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   void _calculateRects() {
     final Size screenSize = _mediaQueryData.size;
 
-    final _maxCenteredWidth = screenSize.width -
-        (context.responsiveLayout.horizontalMargin * 2 -
-                _mediaQueryData.viewPadding.horizontal)
-            .abs();
-    final _maxCenteredHeight =
-        screenSize.height - _mediaQueryData.viewPadding.vertical;
-    final _biggestPossibleCenteredScaleFactor = math.min(
-      _maxCenteredWidth / screenSize.width,
-      _maxCenteredHeight / screenSize.height,
+    // center
+    final minContentWidthPadding =
+        context.responsiveLayout.horizontalMargin * 2;
+    final maxContentWidth = screenSize.width -
+        math.max(
+          _mediaQueryData.viewPadding.horizontal,
+          minContentWidthPadding,
+        );
+
+    final maxContentHeight =
+        screenSize.height - math.max(0, _mediaQueryData.viewPadding.vertical);
+
+    // scale to show app in safeArea
+    final centerScaleFactor = math.min(
+      maxContentWidth / screenSize.width,
+      maxContentHeight / screenSize.height,
     );
 
-    // TODO: Offset the center based on viewPaddings
     _rectAppCentered = Rect.fromCenter(
-      center: screenSize.center(Offset.zero),
-      width: screenSize.width * _biggestPossibleCenteredScaleFactor,
-      height: screenSize.height * _biggestPossibleCenteredScaleFactor,
+      center:
+          screenSize.center(Offset.zero) + _mediaQueryData.viewInsets.topLeft,
+      width: screenSize.width * centerScaleFactor,
+      height: screenSize.height * centerScaleFactor,
     );
 
-    final contentHeight = math.max(screenSize.height * 0.5, 300.0);
-    final width = screenSize.width * _biggestPossibleCenteredScaleFactor;
-    _rectAppDown = Rect.fromLTWH(
-      (screenSize.width - width) / 2,
+    // iPhone SE is 320 width
+    const minSquare = Size(320, 320);
+    const maxSquare = Size(640, 640);
+    const double minAppPeakHeight = 56;
+
+    final bool isTablet = screenSize.width > 1280;
+    final bool isTallScreen = screenSize.height > 800;
+
+    final double buttonBarHeight = isTallScreen ? 128 : 64;
+    final bool isKeyboardOpen = _mediaQueryData.viewInsets.bottom > 100;
+
+    // center the navigation buttons
+    var preferredAppHeight = _mediaQueryData.size.height * 0.5;
+    if (!isKeyboardOpen) {
+      preferredAppHeight -= minAppPeakHeight;
+      preferredAppHeight -= buttonBarHeight / 2;
+    }
+    final preferredContentHeight =
+        _mediaQueryData.size.height - preferredAppHeight;
+
+    final contentHeightWithButtons = math.max(
+      math.min(preferredContentHeight, maxSquare.height),
+      minSquare.height,
+    );
+    // On super small screen (landscape phones) scale to 0 and
+    // make 100% sure the appPeak is visible
+    final double contentHeight =
+        math.min(contentHeightWithButtons, screenSize.height) -
+            minAppPeakHeight;
+
+    final appWidth = screenSize.width * centerScaleFactor;
+    double minHorizontalContentPadding = (screenSize.width - appWidth) / 2;
+
+    late double contentWidth;
+    if (screenSize.width - minHorizontalContentPadding * 2 > maxSquare.width) {
+      contentWidth = maxSquare.width;
+      // remove horizontal padding because the view is centered horizontally
+      // and automatically has a padding
+      minHorizontalContentPadding = 0;
+    } else {
+      contentWidth = screenSize.width;
+    }
+
+    _rectContentArea = Rect.fromLTWH(
+      (screenSize.width - contentWidth) / 2 + minHorizontalContentPadding,
+      0, // TODO top padding?
+      contentWidth - minHorizontalContentPadding * 2,
+      contentHeight - buttonBarHeight,
+    );
+
+    _rectAppOutOfFocus = Rect.fromLTWH(
+      (screenSize.width - appWidth) / 2,
       contentHeight,
-      width,
-      screenSize.height * _biggestPossibleCenteredScaleFactor,
-    );
-    _contentViewPadding = EdgeInsets.fromLTRB(
-      _mediaQueryData.padding.left,
-      _mediaQueryData.padding.top,
-      _mediaQueryData.padding.right,
-      screenSize.height - contentHeight,
+      appWidth,
+      screenSize.height * centerScaleFactor,
     );
 
-    _rectAppClosed =
+    _rectNavigationButtons = Rect.fromLTWH(
+      isTablet ? _rectAppOutOfFocus.left : _rectContentArea.left,
+      contentHeight - buttonBarHeight,
+      isTablet ? _rectAppOutOfFocus.width : _rectContentArea.width,
+      buttonBarHeight,
+    );
+
+    _rectAppFillsScreen =
         Rect.fromPoints(Offset.zero, screenSize.bottomRight(Offset.zero));
   }
 
@@ -274,8 +326,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     _backdropAnimationController.reset();
     switch (_backdropStatus) {
       case WiredashBackdropStatus.open:
-        _transformAnimation = RectTween(begin: _rectAppDown, end: _rectAppDown)
-            .animate(_driverAnimation);
+        _transformAnimation =
+            RectTween(begin: _rectAppOutOfFocus, end: _rectAppOutOfFocus)
+                .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(20),
           end: BorderRadius.circular(20),
@@ -284,7 +337,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
       case WiredashBackdropStatus.closed:
         _transformAnimation =
-            RectTween(begin: _rectAppClosed, end: _rectAppClosed)
+            RectTween(begin: _rectAppFillsScreen, end: _rectAppFillsScreen)
                 .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(0),
@@ -304,7 +357,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
       case WiredashBackdropStatus.opening:
         _transformAnimation =
-            RectTween(begin: _rectAppClosed, end: _rectAppDown)
+            RectTween(begin: _rectAppFillsScreen, end: _rectAppOutOfFocus)
                 .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(0),
@@ -314,7 +367,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
       case WiredashBackdropStatus.closing:
         _transformAnimation =
-            RectTween(begin: _rectAppDown, end: _rectAppClosed)
+            RectTween(begin: _rectAppOutOfFocus, end: _rectAppFillsScreen)
                 .animate(_driverAnimation);
         _backdropAnimationController.value = 0.0;
         _cornerRadiusAnimation = BorderRadiusTween(
@@ -325,7 +378,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
       case WiredashBackdropStatus.openingCentered:
         _transformAnimation =
-            RectTween(begin: _rectAppDown, end: _rectAppCentered)
+            RectTween(begin: _rectAppOutOfFocus, end: _rectAppCentered)
                 .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(20),
@@ -335,7 +388,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
       case WiredashBackdropStatus.closingCentered:
         _transformAnimation =
-            RectTween(begin: _rectAppCentered, end: _rectAppDown)
+            RectTween(begin: _rectAppCentered, end: _rectAppOutOfFocus)
                 .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
           begin: BorderRadius.circular(20),
@@ -374,7 +427,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final oldMq = _mediaQueryData;
     final newMq = MediaQuery.of(context);
     _mediaQueryData = newMq;
-    if (newMq.size != oldMq.size) {
+    if (newMq.size != oldMq.size ||
+        // keyboard detection
+        newMq.viewInsets != oldMq.viewInsets) {
       _calculateRects();
       _swapAnimation();
     }
@@ -404,9 +459,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       return app;
     }
 
-    app = FocusScope(
+    app = Focus(
       debugLabel: 'wiredash app wrapper',
-      canRequestFocus: false,
+      canRequestFocus: widget.controller._isAppInteractive,
       // Users would be unable to leave the app once it got focus
       skipTraversal: true,
       child: _KeepAppAlive(
@@ -414,10 +469,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       ),
     );
 
-    final content = MediaQuery(
-      data: _mediaQueryData.copyWith(padding: _contentViewPadding),
-      // TODO check if this has to be wrapped with a FocusScope
-      child: const WiredashFeedbackFlow(),
+    final content = Positioned.fromRect(
+      rect: _rectContentArea,
+      child: MediaQuery(
+        data: _mediaQueryData.removePadding(removeBottom: true),
+        child: const Focus(
+          debugLabel: 'wiredash-content',
+          child: WiredashFeedbackFlow(),
+        ),
+      ),
     );
 
     return Material(
@@ -442,6 +502,26 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               ),
             ),
             _buildAppOverlay(),
+            Positioned.fromRect(
+              rect: _rectNavigationButtons,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  OutlinedButton(
+                    onPressed: () {
+                      // TODO
+                    },
+                    child: const Text("Prev"),
+                  ),
+                  OutlinedButton(
+                    onPressed: () {
+                      // TODO
+                    },
+                    child: const Text("Next"),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -532,7 +612,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, app) {
-        final openedPosition = _rectAppDown.top;
+        final outOfFocusPosition = _rectAppOutOfFocus.top;
 
         app = AbsorbPointer(
           absorbing: !widget.controller.isAppInteractive,
@@ -563,7 +643,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 const SpringDescription(mass: 30, stiffness: 1, damping: 1),
                 _backdropAnimationController.value,
                 1.0,
-                -velocity / openedPosition,
+                -velocity / outOfFocusPosition,
               );
               final a1 = _backdropAnimationController.animateWith(simApp);
               final a2 = _pullAppYController.animateTo(
@@ -585,7 +665,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 const SpringDescription(mass: 30, stiffness: 1, damping: 1),
                 1 - _backdropAnimationController.value,
                 1.0,
-                -velocity / openedPosition,
+                -velocity / outOfFocusPosition,
               );
               final a1 = _backdropAnimationController.animateWith(simApp);
               final a2 = _pullAppYController.animateTo(
@@ -612,13 +692,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
         // the difference of height between open and closed rect
         final heightDifference =
-            _rectAppClosed.height - _transformAnimation.value!.height;
+            _rectAppFillsScreen.height - _transformAnimation.value!.height;
         final yTranslation = _pullAppYController.value +
             _transformAnimation.value!.top -
             heightDifference;
         // The scale the app should be scaled to, compared to fullscreen
         final appScale =
-            _transformAnimation.value!.width / _rectAppClosed.width;
+            _transformAnimation.value!.width / _rectAppFillsScreen.width;
 
         // ignore: join_return_with_assignment
         app = Transform.translate(
