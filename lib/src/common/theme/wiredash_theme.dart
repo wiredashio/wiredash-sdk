@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/common/theme/device_class.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 
 class WiredashTheme extends StatelessWidget {
@@ -17,8 +16,8 @@ class WiredashTheme extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final deviceClass = _calculateDeviceClass(constraints);
-        // TODO copyWith new deviceClass
-        return _InheritedWiredashTheme(theme: this, child: child);
+        final themeData = data.copyWith(deviceClass: deviceClass);
+        return _InheritedWiredashTheme(themeData: themeData, child: child);
       },
     );
   }
@@ -26,7 +25,7 @@ class WiredashTheme extends StatelessWidget {
   static WiredashThemeData? of(BuildContext context) {
     final _InheritedWiredashTheme? inheritedTheme =
         context.dependOnInheritedWidgetOfExactType<_InheritedWiredashTheme>();
-    return inheritedTheme?.theme.data;
+    return inheritedTheme?.themeData;
   }
 
   static DeviceClass _calculateDeviceClass(BoxConstraints constraints) {
@@ -48,15 +47,15 @@ class WiredashTheme extends StatelessWidget {
 class _InheritedWiredashTheme extends InheritedWidget {
   const _InheritedWiredashTheme({
     Key? key,
-    required this.theme,
+    required this.themeData,
     required Widget child,
   }) : super(key: key, child: child);
 
-  final WiredashTheme theme;
+  final WiredashThemeData themeData;
 
   @override
   bool updateShouldNotify(_InheritedWiredashTheme oldWidget) =>
-      theme != oldWidget.theme;
+      themeData != oldWidget.themeData;
 }
 
 extension WiredashThemeExtension on BuildContext {

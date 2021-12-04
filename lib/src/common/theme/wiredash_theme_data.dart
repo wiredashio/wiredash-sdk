@@ -1,7 +1,6 @@
 import 'dart:ui' show Brightness;
 
 import 'package:flutter/rendering.dart';
-import 'package:wiredash/src/common/theme/device_class.dart';
 
 class WiredashThemeData {
   factory WiredashThemeData({
@@ -51,7 +50,6 @@ class WiredashThemeData {
 
   WiredashThemeData._({
     required this.brightness,
-    required this.deviceClass,
     required this.primaryColor,
     required this.secondaryColor,
     required this.primaryTextColor,
@@ -59,6 +57,7 @@ class WiredashThemeData {
     required this.primaryBackgroundColor,
     required this.secondaryBackgroundColor,
     required this.errorColor,
+    required this.deviceClass,
     required this.fontFamily,
   });
 
@@ -147,4 +146,87 @@ class WiredashThemeData {
         return 128;
     }
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WiredashThemeData &&
+          runtimeType == other.runtimeType &&
+          brightness == other.brightness &&
+          primaryColor == other.primaryColor &&
+          secondaryColor == other.secondaryColor &&
+          primaryTextColor == other.primaryTextColor &&
+          secondaryTextColor == other.secondaryTextColor &&
+          primaryBackgroundColor == other.primaryBackgroundColor &&
+          secondaryBackgroundColor == other.secondaryBackgroundColor &&
+          errorColor == other.errorColor &&
+          deviceClass == other.deviceClass &&
+          fontFamily == other.fontFamily);
+
+  @override
+  int get hashCode =>
+      brightness.hashCode ^
+      primaryColor.hashCode ^
+      secondaryColor.hashCode ^
+      primaryTextColor.hashCode ^
+      secondaryTextColor.hashCode ^
+      primaryBackgroundColor.hashCode ^
+      secondaryBackgroundColor.hashCode ^
+      errorColor.hashCode ^
+      deviceClass.hashCode ^
+      fontFamily.hashCode;
+
+  @override
+  String toString() {
+    return 'WiredashThemeData{'
+        'brightness: $brightness, '
+        'primaryColor: $primaryColor, '
+        'secondaryColor: $secondaryColor, '
+        'primaryTextColor: $primaryTextColor, '
+        'secondaryTextColor: $secondaryTextColor, '
+        'primaryBackgroundColor: $primaryBackgroundColor, '
+        'secondaryBackgroundColor: $secondaryBackgroundColor, '
+        'errorColor: $errorColor, '
+        'deviceClass: $deviceClass, '
+        'fontFamily: $fontFamily, '
+        '}';
+  }
+
+  WiredashThemeData copyWith({
+    Brightness? brightness,
+    Color? primaryColor,
+    Color? secondaryColor,
+    Color? primaryTextColor,
+    Color? secondaryTextColor,
+    Color? primaryBackgroundColor,
+    Color? secondaryBackgroundColor,
+    Color? errorColor,
+    DeviceClass? deviceClass,
+    String? fontFamily,
+  }) {
+    return WiredashThemeData(
+      brightness: brightness ?? this.brightness,
+      primaryColor: primaryColor ?? this.primaryColor,
+      secondaryColor: secondaryColor ?? this.secondaryColor,
+      primaryTextColor: primaryTextColor ?? this.primaryTextColor,
+      secondaryTextColor: secondaryTextColor ?? this.secondaryTextColor,
+      primaryBackgroundColor:
+          primaryBackgroundColor ?? this.primaryBackgroundColor,
+      secondaryBackgroundColor:
+          secondaryBackgroundColor ?? this.secondaryBackgroundColor,
+      errorColor: errorColor ?? this.errorColor,
+      deviceClass: deviceClass ?? this.deviceClass,
+      fontFamily: fontFamily ?? this.fontFamily,
+    );
+  }
+}
+
+enum DeviceClass {
+  handsetSmall,
+  handsetMedium,
+  handsetLarge,
+  tabletSmall,
+  tabletLarge,
+  desktopSmall,
+  desktopLarge
 }
