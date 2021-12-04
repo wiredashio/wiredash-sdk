@@ -5,7 +5,7 @@ import 'package:flutter/rendering.dart';
 class WiredashThemeData {
   factory WiredashThemeData({
     Brightness brightness = Brightness.light,
-    DeviceClass deviceClass = DeviceClass.handsetLarge,
+    DeviceClass deviceClass = DeviceClass.handsetLarge400,
     Color? primaryColor,
     Color? secondaryColor,
     Color? primaryTextColor,
@@ -130,19 +130,19 @@ class WiredashThemeData {
 
   double get horizontalPadding {
     switch (deviceClass) {
-      case DeviceClass.handsetSmall:
+      case DeviceClass.handsetSmall320:
         return 8;
-      case DeviceClass.handsetMedium:
+      case DeviceClass.handsetMedium360:
         return 16;
-      case DeviceClass.handsetLarge:
+      case DeviceClass.handsetLarge400:
         return 32;
-      case DeviceClass.tabletSmall:
+      case DeviceClass.tabletSmall600:
         return 64;
-      case DeviceClass.tabletLarge:
+      case DeviceClass.tabletLarge720:
         return 64;
-      case DeviceClass.desktopSmall:
+      case DeviceClass.desktopSmall1024:
         return 128;
-      case DeviceClass.desktopLarge:
+      case DeviceClass.desktopLarge1440:
         return 128;
     }
   }
@@ -222,11 +222,44 @@ class WiredashThemeData {
 }
 
 enum DeviceClass {
-  handsetSmall,
-  handsetMedium,
-  handsetLarge,
-  tabletSmall,
-  tabletLarge,
-  desktopSmall,
-  desktopLarge
+  /// iPhone SE is 320 width which is the bare minimum for our design to work
+  handsetSmall320,
+
+  /// Pixel 4A/5 width: 393
+  /// Samsung Galaxy S21 Ultra (2021) width: 384
+  /// iPhone 12 mini (2020) width: 360
+  handsetMedium360,
+
+  /// Sony Xperia Z4 portrait width: 534
+  /// iPhone 12 pro max (2020) width: 428
+  /// iPhone 6+, 6S+, 7+, 8+ width: 414
+  /// Google Pixel 4 XL width: 412
+  handsetLarge400,
+
+  /// Amazon Kindle Fire portrait width: 600
+  tabletSmall600,
+
+  /// Microsoft Surface Book width: 1000
+  /// Apple iPhone 12 Pro Max (2020) landscape width: 926
+  /// MacBook Pro 16" 2019 (default scale) split screen width: 896
+  /// Samsung Galaxy Z Fold2 (2020) width: 884
+  /// iPad Pro portrait width: 834
+  /// iPad Air 4 portrait width: 820
+  /// iPad portrait width: 768
+  tabletLarge720,
+
+  /// iPad Pro 12.9 landscape width: 1366
+  /// Macbook Pro 13" 2018: 1280
+  /// iPad Pro 11 landscape with: 1194
+  /// iPad Pro 10.5 landscape with: 1112
+  /// iPad landscape with: 1024
+  /// iPad Pro 12" width: 1024
+  /// Microsoft Surface Pro 3 width: 1024
+  desktopSmall1024,
+
+  /// MacBook Pro 16" 2019 (more space) width: 2048
+  /// MacBook Pro 16" 2019 (default scale) width: 1792
+  /// MacBook Pro 16" 2019 (medium scale) width: 1536
+  /// MacBook Pro 15" 2018 width: 1440
+  desktopLarge1440
 }

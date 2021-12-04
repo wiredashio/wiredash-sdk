@@ -31,16 +31,14 @@ class WiredashTheme extends StatelessWidget {
   static DeviceClass _calculateDeviceClass(BoxConstraints constraints) {
     final normalized = constraints.normalize();
     final width = normalized.maxWidth;
-    final size = Size(normalized.maxWidth, normalized.maxHeight);
-    final isLandscape = normalized.maxWidth > normalized.maxHeight;
 
-    if (width >= 1440) return DeviceClass.desktopLarge;
-    if (width >= 1024) return DeviceClass.desktopSmall;
-    if (width >= 720) return DeviceClass.tabletLarge;
-    if (width >= 600) return DeviceClass.tabletSmall;
-    if (width >= 400) return DeviceClass.handsetLarge;
-    if (width >= 360) return DeviceClass.handsetMedium;
-    return DeviceClass.handsetSmall;
+    if (width >= 1440) return DeviceClass.desktopLarge1440;
+    if (width >= 1024) return DeviceClass.desktopSmall1024;
+    if (width >= 720) return DeviceClass.tabletLarge720;
+    if (width >= 600) return DeviceClass.tabletSmall600;
+    if (width >= 400) return DeviceClass.handsetLarge400;
+    if (width >= 360) return DeviceClass.handsetMedium360;
+    return DeviceClass.handsetSmall320;
   }
 }
 
