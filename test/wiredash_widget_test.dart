@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
-import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 import 'package:wiredash/wiredash.dart';
@@ -86,30 +85,39 @@ void main() {
 
       await tester.enterText(find.byType(TextField), 'asdfasdf');
       await tester.pumpAndSettle();
-      await tester.waitUntil(find.byType(BigBlueButton), findsOneWidget);
+      await tester.waitUntil(
+          find.byIcon(Wirecons.arrow_narrow_right), findsOneWidget);
+      expect(find.byIcon(Wirecons.arrow_narrow_right), findsOneWidget);
+      expect(find.byIcon(Wirecons.arrow_narrow_left), findsOneWidget);
 
-      await tester.tap(find.byType(BigBlueButton));
+      await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
       await tester.pumpHardAndSettle();
-      await tester.waitUntil(find.text('Skip'), findsOneWidget);
+      // TODO check for labels on screen
+      // await tester.waitUntil(find.text('Skip'), findsOneWidget);
 
-      await tester.tap(find.text('Skip'));
+      // screenshot overview
+      await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
       await tester.pumpHardAndSettle();
-      await tester.waitUntil(find.text('Skip'), findsOneWidget);
 
-      await tester.tap(find.text('Skip'));
-      await tester.pumpHardAndSettle();
-      await tester.waitUntil(find.text('Yes'), findsOneWidget);
+      // Go to screenshot section
+      await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
+      await tester.waitUntil(find.byIcon(Wirecons.camera), findsOneWidget);
+      // TODO check app is interactive
 
-      await tester.tap(find.text('Yes'));
-      await tester.pumpHardAndSettle();
+      await expectLater(
+          find.byType(Wiredash), matchesGoldenFile('goldens/0.png'));
+      print(tester.allWidgets);
 
       // Click the screenshot button
       await tester.tap(find.byIcon(Wirecons.camera));
       await tester.pumpAndSettle();
+
+      // Wait for edit screen
       await tester.waitUntil(find.byIcon(Wirecons.check), findsOneWidget);
 
       // Check for save screenshot button
       expect(find.byIcon(Wirecons.check), findsOneWidget);
+      expect(find.byIcon(Wirecons.pencil), findsOneWidget);
     });
   });
 }
