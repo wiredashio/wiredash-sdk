@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 class WiredashThemeData {
   factory WiredashThemeData({
     Brightness brightness = Brightness.light,
+    DeviceClass deviceClass = DeviceClass.handsetLarge400,
     Color? primaryColor,
     Color? secondaryColor,
     Color? primaryTextColor,
@@ -17,6 +18,7 @@ class WiredashThemeData {
     if (brightness == Brightness.light) {
       return WiredashThemeData._(
         brightness: brightness,
+        deviceClass: deviceClass,
         primaryColor: primaryColor ?? const Color(0xff1A56DB),
         secondaryColor: secondaryColor ?? const Color(0xffE8EEFB),
         primaryTextColor: primaryTextColor ?? const Color(0xff030A1C),
@@ -31,6 +33,7 @@ class WiredashThemeData {
     } else {
       return WiredashThemeData._(
         brightness: brightness,
+        deviceClass: deviceClass,
         primaryColor: primaryColor ?? const Color(0xff1A56DB),
         secondaryColor: secondaryColor ?? const Color(0xffE8EEFB),
         primaryTextColor: primaryTextColor ?? const Color(0xff030A1C),
@@ -54,6 +57,7 @@ class WiredashThemeData {
     required this.primaryBackgroundColor,
     required this.secondaryBackgroundColor,
     required this.errorColor,
+    required this.deviceClass,
     required this.fontFamily,
   });
 
@@ -69,6 +73,8 @@ class WiredashThemeData {
   final Color secondaryBackgroundColor;
   final Color errorColor;
 
+  final DeviceClass deviceClass;
+
   final String fontFamily;
 
   static const _fontFamily = 'Inter';
@@ -76,7 +82,7 @@ class WiredashThemeData {
 
   String? get packageName => fontFamily == _fontFamily ? _packageName : null;
 
-  TextStyle get headlineStyle => TextStyle(
+  TextStyle get headlineTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
         fontSize: 28,
@@ -84,7 +90,7 @@ class WiredashThemeData {
         fontWeight: FontWeight.bold,
       );
 
-  TextStyle get titleStyle => TextStyle(
+  TextStyle get titleTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
         fontSize: 20,
@@ -92,7 +98,7 @@ class WiredashThemeData {
         fontWeight: FontWeight.bold,
       );
 
-  TextStyle get bodyStyle => TextStyle(
+  TextStyle get bodyTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
         fontSize: 16,
@@ -100,7 +106,7 @@ class WiredashThemeData {
         fontWeight: FontWeight.normal,
       );
 
-  TextStyle get captionStyle => TextStyle(
+  TextStyle get captionTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
         fontSize: 10,
@@ -108,17 +114,152 @@ class WiredashThemeData {
         fontWeight: FontWeight.normal,
       );
 
-  TextStyle get inputStyle => TextStyle(
+  TextStyle get inputTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
         fontSize: 14,
         color: primaryTextColor,
       );
 
-  TextStyle get inputErrorStyle => TextStyle(
+  TextStyle get inputErrorTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
         fontSize: 12,
         color: errorColor,
       );
+
+  double get horizontalPadding {
+    switch (deviceClass) {
+      case DeviceClass.handsetSmall320:
+        return 8;
+      case DeviceClass.handsetMedium360:
+        return 16;
+      case DeviceClass.handsetLarge400:
+        return 32;
+      case DeviceClass.tabletSmall600:
+        return 64;
+      case DeviceClass.tabletLarge720:
+        return 64;
+      case DeviceClass.desktopSmall1024:
+        return 128;
+      case DeviceClass.desktopLarge1440:
+        return 128;
+    }
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WiredashThemeData &&
+          runtimeType == other.runtimeType &&
+          brightness == other.brightness &&
+          primaryColor == other.primaryColor &&
+          secondaryColor == other.secondaryColor &&
+          primaryTextColor == other.primaryTextColor &&
+          secondaryTextColor == other.secondaryTextColor &&
+          primaryBackgroundColor == other.primaryBackgroundColor &&
+          secondaryBackgroundColor == other.secondaryBackgroundColor &&
+          errorColor == other.errorColor &&
+          deviceClass == other.deviceClass &&
+          fontFamily == other.fontFamily);
+
+  @override
+  int get hashCode =>
+      brightness.hashCode ^
+      primaryColor.hashCode ^
+      secondaryColor.hashCode ^
+      primaryTextColor.hashCode ^
+      secondaryTextColor.hashCode ^
+      primaryBackgroundColor.hashCode ^
+      secondaryBackgroundColor.hashCode ^
+      errorColor.hashCode ^
+      deviceClass.hashCode ^
+      fontFamily.hashCode;
+
+  @override
+  String toString() {
+    return 'WiredashThemeData{'
+        'brightness: $brightness, '
+        'primaryColor: $primaryColor, '
+        'secondaryColor: $secondaryColor, '
+        'primaryTextColor: $primaryTextColor, '
+        'secondaryTextColor: $secondaryTextColor, '
+        'primaryBackgroundColor: $primaryBackgroundColor, '
+        'secondaryBackgroundColor: $secondaryBackgroundColor, '
+        'errorColor: $errorColor, '
+        'deviceClass: $deviceClass, '
+        'fontFamily: $fontFamily, '
+        '}';
+  }
+
+  WiredashThemeData copyWith({
+    Brightness? brightness,
+    Color? primaryColor,
+    Color? secondaryColor,
+    Color? primaryTextColor,
+    Color? secondaryTextColor,
+    Color? primaryBackgroundColor,
+    Color? secondaryBackgroundColor,
+    Color? errorColor,
+    DeviceClass? deviceClass,
+    String? fontFamily,
+  }) {
+    return WiredashThemeData(
+      brightness: brightness ?? this.brightness,
+      primaryColor: primaryColor ?? this.primaryColor,
+      secondaryColor: secondaryColor ?? this.secondaryColor,
+      primaryTextColor: primaryTextColor ?? this.primaryTextColor,
+      secondaryTextColor: secondaryTextColor ?? this.secondaryTextColor,
+      primaryBackgroundColor:
+          primaryBackgroundColor ?? this.primaryBackgroundColor,
+      secondaryBackgroundColor:
+          secondaryBackgroundColor ?? this.secondaryBackgroundColor,
+      errorColor: errorColor ?? this.errorColor,
+      deviceClass: deviceClass ?? this.deviceClass,
+      fontFamily: fontFamily ?? this.fontFamily,
+    );
+  }
+}
+
+enum DeviceClass {
+  /// iPhone SE is 320 width which is the bare minimum for our design to work
+  handsetSmall320,
+
+  /// Pixel 4A/5 width: 393
+  /// Samsung Galaxy S21 Ultra (2021) width: 384
+  /// iPhone 12 mini (2020) width: 360
+  handsetMedium360,
+
+  /// Sony Xperia Z4 portrait width: 534
+  /// iPhone 12 pro max (2020) width: 428
+  /// iPhone 6+, 6S+, 7+, 8+ width: 414
+  /// Google Pixel 4 XL width: 412
+  handsetLarge400,
+
+  /// Amazon Kindle Fire portrait width: 600
+  tabletSmall600,
+
+  /// Microsoft Surface Book width: 1000
+  /// Apple iPhone 12 Pro Max (2020) landscape width: 926
+  /// MacBook Pro 16" 2019 (default scale) split screen width: 896
+  /// Samsung Galaxy Z Fold2 (2020) width: 884
+  /// iPad Pro portrait width: 834
+  /// iPad Air 4 portrait width: 820
+  /// iPad portrait width: 768
+  tabletLarge720,
+
+  /// iPad Pro 12.9 landscape width: 1366
+  /// Macbook Pro 13" 2018: 1280
+  /// iPad Pro 11 landscape with: 1194
+  /// iPad Pro 10.5 landscape with: 1112
+  /// iPad landscape with: 1024
+  /// iPad Pro 12" width: 1024
+  /// Microsoft Surface Pro 3 width: 1024
+  desktopSmall1024,
+
+  /// MacBook Pro 16" 2019 (more space) width: 2048
+  /// MacBook Pro 16" 2019 (default scale) width: 1792
+  /// MacBook Pro 16" 2019 (medium scale) width: 1536
+  /// MacBook Pro 15" 2018 width: 1440
+  desktopLarge1440
 }

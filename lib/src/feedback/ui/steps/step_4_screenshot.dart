@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
@@ -32,7 +33,8 @@ class _Step4ScreenshotState extends State<Step4Screenshot> {
             const SizedBox(height: 32),
             BigBlueButton(
               onTap: () {
-                context.feedbackModel.enterCaptureMode();
+                context.feedbackModel
+                    .goToStep(FeedbackFlowStatus.screenshotsOverview);
               },
               child: const Text("Yes"),
             ),

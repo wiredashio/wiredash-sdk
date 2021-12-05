@@ -9,11 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/feedback/ui/app_overlay.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
+import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
+import 'package:wiredash/src/feedback/ui/screenshot_app_overlay.dart';
 import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
-import 'package:wiredash/src/responsive_layout.dart';
 
 enum WiredashBackdropStatus {
   closed,
@@ -83,6 +84,7 @@ class BackdropController extends ChangeNotifier {
     notifyListeners();
 
     await _state!._animateToOpen();
+    notifyListeners();
   }
 
   Future<void> animateToCentered() async {
@@ -185,7 +187,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     } else if (_backdropStatus == WiredashBackdropStatus.centered) {
       _backdropStatus = WiredashBackdropStatus.closingCentered;
     } else {
-      throw "can't animate from state $_backdropStatus to `open`";
+      // no need for animating, we're already in a desired state
+      return;
     }
     _swapAnimation();
 
@@ -229,8 +232,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final Size screenSize = _mediaQueryData.size;
 
     // center
-    final minContentWidthPadding =
-        context.responsiveLayout.horizontalMargin * 2;
+    final minContentWidthPadding = context.theme.horizontalPadding * 2;
     final maxContentWidth = screenSize.width -
         math.max(
           _mediaQueryData.viewPadding.horizontal,
@@ -503,24 +505,17 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 ),
               ),
               _buildAppOverlay(),
-              Positioned.fromRect(
-                rect: _rectNavigationButtons,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () {
-                        // TODO
-                      },
-                      child: const Text("Prev"),
-                    ),
-                    OutlinedButton(
-                      onPressed: () {
-                        // TODO
-                      },
-                      child: const Text("Next"),
-                    ),
-                  ],
+              AnimatedOpacity(
+                duration: const Duration(milliseconds: 300),
+                opacity: () {
+                  if (_backdropStatus == WiredashBackdropStatus.closing) {
+                    return 0.0;
+                  }
+                  // TODO animate them a bit later in
+                  return 1.0;
+                }(),
+                child: FeedbackNavigation(
+                  defaultLocation: _rectNavigationButtons,
                 ),
               ),
             ],
@@ -536,7 +531,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       builder: (context, child) {
         return Transform.translate(
           offset: Offset(0, _pullAppYController.value),
-          child: AppOverlay(
+          child: ScreenshotAppOverlay(
             appRect: _transformAnimation.value!,
             borderRadius: _cornerRadiusAnimation.value!,
           ),

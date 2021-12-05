@@ -1,0 +1,275 @@
+import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/widgets/translate_transition.dart';
+import 'package:wiredash/src/common/widgets/tron_button.dart';
+import 'package:wiredash/src/common/widgets/wirecons.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/feedback/feedback_model_provider.dart';
+
+class FeedbackNavigation extends StatefulWidget {
+  const FeedbackNavigation({
+    Key? key,
+    required this.defaultLocation,
+  }) : super(key: key);
+
+  final Rect defaultLocation;
+
+  @override
+  _FeedbackNavigationState createState() => _FeedbackNavigationState();
+}
+
+class _FeedbackNavigationState extends State<FeedbackNavigation>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  Animation<Offset> _prevButtonAnimation =
+      const AlwaysStoppedAnimation(Offset.zero);
+  Animation<Offset> _nextButtonAnimation =
+      const AlwaysStoppedAnimation(Offset.zero);
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 750),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _recreateAnimations();
+  }
+
+  @override
+  void didUpdateWidget(covariant FeedbackNavigation oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _recreateAnimations();
+  }
+
+  void _recreateAnimations() {
+    final width = MediaQuery.of(context).size.width;
+    const double buttonTransitionWidth = 30;
+    _prevButtonAnimation = Tween(
+      begin: Offset(widget.defaultLocation.left, 0),
+      end: const Offset(-buttonTransitionWidth, 0),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      ),
+    );
+
+    _nextButtonAnimation = Tween(
+      begin: Offset(
+        -(width - widget.defaultLocation.right),
+        0,
+      ),
+      end: const Offset(buttonTransitionWidth, 0),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned(
+          top: widget.defaultLocation.top,
+          height: widget.defaultLocation.height,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TranslateTransition(
+                offset: _prevButtonAnimation,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 150),
+                    curve: Curves.easeIn,
+                    opacity: _isPrevButtonVisible() ? 1 : 0,
+                    child: _getPrevButton(),
+                  ),
+                ),
+              ),
+              TranslateTransition(
+                offset: _nextButtonAnimation,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 150),
+                    curve: Curves.easeIn,
+                    opacity: _isNextButtonVisible() ? 1 : 0,
+                    child: _getNextButton(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  bool _isPrevButtonVisible() {
+    return context.feedbackModel.feedbackFlowStatus != FeedbackFlowStatus.none;
+  }
+
+  bool _isNextButtonVisible() {
+    return context.feedbackModel.feedbackFlowStatus != FeedbackFlowStatus.none;
+  }
+
+  // TODO use
+  Color prevButtonColor() {
+    if (context.feedbackModel.feedbackFlowStatus ==
+        FeedbackFlowStatus.screenshotDrawing) {
+      return context.feedbackModel.picassoController.color;
+    }
+    return context.theme.secondaryColor;
+  }
+
+  Widget _getPrevButton() {
+    switch (context.feedbackModel.feedbackFlowStatus) {
+      case FeedbackFlowStatus.none:
+      case FeedbackFlowStatus.message:
+        return TronButton(
+          color: context.theme.secondaryColor,
+          icon: Wirecons.arrow_narrow_left,
+          label: 'Go back',
+          onTap: () => context.feedbackModel.goToStep(FeedbackFlowStatus.none),
+        );
+      case FeedbackFlowStatus.labels:
+        return TronButton(
+          color: context.theme.secondaryColor,
+          icon: Wirecons.arrow_narrow_left,
+          label: 'Go back',
+          onTap: () =>
+              context.feedbackModel.goToStep(FeedbackFlowStatus.message),
+        );
+
+      case FeedbackFlowStatus.screenshotNavigating:
+      case FeedbackFlowStatus.screenshotCapturing:
+        _controller.forward();
+        return TronButton(
+          color: context.theme.secondaryColor,
+          icon: Wirecons.x,
+          iconOffset: const Offset(.15, 0),
+          label: 'Cancel',
+          onTap: () => context.feedbackModel
+              .goToStep(FeedbackFlowStatus.screenshotsOverview),
+        );
+      case FeedbackFlowStatus.screenshotDrawing:
+      case FeedbackFlowStatus.screenshotSaving:
+        return TronButton(
+          color: context.feedbackModel.picassoController.color,
+          icon: Wirecons.pencil,
+          iconOffset: const Offset(.15, 0),
+          label: 'Change paint',
+          onTap: () {
+            debugPrint('Open paint menu');
+          },
+        );
+      case FeedbackFlowStatus.screenshotsOverview:
+        _controller.reverse();
+        if (context.feedbackModel.hasScreenshots) {
+          return TronButton(
+            color: context.theme.secondaryColor,
+            icon: Wirecons.arrow_narrow_left,
+            label: 'Go back',
+            onTap: () =>
+                context.feedbackModel.goToStep(FeedbackFlowStatus.labels),
+          );
+        } else {
+          return TronButton(
+            color: context.theme.secondaryColor,
+            icon: Wirecons.chevron_double_right,
+            label: 'Skip screenshot',
+            onTap: () =>
+                context.feedbackModel.goToStep(FeedbackFlowStatus.email),
+          );
+        }
+
+      case FeedbackFlowStatus.email:
+        return TronButton(
+          color: context.theme.secondaryColor,
+          icon: Wirecons.arrow_narrow_left,
+          label: 'Go back',
+          onTap: () => context.feedbackModel
+              .goToStep(FeedbackFlowStatus.screenshotsOverview),
+        );
+    }
+  }
+
+  Widget? _getNextButton() {
+    switch (context.feedbackModel.feedbackFlowStatus) {
+      case FeedbackFlowStatus.none:
+      case FeedbackFlowStatus.message:
+        return TronButton(
+          color: context.theme.primaryColor,
+          icon: Wirecons.arrow_narrow_right,
+          label: 'Next',
+          onTap: () =>
+              context.feedbackModel.goToStep(FeedbackFlowStatus.labels),
+        );
+      case FeedbackFlowStatus.labels:
+        return TronButton(
+          color: context.theme.primaryColor,
+          icon: Wirecons.arrow_narrow_right,
+          label: 'Next',
+          onTap: () => context.feedbackModel
+              .goToStep(FeedbackFlowStatus.screenshotsOverview),
+        );
+      case FeedbackFlowStatus.screenshotNavigating:
+      case FeedbackFlowStatus.screenshotCapturing:
+        return TronButton(
+          color: context.theme.primaryColor,
+          icon: Wirecons.camera,
+          iconOffset: const Offset(-.15, 0),
+          label: 'Next',
+          onTap: () => context.feedbackModel
+              .goToStep(FeedbackFlowStatus.screenshotCapturing),
+        );
+      case FeedbackFlowStatus.screenshotDrawing:
+      case FeedbackFlowStatus.screenshotSaving:
+        return TronButton(
+          color: context.theme.primaryColor,
+          icon: Wirecons.check,
+          iconOffset: const Offset(-.15, 0),
+          label: 'Next',
+          onTap: () => context.feedbackModel
+              .goToStep(FeedbackFlowStatus.screenshotSaving),
+        );
+      case FeedbackFlowStatus.screenshotsOverview:
+        return TronButton(
+          color: context.theme.primaryColor,
+          icon: Wirecons.arrow_narrow_right,
+          label: 'Next',
+          onTap: () => context.feedbackModel
+              .goToStep(FeedbackFlowStatus.screenshotNavigating),
+        );
+      case FeedbackFlowStatus.email:
+        // TODO Implement sending of feedback
+        return TronButton(
+          color: context.theme.primaryColor,
+          icon: Wirecons.arrow_narrow_right,
+          label: 'Next',
+          onTap: () => context.feedbackModel.goToStep(FeedbackFlowStatus.none),
+        );
+    }
+  }
+}

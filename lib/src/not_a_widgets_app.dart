@@ -52,6 +52,9 @@ class NotAWidgetsApp extends StatelessWidget {
 
     // Both DefaultTextEditingShortcuts and DefaultTextEditingActions are
     // required to make text edits like deletion of characters possible on macOS
+    widget = DefaultTextEditingActions(
+      child: widget,
+    );
     widget = DefaultTextEditingShortcuts(
       child: widget,
     );

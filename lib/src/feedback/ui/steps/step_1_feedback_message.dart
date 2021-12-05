@@ -5,7 +5,6 @@ import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
-import 'package:wiredash/src/responsive_layout.dart';
 
 class Step1FeedbackMessage extends StatefulWidget {
   const Step1FeedbackMessage({Key? key}) : super(key: key);
@@ -55,7 +54,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       'Give us feedback',
-                      style: context.responsiveLayout.titleTextStyle,
+                      style: context.theme.titleTextStyle,
                     ),
                   ),
                   Flexible(
@@ -67,7 +66,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                         maxLength: 2048,
                         buildCounter: _getCounterText,
                         minLines: 3,
-                        style: context.responsiveLayout.bodyTextStyle,
+                        style: context.theme.bodyTextStyle,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           focusedBorder: InputBorder.none,
@@ -150,7 +149,7 @@ Widget? _getCounterText(
   return Text(
     remaining > 150 ? '' : remaining.toString(),
     style: WiredashTheme.of(context)!
-        .inputErrorStyle
+        .inputErrorTextStyle
         .copyWith(color: _getCounterColor()),
   );
 }
