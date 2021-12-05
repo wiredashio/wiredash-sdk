@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -120,7 +121,7 @@ class _TronButtonState extends State<TronButton>
                   excludeFromSemantics: true,
                   child: ScaleTransition(
                     scale: _iconScaleAnimation,
-                    child: AnimatedSlide(
+                    child: _AnimatedSlideBackport(
                       duration: _duration,
                       offset: widget.iconOffset,
                       child: TronIcon(
@@ -197,5 +198,69 @@ class _TronButtonState extends State<TronButton>
       _pressed = false;
       _controller.reverse();
     });
+  }
+}
+
+/// Backport of [AnimatedSlide], which was added in Flutter 2.5
+class _AnimatedSlideBackport extends ImplicitlyAnimatedWidget {
+  /// Creates a widget that animates its offset translation implicitly.
+  ///
+  /// The [offset] and [duration] arguments must not be null.
+  const _AnimatedSlideBackport({
+    Key? key,
+    this.child,
+    required this.offset,
+    Curve curve = Curves.linear,
+    required Duration duration,
+    VoidCallback? onEnd,
+  }) : super(key: key, curve: curve, duration: duration, onEnd: onEnd);
+
+  /// The widget below this widget in the tree.
+  ///
+  /// {@macro flutter.widgets.ProxyWidget.child}
+  final Widget? child;
+
+  /// The target offset.
+  /// The child will be translated horizontally by `width * dx` and vertically by `height * dy`
+  ///
+  /// The offset must not be null.
+  final Offset offset;
+
+  @override
+  ImplicitlyAnimatedWidgetState<_AnimatedSlideBackport> createState() =>
+      _AnimatedSlideBackportState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<Offset>('offset', offset));
+  }
+}
+
+class _AnimatedSlideBackportState
+    extends ImplicitlyAnimatedWidgetState<_AnimatedSlideBackport> {
+  Tween<Offset>? _offset;
+  late Animation<Offset> _offsetAnimation;
+
+  @override
+  void forEachTween(TweenVisitor<dynamic> visitor) {
+    _offset = visitor(
+      _offset,
+      widget.offset,
+      (dynamic value) => Tween<Offset>(begin: value as Offset),
+    ) as Tween<Offset>?;
+  }
+
+  @override
+  void didUpdateTweens() {
+    _offsetAnimation = animation.drive(_offset!);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SlideTransition(
+      position: _offsetAnimation,
+      child: widget.child,
+    );
   }
 }
