@@ -104,10 +104,6 @@ void main() {
       await tester.waitUntil(find.byIcon(Wirecons.camera), findsOneWidget);
       // TODO check app is interactive
 
-      await expectLater(
-          find.byType(Wiredash), matchesGoldenFile('goldens/0.png'));
-      print(tester.allWidgets);
-
       // Click the screenshot button
       await tester.tap(find.byIcon(Wirecons.camera));
       await tester.pumpAndSettle();
