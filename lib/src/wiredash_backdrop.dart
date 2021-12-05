@@ -11,6 +11,7 @@ import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
+import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
 import 'package:wiredash/src/feedback/ui/screenshot_app_overlay.dart';
 import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
@@ -504,25 +505,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 ),
               ),
               _buildAppOverlay(),
-              Positioned.fromRect(
-                rect: _rectNavigationButtons,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () {
-                        // TODO
-                      },
-                      child: const Text("Prev"),
-                    ),
-                    OutlinedButton(
-                      onPressed: () {
-                        // TODO
-                      },
-                      child: const Text("Next"),
-                    ),
-                  ],
-                ),
+              FeedbackNavigation(
+                defaultLocation: _rectNavigationButtons,
               ),
             ],
           ),

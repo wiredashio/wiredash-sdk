@@ -7,7 +7,12 @@ import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 
 class FeedbackNavigation extends StatefulWidget {
-  const FeedbackNavigation({Key? key}) : super(key: key);
+  const FeedbackNavigation({
+    Key? key,
+    required this.defaultLocation,
+  }) : super(key: key);
+
+  final Rect defaultLocation;
 
   @override
   _FeedbackNavigationState createState() => _FeedbackNavigationState();
@@ -34,10 +39,21 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _recreateAnimations();
+  }
 
+  @override
+  void didUpdateWidget(covariant FeedbackNavigation oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _recreateAnimations();
+  }
+
+  void _recreateAnimations() {
+    final width = MediaQuery.of(context).size.width;
+    const double buttonTransitionWidth = 30;
     _prevButtonAnimation = Tween(
-      begin: Offset.zero,
-      end: Offset(-context.theme.horizontalPadding - 24, 0),
+      begin: Offset(widget.defaultLocation.left, 0),
+      end: const Offset(-buttonTransitionWidth, 0),
     ).animate(
       CurvedAnimation(
         parent: _controller,
@@ -47,8 +63,11 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
     );
 
     _nextButtonAnimation = Tween(
-      begin: Offset.zero,
-      end: Offset(context.theme.horizontalPadding + 24, 0),
+      begin: Offset(
+        -(width - widget.defaultLocation.right),
+        0,
+      ),
+      end: const Offset(buttonTransitionWidth, 0),
     ).animate(
       CurvedAnimation(
         parent: _controller,
@@ -66,47 +85,56 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Stack(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: context.theme.horizontalPadding,
-            ),
-            child: TranslateTransition(
-              offset: _prevButtonAnimation,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 150),
-                  curve: Curves.easeIn,
-                  opacity: isPrevButtonVisible() ? 1 : 0,
-                  child: _getPrevButton(),
+    return Stack(
+      children: [
+        Positioned(
+          top: widget.defaultLocation.top,
+          height: widget.defaultLocation.height,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TranslateTransition(
+                offset: _prevButtonAnimation,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 150),
+                    curve: Curves.easeIn,
+                    opacity: _isPrevButtonVisible() ? 1 : 0,
+                    child: _getPrevButton(),
+                  ),
                 ),
               ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: context.theme.horizontalPadding,
-            ),
-            child: TranslateTransition(
-              offset: _nextButtonAnimation,
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: _getNextButton(),
+              TranslateTransition(
+                offset: _nextButtonAnimation,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 150),
+                    curve: Curves.easeIn,
+                    opacity: _isNextButtonVisible() ? 1 : 0,
+                    child: _getNextButton(),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  bool isPrevButtonVisible() {
+  bool _isPrevButtonVisible() {
     return context.feedbackModel.feedbackFlowStatus != FeedbackFlowStatus.none;
   }
 
+  bool _isNextButtonVisible() {
+    return context.feedbackModel.feedbackFlowStatus != FeedbackFlowStatus.none;
+  }
+
+  // TODO use
   Color prevButtonColor() {
     if (context.feedbackModel.feedbackFlowStatus ==
         FeedbackFlowStatus.screenshotDrawing) {

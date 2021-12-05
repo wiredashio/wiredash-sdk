@@ -25,7 +25,6 @@ import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
-import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
 import 'package:wiredash/src/not_a_widgets_app.dart';
 import 'package:wiredash/src/wiredash_backdrop.dart';
@@ -272,7 +271,6 @@ class WiredashState extends State<Wiredash> {
                 controller: backdropController,
                 child: appBuilder,
               ),
-              const FeedbackNavigation(),
             ],
           ),
         ),
