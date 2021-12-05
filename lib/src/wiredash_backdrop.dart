@@ -10,6 +10,8 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
 import 'package:wiredash/src/feedback/ui/screenshot_app_overlay.dart';
@@ -505,8 +507,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 ),
               ),
               _buildAppOverlay(),
-              FeedbackNavigation(
-                defaultLocation: _rectNavigationButtons,
+              AnimatedOpacity(
+                duration: const Duration(milliseconds: 300),
+                opacity: () {
+                  if (_backdropStatus == WiredashBackdropStatus.closing) {
+                    return 0.0;
+                  }
+                  // TODO animate them a bit later in
+                  return 1.0;
+                }(),
+                child: FeedbackNavigation(
+                  defaultLocation: _rectNavigationButtons,
+                ),
               ),
             ],
           ),
