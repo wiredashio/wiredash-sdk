@@ -1,7 +1,8 @@
 import 'package:flutter/widgets.dart';
 
-class OffsetTransition extends AnimatedWidget {
-  const OffsetTransition({
+/// Animated version of an [Transform.translate] that animates its [Transform.origin] property.
+class TranslateTransition extends AnimatedWidget {
+  const TranslateTransition({
     Key? key,
     required Animation<Offset> offset,
     this.child,

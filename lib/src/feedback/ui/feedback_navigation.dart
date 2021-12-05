@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/widgets/offset_transition.dart';
+import 'package:wiredash/src/common/widgets/translate_transition.dart';
 import 'package:wiredash/src/common/widgets/tron_button.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
@@ -73,7 +73,7 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
             padding: EdgeInsets.symmetric(
               horizontal: context.theme.horizontalPadding,
             ),
-            child: OffsetTransition(
+            child: TranslateTransition(
               offset: _prevButtonAnimation,
               child: Align(
                 alignment: Alignment.centerLeft,
@@ -90,7 +90,7 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
             padding: EdgeInsets.symmetric(
               horizontal: context.theme.horizontalPadding,
             ),
-            child: OffsetTransition(
+            child: TranslateTransition(
               offset: _nextButtonAnimation,
               child: Align(
                 alignment: Alignment.centerRight,
