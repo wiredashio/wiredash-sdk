@@ -86,7 +86,9 @@ void main() {
       await tester.enterText(find.byType(TextField), 'asdfasdf');
       await tester.pumpAndSettle();
       await tester.waitUntil(
-          find.byIcon(Wirecons.arrow_narrow_right), findsOneWidget);
+        find.byIcon(Wirecons.arrow_narrow_right),
+        findsOneWidget,
+      );
       expect(find.byIcon(Wirecons.arrow_narrow_right), findsOneWidget);
       expect(find.byIcon(Wirecons.arrow_narrow_left), findsOneWidget);
 
