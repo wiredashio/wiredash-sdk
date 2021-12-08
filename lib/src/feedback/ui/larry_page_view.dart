@@ -16,6 +16,7 @@ class LarryPageView extends StatefulWidget {
     required this.builder,
     this.onPageChanged,
     this.initialPage = 0,
+    this.pageIndex = 0,
   }) : super(key: key);
 
   final Widget Function(BuildContext context) builder;
@@ -28,6 +29,9 @@ class LarryPageView extends StatefulWidget {
 
   final int initialPage;
 
+  /// The index of the current page
+  final int pageIndex;
+
   @override
   State<LarryPageView> createState() => LarryPageViewState();
 }
@@ -36,11 +40,6 @@ class LarryPageViewState extends State<LarryPageView>
     with TickerProviderStateMixin<LarryPageView> {
   /// Drives the scroll animation once the finger leaves the screen
   late final AnimationController _controller;
-
-  /// The index of the current [page]
-  ///
-  /// starting at 0 up to `widget.stepCount - 1`
-  int _page = 0;
 
   /// The Y scroll position, the [Offset] the [ViewPort] is moved
   double _offset = 0;
@@ -85,7 +84,6 @@ class LarryPageViewState extends State<LarryPageView>
   @override
   void initState() {
     super.initState();
-    _page = widget.initialPage;
     _controller = AnimationController(
       vsync: this,
       value: 0,
@@ -101,6 +99,18 @@ class LarryPageViewState extends State<LarryPageView>
     _nextPageTimer?.cancel();
     super.dispose();
   }
+
+  // @override
+  // void didUpdateWidget(covariant LarryPageView oldWidget) {
+  //   if (oldWidget.pageIndex < widget.pageIndex) {
+  //     moveToNextPage();
+  //   }
+  //   if (oldWidget.pageIndex > widget.pageIndex) {
+  //     moveToPreviousPage();
+  //   }
+  //
+  //   super.didUpdateWidget(oldWidget);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -131,11 +141,11 @@ class LarryPageViewState extends State<LarryPageView>
               // hide next page, while delaying in-animation
               return 0.0;
             }
-            if (_page == 0 && _offset < 0) {
+            if (widget.pageIndex == 0 && _offset < 0) {
               // first item
               return 1.0;
             }
-            if (_page == widget.stepCount - 1 && _offset > 0) {
+            if (widget.pageIndex == widget.stepCount - 1 && _offset > 0) {
               // last item
               return 1.0;
             }
@@ -143,10 +153,10 @@ class LarryPageViewState extends State<LarryPageView>
           }();
 
           child = KeyedSubtree(
-            key: ValueKey(_page),
+            key: ValueKey(widget.pageIndex),
             child: StepInheritedWidget(
               data: StepInformation(
-                index: _page,
+                index: widget.pageIndex,
                 animation: AlwaysStoppedAnimation<double>(opacity),
                 pageView: this,
                 innerScrollController: _childScrollController,
@@ -308,7 +318,7 @@ class LarryPageViewState extends State<LarryPageView>
       if (primaryVelocity < 0) {
         // TODO check where the double jump is coming from
         // scroll up
-        if (_page + 1 < widget.stepCount) {
+        if (widget.pageIndex + 1 < widget.stepCount) {
           final sim = FrictionSimulation(1, -primaryVelocity, _offset);
           _controller.animateWith(sim);
           _animatingPageOut = true;
@@ -317,7 +327,7 @@ class LarryPageViewState extends State<LarryPageView>
         }
       }
       if (primaryVelocity > 0) {
-        if (_page > 0) {
+        if (widget.pageIndex > 0) {
           final sim = ClampingScrollSimulation(
             velocity: -primaryVelocity,
             position: _offset,
@@ -365,13 +375,13 @@ class LarryPageViewState extends State<LarryPageView>
 
     if (_animatingPageOut) {
       if (_offset > _pageSwitchDistance) {
-        if (_page + 1 < widget.stepCount) {
-          _page++;
+        if (widget.pageIndex + 1 < widget.stepCount) {
+          // _page++;
           _childScrollController.dispose();
           _childScrollController = ScrollController();
           _offset = -_pageSwitchDistance;
           _animatingPageOut = false;
-          widget.onPageChanged?.call(_page);
+          widget.onPageChanged?.call(widget.pageIndex + 1);
           final sim =
               SpringSimulation(_pageSpring, _offset, 0, _pageEnterVelocity);
           _nextPageTimer?.cancel();
@@ -381,13 +391,13 @@ class LarryPageViewState extends State<LarryPageView>
           });
         }
       } else if (_offset < -_pageSwitchDistance) {
-        if (_page > 0) {
-          _page--;
+        if (widget.pageIndex > 0) {
+          // _page--;
           _childScrollController.dispose();
           _childScrollController = ScrollController();
           _offset = _pageSwitchDistance;
           _animatingPageOut = false;
-          widget.onPageChanged?.call(_page);
+          widget.onPageChanged?.call(widget.pageIndex - 1);
           final sim =
               SpringSimulation(_pageSpring, _offset, 0, -_pageEnterVelocity);
           _nextPageTimer?.cancel();
@@ -401,7 +411,7 @@ class LarryPageViewState extends State<LarryPageView>
   }
 
   void moveToNextPage() {
-    if (_page + 1 >= widget.stepCount) {
+    if (widget.pageIndex + 1 >= widget.stepCount) {
       return;
     }
     setState(() {
@@ -417,19 +427,30 @@ class LarryPageViewState extends State<LarryPageView>
   }
 
   void moveToPreviousPage() {
-    if (_page <= 0) {
+    if (widget.pageIndex <= 0) {
       return;
     }
     setState(() {
       _animatingPageOut = true;
     });
     final outSim = GravitySimulation(
-      _pageExitAcceleration,
+      -_pageExitAcceleration,
       0,
-      -_pageSwitchDistance,
+      _pageSwitchDistance,
       _pageEnterVelocity,
     );
     _controller.animateWith(outSim);
+  }
+
+  void moveToPage(int index) {
+    if (index > widget.pageIndex) {
+      moveToNextPage();
+      return;
+    }
+    if (index < widget.pageIndex) {
+      moveToPreviousPage();
+      return;
+    }
   }
 }
 

@@ -6,14 +6,14 @@ import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/labeled_button.dart';
 import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 
-class Step3Email extends StatefulWidget {
-  const Step3Email({Key? key}) : super(key: key);
+class Step5Email extends StatefulWidget {
+  const Step5Email({Key? key}) : super(key: key);
 
   @override
-  _Step3EmailState createState() => _Step3EmailState();
+  _Step5EmailState createState() => _Step5EmailState();
 }
 
-class _Step3EmailState extends State<Step3Email> with TickerProviderStateMixin {
+class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
   late final TextEditingController _controller;
 
   @override

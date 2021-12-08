@@ -7,14 +7,14 @@ import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/labeled_button.dart';
 import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 
-class Step4ScreenshotSaving extends StatefulWidget {
-  const Step4ScreenshotSaving({Key? key}) : super(key: key);
+class Step3ScreenshotOverview extends StatefulWidget {
+  const Step3ScreenshotOverview({Key? key}) : super(key: key);
 
   @override
-  _Step4ScreenshotSavingState createState() => _Step4ScreenshotSavingState();
+  _Step3ScreenshotOverviewState createState() => _Step3ScreenshotOverviewState();
 }
 
-class _Step4ScreenshotSavingState extends State<Step4ScreenshotSaving> {
+class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
@@ -25,7 +25,7 @@ class _Step4ScreenshotSavingState extends State<Step4ScreenshotSaving> {
           children: [
             const Text(
               'For a better understanding. Do you want to take a screenshot of it?\n'
-              'Screenshot saving',
+                  'Screenshot Overview',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,

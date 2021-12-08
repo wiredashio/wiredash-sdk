@@ -41,6 +41,17 @@ class FeedbackModel with ChangeNotifier {
   bool get isActive => _feedbackFlowStatus != FeedbackFlowStatus.none;
   bool get hasScreenshots => _screenshot != null;
 
+  List<FeedbackFlowStatus> get steps {
+    final stack = [FeedbackFlowStatus.message];
+
+    if (_feedbackMessage != null) {
+      stack.add(FeedbackFlowStatus.labels);
+      stack.add(FeedbackFlowStatus.screenshotsOverview);
+      stack.add(FeedbackFlowStatus.email);
+    }
+    return stack;
+  }
+
   set feedbackMessage(String? feedbackMessage) {
     final trimmed = feedbackMessage?.trim();
     if (trimmed == '') {
@@ -62,6 +73,7 @@ class FeedbackModel with ChangeNotifier {
   }
 
   Future<void> goToStep(FeedbackFlowStatus newStatus) async {
+    print("nextStep $newStatus");
     switch (newStatus) {
       case FeedbackFlowStatus.none:
         _feedbackFlowStatus = newStatus;
@@ -120,7 +132,6 @@ class FeedbackModel with ChangeNotifier {
       case FeedbackFlowStatus.email:
         _feedbackFlowStatus = newStatus;
         notifyListeners();
-        await _wiredashState.backdropController.animateToOpen();
         break;
     }
   }
@@ -128,12 +139,12 @@ class FeedbackModel with ChangeNotifier {
   Future<void> submitFeedback() async {
     // TODO remove before release
     bool fakeSubmit = true;
-    assert(
-      () {
-        fakeSubmit = false;
-        return true;
-      }(),
-    );
+    // assert(
+    //   () {
+    //     fakeSubmit = false;
+    //     return true;
+    //   }(),
+    // );
     if (fakeSubmit) {
       await _wiredashState.backdropController.animateToClosed();
       _wiredashState.discardFeedback();

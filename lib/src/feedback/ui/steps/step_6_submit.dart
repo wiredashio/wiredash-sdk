@@ -5,14 +5,14 @@ import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 
-class Step5Submit extends StatefulWidget {
-  const Step5Submit({Key? key}) : super(key: key);
+class Step6Submit extends StatefulWidget {
+  const Step6Submit({Key? key}) : super(key: key);
 
   @override
-  _Step5SubmitState createState() => _Step5SubmitState();
+  _Step6SubmitState createState() => _Step6SubmitState();
 }
 
-class _Step5SubmitState extends State<Step5Submit> {
+class _Step6SubmitState extends State<Step6Submit> {
   @override
   Widget build(BuildContext context) {
     return Padding(

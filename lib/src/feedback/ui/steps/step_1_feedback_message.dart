@@ -83,36 +83,6 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                 ],
               ),
             ),
-            AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                return AnimatedSize(
-                  // ignore: deprecated_member_use
-                  vsync: this,
-                  duration: const Duration(milliseconds: 450),
-                  curve: Curves.fastOutSlowIn,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 225),
-                    reverseDuration: const Duration(milliseconds: 170),
-                    switchInCurve: Curves.fastOutSlowIn,
-                    switchOutCurve: Curves.fastOutSlowIn,
-                    child: Container(
-                      key: ValueKey(_controller.text.isEmpty),
-                      child: () {
-                        return BigBlueButton(
-                          onTap: () {
-                            StepInformation.of(context)
-                                .pageView
-                                .moveToNextPage();
-                          },
-                          child: const Text('next'),
-                        );
-                      }(),
-                    ),
-                  ),
-                );
-              },
-            ),
           ],
         ),
       ),
