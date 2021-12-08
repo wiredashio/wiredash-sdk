@@ -117,7 +117,9 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.waitUntil(
-          find.byIcon(Wirecons.arrow_narrow_right), findsOneWidget);
+        find.byIcon(Wirecons.arrow_narrow_right),
+        findsOneWidget,
+      );
 
       // TODO check that we see the screenshot
       await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
