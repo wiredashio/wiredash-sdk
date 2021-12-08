@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
@@ -23,13 +24,10 @@ class _Step4ScreenshotSavingState extends State<Step4ScreenshotSaving> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               'For a better understanding. Do you want to take a screenshot of it?\n'
               'Screenshot saving',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
+              style: context.theme.titleTextStyle,
             ),
             const SizedBox(height: 32),
             BigBlueButton(

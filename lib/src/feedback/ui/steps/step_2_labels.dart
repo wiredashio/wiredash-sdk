@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
@@ -23,12 +24,9 @@ class _Step2LabelsState extends State<Step2Labels>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'What category fits best with your feedback?',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
+              style: context.theme.titleTextStyle,
             ),
             // TODO replace with automatic scaled spacing from theme
             const SizedBox(height: 32),

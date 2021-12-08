@@ -275,7 +275,7 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
       case FeedbackFlowStatus.email:
         return TronButton(
           color: context.theme.primaryColor,
-          icon: Wirecons.arrow_narrow_right,
+          icon: Wirecons.check,
           label: 'Next',
           onTap: () {
             context.feedbackModel.submitFeedback();

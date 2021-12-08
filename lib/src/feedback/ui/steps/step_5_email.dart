@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
@@ -47,20 +49,17 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 20),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
                   child: Text(
                     'Email',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: context.theme.titleTextStyle,
                   ),
                 ),
                 TextField(
                   controller: _controller,
                   keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(fontSize: 14),
+                  style: context.theme.bodyTextStyle,
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
@@ -72,36 +71,6 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 32),
-            AnimatedSize(
-              duration: const Duration(milliseconds: 225),
-              // ignore: deprecated_member_use
-              vsync: this,
-              clipBehavior: Clip.none,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 225),
-                reverseDuration: const Duration(milliseconds: 170),
-                switchInCurve: Curves.fastOutSlowIn,
-                switchOutCurve: Curves.fastOutSlowIn,
-                child: () {
-                  if (context.feedbackModel.userEmail?.isEmpty != false) {
-                    return LabeledButton(
-                      onTap: () {
-                        StepInformation.of(context).pageView.moveToNextPage();
-                      },
-                      child: const Text('Skip'),
-                    );
-                  }
-
-                  return BigBlueButton(
-                    onTap: () {
-                      StepInformation.of(context).pageView.moveToNextPage();
-                    },
-                    child: const Icon(Icons.arrow_right_alt),
-                  );
-                }(),
-              ),
             ),
           ],
         ),

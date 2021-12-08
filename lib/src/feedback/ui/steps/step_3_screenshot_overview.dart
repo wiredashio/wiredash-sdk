@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
@@ -11,7 +12,8 @@ class Step3ScreenshotOverview extends StatefulWidget {
   const Step3ScreenshotOverview({Key? key}) : super(key: key);
 
   @override
-  _Step3ScreenshotOverviewState createState() => _Step3ScreenshotOverviewState();
+  _Step3ScreenshotOverviewState createState() =>
+      _Step3ScreenshotOverviewState();
 }
 
 class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
@@ -23,31 +25,15 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'For a better understanding. Do you want to take a screenshot of it?\n'
-                  'Screenshot Overview',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
+            Text(
+              'Do you want to create a screenshot that explains what you want to say?',
+              style: context.theme.titleTextStyle,
             ),
-            const SizedBox(height: 32),
-            BigBlueButton(
-              onTap: () {
-                context.feedbackModel
-                    .goToStep(FeedbackFlowStatus.screenshotsOverview);
-              },
-              child: const Text("Yes"),
-            ),
-            const SizedBox(height: 64),
-            LabeledButton(
-              onTap: () {
-                StepInformation.of(context).pageView.moveToNextPage();
-              },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.0),
-                child: Text("I'm done"),
-              ),
+            SizedBox(height: context.theme.titleTextStyle.fontSize!),
+            Text(
+              'You can still use the app and can take a screenshot when it’s the right screen.',
+              style: context.theme.titleTextStyle
+                  .copyWith(color: context.theme.secondaryTextColor),
             ),
           ],
         ),
