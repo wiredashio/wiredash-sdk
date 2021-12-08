@@ -141,11 +141,12 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
   Widget? _getPrevButton() {
     switch (context.feedbackModel.feedbackFlowStatus) {
       case FeedbackFlowStatus.none:
+        return null;
       case FeedbackFlowStatus.message:
         return TronButton(
           key: const ValueKey('back'),
           color: context.theme.secondaryColor,
-          icon: Wirecons.arrow_narrow_left,
+          icon: Wirecons.home,
           label: 'Back to app',
           onTap: () => context.wiredashModel.hide(),
         );
@@ -214,6 +215,7 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
   Widget? _getNextButton() {
     switch (context.feedbackModel.feedbackFlowStatus) {
       case FeedbackFlowStatus.none:
+        return null;
       case FeedbackFlowStatus.message:
         if (context.feedbackModel.feedbackMessage == null) {
           return null;
@@ -228,7 +230,9 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
 
       case FeedbackFlowStatus.labels:
         return TronButton(
-          color: context.theme.primaryColor,
+          color: context.feedbackModel.selectedLabels.isEmpty
+              ? context.theme.secondaryColor
+              : context.theme.primaryColor,
           icon: Wirecons.arrow_narrow_right,
           label: 'Next',
           onTap: () => context.feedbackModel

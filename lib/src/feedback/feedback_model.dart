@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
+import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
@@ -37,6 +38,13 @@ class FeedbackModel with ChangeNotifier {
 
   String? get userEmail => _userEmail;
   String? _userEmail;
+
+  List<Label> get selectedLabels => List.unmodifiable(_selectedLabels);
+  List<Label> _selectedLabels = [];
+  set selectedLabels(List<Label> list) {
+    _selectedLabels = list;
+    notifyListeners();
+  }
 
   bool get isActive => _feedbackFlowStatus != FeedbackFlowStatus.none;
   bool get hasScreenshots => _screenshot != null;
@@ -146,10 +154,12 @@ class FeedbackModel with ChangeNotifier {
     //   }(),
     // );
     if (fakeSubmit) {
+      print("Submitting feedback (fake)");
       await _wiredashState.backdropController.animateToClosed();
       _wiredashState.discardFeedback();
       return;
     } else {
+      print("Submitting feedback");
       try {
         final item = await createFeedback();
         await _wiredashState.feedbackSubmitter.submit(item, null);
