@@ -33,13 +33,13 @@ class _Step6SubmitState extends State<Step6Submit> {
                   const Text("Submitted"),
                   const SizedBox(height: 32),
                   LabeledButton(
+                    onTap: () {
+                      context.feedbackModel.returnToAppPostSubmit();
+                    },
                     child: const Text(
                       'Back to app',
                       textAlign: TextAlign.center,
                     ),
-                    onTap: () {
-                      context.feedbackModel.returnToAppPostSubmit();
-                    },
                   ),
                 ],
               );
