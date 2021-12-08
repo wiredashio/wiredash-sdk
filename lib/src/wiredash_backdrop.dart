@@ -203,6 +203,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }
 
   Future<void> _animateToClosed() async {
+    if (_backdropStatus == WiredashBackdropStatus.closed) {
+      return;
+    }
     _backdropStatus = WiredashBackdropStatus.closing;
     _swapAnimation();
 

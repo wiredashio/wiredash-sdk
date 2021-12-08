@@ -209,6 +209,8 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           onTap: () => context.feedbackModel
               .goToStep(FeedbackFlowStatus.screenshotsOverview),
         );
+      case FeedbackFlowStatus.submitting:
+        return null;
     }
   }
 
@@ -281,6 +283,8 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
             context.feedbackModel.submitFeedback();
           },
         );
+      case FeedbackFlowStatus.submitting:
+        return null;
     }
   }
 }

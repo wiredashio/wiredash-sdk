@@ -16,7 +16,8 @@ enum FeedbackFlowStatus {
   screenshotCapturing,
   screenshotDrawing,
   screenshotSaving,
-  email
+  email,
+  submitting
 }
 
 class FeedbackModel with ChangeNotifier {
@@ -50,12 +51,19 @@ class FeedbackModel with ChangeNotifier {
   bool get hasScreenshots => _screenshot != null;
 
   List<FeedbackFlowStatus> get steps {
+    if (submitted) {
+      return [FeedbackFlowStatus.submitting];
+    }
+
     final stack = [FeedbackFlowStatus.message];
 
     if (_feedbackMessage != null) {
       stack.add(FeedbackFlowStatus.labels);
       stack.add(FeedbackFlowStatus.screenshotsOverview);
       stack.add(FeedbackFlowStatus.email);
+    }
+    if (submitting || submitted) {
+      stack.add(FeedbackFlowStatus.submitting);
     }
     return stack;
   }
@@ -82,6 +90,7 @@ class FeedbackModel with ChangeNotifier {
 
   Future<void> goToStep(FeedbackFlowStatus newStatus) async {
     print("nextStep $newStatus");
+    print("Stack: $steps");
     switch (newStatus) {
       case FeedbackFlowStatus.none:
         _feedbackFlowStatus = newStatus;
@@ -141,10 +150,20 @@ class FeedbackModel with ChangeNotifier {
         _feedbackFlowStatus = newStatus;
         notifyListeners();
         break;
+      case FeedbackFlowStatus.submitting:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
+        break;
     }
   }
 
+  bool submitting = false;
+  bool submitted = false;
+
   Future<void> submitFeedback() async {
+    submitting = true;
+    notifyListeners();
+    goToStep(FeedbackFlowStatus.submitting);
     // TODO remove before release
     bool fakeSubmit = true;
     // assert(
@@ -153,20 +172,37 @@ class FeedbackModel with ChangeNotifier {
     //     return true;
     //   }(),
     // );
-    if (fakeSubmit) {
-      print("Submitting feedback (fake)");
-      await _wiredashState.backdropController.animateToClosed();
-      _wiredashState.discardFeedback();
-      return;
-    } else {
-      print("Submitting feedback");
-      try {
-        final item = await createFeedback();
-        await _wiredashState.feedbackSubmitter.submit(item, null);
-      } catch (e) {
-        // TODO show error UI
+    try {
+      if (fakeSubmit) {
+        print("Submitting feedback (fake)");
+        await Future.delayed(const Duration(seconds: 2));
+        submitted = true;
+        submitting = false;
+        notifyListeners();
+
+        await Future.delayed(const Duration(seconds: 1));
+        await returnToAppPostSubmit();
+
+        return;
+      } else {
+        print("Submitting feedback");
+        try {
+          final item = await createFeedback();
+          await _wiredashState.feedbackSubmitter.submit(item, null);
+        } catch (e) {
+          // TODO show error UI
+        }
       }
+    } catch (e) {
+      submitting = false;
+      notifyListeners();
     }
+  }
+
+  Future<void> returnToAppPostSubmit() async {
+    if (submitted == false) return;
+    await _wiredashState.backdropController.animateToClosed();
+    _wiredashState.discardFeedback();
   }
 
   Future<PersistedFeedbackItem> createFeedback() async {

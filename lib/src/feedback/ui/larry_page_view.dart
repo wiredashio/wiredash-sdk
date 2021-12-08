@@ -102,13 +102,9 @@ class LarryPageViewState extends State<LarryPageView>
 
   // @override
   // void didUpdateWidget(covariant LarryPageView oldWidget) {
-  //   if (oldWidget.pageIndex < widget.pageIndex) {
-  //     moveToNextPage();
+  //   if (oldWidget.stepCount < widget.stepCount) {
+  //     _page
   //   }
-  //   if (oldWidget.pageIndex > widget.pageIndex) {
-  //     moveToPreviousPage();
-  //   }
-  //
   //   super.didUpdateWidget(oldWidget);
   // }
 
@@ -411,9 +407,11 @@ class LarryPageViewState extends State<LarryPageView>
   }
 
   void moveToNextPage() {
+    print("moveToNext: ${widget.pageIndex + 1}, count: ${widget.stepCount}");
     if (widget.pageIndex + 1 >= widget.stepCount) {
       return;
     }
+    print("start next anim");
     setState(() {
       _animatingPageOut = true;
     });
@@ -444,10 +442,12 @@ class LarryPageViewState extends State<LarryPageView>
 
   void moveToPage(int index) {
     if (index > widget.pageIndex) {
+      print("next");
       moveToNextPage();
       return;
     }
     if (index < widget.pageIndex) {
+      print("prev");
       moveToPreviousPage();
       return;
     }

@@ -60,6 +60,10 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                   controller: _controller,
                   keyboardType: TextInputType.emailAddress,
                   style: context.theme.bodyTextStyle,
+                  onSubmitted: (_) {
+                    context.feedbackModel
+                        .goToStep(FeedbackFlowStatus.submitting);
+                  },
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,

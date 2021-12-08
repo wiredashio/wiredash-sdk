@@ -8,6 +8,8 @@ import 'package:wiredash/src/feedback/ui/steps/step_2_labels.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_3_screenshot_overview.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_4_screenshot.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_5_email.dart';
+import 'package:wiredash/src/feedback/ui/steps/step_6_submit.dart';
+import 'package:wiredash/src/wiredash_model_provider.dart';
 
 class WiredashFeedbackFlow extends StatefulWidget {
   const WiredashFeedbackFlow({Key? key}) : super(key: key);
@@ -37,9 +39,13 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (_index >= context.feedbackModel.steps.length) {
+      _index = context.feedbackModel.steps.length - 1;
+    }
 
     final oldIndex = _index;
     final newIndex = stackIndex;
+    print("didChangeDependencies $oldIndex $newIndex");
     if (newIndex == null) {
       // state not in stack, stay at current page
       return;
@@ -47,13 +53,17 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     if (oldIndex != newIndex) {
       final state = _lpvKey.currentState!;
       print("didChangeDependencies $oldIndex -> $newIndex");
-      state.moveToPage(newIndex);
+      // jump to next page after the widget has been rebuild and LarryPageView knows about the new itemCount
+      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+        state.moveToPage(newIndex);
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final feedbackModel = context.feedbackModel;
+    print("Index: $_index");
     return GestureDetector(
       onTap: () {
         Focus.maybeOf(context)?.unfocus();
@@ -95,7 +105,16 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         },
         builder: (context) {
           final index = _index;
-          final status = feedbackModel.steps[index];
+          final FeedbackFlowStatus status = () {
+            if (feedbackModel.steps.length <= index) {
+              if (stackIndex == null) {
+                return feedbackModel.steps.first;
+              } else {
+                return feedbackModel.steps[stackIndex!];
+              }
+            }
+            return feedbackModel.steps[index];
+          }();
 
           final stepWidget = () {
             if (status == FeedbackFlowStatus.message) {
@@ -113,9 +132,13 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             if (status == FeedbackFlowStatus.email) {
               return const Step5Email();
             }
+            if (status == FeedbackFlowStatus.submitting) {
+              return const Step6Submit();
+            }
             throw 'Unknown step $status at index $index';
           }();
 
+          print("Showing: ${stepWidget.runtimeType}");
           final step = StepInformation.of(context);
           return GreyScaleFilter(
             key: ValueKey(status),

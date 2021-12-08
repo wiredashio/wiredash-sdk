@@ -4,6 +4,8 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
+import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
+import 'package:wiredash/src/feedback/ui/labeled_button.dart';
 
 class Step6Submit extends StatefulWidget {
   const Step6Submit({Key? key}) : super(key: key);
@@ -15,51 +17,58 @@ class Step6Submit extends StatefulWidget {
 class _Step6SubmitState extends State<Step6Submit> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: context.theme.horizontalPadding,
-        vertical: 16,
-      ),
-      child: Container(
-        // TODO required?
-        color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Summary',
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Message: ${context.feedbackModel.feedbackMessage}\n'
-                '\n'
-                'Email: ${context.feedbackModel.userEmail}\n'
-                '\n'
-                'Screenshots: 0\n'
-                '\n'
-                'AppVersion: TODO\n'
-                'Browser Version: TODO\n'
-                'Whatever is useful\n',
-                style: const TextStyle(fontSize: 14),
-              ),
-              const SizedBox(height: 16),
-              Center(
-                child: BigBlueButton(
-                  text: const Text('Submit'),
-                  onTap: () {
-                    context.feedbackModel.submitFeedback();
-                  },
-                  child: const Icon(Wirecons.save),
-                ),
-              ),
-            ],
-          ),
+    return StepPageScaffold(
+      child: Center(
+        child: AnimatedSwitcher(
+          duration: Duration(seconds: 1),
+          child: () {
+            final feedbackModel = context.feedbackModel;
+            if (feedbackModel.submitted) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.check,
+                    size: 64,
+                    color: context.theme.primaryColor,
+                  ),
+                  const SizedBox(height: 8),
+                  Text("Submitted"),
+                  const SizedBox(height: 32),
+                  LabeledButton(
+                    child: Text(
+                      'Back to app',
+                      textAlign: TextAlign.center,
+                    ),
+                    onTap: () {
+                      context.feedbackModel.returnToAppPostSubmit();
+                    },
+                  ),
+                ],
+              );
+            }
+
+            if (feedbackModel.submitting) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/images/logo_white.png',
+                    package: 'wiredash',
+                    height: 64,
+                    color: context.theme.primaryColor,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Submitting",
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              );
+            } else {
+              return Text("Submit your feedback now");
+            }
+          }(),
         ),
       ),
     );
