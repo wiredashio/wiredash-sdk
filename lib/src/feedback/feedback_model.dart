@@ -1,7 +1,6 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
@@ -176,7 +175,6 @@ class FeedbackModel with ChangeNotifier {
 
       if (fakeSubmit) {
         if (kDebugMode) print("Submitting feedback (fake)");
-
         await minWaitDuration;
         submitted = true;
         submitting = false;

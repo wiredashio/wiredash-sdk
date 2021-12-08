@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:test/test.dart';
-import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
@@ -31,7 +30,7 @@ class _Step2LabelsState extends State<Step2Labels>
             // TODO replace with automatic scaled spacing from theme
             const SizedBox(height: 32),
             _LabelRecommendations(
-              labels: [
+              labels: const [
                 Label(id: 'bug', name: 'Bug'),
                 Label(id: 'improvement', name: 'Improvement'),
                 Label(id: 'praise', name: 'Praise 🎉'),
