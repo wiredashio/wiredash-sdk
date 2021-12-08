@@ -71,11 +71,25 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             if (_stackIndex == null) {
               return;
             }
-            if (_stackIndex == _index) {
-              // cool, the correct index is already in the model
-            } else {
-              final step = feedbackModel.steps[_stackIndex];
-              feedbackModel.goToStep(step);
+
+            if (_stackIndex < _index) {
+              final currentStep = feedbackModel.steps[_stackIndex];
+              final nextStepIndex = _stackIndex + 1;
+              if (nextStepIndex <= feedbackModel.steps.length) {
+                final step = feedbackModel.steps[nextStepIndex];
+                print("Adjust state $currentStep -> $step");
+                feedbackModel.goToStep(step);
+              }
+            }
+
+            if (_stackIndex > _index) {
+              final currentStep = feedbackModel.steps[_stackIndex];
+              final prevStepIndex = _stackIndex - 1;
+              if (prevStepIndex <= feedbackModel.steps.length) {
+                final step = feedbackModel.steps[prevStepIndex];
+                print("Adjust state $currentStep -> $step");
+                feedbackModel.goToStep(step);
+              }
             }
           });
         },
