@@ -407,11 +407,9 @@ class LarryPageViewState extends State<LarryPageView>
   }
 
   void moveToNextPage() {
-    print("moveToNext: ${widget.pageIndex + 1}, count: ${widget.stepCount}");
     if (widget.pageIndex + 1 >= widget.stepCount) {
       return;
     }
-    print("start next anim");
     setState(() {
       _animatingPageOut = true;
     });
@@ -442,12 +440,10 @@ class LarryPageViewState extends State<LarryPageView>
 
   void moveToPage(int index) {
     if (index > widget.pageIndex) {
-      print("next");
       moveToNextPage();
       return;
     }
     if (index < widget.pageIndex) {
-      print("prev");
       moveToPreviousPage();
       return;
     }

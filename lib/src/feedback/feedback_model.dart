@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
@@ -89,8 +90,6 @@ class FeedbackModel with ChangeNotifier {
   }
 
   Future<void> goToStep(FeedbackFlowStatus newStatus) async {
-    print("nextStep $newStatus");
-    print("Stack: $steps");
     switch (newStatus) {
       case FeedbackFlowStatus.none:
         _feedbackFlowStatus = newStatus;
@@ -164,39 +163,45 @@ class FeedbackModel with ChangeNotifier {
     submitting = true;
     notifyListeners();
     goToStep(FeedbackFlowStatus.submitting);
-    // TODO remove before release
-    bool fakeSubmit = true;
-    // assert(
-    //   () {
-    //     fakeSubmit = false;
-    //     return true;
-    //   }(),
-    // );
+    bool fakeSubmit = false;
+    assert(
+      () {
+        fakeSubmit = true;
+        return true;
+      }(),
+    );
     try {
+      final Future<void> minWaitDuration =
+          await Future.delayed(const Duration(seconds: 2));
+
       if (fakeSubmit) {
-        print("Submitting feedback (fake)");
-        await Future.delayed(const Duration(seconds: 2));
+        if (kDebugMode) print("Submitting feedback (fake)");
+
+        await minWaitDuration;
         submitted = true;
         submitting = false;
         notifyListeners();
-
-        await Future.delayed(const Duration(seconds: 1));
-        await returnToAppPostSubmit();
-
-        return;
       } else {
-        print("Submitting feedback");
+        if (kDebugMode) print("Submitting feedback");
         try {
-          final item = await createFeedback();
-          await _wiredashState.feedbackSubmitter.submit(item, null);
+          final Future<void> feedback = () async {
+            final item = await createFeedback();
+            await _wiredashState.feedbackSubmitter.submit(item, null);
+          }();
+          await Future.wait([feedback, minWaitDuration]);
+          submitted = true;
+          notifyListeners();
         } catch (e) {
           // TODO show error UI
+          rethrow;
         }
       }
-    } catch (e) {
+    } finally {
       submitting = false;
       notifyListeners();
     }
+    await Future.delayed(const Duration(seconds: 1));
+    await returnToAppPostSubmit();
   }
 
   Future<void> returnToAppPostSubmit() async {

@@ -1,9 +1,6 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/media_query_from_window.dart';
 
 /// Wrapper for widgets like [TextField] that expect,
