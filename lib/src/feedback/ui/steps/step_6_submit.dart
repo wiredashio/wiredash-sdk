@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
-import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/labeled_button.dart';
 
@@ -20,7 +17,7 @@ class _Step6SubmitState extends State<Step6Submit> {
     return StepPageScaffold(
       child: Center(
         child: AnimatedSwitcher(
-          duration: Duration(seconds: 1),
+          duration: const Duration(seconds: 1),
           child: () {
             final feedbackModel = context.feedbackModel;
             if (feedbackModel.submitted) {
@@ -33,10 +30,10 @@ class _Step6SubmitState extends State<Step6Submit> {
                     color: context.theme.primaryColor,
                   ),
                   const SizedBox(height: 8),
-                  Text("Submitted"),
+                  const Text("Submitted"),
                   const SizedBox(height: 32),
                   LabeledButton(
-                    child: Text(
+                    child: const Text(
                       'Back to app',
                       textAlign: TextAlign.center,
                     ),
@@ -59,14 +56,14 @@ class _Step6SubmitState extends State<Step6Submit> {
                     color: context.theme.primaryColor,
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  const Text(
                     "Submitting",
                     textAlign: TextAlign.center,
                   ),
                 ],
               );
             } else {
-              return Text("Submit your feedback now");
+              return const Text("Submit your feedback now");
             }
           }(),
         ),

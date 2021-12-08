@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/utils/color_ext.dart';
 import 'package:wiredash/src/common/widgets/animated_shape.dart';
 import 'package:wiredash/src/common/widgets/tron_icon.dart';
