@@ -86,7 +86,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.byIcon(Wirecons.arrow_narrow_right), findsOneWidget);
-      expect(find.byIcon(Wirecons.arrow_narrow_left), findsOneWidget);
+      expect(find.byIcon(Wirecons.home), findsOneWidget);
 
       await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
       await tester.pumpHardAndSettle();
@@ -112,6 +112,23 @@ void main() {
       // Check for save screenshot button
       expect(find.byIcon(Wirecons.check), findsOneWidget);
       expect(find.byIcon(Wirecons.pencil), findsOneWidget);
+
+      await tester.tap(find.byIcon(Wirecons.check));
+      await tester.pumpAndSettle();
+
+      await tester.waitUntil(
+          find.byIcon(Wirecons.arrow_narrow_right), findsOneWidget);
+
+      // TODO check that we see the screenshot
+      await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'dash@wiredash.io');
+      await tester.pumpAndSettle();
+      // await tester.tap(find.byIcon(Wirecons.check));
+      //
+      // await tester.waitUntil(find.text("Submitting"), findsOneWidget);
+      // await tester.waitUntil(find.text("Submitted"), findsOneWidget);
     });
   });
 }
