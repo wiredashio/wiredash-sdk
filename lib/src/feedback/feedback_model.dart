@@ -171,7 +171,7 @@ class FeedbackModel with ChangeNotifier {
     );
     try {
       final Future<void> minWaitDuration =
-          await Future.delayed(const Duration(seconds: 2));
+          Future<void>.delayed(const Duration(seconds: 2));
 
       if (fakeSubmit) {
         if (kDebugMode) print("Submitting feedback (fake)");
