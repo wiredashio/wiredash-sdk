@@ -10,7 +10,7 @@ jobs:
   minVersion:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:2.2.0-10.1.pre
+      image: cirrusci/flutter:2.5.0
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -19,8 +19,6 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
-      - name: Analyze
-        run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings .
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
@@ -38,8 +36,6 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
-      - name: Analyze
-        run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings .
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
@@ -57,17 +53,15 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
-      - name: Analyze
-        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings .
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
         run: cd example && sudo --preserve-env=PATH env flutter build web
 
-  dev:
+  master:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:dev
+      image: cirrusci/flutter:master
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -76,8 +70,6 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
-      - name: Analyze
-        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings .
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
