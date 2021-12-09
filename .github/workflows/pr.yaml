@@ -23,7 +23,7 @@ jobs:
       - name: Analyze
         run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings .
       - name: Check formatting
-        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed .
+        run: sudo --preserve-env=PATH env flutter format --fix --set-exit-if-changed .
 
   pr-min:
     runs-on: ubuntu-latest
