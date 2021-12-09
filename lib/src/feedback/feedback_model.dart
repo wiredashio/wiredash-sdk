@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
+import 'package:wiredash/src/common/utils/delay.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
@@ -158,6 +160,9 @@ class FeedbackModel with ChangeNotifier {
   bool submitting = false;
   bool submitted = false;
 
+  Delay? _submitDelay;
+  Delay? _closeDelay;
+
   Future<void> submitFeedback() async {
     submitting = true;
     notifyListeners();
@@ -170,13 +175,12 @@ class FeedbackModel with ChangeNotifier {
       }(),
     );
     try {
-      final Future<void> minWaitDuration =
-          Future<void>.delayed(const Duration(seconds: 2));
-
+      _submitDelay?.dispose();
+      _submitDelay = Delay(const Duration(seconds: 2));
       if (fakeSubmit) {
         // ignore: avoid_print
         if (kDebugMode) print("Submitting feedback (fake)");
-        await minWaitDuration;
+        await _submitDelay!.future;
         submitted = true;
         submitting = false;
         notifyListeners();
@@ -188,7 +192,7 @@ class FeedbackModel with ChangeNotifier {
             final item = await createFeedback();
             await _wiredashState.feedbackSubmitter.submit(item, null);
           }();
-          await Future.wait([feedback, minWaitDuration]);
+          await Future.wait([feedback, _submitDelay!.future]);
           submitted = true;
           notifyListeners();
         } catch (e) {
@@ -200,7 +204,9 @@ class FeedbackModel with ChangeNotifier {
       submitting = false;
       notifyListeners();
     }
-    await Future.delayed(const Duration(seconds: 1));
+    _closeDelay?.dispose();
+    _closeDelay = Delay(const Duration(seconds: 1));
+    await _closeDelay!.future;
     await returnToAppPostSubmit();
   }
 
@@ -227,5 +233,12 @@ class FeedbackModel with ChangeNotifier {
       type: 'bug',
       userId: 'test', // TODO use real user id
     );
+  }
+
+  @override
+  void dispose() {
+    _submitDelay?.dispose();
+    _closeDelay?.dispose();
+    super.dispose();
   }
 }
