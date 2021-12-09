@@ -10,7 +10,7 @@ jobs:
   minVersion:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:2.2.0-10.1.pre
+      image: cirrusci/flutter:2.5.0
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -58,10 +58,10 @@ jobs:
       - name: Build
         run: cd example && sudo --preserve-env=PATH env flutter build web
 
-  dev:
+  master:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:dev
+      image: cirrusci/flutter:master
     steps:
       - uses: actions/checkout@v2.3.4
         with:
