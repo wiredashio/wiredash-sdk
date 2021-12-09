@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/utils/uuid.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';

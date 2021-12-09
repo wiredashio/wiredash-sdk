@@ -1,16 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
-import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
+import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
-import 'package:wiredash/src/feedback/ui/labeled_button.dart';
-import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
-
-const _labels = [
-  Label(id: 'bug', name: 'Bug'),
-  Label(id: 'improvement', name: 'Improvement'),
-  Label(id: 'praise', name: 'Praise 🎉'),
-];
 
 class Step2Labels extends StatefulWidget {
   const Step2Labels({Key? key}) : super(key: key);
@@ -21,84 +13,43 @@ class Step2Labels extends StatefulWidget {
 
 class _Step2LabelsState extends State<Step2Labels>
     with TickerProviderStateMixin {
-  // TODO move into feedback model
-  final ValueNotifier<Set<Label>> _selectedLabels = ValueNotifier({});
-
   @override
   Widget build(BuildContext context) {
+    final feedbackModel = context.feedbackModel;
+    final selectedLabels = feedbackModel.selectedLabels;
     return StepPageScaffold(
       child: SafeArea(
-        child: ValueListenableBuilder<Set<Label>>(
-          valueListenable: _selectedLabels,
-          builder: (context, selectedLabels, child) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'What category fits best with your feedback?',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                // TODO replace with automatic scaled spacing from theme
-                const SizedBox(height: 32),
-                _LabelRecommendations(
-                  isAnyLabelSelected: selectedLabels.isNotEmpty,
-                  isLabelSelected: selectedLabels.contains,
-                  toggleSelection: (label) {
-                    setState(() {
-                      if (selectedLabels.contains(label)) {
-                        selectedLabels.remove(label);
-                      } else {
-                        selectedLabels.add(label);
-                      }
-                    });
-                  },
-                ),
-                const SizedBox(height: 32),
-                Builder(
-                  builder: (context) {
-                    return AnimatedSize(
-                      duration: const Duration(milliseconds: 225),
-                      // ignore: deprecated_member_use
-                      vsync: this,
-                      clipBehavior: Clip.none,
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 225),
-                        reverseDuration: const Duration(milliseconds: 170),
-                        switchInCurve: Curves.fastOutSlowIn,
-                        switchOutCurve: Curves.fastOutSlowIn,
-                        child: () {
-                          if (selectedLabels.isEmpty) {
-                            return LabeledButton(
-                              onTap: () {
-                                StepInformation.of(context)
-                                    .pageView
-                                    .moveToNextPage();
-                              },
-                              child: const Text('Skip'),
-                            );
-                          }
-
-                          return BigBlueButton(
-                            onTap: () {
-                              StepInformation.of(context)
-                                  .pageView
-                                  .moveToNextPage();
-                            },
-                            // TODO don't use material icon
-                            child: const Icon(Icons.arrow_right_alt),
-                          );
-                        }(),
-                      ),
-                    );
-                  },
-                ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'What category fits best with your feedback?',
+              style: context.theme.titleTextStyle,
+            ),
+            // TODO replace with automatic scaled spacing from theme
+            const SizedBox(height: 32),
+            _LabelRecommendations(
+              labels: const [
+                Label(id: 'bug', name: 'Bug'),
+                Label(id: 'improvement', name: 'Improvement'),
+                Label(id: 'praise', name: 'Praise 🎉'),
               ],
-            );
-          },
+              isAnyLabelSelected: selectedLabels.isNotEmpty,
+              isLabelSelected: selectedLabels.contains,
+              toggleSelection: (label) {
+                setState(() {
+                  if (selectedLabels.contains(label)) {
+                    feedbackModel.selectedLabels = selectedLabels.toList()
+                      ..remove(label);
+                  } else {
+                    feedbackModel.selectedLabels = selectedLabels.toList()
+                      ..add(label);
+                  }
+                });
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -107,12 +58,14 @@ class _Step2LabelsState extends State<Step2Labels>
 
 class _LabelRecommendations extends StatelessWidget {
   const _LabelRecommendations({
+    required this.labels,
     required this.isAnyLabelSelected,
     required this.isLabelSelected,
     required this.toggleSelection,
     Key? key,
   }) : super(key: key);
 
+  final List<Label> labels;
   final bool isAnyLabelSelected;
   final bool Function(Label) isLabelSelected;
   final void Function(Label) toggleSelection;
@@ -124,7 +77,7 @@ class _LabelRecommendations extends StatelessWidget {
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
-        children: _labels.map((label) {
+        children: labels.map((label) {
           return _Label(
             label: label,
             isAnyLabelSelected: isAnyLabelSelected,

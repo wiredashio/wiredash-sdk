@@ -2,9 +2,6 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:wiredash/src/common/build_info/app_info.dart';
-import 'package:wiredash/src/common/build_info/build_info.dart';
-import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
 const int _serializationVersion = 1;

@@ -5,6 +5,7 @@ import 'package:wiredash/src/common/widgets/tron_button.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
+import 'package:wiredash/src/wiredash_model_provider.dart';
 
 class FeedbackNavigation extends StatefulWidget {
   const FeedbackNavigation({
@@ -85,6 +86,8 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
 
   @override
   Widget build(BuildContext context) {
+    final prevButton = _getPrevButton();
+    final nextButton = _getNextButton();
     return Stack(
       children: [
         Positioned(
@@ -99,11 +102,11 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
                 offset: _prevButtonAnimation,
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 150),
-                    curve: Curves.easeIn,
-                    opacity: _isPrevButtonVisible() ? 1 : 0,
-                    child: _getPrevButton(),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    switchInCurve: Curves.easeInCubic,
+                    switchOutCurve: Curves.easeOutCubic,
+                    child: prevButton ?? const SizedBox(),
                   ),
                 ),
               ),
@@ -111,11 +114,11 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
                 offset: _nextButtonAnimation,
                 child: Align(
                   alignment: Alignment.centerRight,
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 150),
-                    curve: Curves.easeIn,
-                    opacity: _isNextButtonVisible() ? 1 : 0,
-                    child: _getNextButton(),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    switchInCurve: Curves.easeInCubic,
+                    switchOutCurve: Curves.easeOutCubic,
+                    child: nextButton ?? const SizedBox(),
                   ),
                 ),
               ),
@@ -124,14 +127,6 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
         ),
       ],
     );
-  }
-
-  bool _isPrevButtonVisible() {
-    return context.feedbackModel.feedbackFlowStatus != FeedbackFlowStatus.none;
-  }
-
-  bool _isNextButtonVisible() {
-    return context.feedbackModel.feedbackFlowStatus != FeedbackFlowStatus.none;
   }
 
   // TODO use
@@ -143,15 +138,17 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
     return context.theme.secondaryColor;
   }
 
-  Widget _getPrevButton() {
+  Widget? _getPrevButton() {
     switch (context.feedbackModel.feedbackFlowStatus) {
       case FeedbackFlowStatus.none:
+        return null;
       case FeedbackFlowStatus.message:
         return TronButton(
+          key: const ValueKey('back'),
           color: context.theme.secondaryColor,
-          icon: Wirecons.arrow_narrow_left,
-          label: 'Go back',
-          onTap: () => context.feedbackModel.goToStep(FeedbackFlowStatus.none),
+          icon: Wirecons.home,
+          label: 'Back to app',
+          onTap: () => context.wiredashModel.hide(),
         );
       case FeedbackFlowStatus.labels:
         return TronButton(
@@ -212,13 +209,19 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           onTap: () => context.feedbackModel
               .goToStep(FeedbackFlowStatus.screenshotsOverview),
         );
+      case FeedbackFlowStatus.submitting:
+        return null;
     }
   }
 
   Widget? _getNextButton() {
     switch (context.feedbackModel.feedbackFlowStatus) {
       case FeedbackFlowStatus.none:
+        return null;
       case FeedbackFlowStatus.message:
+        if (context.feedbackModel.feedbackMessage == null) {
+          return null;
+        }
         return TronButton(
           color: context.theme.primaryColor,
           icon: Wirecons.arrow_narrow_right,
@@ -226,9 +229,12 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           onTap: () =>
               context.feedbackModel.goToStep(FeedbackFlowStatus.labels),
         );
+
       case FeedbackFlowStatus.labels:
         return TronButton(
-          color: context.theme.primaryColor,
+          color: context.feedbackModel.selectedLabels.isEmpty
+              ? context.theme.secondaryColor
+              : context.theme.primaryColor,
           icon: Wirecons.arrow_narrow_right,
           label: 'Next',
           onTap: () => context.feedbackModel
@@ -259,17 +265,26 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           color: context.theme.primaryColor,
           icon: Wirecons.arrow_narrow_right,
           label: 'Next',
-          onTap: () => context.feedbackModel
-              .goToStep(FeedbackFlowStatus.screenshotNavigating),
+          onTap: () {
+            if (context.feedbackModel.hasScreenshots) {
+              context.feedbackModel.goToStep(FeedbackFlowStatus.email);
+            } else {
+              context.feedbackModel
+                  .goToStep(FeedbackFlowStatus.screenshotNavigating);
+            }
+          },
         );
       case FeedbackFlowStatus.email:
-        // TODO Implement sending of feedback
         return TronButton(
           color: context.theme.primaryColor,
-          icon: Wirecons.arrow_narrow_right,
+          icon: Wirecons.check,
           label: 'Next',
-          onTap: () => context.feedbackModel.goToStep(FeedbackFlowStatus.none),
+          onTap: () {
+            context.feedbackModel.submitFeedback();
+          },
         );
+      case FeedbackFlowStatus.submitting:
+        return null;
     }
   }
 }

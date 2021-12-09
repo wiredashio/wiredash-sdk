@@ -1,7 +1,8 @@
 import 'dart:ui' as ui;
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
+import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
@@ -15,7 +16,8 @@ enum FeedbackFlowStatus {
   screenshotCapturing,
   screenshotDrawing,
   screenshotSaving,
-  email
+  email,
+  submitting
 }
 
 class FeedbackModel with ChangeNotifier {
@@ -38,8 +40,33 @@ class FeedbackModel with ChangeNotifier {
   String? get userEmail => _userEmail;
   String? _userEmail;
 
+  List<Label> get selectedLabels => List.unmodifiable(_selectedLabels);
+  List<Label> _selectedLabels = [];
+  set selectedLabels(List<Label> list) {
+    _selectedLabels = list;
+    notifyListeners();
+  }
+
   bool get isActive => _feedbackFlowStatus != FeedbackFlowStatus.none;
   bool get hasScreenshots => _screenshot != null;
+
+  List<FeedbackFlowStatus> get steps {
+    if (submitted) {
+      return [FeedbackFlowStatus.submitting];
+    }
+
+    final stack = [FeedbackFlowStatus.message];
+
+    if (_feedbackMessage != null) {
+      stack.add(FeedbackFlowStatus.labels);
+      stack.add(FeedbackFlowStatus.screenshotsOverview);
+      stack.add(FeedbackFlowStatus.email);
+    }
+    if (submitting || submitted) {
+      stack.add(FeedbackFlowStatus.submitting);
+    }
+    return stack;
+  }
 
   set feedbackMessage(String? feedbackMessage) {
     final trimmed = feedbackMessage?.trim();
@@ -120,32 +147,67 @@ class FeedbackModel with ChangeNotifier {
       case FeedbackFlowStatus.email:
         _feedbackFlowStatus = newStatus;
         notifyListeners();
-        await _wiredashState.backdropController.animateToOpen();
+        break;
+      case FeedbackFlowStatus.submitting:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
         break;
     }
   }
 
+  bool submitting = false;
+  bool submitted = false;
+
   Future<void> submitFeedback() async {
-    // TODO remove before release
-    bool fakeSubmit = true;
+    submitting = true;
+    notifyListeners();
+    goToStep(FeedbackFlowStatus.submitting);
+    bool fakeSubmit = false;
     assert(
       () {
-        fakeSubmit = false;
+        fakeSubmit = true;
         return true;
       }(),
     );
-    if (fakeSubmit) {
-      await _wiredashState.backdropController.animateToClosed();
-      _wiredashState.discardFeedback();
-      return;
-    } else {
-      try {
-        final item = await createFeedback();
-        await _wiredashState.feedbackSubmitter.submit(item, null);
-      } catch (e) {
-        // TODO show error UI
+    try {
+      final Future<void> minWaitDuration =
+          Future<void>.delayed(const Duration(seconds: 2));
+
+      if (fakeSubmit) {
+        // ignore: avoid_print
+        if (kDebugMode) print("Submitting feedback (fake)");
+        await minWaitDuration;
+        submitted = true;
+        submitting = false;
+        notifyListeners();
+      } else {
+        // ignore: avoid_print
+        if (kDebugMode) print("Submitting feedback");
+        try {
+          final Future<void> feedback = () async {
+            final item = await createFeedback();
+            await _wiredashState.feedbackSubmitter.submit(item, null);
+          }();
+          await Future.wait([feedback, minWaitDuration]);
+          submitted = true;
+          notifyListeners();
+        } catch (e) {
+          // TODO show error UI
+          rethrow;
+        }
       }
+    } finally {
+      submitting = false;
+      notifyListeners();
     }
+    await Future.delayed(const Duration(seconds: 1));
+    await returnToAppPostSubmit();
+  }
+
+  Future<void> returnToAppPostSubmit() async {
+    if (submitted == false) return;
+    await _wiredashState.backdropController.animateToClosed();
+    _wiredashState.discardFeedback();
   }
 
   Future<PersistedFeedbackItem> createFeedback() async {

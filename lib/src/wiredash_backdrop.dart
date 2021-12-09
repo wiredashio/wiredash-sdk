@@ -1,14 +1,8 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter/physics.dart';
-import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
@@ -203,6 +197,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }
 
   Future<void> _animateToClosed() async {
+    if (_backdropStatus == WiredashBackdropStatus.closed) {
+      return;
+    }
     _backdropStatus = WiredashBackdropStatus.closing;
     _swapAnimation();
 

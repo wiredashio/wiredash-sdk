@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
-import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
-import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 
 class Step1FeedbackMessage extends StatefulWidget {
   const Step1FeedbackMessage({Key? key}) : super(key: key);
@@ -82,36 +79,6 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                   ),
                 ],
               ),
-            ),
-            AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                return AnimatedSize(
-                  // ignore: deprecated_member_use
-                  vsync: this,
-                  duration: const Duration(milliseconds: 450),
-                  curve: Curves.fastOutSlowIn,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 225),
-                    reverseDuration: const Duration(milliseconds: 170),
-                    switchInCurve: Curves.fastOutSlowIn,
-                    switchOutCurve: Curves.fastOutSlowIn,
-                    child: Container(
-                      key: ValueKey(_controller.text.isEmpty),
-                      child: () {
-                        return BigBlueButton(
-                          onTap: () {
-                            StepInformation.of(context)
-                                .pageView
-                                .moveToNextPage();
-                          },
-                          child: const Text('next'),
-                        );
-                      }(),
-                    ),
-                  ),
-                );
-              },
             ),
           ],
         ),

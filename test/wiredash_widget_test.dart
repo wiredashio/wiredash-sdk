@@ -1,14 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:test/fake.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
-import 'package:wiredash/wiredash.dart';
 
 import 'util/invocation_catcher.dart';
 
@@ -90,7 +86,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.byIcon(Wirecons.arrow_narrow_right), findsOneWidget);
-      expect(find.byIcon(Wirecons.arrow_narrow_left), findsOneWidget);
+      expect(find.byIcon(Wirecons.home), findsOneWidget);
 
       await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
       await tester.pumpHardAndSettle();
@@ -116,6 +112,25 @@ void main() {
       // Check for save screenshot button
       expect(find.byIcon(Wirecons.check), findsOneWidget);
       expect(find.byIcon(Wirecons.pencil), findsOneWidget);
+
+      await tester.tap(find.byIcon(Wirecons.check));
+      await tester.pumpAndSettle();
+
+      await tester.waitUntil(
+        find.byIcon(Wirecons.arrow_narrow_right),
+        findsOneWidget,
+      );
+
+      // TODO check that we see the screenshot
+      await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'dash@wiredash.io');
+      await tester.pumpAndSettle();
+      // await tester.tap(find.byIcon(Wirecons.check));
+      //
+      // await tester.waitUntil(find.text("Submitting"), findsOneWidget);
+      // await tester.waitUntil(find.text("Submitted"), findsOneWidget);
     });
   });
 }

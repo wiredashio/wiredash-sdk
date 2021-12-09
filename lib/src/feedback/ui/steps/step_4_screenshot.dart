@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/big_blue_button.dart';
@@ -7,14 +8,14 @@ import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/labeled_button.dart';
 import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 
-class Step4Screenshot extends StatefulWidget {
-  const Step4Screenshot({Key? key}) : super(key: key);
+class Step4ScreenshotSaving extends StatefulWidget {
+  const Step4ScreenshotSaving({Key? key}) : super(key: key);
 
   @override
-  _Step4ScreenshotState createState() => _Step4ScreenshotState();
+  _Step4ScreenshotSavingState createState() => _Step4ScreenshotSavingState();
 }
 
-class _Step4ScreenshotState extends State<Step4Screenshot> {
+class _Step4ScreenshotSavingState extends State<Step4ScreenshotSaving> {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
@@ -23,12 +24,10 @@ class _Step4ScreenshotState extends State<Step4Screenshot> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'For a better understanding. Do you want to take a screenshot of it?',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
+            Text(
+              'For a better understanding. Do you want to take a screenshot of it?\n'
+              'Screenshot saving',
+              style: context.theme.titleTextStyle,
             ),
             const SizedBox(height: 32),
             BigBlueButton(
