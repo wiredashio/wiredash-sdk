@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/wiredash_backdrop.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
@@ -17,7 +18,7 @@ class SemiTransparentStatusBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!Platform.isIOS) {
+    if (kIsWeb || !Platform.isIOS) {
       // only draw it on iOS
       return child;
     }
