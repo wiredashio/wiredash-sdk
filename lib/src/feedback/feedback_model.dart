@@ -44,13 +44,24 @@ class FeedbackModel with ChangeNotifier {
 
   List<Label> get selectedLabels => List.unmodifiable(_selectedLabels);
   List<Label> _selectedLabels = [];
+
   set selectedLabels(List<Label> list) {
     _selectedLabels = list;
     notifyListeners();
   }
 
   bool get isActive => _feedbackFlowStatus != FeedbackFlowStatus.none;
+
   bool get hasScreenshots => _screenshot != null;
+
+  bool get submitting => _submitting;
+  bool _submitting = false;
+
+  bool get submitted => _submitted;
+  bool _submitted = false;
+
+  Delay? _submitDelay;
+  Delay? _closeDelay;
 
   List<FeedbackFlowStatus> get steps {
     if (submitted) {
@@ -157,14 +168,8 @@ class FeedbackModel with ChangeNotifier {
     }
   }
 
-  bool submitting = false;
-  bool submitted = false;
-
-  Delay? _submitDelay;
-  Delay? _closeDelay;
-
   Future<void> submitFeedback() async {
-    submitting = true;
+    _submitting = true;
     notifyListeners();
     goToStep(FeedbackFlowStatus.submitting);
     bool fakeSubmit = false;
@@ -181,8 +186,8 @@ class FeedbackModel with ChangeNotifier {
         // ignore: avoid_print
         if (kDebugMode) print("Submitting feedback (fake)");
         await _submitDelay!.future;
-        submitted = true;
-        submitting = false;
+        _submitted = true;
+        _submitting = false;
         notifyListeners();
       } else {
         // ignore: avoid_print
@@ -193,7 +198,7 @@ class FeedbackModel with ChangeNotifier {
             await _wiredashState.feedbackSubmitter.submit(item, null);
           }();
           await Future.wait([feedback, _submitDelay!.future]);
-          submitted = true;
+          _submitted = true;
           notifyListeners();
         } catch (e) {
           // TODO show error UI
@@ -201,7 +206,7 @@ class FeedbackModel with ChangeNotifier {
         }
       }
     } finally {
-      submitting = false;
+      _submitting = false;
       notifyListeners();
     }
     _closeDelay?.dispose();
