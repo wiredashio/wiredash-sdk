@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class PicassoController extends ChangeNotifier {
   late _PicassoState? _state;
 
   bool _isActive = false;
-  Color _color = Colors.black;
+  Color _color = const Color(0xff6B46C1);
   double _strokeWidth = 5.0;
 
   bool get isActive => _isActive;
@@ -58,7 +59,7 @@ class PicassoController extends ChangeNotifier {
     _state!._redo();
   }
 
-  Future<ui.Image> paintDrawingOntoImage(ui.Image image) async {
+  Future<Uint8List> paintDrawingOntoImage(ui.Image image) async {
     return _state!._paintOntoImage(image);
   }
 }
@@ -201,7 +202,7 @@ class _PicassoState extends State<Picasso> {
     }
   }
 
-  Future<ui.Image> _paintOntoImage(ui.Image image) async {
+  Future<Uint8List> _paintOntoImage(ui.Image image) async {
     final imageSize = Size(image.width.toDouble(), image.height.toDouble());
     final recording = ui.PictureRecorder();
     final canvas = Canvas(
@@ -217,9 +218,7 @@ class _PicassoState extends State<Picasso> {
           imageSize.height.toInt(),
         );
 
-    return masterpiece;
-
-    // final bytes = await masterpiece.toByteData(format: ui.ImageByteFormat.png);
-    // return bytes!.buffer.asUint8List();
+    final bytes = await masterpiece.toByteData(format: ui.ImageByteFormat.png);
+    return bytes!.buffer.asUint8List();
   }
 }
