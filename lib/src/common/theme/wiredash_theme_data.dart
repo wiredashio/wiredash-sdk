@@ -147,6 +147,36 @@ class WiredashThemeData {
     }
   }
 
+  double get verticalPadding {
+    switch (deviceClass) {
+      case DeviceClass.handsetSmall320:
+      case DeviceClass.handsetMedium360:
+      case DeviceClass.handsetLarge400:
+      case DeviceClass.tabletSmall600:
+      case DeviceClass.tabletLarge720:
+        return 40;
+      case DeviceClass.desktopSmall1024:
+      case DeviceClass.desktopLarge1440:
+        return 64;
+    }
+  }
+
+  double get maxContentWidth {
+    switch (deviceClass) {
+      case DeviceClass.handsetSmall320:
+      case DeviceClass.handsetMedium360:
+      case DeviceClass.handsetLarge400:
+      case DeviceClass.tabletSmall600:
+        return double.infinity;
+      case DeviceClass.tabletLarge720:
+        return 480;
+      case DeviceClass.desktopSmall1024:
+        return 640;
+      case DeviceClass.desktopLarge1440:
+        return 720;
+    }
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
