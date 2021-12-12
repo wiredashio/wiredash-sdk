@@ -133,7 +133,7 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
   Color prevButtonColor() {
     if (context.feedbackModel.feedbackFlowStatus ==
         FeedbackFlowStatus.screenshotDrawing) {
-      return context.feedbackModel.picassoController.color;
+      return context.feedbackModel.penColor;
     }
     return context.theme.secondaryColor;
   }
@@ -173,7 +173,7 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
       case FeedbackFlowStatus.screenshotDrawing:
       case FeedbackFlowStatus.screenshotSaving:
         return TronButton(
-          color: context.feedbackModel.picassoController.color,
+          color: context.feedbackModel.penColor,
           icon: Wirecons.pencil,
           iconOffset: const Offset(.15, 0),
           label: 'Change paint',

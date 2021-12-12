@@ -1,12 +1,12 @@
-import 'dart:async';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/utils/delay.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
-import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 
 enum FeedbackFlowStatus {
@@ -30,14 +30,12 @@ class FeedbackModel with ChangeNotifier {
 
   FeedbackFlowStatus get feedbackFlowStatus => _feedbackFlowStatus;
 
-  PicassoController get picassoController => _wiredashState.picassoController;
-
   final BuildInfoManager buildInfoManager = BuildInfoManager();
 
   String? get feedbackMessage => _feedbackMessage;
   String? _feedbackMessage;
 
-  ui.Image? _screenshot;
+  Uint8List? _screenshot;
 
   String? get userEmail => _userEmail;
   String? _userEmail;
@@ -53,6 +51,7 @@ class FeedbackModel with ChangeNotifier {
   bool get isActive => _feedbackFlowStatus != FeedbackFlowStatus.none;
 
   bool get hasScreenshots => _screenshot != null;
+  Uint8List? get screenshot => _screenshot;
 
   bool get submitting => _submitting;
   bool _submitting = false;
@@ -101,6 +100,17 @@ class FeedbackModel with ChangeNotifier {
     notifyListeners();
   }
 
+  Color get penColor => _wiredashState.picassoController.color;
+
+  set penColor(Color color) {
+    _wiredashState.picassoController.color = color;
+    notifyListeners();
+  }
+
+  void undoDrawing() {
+    _wiredashState.picassoController.undo();
+  }
+
   Future<void> goToStep(FeedbackFlowStatus newStatus) async {
     switch (newStatus) {
       case FeedbackFlowStatus.none:
@@ -123,14 +133,14 @@ class FeedbackModel with ChangeNotifier {
         break;
       case FeedbackFlowStatus.screenshotNavigating:
         _feedbackFlowStatus = newStatus;
-        picassoController.isActive = false;
+        _wiredashState.picassoController.isActive = false;
         notifyListeners();
 
         await _wiredashState.backdropController.animateToCentered();
         break;
       case FeedbackFlowStatus.screenshotCapturing:
         _feedbackFlowStatus = newStatus;
-        picassoController.isActive = false;
+        _wiredashState.picassoController.isActive = false;
         notifyListeners();
 
         await _wiredashState.screenCaptureController.captureScreen();
@@ -138,12 +148,12 @@ class FeedbackModel with ChangeNotifier {
         break;
       case FeedbackFlowStatus.screenshotDrawing:
         _feedbackFlowStatus = newStatus;
-        picassoController.isActive = true;
+        _wiredashState.picassoController.isActive = true;
         notifyListeners();
         break;
       case FeedbackFlowStatus.screenshotSaving:
         _feedbackFlowStatus = newStatus;
-        picassoController.isActive = false;
+        _wiredashState.picassoController.isActive = false;
         notifyListeners();
 
         _screenshot =
