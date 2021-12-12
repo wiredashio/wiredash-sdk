@@ -52,20 +52,29 @@ class _ScreenCaptureState extends State<ScreenCapture> {
 
     final _screenshot = await canvas.toImage(pixelRatio: 1.5);
 
-    final byteData =
-        await _screenshot.toByteData(format: ui.ImageByteFormat.png);
-    if (byteData == null) return null;
-
-    if (mounted) {
-      final image = MemoryImage(byteData.buffer.asUint8List());
-      await precacheImage(image, context);
-
-      setState(() {
-        _screenshotMemoryImage = image;
-      });
-    }
-
+    precacheScreenshot(_screenshot).catchError((e, stack) {
+      debugPrint(e?.toString());
+      debugPrint(stack?.toString());
+    });
     return _screenshot;
+  }
+
+  Future<void> precacheScreenshot(ui.Image screenshot) async {
+    final byteData =
+        await screenshot.toByteData(format: ui.ImageByteFormat.png);
+    if (byteData == null) return;
+
+    final image = MemoryImage(byteData.buffer.asUint8List());
+    try {
+      if (!mounted) return;
+      await precacheImage(image, context);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    if (!mounted) return;
+    setState(() {
+      _screenshotMemoryImage = image;
+    });
   }
 
   void releaseScreen() {
