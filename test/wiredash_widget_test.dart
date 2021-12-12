@@ -53,7 +53,7 @@ void main() {
       },
     );
 
-    testWidgets('Capture a screenshot', (tester) async {
+    testWidgets('Send feedback with screenshot', (tester) async {
       await tester.pumpWidget(
         Wiredash(
           projectId: 'test',
@@ -127,10 +127,12 @@ void main() {
 
       await tester.enterText(find.byType(TextField), 'dash@wiredash.io');
       await tester.pumpAndSettle();
-      // await tester.tap(find.byIcon(Wirecons.check));
-      //
-      // await tester.waitUntil(find.text("Submitting"), findsOneWidget);
-      // await tester.waitUntil(find.text("Submitted"), findsOneWidget);
+
+      // Submit
+      await tester.tap(find.byIcon(Wirecons.check));
+      await tester.pumpAndSettle();
+      await tester.waitUntil(find.text("Submitting"), findsOneWidget);
+      await tester.waitUntil(find.text("Submitted"), findsOneWidget);
     });
   });
 }

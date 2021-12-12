@@ -102,7 +102,6 @@ class _TronButtonState extends State<TronButton>
           button: true,
           enabled: _enabled,
           label: widget.label,
-          onTap: widget.onTap == null ? null : _simulateTap,
           child: SizedBox(
             height: 48,
             width: 80,
