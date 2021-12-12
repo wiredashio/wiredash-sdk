@@ -45,12 +45,14 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Text(
-                    'Email',
-                    style: context.theme.titleTextStyle,
-                  ),
+                Text(
+                  'Optional step',
+                  style: context.theme.captionTextStyle,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Enter your email to get updates regarding your issue',
+                  style: context.theme.titleTextStyle,
                 ),
                 TextField(
                   controller: _controller,
@@ -66,7 +68,7 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                     enabledBorder: InputBorder.none,
                     disabledBorder: InputBorder.none,
                     errorBorder: InputBorder.none,
-                    hintText: 'mail@wiredash.io',
+                    hintText: 'example@wiredash.io',
                     contentPadding: EdgeInsets.only(top: 16),
                   ),
                 ),

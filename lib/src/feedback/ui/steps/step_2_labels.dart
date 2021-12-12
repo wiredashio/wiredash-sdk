@@ -24,7 +24,12 @@ class _Step2LabelsState extends State<Step2Labels>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'What category fits best with your feedback?',
+              'Optional step',
+              style: context.theme.captionTextStyle,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Which label represents your type of feedback?',
               style: context.theme.titleTextStyle,
             ),
             // TODO replace with automatic scaled spacing from theme
