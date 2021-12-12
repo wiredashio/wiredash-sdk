@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
-import 'package:wiredash/src/feedback/ui/screenshot_border_decoration.dart';
 
 class ScreenshotAppOverlay extends StatefulWidget {
   const ScreenshotAppOverlay({
@@ -130,37 +129,38 @@ class _AnimatedScreenshotBorderState extends State<AnimatedScreenshotBorder>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        final inScreenshotMode = context.feedbackModel.feedbackFlowStatus ==
-                FeedbackFlowStatus.screenshotNavigating ||
-            context.feedbackModel.feedbackFlowStatus ==
-                FeedbackFlowStatus.screenshotCapturing ||
-            context.feedbackModel.feedbackFlowStatus ==
-                FeedbackFlowStatus.screenshotDrawing ||
-            context.feedbackModel.feedbackFlowStatus ==
-                FeedbackFlowStatus.screenshotSaving;
-        return IgnorePointer(
-          child: DecoratedBox(
-            decoration: inScreenshotMode
-                ? ScreenshotBorderDecoration(
-                    borderRadius: widget.borderRadius,
-                    cornerStrokeWidth: 6,
-                    cornerExtensionLength: Tween(
-                      begin: 20.0,
-                      end: MediaQuery.of(context).size.shortestSide / 4,
-                    ).evaluate(_screenshotCornerExtentAnimation),
-                    edgeStrokeWidth: _screenshotBorderThicknessAnimation.value,
-                    color: _screenshotBorderColorAnimation.value!,
-                  )
-                : const BoxDecoration(),
-            child: child,
-          ),
-        );
-      },
-      child: _buildScreenshotFlash(),
-    );
+    return IgnorePointer(child: _buildScreenshotFlash());
+    // return AnimatedBuilder(
+    //   animation: _controller,
+    //   builder: (context, child) {
+    //     final inScreenshotMode = context.feedbackModel.feedbackFlowStatus ==
+    //             FeedbackFlowStatus.screenshotNavigating ||
+    //         context.feedbackModel.feedbackFlowStatus ==
+    //             FeedbackFlowStatus.screenshotCapturing ||
+    //         context.feedbackModel.feedbackFlowStatus ==
+    //             FeedbackFlowStatus.screenshotDrawing ||
+    //         context.feedbackModel.feedbackFlowStatus ==
+    //             FeedbackFlowStatus.screenshotSaving;
+    //     return IgnorePointer(
+    //       child: DecoratedBox(
+    //         decoration: inScreenshotMode
+    //             ? ScreenshotBorderDecoration(
+    //                 borderRadius: widget.borderRadius,
+    //                 cornerStrokeWidth: 6,
+    //                 cornerExtensionLength: Tween(
+    //                   begin: 20.0,
+    //                   end: MediaQuery.of(context).size.shortestSide / 4,
+    //                 ).evaluate(_screenshotCornerExtentAnimation),
+    //                 edgeStrokeWidth: _screenshotBorderThicknessAnimation.value,
+    //                 color: _screenshotBorderColorAnimation.value!,
+    //               )
+    //             : const BoxDecoration(),
+    //         child: child,
+    //       ),
+    //     );
+    //   },
+    //   child: _buildScreenshotFlash(),
+    // );
   }
 
   Widget _buildScreenshotFlash() {
