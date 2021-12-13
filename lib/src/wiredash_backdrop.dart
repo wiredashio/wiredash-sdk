@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/tron_progress_indicator.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
 import 'package:wiredash/src/feedback/ui/screenshot_app_overlay.dart';
 import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
-
-import 'feedback/feedback_model.dart';
 
 enum WiredashBackdropStatus {
   closed,
@@ -132,7 +131,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   Rect _rectAppCentered = Rect.zero;
   Rect _rectAppFillsScreen = Rect.zero;
   Rect _rectContentArea = Rect.zero;
-  Rect _rectProgressIndicator = Rect.zero;
   Rect _rectNavigationButtons = Rect.zero;
 
   WiredashBackdropStatus get _backdropStatus =>

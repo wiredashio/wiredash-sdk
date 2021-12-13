@@ -7,7 +7,8 @@ import 'package:wiredash/src/wiredash_model_provider.dart';
 
 /// Draws a semi transparent statusbar on iOS to mimic the behavior on Android.
 ///
-/// Usually, the [Scaffold] draws it, be we try to avoid material widgets in Wiredash.
+/// Usually, the [Scaffold] draws it, be we try to avoid material widgets in
+/// Wiredash.
 class SemiTransparentStatusBar extends StatelessWidget {
   const SemiTransparentStatusBar({
     Key? key,

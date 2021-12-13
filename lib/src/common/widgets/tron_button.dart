@@ -22,7 +22,7 @@ class TronButton extends StatefulWidget {
   final VoidCallback? onTap;
 
   @override
-  _TronButtonState createState() => _TronButtonState();
+  State<TronButton> createState() => _TronButtonState();
 }
 
 class _TronButtonState extends State<TronButton>
@@ -219,7 +219,8 @@ class _AnimatedSlideBackport extends ImplicitlyAnimatedWidget {
   final Widget? child;
 
   /// The target offset.
-  /// The child will be translated horizontally by `width * dx` and vertically by `height * dy`
+  /// The child will be translated horizontally by `width * dx` and vertically
+  /// by `height * dy`
   ///
   /// The offset must not be null.
   final Offset offset;

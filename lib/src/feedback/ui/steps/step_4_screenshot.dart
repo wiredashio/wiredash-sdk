@@ -12,7 +12,7 @@ class Step4ScreenshotSaving extends StatefulWidget {
   const Step4ScreenshotSaving({Key? key}) : super(key: key);
 
   @override
-  _Step4ScreenshotSavingState createState() => _Step4ScreenshotSavingState();
+  State<Step4ScreenshotSaving> createState() => _Step4ScreenshotSavingState();
 }
 
 class _Step4ScreenshotSavingState extends State<Step4ScreenshotSaving> {
@@ -25,7 +25,8 @@ class _Step4ScreenshotSavingState extends State<Step4ScreenshotSaving> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'For a better understanding. Do you want to take a screenshot of it?\n'
+              'For a better understanding. Do you want to take a screenshot '
+              'of it?\n'
               'Screenshot saving',
               style: context.theme.titleTextStyle,
             ),
@@ -35,7 +36,7 @@ class _Step4ScreenshotSavingState extends State<Step4ScreenshotSaving> {
                 context.feedbackModel
                     .goToStep(FeedbackFlowStatus.screenshotsOverview);
               },
-              child: const Text("Yes"),
+              child: const Text('Yes'),
             ),
             const SizedBox(height: 64),
             LabeledButton(

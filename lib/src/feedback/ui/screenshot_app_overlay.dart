@@ -16,7 +16,7 @@ class ScreenshotAppOverlay extends StatefulWidget {
   final Rect appRect;
 
   @override
-  _ScreenshotAppOverlayState createState() => _ScreenshotAppOverlayState();
+  State<ScreenshotAppOverlay> createState() => _ScreenshotAppOverlayState();
 }
 
 class _ScreenshotAppOverlayState extends State<ScreenshotAppOverlay>
@@ -57,7 +57,7 @@ class AnimatedScreenshotBorder extends StatefulWidget {
   final BorderRadius borderRadius;
 
   @override
-  _AnimatedScreenshotBorderState createState() =>
+  State<AnimatedScreenshotBorder> createState() =>
       _AnimatedScreenshotBorderState();
 }
 
@@ -66,9 +66,6 @@ class _AnimatedScreenshotBorderState extends State<AnimatedScreenshotBorder>
   late AnimationController _controller;
 
   late Animation<double> _screenshotFlashAnimation;
-  late Animation<double> _screenshotBorderThicknessAnimation;
-  late Animation<double> _screenshotCornerExtentAnimation;
-  late Animation<Color?> _screenshotBorderColorAnimation;
 
   @override
   void initState() {
@@ -82,30 +79,6 @@ class _AnimatedScreenshotBorderState extends State<AnimatedScreenshotBorder>
       CurvedAnimation(
         parent: _controller,
         curve: Curves.ease,
-      ),
-    );
-
-    _screenshotBorderThicknessAnimation = Tween(begin: 2.0, end: 6.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.7, 1.0, curve: Curves.easeInOutExpo),
-      ),
-    );
-
-    _screenshotCornerExtentAnimation = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.5, 1.0, curve: Curves.easeInOutExpo),
-      ),
-    );
-
-    _screenshotBorderColorAnimation = ColorTween(
-      begin: const Color(0xFF1A56DB),
-      end: const Color(0xFF1A56DB),
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.5, 1.0, curve: Curves.easeInOutCubic),
       ),
     );
   }
@@ -151,7 +124,8 @@ class _AnimatedScreenshotBorderState extends State<AnimatedScreenshotBorder>
     //                   begin: 20.0,
     //                   end: MediaQuery.of(context).size.shortestSide / 4,
     //                 ).evaluate(_screenshotCornerExtentAnimation),
-    //                 edgeStrokeWidth: _screenshotBorderThicknessAnimation.value,
+    //                 edgeStrokeWidth: _screenshotBorderThicknessAnimation
+    //                              .value,
     //                 color: _screenshotBorderColorAnimation.value!,
     //               )
     //             : const BoxDecoration(),

@@ -26,19 +26,20 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
         ],
       );
       // ignore: avoid_print
-      print("Feedback submitted ✌️ ${item.message}");
+      print('Feedback submitted ✌️ ${item.message}');
     } on UnauthenticatedWiredashApiException catch (e, stack) {
       // Project configuration is off, retry at next app start
       reportWiredashError(
         e,
         stack,
-        'Wiredash project configuration is wrong, next retry after next app start',
+        'Wiredash project configuration is wrong, next retry after '
+        'next app start',
       );
       rethrow;
     } on WiredashApiException catch (e, stack) {
       if (e.message != null &&
-          e.message!.contains("fails because") &&
-          e.message!.contains("is required")) {
+          e.message!.contains('fails because') &&
+          e.message!.contains('is required')) {
         // some required property is missing. The item will never be delivered
         // to the server, therefore discard it.
         reportWiredashError(

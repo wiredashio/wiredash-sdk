@@ -11,8 +11,9 @@ import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
-/// A class that knows how to "eventually send" a [PersistedFeedbackItem] and an associated
-/// screenshot file, retrying appropriately when sending fails.
+/// A class that knows how to "eventually send" a [PersistedFeedbackItem]
+/// and an associated screenshot file, retrying appropriately when sending
+/// fails.
 class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   RetryingFeedbackSubmitter(
     this.fs,
@@ -24,8 +25,8 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   final PendingFeedbackItemStorage _pendingFeedbackItemStorage;
   final WiredashApi _api;
 
-  // Ensures that we're not starting multiple "submitPendingFeedbackItems()" jobs
-  // in parallel.
+  // Ensures that we're not starting multiple "submitPendingFeedbackItems()"
+  // jobs in parallel.
   bool _submitting = false;
 
   // Whether or not "submit()" / "submitPendingFeedbackItems()" was called while
@@ -40,13 +41,13 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
     await _pendingFeedbackItemStorage.addPendingItem(item, screenshot);
 
     // Intentionally not "await"-ed. Since we've persisted the pending feedback
-    // item, we can pretty safely assume it's going to be eventually sent, so the
-    // future can complete after persisting the item.
+    // item, we can pretty safely assume it's going to be eventually sent, so
+    // the future can complete after persisting the item.
     submitPendingFeedbackItems();
   }
 
-  /// Checks if there are any pending feedback items stored in persistent storage.
-  /// If there are, tries to send all of them.
+  /// Checks if there are any pending feedback items stored in persistent
+  /// storage. If there are, tries to send all of them.
   ///
   /// Can be called whenever there's a good time to try sending pending feedback
   /// items, such as in "initState()" of the Wiredash widget, or when network
@@ -121,7 +122,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
           ],
         );
         // ignore: avoid_print
-        print("Feedback submitted ✌️ ${item.feedbackItem.message}");
+        print('Feedback submitted ✌️ ${item.feedbackItem.message}');
         await _pendingFeedbackItemStorage.clearPendingItem(item.id);
         break;
       } on UnauthenticatedWiredashApiException catch (e, stack) {
@@ -129,7 +130,8 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
         reportWiredashError(
           e,
           stack,
-          'Wiredash project configuration is wrong, next retry after next app start',
+          'Wiredash project configuration is wrong, next retry after '
+          'next app start',
         );
         break;
       } on WiredashApiException catch (e, stack) {
@@ -139,7 +141,8 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
           reportWiredashError(
             e,
             stack,
-            'Feedback has missing properties and can not be submitted to server. Will be discarded',
+            'Feedback has missing properties and can not be submitted to '
+            'server. Will be discarded',
           );
           await _pendingFeedbackItemStorage.clearPendingItem(item.id);
           break;
@@ -165,7 +168,8 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
         reportWiredashError(
           e,
           stack,
-          'Could not send feedback to server after $attempt retries. Retrying...',
+          'Could not send feedback to server after $attempt retries. '
+          'Retrying...',
           debugOnly: true,
         );
         await Future.delayed(_exponentialBackoff(attempt));

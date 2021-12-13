@@ -46,7 +46,7 @@ class MockNetworkManager extends Fake implements WiredashApi {
     if (response != null) {
       return response as ImageBlob;
     }
-    throw "Not mocked";
+    throw 'Not mocked';
   }
 }
 
@@ -126,7 +126,7 @@ void main() {
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
           textScaleFactor: 1.0,
-          platformLocale: "en_US",
+          platformLocale: 'en_US',
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
           gestureInsets:
@@ -157,8 +157,8 @@ void main() {
     });
 
     test(
-        'submit() - does not crash when screenshot file does not exist anymore for some reason',
-        () async {
+        'submit() - does not crash when screenshot file does not exist '
+        'anymore for some reason', () async {
       const item = PersistedFeedbackItem(
         appInfo: AppInfo(
           appLocale: 'de_DE',
@@ -168,7 +168,7 @@ void main() {
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
           textScaleFactor: 1.0,
-          platformLocale: "en_US",
+          platformLocale: 'en_US',
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
           gestureInsets:
@@ -220,7 +220,7 @@ void main() {
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
           textScaleFactor: 1.0,
-          platformLocale: "en_US",
+          platformLocale: 'en_US',
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
           gestureInsets:
@@ -243,8 +243,8 @@ void main() {
     });
 
     test(
-        'submit() - if successful, gets rid of the feedback item in the storage',
-        () async {
+        'submit() - if successful, gets rid of the feedback item '
+        'in the storage', () async {
       const item = PersistedFeedbackItem(
         appInfo: AppInfo(
           appLocale: 'de_DE',
@@ -254,7 +254,7 @@ void main() {
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
           textScaleFactor: 1.0,
-          platformLocale: "en_US",
+          platformLocale: 'en_US',
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
           gestureInsets:
@@ -289,7 +289,8 @@ void main() {
     });
 
     test(
-        'submit() - when has existing items and submits only the first one successfully, does not remove the failed items from storage',
+        'submit() - when has existing items and submits only the first one '
+        'successfully, does not remove the failed items from storage',
         () async {
       const item = PersistedFeedbackItem(
         appInfo: AppInfo(
@@ -300,7 +301,7 @@ void main() {
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
           textScaleFactor: 1.0,
-          platformLocale: "en_US",
+          platformLocale: 'en_US',
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
           gestureInsets:
@@ -350,8 +351,9 @@ void main() {
           firstFileSubmitted = true;
         };
 
-        // Persist a new item - in this case with an id of '3' and '3.png' as the
-        // screenshot path. Triggers submitting of pending items, starting from '1'.
+        // Persist a new item - in this case with an id of '3' and '3.png' as
+        // the screenshot path. Triggers submitting of pending items, starting
+        // from '1'.
         retryingFeedbackSubmitter.submit(item, kTransparentImage);
 
         // Hop on the time machine...
@@ -406,7 +408,7 @@ void main() {
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
           textScaleFactor: 1.0,
-          platformLocale: "en_US",
+          platformLocale: 'en_US',
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
           gestureInsets:
@@ -485,7 +487,7 @@ void main() {
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
           textScaleFactor: 1.0,
-          platformLocale: "en_US",
+          platformLocale: 'en_US',
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
           gestureInsets:
@@ -511,7 +513,7 @@ void main() {
           mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
             retryLog.add(clock.now());
             throw UnauthenticatedWiredashApiException(
-              Response("error", 401),
+              Response('error', 401),
               'projectX',
               'abcdefg1234',
             );
@@ -554,7 +556,7 @@ void main() {
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
           textScaleFactor: 1.0,
-          platformLocale: "en_US",
+          platformLocale: 'en_US',
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
           gestureInsets:
@@ -574,7 +576,8 @@ void main() {
       fakeAsync((async) {
         mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
           final response = Response(
-            '{"message": "child "deviceInfo" fails because [child "platformOS" fails because ["platformOS" is required]]"}',
+            '{"message": "child "deviceInfo" fails because [child "platformOS"'
+            ' fails because ["platformOS" is required]]"}',
             400,
           );
           throw WiredashApiException(response: response);
@@ -603,7 +606,7 @@ void main() {
         deviceInfo: DeviceInfo(
           pixelRatio: 1.0,
           textScaleFactor: 1.0,
-          platformLocale: "en_US",
+          platformLocale: 'en_US',
           platformSupportedLocales: ['en_US', 'de_DE'],
           platformBrightness: Brightness.dark,
           gestureInsets:

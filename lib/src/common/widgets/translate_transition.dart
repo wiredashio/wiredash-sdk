@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-/// Animated version of an [Transform.translate] that animates its [Transform.origin] property.
+/// Animated version of an [Transform.translate] that animates its
+/// [Transform.origin] property.
 class TranslateTransition extends AnimatedWidget {
   const TranslateTransition({
     Key? key,

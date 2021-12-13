@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
@@ -9,7 +8,7 @@ class Step3ScreenshotOverview extends StatefulWidget {
   const Step3ScreenshotOverview({Key? key}) : super(key: key);
 
   @override
-  _Step3ScreenshotOverviewState createState() =>
+  State<Step3ScreenshotOverview> createState() =>
       _Step3ScreenshotOverviewState();
 }
 
@@ -45,7 +44,7 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
                         ),
                         Positioned.fill(
                           child: Container(
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               gradient: LinearGradient(
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
@@ -54,7 +53,7 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
                             ),
                             width: 160,
                             alignment: Alignment.center,
-                            child: Icon(
+                            child: const Icon(
                               Wirecons.trash,
                               color: Colors.white,
                             ),
@@ -63,13 +62,14 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
                       ],
                     ),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Container(
                     width: 160,
                     height: 100, // 100
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: context.theme.secondaryColor),
+                      borderRadius: BorderRadius.circular(10),
+                      color: context.theme.secondaryColor,
+                    ),
                     alignment: Alignment.center,
                     child: Icon(
                       Wirecons.plus,
@@ -90,12 +90,14 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Do you want to create a screenshot that explains what you want to say?',
+                'Do you want to create a screenshot that explains what you '
+                'want to say?',
                 style: context.theme.titleTextStyle,
               ),
               SizedBox(height: context.theme.titleTextStyle.fontSize),
               Text(
-                'You will be able to navigate through the app and take a screenshot on the right screen.',
+                'You will be able to navigate through the app and take a '
+                'screenshot on the right screen.',
                 style: context.theme.titleTextStyle
                     .copyWith(color: context.theme.secondaryTextColor),
               ),

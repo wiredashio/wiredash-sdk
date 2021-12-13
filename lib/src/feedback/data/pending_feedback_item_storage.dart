@@ -8,8 +8,8 @@ import 'package:wiredash/src/common/utils/uuid.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
-/// A temporary place for [PersistedFeedbackItem] classes and user-generated screenshot to
-/// sit in until they get sent into the Wiredash console.
+/// A temporary place for [PersistedFeedbackItem] classes and user-generated
+/// screenshot to sit in until they get sent into the Wiredash console.
 class PendingFeedbackItemStorage {
   PendingFeedbackItemStorage(
     this._fs,
@@ -34,14 +34,16 @@ class PendingFeedbackItemStorage {
         // parsing may fail for missing required properties
         parsed.add(deserializePendingFeedbackItem(item));
       } catch (e, stack) {
-        // Usually this happens when we add new required properties without a migration
+        // Usually this happens when we add new required properties without
+        // a migration
 
         // The next time addPendingItem is called, the invalid feedbacks get
         // removed automatically
         reportWiredashError(e, stack, 'Could not parse item from disk $item');
         try {
           // Remove the associated screenshot right now.
-          // This here is custom parsing and fails when the serialization changes
+          // This here is custom parsing and fails when the serialization
+          // changes
           final map = jsonDecode(item) as Map<String, dynamic>;
           final screenshot = _fs.file(map['screenshotPath']);
           if (await screenshot.exists()) {
@@ -61,7 +63,8 @@ class PendingFeedbackItemStorage {
 
   /// Saves [item] and [screenshot] in the persistent storage.
   ///
-  /// If [screenshot] is non-null, saves it in the application documents directory
+  /// If [screenshot] is non-null, saves it in the application documents
+  /// directory
   /// with a randomly generated filename.
   Future<PendingFeedbackItem> addPendingItem(
     PersistedFeedbackItem item,

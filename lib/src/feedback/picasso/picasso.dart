@@ -17,7 +17,7 @@ class Picasso extends StatefulWidget {
   final Widget child;
 
   @override
-  _PicassoState createState() => _PicassoState();
+  State<Picasso> createState() => _PicassoState();
 }
 
 class PicassoController extends ChangeNotifier {

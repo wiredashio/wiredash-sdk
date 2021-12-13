@@ -12,7 +12,7 @@ class WiredashModel with ChangeNotifier {
   ///
   /// Usually only relevant for debug builds
   Future<void> clearPendingFeedbacks() async {
-    debugPrint("Deleting pending feedbacks");
+    debugPrint('Deleting pending feedbacks');
     final submitter = state.feedbackSubmitter;
     if (submitter is RetryingFeedbackSubmitter) {
       await submitter.deletePendingFeedbacks();

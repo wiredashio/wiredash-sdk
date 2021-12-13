@@ -44,7 +44,8 @@ import 'package:wiredash/src/wiredash_model_provider.dart';
 ///
 /// class _MyAppState extends State<MyApp> {
 ///   /// Share the app [Navigator] with Wiredash
-///   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+///   final GlobalKey<NavigatorState> _navigatorKey =
+///                                           GlobalKey<NavigatorState>();
 ///
 ///   @override
 ///   Widget build(BuildContext context) {
@@ -232,7 +233,8 @@ class WiredashState extends State<Wiredash> {
 
   @override
   Widget build(BuildContext context) {
-    // Assign app an key so it doesn't lose state when wrapped, unwrapped with widgets
+    // Assign app an key so it doesn't lose state when wrapped, unwrapped
+    // with widgets
     final Widget app = KeyedSubtree(
       key: _appKey,
       child: widget.child,

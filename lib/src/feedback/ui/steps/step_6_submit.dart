@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
-import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
-import 'package:wiredash/src/feedback/ui/labeled_button.dart';
 
 class Step6Submit extends StatefulWidget {
   const Step6Submit({Key? key}) : super(key: key);
 
   @override
-  _Step6SubmitState createState() => _Step6SubmitState();
+  State<Step6Submit> createState() => _Step6SubmitState();
 }
 
 class _Step6SubmitState extends State<Step6Submit> {
@@ -21,9 +19,17 @@ class _Step6SubmitState extends State<Step6Submit> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 24,),
-              Icon(Wirecons.check, size: 48, color: context.theme.primaryColor,),
-              SizedBox(height: 20,),
+              const SizedBox(
+                height: 24,
+              ),
+              Icon(
+                Wirecons.check,
+                size: 48,
+                color: context.theme.primaryColor,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               Text(
                 'Thanks for your feedback!',
                 style: context.theme.titleTextStyle,

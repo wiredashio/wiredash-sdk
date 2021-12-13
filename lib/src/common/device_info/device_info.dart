@@ -21,17 +21,20 @@ class DeviceInfo {
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/padding.html
   final WindowPadding padding;
 
-  /// The dimensions of the rectangle into which the scene rendered in this view will be drawn on the screen, in physical pixels.
+  /// The dimensions of the rectangle into which the scene rendered in this
+  /// view will be drawn on the screen, in physical pixels.
   ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/physicalSize.html
   final Size physicalSize;
 
-  /// The dimensions and location of the rectangle into which the scene rendered in this view will be drawn on the screen, in physical pixels.
+  /// The dimensions and location of the rectangle into which the scene
+  /// rendered in this view will be drawn on the screen, in physical pixels.
   ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/physicalGeometry.html
   final Rect physicalGeometry;
 
-  /// The number of device pixels for each logical pixel for the screen this view is displayed on.
+  /// The number of device pixels for each logical pixel for the screen this
+  /// view is displayed on.
   ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/devicePixelRatio.html
   final double pixelRatio;
@@ -64,7 +67,8 @@ class DeviceInfo {
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/viewInsets.html
   final WindowPadding viewInsets;
 
-  /// Area where Android does not intercept i.e. for the back button gesture (swipe from the side of the screen)
+  /// Area where Android does not intercept i.e. for the back button gesture
+  /// (swipe from the side of the screen)
   ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/systemGestureInsets.html
   final WindowPadding gestureInsets;

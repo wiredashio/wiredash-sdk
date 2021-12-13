@@ -70,8 +70,8 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                           enabledBorder: InputBorder.none,
                           disabledBorder: InputBorder.none,
                           errorBorder: InputBorder.none,
-                          hintText:
-                              'e.g. there’s an unknown error when I try to update my email in the profile menu',
+                          hintText: 'e.g. there’s an unknown error when I try '
+                              'to update my email in the profile menu',
                           contentPadding: EdgeInsets.only(top: 16),
                         ),
                       ),

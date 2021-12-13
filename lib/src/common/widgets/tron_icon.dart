@@ -13,7 +13,7 @@ class TronIcon extends StatefulWidget {
   final IconData icon;
 
   @override
-  _TronIconState createState() => _TronIconState();
+  State<TronIcon> createState() => _TronIconState();
 }
 
 class _TronIconState extends State<TronIcon>

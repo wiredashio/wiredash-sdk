@@ -7,7 +7,8 @@ class Delay {
   }
   final Duration duration;
 
-  /// When true, the [future] throws an error on complete. When false it never completes
+  /// When true, the [future] throws an error on complete. When false it never
+  /// completes
   final bool errorOnDispose;
 
   Timer? _timer;

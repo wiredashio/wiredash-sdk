@@ -8,7 +8,7 @@ class Step2Labels extends StatefulWidget {
   const Step2Labels({Key? key}) : super(key: key);
 
   @override
-  _Step2LabelsState createState() => _Step2LabelsState();
+  State<Step2Labels> createState() => _Step2LabelsState();
 }
 
 class _Step2LabelsState extends State<Step2Labels>

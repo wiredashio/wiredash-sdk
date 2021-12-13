@@ -64,7 +64,7 @@ class WiredashApi {
   }) async {
     final uri = Uri.parse('$_host/sendFeedback');
     final Request request = Request('POST', uri);
-    request.headers["Content-Type"] = "application/json";
+    request.headers['Content-Type'] = 'application/json';
 
     final args = feedback.toFeedbackBody();
     args.addAll({'images': images.map((blob) => blob.data).toList()});
@@ -103,7 +103,7 @@ class WiredashApiException implements Exception {
   String? get message {
     final String? bodyMessage = () {
       try {
-        final json = jsonDecode(response?.body ?? "") as Map?;
+        final json = jsonDecode(response?.body ?? '') as Map?;
         return json?['message'] as String?;
       } catch (e) {
         return response?.body;
@@ -112,7 +112,7 @@ class WiredashApiException implements Exception {
     if (_message == null) {
       return bodyMessage;
     }
-    return "$_message $bodyMessage";
+    return '$_message $bodyMessage';
   }
 
   final String? _message;
@@ -120,11 +120,16 @@ class WiredashApiException implements Exception {
 
   @override
   String toString() {
-    return 'WiredashApiException{${response?.statusCode}, message: $message, body: ${response?.body}';
+    return 'WiredashApiException{'
+        '${response?.statusCode}, '
+        'message: $message, '
+        'body: ${response?.body}'
+        '}';
   }
 }
 
-/// Thrown when the server couldn't match the project + secret to a existing project
+/// Thrown when the server couldn't match the project + secret to a existing
+/// project
 class UnauthenticatedWiredashApiException extends WiredashApiException {
   UnauthenticatedWiredashApiException(
     Response response,
@@ -140,7 +145,11 @@ class UnauthenticatedWiredashApiException extends WiredashApiException {
 
   @override
   String toString() {
-    return 'UnauthenticatedWiredashApiException{$message, status code: ${response?.statusCode}, ${response?.body}';
+    return 'UnauthenticatedWiredashApiException{'
+        '$message, '
+        'status code: ${response?.statusCode}, '
+        '${response?.body}'
+        '}';
   }
 }
 

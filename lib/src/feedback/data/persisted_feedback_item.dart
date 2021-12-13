@@ -8,9 +8,10 @@ export 'package:wiredash/src/common/build_info/app_info.dart';
 export 'package:wiredash/src/common/build_info/build_info.dart';
 export 'package:wiredash/src/common/device_info/device_info.dart';
 
-/// Contains all relevant feedback information, both user-provided and automatically
-/// inferred, that will be eventually sent to the Wiredash console and are in
-/// the meantime persisted on disk inside [PendingFeedbackItem].
+/// Contains all relevant feedback information, both user-provided and
+/// automatically inferred, that will be eventually sent to the Wiredash
+/// console and are in the meantime persisted on disk inside
+/// [PendingFeedbackItem].
 ///
 /// Actual serialization happens in [PendingFeedbackItem]
 class PersistedFeedbackItem {

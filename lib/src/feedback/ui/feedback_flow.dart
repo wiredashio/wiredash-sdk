@@ -50,7 +50,8 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     }
     if (oldIndex != newIndex) {
       final state = _lpvKey.currentState!;
-      // jump to next page after the widget has been rebuild and LarryPageView knows about the new itemCount
+      // jump to next page after the widget has been rebuild and LarryPageView
+      // knows about the new itemCount
       WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
         state.moveToPage(newIndex);
       });

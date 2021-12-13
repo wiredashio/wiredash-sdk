@@ -15,7 +15,7 @@ class ScreenCapture extends StatefulWidget {
   final Widget child;
 
   @override
-  _ScreenCaptureState createState() => _ScreenCaptureState();
+  State<ScreenCapture> createState() => _ScreenCaptureState();
 }
 
 class ScreenCaptureController extends ChangeNotifier {

@@ -9,15 +9,16 @@ class DeviceIdGenerator {
 
   /// A rather short timeout for shared preferences
   ///
-  /// Usually shared preferences shouldn't fail. But if they do or don't react the
-  /// deviceId fallback should generate in finite time
+  /// Usually shared preferences shouldn't fail. But if they do or don't react
+  /// the deviceId fallback should generate in finite time
   static const _sharedPrefsTimeout = Duration(seconds: 2);
 
   DeviceIdGenerator();
 
   /// Returns the unique deviceId for this device/app combination
   ///
-  /// The Future is lazy created an then cached, thus returns very fast when called multiple times
+  /// The Future is lazy created an then cached, thus returns very fast when
+  /// called multiple times
   Future<String> deviceId() {
     final future = _deviceIdFuture;
     if (future != null) {

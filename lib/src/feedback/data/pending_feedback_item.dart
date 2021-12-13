@@ -6,8 +6,8 @@ import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
 const int _serializationVersion = 1;
 
-/// Represents a [PersistedFeedbackItem] that has not yet been submitted, and that has
-/// been saved in the persistent storage.
+/// Represents a [PersistedFeedbackItem] that has not yet been submitted,
+/// and that has been saved in the persistent storage.
 class PendingFeedbackItem {
   const PendingFeedbackItem({
     required this.id,
@@ -239,25 +239,31 @@ class WiredashWindowPadding implements WindowPadding {
     );
   }
 
-  /// The distance from the left edge to the first unpadded pixel, in physical pixels.
+  /// The distance from the left edge to the first unpadded pixel, in physical
+  /// pixels.
   @override
   final double left;
 
-  /// The distance from the top edge to the first unpadded pixel, in physical pixels.
+  /// The distance from the top edge to the first unpadded pixel, in physical
+  /// pixels.
   @override
   final double top;
 
-  /// The distance from the right edge to the first unpadded pixel, in physical pixels.
+  /// The distance from the right edge to the first unpadded pixel, in physical
+  /// pixels.
   @override
   final double right;
 
-  /// The distance from the bottom edge to the first unpadded pixel, in physical pixels.
+  /// The distance from the bottom edge to the first unpadded pixel, in physical
+  /// pixels.
   @override
   final double bottom;
 
   @override
   String toString() {
-    return 'WiredashWindowPadding{left: $left, top: $top, right: $right, bottom: $bottom}';
+    return 'WiredashWindowPadding{'
+        'left: $left, top: $top, right: $right, bottom: $bottom'
+        '}';
   }
 
   @override

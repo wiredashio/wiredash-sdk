@@ -4,9 +4,9 @@ import 'package:wiredash/src/common/device_info/device_info.dart';
 
 // import a dart:html or dart:io version of `createDeviceInfoGenerator`
 // if non are available the stub is used
-import 'device_info_generator_stub.dart'
-    if (dart.library.html) 'dart_html_device_info_generator.dart'
-    if (dart.library.io) 'dart_io_device_info_generator.dart';
+import 'package:wiredash/src/common/device_info/device_info_generator_stub.dart'
+    if (dart.library.html) 'package:wiredash/src/common/device_info/dart_html_device_info_generator.dart'
+    if (dart.library.io) 'package:wiredash/src/common/device_info/dart_io_device_info_generator.dart';
 
 abstract class DeviceInfoGenerator {
   /// Loads a [DeviceInfoGenerator] based on the environment by calling the

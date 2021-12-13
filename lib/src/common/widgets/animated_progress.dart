@@ -12,7 +12,7 @@ class AnimatedProgress extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AnimatedProgressState createState() => _AnimatedProgressState();
+  State<AnimatedProgress> createState() => _AnimatedProgressState();
 }
 
 class _AnimatedProgressState extends State<AnimatedProgress>

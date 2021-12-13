@@ -21,12 +21,12 @@ void main() {
       deviceId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
       deviceInfo: DeviceInfo(
         pixelRatio: 2.75,
-        platformOS: "android",
-        platformOSVersion: "RSR1.201013.001",
-        platformVersion:
-            '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+        platformOS: 'android',
+        platformOSVersion: 'RSR1.201013.001',
+        platformVersion: '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+            '"android_ia32"',
         textScaleFactor: 1,
-        platformLocale: "en_US",
+        platformLocale: 'en_US',
         platformSupportedLocales: ['en_US', 'de_DE'],
         platformBrightness: Brightness.dark,
         gestureInsets:
@@ -56,7 +56,7 @@ void main() {
       deviceInfo: DeviceInfo(
         pixelRatio: 1.0,
         textScaleFactor: 1.0,
-        platformLocale: "en_US",
+        platformLocale: 'en_US',
         platformSupportedLocales: ['en_US', 'de_DE'],
         platformBrightness: Brightness.dark,
         gestureInsets:
@@ -98,7 +98,8 @@ void main() {
               'platformOS': 'android',
               'platformOSBuild': 'RSR1.201013.001',
               'platformVersion':
-                  '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+                  '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+                      '"android_ia32"',
               'textScaleFactor': 1,
               'platformLocale': 'en_US',
               'platformSupportedLocales': ['en_US', 'de_DE'],
@@ -183,7 +184,8 @@ void main() {
               'platformOS': 'android',
               'platformOSBuild': 'RSR1.201013.001',
               'platformVersion':
-                  '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+                  '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+                      '"android_ia32"',
               'textScaleFactor': 1,
               'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             },

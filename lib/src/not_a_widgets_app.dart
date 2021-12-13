@@ -25,7 +25,8 @@ class NotAWidgetsApp extends StatelessWidget {
       initialEntries: [
         OverlayEntry(
           builder: (context) {
-            // use a stateful widget as direct child or hot reload will not work for that widget
+            // use a stateful widget as direct child or hot reload will not
+            // work for that widget
             return child;
           },
         ),

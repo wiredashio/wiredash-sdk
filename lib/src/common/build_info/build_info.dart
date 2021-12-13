@@ -7,7 +7,9 @@ import 'package:flutter/foundation.dart';
 ///
 /// For example:
 /// ```
-/// flutter build --dart-define=BUILD_NUMBER=$BUILD_NUMBER --dart-define=BUILD_VERSION=$BUILD_VERSION --dart-define=BUILD_COMMIT=$FCI_COMMIT
+/// flutter build --dart-define=BUILD_NUMBER=$BUILD_NUMBER \
+///   --dart-define=BUILD_VERSION=$BUILD_VERSION \
+///   --dart-define=BUILD_COMMIT=$FCI_COMMIT
 /// ```
 class EnvBuildInfo {
   static const _buildNumber = bool.hasEnvironment('BUILD_NUMBER')
@@ -16,7 +18,7 @@ class EnvBuildInfo {
   static const _buildVersion = bool.hasEnvironment('BUILD_VERSION')
       ? String.fromEnvironment('BUILD_VERSION')
       : null;
-  static const _buildCommit = bool.hasEnvironment("BUILD_COMMIT")
+  static const _buildCommit = bool.hasEnvironment('BUILD_COMMIT')
       ? String.fromEnvironment('BUILD_COMMIT')
       : null;
 
@@ -69,7 +71,11 @@ class BuildInfo {
 
   @override
   String toString() {
-    return 'BuildInfo{compilationMode: $compilationMode, buildVersion: $buildVersion, buildNumber: $buildNumber, buildCommit: $buildCommit}';
+    return 'BuildInfo{compilationMode: $compilationMode, '
+        'buildVersion: $buildVersion, '
+        'buildNumber: $buildNumber, '
+        'buildCommit: $buildCommit'
+        '}';
   }
 }
 

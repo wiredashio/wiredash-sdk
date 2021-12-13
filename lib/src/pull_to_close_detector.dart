@@ -42,7 +42,7 @@ class PullToCloseDetector extends StatefulWidget {
   final void Function(double velocity) startReopenSimulation;
 
   @override
-  _PullToCloseDetectorState createState() => _PullToCloseDetectorState();
+  State<PullToCloseDetector> createState() => _PullToCloseDetectorState();
 }
 
 class _PullToCloseDetectorState extends State<PullToCloseDetector> {

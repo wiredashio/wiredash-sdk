@@ -16,7 +16,7 @@ class FeedbackNavigation extends StatefulWidget {
   final Rect defaultLocation;
 
   @override
-  _FeedbackNavigationState createState() => _FeedbackNavigationState();
+  State<FeedbackNavigation> createState() => _FeedbackNavigationState();
 }
 
 class _FeedbackNavigationState extends State<FeedbackNavigation>

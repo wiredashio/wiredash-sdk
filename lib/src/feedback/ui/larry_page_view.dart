@@ -44,8 +44,8 @@ class LarryPageViewState extends State<LarryPageView>
   double _offset = 0;
 
   /// [true] while the page is ballistic scrolling outwards (after the finger
-  /// left the screen), waiting for [_pageSwitchDistance] to be reached switching
-  /// the page.
+  /// left the screen), waiting for [_pageSwitchDistance] to be reached
+  /// switching the page.
   bool _animatingPageOut = false;
 
   /// Controls the inner [SingleChildScrollView] of the current page
@@ -245,7 +245,8 @@ class LarryPageViewState extends State<LarryPageView>
     // 3. forward overscroll events to pageview
     if (n is ScrollUpdateNotification) {
       if (_waitForEnd == true) {
-        // already detected that the user started a fling, called _onVerticalDragEnd
+        // already detected that the user started a fling,
+        // called _onVerticalDragEnd
         return false;
       }
 
@@ -262,9 +263,10 @@ class LarryPageViewState extends State<LarryPageView>
         );
         _onVerticalDragEnd(end);
       } else {
-        // with details just behave normally when scrolled inside the scrollview.
+        // with details just behave normally when scrolled inside the scrollview
 
-        // detect overscroll event and forward those to the pageview scroll mechanism
+        // detect overscroll event and forward those to the pageview scroll
+        // mechanism
         if (_outerScrollUp && n.metrics.pixels <= n.metrics.minScrollExtent) {
           // Keep visual position of inner scroll view at top
           _childScrollController.position

@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -194,14 +193,14 @@ class FeedbackModel with ChangeNotifier {
       _submitDelay = Delay(const Duration(seconds: 2));
       if (fakeSubmit) {
         // ignore: avoid_print
-        if (kDebugMode) print("Submitting feedback (fake)");
+        if (kDebugMode) print('Submitting feedback (fake)');
         await _submitDelay!.future;
         _submitted = true;
         _submitting = false;
         notifyListeners();
       } else {
         // ignore: avoid_print
-        if (kDebugMode) print("Submitting feedback");
+        if (kDebugMode) print('Submitting feedback');
         try {
           final Future<void> feedback = () async {
             final item = await createFeedback();

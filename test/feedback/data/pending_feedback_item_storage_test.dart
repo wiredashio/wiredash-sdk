@@ -83,7 +83,7 @@ void main() {
             deviceInfo: DeviceInfo(
               pixelRatio: 1.0,
               textScaleFactor: 1.0,
-              platformLocale: "en_US",
+              platformLocale: 'en_US',
               platformSupportedLocales: ['en_US', 'de_DE'],
               platformBrightness: Brightness.dark,
               gestureInsets:
@@ -136,12 +136,13 @@ void main() {
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
             'platformBrightness': 'dark',
-            'platformLocale': "en_US",
+            'platformLocale': 'en_US',
             'platformOS': 'android',
             'platformOSBuild': 'RSR1.201013.001',
             'platformSupportedLocales': ['en_US', 'de_DE'],
             'platformVersion':
-                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+                    '"android_ia32"',
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
@@ -175,7 +176,7 @@ void main() {
             deviceInfo: DeviceInfo(
               pixelRatio: 1.0,
               textScaleFactor: 1.0,
-              platformLocale: "en_US",
+              platformLocale: 'en_US',
               platformSupportedLocales: ['en_US', 'de_DE'],
               platformBrightness: Brightness.dark,
               gestureInsets:
@@ -241,12 +242,13 @@ void main() {
             'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'pixelRatio': 2.75,
             'platformBrightness': 'dark',
-            'platformLocale': "en_US",
+            'platformLocale': 'en_US',
             'platformOS': 'android',
             'platformOSBuild': 'RSR1.201013.001',
             'platformSupportedLocales': ['en_US', 'de_DE'],
             'platformVersion':
-                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+                    '"android_ia32"',
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
@@ -315,12 +317,13 @@ void main() {
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
             'platformBrightness': 'dark',
-            'platformLocale': "en_US",
+            'platformLocale': 'en_US',
             'platformOS': 'android',
             'platformOSBuild': 'RSR1.201013.001',
             'platformSupportedLocales': ['en_US', 'de_DE'],
             'platformVersion':
-                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+                    '"android_ia32"',
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
@@ -354,12 +357,13 @@ void main() {
             'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'pixelRatio': 2.75,
             'platformBrightness': 'dark',
-            'platformLocale': "en_US",
+            'platformLocale': 'en_US',
             'platformOS': 'android',
             'platformOSBuild': 'RSR1.201013.001',
             'platformSupportedLocales': ['en_US', 'de_DE'],
             'platformVersion':
-                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+                    '"android_ia32"',
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
@@ -394,8 +398,8 @@ void main() {
     });
 
     test(
-        'does not crash when clearing an item and the screenshot file does not exist',
-        () async {
+        'does not crash when clearing an item and the screenshot '
+        'file does not exist', () async {
       final item = json.encode({
         'id': '<existing item id>',
         'feedbackItem': {
@@ -411,7 +415,8 @@ void main() {
           .setStringList('io.wiredash.pending_feedback_items', [item]);
       await storage.clearPendingItem('<existing item id>');
 
-      // If the test didn't crash until this point, it's considered a passing test.
+      // If the test didn't crash until this point, it's considered a passing
+      // test.
     });
 
     test('removes items which can not be parsed', () async {
@@ -462,12 +467,13 @@ void main() {
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
             'platformBrightness': 'dark',
-            'platformLocale': "en_US",
+            'platformLocale': 'en_US',
             'platformOS': 'android',
             'platformOSBuild': 'RSR1.201013.001',
             'platformSupportedLocales': ['en_US', 'de_DE'],
             'platformVersion':
-                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+                    '"android_ia32"',
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
@@ -522,7 +528,7 @@ void main() {
             deviceInfo: DeviceInfo(
               pixelRatio: 1.0,
               textScaleFactor: 1.0,
-              platformLocale: "en_US",
+              platformLocale: 'en_US',
               platformSupportedLocales: ['en_US', 'de_DE'],
               platformBrightness: Brightness.dark,
               gestureInsets:

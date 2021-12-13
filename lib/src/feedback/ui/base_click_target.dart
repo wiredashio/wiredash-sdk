@@ -113,7 +113,12 @@ class TargetState {
 
   @override
   String toString() {
-    return 'TargetState{focused: $focused, pressed: $pressed, hovered: $hovered, enabled: $enabled}';
+    return 'TargetState{'
+        'focused: $focused, '
+        'pressed: $pressed, '
+        'hovered: $hovered, '
+        'enabled: $enabled'
+        '}';
   }
 }
 
@@ -151,7 +156,7 @@ class AnimatedClickTarget extends StatefulWidget {
   final Duration duration;
 
   @override
-  _AnimatedClickTargetState createState() => _AnimatedClickTargetState();
+  State<AnimatedClickTarget> createState() => _AnimatedClickTargetState();
 }
 
 class _AnimatedClickTargetState extends State<AnimatedClickTarget>

@@ -8,7 +8,7 @@ class Step5Email extends StatefulWidget {
   const Step5Email({Key? key}) : super(key: key);
 
   @override
-  _Step5EmailState createState() => _Step5EmailState();
+  State<Step5Email> createState() => _Step5EmailState();
 }
 
 class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {

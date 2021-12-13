@@ -17,7 +17,7 @@ class AnimatedShape extends ImplicitlyAnimatedWidget {
   final Widget child;
 
   @override
-  _AnimatedShapeState createState() => _AnimatedShapeState();
+  AnimatedWidgetBaseState<AnimatedShape> createState() => _AnimatedShapeState();
 }
 
 class _AnimatedShapeState extends AnimatedWidgetBaseState<AnimatedShape> {

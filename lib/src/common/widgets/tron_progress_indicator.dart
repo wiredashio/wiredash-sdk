@@ -13,7 +13,7 @@ class TronProgressIndicator extends StatefulWidget {
   final int currentStep;
 
   @override
-  _TronProgressIndicatorState createState() => _TronProgressIndicatorState();
+  State<TronProgressIndicator> createState() => _TronProgressIndicatorState();
 }
 
 class _TronProgressIndicatorState extends State<TronProgressIndicator>
