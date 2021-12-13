@@ -131,8 +131,10 @@ void main() {
       // Submit
       await tester.tap(find.byIcon(Wirecons.check));
       await tester.pumpAndSettle();
-      await tester.waitUntil(find.text("Submitting"), findsOneWidget);
-      await tester.waitUntil(find.text("Submitted"), findsOneWidget);
+      await tester.waitUntil(
+        find.text('Thanks for your feedback!'),
+        findsOneWidget,
+      );
     });
   });
 }
