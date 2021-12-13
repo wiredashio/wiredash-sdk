@@ -6,7 +6,6 @@ import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_1_feedback_message.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_2_labels.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_3_screenshot_overview.dart';
-import 'package:wiredash/src/feedback/ui/steps/step_4_screenshot.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_5_email.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_6_submit.dart';
 
@@ -117,9 +116,6 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             }
             if (status == FeedbackFlowStatus.screenshotsOverview) {
               return const Step3ScreenshotOverview();
-            }
-            if (status == FeedbackFlowStatus.screenshotSaving) {
-              return const Step4ScreenshotSaving();
             }
             if (status == FeedbackFlowStatus.email) {
               return const Step5Email();
