@@ -59,6 +59,11 @@ class NotAWidgetsApp extends StatelessWidget {
       child: widget,
     );
 
+    // Make Wiredash a Material widget to support TextFields, etc.
+    widget = Material(
+      child: widget,
+    );
+
     return widget;
   }
 }

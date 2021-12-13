@@ -9,8 +9,6 @@ import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
-import 'package:wiredash/src/feedback/ui/screenshot_app_overlay.dart';
-import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
 
 enum WiredashBackdropStatus {
@@ -447,92 +445,97 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   @override
   Widget build(BuildContext context) {
-    Widget backdropApp = widget.child;
+    Widget app = widget.child;
 
     if (_backdropStatus == WiredashBackdropStatus.closed) {
       // Wiredash is closed, show the app without being wrapped in Transforms
-      return backdropApp;
+      return app;
     }
 
-    backdropApp = Focus(
+    app = Focus(
       debugLabel: 'wiredash app wrapper',
       canRequestFocus: widget.controller._isAppInteractive,
       // Users would be unable to leave the app once it got focus
       skipTraversal: true,
       child: _KeepAppAlive(
-        child: backdropApp,
+        child: app,
       ),
     );
 
-    final backdropContent = Positioned.fromRect(
+    final content = Positioned.fromRect(
       rect: _rectContentArea,
       child: MediaQuery(
         data: _mediaQueryData.removePadding(removeBottom: true),
         child: const Focus(
-          debugLabel: 'wiredash-content',
+          debugLabel: 'wiredash backdrop content',
           child: WiredashFeedbackFlow(),
         ),
       ),
     );
 
-    return Material(
-      child: SemiTransparentStatusBar(
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: AlignmentDirectional.topCenter,
-              end: AlignmentDirectional.bottomCenter,
-              colors: <Color>[
-                Colors.white,
-                Color(0xFFE8EEFB),
-              ],
+    return DecoratedBox(
+      decoration: _backgroundDecoration(),
+      child: Stack(
+        children: <Widget>[
+          content,
+          _buildProgressIndicator(),
+          _buildAppPositioningAnimation(
+            child: _buildAppFrame(
+              child: app,
             ),
           ),
-          // Stack allows placing the app on top while we're awaiting layout
-          child: Stack(
-            children: <Widget>[
-              backdropContent,
-              AnimatedOpacity(
-                duration: const Duration(milliseconds: 300),
-                opacity:
-                    _backdropStatus == WiredashBackdropStatus.openingCentered ||
-                            _backdropStatus == WiredashBackdropStatus.centered
-                        ? 0.0
-                        : 1.0,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.theme.horizontalPadding,
-                    vertical: context.theme.verticalPadding,
-                  ),
-                  child: TronProgressIndicator(
-                    totalSteps: 5,
-                    currentStep: _getCurrentStep(),
-                  ),
-                ),
-              ),
-              _buildAppPositioningAnimation(
-                child: _buildAppFrame(
-                  child: backdropApp,
-                ),
-              ),
-              _buildAppOverlay(),
-              AnimatedOpacity(
-                duration: const Duration(milliseconds: 150),
-                opacity: _backdropStatus == WiredashBackdropStatus.closing
-                    ? 0.0
-                    : 1.0,
-                child: FeedbackNavigation(
-                  defaultLocation: _rectNavigationButtons,
-                ),
-              ),
-            ],
-          ),
+          _buildNavigationButtons(),
+        ],
+      ),
+    );
+  }
+
+  /// Wiredash background based on a linear gradient
+  BoxDecoration _backgroundDecoration() {
+    return BoxDecoration(
+      gradient: LinearGradient(
+        begin: AlignmentDirectional.topCenter,
+        end: AlignmentDirectional.bottomCenter,
+        colors: <Color>[
+          context.theme.primaryBackgroundColor,
+          context.theme.secondaryBackgroundColor,
+        ],
+      ),
+    );
+  }
+
+  /// Builds the circular progress indicator in the top left
+  Widget _buildProgressIndicator() {
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 300),
+      opacity: _backdropStatus == WiredashBackdropStatus.openingCentered ||
+              _backdropStatus == WiredashBackdropStatus.centered
+          ? 0.0
+          : 1.0,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: context.theme.horizontalPadding,
+          vertical: context.theme.verticalPadding,
+        ),
+        child: TronProgressIndicator(
+          totalSteps: 5,
+          currentStep: _getCurrentProgressStep(),
         ),
       ),
     );
   }
 
-  int _getCurrentStep() {
+  Widget _buildNavigationButtons() {
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 150),
+      opacity: _backdropStatus == WiredashBackdropStatus.closing ? 0.0 : 1.0,
+      child: FeedbackNavigation(
+        defaultLocation: _rectNavigationButtons,
+      ),
+    );
+  }
+
+  int _getCurrentProgressStep() {
     switch (context.feedbackModel.feedbackFlowStatus) {
       case FeedbackFlowStatus.none:
       case FeedbackFlowStatus.message:
@@ -550,21 +553,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       case FeedbackFlowStatus.submitting:
         return 5;
     }
-  }
-
-  Widget _buildAppOverlay() {
-    return AnimatedBuilder(
-      animation: _backdropAnimationController,
-      builder: (context, child) {
-        return Transform.translate(
-          offset: Offset(0, _pullAppYController.value),
-          child: ScreenshotAppOverlay(
-            appRect: _transformAnimation.value!,
-            borderRadius: _cornerRadiusAnimation.value!,
-          ),
-        );
-      },
-    );
   }
 
   /// Clips and adds shadow to the app
