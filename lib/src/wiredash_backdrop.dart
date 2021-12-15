@@ -467,20 +467,62 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       ),
     );
 
+    final stackChildren = _orderStackChildren(
+      app: _buildAppPositioningAnimation(
+        child: _buildAppFrame(
+          child: app,
+        ),
+      ),
+      content: content,
+      navButtons: _buildNavigationButtons(),
+    );
+
     return DecoratedBox(
       decoration: _backgroundDecoration(),
       child: Stack(
-        children: <Widget>[
-          content,
-          _buildAppPositioningAnimation(
-            child: _buildAppFrame(
-              child: app,
-            ),
-          ),
-          _buildNavigationButtons(),
-        ],
+        children: stackChildren,
       ),
     );
+  }
+
+  /// Reorders the stack items (z-index) depending on the backdrop state
+  ///
+  /// Keeps [navButtons] at the very top when possible. Moves the [app] to the
+  /// top when interacting with it
+  List<Widget> _orderStackChildren({
+    required Widget app,
+    required Widget content,
+    required Widget navButtons,
+  }) {
+    final keyedApp = KeyedSubtree(
+      key: const ValueKey('app'),
+      child: app,
+    );
+    final keyedContent = KeyedSubtree(
+      key: const ValueKey('content'),
+      child: content,
+    );
+    final keyedNav = KeyedSubtree(
+      key: const ValueKey('nav'),
+      child: navButtons,
+    );
+
+    if (_backdropStatus == WiredashBackdropStatus.closing ||
+        _backdropStatus == WiredashBackdropStatus.opening) {
+      // Move app above nav buttons
+      return [
+        keyedContent,
+        keyedNav,
+        keyedApp,
+      ];
+    }
+
+    // Place buttons at the very top by default
+    return [
+      keyedContent,
+      keyedApp,
+      keyedNav,
+    ];
   }
 
   /// Wiredash background based on a linear gradient
@@ -638,8 +680,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           app = PullToCloseDetector(
             closeDirection: CloseDirection.upwards,
             onPullStart: () {
-              _pulling = true;
-              _backdropStatus = WiredashBackdropStatus.closing;
+              setState(() {
+                _pulling = true;
+                _backdropStatus = WiredashBackdropStatus.closing;
+              });
               _swapAnimation();
               _pullCurves();
               _pullAppYController.value = 0.0;
