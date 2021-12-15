@@ -3,7 +3,6 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
-import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 
 class Step2Labels extends StatefulWidget {
   const Step2Labels({Key? key}) : super(key: key);
