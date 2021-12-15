@@ -51,6 +51,37 @@ class WiredashThemeData {
     }
   }
 
+  factory WiredashThemeData.fromColor({
+    required Color color,
+    required Brightness brightness,
+    Size? windowSize,
+  }) {
+    // Deriving colors for a light theme
+    // TODO: Derive colors for a dark theme
+
+    final hsl = HSLColor.fromColor(color);
+
+    return WiredashThemeData._(
+      brightness: brightness,
+      deviceClass: DeviceClass.handsetLarge400,
+      primaryColor: color,
+      secondaryColor: hsl
+          .withHue((hsl.hue - 10) % 360)
+          .withSaturation(.60)
+          .withLightness(.90)
+          .toColor(),
+      primaryTextColor: const Color(0xff030A1C),
+      secondaryTextColor: const Color(0xff8C93A2),
+      primaryBackgroundColor:
+          hsl.withSaturation(1.0).withLightness(1.0).toColor(),
+      secondaryBackgroundColor:
+          hsl.withSaturation(.8).withLightness(.95).toColor(),
+      errorColor: const Color(0xffff5c6a),
+      fontFamily: _fontFamily,
+      windowSize: windowSize ?? Size.zero,
+    );
+  }
+
   WiredashThemeData._({
     required this.brightness,
     required this.primaryColor,

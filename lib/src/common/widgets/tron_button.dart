@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/utils/color_ext.dart';
 import 'package:wiredash/src/common/widgets/animated_shape.dart';
 import 'package:wiredash/src/common/widgets/tron_icon.dart';
@@ -60,7 +61,7 @@ class _TronButtonState extends State<TronButton>
   }
 
   Color get _buttonColor {
-    final buttonColor = widget.color ?? const Color(0xff1A56DB);
+    final buttonColor = widget.color ?? context.theme.primaryColor;
 
     if (!_enabled) {
       return buttonColor.lighten(0.3);
@@ -79,11 +80,11 @@ class _TronButtonState extends State<TronButton>
   }
 
   Color get _iconColor {
-    // TODO define bright / dark icon colors in theme
-    if (_buttonColor.brightness == Brightness.light) {
-      return const Color(0xff1A56DB);
+    if (_buttonColor.brightness == Brightness.light &&
+        _buttonColor != context.theme.primaryColor) {
+      return context.theme.primaryColor;
     }
-    return const Color(0xffE8EEFB);
+    return context.theme.secondaryColor;
   }
 
   @override
