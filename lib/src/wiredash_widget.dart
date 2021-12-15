@@ -164,7 +164,10 @@ class WiredashState extends State<Wiredash> {
   @override
   void initState() {
     super.initState();
-
+    debugProjectCredentialValidator.validate(
+      projectId: widget.projectId,
+      secret: widget.secret,
+    );
     buildInfoManager = BuildInfoManager();
     deviceIdGenerator = DeviceIdGenerator();
     deviceInfoGenerator = DeviceInfoGenerator(window);
