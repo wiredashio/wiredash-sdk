@@ -15,26 +15,28 @@ class _Step6SubmitState extends State<Step6Submit> {
   Widget build(BuildContext context) {
     return StepPageScaffold(
       child: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(
-                height: 24,
-              ),
-              Icon(
-                Wirecons.check,
-                size: 48,
-                color: context.theme.primaryColor,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                'Thanks for your feedback!',
-                style: context.theme.titleTextStyle,
-              ),
-            ],
+        child: ScrollBox(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  height: 24,
+                ),
+                Icon(
+                  Wirecons.check,
+                  size: 48,
+                  color: context.theme.primaryColor,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  'Thanks for your feedback!',
+                  style: context.theme.titleTextStyle,
+                ),
+              ],
+            ),
           ),
         ),
       ),

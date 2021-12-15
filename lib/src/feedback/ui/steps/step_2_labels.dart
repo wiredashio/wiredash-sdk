@@ -3,6 +3,7 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
+import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 
 class Step2Labels extends StatefulWidget {
   const Step2Labels({Key? key}) : super(key: key);
@@ -19,42 +20,44 @@ class _Step2LabelsState extends State<Step2Labels>
     final selectedLabels = feedbackModel.selectedLabels;
     return StepPageScaffold(
       child: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Optional step',
-              style: context.theme.captionTextStyle,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Which label represents your type of feedback?',
-              style: context.theme.titleTextStyle,
-            ),
-            // TODO replace with automatic scaled spacing from theme
-            const SizedBox(height: 32),
-            _LabelRecommendations(
-              labels: const [
-                Label(id: 'bug', name: 'Bug'),
-                Label(id: 'improvement', name: 'Improvement'),
-                Label(id: 'praise', name: 'Praise 🎉'),
-              ],
-              isAnyLabelSelected: selectedLabels.isNotEmpty,
-              isLabelSelected: selectedLabels.contains,
-              toggleSelection: (label) {
-                setState(() {
-                  if (selectedLabels.contains(label)) {
-                    feedbackModel.selectedLabels = selectedLabels.toList()
-                      ..remove(label);
-                  } else {
-                    feedbackModel.selectedLabels = selectedLabels.toList()
-                      ..add(label);
-                  }
-                });
-              },
-            ),
-          ],
+        child: ScrollBox(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Optional step',
+                style: context.theme.captionTextStyle,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Which label represents your type of feedback?',
+                style: context.theme.titleTextStyle,
+              ),
+              // TODO replace with automatic scaled spacing from theme
+              const SizedBox(height: 32),
+              _LabelRecommendations(
+                labels: const [
+                  Label(id: 'bug', name: 'Bug'),
+                  Label(id: 'improvement', name: 'Improvement'),
+                  Label(id: 'praise', name: 'Praise 🎉'),
+                ],
+                isAnyLabelSelected: selectedLabels.isNotEmpty,
+                isLabelSelected: selectedLabels.contains,
+                toggleSelection: (label) {
+                  setState(() {
+                    if (selectedLabels.contains(label)) {
+                      feedbackModel.selectedLabels = selectedLabels.toList()
+                        ..remove(label);
+                    } else {
+                      feedbackModel.selectedLabels = selectedLabels.toList()
+                        ..add(label);
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

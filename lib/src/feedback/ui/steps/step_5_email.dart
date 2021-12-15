@@ -37,44 +37,46 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return StepPageScaffold(
       child: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Optional step',
-                  style: context.theme.captionTextStyle,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Enter your email to get updates regarding your issue',
-                  style: context.theme.titleTextStyle,
-                ),
-                TextField(
-                  controller: _controller,
-                  keyboardType: TextInputType.emailAddress,
-                  style: context.theme.bodyTextStyle,
-                  onSubmitted: (_) {
-                    context.feedbackModel
-                        .goToStep(FeedbackFlowStatus.submitting);
-                  },
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    disabledBorder: InputBorder.none,
-                    errorBorder: InputBorder.none,
-                    hintText: 'example@wiredash.io',
-                    contentPadding: EdgeInsets.only(top: 16),
+        child: ScrollBox(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Optional step',
+                    style: context.theme.captionTextStyle,
                   ),
-                ),
-              ],
-            ),
-          ],
+                  const SizedBox(height: 12),
+                  Text(
+                    'Enter your email to get updates regarding your issue',
+                    style: context.theme.titleTextStyle,
+                  ),
+                  TextField(
+                    controller: _controller,
+                    keyboardType: TextInputType.emailAddress,
+                    style: context.theme.bodyTextStyle,
+                    onSubmitted: (_) {
+                      context.feedbackModel
+                          .goToStep(FeedbackFlowStatus.submitting);
+                    },
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      hintText: 'example@wiredash.io',
+                      contentPadding: EdgeInsets.only(top: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

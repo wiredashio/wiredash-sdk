@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
+import 'package:wiredash/src/feedback/ui/larry_page_view.dart';
 
 class Step1FeedbackMessage extends StatefulWidget {
   const Step1FeedbackMessage({Key? key}) : super(key: key);
@@ -37,50 +38,54 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
   Widget build(BuildContext context) {
     return StepPageScaffold(
       child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // reduce size when it doesn't fit
-            Flexible(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      'Give us feedback',
-                      style: context.theme.titleTextStyle,
+        child: ScrollBox(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // reduce size when it doesn't fit
+              Flexible(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        'Give us feedback',
+                        style: context.theme.titleTextStyle,
+                      ),
                     ),
-                  ),
-                  Flexible(
-                    child: ScrollBox(
-                      child: TextField(
-                        controller: _controller,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
-                        maxLength: 2048,
-                        buildCounter: _getCounterText,
-                        minLines: 1,
-                        style: context.theme.bodyTextStyle,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          hintText: 'e.g. there’s an unknown error when I try '
-                              'to update my email in the profile menu',
-                          contentPadding: EdgeInsets.only(top: 16),
+                    Flexible(
+                      child: ScrollBox(
+                        child: TextField(
+                          controller: _controller,
+                          keyboardType: TextInputType.multiline,
+                          maxLines: null,
+                          maxLength: 2048,
+                          buildCounter: _getCounterText,
+                          minLines: 1,
+                          style: context.theme.bodyTextStyle,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            hintText:
+                                'e.g. there’s an unknown error when I try '
+                                'to update my email in the profile menu',
+                            contentPadding: EdgeInsets.only(top: 16),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
