@@ -111,18 +111,6 @@ class _Label extends StatelessWidget {
   final bool selected;
   final VoidCallback toggleSelection;
 
-  // If this label is selected, or if this label is deselected AND no other
-  // labels have been selected, we want to display the tint color.
-  //
-  // However, if this label is deselected but some other labels are selected, we
-  // want to display a gray color with less contrast so that this label really
-  // looks different from the selected ones.
-  Color _resolveTextColor() {
-    return selected || !isAnyLabelSelected
-        ? const Color(0xFF1A56DB) // tint
-        : const Color(0xFFA0AEC0); // gray / 500
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -132,13 +120,15 @@ class _Label extends StatelessWidget {
         curve: Curves.ease,
         constraints: const BoxConstraints(maxHeight: 41, minHeight: 41),
         decoration: BoxDecoration(
-          color: selected ? Colors.white : const Color(0xFFE8EEFB),
+          color: selected
+              ? context.theme.primaryBackgroundColor
+              : context.theme.secondaryBackgroundColor,
           borderRadius: BorderRadius.circular(10),
           border: selected
               ? Border.all(
                   width: 2,
                   // tint
-                  color: const Color(0xFF1A56DB),
+                  color: context.theme.primaryColor,
                 )
               : Border.all(
                   width: 2,
@@ -153,7 +143,9 @@ class _Label extends StatelessWidget {
             curve: Curves.ease,
             style: TextStyle(
               fontWeight: FontWeight.w800,
-              color: _resolveTextColor(), // gray / 500
+              color: selected || !isAnyLabelSelected
+                  ? context.theme.primaryColor
+                  : context.theme.primaryColor.withAlpha(128), // gray / 500
             ),
             child: Text(label.name),
           ),
