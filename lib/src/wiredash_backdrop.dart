@@ -4,9 +4,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/widgets/tron_progress_indicator.dart';
-import 'package:wiredash/src/feedback/feedback_model.dart';
-import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
 import 'package:wiredash/src/pull_to_close_detector.dart';
@@ -258,7 +255,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     const maxSquare = Size(640, 640);
     const double minAppPeakHeight = 56;
 
-    const minNavButtonWidth = 100;
     final double buttonBarHeight = context.theme.buttonBarHeight;
     final bool isKeyboardOpen = _mediaQueryData.viewInsets.bottom > 100;
 
@@ -476,7 +472,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       child: Stack(
         children: <Widget>[
           content,
-          _buildProgressIndicator(),
           _buildAppPositioningAnimation(
             child: _buildAppFrame(
               child: app,
@@ -502,27 +497,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
   }
 
-  /// Builds the circular progress indicator in the top left
-  Widget _buildProgressIndicator() {
-    return AnimatedOpacity(
-      duration: const Duration(milliseconds: 300),
-      opacity: _backdropStatus == WiredashBackdropStatus.openingCentered ||
-              _backdropStatus == WiredashBackdropStatus.centered
-          ? 0.0
-          : 1.0,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: context.theme.horizontalPadding,
-          vertical: context.theme.verticalPadding,
-        ),
-        child: TronProgressIndicator(
-          totalSteps: 5,
-          currentStep: _getCurrentProgressStep(),
-        ),
-      ),
-    );
-  }
-
   Widget _buildNavigationButtons() {
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 150),
@@ -531,26 +505,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         defaultLocation: _rectNavigationButtons,
       ),
     );
-  }
-
-  int _getCurrentProgressStep() {
-    switch (context.feedbackModel.feedbackFlowStatus) {
-      case FeedbackFlowStatus.none:
-      case FeedbackFlowStatus.message:
-        return 1;
-      case FeedbackFlowStatus.labels:
-        return 2;
-      case FeedbackFlowStatus.screenshotsOverview:
-      case FeedbackFlowStatus.screenshotNavigating:
-      case FeedbackFlowStatus.screenshotCapturing:
-      case FeedbackFlowStatus.screenshotDrawing:
-      case FeedbackFlowStatus.screenshotSaving:
-        return 3;
-      case FeedbackFlowStatus.email:
-        return 4;
-      case FeedbackFlowStatus.submitting:
-        return 5;
-    }
   }
 
   /// Clips and adds shadow to the app
@@ -812,9 +766,5 @@ extension on Rect {
       maxWidth - padding * 2,
       height,
     );
-  }
-
-  Rect expandHeight(double addition) {
-    return Rect.fromLTWH(left, top, width, height + addition);
   }
 }

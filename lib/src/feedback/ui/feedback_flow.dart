@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/common/widgets/tron_progress_indicator.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/grey_scale_filter.dart';
@@ -60,81 +61,120 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
   @override
   Widget build(BuildContext context) {
     final feedbackModel = context.feedbackModel;
+    final larryPageView = LarryPageView(
+      key: _lpvKey,
+      stepCount: feedbackModel.steps.length,
+      initialPage: _index,
+      pageIndex: _index,
+      onPageChanged: (index) {
+        setState(() {
+          _index = index;
+          final _stackIndex = stackIndex;
+          if (_stackIndex == null) {
+            return;
+          }
+
+          if (_stackIndex < _index) {
+            final nextStepIndex = _stackIndex + 1;
+            if (nextStepIndex <= feedbackModel.steps.length) {
+              final step = feedbackModel.steps[nextStepIndex];
+              feedbackModel.goToStep(step);
+            }
+          }
+
+          if (_stackIndex > _index) {
+            final prevStepIndex = _stackIndex - 1;
+            if (prevStepIndex <= feedbackModel.steps.length) {
+              final step = feedbackModel.steps[prevStepIndex];
+              feedbackModel.goToStep(step);
+            }
+          }
+        });
+      },
+      builder: (context) {
+        final index = _index;
+        final FeedbackFlowStatus status = () {
+          if (feedbackModel.steps.length <= index) {
+            if (stackIndex == null) {
+              return feedbackModel.steps.first;
+            } else {
+              return feedbackModel.steps[stackIndex!];
+            }
+          }
+          return feedbackModel.steps[index];
+        }();
+
+        final stepWidget = () {
+          if (status == FeedbackFlowStatus.message) {
+            return const Step1FeedbackMessage();
+          }
+          if (status == FeedbackFlowStatus.labels) {
+            return const Step2Labels();
+          }
+          if (status == FeedbackFlowStatus.screenshotsOverview) {
+            return const Step3ScreenshotOverview();
+          }
+          if (status == FeedbackFlowStatus.email) {
+            return const Step5Email();
+          }
+          if (status == FeedbackFlowStatus.submitting) {
+            return const Step6Submit();
+          }
+          throw 'Unknown step $status at index $index';
+        }();
+
+        final step = StepInformation.of(context);
+        return GreyScaleFilter(
+          key: ValueKey(status),
+          greyScale: step.animation.value,
+          child: stepWidget,
+        );
+      },
+    );
+
     return GestureDetector(
       onTap: () {
         Focus.maybeOf(context)?.unfocus();
       },
-      child: LarryPageView(
-        key: _lpvKey,
-        stepCount: feedbackModel.steps.length,
-        initialPage: _index,
-        pageIndex: _index,
-        onPageChanged: (index) {
-          setState(() {
-            _index = index;
-            final _stackIndex = stackIndex;
-            if (_stackIndex == null) {
-              return;
-            }
-
-            if (_stackIndex < _index) {
-              final nextStepIndex = _stackIndex + 1;
-              if (nextStepIndex <= feedbackModel.steps.length) {
-                final step = feedbackModel.steps[nextStepIndex];
-                feedbackModel.goToStep(step);
-              }
-            }
-
-            if (_stackIndex > _index) {
-              final prevStepIndex = _stackIndex - 1;
-              if (prevStepIndex <= feedbackModel.steps.length) {
-                final step = feedbackModel.steps[prevStepIndex];
-                feedbackModel.goToStep(step);
-              }
-            }
-          });
-        },
-        builder: (context) {
-          final index = _index;
-          final FeedbackFlowStatus status = () {
-            if (feedbackModel.steps.length <= index) {
-              if (stackIndex == null) {
-                return feedbackModel.steps.first;
-              } else {
-                return feedbackModel.steps[stackIndex!];
-              }
-            }
-            return feedbackModel.steps[index];
-          }();
-
-          final stepWidget = () {
-            if (status == FeedbackFlowStatus.message) {
-              return const Step1FeedbackMessage();
-            }
-            if (status == FeedbackFlowStatus.labels) {
-              return const Step2Labels();
-            }
-            if (status == FeedbackFlowStatus.screenshotsOverview) {
-              return const Step3ScreenshotOverview();
-            }
-            if (status == FeedbackFlowStatus.email) {
-              return const Step5Email();
-            }
-            if (status == FeedbackFlowStatus.submitting) {
-              return const Step6Submit();
-            }
-            throw 'Unknown step $status at index $index';
-          }();
-
-          final step = StepInformation.of(context);
-          return GreyScaleFilter(
-            key: ValueKey(status),
-            greyScale: step.animation.value,
-            child: stepWidget,
-          );
-        },
+      child: Stack(
+        children: [
+          larryPageView,
+          _buildProgressIndicator(),
+        ],
       ),
     );
+  }
+
+  /// Builds the circular progress indicator in the top left
+  Widget _buildProgressIndicator() {
+    return Positioned(
+      top: 16,
+      right: 0,
+      child: TronProgressIndicator(
+        totalSteps: 5,
+        currentStep: _getCurrentProgressStep(),
+      ),
+    );
+  }
+
+  int _getCurrentProgressStep() {
+    switch (context.feedbackModel.feedbackFlowStatus) {
+      case FeedbackFlowStatus.none:
+      case FeedbackFlowStatus.message:
+        return 1;
+      case FeedbackFlowStatus.labels:
+        return 2;
+      case FeedbackFlowStatus.screenshotsOverview:
+      case FeedbackFlowStatus.screenshotNavigating:
+      case FeedbackFlowStatus.screenshotCapturing:
+      case FeedbackFlowStatus.screenshotDrawing:
+      case FeedbackFlowStatus.screenshotSaving:
+        return 3;
+      case FeedbackFlowStatus.email:
+        return 4;
+      case FeedbackFlowStatus.submitting:
+        return 5;
+    }
   }
 }
 
