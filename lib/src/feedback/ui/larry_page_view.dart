@@ -99,14 +99,6 @@ class LarryPageViewState extends State<LarryPageView>
     super.dispose();
   }
 
-  // @override
-  // void didUpdateWidget(covariant LarryPageView oldWidget) {
-  //   if (oldWidget.stepCount < widget.stepCount) {
-  //     _page
-  //   }
-  //   super.didUpdateWidget(oldWidget);
-  // }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
