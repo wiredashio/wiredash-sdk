@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/widgets/tron_progress_indicator.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
@@ -147,6 +149,11 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
 
   /// Builds the circular progress indicator in the top left
   Widget _buildProgressIndicator() {
+    if (context.theme.deviceClass == DeviceClass.handsetSmall320) {
+      // hide progress indicator on small screens
+      return const SizedBox();
+    }
+
     return Positioned(
       top: 16,
       right: 0,
