@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/backdrop_controller_provider.dart';
 import 'package:wiredash/src/wiredash_backdrop.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
 
@@ -23,7 +24,7 @@ class SemiTransparentStatusBar extends StatelessWidget {
       // only draw it on iOS
       return child;
     }
-    final backdrop = context.wiredashModel.state.backdropController;
+    final backdrop = context.backdropController;
     final isLight = context.wiredashModel.state.widget.theme?.brightness ==
         Brightness.light;
     return Stack(

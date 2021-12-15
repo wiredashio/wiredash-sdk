@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/backdrop_controller_provider.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/build_info/device_id_generator.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
@@ -140,7 +141,9 @@ class WiredashState extends State<Wiredash> {
 
   late DeviceIdGenerator deviceIdGenerator;
 
-  late BackdropController backdropController;
+  late BackdropController _backdropController;
+  BackdropController get backdropController => _backdropController;
+
   late PicassoController picassoController;
   late ScreenCaptureController screenCaptureController;
 
@@ -165,29 +168,10 @@ class WiredashState extends State<Wiredash> {
     deviceIdGenerator = DeviceIdGenerator();
     deviceInfoGenerator = DeviceInfoGenerator(window);
 
-    const fileSystem = LocalFileSystem();
-    final storage = PendingFeedbackItemStorage(
-      fileSystem,
-      SharedPreferences.getInstance,
-      () async => (await getApplicationDocumentsDirectory()).path,
-    );
-
-    final api = WiredashApi(
-      httpClient: Client(),
-      projectId: widget.projectId,
-      secret: widget.secret,
-      deviceIdProvider: () => deviceIdGenerator.deviceId(),
-    );
-
-    feedbackSubmitter = kIsWeb
-        ? DirectFeedbackSubmitter(api)
-        : (RetryingFeedbackSubmitter(fileSystem, storage, api)
-          ..submitPendingFeedbackItems());
-
-    backdropController = BackdropController()
+    _backdropController = BackdropController()
       ..addListener(() {
         setState(() {
-          _isWiredashClosed = backdropController.backdropStatus ==
+          _isWiredashClosed = _backdropController.backdropStatus ==
               WiredashBackdropStatus.closed;
         });
       });
@@ -208,23 +192,39 @@ class WiredashState extends State<Wiredash> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didUpdateWidget(Wiredash oldWidget) {
+    super.didUpdateWidget(oldWidget);
     debugProjectCredentialValidator.validate(
       projectId: widget.projectId,
       secret: widget.secret,
     );
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(Wiredash oldWidget) {
-    super.didUpdateWidget(oldWidget);
     _updateDependencies();
   }
 
   void _updateDependencies() {
-    // TODO fix update _api
-    // TODO validate everything gets updated
+    final api = WiredashApi(
+      httpClient: Client(),
+      projectId: widget.projectId,
+      secret: widget.secret,
+      deviceIdProvider: () => deviceIdGenerator.deviceId(),
+    );
+
+    feedbackSubmitter = kIsWeb
+        ? DirectFeedbackSubmitter(api)
+        : () {
+            const fileSystem = LocalFileSystem();
+            final storage = PendingFeedbackItemStorage(
+              fileSystem,
+              SharedPreferences.getInstance,
+              () async => (await getApplicationDocumentsDirectory()).path,
+            );
+            final retryingFeedbackSubmitter =
+                RetryingFeedbackSubmitter(fileSystem, storage, api);
+
+            retryingFeedbackSubmitter.submitPendingFeedbackItems();
+            return retryingFeedbackSubmitter;
+          }();
+
     setState(() {
       options = widget.options ?? WiredashOptionsData();
       _theme = widget.theme ?? WiredashThemeData();
@@ -270,7 +270,7 @@ class WiredashState extends State<Wiredash> {
             children: [
               WiredashBackdrop(
                 key: _backdropKey,
-                controller: backdropController,
+                controller: _backdropController,
                 child: appBuilder,
               ),
             ],
@@ -284,9 +284,12 @@ class WiredashState extends State<Wiredash> {
       wiredashModel: _wiredashModel,
       child: FeedbackModelProvider(
         feedbackModel: _feedbackModel,
-        child: WiredashOptions(
-          data: options,
-          child: backdrop,
+        child: BackdropControllerProvider(
+          backdropController: _backdropController,
+          child: WiredashOptions(
+            data: options,
+            child: backdrop,
+          ),
         ),
       ),
     );
