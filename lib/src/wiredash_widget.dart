@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/backdrop_controller_provider.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/build_info/device_id_generator.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
@@ -19,6 +18,8 @@ import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/common/widgets/screencapture.dart';
+import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
+import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
@@ -26,9 +27,9 @@ import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
+import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
 import 'package:wiredash/src/not_a_widgets_app.dart';
-import 'package:wiredash/src/wiredash_backdrop.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
 
@@ -286,9 +287,12 @@ class WiredashState extends State<Wiredash> {
         feedbackModel: _feedbackModel,
         child: BackdropControllerProvider(
           backdropController: _backdropController,
-          child: WiredashOptions(
-            data: options,
-            child: backdrop,
+          child: PicassoControllerProvider(
+            picassoController: picassoController,
+            child: WiredashOptions(
+              data: options,
+              child: backdrop,
+            ),
           ),
         ),
       ),

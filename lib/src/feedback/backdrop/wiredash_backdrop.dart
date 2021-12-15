@@ -4,9 +4,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/feedback/backdrop/pull_to_close_detector.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
-import 'package:wiredash/src/pull_to_close_detector.dart';
 
 enum WiredashBackdropStatus {
   closed,

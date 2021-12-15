@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
@@ -97,17 +96,6 @@ class FeedbackModel with ChangeNotifier {
       _userEmail = trimmed;
     }
     notifyListeners();
-  }
-
-  Color get penColor => _wiredashState.picassoController.color;
-
-  set penColor(Color color) {
-    _wiredashState.picassoController.color = color;
-    notifyListeners();
-  }
-
-  void undoDrawing() {
-    _wiredashState.picassoController.undo();
   }
 
   Future<void> goToStep(FeedbackFlowStatus newStatus) async {

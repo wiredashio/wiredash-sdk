@@ -5,6 +5,7 @@ import 'package:wiredash/src/common/widgets/tron_button.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
+import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
 
 class FeedbackNavigation extends StatefulWidget {
@@ -134,7 +135,7 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
   Color prevButtonColor() {
     if (context.feedbackModel.feedbackFlowStatus ==
         FeedbackFlowStatus.screenshotDrawing) {
-      return context.feedbackModel.penColor;
+      return context.picasso.color;
     }
     return context.theme.secondaryColor;
   }
@@ -174,12 +175,13 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
       case FeedbackFlowStatus.screenshotDrawing:
       case FeedbackFlowStatus.screenshotSaving:
         return TronButton(
-          color: context.feedbackModel.penColor,
+          color: context.picasso.color,
           icon: Wirecons.pencil,
           iconOffset: const Offset(.15, 0),
           label: 'Change paint',
           onTap: () {
             debugPrint('Open paint menu');
+            context.picasso.undo();
           },
         );
       case FeedbackFlowStatus.screenshotsOverview:

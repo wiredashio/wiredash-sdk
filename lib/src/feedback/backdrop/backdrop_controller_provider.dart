@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/wiredash_backdrop.dart';
+import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
 
 class BackdropControllerProvider extends InheritedNotifier<BackdropController> {
   const BackdropControllerProvider({

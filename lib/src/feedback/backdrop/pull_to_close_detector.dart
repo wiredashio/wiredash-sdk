@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/wiredash_backdrop.dart';
+import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
 
 enum CloseDirection {
   upwards,

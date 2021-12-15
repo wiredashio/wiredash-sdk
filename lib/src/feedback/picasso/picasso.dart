@@ -187,7 +187,7 @@ class _PicassoState extends State<Picasso> {
       final strokes = _strokes.toList();
       final lastStroke = strokes.removeLast();
       _strokes = List.unmodifiable(strokes);
-      _undoneStrokes.add(lastStroke);
+      _undoneStrokes = List.unmodifiable([..._undoneStrokes, lastStroke]);
       _strokesStreamController.add(_strokes);
     }
   }
