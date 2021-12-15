@@ -172,7 +172,7 @@ class FeedbackModel with ChangeNotifier {
     bool fakeSubmit = false;
     assert(
       () {
-        fakeSubmit = true;
+        fakeSubmit = false;
         return true;
       }(),
     );
@@ -192,7 +192,7 @@ class FeedbackModel with ChangeNotifier {
         try {
           final Future<void> feedback = () async {
             final item = await createFeedback();
-            await _wiredashState.feedbackSubmitter.submit(item, null);
+            await _wiredashState.feedbackSubmitter.submit(item, _screenshot);
           }();
           await Future.wait([feedback, _submitDelay!.future]);
           _submitted = true;
@@ -226,7 +226,6 @@ class FeedbackModel with ChangeNotifier {
       appInfo: AppInfo(
         appLocale: _wiredashState.options.currentLocale.toLanguageTag(),
       ),
-      // TODO add screenshot
       buildInfo: _wiredashState.buildInfoManager.buildInfo,
       deviceInfo: _wiredashState.deviceInfoGenerator.generate(),
       email: userEmail,
