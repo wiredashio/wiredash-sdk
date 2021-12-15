@@ -96,8 +96,6 @@ class BackdropController extends ChangeNotifier {
 
 class _WiredashBackdropState extends State<WiredashBackdrop>
     with TickerProviderStateMixin {
-  late final ScrollController _scrollController = ScrollController();
-
   /// Main animation controller
   late final AnimationController _backdropAnimationController =
       AnimationController(
@@ -168,7 +166,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   @override
   void dispose() {
-    _scrollController.dispose();
     _backdropAnimationController.dispose();
     super.dispose();
   }
