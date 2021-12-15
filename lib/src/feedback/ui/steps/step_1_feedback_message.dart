@@ -62,7 +62,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                         maxLines: null,
                         maxLength: 2048,
                         buildCounter: _getCounterText,
-                        minLines: 3,
+                        minLines: 1,
                         style: context.theme.bodyTextStyle,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
