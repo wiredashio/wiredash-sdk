@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/media_query_from_window.dart';
 
@@ -43,6 +44,7 @@ class NotAWidgetsApp extends StatelessWidget {
         delegates: const [
           DefaultMaterialLocalizations.delegate,
           DefaultWidgetsLocalizations.delegate,
+          DefaultCupertinoLocalizations.delegate,
         ],
         child: widget,
       ),
