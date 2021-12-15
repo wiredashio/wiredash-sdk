@@ -14,6 +14,7 @@ class WiredashThemeData {
     Color? secondaryBackgroundColor,
     Color? errorColor,
     String? fontFamily,
+    Size? windowSize,
   }) {
     if (brightness == Brightness.light) {
       return WiredashThemeData._(
@@ -29,6 +30,7 @@ class WiredashThemeData {
             secondaryBackgroundColor ?? const Color(0xfff5f6f8),
         errorColor: errorColor ?? const Color(0xffff5c6a),
         fontFamily: fontFamily ?? _fontFamily,
+        windowSize: windowSize ?? Size.zero,
       );
     } else {
       return WiredashThemeData._(
@@ -44,6 +46,7 @@ class WiredashThemeData {
             secondaryBackgroundColor ?? const Color(0xfff5f6f8),
         errorColor: errorColor ?? const Color(0xffff5c6a),
         fontFamily: fontFamily ?? _fontFamily,
+        windowSize: windowSize ?? Size.zero,
       );
     }
   }
@@ -59,6 +62,7 @@ class WiredashThemeData {
     required this.errorColor,
     required this.deviceClass,
     required this.fontFamily,
+    required this.windowSize,
   });
 
   final Brightness brightness;
@@ -74,6 +78,7 @@ class WiredashThemeData {
   final Color errorColor;
 
   final DeviceClass deviceClass;
+  final Size windowSize;
 
   final String fontFamily;
 
@@ -147,6 +152,13 @@ class WiredashThemeData {
     }
   }
 
+  double get buttonBarHeight {
+    if (windowSize.shortestSide <= 600) {
+      return 64;
+    }
+    return 96;
+  }
+
   double get verticalPadding {
     switch (deviceClass) {
       case DeviceClass.handsetSmall320:
@@ -169,11 +181,11 @@ class WiredashThemeData {
       case DeviceClass.tabletSmall600:
         return double.infinity;
       case DeviceClass.tabletLarge720:
-        return 480;
-      case DeviceClass.desktopSmall1024:
         return 640;
-      case DeviceClass.desktopLarge1440:
+      case DeviceClass.desktopSmall1024:
         return 720;
+      case DeviceClass.desktopLarge1440:
+        return 800;
     }
   }
 
@@ -191,7 +203,8 @@ class WiredashThemeData {
           secondaryBackgroundColor == other.secondaryBackgroundColor &&
           errorColor == other.errorColor &&
           deviceClass == other.deviceClass &&
-          fontFamily == other.fontFamily);
+          fontFamily == other.fontFamily &&
+          windowSize == other.windowSize);
 
   @override
   int get hashCode =>
@@ -204,7 +217,8 @@ class WiredashThemeData {
       secondaryBackgroundColor.hashCode ^
       errorColor.hashCode ^
       deviceClass.hashCode ^
-      fontFamily.hashCode;
+      fontFamily.hashCode ^
+      windowSize.hashCode;
 
   @override
   String toString() {
@@ -219,6 +233,7 @@ class WiredashThemeData {
         'errorColor: $errorColor, '
         'deviceClass: $deviceClass, '
         'fontFamily: $fontFamily, '
+        'windowSize: $windowSize, '
         '}';
   }
 
@@ -233,6 +248,7 @@ class WiredashThemeData {
     Color? errorColor,
     DeviceClass? deviceClass,
     String? fontFamily,
+    Size? windowSize,
   }) {
     return WiredashThemeData(
       brightness: brightness ?? this.brightness,
@@ -247,6 +263,7 @@ class WiredashThemeData {
       errorColor: errorColor ?? this.errorColor,
       deviceClass: deviceClass ?? this.deviceClass,
       fontFamily: fontFamily ?? this.fontFamily,
+      windowSize: windowSize ?? this.windowSize,
     );
   }
 }

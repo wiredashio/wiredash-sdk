@@ -97,6 +97,7 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           right: 0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               TranslateTransition(
                 offset: _prevButtonAnimation,

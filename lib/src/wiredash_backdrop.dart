@@ -257,15 +257,17 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     const minSquare = Size(320, 320);
     const maxSquare = Size(640, 640);
     const double minAppPeakHeight = 56;
+
+    const minNavButtonWidth = 100;
+    final double buttonBarHeight = context.theme.buttonBarHeight;
     final bool isKeyboardOpen = _mediaQueryData.viewInsets.bottom > 100;
 
     // center the navigation buttons
     var preferredAppHeight = _mediaQueryData.size.height * 0.5;
     if (!isKeyboardOpen) {
       preferredAppHeight -= minAppPeakHeight;
-      preferredAppHeight -= context.theme.verticalPadding / 2;
+      preferredAppHeight -= buttonBarHeight / 2;
     }
-
     final preferredContentHeight =
         _mediaQueryData.size.height - preferredAppHeight;
 
@@ -279,35 +281,31 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         math.min(contentHeightWithButtons, screenSize.height) -
             minAppPeakHeight;
 
-    final appWidth = screenSize.width * centerScaleFactor;
-    final contentWidth =
-        math.min(screenSize.width, context.theme.maxContentWidth);
-
-    final horizontalPadding = math.max(
-      (screenSize.width - contentWidth) / 2,
-      context.theme.horizontalPadding,
-    );
-
-    _rectContentArea = Rect.fromLTRB(
-      horizontalPadding,
-      0, //TODO add additional top padding
-      screenSize.width - horizontalPadding,
-      screenSize.height - contentHeight - context.theme.verticalPadding,
+    _rectContentArea = Rect.fromLTWH(
+      0,
+      0, // TODO top padding?
+      context.theme.maxContentWidth,
+      contentHeight - buttonBarHeight,
+    ).centerHorizontally(
+      maxWidth: screenSize.width,
+      minPadding: context.theme.horizontalPadding,
     );
 
     _rectAppOutOfFocus = Rect.fromLTWH(
-      (screenSize.width - appWidth) / 2,
+      0,
       contentHeight,
-      appWidth,
+      screenSize.width * centerScaleFactor,
       screenSize.height * centerScaleFactor,
+    ).centerHorizontally(
+      maxWidth: screenSize.width,
+      minPadding: context.theme.horizontalPadding,
     );
 
-    _rectNavigationButtons = Rect.fromLTRB(
+    _rectNavigationButtons = Rect.fromLTWH(
       _rectAppOutOfFocus.left,
-      contentHeight - context.theme.verticalPadding - 48,
-      //TODO Use real button height
-      _rectAppOutOfFocus.right,
-      _rectAppOutOfFocus.top,
+      _rectContentArea.bottom,
+      _rectAppOutOfFocus.width,
+      buttonBarHeight,
     );
 
     _rectAppFillsScreen =
@@ -800,4 +798,23 @@ class _KeepAppAliveState extends State<_KeepAppAlive>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+extension on Rect {
+  Rect centerHorizontally({required double maxWidth, double minPadding = 0.0}) {
+    double padding = (maxWidth - width) / 2;
+    if (padding < minPadding) {
+      padding = minPadding;
+    }
+    return Rect.fromLTWH(
+      padding,
+      top,
+      maxWidth - padding * 2,
+      height,
+    );
+  }
+
+  Rect expandHeight(double addition) {
+    return Rect.fromLTWH(left, top, width, height + addition);
+  }
 }

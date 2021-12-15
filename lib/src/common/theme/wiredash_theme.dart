@@ -16,7 +16,10 @@ class WiredashTheme extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final deviceClass = _calculateDeviceClass(constraints);
-        final themeData = data.copyWith(deviceClass: deviceClass);
+        final themeData = data.copyWith(
+          deviceClass: deviceClass,
+          windowSize: constraints.biggest,
+        );
         return _InheritedWiredashTheme(themeData: themeData, child: child);
       },
     );
