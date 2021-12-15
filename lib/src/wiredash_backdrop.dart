@@ -226,22 +226,24 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   void _calculateRects() {
     final Size screenSize = _mediaQueryData.size;
 
-    // center
-    final minContentWidthPadding = context.theme.horizontalPadding * 2;
-    final maxContentWidth = screenSize.width -
-        math.max(
-          _mediaQueryData.viewPadding.horizontal,
-          minContentWidthPadding,
-        );
-
-    final maxContentHeight =
-        screenSize.height - math.max(0, _mediaQueryData.viewPadding.vertical);
-
     // scale to show app in safeArea
-    final centerScaleFactor = math.min(
-      maxContentWidth / screenSize.width,
-      maxContentHeight / screenSize.height,
-    );
+    final centerScaleFactor = () {
+      // center
+      final minContentWidthPadding = context.theme.horizontalPadding * 2;
+      final maxContentWidth = screenSize.width -
+          math.max(
+            _mediaQueryData.viewPadding.horizontal,
+            minContentWidthPadding,
+          );
+
+      final maxContentHeight =
+          screenSize.height - math.max(0, _mediaQueryData.viewPadding.vertical);
+
+      return math.min(
+        maxContentWidth / screenSize.width,
+        maxContentHeight / screenSize.height,
+      );
+    }();
 
     _rectAppCentered = Rect.fromCenter(
       center:
@@ -251,8 +253,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
 
     // iPhone SE is 320 width
-    const minSquare = Size(320, 320);
-    const maxSquare = Size(640, 640);
+    const double minContentAreaHeight = 320.0;
+    const double maxContentAreaHeight = 640.0;
     const double minAppPeakHeight = 56;
 
     final double buttonBarHeight = context.theme.buttonBarHeight;
@@ -268,8 +270,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _mediaQueryData.size.height - preferredAppHeight;
 
     final contentHeightWithButtons = math.max(
-      math.min(preferredContentHeight, maxSquare.height),
-      minSquare.height,
+      math.min(preferredContentHeight, maxContentAreaHeight),
+      minContentAreaHeight,
     );
     // On super small screen (landscape phones) scale to 0 and
     // make 100% sure the appPeak is visible
