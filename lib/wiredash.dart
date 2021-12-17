@@ -1,5 +1,6 @@
 library wiredash;
 
+export 'src/common/options/feedback_options.dart';
 export 'src/common/options/wiredash_options_data.dart';
 export 'src/common/theme/wiredash_theme_data.dart';
 export 'src/common/translation/wiredash_localizations.dart';

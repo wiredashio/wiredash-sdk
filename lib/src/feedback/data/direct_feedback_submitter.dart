@@ -19,7 +19,7 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
         screenshotUri = await _api.sendImage(screenshot);
       }
 
-      await _api.sendFeedback(
+      await _api.sendFeedbackLegacy(
         item,
         images: [
           if (screenshotUri != null) screenshotUri,

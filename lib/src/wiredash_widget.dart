@@ -12,10 +12,7 @@ import 'package:wiredash/src/common/build_info/device_id_generator.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
-import 'package:wiredash/src/common/options/wiredash_options_data.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
-import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/common/widgets/screencapture.dart';
 import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
@@ -30,8 +27,8 @@ import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
 import 'package:wiredash/src/not_a_widgets_app.dart';
-import 'package:wiredash/src/wiredash_controller.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
+import 'package:wiredash/wiredash.dart';
 
 /// Capture in-app user feedback, wishes, ratings and much more
 ///
@@ -81,6 +78,7 @@ class Wiredash extends StatefulWidget {
     this.navigatorKey,
     this.options,
     this.theme,
+    this.feedbackOptions,
     required this.child,
   }) : super(key: key);
 
@@ -95,6 +93,8 @@ class Wiredash extends StatefulWidget {
 
   /// Customize Wiredash's behaviour and language
   final WiredashOptionsData? options;
+
+  final WiredashFeedbackOptions? feedbackOptions;
 
   /// Default visual properties, like colors and fonts for the Wiredash bottom
   /// sheet and the screenshot capture UI.

@@ -23,6 +23,7 @@ class WiredashController {
   /// to the feedback. The [userEmail] parameter can be used to prefill the
   /// email input field but it's up to the user to decide if he want's to
   /// include his email with the feedback.
+  // TODO split in userEmail and userId
   void setUserProperties({String? userId, String? userEmail}) {
     // TODO implement user properties
     // _model.userId = userId ?? _model.userId;
@@ -33,10 +34,15 @@ class WiredashController {
   ///
   /// If these values are also provided through dart-define during compile time
   /// then they will be overwritten by this method
+  // TODO split
   void setBuildProperties({String? buildVersion, String? buildNumber}) {
-    // TODO implement user properties
+    // TODO fix implementation
     // _model.buildInfoManager.buildVersionOverride = buildVersion;
     // _model.buildInfoManager.buildNumberOverride = buildNumber;
+  }
+
+  void setMetaData(Map<String, Object?> data) {
+    // TODO implement custom payloads
   }
 
   /// This will open the Wiredash feedback sheet and start the feedback process.

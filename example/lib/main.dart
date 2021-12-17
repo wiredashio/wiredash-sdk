@@ -59,6 +59,14 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
         // locale: const Locale('de'),
         // textDirection: TextDirection.rtl,
       ),
+      feedbackOptions: WiredashFeedbackOptions(
+        labels: [
+          Label(
+            id: 'lbl-2r98yasfk',
+            name: 'bug', // TODO translate it yourself here
+          ),
+        ],
+      ),
       theme: WiredashThemeData(
 
           /// Uncomment below to explore the various theme options:

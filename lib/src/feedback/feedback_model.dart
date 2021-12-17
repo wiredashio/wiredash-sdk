@@ -229,10 +229,11 @@ class FeedbackModel with ChangeNotifier {
       buildInfo: _wiredashState.buildInfoManager.buildInfo,
       deviceInfo: _wiredashState.deviceInfoGenerator.generate(),
       email: userEmail,
-      // TODO collect message and labels
       message: _feedbackMessage!,
+      // TODO collect labels
       type: 'bug',
-      userId: 'test', // TODO use real user id
+      // TODO use real user id
+      userId: 'test',
     );
   }
 
