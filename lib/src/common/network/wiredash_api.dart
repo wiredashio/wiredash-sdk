@@ -178,10 +178,8 @@ extension FeedbackBody on PersistedFeedbackItem {
     // Required values
     values.addAll({
       'deviceId': nonNull(deviceId),
-      // TODO remove isDebugBuild and replace it with compilationMode on backend
       'compilationMode': nonNull(buildInfo.compilationMode).jsonEncode(),
-      // TODO return correct label ids
-      'labels': [nonNull(type)],
+      if (labels != null) 'labels': nonNull(labels!),
       'message': nonNull(message),
       'sdkVersion': nonNull(sdkVersion),
       'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
@@ -198,7 +196,6 @@ extension FeedbackBody on PersistedFeedbackItem {
       'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
       'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
       'windowPadding': nonNull(deviceInfo.padding).toJson(),
-      // TODO add to backend
       'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
       'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode(),
     });

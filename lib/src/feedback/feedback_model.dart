@@ -3,9 +3,9 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/utils/delay.dart';
-import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
+import 'package:wiredash/wiredash.dart';
 
 enum FeedbackFlowStatus {
   none,
@@ -35,11 +35,19 @@ class FeedbackModel with ChangeNotifier {
 
   Uint8List? _screenshot;
 
-  String? get userEmail => _userEmail;
+  String? get userEmail => _userEmail ?? _metaData?.userEmail;
   String? _userEmail;
 
   List<Label> get selectedLabels => List.unmodifiable(_selectedLabels);
   List<Label> _selectedLabels = [];
+
+  List<Label> get labels =>
+      _wiredashState.widget.feedbackOptions?.labels ??
+      const [
+        Label(id: 'bug', title: 'Bug'),
+        Label(id: 'improvement', title: 'Improvement'),
+        Label(id: 'praise', title: 'Praise'),
+      ];
 
   set selectedLabels(List<Label> list) {
     _selectedLabels = list;
@@ -59,6 +67,10 @@ class FeedbackModel with ChangeNotifier {
 
   Delay? _submitDelay;
   Delay? _closeDelay;
+
+  FeedbackMetaData? _metaData;
+  late DeviceInfo _deviceInfo;
+  late BuildInfo _buildInfo;
 
   List<FeedbackFlowStatus> get steps {
     if (submitted) {
@@ -131,6 +143,25 @@ class FeedbackModel with ChangeNotifier {
         notifyListeners();
 
         await _wiredashState.screenCaptureController.captureScreen();
+        // TODO show loading indicator?
+        final metaData = FeedbackMetaData();
+        _deviceInfo = _wiredashState.deviceInfoGenerator.generate();
+        final buildInfo = _wiredashState.buildInfoManager.buildInfo;
+        metaData.buildVersion = buildInfo.buildVersion;
+        metaData.buildNumber = buildInfo.buildNumber;
+        metaData.buildCommit = buildInfo.buildCommit;
+        // Allow devs to collect additional information
+        await _wiredashState.widget.feedbackOptions?.collectMetaData
+            ?.call(metaData);
+        _buildInfo = BuildInfo(
+          compilationMode: buildInfo.compilationMode,
+          buildVersion: buildInfo.buildVersion,
+          buildNumber: buildInfo.buildNumber,
+          buildCommit: buildInfo.buildCommit,
+        );
+        _metaData = metaData;
+        notifyListeners();
+
         await goToStep(FeedbackFlowStatus.screenshotDrawing);
         break;
       case FeedbackFlowStatus.screenshotDrawing:
@@ -226,14 +257,12 @@ class FeedbackModel with ChangeNotifier {
       appInfo: AppInfo(
         appLocale: _wiredashState.options.currentLocale.toLanguageTag(),
       ),
-      buildInfo: _wiredashState.buildInfoManager.buildInfo,
-      deviceInfo: _wiredashState.deviceInfoGenerator.generate(),
+      buildInfo: _buildInfo,
+      deviceInfo: _deviceInfo,
       email: userEmail,
       message: _feedbackMessage!,
-      // TODO collect labels
-      type: 'bug',
-      // TODO use real user id
-      userId: 'test',
+      labels: _selectedLabels.map((it) => it.id).toList(),
+      userId: _metaData?.userId,
     );
   }
 

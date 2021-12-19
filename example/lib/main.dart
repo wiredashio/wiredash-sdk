@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
 
 void main() {
-  runApp(const WiredashExampleApp());
+  runApp(WiredashExampleApp());
 }
 
 class WiredashExampleApp extends StatefulWidget {
-  const WiredashExampleApp({Key? key}) : super(key: key);
+  WiredashExampleApp({Key? key}) : super(key: key);
 
   @override
   _WiredashExampleAppState createState() => _WiredashExampleAppState();
@@ -50,20 +50,37 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
 
         /// Uncomment below to set custom translations work
         // customTranslations: {
-        //   const Locale.fromSubtags(languageCode: 'en'):
-        //       const CustomDemoTranslations(),
+        //    Locale.fromSubtags(languageCode: 'en'):
+        //        CustomDemoTranslations(),
         // },
 
         /// Uncomment below to override the default device locale
         // and/or text direction
-        // locale: const Locale('de'),
+        // locale:  Locale('de'),
         // textDirection: TextDirection.rtl,
       ),
       feedbackOptions: WiredashFeedbackOptions(
+        askForUserEmail: true,
+        collectMetaData: (metaData) async {
+          metaData.userEmail = 'dash@wiredash.io';
+          metaData.custom['isPremium'] = false;
+        },
         labels: [
           Label(
-            id: 'lbl-2r98yasfk',
-            name: 'bug', // TODO translate it yourself here
+            id: 'lbl-r65egsdf',
+            title: 'Bug',
+          ),
+          Label(
+            id: 'lbl-2r98yask',
+            title: 'Abfall',
+          ),
+          Label(
+            id: 'lbl-de3w2fds',
+            title: 'Backend',
+          ),
+          Label(
+            id: 'lbl-2r98yas4',
+            title: 'Da muss Frederik noch mal dran',
           ),
         ],
       ),
@@ -95,14 +112,14 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         navigatorKey: _navigatorKey,
-        home: const _HomePage(),
+        home: _HomePage(),
       ),
     );
   }
 }
 
 class _HomePage extends StatelessWidget {
-  const _HomePage({Key? key}) : super(key: key);
+  _HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +131,7 @@ class _HomePage extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             title: Text('Sample Item #$index'),
-            subtitle: const Text('Tap me to open a new page'),
+            subtitle: Text('Tap me to open a new page'),
             onTap: () => _openDetailsPage(context, index),
           );
         },
@@ -144,7 +161,7 @@ class _HomePage extends StatelessWidget {
 }
 
 class _DetailsPage extends StatelessWidget {
-  const _DetailsPage({
+  _DetailsPage({
     Key? key,
     required this.index,
   }) : super(key: key);
@@ -159,7 +176,7 @@ class _DetailsPage extends StatelessWidget {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -167,8 +184,8 @@ class _DetailsPage extends StatelessWidget {
                 'Details page #$index',
                 style: Theme.of(context).textTheme.headline6,
               ),
-              const SizedBox(height: 8),
-              const Text('Try navigating here in feedback mode.')
+              SizedBox(height: 8),
+              Text('Try navigating here in feedback mode.')
             ],
           ),
         ),

@@ -136,7 +136,9 @@ class PendingFeedbackItemParserV1 {
       email: feedbackItemJson['email'] as String?,
       message: feedbackItemJson['message'] as String,
       sdkVersion: feedbackItemJson['sdkVersion'] as int,
-      type: feedbackItemJson['type'] as String,
+      labels: (feedbackItemJson['labels'] as List<dynamic>?)
+          ?.map((it) => it as String)
+          .toList(),
       userId: feedbackItemJson['userId'] as String?,
     );
 
@@ -176,8 +178,8 @@ extension _SerializePersistedFeedbackItem on PersistedFeedbackItem {
       }),
       'deviceId': deviceId,
       if (email != null) 'email': email,
+      if (labels != null) 'labels': labels,
       'message': message,
-      'type': type,
       if (userId != null) 'userId': userId,
       'sdkVersion': sdkVersion,
     });

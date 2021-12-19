@@ -39,7 +39,7 @@ void main() {
       ),
       email: 'email@example.com',
       message: 'Hello world!',
-      type: 'bug',
+      labels: ['bug', 'lbl-1234'],
       userId: 'Testy McTestFace',
       sdkVersion: 1,
     ),
@@ -68,7 +68,6 @@ void main() {
         physicalSize: Size(1280, 720),
       ),
       message: 'Hello world!',
-      type: 'bug',
       sdkVersion: 12,
     ),
   );
@@ -111,7 +110,7 @@ void main() {
             'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
             'email': 'email@example.com',
             'message': 'Hello world!',
-            'type': 'bug',
+            'labels': ['bug', 'lbl-1234'],
             'userId': 'Testy McTestFace',
             'sdkVersion': 1
           },
@@ -127,7 +126,6 @@ void main() {
           'feedbackItem': {
             'deviceId': '1234',
             'message': 'Hello world!',
-            'type': 'bug',
             'sdkVersion': 12,
             'appInfo': {
               'appLocale': 'en_US',
@@ -192,7 +190,7 @@ void main() {
             'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
             'email': 'email@example.com',
             'message': 'Hello world!',
-            'type': 'bug',
+            'labels': ['bug', 'lbl-1234'],
             'userId': 'Testy McTestFace',
             'sdkVersion': 1,
           },
@@ -207,7 +205,6 @@ void main() {
         'feedbackItem': {
           'deviceId': '1234',
           'message': 'Hello world!',
-          'type': 'bug',
           'sdkVersion': 12,
           'appInfo': {
             'appLocale': 'en_US',

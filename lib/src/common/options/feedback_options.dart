@@ -1,23 +1,17 @@
+import 'dart:async';
+
+import 'package:wiredash/src/feedback/data/label.dart';
+
 class WiredashFeedbackOptions {
   final List<Label>? labels;
   final bool askForUserEmail;
-  // TODO move pen color in here
+  final FutureOr<void> Function(FeedbackMetaData)? collectMetaData;
 
   const WiredashFeedbackOptions({
     this.labels,
-    this.askForUserEmail = true,
+    this.askForUserEmail = false,
+    this.collectMetaData,
   });
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is WiredashFeedbackOptions &&
-          runtimeType == other.runtimeType &&
-          labels == other.labels &&
-          askForUserEmail == other.askForUserEmail);
-
-  @override
-  int get hashCode => labels.hashCode ^ askForUserEmail.hashCode;
 
   @override
   String toString() {
@@ -28,47 +22,22 @@ class WiredashFeedbackOptions {
   }
 }
 
-class Label {
-  const Label({
-    required this.id,
-    required this.title,
-    this.description,
-  });
-
-  final String id;
-  final String title;
-  final String? description;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Label &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          title == other.title &&
-          description == other.description);
-
-  @override
-  int get hashCode => id.hashCode ^ title.hashCode ^ description.hashCode;
+class FeedbackMetaData {
+  String? userId;
+  String? userEmail;
+  String? buildVersion;
+  String? buildNumber;
+  String? buildCommit;
+  Map<String, Object?> custom = {};
 
   @override
   String toString() {
-    return 'Label{'
-        'id: $id, '
-        'title: $title, '
-        'description: $description'
+    return 'FeedbackMetaData{'
+        'userId: $userId, '
+        'userEmail: $userEmail, '
+        'buildVersion: $buildVersion, '
+        'buildNumber: $buildNumber, '
+        'custom: $custom'
         '}';
-  }
-
-  Label copyWith({
-    String? id,
-    String? title,
-    String? description,
-  }) {
-    return Label(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      description: description ?? this.description,
-    );
   }
 }

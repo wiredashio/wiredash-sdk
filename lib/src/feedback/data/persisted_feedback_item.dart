@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/app_info.dart';
 import 'package:wiredash/src/common/build_info/build_info.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
@@ -22,8 +25,8 @@ class PersistedFeedbackItem {
     required this.deviceId,
     this.email,
     required this.message,
-    required this.type,
     this.userId,
+    this.labels,
     this.sdkVersion = wiredashSdkVersion,
   });
 
@@ -33,9 +36,9 @@ class PersistedFeedbackItem {
   final String deviceId;
   final String? email;
   final String message;
-  final String type;
   final String? userId;
   final int sdkVersion;
+  final List<String>? labels;
 
   @override
   bool operator ==(Object other) =>
@@ -44,21 +47,25 @@ class PersistedFeedbackItem {
           runtimeType == other.runtimeType &&
           deviceInfo == other.deviceInfo &&
           appInfo == other.appInfo &&
+          buildInfo == other.buildInfo &&
+          deviceId == other.deviceId &&
           email == other.email &&
           message == other.message &&
-          type == other.type &&
           userId == other.userId &&
-          sdkVersion == other.sdkVersion;
+          sdkVersion == other.sdkVersion &&
+          listEquals(labels, other.labels);
 
   @override
   int get hashCode =>
       deviceInfo.hashCode ^
       appInfo.hashCode ^
+      buildInfo.hashCode ^
+      deviceId.hashCode ^
       email.hashCode ^
       message.hashCode ^
-      type.hashCode ^
       userId.hashCode ^
-      sdkVersion.hashCode;
+      sdkVersion.hashCode ^
+      hashList(labels);
 
   @override
   String toString() {
@@ -67,9 +74,9 @@ class PersistedFeedbackItem {
         'appInfo: $appInfo, '
         'email: $email, '
         'message: $message, '
-        'type: $type, '
         'userId: $userId, '
         'sdkVersion: $sdkVersion, '
+        'labels: $labels, '
         '}';
   }
 }

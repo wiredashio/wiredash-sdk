@@ -36,7 +36,7 @@ void main() {
         ),
         email: 'email@example.com',
         message: 'Hello world!',
-        type: 'bug',
+        labels: ['bug'],
         userId: 'Testy McTestFace',
         sdkVersion: 1,
       ).toFeedbackBody();
@@ -99,7 +99,7 @@ void main() {
         ),
         email: '',
         message: 'Hello world!',
-        type: 'bug',
+        labels: ['bug'],
         userId: 'Testy McTestFace',
         sdkVersion: 1,
       ).toFeedbackBody();

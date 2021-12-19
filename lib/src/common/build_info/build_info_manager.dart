@@ -1,15 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/build_info.dart';
 
-/// Allows overriding of statically defined values
 class BuildInfoManager {
   BuildInfoManager();
 
-  String? buildVersionOverride;
-
-  String? buildNumberOverride;
-
-  /// Returns the aggregated build info from compile-time env and overrides
+  /// Returns the aggregated build info from compile-time env
   BuildInfo get buildInfo {
     return BuildInfo(
       compilationMode: () {
@@ -17,8 +12,8 @@ class BuildInfoManager {
         if (kProfileMode) return CompilationMode.profile;
         return CompilationMode.release;
       }(),
-      buildVersion: buildVersionOverride ?? EnvBuildInfo.buildVersion,
-      buildNumber: buildNumberOverride ?? EnvBuildInfo.buildNumber,
+      buildVersion: EnvBuildInfo.buildVersion,
+      buildNumber: EnvBuildInfo.buildNumber,
       buildCommit: EnvBuildInfo.buildCommit,
     );
   }

@@ -36,11 +36,7 @@ class _Step2LabelsState extends State<Step2Labels>
               // TODO replace with automatic scaled spacing from theme
               const SizedBox(height: 32),
               _LabelRecommendations(
-                labels: const [
-                  Label(id: 'bug', name: 'Bug'),
-                  Label(id: 'improvement', name: 'Improvement'),
-                  Label(id: 'praise', name: 'Praise 🎉'),
-                ],
+                labels: feedbackModel.labels,
                 isAnyLabelSelected: selectedLabels.isNotEmpty,
                 isLabelSelected: selectedLabels.contains,
                 toggleSelection: (label) {
@@ -147,7 +143,7 @@ class _Label extends StatelessWidget {
                   ? context.theme.primaryColor
                   : context.theme.primaryColor.withAlpha(128), // gray / 500
             ),
-            child: Text(label.name),
+            child: Text(label.title),
           ),
         ),
       ),
