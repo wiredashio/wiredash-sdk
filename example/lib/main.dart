@@ -142,7 +142,7 @@ class _HomePage extends StatelessWidget {
         /// Since the `Wiredash` widget is at the root of the widget tree this
         /// method can be accessed from anywhere in the code.
         onPressed: () {
-          Wiredash.of(context)!.show();
+          Wiredash.of(context).show();
         },
         child: Icon(Icons.feedback_outlined),
       ),

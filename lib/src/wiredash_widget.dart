@@ -118,6 +118,21 @@ class Wiredash extends StatefulWidget {
   @override
   WiredashState createState() => WiredashState();
 
+  /// The [WiredashController] from the closest [Wiredash] instance or `null`
+  /// that encloses the given context.
+  ///
+  /// Use it to start Wiredash (when available)
+  ///
+  /// ```dart
+  /// Wiredash.maybeOf(context)?.show();
+  /// ```
+  static WiredashController? maybeOf(BuildContext context) {
+    final state = context.findAncestorStateOfType<WiredashState>();
+    if (state == null) return null;
+
+    return WiredashController(state._wiredashModel);
+  }
+
   /// The [WiredashController] from the closest [Wiredash] instance that
   /// encloses the given context.
   ///
@@ -126,11 +141,9 @@ class Wiredash extends StatefulWidget {
   /// ```dart
   /// Wiredash.of(context).show();
   /// ```
-  static WiredashController? of(BuildContext context) {
+  static WiredashController of(BuildContext context) {
     final state = context.findAncestorStateOfType<WiredashState>();
-    if (state == null) return null;
-
-    return WiredashController(state._wiredashModel);
+    return WiredashController(state!._wiredashModel);
   }
 }
 
