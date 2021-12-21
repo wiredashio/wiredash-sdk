@@ -252,6 +252,8 @@ extension FeedbackBody on PersistedFeedbackItem {
 
 /// Explicitly defines a values a non null, making it a compile time error
 /// when [value] becomes nullable
+///
+/// This prevents accidental null values here that may happen due to refactoring
 T nonNull<T extends Object>(T value) {
   return value;
 }

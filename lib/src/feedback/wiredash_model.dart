@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/options/feedback_options.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 
@@ -7,6 +8,26 @@ class WiredashModel with ChangeNotifier {
   WiredashModel(this.state);
 
   final WiredashState state;
+
+  CustomizableWiredashMetaData? _metaData;
+
+  CustomizableWiredashMetaData get metaData {
+    if (_metaData == null) {
+      _metaData = CustomizableWiredashMetaData();
+
+      // prepopulate
+      final buildInfo = state.buildInfoManager.buildInfo;
+      _metaData!.buildVersion = buildInfo.buildVersion;
+      _metaData!.buildNumber = buildInfo.buildNumber;
+      _metaData!.buildCommit = buildInfo.buildCommit;
+    }
+    return _metaData!;
+  }
+
+  set metaData(CustomizableWiredashMetaData? metaData) {
+    _metaData = metaData;
+    notifyListeners();
+  }
 
   /// Deletes pending feedbacks
   ///

@@ -77,6 +77,20 @@ class BuildInfo {
         'buildCommit: $buildCommit'
         '}';
   }
+
+  BuildInfo copyWith({
+    String? buildVersion,
+    String? buildNumber,
+    String? buildCommit,
+    CompilationMode? compilationMode,
+  }) {
+    return BuildInfo(
+      buildVersion: buildVersion ?? this.buildVersion,
+      buildNumber: buildNumber ?? this.buildNumber,
+      buildCommit: buildCommit ?? this.buildCommit,
+      compilationMode: compilationMode ?? this.compilationMode,
+    );
+  }
 }
 
 /// The compile mode the Flutter app was built with

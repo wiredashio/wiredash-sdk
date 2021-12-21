@@ -59,12 +59,11 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
         // locale:  Locale('de'),
         // textDirection: TextDirection.rtl,
       ),
+      collectMetaData: (metaData) async {
+        metaData.userEmail = 'dash@wiredash.io';
+        metaData.custom['isPremium'] = false;
       feedbackOptions: WiredashFeedbackOptions(
         askForUserEmail: true,
-        collectMetaData: (metaData) async {
-          metaData.userEmail = 'dash@wiredash.io';
-          metaData.custom['isPremium'] = false;
-        },
         labels: [
           Label(
             id: 'lbl-r65egsdf',

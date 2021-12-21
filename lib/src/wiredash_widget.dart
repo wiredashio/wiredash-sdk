@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:file/local.dart';
@@ -79,6 +80,7 @@ class Wiredash extends StatefulWidget {
     this.options,
     this.theme,
     this.feedbackOptions,
+    this.collectMetaData,
     required this.child,
   }) : super(key: key);
 
@@ -95,6 +97,10 @@ class Wiredash extends StatefulWidget {
   final WiredashOptionsData? options;
 
   final WiredashFeedbackOptions? feedbackOptions;
+
+  final FutureOr<CustomizableWiredashMetaData> Function(
+    CustomizableWiredashMetaData metaData,
+  )? collectMetaData;
 
   /// Default visual properties, like colors and fonts for the Wiredash bottom
   /// sheet and the screenshot capture UI.
@@ -135,6 +141,8 @@ class Wiredash extends StatefulWidget {
 
 class WiredashState extends State<Wiredash> {
   late WiredashModel _wiredashModel;
+  WiredashModel get wiredashModel => _wiredashModel;
+
   late FeedbackModel _feedbackModel;
 
   late WiredashOptionsData options;

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:wiredash/src/common/build_info/build_info.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
-import 'package:wiredash/src/wiredash_widget.dart';
+import 'package:wiredash/wiredash.dart';
 
 /// Use this controller to interact with [Wiredash]
 ///
@@ -19,30 +20,60 @@ class WiredashController {
 
   final WiredashModel _model;
 
+  /// Modify the metadata that will be collected with Wiredash
+  ///
+  /// The metadata include user information (userId and userEmail),
+  /// build information (version, buildNumber, commit) and
+  /// any custom data (Map<String, Object?>) you want to have attached to
+  /// feedback.
+  ///
+  /// Setting the userEmail prefills the email field.
+  ///
+  /// The build information is prefilled by [EnvBuildInfo], reading the build
+  /// environment variables during compilation.
+  ///
+  /// Usage:
+  ///
+  /// ```dart
+  /// Wiredash.of(context).modifyMetaData(
+  ///   (metaData) => metaData
+  ///     ..userEmail = 'dash@wiredash.io'
+  ///     ..buildCommit = '43f23dd'
+  ///     ..custom['screen'] = 'HomePage'
+  ///     ..custom['isPremium'] = false,
+  /// );
+  /// ```
+  void modifyMetaData(
+    CustomizableWiredashMetaData Function(CustomizableWiredashMetaData metaData)
+        mutation,
+  ) {
+    _model.metaData = mutation(_model.metaData);
+  }
+
   /// Use this method to provide custom [userId]
   /// to the feedback. The [userEmail] parameter can be used to prefill the
   /// email input field but it's up to the user to decide if he want's to
   /// include his email with the feedback.
-  // TODO split in userEmail and userId
+  @Deprecated('use mutateMetaData((metaData) => metaData)')
   void setUserProperties({String? userId, String? userEmail}) {
-    // TODO implement user properties
-    // _model.userId = userId ?? _model.userId;
-    // _model.userEmail = userEmail ?? _model.userEmail;
+    modifyMetaData(
+      (metaData) => metaData
+        ..userId = userId ?? metaData.userId
+        ..userEmail = userEmail ?? metaData.userEmail,
+    );
   }
 
   /// Use this method to attach custom [buildVersion] and [buildNumber]
   ///
   /// If these values are also provided through dart-define during compile time
   /// then they will be overwritten by this method
-  // TODO split
+  @Deprecated('use mutateMetaData((metaData) => metaData)')
   void setBuildProperties({String? buildVersion, String? buildNumber}) {
-    // TODO fix implementation
-    // _model.buildInfoManager.buildVersionOverride = buildVersion;
-    // _model.buildInfoManager.buildNumberOverride = buildNumber;
-  }
-
-  void setMetaData(Map<String, Object?> data) {
-    // TODO implement custom payloads
+    modifyMetaData(
+      (metaData) => metaData
+        ..buildVersion = buildVersion ?? metaData.buildVersion
+        ..buildNumber = buildNumber ?? metaData.buildNumber,
+    );
   }
 
   /// This will open the Wiredash feedback sheet and start the feedback process.
@@ -64,7 +95,7 @@ class WiredashController {
   /// The [Confidential] widget can automatically hide sensitive widgets from
   /// being recorded in a feedback screenshot.
   ValueNotifier<bool> get visible {
-    return _model
-        .asValueNotifier((c) => c.state.backdropController.isAppInteractive);
+    return _model.state.backdropController
+        .asValueNotifier((c) => c.isAppInteractive);
   }
 }

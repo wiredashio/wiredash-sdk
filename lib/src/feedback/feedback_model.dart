@@ -68,7 +68,7 @@ class FeedbackModel with ChangeNotifier {
   Delay? _submitDelay;
   Delay? _closeDelay;
 
-  FeedbackMetaData? _metaData;
+  CustomizableWiredashMetaData? _metaData;
   late DeviceInfo _deviceInfo;
   late BuildInfo _buildInfo;
 
@@ -144,21 +144,11 @@ class FeedbackModel with ChangeNotifier {
 
         await _wiredashState.screenCaptureController.captureScreen();
         // TODO show loading indicator?
-        final metaData = FeedbackMetaData();
         _deviceInfo = _wiredashState.deviceInfoGenerator.generate();
-        final buildInfo = _wiredashState.buildInfoManager.buildInfo;
-        metaData.buildVersion = buildInfo.buildVersion;
-        metaData.buildNumber = buildInfo.buildNumber;
-        metaData.buildCommit = buildInfo.buildCommit;
+        final metaData = _wiredashState.wiredashModel.metaData;
         // Allow devs to collect additional information
-        await _wiredashState.widget.feedbackOptions?.collectMetaData
-            ?.call(metaData);
-        _buildInfo = BuildInfo(
-          compilationMode: buildInfo.compilationMode,
-          buildVersion: buildInfo.buildVersion,
-          buildNumber: buildInfo.buildNumber,
-          buildCommit: buildInfo.buildCommit,
-        );
+        await _wiredashState.widget.collectMetaData?.call(metaData);
+        _buildInfo = _wiredashState.buildInfoManager.buildInfo;
         _metaData = metaData;
         notifyListeners();
 
@@ -257,7 +247,11 @@ class FeedbackModel with ChangeNotifier {
       appInfo: AppInfo(
         appLocale: _wiredashState.options.currentLocale.toLanguageTag(),
       ),
-      buildInfo: _buildInfo,
+      buildInfo: _buildInfo.copyWith(
+        buildCommit: _metaData?.buildCommit,
+        buildNumber: _metaData?.buildNumber,
+        buildVersion: _metaData?.buildVersion,
+      ),
       deviceInfo: _deviceInfo,
       email: userEmail,
       message: _feedbackMessage!,
