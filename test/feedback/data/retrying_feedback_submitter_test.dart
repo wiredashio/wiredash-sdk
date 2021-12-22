@@ -26,7 +26,7 @@ class MockNetworkManager extends Fake implements WiredashApi {
       MethodInvocationCatcher('sendFeedback');
 
   @override
-  Future<void> sendFeedbackLegacy(
+  Future<void> sendFeedback(
     PersistedFeedbackItem feedback, {
     List<ImageBlob> images = const [],
   }) async {

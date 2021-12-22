@@ -57,7 +57,7 @@ class WiredashApi {
   /// Reports a feedback
   ///
   /// POST /sendFeedback
-  Future<void> sendFeedbackLegacy(
+  Future<void> sendFeedback(
     PersistedFeedbackItem feedback, {
     List<ImageBlob> images = const [],
   }) async {

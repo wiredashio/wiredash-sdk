@@ -115,7 +115,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
           return null;
         }();
 
-        await _api.sendFeedbackLegacy(
+        await _api.sendFeedback(
           item.feedbackItem,
           images: [
             if (imageUri != null) imageUri,
