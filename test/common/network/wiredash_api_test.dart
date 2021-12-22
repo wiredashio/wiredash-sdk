@@ -67,7 +67,7 @@ void main() {
           'compilationMode': 'debug',
           'customMetaData': {
             'customText': 'text',
-            'nestedObject': '{"frodo":"ring","sam":"lembas"}'
+            'nestedObject': {'frodo': 'ring', 'sam': 'lembas'}
           },
           'labels': ['bug'],
           'message': 'Hello world!',

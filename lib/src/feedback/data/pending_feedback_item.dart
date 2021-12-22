@@ -132,8 +132,9 @@ class PendingFeedbackItemParserV1 {
     final feedbackItem = PersistedFeedbackItem(
       appInfo: appInfo,
       buildInfo: buildInfo,
-      customMetaData:
-          (feedbackItemJson['customMetaData'] as Map?)?.cast<String, Object?>(),
+      customMetaData: (feedbackItemJson['customMetaData'] as Map?)?.map(
+        (key, value) => MapEntry(key.toString(), jsonDecode(value.toString())),
+      ),
       deviceInfo: deviceInfo,
       deviceId: feedbackItemJson['deviceId'] as String,
       email: feedbackItemJson['email'] as String?,

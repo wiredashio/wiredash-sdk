@@ -95,8 +95,8 @@ void main() {
               'compilationMode': 'profile',
             },
             'customMetaData': {
-              'customText': 'text',
-              'nestedObject': {'frodo': 'ring', 'sam': 'lembas'},
+              'customText': '"text"',
+              'nestedObject': '{"frodo":"ring","sam":"lembas"}',
             },
             'deviceInfo': {
               'padding': [0, 66, 0, 0],
@@ -181,8 +181,8 @@ void main() {
               'compilationMode': 'profile',
             },
             'customMetaData': {
-              'customText': 'text',
-              'nestedObject': {'frodo': 'ring', 'sam': 'lembas'},
+              'customText': '"text"',
+              'nestedObject': '{"frodo":"ring","sam":"lembas"}',
             },
             'deviceInfo': {
               'padding': [0, 66, 0, 0],
