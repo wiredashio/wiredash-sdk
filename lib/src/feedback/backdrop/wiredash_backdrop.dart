@@ -526,7 +526,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// Wiredash background based on a linear gradient
   BoxDecoration _backgroundDecoration() {
-    print(context.theme.secondaryBackgroundColor);
     return BoxDecoration(
       gradient: LinearGradient(
         begin: AlignmentDirectional.topCenter,

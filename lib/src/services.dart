@@ -128,7 +128,7 @@ class WiredashServices extends ChangeNotifier {
 }
 
 class Locator {
-  final Map<Type, _Provider> _registry = {};
+  final Map<Type, InstanceFactory> _registry = {};
 
   void dispose() {
     for (final item in _registry.values) {
@@ -141,12 +141,12 @@ class Locator {
     return provider!.instance as T;
   }
 
-  _Provider<T> inject<T>(
+  InstanceFactory<T> inject<T>(
     T Function(Locator) create, {
     Function(T)? dispose,
   }) {
-    late _Provider<T> provider;
-    provider = _Provider(this, create, () {
+    late InstanceFactory<T> provider;
+    provider = InstanceFactory(this, create, () {
       final instance = provider._instance;
       if (instance != null && dispose != null) {
         dispose(instance);
@@ -154,8 +154,6 @@ class Locator {
     });
     final existing = _registry[T];
     if (existing != null) {
-      print("$existing changed, rebuilding dependencies:");
-      print(existing.dependencies);
       provider.dependencies = existing.dependencies;
     }
     _registry[T] = provider;
@@ -163,10 +161,10 @@ class Locator {
   }
 }
 
-class _Provider<T> {
+class InstanceFactory<T> {
   static int _id = 0;
 
-  _Provider(this.locator, this.create, this.dispose) {
+  InstanceFactory(this.locator, this.create, this.dispose) {
     // locator.registry[id] = this;
   }
 
@@ -176,7 +174,7 @@ class _Provider<T> {
   final int id = _id++;
   T? _instance;
 
-  List<_Provider> dependencies = [];
+  List<InstanceFactory> dependencies = [];
 
   final Function()? dispose;
 
@@ -198,14 +196,13 @@ class DependencyTracker {
 
   DependencyTracker(this.provider);
 
-  final _Provider provider;
+  final InstanceFactory provider;
   Locator get locator => provider.locator;
 
   int? _prevActive;
 
   void create() {
     _prevActive = _active;
-    print("> create $provider");
     _active = provider.id;
     if (_prevActive != null) {
       final listener = locator._registry.values
@@ -216,6 +213,5 @@ class DependencyTracker {
 
   void created() {
     _active = _prevActive;
-    print("< created $provider");
   }
 }

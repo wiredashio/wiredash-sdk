@@ -131,32 +131,9 @@ class Wiredash extends StatefulWidget {
 }
 
 class WiredashState extends State<Wiredash> {
-  // late WiredashModel _wiredashModel;
-  // WiredashModel get wiredashModel => _wiredashModel;
-  //
-  // late FeedbackModel _feedbackModel;
-  //
-  // late WiredashOptionsData options;
-  // late WiredashThemeData _theme;
-  //
-  // late DeviceIdGenerator deviceIdGenerator;
-  //
-  // late BackdropController _backdropController;
-  // BackdropController get backdropController => _backdropController;
-  //
-  // late PicassoController picassoController;
-  // late ScreenCaptureController screenCaptureController;
-  //
-  // late BuildInfoManager buildInfoManager;
-  //
-  // late DeviceInfoGenerator deviceInfoGenerator;
-  //
-  // late FeedbackSubmitter feedbackSubmitter;
+  final Key _appKey = const ValueKey('app');
 
-  final GlobalKey _appKey = GlobalKey<State<StatefulWidget>>(debugLabel: 'app');
-
-  final GlobalKey _backdropKey =
-      GlobalKey<State<StatefulWidget>>(debugLabel: 'backdrop');
+  final Key _backdropKey = const ValueKey('backdrop');
 
   bool _isWiredashClosed = true;
 
@@ -172,12 +149,11 @@ class WiredashState extends State<Wiredash> {
     services.updateWidget(widget);
     services.addListener(() {
       setState(() {
-        print("rebuilding wiredash widget #1");
+        // rebuild wiredash
       });
     });
     services.backdropController.addListener(() {
       setState(() {
-        print("rebuilding wiredash widget #2");
         _isWiredashClosed = services.backdropController.backdropStatus ==
             WiredashBackdropStatus.closed;
       });
@@ -234,7 +210,6 @@ class WiredashState extends State<Wiredash> {
       locale: widget.options?.currentLocale,
       textDirection: widget.options?.textDirection,
       child: WiredashLocalizations(
-        // Style wiredash using the users provided theme
         child: WiredashTheme(
           data: theme,
           child: Stack(
