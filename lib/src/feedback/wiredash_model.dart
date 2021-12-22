@@ -2,12 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/options/feedback_options.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
-import 'package:wiredash/src/wiredash_widget.dart';
+import 'package:wiredash/src/services.dart';
 
 class WiredashModel with ChangeNotifier {
-  WiredashModel(this.state);
+  WiredashModel(this.services);
 
-  final WiredashState state;
+  final WiredashServices services;
 
   CustomizableWiredashMetaData? _metaData;
 
@@ -16,7 +16,7 @@ class WiredashModel with ChangeNotifier {
       _metaData = CustomizableWiredashMetaData();
 
       // prepopulate
-      final buildInfo = state.buildInfoManager.buildInfo;
+      final buildInfo = services.buildInfoManager.buildInfo;
       _metaData!.buildVersion = buildInfo.buildVersion;
       _metaData!.buildNumber = buildInfo.buildNumber;
       _metaData!.buildCommit = buildInfo.buildCommit;
@@ -34,7 +34,7 @@ class WiredashModel with ChangeNotifier {
   /// Usually only relevant for debug builds
   Future<void> clearPendingFeedbacks() async {
     debugPrint('Deleting pending feedbacks');
-    final submitter = state.feedbackSubmitter;
+    final submitter = services.feedbackSubmitter;
     if (submitter is RetryingFeedbackSubmitter) {
       await submitter.deletePendingFeedbacks();
     }
@@ -42,13 +42,13 @@ class WiredashModel with ChangeNotifier {
 
   /// Opens wiredash behind the app
   Future<void> show() async {
-    if (state.backdropController.isWiredashActive) return;
-    await state.backdropController.animateToOpen();
+    if (services.backdropController.isWiredashActive) return;
+    await services.backdropController.animateToOpen();
   }
 
   /// Closes wiredash
   Future<void> hide() async {
-    await state.backdropController.animateToClosed();
+    await services.backdropController.animateToClosed();
   }
 }
 

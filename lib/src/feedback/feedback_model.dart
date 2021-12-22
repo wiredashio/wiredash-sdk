@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/utils/delay.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
-import 'package:wiredash/src/wiredash_widget.dart';
+import 'package:wiredash/src/services.dart';
 import 'package:wiredash/wiredash.dart';
 
 enum FeedbackFlowStatus {
@@ -21,9 +21,9 @@ enum FeedbackFlowStatus {
 }
 
 class FeedbackModel with ChangeNotifier {
-  FeedbackModel(WiredashState state) : _wiredashState = state;
+  FeedbackModel(WiredashServices services) : _services = services;
 
-  final WiredashState _wiredashState;
+  final WiredashServices _services;
   FeedbackFlowStatus _feedbackFlowStatus = FeedbackFlowStatus.message;
 
   FeedbackFlowStatus get feedbackFlowStatus => _feedbackFlowStatus;
@@ -42,7 +42,7 @@ class FeedbackModel with ChangeNotifier {
   List<Label> _selectedLabels = [];
 
   List<Label> get labels =>
-      _wiredashState.widget.feedbackOptions?.labels ??
+      _services.wiredashWidget.feedbackOptions?.labels ??
       const [
         Label(id: 'bug', title: 'Bug'),
         Label(id: 'improvement', title: 'Improvement'),
@@ -128,27 +128,28 @@ class FeedbackModel with ChangeNotifier {
         _feedbackFlowStatus = newStatus;
         notifyListeners();
 
-        await _wiredashState.backdropController.animateToOpen();
+        await _services.backdropController.animateToOpen();
         break;
       case FeedbackFlowStatus.screenshotNavigating:
         _feedbackFlowStatus = newStatus;
-        _wiredashState.picassoController.isActive = false;
+        _services.picassoController.isActive = false;
         notifyListeners();
 
-        await _wiredashState.backdropController.animateToCentered();
+        await _services.backdropController.animateToCentered();
         break;
       case FeedbackFlowStatus.screenshotCapturing:
         _feedbackFlowStatus = newStatus;
-        _wiredashState.picassoController.isActive = false;
+        _services.picassoController.isActive = false;
         notifyListeners();
 
-        await _wiredashState.screenCaptureController.captureScreen();
+        await _services.screenCaptureController.captureScreen();
         // TODO show loading indicator?
-        _deviceInfo = _wiredashState.deviceInfoGenerator.generate();
-        final metaData = _wiredashState.wiredashModel.metaData;
+        _deviceInfo = _services.deviceInfoGenerator.generate();
+        final metaData = _services.wiredashModel.metaData;
         // Allow devs to collect additional information
-        await _wiredashState.widget.collectMetaData?.call(metaData);
-        _buildInfo = _wiredashState.buildInfoManager.buildInfo;
+        await _services.wiredashWidget.feedbackOptions?.collectMetaData
+            ?.call(metaData);
+        _buildInfo = _services.buildInfoManager.buildInfo;
         _metaData = metaData;
         notifyListeners();
 
@@ -156,22 +157,21 @@ class FeedbackModel with ChangeNotifier {
         break;
       case FeedbackFlowStatus.screenshotDrawing:
         _feedbackFlowStatus = newStatus;
-        _wiredashState.picassoController.isActive = true;
+        _services.picassoController.isActive = true;
         notifyListeners();
         break;
       case FeedbackFlowStatus.screenshotSaving:
         _feedbackFlowStatus = newStatus;
-        _wiredashState.picassoController.isActive = false;
+        _services.picassoController.isActive = false;
         notifyListeners();
 
-        _screenshot =
-            await _wiredashState.picassoController.paintDrawingOntoImage(
-          _wiredashState.screenCaptureController.screenshot!,
+        _screenshot = await _services.picassoController.paintDrawingOntoImage(
+          _services.screenCaptureController.screenshot!,
         );
         notifyListeners();
 
-        await _wiredashState.backdropController.animateToOpen();
-        _wiredashState.screenCaptureController.releaseScreen();
+        await _services.backdropController.animateToOpen();
+        _services.screenCaptureController.releaseScreen();
 
         await goToStep(FeedbackFlowStatus.screenshotsOverview);
         break;
@@ -213,7 +213,7 @@ class FeedbackModel with ChangeNotifier {
         try {
           final Future<void> feedback = () async {
             final item = await createFeedback();
-            await _wiredashState.feedbackSubmitter.submit(item, _screenshot);
+            await _services.feedbackSubmitter.submit(item, _screenshot);
           }();
           await Future.wait([feedback, _submitDelay!.future]);
           _submitted = true;
@@ -235,17 +235,17 @@ class FeedbackModel with ChangeNotifier {
 
   Future<void> returnToAppPostSubmit() async {
     if (submitted == false) return;
-    await _wiredashState.backdropController.animateToClosed();
-    _wiredashState.discardFeedback();
+    await _services.backdropController.animateToClosed();
+    _services.discardFeedback();
   }
 
   Future<PersistedFeedbackItem> createFeedback() async {
-    final deviceId = await _wiredashState.deviceIdGenerator.deviceId();
+    final deviceId = await _services.deviceIdGenerator.deviceId();
 
     return PersistedFeedbackItem(
       deviceId: deviceId,
       appInfo: AppInfo(
-        appLocale: _wiredashState.options.currentLocale.toLanguageTag(),
+        appLocale: _services.wiredashOptions.currentLocale.toLanguageTag(),
       ),
       buildInfo: _buildInfo.copyWith(
         buildCommit: _metaData?.buildCommit,

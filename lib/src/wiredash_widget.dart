@@ -1,33 +1,16 @@
-import 'dart:async';
-import 'dart:ui';
-
-import 'package:file/local.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/common/build_info/build_info_manager.dart';
-import 'package:wiredash/src/common/build_info/device_id_generator.dart';
-import 'package:wiredash/src/common/device_info/device_info_generator.dart';
-import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/common/widgets/screencapture.dart';
 import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
 import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
-import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
-import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
-import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
-import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
-import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
-import 'package:wiredash/src/feedback/wiredash_model.dart';
 import 'package:wiredash/src/not_a_widgets_app.dart';
+import 'package:wiredash/src/services.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -130,7 +113,7 @@ class Wiredash extends StatefulWidget {
     final state = context.findAncestorStateOfType<WiredashState>();
     if (state == null) return null;
 
-    return WiredashController(state._wiredashModel);
+    return WiredashController(state.services.wiredashModel);
   }
 
   /// The [WiredashController] from the closest [Wiredash] instance that
@@ -143,32 +126,32 @@ class Wiredash extends StatefulWidget {
   /// ```
   static WiredashController of(BuildContext context) {
     final state = context.findAncestorStateOfType<WiredashState>();
-    return WiredashController(state!._wiredashModel);
+    return WiredashController(state!.services.wiredashModel);
   }
 }
 
 class WiredashState extends State<Wiredash> {
-  late WiredashModel _wiredashModel;
-  WiredashModel get wiredashModel => _wiredashModel;
-
-  late FeedbackModel _feedbackModel;
-
-  late WiredashOptionsData options;
-  late WiredashThemeData _theme;
-
-  late DeviceIdGenerator deviceIdGenerator;
-
-  late BackdropController _backdropController;
-  BackdropController get backdropController => _backdropController;
-
-  late PicassoController picassoController;
-  late ScreenCaptureController screenCaptureController;
-
-  late BuildInfoManager buildInfoManager;
-
-  late DeviceInfoGenerator deviceInfoGenerator;
-
-  late FeedbackSubmitter feedbackSubmitter;
+  // late WiredashModel _wiredashModel;
+  // WiredashModel get wiredashModel => _wiredashModel;
+  //
+  // late FeedbackModel _feedbackModel;
+  //
+  // late WiredashOptionsData options;
+  // late WiredashThemeData _theme;
+  //
+  // late DeviceIdGenerator deviceIdGenerator;
+  //
+  // late BackdropController _backdropController;
+  // BackdropController get backdropController => _backdropController;
+  //
+  // late PicassoController picassoController;
+  // late ScreenCaptureController screenCaptureController;
+  //
+  // late BuildInfoManager buildInfoManager;
+  //
+  // late DeviceInfoGenerator deviceInfoGenerator;
+  //
+  // late FeedbackSubmitter feedbackSubmitter;
 
   final GlobalKey _appKey = GlobalKey<State<StatefulWidget>>(debugLabel: 'app');
 
@@ -177,6 +160,8 @@ class WiredashState extends State<Wiredash> {
 
   bool _isWiredashClosed = true;
 
+  final WiredashServices services = WiredashServices();
+
   @override
   void initState() {
     super.initState();
@@ -184,30 +169,24 @@ class WiredashState extends State<Wiredash> {
       projectId: widget.projectId,
       secret: widget.secret,
     );
-    buildInfoManager = BuildInfoManager();
-    deviceIdGenerator = DeviceIdGenerator();
-    deviceInfoGenerator = DeviceInfoGenerator(window);
-
-    _backdropController = BackdropController()
-      ..addListener(() {
-        setState(() {
-          _isWiredashClosed = _backdropController.backdropStatus ==
-              WiredashBackdropStatus.closed;
-        });
+    services.updateWidget(widget);
+    services.addListener(() {
+      setState(() {
+        print("rebuilding wiredash widget #1");
       });
-    picassoController = PicassoController();
-    screenCaptureController = ScreenCaptureController();
-
-    _wiredashModel = WiredashModel(this);
-    _feedbackModel = FeedbackModel(this);
-
-    _updateDependencies();
+    });
+    services.backdropController.addListener(() {
+      setState(() {
+        print("rebuilding wiredash widget #2");
+        _isWiredashClosed = services.backdropController.backdropStatus ==
+            WiredashBackdropStatus.closed;
+      });
+    });
   }
 
   @override
   void dispose() {
-    _wiredashModel.dispose();
-    _feedbackModel.dispose();
+    services.dispose();
     super.dispose();
   }
 
@@ -218,41 +197,13 @@ class WiredashState extends State<Wiredash> {
       projectId: widget.projectId,
       secret: widget.secret,
     );
-    _updateDependencies();
-  }
-
-  void _updateDependencies() {
-    final api = WiredashApi(
-      httpClient: Client(),
-      projectId: widget.projectId,
-      secret: widget.secret,
-      deviceIdProvider: () => deviceIdGenerator.deviceId(),
-    );
-
-    feedbackSubmitter = kIsWeb
-        ? DirectFeedbackSubmitter(api)
-        : () {
-            const fileSystem = LocalFileSystem();
-            final storage = PendingFeedbackItemStorage(
-              fileSystem,
-              SharedPreferences.getInstance,
-              () async => (await getApplicationDocumentsDirectory()).path,
-            );
-            final retryingFeedbackSubmitter =
-                RetryingFeedbackSubmitter(fileSystem, storage, api);
-
-            retryingFeedbackSubmitter.submitPendingFeedbackItems();
-            return retryingFeedbackSubmitter;
-          }();
-
-    setState(() {
-      options = widget.options ?? WiredashOptionsData();
-      _theme = widget.theme ?? WiredashThemeData();
-    });
+    services.updateWidget(widget);
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = widget.theme ?? WiredashThemeData();
+
     // Assign app an key so it doesn't lose state when wrapped, unwrapped
     // with widgets
     final Widget app = KeyedSubtree(
@@ -267,9 +218,9 @@ class WiredashState extends State<Wiredash> {
         if (!_isWiredashClosed) {
           // This is the place to wrap the app itself, not the whole backdrop
           widget = Picasso(
-            controller: picassoController,
+            controller: services.picassoController,
             child: ScreenCapture(
-              controller: screenCaptureController,
+              controller: services.screenCaptureController,
               child: widget,
             ),
           );
@@ -285,12 +236,12 @@ class WiredashState extends State<Wiredash> {
       child: WiredashLocalizations(
         // Style wiredash using the users provided theme
         child: WiredashTheme(
-          data: _theme,
+          data: theme,
           child: Stack(
             children: [
               WiredashBackdrop(
                 key: _backdropKey,
-                controller: _backdropController,
+                controller: services.backdropController,
                 child: appBuilder,
               ),
             ],
@@ -301,34 +252,21 @@ class WiredashState extends State<Wiredash> {
 
     // Finally provide the models to wiredash and the UI
     return WiredashModelProvider(
-      wiredashModel: _wiredashModel,
+      wiredashModel: services.wiredashModel,
       child: FeedbackModelProvider(
-        feedbackModel: _feedbackModel,
+        feedbackModel: services.feedbackModel,
         child: BackdropControllerProvider(
-          backdropController: _backdropController,
+          backdropController: services.backdropController,
           child: PicassoControllerProvider(
-            picassoController: picassoController,
+            picassoController: services.picassoController,
             child: WiredashOptions(
-              data: options,
+              data: services.wiredashOptions,
               child: backdrop,
             ),
           ),
         ),
       ),
     );
-  }
-
-  /// discards the current feedback and starts over
-  void discardFeedback() {
-    final old = _feedbackModel;
-    setState(() {
-      _feedbackModel = FeedbackModel(this);
-    });
-    // dispose old one after next frame. disposing it earlier would prevent the
-    // FeedbackModelProvider from correctly remove the listeners
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      old.dispose();
-    });
   }
 }
 

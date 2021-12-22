@@ -223,7 +223,7 @@ class WiredashThemeData {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is WiredashThemeData &&
+      other is WiredashThemeData &&
           runtimeType == other.runtimeType &&
           brightness == other.brightness &&
           primaryColor == other.primaryColor &&
@@ -234,8 +234,8 @@ class WiredashThemeData {
           secondaryBackgroundColor == other.secondaryBackgroundColor &&
           errorColor == other.errorColor &&
           deviceClass == other.deviceClass &&
-          fontFamily == other.fontFamily &&
-          windowSize == other.windowSize);
+          windowSize == other.windowSize &&
+          fontFamily == other.fontFamily;
 
   @override
   int get hashCode =>
@@ -248,8 +248,8 @@ class WiredashThemeData {
       secondaryBackgroundColor.hashCode ^
       errorColor.hashCode ^
       deviceClass.hashCode ^
-      fontFamily.hashCode ^
-      windowSize.hashCode;
+      windowSize.hashCode ^
+      fontFamily.hashCode;
 
   @override
   String toString() {

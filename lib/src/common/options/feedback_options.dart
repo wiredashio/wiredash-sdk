@@ -1,14 +1,15 @@
+import 'dart:async';
+
 import 'package:wiredash/src/feedback/data/label.dart';
 
 class WiredashFeedbackOptions {
-
   final List<Label>? labels;
 
   final bool askForUserEmail;
 
   final FutureOr<CustomizableWiredashMetaData> Function(
-      CustomizableWiredashMetaData metaData,
-      )? collectMetaData;
+    CustomizableWiredashMetaData metaData,
+  )? collectMetaData;
 
   const WiredashFeedbackOptions({
     this.labels,

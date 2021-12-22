@@ -95,7 +95,7 @@ class WiredashController {
   /// The [Confidential] widget can automatically hide sensitive widgets from
   /// being recorded in a feedback screenshot.
   ValueNotifier<bool> get visible {
-    return _model.state.backdropController
+    return _model.services.backdropController
         .asValueNotifier((c) => c.isAppInteractive);
   }
 }

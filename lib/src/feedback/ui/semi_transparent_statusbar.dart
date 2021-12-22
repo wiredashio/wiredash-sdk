@@ -25,8 +25,9 @@ class SemiTransparentStatusBar extends StatelessWidget {
       return child;
     }
     final backdrop = context.backdropController;
-    final isLight = context.wiredashModel.state.widget.theme?.brightness ==
-        Brightness.light;
+    final isLight =
+        context.wiredashModel.services.wiredashWidget.theme?.brightness ==
+            Brightness.light;
     return Stack(
       children: [
         child,

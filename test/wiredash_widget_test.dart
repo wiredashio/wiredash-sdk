@@ -63,7 +63,7 @@ void main() {
               builder: (context) {
                 return Scaffold(
                   floatingActionButton: FloatingActionButton(
-                    onPressed: Wiredash.of(context)!.show,
+                    onPressed: Wiredash.of(context).show,
                   ),
                 );
               },

@@ -60,10 +60,9 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
         // textDirection: TextDirection.rtl,
       ),
       feedbackOptions: WiredashFeedbackOptions(
-        collectMetaData: (metaData) async {
-          metaData.userEmail = 'dash@wiredash.io';
-          metaData.custom['isPremium'] = false;
-        },
+        collectMetaData: (metaData) => metaData
+          ..userEmail = 'dash@wiredash.io'
+          ..custom['isPremium'] = false,
         askForUserEmail: true,
         labels: [
           Label(
