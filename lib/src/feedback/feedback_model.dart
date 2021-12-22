@@ -64,8 +64,8 @@ class FeedbackModel with ChangeNotifier {
   Delay? _closeDelay;
 
   CustomizableWiredashMetaData? _metaData;
-  late DeviceInfo _deviceInfo;
-  late BuildInfo _buildInfo;
+  DeviceInfo? _deviceInfo;
+  BuildInfo? _buildInfo;
 
   List<FeedbackFlowStatus> get steps {
     if (submitted) {
@@ -273,18 +273,28 @@ class FeedbackModel with ChangeNotifier {
 
   Future<PersistedFeedbackItem> createFeedback() async {
     final deviceId = await _services.deviceIdGenerator.deviceId();
+    _buildInfo ??= _services.buildInfoManager.buildInfo;
+    _deviceInfo ??= _services.deviceInfoGenerator.generate();
+
+    if (_metaData == null) {
+      final metaData = _services.wiredashModel.metaData;
+      // Allow devs to collect additional information
+      await _services.wiredashWidget.feedbackOptions?.collectMetaData
+          ?.call(metaData);
+      _metaData = metaData;
+    }
 
     return PersistedFeedbackItem(
       deviceId: deviceId,
       appInfo: AppInfo(
         appLocale: _services.wiredashOptions.currentLocale.toLanguageTag(),
       ),
-      buildInfo: _buildInfo.copyWith(
+      buildInfo: _buildInfo!.copyWith(
         buildCommit: _metaData?.buildCommit,
         buildNumber: _metaData?.buildNumber,
         buildVersion: _metaData?.buildVersion,
       ),
-      deviceInfo: _deviceInfo,
+      deviceInfo: _deviceInfo!,
       email: userEmail,
       message: _feedbackMessage!,
       labels: _selectedLabels.map((it) => it.id).toList(),

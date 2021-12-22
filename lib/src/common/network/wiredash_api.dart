@@ -4,7 +4,6 @@ import 'dart:ui';
 
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/version.dart';
 
@@ -247,22 +246,7 @@ extension FeedbackBody on PersistedFeedbackItem {
       values.addAll({'userId': _userId});
     }
 
-    final _customMetaData = customMetaData?.map((key, value) {
-      if (value == null) {
-        return MapEntry(key, null);
-      }
-      try {
-        return MapEntry(key, value is String ? value : jsonEncode(value));
-      } catch (e, stack) {
-        reportWiredashError(
-          e,
-          stack,
-          'Could not serialize customMetaData property '
-          '$key=${value.toString()}',
-        );
-        return MapEntry(key, null);
-      }
-    });
+    final _customMetaData = customMetaData;
     if (_customMetaData != null) {
       _customMetaData.removeWhere((key, value) => value == null);
       values.addAll({'customMetaData': _customMetaData});

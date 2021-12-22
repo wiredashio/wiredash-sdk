@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
 const int _serializationVersion = 1;
@@ -131,6 +132,8 @@ class PendingFeedbackItemParserV1 {
     final feedbackItem = PersistedFeedbackItem(
       appInfo: appInfo,
       buildInfo: buildInfo,
+      customMetaData:
+          (feedbackItemJson['customMetaData'] as Map?)?.cast<String, Object?>(),
       deviceInfo: deviceInfo,
       deviceId: feedbackItemJson['deviceId'] as String,
       email: feedbackItemJson['email'] as String?,
@@ -140,8 +143,6 @@ class PendingFeedbackItemParserV1 {
           ?.map((it) => it as String)
           .toList(),
       userId: feedbackItemJson['userId'] as String?,
-      customMetaData:
-          (feedbackItemJson['customMetaData'] as Map?)?.cast<String, Object?>(),
     );
 
     return PendingFeedbackItem(
@@ -182,11 +183,29 @@ extension _SerializePersistedFeedbackItem on PersistedFeedbackItem {
       if (email != null) 'email': email,
       if (labels != null) 'labels': labels,
       if (customMetaData != null)
-        'customMetaData': SplayTreeMap.from(customMetaData!),
+        'customMetaData': _serializedMetaData(customMetaData!),
       'message': message,
       if (userId != null) 'userId': userId,
       'sdkVersion': sdkVersion,
     });
+  }
+
+  Map<String, Object> _serializedMetaData(Map<String, Object?> metaData) {
+    final data = metaData.map((key, value) {
+      try {
+        return MapEntry(key, jsonEncode(value));
+      } catch (e, stack) {
+        reportWiredashError(
+          e,
+          stack,
+          'Could not serialize customMetaData property '
+          '$key=${value.toString()}',
+        );
+        return MapEntry(key, null);
+      }
+    });
+    data.removeWhere((key, value) => value == null);
+    return SplayTreeMap.from(data);
   }
 }
 
