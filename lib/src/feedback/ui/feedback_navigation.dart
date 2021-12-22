@@ -229,8 +229,9 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           color: context.theme.primaryColor,
           icon: Wirecons.arrow_narrow_right,
           label: 'Next',
-          onTap: () =>
-              context.feedbackModel.goToStep(FeedbackFlowStatus.labels),
+          onTap: () {
+            context.feedbackModel.goToNextStep();
+          },
         );
 
       case FeedbackFlowStatus.labels:

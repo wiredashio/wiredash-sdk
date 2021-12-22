@@ -24,15 +24,6 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
   final GlobalKey<LarryPageViewState> stepFormKey =
       GlobalKey<LarryPageViewState>();
 
-  int? get stackIndex {
-    final state = context.feedbackModel.feedbackFlowStatus;
-    final index = context.feedbackModel.steps.indexOf(state);
-    if (index == -1) {
-      return null;
-    }
-    return index;
-  }
-
   int _index = 0;
 
   final GlobalKey<LarryPageViewState> _lpvKey = GlobalKey();
@@ -45,7 +36,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     }
 
     final oldIndex = _index;
-    final newIndex = stackIndex;
+    final newIndex = context.feedbackModel.currentStepIndex;
     if (newIndex == null) {
       // state not in stack, stay at current page
       return;
@@ -71,25 +62,17 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       onPageChanged: (index) {
         setState(() {
           _index = index;
-          final _stackIndex = stackIndex;
+          final _stackIndex = feedbackModel.currentStepIndex;
           if (_stackIndex == null) {
             return;
           }
 
           if (_stackIndex < _index) {
-            final nextStepIndex = _stackIndex + 1;
-            if (nextStepIndex <= feedbackModel.steps.length) {
-              final step = feedbackModel.steps[nextStepIndex];
-              feedbackModel.goToStep(step);
-            }
+            feedbackModel.goToNextStep();
           }
 
           if (_stackIndex > _index) {
-            final prevStepIndex = _stackIndex - 1;
-            if (prevStepIndex <= feedbackModel.steps.length) {
-              final step = feedbackModel.steps[prevStepIndex];
-              feedbackModel.goToStep(step);
-            }
+            feedbackModel.goToPreviousStep();
           }
         });
       },
@@ -97,10 +80,11 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         final index = _index;
         final FeedbackFlowStatus status = () {
           if (feedbackModel.steps.length <= index) {
+            final stackIndex = feedbackModel.currentStepIndex;
             if (stackIndex == null) {
               return feedbackModel.steps.first;
             } else {
-              return feedbackModel.steps[stackIndex!];
+              return feedbackModel.steps[stackIndex];
             }
           }
           return feedbackModel.steps[index];

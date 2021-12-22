@@ -42,12 +42,7 @@ class FeedbackModel with ChangeNotifier {
   List<Label> _selectedLabels = [];
 
   List<Label> get labels =>
-      _services.wiredashWidget.feedbackOptions?.labels ??
-      const [
-        Label(id: 'bug', title: 'Bug'),
-        Label(id: 'improvement', title: 'Improvement'),
-        Label(id: 'praise', title: 'Praise'),
-      ];
+      _services.wiredashWidget.feedbackOptions?.labels ?? [];
 
   set selectedLabels(List<Label> list) {
     _selectedLabels = list;
@@ -80,7 +75,7 @@ class FeedbackModel with ChangeNotifier {
     final stack = [FeedbackFlowStatus.message];
 
     if (_feedbackMessage != null) {
-      stack.add(FeedbackFlowStatus.labels);
+      if (labels.isNotEmpty) stack.add(FeedbackFlowStatus.labels);
       stack.add(FeedbackFlowStatus.screenshotsOverview);
       stack.add(FeedbackFlowStatus.email);
     }
@@ -108,6 +103,43 @@ class FeedbackModel with ChangeNotifier {
       _userEmail = trimmed;
     }
     notifyListeners();
+  }
+
+  int? get currentStepIndex {
+    final state = feedbackFlowStatus;
+    final index = steps.indexOf(state);
+    if (index == -1) {
+      return null;
+    }
+    return index;
+  }
+
+  Future<void> goToNextStep() async {
+    final index = currentStepIndex;
+    if (index == null) {
+      throw StateError('Unknown step index');
+    }
+    final nextStepIndex = index + 1;
+    if (nextStepIndex <= steps.length) {
+      final step = steps[nextStepIndex];
+      await goToStep(step);
+    } else {
+      throw StateError('reached the end of the stack (length ${steps.length})');
+    }
+  }
+
+  Future<void> goToPreviousStep() async {
+    final index = currentStepIndex;
+    if (index == null) {
+      throw StateError('Unknown step index');
+    }
+    final prevStepIndex = index - 1;
+    if (prevStepIndex > 0) {
+      final step = steps[prevStepIndex];
+      await goToStep(step);
+    } else {
+      throw StateError('Already at first item');
+    }
   }
 
   Future<void> goToStep(FeedbackFlowStatus newStatus) async {
