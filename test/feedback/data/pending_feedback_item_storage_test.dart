@@ -498,6 +498,10 @@ void main() {
       FlutterError.onError = (FlutterErrorDetails details) {
         caught = details;
       };
+      addTearDown(() {
+        // reset error reporter after test
+        FlutterError.onError = oldOnErrorHandler;
+      });
 
       final retrieved = await storage.retrieveAllPendingItems();
 

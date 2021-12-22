@@ -288,6 +288,7 @@ class FeedbackModel with ChangeNotifier {
       email: userEmail,
       message: _feedbackMessage!,
       labels: _selectedLabels.map((it) => it.id).toList(),
+      customMetaData: _metaData?.custom,
       userId: _metaData?.userId,
     );
   }

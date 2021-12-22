@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/app_info.dart';
 import 'package:wiredash/src/common/build_info/build_info.dart';
@@ -27,6 +28,7 @@ class PersistedFeedbackItem {
     required this.message,
     this.userId,
     this.labels,
+    this.customMetaData,
     this.sdkVersion = wiredashSdkVersion,
   });
 
@@ -39,6 +41,7 @@ class PersistedFeedbackItem {
   final String? userId;
   final int sdkVersion;
   final List<String>? labels;
+  final Map<String, Object?>? customMetaData;
 
   @override
   bool operator ==(Object other) =>
@@ -53,7 +56,9 @@ class PersistedFeedbackItem {
           message == other.message &&
           userId == other.userId &&
           sdkVersion == other.sdkVersion &&
-          listEquals(labels, other.labels);
+          listEquals(labels, other.labels) &&
+          const DeepCollectionEquality.unordered()
+              .equals(customMetaData, other.customMetaData);
 
   @override
   int get hashCode =>
@@ -65,7 +70,8 @@ class PersistedFeedbackItem {
       message.hashCode ^
       userId.hashCode ^
       sdkVersion.hashCode ^
-      hashList(labels);
+      hashList(labels) ^
+      const DeepCollectionEquality.unordered().hash(customMetaData);
 
   @override
   String toString() {
@@ -77,6 +83,7 @@ class PersistedFeedbackItem {
         'userId: $userId, '
         'sdkVersion: $sdkVersion, '
         'labels: $labels, '
+        'customMetaData: $customMetaData'
         '}';
   }
 }

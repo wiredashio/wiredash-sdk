@@ -140,6 +140,8 @@ class PendingFeedbackItemParserV1 {
           ?.map((it) => it as String)
           .toList(),
       userId: feedbackItemJson['userId'] as String?,
+      customMetaData:
+          (feedbackItemJson['customMetaData'] as Map?)?.cast<String, Object?>(),
     );
 
     return PendingFeedbackItem(
@@ -179,6 +181,8 @@ extension _SerializePersistedFeedbackItem on PersistedFeedbackItem {
       'deviceId': deviceId,
       if (email != null) 'email': email,
       if (labels != null) 'labels': labels,
+      if (customMetaData != null)
+        'customMetaData': SplayTreeMap.from(customMetaData!),
       'message': message,
       if (userId != null) 'userId': userId,
       'sdkVersion': sdkVersion,
