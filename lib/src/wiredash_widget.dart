@@ -59,7 +59,8 @@ class Wiredash extends StatefulWidget {
     Key? key,
     required this.projectId,
     required this.secret,
-    this.navigatorKey,
+    @Deprecated('Since 1.0 the navigatorKey is not required anymore')
+        this.navigatorKey,
     this.options,
     this.theme,
     this.feedbackOptions,
@@ -67,6 +68,7 @@ class Wiredash extends StatefulWidget {
   }) : super(key: key);
 
   /// Reference to the app [Navigator] to show the Wiredash bottom sheet
+  @Deprecated('Since 1.0 the navigatorKey is not required anymore')
   final GlobalKey<NavigatorState>? navigatorKey;
 
   /// Your Wiredash projectId

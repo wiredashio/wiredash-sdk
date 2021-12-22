@@ -16,11 +16,10 @@ void main() {
 
     testWidgets('widget can be created', (tester) async {
       await tester.pumpWidget(
-        Wiredash(
+        const Wiredash(
           projectId: 'test',
           secret: 'test',
-          navigatorKey: GlobalKey<NavigatorState>(),
-          child: const SizedBox(),
+          child: SizedBox(),
         ),
       );
 
@@ -38,11 +37,10 @@ void main() {
         });
 
         await tester.pumpWidget(
-          Wiredash(
+          const Wiredash(
             projectId: 'my-project-id',
             secret: 'my-secret',
-            navigatorKey: GlobalKey<NavigatorState>(),
-            child: const SizedBox(),
+            child: SizedBox(),
           ),
         );
 

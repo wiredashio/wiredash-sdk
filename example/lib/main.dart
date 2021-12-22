@@ -5,6 +5,8 @@ void main() {
   runApp(WiredashExampleApp());
 }
 
+/// The first widget put into `runApp` should be stateful to make hot reload
+/// work
 class WiredashExampleApp extends StatefulWidget {
   WiredashExampleApp({Key? key}) : super(key: key);
 
@@ -13,8 +15,6 @@ class WiredashExampleApp extends StatefulWidget {
 }
 
 class _WiredashExampleAppState extends State<WiredashExampleApp> {
-  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
-
   @override
   Widget build(BuildContext context) {
     /// The `Wiredash` widget wraps the top level application widget.
@@ -35,7 +35,6 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
     return Wiredash(
       projectId: "Project ID from console.wiredash.io",
       secret: "API Key from console.wiredash.io",
-      navigatorKey: _navigatorKey,
       options: WiredashOptionsData(
         /// Change the locale of the Wiredash UI
         locale: Locale('en'),
@@ -79,7 +78,7 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
           ),
           Label(
             id: 'lbl-2r98yas4',
-            title: 'Da muss Frederik noch mal dran',
+            title: 'Da muss Frederik noch mal ran',
           ),
         ],
       ),
@@ -110,7 +109,6 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
           ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        navigatorKey: _navigatorKey,
         home: _HomePage(),
       ),
     );
