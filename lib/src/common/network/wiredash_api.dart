@@ -28,6 +28,7 @@ class WiredashApi {
   final Future<String> Function() _deviceIdProvider;
 
   static const String _host = 'https://api.wiredash.io/sdk';
+  // static const String _host = 'https://dev-api.wiredash.io/sdk';
 
   /// Uploads an image to the Wiredash image hosting
   ///
