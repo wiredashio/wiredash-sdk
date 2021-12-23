@@ -269,7 +269,9 @@ extension FeedbackBody on PersistedFeedbackItem {
     });
     if (_customMetaData != null) {
       _customMetaData.removeWhere((key, value) => value == null);
-      values.addAll({'customMetaData': _customMetaData});
+      if (_customMetaData.isNotEmpty) {
+        values.addAll({'customMetaData': _customMetaData});
+      }
     }
 
     return values.map((k, v) => MapEntry(k, v));
