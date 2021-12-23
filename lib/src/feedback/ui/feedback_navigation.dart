@@ -145,12 +145,16 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
       case FeedbackFlowStatus.none:
         return null;
       case FeedbackFlowStatus.message:
-        return TronButton(
-          key: const ValueKey('back'),
-          color: context.theme.secondaryColor,
-          icon: Wirecons.home,
-          label: 'Back to app',
-          onTap: () => context.wiredashModel.hide(),
+        return Opacity(
+          // don't highlight the exit that much
+          opacity: 0.5,
+          child: TronButton(
+            key: const ValueKey('back'),
+            color: context.theme.secondaryColor,
+            icon: Wirecons.chevron_double_up,
+            label: 'Back to app',
+            onTap: () => context.wiredashModel.hide(),
+          ),
         );
       case FeedbackFlowStatus.labels:
         return TronButton(
