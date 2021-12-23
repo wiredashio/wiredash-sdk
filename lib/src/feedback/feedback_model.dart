@@ -134,7 +134,7 @@ class FeedbackModel with ChangeNotifier {
       throw StateError('Unknown step index');
     }
     final prevStepIndex = index - 1;
-    if (prevStepIndex > 0) {
+    if (prevStepIndex >= 0) {
       final step = steps[prevStepIndex];
       await goToStep(step);
     } else {
