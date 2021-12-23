@@ -85,7 +85,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.byIcon(Wirecons.arrow_narrow_right), findsOneWidget);
-      expect(find.byIcon(Wirecons.home), findsOneWidget);
+      expect(find.byIcon(Wirecons.chevron_double_up), findsOneWidget);
       // next to screenshot overview
       await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
       await tester.pumpHardAndSettle();
@@ -170,7 +170,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.byIcon(Wirecons.arrow_narrow_right), findsOneWidget);
-    expect(find.byIcon(Wirecons.home), findsOneWidget);
+    expect(find.byIcon(Wirecons.chevron_double_up), findsOneWidget);
 
     await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
     await tester.pumpHardAndSettle();
