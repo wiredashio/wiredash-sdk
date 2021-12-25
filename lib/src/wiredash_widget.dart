@@ -10,7 +10,7 @@ import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
 import 'package:wiredash/src/not_a_widgets_app.dart';
-import 'package:wiredash/src/services.dart';
+import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
 import 'package:wiredash/wiredash.dart';
 
