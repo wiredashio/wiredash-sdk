@@ -82,31 +82,30 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
           ),
         ],
       ),
-      theme: WiredashThemeData(
+      // theme: WiredashThemeData(
+      /// Uncomment below to explore the various theme options:
 
-          /// Uncomment below to explore the various theme options:
+      /// Customize the Font Family
+      // fontFamily: 'Monospace',
 
-          /// Customize the Font Family
-          // fontFamily: 'Monospace',
+      /// Customize the Bottom Sheet Border Radius
+      // sheetBorderRadius: BorderRadius.zero,
 
-          /// Customize the Bottom Sheet Border Radius
-          // sheetBorderRadius: BorderRadius.zero,
+      /// Customize Brightness and Colors
+      // brightness: Brightness.light,
+      // primaryColor: Colors.red,
+      // secondaryColor: Colors.blue,
 
-          /// Customize Brightness and Colors
-          // brightness: Brightness.light,
-          // primaryColor: Colors.red,
-          // secondaryColor: Colors.blue,
-
-          /// Customize the Pen Colors
-          /// Note: If you change the Pen Colors, please consider providing
-          /// custom translations to the WiredashOptions to ensure the app is
-          /// accessible to all. The default translations describe the default
-          /// pen colors.
-          // firstPenColor: Colors.orange,
-          // secondPenColor: Colors.green,
-          // thirdPenColor: Colors.yellow,
-          // fourthPenColor: Colors.deepPurpleAccent,
-          ),
+      /// Customize the Pen Colors
+      /// Note: If you change the Pen Colors, please consider providing
+      /// custom translations to the WiredashOptions to ensure the app is
+      /// accessible to all. The default translations describe the default
+      /// pen colors.
+      // firstPenColor: Colors.orange,
+      // secondPenColor: Colors.green,
+      // thirdPenColor: Colors.yellow,
+      // fourthPenColor: Colors.deepPurpleAccent,
+      // ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: _HomePage(),
