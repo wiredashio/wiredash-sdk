@@ -172,6 +172,7 @@ class _TronButtonState extends State<TronButton>
 
     await Future.delayed(_duration);
 
+    if (!mounted) return;
     setState(() {
       _pressed = false;
       _controller.reverse();
