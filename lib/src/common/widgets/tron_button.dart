@@ -207,7 +207,6 @@ class _TronButtonState extends State<TronButton>
 
   void _handleTapUp(TapUpDetails details) {
     if (!_enabled) return;
-    widget.onTap?.call();
 
     setState(() {
       _pressed = false;
