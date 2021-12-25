@@ -10,16 +10,19 @@ import 'package:wiredash/src/common/widgets/tron_icon.dart';
 
 class TronButton extends StatefulWidget {
   const TronButton({
-    required this.icon,
+    this.icon,
     required this.label,
     this.onTap,
     this.color,
     this.iconOffset = Offset.zero,
     Key? key,
-  }) : super(key: key);
+    this.child,
+  })  : assert(child != null && icon == null || child == null && icon != null),
+        super(key: key);
 
   final Color? color;
-  final IconData icon;
+  final IconData? icon;
+  final Widget? child;
   final Offset iconOffset;
   final String label;
   final VoidCallback? onTap;
@@ -126,9 +129,26 @@ class _TronButtonState extends State<TronButton>
                     child: _AnimatedSlideBackport(
                       duration: _duration,
                       offset: widget.iconOffset,
-                      child: TronIcon(
-                        widget.icon,
-                        color: _iconColor,
+                      child: Builder(
+                        builder: (context) {
+                          if (widget.child != null) {
+                            return Center(
+                              child: DefaultTextStyle(
+                                style: TextStyle(
+                                  color: _iconColor,
+                                ),
+                                child: widget.child!,
+                              ),
+                            );
+                          }
+                          if (widget.icon != null) {
+                            return TronIcon(
+                              widget.icon!,
+                              color: _iconColor,
+                            );
+                          }
+                          return const SizedBox();
+                        },
                       ),
                     ),
                   ),
