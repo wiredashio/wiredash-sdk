@@ -174,9 +174,12 @@ class ScrollBox extends StatefulWidget {
   const ScrollBox({
     Key? key,
     required this.child,
+    this.padding,
   }) : super(key: key);
 
   final Widget child;
+
+  final EdgeInsetsGeometry? padding;
 
   @override
   State<ScrollBox> createState() => _ScrollBoxState();
@@ -194,6 +197,7 @@ class _ScrollBoxState extends State<ScrollBox> {
         isAlwaysShown: true,
         child: SingleChildScrollView(
           controller: controller,
+          padding: widget.padding,
           child: widget.child,
         ),
       ),
