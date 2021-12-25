@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/utils/delay.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
-import 'package:wiredash/src/services.dart';
+import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/wiredash.dart';
 
 enum FeedbackFlowStatus {
@@ -120,7 +120,7 @@ class FeedbackModel with ChangeNotifier {
       throw StateError('Unknown step index');
     }
     final nextStepIndex = index + 1;
-    if (nextStepIndex <= steps.length) {
+    if (nextStepIndex < steps.length) {
       final step = steps[nextStepIndex];
       await goToStep(step);
     } else {
