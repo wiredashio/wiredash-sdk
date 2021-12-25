@@ -38,6 +38,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
     return StepPageScaffold(
       child: SafeArea(
         child: ScrollBox(
+          padding: const EdgeInsets.symmetric(vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -65,7 +66,8 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                         buildCounter: _getCounterText,
                         minLines: 1,
                         style: context.theme.bodyTextStyle,
-                        decoration: const InputDecoration(
+                        cursorColor: context.theme.primaryColor,
+                        decoration: InputDecoration(
                           border: InputBorder.none,
                           focusedBorder: InputBorder.none,
                           enabledBorder: InputBorder.none,
@@ -73,7 +75,8 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                           errorBorder: InputBorder.none,
                           hintText: 'e.g. there’s an unknown error when I try '
                               'to update my email in the profile menu',
-                          contentPadding: EdgeInsets.only(top: 16),
+                          contentPadding: const EdgeInsets.only(top: 16),
+                          hintStyle: context.theme.body2TextStyle,
                         ),
                       ),
                     ),

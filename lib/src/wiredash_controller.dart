@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/build_info/build_info.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
 import 'package:wiredash/wiredash.dart';
@@ -85,7 +85,22 @@ class WiredashController {
   ///
   /// If a Wiredash feedback flow is already active (=a feedback sheet is open),
   /// does nothing.
-  void show() => _model.show();
+  void show([BuildContext? context]) {
+    // reset at every call
+    _model.themeFromContext = null;
+    if (context != null) {
+      // generate theme from current context
+      final theme = Theme.of(context);
+      if (theme != ThemeData.fallback()) {
+        _model.themeFromContext = WiredashThemeData.fromColor(
+          color: theme.colorScheme.secondary,
+          brightness: theme.brightness,
+        );
+      }
+    }
+
+    _model.show();
+  }
 
   /// A [ValueNotifier] representing the current state of the capture UI. Use
   /// this to change your app's configuration when the user is in the process

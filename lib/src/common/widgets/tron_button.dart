@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -80,11 +82,12 @@ class _TronButtonState extends State<TronButton>
   }
 
   Color get _iconColor {
-    if (_buttonColor.brightness == Brightness.light &&
-        _buttonColor != context.theme.primaryColor) {
-      return context.theme.primaryColor;
-    }
-    return context.theme.secondaryColor;
+    final buttonColor = _buttonColor;
+    final luminance = buttonColor.computeLuminance();
+    final hsl = HSLColor.fromColor(buttonColor);
+    final blackOrWhite = luminance < 0.4 ? Colors.white : Colors.black;
+
+    return blackOrWhite.withOpacity(math.max(hsl.saturation, 0.6));
   }
 
   @override

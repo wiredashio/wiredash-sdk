@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/options/feedback_options.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/services.dart';
 
@@ -10,7 +11,6 @@ class WiredashModel with ChangeNotifier {
   final WiredashServices services;
 
   CustomizableWiredashMetaData? _metaData;
-
   CustomizableWiredashMetaData get metaData {
     if (_metaData == null) {
       _metaData = CustomizableWiredashMetaData();
@@ -26,6 +26,14 @@ class WiredashModel with ChangeNotifier {
 
   set metaData(CustomizableWiredashMetaData? metaData) {
     _metaData = metaData;
+    notifyListeners();
+  }
+
+  WiredashThemeData? _themeFromContext;
+  WiredashThemeData? get themeFromContext => _themeFromContext;
+
+  set themeFromContext(WiredashThemeData? themeFromContext) {
+    _themeFromContext = themeFromContext;
     notifyListeners();
   }
 
