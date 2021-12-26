@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/build_info/build_info.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
@@ -86,15 +87,40 @@ class WiredashController {
   /// If a Wiredash feedback flow is already active (=a feedback sheet is open),
   /// does nothing.
   void show([BuildContext? context]) {
-    // reset at every call
+    // reset theme at every call
     _model.themeFromContext = null;
     if (context != null) {
       // generate theme from current context
-      final theme = Theme.of(context);
-      if (theme != ThemeData.fallback()) {
+      final materialTheme = Theme.of(context);
+      final cupertinoTheme = CupertinoTheme.of(context);
+      final materialColor = materialTheme.colorScheme.secondary;
+      final cupertinoColor = cupertinoTheme.primaryColor;
+
+      late Color color;
+      const defaultCupertinoTheme = CupertinoThemeData();
+      // When the primary cupertino color is set, use this one
+      if (defaultCupertinoTheme.primaryColor != cupertinoColor) {
+        color = cupertinoColor;
+      } else {
+        // always fallback to material color, which is more likely to be set
+        // in the flutter world
+        color = materialColor;
+      }
+
+      late Brightness brightness;
+      if (materialTheme.brightness == Brightness.dark ||
+          cupertinoTheme.brightness == Brightness.dark) {
+        // When one is dark, assume either of them is explicitly set
+        brightness = Brightness.dark;
+      } else {
+        // fallback to light
+        brightness = Brightness.light;
+      }
+
+      if (materialTheme != ThemeData.fallback()) {
         _model.themeFromContext = WiredashThemeData.fromColor(
-          color: theme.colorScheme.secondary,
-          brightness: theme.brightness,
+          color: color,
+          brightness: brightness,
         );
       }
     }
