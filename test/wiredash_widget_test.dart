@@ -232,13 +232,24 @@ extension on WidgetTester {
     await pumpAndSettle();
   }
 
-  Future<void> waitUntil(Finder finder, Matcher matcher) async {
+  Future<void> waitUntil(
+    Finder finder,
+    Matcher matcher, {
+    Duration timeout = const Duration(seconds: 30),
+  }) async {
+    final start = DateTime.now();
     await pumpAndSettle();
     // ignore: literal_only_boolean_expressions
     while (true) {
       if (matcher.matches(finder, {})) {
         break;
       }
+
+      final now = DateTime.now();
+      if (now.isAfter(start..add(timeout))) {
+        throw 'Did not find $finder after $timeout';
+      }
+
       // ignore: avoid_print
       print('Waiting for\n\tFinder: $finder to match\n\tMatcher: $matcher');
       await pumpHardAndSettle();
