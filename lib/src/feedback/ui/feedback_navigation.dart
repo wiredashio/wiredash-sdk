@@ -287,6 +287,19 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           },
         );
       case FeedbackFlowStatus.submitting:
+        final error = context.feedbackModel.submissionError;
+        if (error != null) {
+          return TronButton(
+            onTap: () {
+              context.feedbackModel.submitFeedback();
+            },
+            label: 'Retry',
+            child: const Padding(
+              padding: EdgeInsets.only(bottom: 2),
+              child: Text('Retry'),
+            ),
+          );
+        }
         return null;
     }
   }

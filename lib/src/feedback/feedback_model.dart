@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/utils/delay.dart';
+import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/wiredash.dart';
@@ -67,6 +68,9 @@ class FeedbackModel with ChangeNotifier {
   DeviceInfo? _deviceInfo;
   BuildInfo? _buildInfo;
 
+  Object? _submissionError;
+  Object? get submissionError => _submissionError;
+
   List<FeedbackFlowStatus> get steps {
     if (submitted) {
       return [FeedbackFlowStatus.submitting];
@@ -79,7 +83,7 @@ class FeedbackModel with ChangeNotifier {
       stack.add(FeedbackFlowStatus.screenshotsOverview);
       stack.add(FeedbackFlowStatus.email);
     }
-    if (submitting || submitted) {
+    if (submitting || submitted || submissionError != null) {
       stack.add(FeedbackFlowStatus.submitting);
     }
     return stack;
@@ -220,6 +224,7 @@ class FeedbackModel with ChangeNotifier {
 
   Future<void> submitFeedback() async {
     _submitting = true;
+    _submissionError = null;
     notifyListeners();
     goToStep(FeedbackFlowStatus.submitting);
     bool fakeSubmit = false;
@@ -250,19 +255,23 @@ class FeedbackModel with ChangeNotifier {
           await Future.wait([feedback, _submitDelay!.future]);
           _submitted = true;
           notifyListeners();
-        } catch (e) {
-          // TODO show error UI
-          rethrow;
+        } catch (e, stack) {
+          print(e);
+          reportWiredashError(e, stack, 'Feedback submission failed');
+          _submissionError = e;
         }
       }
     } finally {
       _submitting = false;
       notifyListeners();
     }
-    _closeDelay?.dispose();
-    _closeDelay = Delay(const Duration(seconds: 1));
-    await _closeDelay!.future;
-    await returnToAppPostSubmit();
+
+    if (_submitted) {
+      _closeDelay?.dispose();
+      _closeDelay = Delay(const Duration(seconds: 1));
+      await _closeDelay!.future;
+      await returnToAppPostSubmit();
+    }
   }
 
   Future<void> returnToAppPostSubmit() async {
