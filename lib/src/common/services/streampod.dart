@@ -30,20 +30,16 @@ class Locator {
       }
     });
     final existing = _registry[T];
+    _registry[T] = provider;
     if (existing != null) {
-      provider.dependencies = existing.dependencies.toList();
-      print("swap $T");
+      final listeners = existing.listeners.toList();
+      existing.listeners = [];
+      existing.dependencies = [];
       existing.dispose?.call();
-
-      // invalidate existing dependency instances
-      for (final dep in provider.dependencies) {
-        dep._oldInstance = dep._instance;
-        dep._instance = null;
-        // create instance
-        dep.instance;
+      for (final listener in listeners) {
+        listener.rebuild();
       }
     }
-    _registry[T] = provider;
     return provider;
   }
 }
@@ -66,6 +62,7 @@ class InstanceFactory<T> {
   T? _instance;
   T? _oldInstance;
 
+  List<InstanceFactory> listeners = [];
   List<InstanceFactory> dependencies = [];
 
   final Function()? dispose;
@@ -83,9 +80,40 @@ class InstanceFactory<T> {
         i = create(locator);
       }
       _tracker.created();
+      // print("$T\n"
+      //     "\t-depends on: ${dependencies.map((e) => e.runtimeType)}\n"
+      //     "\t-Listeners: ${listeners.map((e) => e.runtimeType)}\n");
       _instance = i;
+    } else {
+      _tracker.create();
+      _tracker.created();
     }
     return _instance!;
+  }
+
+  void rebuild() {
+    dispose?.call();
+    final listeners = this.listeners.toList();
+    final dependencies = this.dependencies.toList();
+    this.dependencies = [];
+    this.listeners = [];
+    _oldInstance = _instance;
+    _instance = null;
+
+    // invalidate existing dependency instances
+    for (final provider in listeners) {
+      _tracker.create();
+      provider.rebuild();
+      _tracker.created();
+    }
+
+    // create instance
+    // instance;
+  }
+
+  @override
+  String toString() {
+    return 'InstanceFactory<$T>{id: $id}';
   }
 }
 
@@ -101,11 +129,14 @@ class DependencyTracker {
 
   void create() {
     _prevActive = _active;
-    _active = provider.id;
+    if (_active != provider.id) {
+      _active = provider.id;
+    }
     if (_prevActive != null) {
       final listener = locator._registry.values
           .firstWhere((element) => element.id == _prevActive);
-      provider.dependencies.add(listener);
+      provider.listeners.add(listener);
+      listener.dependencies.add(provider);
     }
   }
 
