@@ -109,9 +109,13 @@ class _TronButtonState extends State<TronButton>
           button: true,
           enabled: _enabled,
           label: widget.label,
-          child: SizedBox(
-            height: 48,
-            width: 80,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minWidth: 80,
+              maxWidth: 200,
+              minHeight: 48,
+              maxHeight: 48,
+            ),
             child: ScaleTransition(
               scale: _buttonScaleAnimation,
               child: AnimatedShape(
@@ -119,7 +123,6 @@ class _TronButtonState extends State<TronButton>
                 shape: const StadiumBorder(),
                 child: GestureDetector(
                   onTapDown: _handleTapDown,
-                  onTap: _simulateTap,
                   onTapCancel: _handleTapCancel,
                   onTapUp: _handleTapUp,
                   behavior: HitTestBehavior.opaque,
@@ -132,12 +135,20 @@ class _TronButtonState extends State<TronButton>
                       child: Builder(
                         builder: (context) {
                           if (widget.child != null) {
-                            return Center(
-                              child: DefaultTextStyle(
-                                style: TextStyle(
-                                  color: _iconColor,
+                            return Align(
+                              widthFactor: 1,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                child: DefaultTextStyle(
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: context.theme.tronButtonTextStyle
+                                      .copyWith(
+                                    color: _iconColor,
+                                  ),
+                                  child: widget.child!,
                                 ),
-                                child: widget.child!,
                               ),
                             );
                           }
@@ -159,24 +170,6 @@ class _TronButtonState extends State<TronButton>
         ),
       ),
     );
-  }
-
-  Future<void> _simulateTap() async {
-    if (widget.onTap == null || _controller.isAnimating) return;
-    widget.onTap!.call();
-
-    setState(() {
-      _pressed = true;
-      _controller.forward();
-    });
-
-    await Future.delayed(_duration);
-
-    if (!mounted) return;
-    setState(() {
-      _pressed = false;
-      _controller.reverse();
-    });
   }
 
   void _handleFocusUpdate(bool focused) {
@@ -208,7 +201,7 @@ class _TronButtonState extends State<TronButton>
 
   void _handleTapUp(TapUpDetails details) {
     if (!_enabled) return;
-
+    widget.onTap!.call();
     setState(() {
       _pressed = false;
       _controller.reverse();

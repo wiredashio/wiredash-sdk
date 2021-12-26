@@ -139,6 +139,14 @@ class WiredashThemeData {
         fontWeight: FontWeight.bold,
       );
 
+  TextStyle get tronButtonTextStyle => TextStyle(
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 14,
+        color: primaryTextColor,
+        fontWeight: FontWeight.w500,
+      );
+
   TextStyle get bodyTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
