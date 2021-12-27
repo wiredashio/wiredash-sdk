@@ -131,15 +131,6 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
     );
   }
 
-  // TODO use
-  Color prevButtonColor() {
-    if (context.feedbackModel.feedbackFlowStatus ==
-        FeedbackFlowStatus.screenshotDrawing) {
-      return context.picasso.color;
-    }
-    return context.theme.secondaryColor;
-  }
-
   Widget? _getPrevButton() {
     switch (context.feedbackModel.feedbackFlowStatus) {
       case FeedbackFlowStatus.none:
