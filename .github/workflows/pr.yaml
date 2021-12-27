@@ -75,6 +75,7 @@ jobs:
     container:
       image: cirrusci/flutter:master
     steps:
+      - run: sudo chown -R $USER:$USER ${{ github.workspace }}
       - uses: actions/checkout@v2.3.4
       - name: Flutter version
         run: flutter doctor -v
