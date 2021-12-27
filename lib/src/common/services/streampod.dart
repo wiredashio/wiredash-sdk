@@ -94,8 +94,7 @@ class InstanceFactory<T> {
   void rebuild() {
     dispose?.call();
     final listeners = this.listeners.toList();
-    final dependencies = this.dependencies.toList();
-    this.dependencies = [];
+    dependencies = [];
     this.listeners = [];
     _oldInstance = _instance;
     _instance = null;

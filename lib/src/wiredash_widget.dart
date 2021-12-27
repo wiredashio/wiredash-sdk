@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
+import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/common/widgets/screencapture.dart';
@@ -10,7 +11,6 @@ import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
 import 'package:wiredash/src/not_a_widgets_app.dart';
-import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
 import 'package:wiredash/wiredash.dart';
 

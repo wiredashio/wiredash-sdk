@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/options/feedback_options.dart';
+import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
-import 'package:wiredash/src/common/services/services.dart';
 
 class WiredashModel with ChangeNotifier {
   WiredashModel(this.services);

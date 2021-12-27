@@ -2,10 +2,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
+import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/src/common/utils/delay.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
-import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/wiredash.dart';
 
 enum FeedbackFlowStatus {
