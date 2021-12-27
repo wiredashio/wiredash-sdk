@@ -65,6 +65,7 @@ class WiredashServices extends ChangeNotifier {
       update: update == null
           ? null
           : (_, T oldInstance) => update(this, oldInstance),
+      dispose: dispose,
     );
     notifyListeners();
     return factory;
@@ -150,6 +151,9 @@ class DiscardFeedbackUseCase {
   final WiredashServices services;
 
   void call() {
-    services.inject<FeedbackModel>((locator) => FeedbackModel(services));
+    services.inject<FeedbackModel>(
+      (locator) => FeedbackModel(services),
+      dispose: (model) => model.dispose(),
+    );
   }
 }

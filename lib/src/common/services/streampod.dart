@@ -20,7 +20,7 @@ class Locator {
   InstanceFactory<T> injectProvider<T>(
     T Function(Locator) create, {
     T Function(Locator, T oldInstance)? update,
-    Function(T)? dispose,
+    void Function(T)? dispose,
   }) {
     late InstanceFactory<T> provider;
     provider = InstanceFactory(this, create, update, () {
