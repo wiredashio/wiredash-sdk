@@ -115,7 +115,7 @@ class Wiredash extends StatefulWidget {
     final state = context.findAncestorStateOfType<WiredashState>();
     if (state == null) return null;
 
-    return WiredashController(state.services.wiredashModel);
+    return WiredashController(state._services.wiredashModel);
   }
 
   /// The [WiredashController] from the closest [Wiredash] instance that
@@ -128,7 +128,7 @@ class Wiredash extends StatefulWidget {
   /// ```
   static WiredashController of(BuildContext context) {
     final state = context.findAncestorStateOfType<WiredashState>();
-    return WiredashController(state!.services.wiredashModel);
+    return WiredashController(state!._services.wiredashModel);
   }
 }
 
@@ -139,7 +139,21 @@ class WiredashState extends State<Wiredash> {
 
   bool _isWiredashClosed = true;
 
-  final WiredashServices services = WiredashServices();
+  final WiredashServices _services = WiredashServices();
+
+  WiredashServices get debugServices {
+    WiredashServices? services;
+    assert(
+      () {
+        services = _services;
+        return true;
+      }(),
+    );
+    if (services == null) {
+      throw "Services can't be accessed in production code";
+    }
+    return services!;
+  }
 
   @override
   void initState() {
@@ -148,15 +162,15 @@ class WiredashState extends State<Wiredash> {
       projectId: widget.projectId,
       secret: widget.secret,
     );
-    services.updateWidget(widget);
-    services.addListener(() {
+    _services.updateWidget(widget);
+    _services.addListener(() {
       setState(() {
         // rebuild wiredash
       });
     });
-    services.backdropController.addListener(() {
+    _services.backdropController.addListener(() {
       setState(() {
-        _isWiredashClosed = services.backdropController.backdropStatus ==
+        _isWiredashClosed = _services.backdropController.backdropStatus ==
             WiredashBackdropStatus.closed;
       });
     });
@@ -164,7 +178,7 @@ class WiredashState extends State<Wiredash> {
 
   @override
   void dispose() {
-    services.dispose();
+    _services.dispose();
     super.dispose();
   }
 
@@ -175,13 +189,13 @@ class WiredashState extends State<Wiredash> {
       projectId: widget.projectId,
       secret: widget.secret,
     );
-    services.updateWidget(widget);
+    _services.updateWidget(widget);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = widget.theme ??
-        services.wiredashModel.themeFromContext ??
+        _services.wiredashModel.themeFromContext ??
         WiredashThemeData();
 
     // Assign app an key so it doesn't lose state when wrapped, unwrapped
@@ -198,9 +212,9 @@ class WiredashState extends State<Wiredash> {
         if (!_isWiredashClosed) {
           // This is the place to wrap the app itself, not the whole backdrop
           widget = Picasso(
-            controller: services.picassoController,
+            controller: _services.picassoController,
             child: ScreenCapture(
-              controller: services.screenCaptureController,
+              controller: _services.screenCaptureController,
               child: widget,
             ),
           );
@@ -220,7 +234,7 @@ class WiredashState extends State<Wiredash> {
             children: [
               WiredashBackdrop(
                 key: _backdropKey,
-                controller: services.backdropController,
+                controller: _services.backdropController,
                 child: appBuilder,
               ),
             ],
@@ -231,15 +245,15 @@ class WiredashState extends State<Wiredash> {
 
     // Finally provide the models to wiredash and the UI
     return WiredashModelProvider(
-      wiredashModel: services.wiredashModel,
+      wiredashModel: _services.wiredashModel,
       child: FeedbackModelProvider(
-        feedbackModel: services.feedbackModel,
+        feedbackModel: _services.feedbackModel,
         child: BackdropControllerProvider(
-          backdropController: services.backdropController,
+          backdropController: _services.backdropController,
           child: PicassoControllerProvider(
-            picassoController: services.picassoController,
+            picassoController: _services.picassoController,
             child: WiredashOptions(
-              data: services.wiredashOptions,
+              data: _services.wiredashOptions,
               child: backdrop,
             ),
           ),
