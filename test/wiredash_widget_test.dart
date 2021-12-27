@@ -157,119 +157,121 @@ void main() {
       expect(submittedFeedback, isNotNull);
       expect(latestCall['images'], hasLength(1));
     });
-  });
 
-  testWidgets('Send feedback with labels and screenshot', (tester) async {
-    TestWidgetsFlutterBinding.ensureInitialized();
-    const MethodChannel channel =
-        MethodChannel('plugins.flutter.io/path_provider_macos');
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      return '.';
-    });
-    await tester.pumpWidget(
-      Wiredash(
-        projectId: 'test',
-        secret: 'test',
-        feedbackOptions: const WiredashFeedbackOptions(
-          labels: [
-            Label(id: 'lbl-1', title: 'One', description: 'First'),
-            Label(id: 'lbl-2', title: 'Two', description: 'Second'),
-          ],
-        ),
-        child: MaterialApp(
-          home: Builder(
-            builder: (context) {
-              return Scaffold(
-                floatingActionButton: FloatingActionButton(
-                  onPressed: Wiredash.of(context).show,
-                ),
-              );
-            },
+    testWidgets('Send feedback with labels and screenshot', (tester) async {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      const MethodChannel channel =
+          MethodChannel('plugins.flutter.io/path_provider_macos');
+      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+        return '.';
+      });
+      await tester.pumpWidget(
+        Wiredash(
+          projectId: 'test',
+          secret: 'test',
+          feedbackOptions: const WiredashFeedbackOptions(
+            labels: [
+              Label(id: 'lbl-1', title: 'One', description: 'First'),
+              Label(id: 'lbl-2', title: 'Two', description: 'Second'),
+            ],
+          ),
+          child: MaterialApp(
+            home: Builder(
+              builder: (context) {
+                return Scaffold(
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: Wiredash.of(context).show,
+                  ),
+                );
+              },
+            ),
           ),
         ),
-      ),
-    );
-    final wiredashWidget =
-        find.byType(Wiredash).evaluate().first as StatefulElement;
-    final services = (wiredashWidget.state as WiredashState).debugServices;
-    final mockApi = _MockApi();
-    services.inject<WiredashApi>((_) => mockApi);
-    services.inject<FeedbackSubmitter>(
-      (locator) => DirectFeedbackSubmitter(locator.api),
-    );
+      );
+      final wiredashWidget =
+          find.byType(Wiredash).evaluate().first as StatefulElement;
+      final services = (wiredashWidget.state as WiredashState).debugServices;
+      final mockApi = _MockApi();
+      services.inject<WiredashApi>((_) => mockApi);
+      services.inject<FeedbackSubmitter>(
+        (locator) => DirectFeedbackSubmitter(locator.api),
+      );
 
-    expect(find.byType(WiredashFeedbackFlow), findsNothing);
+      expect(find.byType(WiredashFeedbackFlow), findsNothing);
 
-    // Open Wiredash
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pumpAndSettle();
-    expect(find.byType(WiredashFeedbackFlow), findsOneWidget);
+      // Open Wiredash
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+      expect(find.byType(WiredashFeedbackFlow), findsOneWidget);
 
-    await tester.enterText(find.byType(TextField), 'asdfasdf');
-    await tester.pumpAndSettle();
-    await tester.waitUntil(
-      find.byIcon(Wirecons.arrow_narrow_right),
-      findsOneWidget,
-    );
-    expect(find.byIcon(Wirecons.arrow_narrow_right), findsOneWidget);
-    expect(find.byIcon(Wirecons.chevron_double_up), findsOneWidget);
+      await tester.enterText(find.byType(TextField), 'feedback_text');
+      await tester.pumpAndSettle();
+      await tester.waitUntil(
+        find.byIcon(Wirecons.arrow_narrow_right),
+        findsOneWidget,
+      );
+      expect(find.byIcon(Wirecons.arrow_narrow_right), findsOneWidget);
+      expect(find.byIcon(Wirecons.chevron_double_up), findsOneWidget);
 
-    await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
-    await tester.pumpHardAndSettle();
-    // Check labels exist
-    expect(find.text('One'), findsOneWidget);
-    expect(find.text('Two'), findsOneWidget);
+      await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
+      await tester.pumpHardAndSettle();
+      // Check labels exist
+      expect(find.text('One'), findsOneWidget);
+      expect(find.text('Two'), findsOneWidget);
 
-    await tester.tap(find.text('Two'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.text('Two'));
+      await tester.pumpAndSettle();
 
-    // screenshot overview
-    await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
-    await tester.pumpHardAndSettle();
+      // screenshot overview
+      await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
+      await tester.pumpHardAndSettle();
 
-    // Go to screenshot section
-    await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
-    await tester.waitUntil(find.byIcon(Wirecons.camera), findsOneWidget);
-    // TODO check app is interactive
+      // Go to screenshot section
+      await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
+      await tester.waitUntil(find.byIcon(Wirecons.camera), findsOneWidget);
+      // TODO check app is interactive
 
-    // Click the screenshot button
-    await tester.tap(find.byIcon(Wirecons.camera));
-    await tester.pumpAndSettle();
+      // Click the screenshot button
+      await tester.tap(find.byIcon(Wirecons.camera));
+      await tester.pumpAndSettle();
 
-    // Wait for edit screen
-    await tester.waitUntil(find.byIcon(Wirecons.check), findsOneWidget);
+      // Wait for edit screen
+      await tester.waitUntil(find.byIcon(Wirecons.check), findsOneWidget);
 
-    // Check for save screenshot button
-    expect(find.byIcon(Wirecons.check), findsOneWidget);
-    expect(find.byIcon(Wirecons.pencil), findsOneWidget);
+      // Check for save screenshot button
+      expect(find.byIcon(Wirecons.check), findsOneWidget);
+      expect(find.byIcon(Wirecons.pencil), findsOneWidget);
 
-    await tester.tap(find.byIcon(Wirecons.check));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Wirecons.check));
+      await tester.pumpAndSettle();
 
-    await tester.waitUntil(
-      find.byIcon(Wirecons.arrow_narrow_right),
-      findsOneWidget,
-    );
+      await tester.waitUntil(
+        find.byIcon(Wirecons.arrow_narrow_right),
+        findsOneWidget,
+      );
 
-    // TODO check that we see the screenshot
-    await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
-    await tester.pumpAndSettle();
+      // TODO check that we see the screenshot
+      await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
+      await tester.pumpAndSettle();
 
-    await tester.enterText(find.byType(TextField), 'dash@wiredash.io');
-    await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'dash@wiredash.io');
+      await tester.pumpAndSettle();
 
-    // Submit
-    await tester.tap(find.byIcon(Wirecons.check));
-    await tester.pump();
-    await tester.waitUntil(
-      find.text('Thanks for your feedback!'),
-      findsOneWidget,
-    );
-    final latestCall = mockApi.sendFeedbackInvocations.latest;
-    final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
-    expect(submittedFeedback, isNotNull);
-    expect(submittedFeedback!.labels, ['lbl-2']);
-    expect(latestCall['images'], hasLength(1));
+      // Submit
+      await tester.tap(find.byIcon(Wirecons.check));
+      await tester.pump();
+      await tester.waitUntil(
+        find.text('Thanks for your feedback!'),
+        findsOneWidget,
+      );
+      final latestCall = mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      expect(submittedFeedback, isNotNull);
+      expect(submittedFeedback!.labels, ['lbl-2']);
+      expect(submittedFeedback.message, 'feedback_text');
+      expect(submittedFeedback.email, 'dash@wiredash.io');
+      expect(latestCall['images'], hasLength(1));
+    });
   });
 }
 
