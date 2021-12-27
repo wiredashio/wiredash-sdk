@@ -61,7 +61,7 @@ class FeedbackModel with ChangeNotifier {
   bool get submitted => _submitted;
   bool _submitted = false;
 
-  Delay? _submitDelay;
+  Delay? _fakeSubmitDelay;
   Delay? _closeDelay;
 
   CustomizableWiredashMetaData? _metaData;
@@ -235,12 +235,12 @@ class FeedbackModel with ChangeNotifier {
       }(),
     );
     try {
-      _submitDelay?.dispose();
-      _submitDelay = Delay(const Duration(seconds: 2));
       if (fakeSubmit) {
         // ignore: avoid_print
         if (kDebugMode) print('Submitting feedback (fake)');
-        await _submitDelay!.future;
+        _fakeSubmitDelay?.dispose();
+        _fakeSubmitDelay = Delay(const Duration(seconds: 2));
+        await _fakeSubmitDelay!.future;
         _submitted = true;
         _submitting = false;
         notifyListeners();
@@ -248,15 +248,11 @@ class FeedbackModel with ChangeNotifier {
         // ignore: avoid_print
         if (kDebugMode) print('Submitting feedback');
         try {
-          final Future<void> feedback = () async {
-            final item = await createFeedback();
-            await _services.feedbackSubmitter.submit(item, _screenshot);
-          }();
-          await Future.wait([feedback, _submitDelay!.future]);
+          final item = await createFeedback();
+          await _services.feedbackSubmitter.submit(item, _screenshot);
           _submitted = true;
           notifyListeners();
         } catch (e, stack) {
-          print(e);
           reportWiredashError(e, stack, 'Feedback submission failed');
           _submissionError = e;
         }
@@ -314,7 +310,7 @@ class FeedbackModel with ChangeNotifier {
 
   @override
   void dispose() {
-    _submitDelay?.dispose();
+    _fakeSubmitDelay?.dispose();
     _closeDelay?.dispose();
     super.dispose();
   }
