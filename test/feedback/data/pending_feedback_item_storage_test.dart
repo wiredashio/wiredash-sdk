@@ -97,7 +97,7 @@ void main() {
             ),
             email: 'email@example.com',
             message: 'Hello world!',
-            type: 'bug',
+            labels: ['bug'],
             userId: 'Testy McTestFace',
           ),
           kTransparentImage,
@@ -147,9 +147,9 @@ void main() {
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
           'email': '<existing item email>',
+          'labels': ['<existing item type>'],
           'message': '<existing item message>',
           'sdkVersion': 1,
-          'type': '<existing item type>',
           'userId': '<existing item user>',
         },
         'id': '1',
@@ -190,7 +190,7 @@ void main() {
             ),
             email: 'email@example.com',
             message: 'Hello world!',
-            type: 'bug',
+            labels: ['<existing item type>'],
             userId: 'Testy McTestFace',
           ),
           kTransparentImage,
@@ -253,9 +253,9 @@ void main() {
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
           'email': '<existing item email>',
+          'labels': ['<existing item type>'],
           'message': '<existing item message>',
           'sdkVersion': 1,
-          'type': '<existing item type>',
           'userId': '<existing item user>',
         },
         'id': '<existing item id>',
@@ -328,9 +328,9 @@ void main() {
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
           'email': '<existing item email>',
+          'labels': ['<existing item type>'],
           'message': '<existing item message>',
           'sdkVersion': 1,
-          'type': '<existing item type>',
           'userId': '<existing item user>',
         },
         'id': '<id for item to be preserved>',
@@ -368,9 +368,9 @@ void main() {
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
           'email': '<existing item email>',
+          'labels': ['<existing item type>'],
           'message': '<existing item message>',
           'sdkVersion': 1,
-          'type': '<existing item type>',
           'userId': '<existing item user>',
         },
         'id': '<existing item id>',
@@ -405,8 +405,8 @@ void main() {
         'feedbackItem': {
           'deviceInfo': {},
           'email': '<existing item email>',
+          'labels': ['<existing item type>'],
           'message': '<existing item message>',
-          'type': '<existing item type>',
           'userId': '<existing item user>'
         },
         'screenshotPath': '<existing item screenshot>'
@@ -478,9 +478,9 @@ void main() {
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
           'email': '<existing item email>',
+          'labels': ['<existing item type>'],
           'message': '<existing item message>',
           'sdkVersion': 1,
-          'type': '<existing item type>',
           'userId': '<existing item user>',
         },
         'id': '1',
@@ -498,6 +498,10 @@ void main() {
       FlutterError.onError = (FlutterErrorDetails details) {
         caught = details;
       };
+      addTearDown(() {
+        // reset error reporter after test
+        FlutterError.onError = oldOnErrorHandler;
+      });
 
       final retrieved = await storage.retrieveAllPendingItems();
 
@@ -541,8 +545,8 @@ void main() {
               physicalSize: Size(800, 1200),
             ),
             email: 'email@example.com',
+            labels: ['bug'],
             message: 'Hello world!',
-            type: 'bug',
             userId: 'Testy McTestFace',
           ),
           kTransparentImage,

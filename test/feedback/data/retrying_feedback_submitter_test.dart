@@ -139,7 +139,7 @@ void main() {
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
+        labels: ['feedback'],
         userId: 'Testy McTestFace',
       );
 
@@ -181,7 +181,7 @@ void main() {
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
+        labels: ['feedback'],
         userId: 'Testy McTestFace',
       );
 
@@ -233,7 +233,7 @@ void main() {
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
+        labels: ['feedback'],
         userId: 'Testy McTestFace',
       );
 
@@ -267,7 +267,7 @@ void main() {
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
+        labels: ['feedback'],
         userId: 'Testy McTestFace',
       );
 
@@ -314,7 +314,7 @@ void main() {
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
+        labels: ['feedback'],
         userId: 'Testy McTestFace',
       );
 
@@ -421,7 +421,7 @@ void main() {
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
+        labels: ['feedback'],
         userId: 'Testy McTestFace',
       );
 
@@ -500,7 +500,7 @@ void main() {
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
+        labels: ['feedback'],
         userId: 'Testy McTestFace',
       );
 
@@ -569,7 +569,7 @@ void main() {
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
+        labels: ['feedback'],
         userId: 'Testy McTestFace',
       );
 
@@ -619,7 +619,7 @@ void main() {
         ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
+        labels: ['feedback'],
         userId: 'Testy McTestFace',
       );
 

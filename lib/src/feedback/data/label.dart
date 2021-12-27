@@ -1,21 +1,47 @@
+import 'package:flutter/foundation.dart';
+
+@immutable
 class Label {
-  const Label({required this.id, required this.name});
+  const Label({
+    required this.id,
+    required this.title,
+    this.description,
+  });
+
   final String id;
-  final String name;
+  final String title;
+  final String? description;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Label &&
+      (other is Label &&
           runtimeType == other.runtimeType &&
           id == other.id &&
-          name == other.name;
+          title == other.title &&
+          description == other.description);
 
   @override
-  int get hashCode => id.hashCode ^ name.hashCode;
+  int get hashCode => id.hashCode ^ title.hashCode ^ description.hashCode;
 
   @override
   String toString() {
-    return 'Label{name: $name, id: $id}';
+    return 'Label{'
+        'id: $id, '
+        'title: $title, '
+        'description: $description'
+        '}';
+  }
+
+  Label copyWith({
+    String? id,
+    String? title,
+    String? description,
+  }) {
+    return Label(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+    );
   }
 }

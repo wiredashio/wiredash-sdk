@@ -38,8 +38,8 @@ class WiredashThemeData {
         deviceClass: deviceClass,
         primaryColor: primaryColor ?? const Color(0xff1A56DB),
         secondaryColor: secondaryColor ?? const Color(0xffE8EEFB),
-        primaryTextColor: primaryTextColor ?? const Color(0xff030A1C),
-        secondaryTextColor: secondaryTextColor ?? const Color(0xff8C93A2),
+        primaryTextColor: primaryTextColor ?? const Color(0xffe3e3e3),
+        secondaryTextColor: secondaryTextColor ?? const Color(0xb0a4a4a4),
         primaryBackgroundColor:
             primaryBackgroundColor ?? const Color(0xffffffff),
         secondaryBackgroundColor:
@@ -54,32 +54,37 @@ class WiredashThemeData {
   factory WiredashThemeData.fromColor({
     required Color color,
     required Brightness brightness,
-    Size? windowSize,
   }) {
-    // Deriving colors for a light theme
-    // TODO: Derive colors for a dark theme
-
     final hsl = HSLColor.fromColor(color);
 
-    return WiredashThemeData._(
-      brightness: brightness,
-      deviceClass: DeviceClass.handsetLarge400,
-      primaryColor: color,
-      secondaryColor: hsl
-          .withHue((hsl.hue - 10) % 360)
-          .withSaturation(.60)
-          .withLightness(.90)
-          .toColor(),
-      primaryTextColor: const Color(0xff030A1C),
-      secondaryTextColor: const Color(0xff8C93A2),
-      primaryBackgroundColor:
-          hsl.withSaturation(1.0).withLightness(1.0).toColor(),
-      secondaryBackgroundColor:
-          hsl.withSaturation(.8).withLightness(.95).toColor(),
-      errorColor: const Color(0xffff5c6a),
-      fontFamily: _fontFamily,
-      windowSize: windowSize ?? Size.zero,
-    );
+    final theme =
+        WiredashThemeData(brightness: brightness, primaryColor: color);
+
+    if (brightness == Brightness.light) {
+      return theme.copyWith(
+        secondaryColor: hsl
+            .withHue((hsl.hue - 10) % 360)
+            .withSaturation(.60)
+            .withLightness(.90)
+            .toColor(),
+        primaryBackgroundColor:
+            hsl.withSaturation(1.0).withLightness(1.0).toColor(),
+        secondaryBackgroundColor:
+            hsl.withSaturation(.8).withLightness(0.95).toColor(),
+      );
+    } else {
+      return theme.copyWith(
+        secondaryColor: hsl
+            .withHue((hsl.hue - 10) % 360)
+            .withSaturation(.1)
+            .withLightness(.1)
+            .toColor(),
+        primaryBackgroundColor:
+            hsl.withSaturation(0.04).withLightness(0.2).toColor(),
+        secondaryBackgroundColor:
+            hsl.withSaturation(0.0).withLightness(0.1).toColor(),
+      );
+    }
   }
 
   WiredashThemeData._({
@@ -134,11 +139,27 @@ class WiredashThemeData {
         fontWeight: FontWeight.bold,
       );
 
+  TextStyle get tronButtonTextStyle => TextStyle(
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 14,
+        color: primaryTextColor,
+        fontWeight: FontWeight.w500,
+      );
+
   TextStyle get bodyTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
         fontSize: 16,
         color: primaryTextColor,
+        fontWeight: FontWeight.normal,
+      );
+
+  TextStyle get body2TextStyle => TextStyle(
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 16,
+        color: secondaryTextColor,
         fontWeight: FontWeight.normal,
       );
 
@@ -223,7 +244,7 @@ class WiredashThemeData {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is WiredashThemeData &&
+      other is WiredashThemeData &&
           runtimeType == other.runtimeType &&
           brightness == other.brightness &&
           primaryColor == other.primaryColor &&
@@ -234,8 +255,8 @@ class WiredashThemeData {
           secondaryBackgroundColor == other.secondaryBackgroundColor &&
           errorColor == other.errorColor &&
           deviceClass == other.deviceClass &&
-          fontFamily == other.fontFamily &&
-          windowSize == other.windowSize);
+          windowSize == other.windowSize &&
+          fontFamily == other.fontFamily;
 
   @override
   int get hashCode =>
@@ -248,8 +269,8 @@ class WiredashThemeData {
       secondaryBackgroundColor.hashCode ^
       errorColor.hashCode ^
       deviceClass.hashCode ^
-      fontFamily.hashCode ^
-      windowSize.hashCode;
+      windowSize.hashCode ^
+      fontFamily.hashCode;
 
   @override
   String toString() {

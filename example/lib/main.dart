@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
 
 void main() {
-  runApp(const WiredashExampleApp());
+  runApp(WiredashExampleApp());
 }
 
+/// The first widget put into `runApp` should be stateful to make hot reload
+/// work
 class WiredashExampleApp extends StatefulWidget {
-  const WiredashExampleApp({Key? key}) : super(key: key);
+  WiredashExampleApp({Key? key}) : super(key: key);
 
   @override
   _WiredashExampleAppState createState() => _WiredashExampleAppState();
 }
 
 class _WiredashExampleAppState extends State<WiredashExampleApp> {
-  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
-
   @override
   Widget build(BuildContext context) {
     /// The `Wiredash` widget wraps the top level application widget.
@@ -35,7 +35,6 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
     return Wiredash(
       projectId: "Project ID from console.wiredash.io",
       secret: "API Key from console.wiredash.io",
-      navigatorKey: _navigatorKey,
       options: WiredashOptionsData(
         /// Change the locale of the Wiredash UI
         locale: Locale('en'),
@@ -50,51 +49,73 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
 
         /// Uncomment below to set custom translations work
         // customTranslations: {
-        //   const Locale.fromSubtags(languageCode: 'en'):
-        //       const CustomDemoTranslations(),
+        //    Locale.fromSubtags(languageCode: 'en'):
+        //        CustomDemoTranslations(),
         // },
 
         /// Uncomment below to override the default device locale
         // and/or text direction
-        // locale: const Locale('de'),
+        // locale:  Locale('de'),
         // textDirection: TextDirection.rtl,
       ),
-      theme: WiredashThemeData(
-
-          /// Uncomment below to explore the various theme options:
-
-          /// Customize the Font Family
-          // fontFamily: 'Monospace',
-
-          /// Customize the Bottom Sheet Border Radius
-          // sheetBorderRadius: BorderRadius.zero,
-
-          /// Customize Brightness and Colors
-          // brightness: Brightness.light,
-          // primaryColor: Colors.red,
-          // secondaryColor: Colors.blue,
-
-          /// Customize the Pen Colors
-          /// Note: If you change the Pen Colors, please consider providing
-          /// custom translations to the WiredashOptions to ensure the app is
-          /// accessible to all. The default translations describe the default
-          /// pen colors.
-          // firstPenColor: Colors.orange,
-          // secondPenColor: Colors.green,
-          // thirdPenColor: Colors.yellow,
-          // fourthPenColor: Colors.deepPurpleAccent,
+      feedbackOptions: WiredashFeedbackOptions(
+        collectMetaData: (metaData) => metaData
+          ..userEmail = 'dash@wiredash.io'
+          ..custom['isPremium'] = false,
+        askForUserEmail: true,
+        labels: [
+          Label(
+            id: 'lbl-r65egsdf',
+            title: 'Bug',
           ),
+          Label(
+            id: 'lbl-2r98yask',
+            title: 'Abfall',
+          ),
+          Label(
+            id: 'lbl-de3w2fds',
+            title: 'Backend',
+          ),
+          Label(
+            id: 'lbl-2r98yas4',
+            title: 'Da muss Frederik noch mal ran',
+          ),
+        ],
+      ),
+      // theme: WiredashThemeData(
+      /// Uncomment below to explore the various theme options:
+
+      /// Customize the Font Family
+      // fontFamily: 'Monospace',
+
+      /// Customize the Bottom Sheet Border Radius
+      // sheetBorderRadius: BorderRadius.zero,
+
+      /// Customize Brightness and Colors
+      // brightness: Brightness.light,
+      // primaryColor: Colors.red,
+      // secondaryColor: Colors.blue,
+
+      /// Customize the Pen Colors
+      /// Note: If you change the Pen Colors, please consider providing
+      /// custom translations to the WiredashOptions to ensure the app is
+      /// accessible to all. The default translations describe the default
+      /// pen colors.
+      // firstPenColor: Colors.orange,
+      // secondPenColor: Colors.green,
+      // thirdPenColor: Colors.yellow,
+      // fourthPenColor: Colors.deepPurpleAccent,
+      // ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        navigatorKey: _navigatorKey,
-        home: const _HomePage(),
+        home: _HomePage(),
       ),
     );
   }
 }
 
 class _HomePage extends StatelessWidget {
-  const _HomePage({Key? key}) : super(key: key);
+  _HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +127,7 @@ class _HomePage extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             title: Text('Sample Item #$index'),
-            subtitle: const Text('Tap me to open a new page'),
+            subtitle: Text('Tap me to open a new page'),
             onTap: () => _openDetailsPage(context, index),
           );
         },
@@ -117,7 +138,7 @@ class _HomePage extends StatelessWidget {
         /// Since the `Wiredash` widget is at the root of the widget tree this
         /// method can be accessed from anywhere in the code.
         onPressed: () {
-          Wiredash.of(context)!.show();
+          Wiredash.of(context).show(context);
         },
         child: Icon(Icons.feedback_outlined),
       ),
@@ -136,7 +157,7 @@ class _HomePage extends StatelessWidget {
 }
 
 class _DetailsPage extends StatelessWidget {
-  const _DetailsPage({
+  _DetailsPage({
     Key? key,
     required this.index,
   }) : super(key: key);
@@ -151,7 +172,7 @@ class _DetailsPage extends StatelessWidget {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -159,8 +180,8 @@ class _DetailsPage extends StatelessWidget {
                 'Details page #$index',
                 style: Theme.of(context).textTheme.headline6,
               ),
-              const SizedBox(height: 8),
-              const Text('Try navigating here in feedback mode.')
+              SizedBox(height: 8),
+              Text('Try navigating here in feedback mode.')
             ],
           ),
         ),

@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/version.dart';
 
@@ -27,6 +28,7 @@ class WiredashApi {
   final Future<String> Function() _deviceIdProvider;
 
   static const String _host = 'https://api.wiredash.io/sdk';
+  // static const String _host = 'https://dev-api.wiredash.io/sdk';
 
   /// Uploads an image to the Wiredash image hosting
   ///
@@ -56,7 +58,7 @@ class WiredashApi {
 
   /// Reports a feedback
   ///
-  /// POST /feedback
+  /// POST /sendFeedback
   Future<void> sendFeedback(
     PersistedFeedbackItem feedback, {
     List<ImageBlob> images = const [],
@@ -178,10 +180,8 @@ extension FeedbackBody on PersistedFeedbackItem {
     // Required values
     values.addAll({
       'deviceId': nonNull(deviceId),
-      // TODO remove isDebugBuild and replace it with compilationMode on backend
       'compilationMode': nonNull(buildInfo.compilationMode).jsonEncode(),
-      // TODO return correct label ids
-      'labels': [nonNull(type)],
+      if (labels != null) 'labels': nonNull(labels!),
       'message': nonNull(message),
       'sdkVersion': nonNull(sdkVersion),
       'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
@@ -198,7 +198,6 @@ extension FeedbackBody on PersistedFeedbackItem {
       'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
       'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
       'windowPadding': nonNull(deviceInfo.padding).toJson(),
-      // TODO add to backend
       'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
       'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode(),
     });
@@ -249,12 +248,41 @@ extension FeedbackBody on PersistedFeedbackItem {
       values.addAll({'userId': _userId});
     }
 
+    final _customMetaData = customMetaData?.map((key, value) {
+      if (value == null) {
+        return MapEntry(key, null);
+      }
+      try {
+        // try encoding. We don't care about the actual encoded content because
+        // it will be later by the http library encoded
+        jsonEncode(value);
+        // encoding worked, it's valid data
+        return MapEntry(key, value);
+      } catch (e, stack) {
+        reportWiredashError(
+          e,
+          stack,
+          'Could not serialize customMetaData property '
+          '$key=${value.toString()}',
+        );
+        return MapEntry(key, null);
+      }
+    });
+    if (_customMetaData != null) {
+      _customMetaData.removeWhere((key, value) => value == null);
+      if (_customMetaData.isNotEmpty) {
+        values.addAll({'customMetaData': _customMetaData});
+      }
+    }
+
     return values.map((k, v) => MapEntry(k, v));
   }
 }
 
 /// Explicitly defines a values a non null, making it a compile time error
 /// when [value] becomes nullable
+///
+/// This prevents accidental null values here that may happen due to refactoring
 T nonNull<T extends Object>(T value) {
   return value;
 }

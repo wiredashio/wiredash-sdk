@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:ui';
 
 import 'package:test/test.dart';
@@ -5,7 +7,7 @@ import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
 void main() {
-  const _full = PendingFeedbackItem(
+  final _full = PendingFeedbackItem(
     id: 'abc123',
     screenshotPath: 'path/to/file.png',
     feedbackItem: PersistedFeedbackItem(
@@ -18,6 +20,10 @@ void main() {
         buildCommit: 'abcdef12',
         compilationMode: CompilationMode.profile,
       ),
+      customMetaData: {
+        'customText': 'text',
+        'nestedObject': {'frodo': 'ring', 'sam': 'lembas'},
+      },
       deviceId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
       deviceInfo: DeviceInfo(
         pixelRatio: 2.75,
@@ -39,7 +45,7 @@ void main() {
       ),
       email: 'email@example.com',
       message: 'Hello world!',
-      type: 'bug',
+      labels: ['bug', 'lbl-1234'],
       userId: 'Testy McTestFace',
       sdkVersion: 1,
     ),
@@ -68,7 +74,6 @@ void main() {
         physicalSize: Size(1280, 720),
       ),
       message: 'Hello world!',
-      type: 'bug',
       sdkVersion: 12,
     ),
   );
@@ -88,6 +93,10 @@ void main() {
               'buildNumber': '543',
               'buildCommit': 'abcdef12',
               'compilationMode': 'profile',
+            },
+            'customMetaData': {
+              'customText': '"text"',
+              'nestedObject': '{"frodo":"ring","sam":"lembas"}',
             },
             'deviceInfo': {
               'padding': [0, 66, 0, 0],
@@ -111,7 +120,7 @@ void main() {
             'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
             'email': 'email@example.com',
             'message': 'Hello world!',
-            'type': 'bug',
+            'labels': ['bug', 'lbl-1234'],
             'userId': 'Testy McTestFace',
             'sdkVersion': 1
           },
@@ -127,7 +136,6 @@ void main() {
           'feedbackItem': {
             'deviceId': '1234',
             'message': 'Hello world!',
-            'type': 'bug',
             'sdkVersion': 12,
             'appInfo': {
               'appLocale': 'en_US',
@@ -172,6 +180,10 @@ void main() {
               'buildCommit': 'abcdef12',
               'compilationMode': 'profile',
             },
+            'customMetaData': {
+              'customText': '"text"',
+              'nestedObject': '{"frodo":"ring","sam":"lembas"}',
+            },
             'deviceInfo': {
               'padding': [0, 66, 0, 0],
               'physicalSize': [1080, 2088],
@@ -192,7 +204,7 @@ void main() {
             'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
             'email': 'email@example.com',
             'message': 'Hello world!',
-            'type': 'bug',
+            'labels': ['bug', 'lbl-1234'],
             'userId': 'Testy McTestFace',
             'sdkVersion': 1,
           },
@@ -207,7 +219,6 @@ void main() {
         'feedbackItem': {
           'deviceId': '1234',
           'message': 'Hello world!',
-          'type': 'bug',
           'sdkVersion': 12,
           'appInfo': {
             'appLocale': 'en_US',

@@ -58,19 +58,21 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                   TextField(
                     controller: _controller,
                     keyboardType: TextInputType.emailAddress,
+                    cursorColor: context.theme.primaryColor,
                     style: context.theme.bodyTextStyle,
                     onSubmitted: (_) {
                       context.feedbackModel
                           .goToStep(FeedbackFlowStatus.submitting);
                     },
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       disabledBorder: InputBorder.none,
                       errorBorder: InputBorder.none,
                       hintText: 'example@wiredash.io',
-                      contentPadding: EdgeInsets.only(top: 16),
+                      contentPadding: const EdgeInsets.only(top: 16),
+                      hintStyle: context.theme.bodyTextStyle,
                     ),
                   ),
                 ],

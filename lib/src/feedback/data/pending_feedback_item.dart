@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
 const int _serializationVersion = 1;
@@ -131,12 +132,17 @@ class PendingFeedbackItemParserV1 {
     final feedbackItem = PersistedFeedbackItem(
       appInfo: appInfo,
       buildInfo: buildInfo,
+      customMetaData: (feedbackItemJson['customMetaData'] as Map?)?.map(
+        (key, value) => MapEntry(key.toString(), jsonDecode(value.toString())),
+      ),
       deviceInfo: deviceInfo,
       deviceId: feedbackItemJson['deviceId'] as String,
       email: feedbackItemJson['email'] as String?,
       message: feedbackItemJson['message'] as String,
       sdkVersion: feedbackItemJson['sdkVersion'] as int,
-      type: feedbackItemJson['type'] as String,
+      labels: (feedbackItemJson['labels'] as List<dynamic>?)
+          ?.map((it) => it as String)
+          .toList(),
       userId: feedbackItemJson['userId'] as String?,
     );
 
@@ -176,11 +182,31 @@ extension _SerializePersistedFeedbackItem on PersistedFeedbackItem {
       }),
       'deviceId': deviceId,
       if (email != null) 'email': email,
+      if (labels != null) 'labels': labels,
+      if (customMetaData != null)
+        'customMetaData': _serializedMetaData(customMetaData!),
       'message': message,
-      'type': type,
       if (userId != null) 'userId': userId,
       'sdkVersion': sdkVersion,
     });
+  }
+
+  Map<String, Object> _serializedMetaData(Map<String, Object?> metaData) {
+    final data = metaData.map((key, value) {
+      try {
+        return MapEntry(key, jsonEncode(value));
+      } catch (e, stack) {
+        reportWiredashError(
+          e,
+          stack,
+          'Could not serialize customMetaData property '
+          '$key=${value.toString()}',
+        );
+        return MapEntry(key, null);
+      }
+    });
+    data.removeWhere((key, value) => value == null);
+    return SplayTreeMap.from(data);
   }
 }
 

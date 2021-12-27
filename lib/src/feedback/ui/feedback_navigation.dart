@@ -145,20 +145,23 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
       case FeedbackFlowStatus.none:
         return null;
       case FeedbackFlowStatus.message:
-        return TronButton(
-          key: const ValueKey('back'),
-          color: context.theme.secondaryColor,
-          icon: Wirecons.home,
-          label: 'Back to app',
-          onTap: () => context.wiredashModel.hide(),
+        return Opacity(
+          // don't highlight the exit that much
+          opacity: 0.5,
+          child: TronButton(
+            key: const ValueKey('back'),
+            color: context.theme.secondaryColor,
+            icon: Wirecons.chevron_double_up,
+            label: 'Back to app',
+            onTap: () => context.wiredashModel.hide(),
+          ),
         );
       case FeedbackFlowStatus.labels:
         return TronButton(
           color: context.theme.secondaryColor,
           icon: Wirecons.arrow_narrow_left,
           label: 'Go back',
-          onTap: () =>
-              context.feedbackModel.goToStep(FeedbackFlowStatus.message),
+          onTap: () => context.feedbackModel.goToPreviousStep(),
         );
 
       case FeedbackFlowStatus.screenshotNavigating:
@@ -191,16 +194,14 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
             color: context.theme.secondaryColor,
             icon: Wirecons.arrow_narrow_left,
             label: 'Go back',
-            onTap: () =>
-                context.feedbackModel.goToStep(FeedbackFlowStatus.labels),
+            onTap: () => context.feedbackModel.goToPreviousStep(),
           );
         } else {
           return TronButton(
             color: context.theme.secondaryColor,
             icon: Wirecons.chevron_double_right,
             label: 'Skip screenshot',
-            onTap: () =>
-                context.feedbackModel.goToStep(FeedbackFlowStatus.email),
+            onTap: () => context.feedbackModel.goToNextStep(),
           );
         }
 
@@ -209,8 +210,7 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           color: context.theme.secondaryColor,
           icon: Wirecons.arrow_narrow_left,
           label: 'Go back',
-          onTap: () => context.feedbackModel
-              .goToStep(FeedbackFlowStatus.screenshotsOverview),
+          onTap: () => context.feedbackModel.goToPreviousStep(),
         );
       case FeedbackFlowStatus.submitting:
         return null;
@@ -229,8 +229,9 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           color: context.theme.primaryColor,
           icon: Wirecons.arrow_narrow_right,
           label: 'Next',
-          onTap: () =>
-              context.feedbackModel.goToStep(FeedbackFlowStatus.labels),
+          onTap: () {
+            context.feedbackModel.goToNextStep();
+          },
         );
 
       case FeedbackFlowStatus.labels:
@@ -240,8 +241,7 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
               : context.theme.primaryColor,
           icon: Wirecons.arrow_narrow_right,
           label: 'Next',
-          onTap: () => context.feedbackModel
-              .goToStep(FeedbackFlowStatus.screenshotsOverview),
+          onTap: () => context.feedbackModel.goToNextStep(),
         );
       case FeedbackFlowStatus.screenshotNavigating:
       case FeedbackFlowStatus.screenshotCapturing:
@@ -287,6 +287,19 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           },
         );
       case FeedbackFlowStatus.submitting:
+        final error = context.feedbackModel.submissionError;
+        if (error != null) {
+          return TronButton(
+            onTap: () {
+              context.feedbackModel.submitFeedback();
+            },
+            label: 'Retry',
+            child: const Padding(
+              padding: EdgeInsets.only(bottom: 2),
+              child: Text('Retry'),
+            ),
+          );
+        }
         return null;
     }
   }

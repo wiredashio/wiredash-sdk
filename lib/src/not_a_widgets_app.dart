@@ -6,7 +6,7 @@ import 'package:wiredash/src/media_query_from_window.dart';
 
 /// Wrapper for widgets like [TextField] that expect,
 /// but don't have a [WidgetsApp] as parent.
-class NotAWidgetsApp extends StatelessWidget {
+class NotAWidgetsApp extends StatefulWidget {
   const NotAWidgetsApp({
     required this.child,
     this.textDirection,
@@ -20,52 +20,63 @@ class NotAWidgetsApp extends StatelessWidget {
   final Locale? locale;
 
   @override
+  State<NotAWidgetsApp> createState() => _NotAWidgetsAppState();
+}
+
+class _NotAWidgetsAppState extends State<NotAWidgetsApp> {
+  OverlayEntry? entry;
+
+  @override
+  void didUpdateWidget(covariant NotAWidgetsApp oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    entry?.markNeedsBuild();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Overlay is required for text edit functions such as copy/paste on mobile
-    Widget widget = Overlay(
-      initialEntries: [
-        OverlayEntry(
-          builder: (context) {
-            // use a stateful widget as direct child or hot reload will not
-            // work for that widget
-            return child;
-          },
-        ),
-      ],
+    entry = OverlayEntry(
+      builder: (context) {
+        // use a stateful widget as direct child or hot reload will not
+        // work for that widget
+        return widget.child;
+      },
     );
 
+    Widget child = Overlay(initialEntries: [entry!]);
+
     // Any Text requires a directionality
-    widget = Directionality(
-      textDirection: textDirection ?? TextDirection.ltr,
+    child = Directionality(
+      textDirection: widget.textDirection ?? TextDirection.ltr,
       // Localizations required for Flutter UI widgets.
       // I.e. copy/paste dialogs for TextFields
       child: Localizations(
-        locale: locale ?? window.locale,
+        locale: widget.locale ?? window.locale,
         delegates: const [
           DefaultMaterialLocalizations.delegate,
           DefaultWidgetsLocalizations.delegate,
           DefaultCupertinoLocalizations.delegate,
         ],
-        child: widget,
+        child: child,
       ),
     );
 
     // Both DefaultTextEditingShortcuts and DefaultTextEditingActions are
     // required to make text edits like deletion of characters possible on macOS
-    widget = DefaultTextEditingShortcuts(
-      child: widget,
+    child = DefaultTextEditingShortcuts(
+      child: child,
     );
 
     // Inject a MediaQuery with information from the app window
-    widget = MediaQueryFromWindow(
-      child: widget,
+    child = MediaQueryFromWindow(
+      child: child,
     );
 
     // Make Wiredash a Material widget to support TextFields, etc.
-    widget = Material(
-      child: widget,
+    child = Material(
+      child: child,
     );
 
-    return widget;
+    return child;
   }
 }

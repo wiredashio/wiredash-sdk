@@ -1,5 +1,8 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
@@ -8,7 +11,16 @@ import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 void main() {
   group('Serialize feedback item', () {
     test('toFeedbackBody()', () {
-      final body = const PersistedFeedbackItem(
+      final oldOnErrorHandler = FlutterError.onError;
+      late FlutterErrorDetails caught;
+      FlutterError.onError = (FlutterErrorDetails details) {
+        caught = details;
+      };
+      addTearDown(() {
+        FlutterError.onError = oldOnErrorHandler;
+      });
+
+      final body = PersistedFeedbackItem(
         appInfo: AppInfo(
           appLocale: 'de_DE',
         ),
@@ -36,9 +48,15 @@ void main() {
         ),
         email: 'email@example.com',
         message: 'Hello world!',
-        type: 'bug',
+        labels: ['bug'],
         userId: 'Testy McTestFace',
         sdkVersion: 1,
+        customMetaData: {
+          'customText': 'text',
+          'nestedObject': {'frodo': 'ring', 'sam': 'lembas'},
+          'ignoreNull': null, // ignores
+          'function': () => null, // reports but doesn't crash
+        },
       ).toFeedbackBody();
 
       expect(
@@ -47,6 +65,10 @@ void main() {
           'appLocale': 'de_DE',
           'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'compilationMode': 'debug',
+          'customMetaData': {
+            'customText': 'text',
+            'nestedObject': {'frodo': 'ring', 'sam': 'lembas'}
+          },
           'labels': ['bug'],
           'message': 'Hello world!',
           'sdkVersion': 1,
@@ -68,6 +90,13 @@ void main() {
           'userEmail': 'email@example.com',
           'userId': 'Testy McTestFace',
         },
+      );
+      expect(
+        caught.toString(),
+        stringContainsInOrder([
+          'customMetaData',
+          'property function',
+        ]),
       );
     });
     test('empty email should not be sent as empty string', () {
@@ -99,7 +128,7 @@ void main() {
         ),
         email: '',
         message: 'Hello world!',
-        type: 'bug',
+        labels: ['bug'],
         userId: 'Testy McTestFace',
         sdkVersion: 1,
       ).toFeedbackBody();

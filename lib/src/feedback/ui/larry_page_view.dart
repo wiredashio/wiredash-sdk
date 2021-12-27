@@ -426,7 +426,7 @@ class LarryPageViewState extends State<LarryPageView>
       -_pageExitAcceleration,
       0,
       _pageSwitchDistance,
-      _pageEnterVelocity,
+      -_pageEnterVelocity,
     );
     _controller.animateWith(outSim);
   }

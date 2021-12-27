@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:wiredash/wiredash.dart';
 
 class WiredashOptionsData {
-  WiredashOptionsData({
+  const WiredashOptionsData({
     Locale? locale,
     TextDirection? textDirection,
     this.bugReportButton = true,
@@ -12,7 +12,7 @@ class WiredashOptionsData {
     this.screenshotStep = true,
     this.customTranslations,
   })  : textDirection = textDirection ?? TextDirection.ltr,
-        _currentLocale = locale ?? _defaultLocale,
+        _currentLocale = locale,
         assert(
           bugReportButton || praiseButton || featureRequestButton,
           'WiredashOptionsData Configuration Error: Show at least one button',
@@ -40,27 +40,17 @@ class WiredashOptionsData {
   final bool featureRequestButton;
 
   /// Current [TextDirection] used by Wiredash widget
-  TextDirection textDirection;
+  final TextDirection textDirection;
 
-  Locale _currentLocale;
+  final Locale? _currentLocale;
 
   /// Current locale used by Wiredash widget
-  Locale get currentLocale => _currentLocale;
-
-  /// Allows to set desired locale of Wiredash widget.
-  ///
-  /// The [locale] will be used if Wiredash built-in translations
-  /// or [customTranslations] contain translations for this [locale].
-  /// Otherwise device default locale will be used.
-  ///
-  /// If device default locale is not supported by Wiredash then English
-  /// will be used instead.
-  void setCurrentLocale(Locale locale) {
-    if (WiredashLocalizations.isSupported(locale)) {
-      _currentLocale = locale;
-    } else {
-      _currentLocale = _defaultLocale;
+  Locale get currentLocale {
+    final locale = _currentLocale;
+    if (locale != null && WiredashLocalizations.isSupported(locale)) {
+      return locale;
     }
+    return _defaultLocale;
   }
 }
 
