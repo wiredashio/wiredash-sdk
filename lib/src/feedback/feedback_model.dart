@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
+import 'package:wiredash/src/common/renderer/renderer.dart';
 import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/src/common/utils/delay.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
@@ -80,7 +81,12 @@ class FeedbackModel with ChangeNotifier {
 
     if (_feedbackMessage != null) {
       if (labels.isNotEmpty) stack.add(FeedbackFlowStatus.labels);
-      stack.add(FeedbackFlowStatus.screenshotsOverview);
+      final renderer = getRenderer();
+      if (renderer != Renderer.html) {
+        // Don't show the screenshot option with html renderer, because it
+        // doesn't support rendering to canvas
+        stack.add(FeedbackFlowStatus.screenshotsOverview);
+      }
       stack.add(FeedbackFlowStatus.email);
     }
     if (submitting || submitted || submissionError != null) {
