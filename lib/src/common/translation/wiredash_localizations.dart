@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
-import 'package:wiredash/wiredash.dart';
+import 'package:wiredash/src/common/translation/l10n/messages_ar.dart' as ar;
+import 'package:wiredash/src/common/translation/l10n/messages_da.dart' as da;
+import 'package:wiredash/src/common/translation/l10n/messages_de.dart' as de;
+import 'package:wiredash/src/common/translation/l10n/messages_en.dart' as en;
+import 'package:wiredash/src/common/translation/l10n/messages_es.dart' as es;
+import 'package:wiredash/src/common/translation/l10n/messages_fr.dart' as fr;
+import 'package:wiredash/src/common/translation/l10n/messages_hu.dart' as hu;
+import 'package:wiredash/src/common/translation/l10n/messages_ko.dart' as ko;
+import 'package:wiredash/src/common/translation/l10n/messages_nl.dart' as nl;
+import 'package:wiredash/src/common/translation/l10n/messages_pl.dart' as pl;
+import 'package:wiredash/src/common/translation/l10n/messages_pt.dart' as pt;
+import 'package:wiredash/src/common/translation/l10n/messages_ru.dart' as ru;
+import 'package:wiredash/src/common/translation/l10n/messages_tr.dart' as tr;
+import 'package:wiredash/src/common/translation/l10n/messages_zh_cn.dart'
+    as zhcn;
 
-import 'l10n/messages_ar.dart' as ar;
-import 'l10n/messages_da.dart' as da;
-import 'l10n/messages_de.dart' as de;
-import 'l10n/messages_en.dart' as en;
-import 'l10n/messages_es.dart' as es;
-import 'l10n/messages_fr.dart' as fr;
-import 'l10n/messages_hu.dart' as hu;
-import 'l10n/messages_ko.dart' as ko;
-import 'l10n/messages_nl.dart' as nl;
-import 'l10n/messages_pl.dart' as pl;
-import 'l10n/messages_pt.dart' as pt;
-import 'l10n/messages_ru.dart' as ru;
-import 'l10n/messages_tr.dart' as tr;
-import 'l10n/messages_zh_cn.dart' as zhcn;
+import 'package:wiredash/wiredash.dart';
 
 class WiredashLocalizations extends StatelessWidget {
   const WiredashLocalizations({

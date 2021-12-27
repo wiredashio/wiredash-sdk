@@ -1,4 +1,7 @@
+// ignore_for_file: avoid_redundant_argument_values
+
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:fake_async/fake_async.dart';
 import 'package:file/file.dart';
@@ -7,11 +10,10 @@ import 'package:http/http.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 
 import '../../util/invocation_catcher.dart';
@@ -24,16 +26,27 @@ class MockNetworkManager extends Fake implements WiredashApi {
       MethodInvocationCatcher('sendFeedback');
 
   @override
-  Future<void> sendFeedback({
-    required FeedbackItem feedback,
-    Uint8List? screenshot,
+  Future<void> sendFeedback(
+    PersistedFeedbackItem feedback, {
+    List<ImageBlob> images = const [],
   }) async {
-    await sendFeedbackInvocations.addMethodCall(
-      namedArgs: {
-        'feedback': feedback,
-        'screenshot': screenshot,
-      },
+    return await sendFeedbackInvocations.addMethodCall(
+      args: [feedback],
+      namedArgs: {'images': images},
     );
+  }
+
+  final MethodInvocationCatcher sendImageInvocations =
+      MethodInvocationCatcher('sendImage');
+
+  @override
+  Future<ImageBlob> sendImage(Uint8List screenshot) async {
+    final response =
+        await sendImageInvocations.addMethodCall(args: [screenshot]);
+    if (response != null) {
+      return response as ImageBlob;
+    }
+    throw 'Not mocked';
   }
 }
 
@@ -56,7 +69,7 @@ class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
 
   @override
   Future<PendingFeedbackItem> addPendingItem(
-    FeedbackItem item,
+    PersistedFeedbackItem item,
     Uint8List? screenshot,
   ) async {
     final id = _currentItems.length + 1;
@@ -93,6 +106,9 @@ void main() {
       fakePendingFeedbackItemStorage =
           FakePendingFeedbackItemStorage(fileSystem);
       mockNetworkManager = MockNetworkManager();
+      mockNetworkManager.sendImageInvocations.interceptor = (_) {
+        return ImageBlob({'mocked': 'response'});
+      };
       retryingFeedbackSubmitter = RetryingFeedbackSubmitter(
         fileSystem,
         fakePendingFeedbackItemStorage,
@@ -101,12 +117,30 @@ void main() {
     });
 
     test('submit() - persists the feedback item properly', () async {
-      const item = FeedbackItem(
-        deviceInfo: DeviceInfo(),
+      const item = PersistedFeedbackItem(
+        appInfo: AppInfo(
+          appLocale: 'de_DE',
+        ),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
+        deviceId: '1234',
+        deviceInfo: DeviceInfo(
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: 'en_US',
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.zero,
+          physicalSize: Size(800, 1200),
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
-        user: 'Testy McTestFace',
+        labels: ['feedback'],
+        userId: 'Testy McTestFace',
       );
 
       await retryingFeedbackSubmitter.submit(item, kTransparentImage);
@@ -123,14 +157,32 @@ void main() {
     });
 
     test(
-        'submit() - does not crash when screenshot file does not exist anymore for some reason',
-        () async {
-      const item = FeedbackItem(
-        deviceInfo: DeviceInfo(),
+        'submit() - does not crash when screenshot file does not exist '
+        'anymore for some reason', () async {
+      const item = PersistedFeedbackItem(
+        appInfo: AppInfo(
+          appLocale: 'de_DE',
+        ),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
+        deviceId: '1234',
+        deviceInfo: DeviceInfo(
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: 'en_US',
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.zero,
+          physicalSize: Size(800, 1200),
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
-        user: 'Testy McTestFace',
+        labels: ['feedback'],
+        userId: 'Testy McTestFace',
       );
 
       fakeAsync((async) {
@@ -152,19 +204,37 @@ void main() {
         // the file didn't exist.
         mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
         final submitCall = mockNetworkManager.sendFeedbackInvocations.latest;
-        expect(submitCall['feedback'], item);
-        expect(submitCall['screenshot'], null);
+        expect(submitCall[0], item);
+        expect(submitCall['images'], []);
       });
     });
 
     test('submit() - future completes before interacting with NetworkManager',
         () async {
-      const item = FeedbackItem(
-        deviceInfo: DeviceInfo(),
+      const item = PersistedFeedbackItem(
+        appInfo: AppInfo(
+          appLocale: 'de_DE',
+        ),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
+        deviceId: '1234',
+        deviceInfo: DeviceInfo(
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: 'en_US',
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.zero,
+          physicalSize: Size(800, 1200),
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
-        user: 'Testy McTestFace',
+        labels: ['feedback'],
+        userId: 'Testy McTestFace',
       );
 
       await retryingFeedbackSubmitter.submit(item, kTransparentImage);
@@ -173,14 +243,32 @@ void main() {
     });
 
     test(
-        'submit() - if successful, gets rid of the feedback item in the storage',
-        () async {
-      const item = FeedbackItem(
-        deviceInfo: DeviceInfo(),
+        'submit() - if successful, gets rid of the feedback item '
+        'in the storage', () async {
+      const item = PersistedFeedbackItem(
+        appInfo: AppInfo(
+          appLocale: 'de_DE',
+        ),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
+        deviceId: '1234',
+        deviceInfo: DeviceInfo(
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: 'en_US',
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.zero,
+          physicalSize: Size(800, 1200),
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
-        user: 'Testy McTestFace',
+        labels: ['feedback'],
+        userId: 'Testy McTestFace',
       );
 
       fakeAsync((async) {
@@ -195,19 +283,39 @@ void main() {
         expect(fakePendingFeedbackItemStorage._deletedItemIds, ['1']);
 
         // Feedback should be sent, and only once.
+        mockNetworkManager.sendImageInvocations.verifyInvocationCount(1);
         mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
       });
     });
 
     test(
-        'submit() - when has existing items and submits only the first one successfully, does not remove the failed items from storage',
+        'submit() - when has existing items and submits only the first one '
+        'successfully, does not remove the failed items from storage',
         () async {
-      const item = FeedbackItem(
-        deviceInfo: DeviceInfo(),
+      const item = PersistedFeedbackItem(
+        appInfo: AppInfo(
+          appLocale: 'de_DE',
+        ),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
+        deviceId: '1234',
+        deviceInfo: DeviceInfo(
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: 'en_US',
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.zero,
+          physicalSize: Size(800, 1200),
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
-        user: 'Testy McTestFace',
+        labels: ['feedback'],
+        userId: 'Testy McTestFace',
       );
 
       // Prepopulate storage with 2 existing items.
@@ -243,8 +351,9 @@ void main() {
           firstFileSubmitted = true;
         };
 
-        // Persist a new item - in this case with an id of '3' and '3.png' as the
-        // screenshot path. Triggers submitting of pending items, starting from '1'.
+        // Persist a new item - in this case with an id of '3' and '3.png' as
+        // the screenshot path. Triggers submitting of pending items, starting
+        // from '1'.
         retryingFeedbackSubmitter.submit(item, kTransparentImage);
 
         // Hop on the time machine...
@@ -270,23 +379,50 @@ void main() {
         ]);
 
         expect(
+          mockNetworkManager.sendImageInvocations.invocations.length > 1,
+          true,
+        );
+
+        final lastUploadCall = mockNetworkManager.sendImageInvocations.latest;
+        expect(lastUploadCall[0], kTransparentImage);
+
+        expect(
           mockNetworkManager.sendFeedbackInvocations.invocations.length > 1,
           true,
         );
-        final lastCall = mockNetworkManager.sendFeedbackInvocations.latest;
-        expect(lastCall['feedback'], item);
-        expect(lastCall['screenshot'], kTransparentImage);
+        final lastSendCall = mockNetworkManager.sendFeedbackInvocations.latest;
+        expect(lastSendCall[0], item);
+        expect(lastSendCall['images'], hasLength(1));
+        expect((lastSendCall['images'] as List?)?[0], isA<ImageBlob>());
       });
     });
 
     test('submit() - if fails, retries up to 8 times with exponential backoff',
         () async {
-      const item = FeedbackItem(
-        deviceInfo: DeviceInfo(),
+      const item = PersistedFeedbackItem(
+        appInfo: AppInfo(
+          appLocale: 'de_DE',
+        ),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
+        deviceId: '1234',
+        deviceInfo: DeviceInfo(
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: 'en_US',
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.zero,
+          physicalSize: Size(800, 1200),
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
-        user: 'Testy McTestFace',
+        labels: ['feedback'],
+        userId: 'Testy McTestFace',
       );
 
       final initialTime = DateTime(2000, 01, 01, 00, 00, 00, 000);
@@ -309,9 +445,8 @@ void main() {
           final sendAttempts = mockNetworkManager
               .sendFeedbackInvocations.invocations
               .where((iv) {
-            final matchItem = iv['feedback'] == item;
-            final matchImage =
-                equals(iv['screenshot']).matches(kTransparentImage, {});
+            final matchItem = iv[0] == item;
+            final matchImage = (iv['images'] as List?)?.length == 1;
             return matchItem && matchImage;
           });
           expect(sendAttempts.length, 8);
@@ -343,12 +478,30 @@ void main() {
 
     test('submit() - does not retry for UnauthenticatedWiredashApiException',
         () async {
-      const item = FeedbackItem(
-        deviceInfo: DeviceInfo(),
+      const item = PersistedFeedbackItem(
+        appInfo: AppInfo(
+          appLocale: 'de_DE',
+        ),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
+        deviceId: '1234',
+        deviceInfo: DeviceInfo(
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: 'en_US',
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.zero,
+          physicalSize: Size(800, 1200),
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
-        user: 'Testy McTestFace',
+        labels: ['feedback'],
+        userId: 'Testy McTestFace',
       );
 
       final initialTime = DateTime(2000, 01, 01, 00, 00, 00, 000);
@@ -360,7 +513,7 @@ void main() {
           mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
             retryLog.add(clock.now());
             throw UnauthenticatedWiredashApiException(
-              Response("error", 401),
+              Response('error', 401),
               'projectX',
               'abcdefg1234',
             );
@@ -394,20 +547,86 @@ void main() {
 
     test('submit() - does not retry when server reports missing properties',
         () async {
-      const item = FeedbackItem(
-        deviceInfo: DeviceInfo(),
+      const item = PersistedFeedbackItem(
+        appInfo: AppInfo(
+          appLocale: 'de_DE',
+        ),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
+        deviceId: '1234',
+        deviceInfo: DeviceInfo(
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: 'en_US',
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.zero,
+          physicalSize: Size(800, 1200),
+        ),
         email: 'email@example.com',
         message: 'test post pls ignore',
-        type: 'feedback',
-        user: 'Testy McTestFace',
+        labels: ['feedback'],
+        userId: 'Testy McTestFace',
       );
 
       fakeAsync((async) {
         mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
           final response = Response(
-            '{"message": "child "deviceInfo" fails because [child "platformOS" fails because ["platformOS" is required]]"}',
-            401,
+            '{"message": "child "deviceInfo" fails because [child "platformOS"'
+            ' fails because ["platformOS" is required]]"}',
+            400,
           );
+          throw WiredashApiException(response: response);
+        };
+
+        retryingFeedbackSubmitter.submit(item, kTransparentImage);
+        async.elapse(const Duration(seconds: 1));
+
+        // Sending one feedback item should be retried no more than 8 times.
+        mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
+
+        // Item has beend deleted
+        expect(fakePendingFeedbackItemStorage._deletedItemIds, ['1']);
+        expect(fakePendingFeedbackItemStorage._currentItems, isEmpty);
+      });
+    });
+
+    test('submit() - does not retry when server reports unknown property',
+        () async {
+      const item = PersistedFeedbackItem(
+        appInfo: AppInfo(
+          appLocale: 'de_DE',
+        ),
+        buildInfo: BuildInfo(compilationMode: CompilationMode.release),
+        deviceId: '1234',
+        deviceInfo: DeviceInfo(
+          pixelRatio: 1.0,
+          textScaleFactor: 1.0,
+          platformLocale: 'en_US',
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          gestureInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+          padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+          viewInsets:
+              WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+          physicalGeometry: Rect.zero,
+          physicalSize: Size(800, 1200),
+        ),
+        email: 'email@example.com',
+        message: 'test post pls ignore',
+        labels: ['feedback'],
+        userId: 'Testy McTestFace',
+      );
+
+      fakeAsync((async) {
+        mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
+          final response =
+              Response('{"message":""compilationMode" is not allowed"}', 400);
           throw WiredashApiException(response: response);
         };
 
@@ -424,5 +643,3 @@ void main() {
     });
   });
 }
-
-// ignore_for_file: avoid_redundant_argument_values

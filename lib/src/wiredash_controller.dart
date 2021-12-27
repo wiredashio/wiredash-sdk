@@ -1,5 +1,8 @@
-import 'package:flutter/foundation.dart';
-import 'package:wiredash/src/wiredash_widget.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:wiredash/src/common/build_info/build_info.dart';
+import 'package:wiredash/src/feedback/wiredash_model.dart';
+import 'package:wiredash/wiredash.dart';
 
 /// Use this controller to interact with [Wiredash]
 ///
@@ -10,31 +13,68 @@ import 'package:wiredash/src/wiredash_widget.dart';
 ///
 /// Add user information
 /// ```dart
-/// Wiredash.of(context).setIdentifiers(appVersion: "1.4.3");
+/// Wiredash.of(context)
+///     .setBuildProperties(buildVersion: "1.4.3", buildNumber: "42");
 /// ```
 class WiredashController {
-  WiredashController(this._state);
+  WiredashController(this._model);
 
-  final WiredashState _state;
+  final WiredashModel _model;
+
+  /// Modify the metadata that will be collected with Wiredash
+  ///
+  /// The metadata include user information (userId and userEmail),
+  /// build information (version, buildNumber, commit) and
+  /// any custom data (Map<String, Object?>) you want to have attached to
+  /// feedback.
+  ///
+  /// Setting the userEmail prefills the email field.
+  ///
+  /// The build information is prefilled by [EnvBuildInfo], reading the build
+  /// environment variables during compilation.
+  ///
+  /// Usage:
+  ///
+  /// ```dart
+  /// Wiredash.of(context).modifyMetaData(
+  ///   (metaData) => metaData
+  ///     ..userEmail = 'dash@wiredash.io'
+  ///     ..buildCommit = '43f23dd'
+  ///     ..custom['screen'] = 'HomePage'
+  ///     ..custom['isPremium'] = false,
+  /// );
+  /// ```
+  void modifyMetaData(
+    CustomizableWiredashMetaData Function(CustomizableWiredashMetaData metaData)
+        mutation,
+  ) {
+    _model.metaData = mutation(_model.metaData);
+  }
 
   /// Use this method to provide custom [userId]
   /// to the feedback. The [userEmail] parameter can be used to prefill the
   /// email input field but it's up to the user to decide if he want's to
   /// include his email with the feedback.
+  @Deprecated('use mutateMetaData((metaData) => metaData)')
   void setUserProperties({String? userId, String? userEmail}) {
-    _state.userManager.userId = userId ?? _state.userManager.userId;
-    _state.userManager.userEmail = userEmail ?? _state.userManager.userEmail;
+    modifyMetaData(
+      (metaData) => metaData
+        ..userId = userId ?? metaData.userId
+        ..userEmail = userEmail ?? metaData.userEmail,
+    );
   }
 
   /// Use this method to attach custom [buildVersion] and [buildNumber]
   ///
   /// If these values are also provided through dart-define during compile time
   /// then they will be overwritten by this method
+  @Deprecated('use mutateMetaData((metaData) => metaData)')
   void setBuildProperties({String? buildVersion, String? buildNumber}) {
-    _state.buildInfoManager.buildVersion =
-        buildVersion ?? _state.buildInfoManager.buildVersion;
-    _state.buildInfoManager.buildNumber =
-        buildNumber ?? _state.buildInfoManager.buildNumber;
+    modifyMetaData(
+      (metaData) => metaData
+        ..buildVersion = buildVersion ?? metaData.buildVersion
+        ..buildNumber = buildNumber ?? metaData.buildNumber,
+    );
   }
 
   /// This will open the Wiredash feedback sheet and start the feedback process.
@@ -46,7 +86,47 @@ class WiredashController {
   ///
   /// If a Wiredash feedback flow is already active (=a feedback sheet is open),
   /// does nothing.
-  void show() => _state.show();
+  void show([BuildContext? context]) {
+    // reset theme at every call
+    _model.themeFromContext = null;
+    if (context != null) {
+      // generate theme from current context
+      final materialTheme = Theme.of(context);
+      final cupertinoTheme = CupertinoTheme.of(context);
+      final materialColor = materialTheme.colorScheme.secondary;
+      final cupertinoColor = cupertinoTheme.primaryColor;
+
+      late Color color;
+      const defaultCupertinoTheme = CupertinoThemeData();
+      // When the primary cupertino color is set, use this one
+      if (defaultCupertinoTheme.primaryColor != cupertinoColor) {
+        color = cupertinoColor;
+      } else {
+        // always fallback to material color, which is more likely to be set
+        // in the flutter world
+        color = materialColor;
+      }
+
+      late Brightness brightness;
+      if (materialTheme.brightness == Brightness.dark ||
+          cupertinoTheme.brightness == Brightness.dark) {
+        // When one is dark, assume either of them is explicitly set
+        brightness = Brightness.dark;
+      } else {
+        // fallback to light
+        brightness = Brightness.light;
+      }
+
+      if (materialTheme != ThemeData.fallback()) {
+        _model.themeFromContext = WiredashThemeData.fromColor(
+          color: color,
+          brightness: brightness,
+        );
+      }
+    }
+
+    _model.show();
+  }
 
   /// A [ValueNotifier] representing the current state of the capture UI. Use
   /// this to change your app's configuration when the user is in the process
@@ -55,5 +135,8 @@ class WiredashController {
   ///
   /// The [Confidential] widget can automatically hide sensitive widgets from
   /// being recorded in a feedback screenshot.
-  ValueNotifier<bool> get visible => _state.captureKey.currentState!.visible;
+  ValueNotifier<bool> get visible {
+    return _model.services.backdropController
+        .asValueNotifier((c) => c.isAppInteractive);
+  }
 }

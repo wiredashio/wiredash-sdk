@@ -1,28 +1,18 @@
-import 'package:file/local.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/capture/capture.dart';
-import 'package:wiredash/src/common/build_info/build_info_manager.dart';
-import 'package:wiredash/src/common/device_info/device_info_generator.dart';
-import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
-import 'package:wiredash/src/common/options/wiredash_options_data.dart';
+import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
-import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
-import 'package:wiredash/src/common/user/user_manager.dart';
-import 'package:wiredash/src/common/utils/build_info.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
-import 'package:wiredash/src/common/widgets/wiredash_scaffold.dart';
-import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
-import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
-import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
-import 'package:wiredash/src/feedback/feedback_model.dart';
-import 'package:wiredash/src/wiredash_controller.dart';
-import 'package:wiredash/src/wiredash_provider.dart';
+import 'package:wiredash/src/common/widgets/screencapture.dart';
+import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
+import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
+import 'package:wiredash/src/feedback/feedback_model_provider.dart';
+import 'package:wiredash/src/feedback/picasso/picasso.dart';
+import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
+import 'package:wiredash/src/not_a_widgets_app.dart';
+import 'package:wiredash/src/wiredash_model_provider.dart';
+import 'package:wiredash/wiredash.dart';
 
 /// Capture in-app user feedback, wishes, ratings and much more
 ///
@@ -37,7 +27,8 @@ import 'package:wiredash/src/wiredash_provider.dart';
 ///
 /// class _MyAppState extends State<MyApp> {
 ///   /// Share the app [Navigator] with Wiredash
-///   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+///   final GlobalKey<NavigatorState> _navigatorKey =
+///                                           GlobalKey<NavigatorState>();
 ///
 ///   @override
 ///   Widget build(BuildContext context) {
@@ -68,14 +59,17 @@ class Wiredash extends StatefulWidget {
     Key? key,
     required this.projectId,
     required this.secret,
-    required this.navigatorKey,
+    @Deprecated('Since 1.0 the navigatorKey is not required anymore')
+        this.navigatorKey,
     this.options,
     this.theme,
+    this.feedbackOptions,
     required this.child,
   }) : super(key: key);
 
   /// Reference to the app [Navigator] to show the Wiredash bottom sheet
-  final GlobalKey<NavigatorState> navigatorKey;
+  @Deprecated('Since 1.0 the navigatorKey is not required anymore')
+  final GlobalKey<NavigatorState>? navigatorKey;
 
   /// Your Wiredash projectId
   final String projectId;
@@ -85,6 +79,8 @@ class Wiredash extends StatefulWidget {
 
   /// Customize Wiredash's behaviour and language
   final WiredashOptionsData? options;
+
+  final WiredashFeedbackOptions? feedbackOptions;
 
   /// Default visual properties, like colors and fonts for the Wiredash bottom
   /// sheet and the screenshot capture UI.
@@ -107,6 +103,21 @@ class Wiredash extends StatefulWidget {
   @override
   WiredashState createState() => WiredashState();
 
+  /// The [WiredashController] from the closest [Wiredash] instance or `null`
+  /// that encloses the given context.
+  ///
+  /// Use it to start Wiredash (when available)
+  ///
+  /// ```dart
+  /// Wiredash.maybeOf(context)?.show();
+  /// ```
+  static WiredashController? maybeOf(BuildContext context) {
+    final state = context.findAncestorStateOfType<WiredashState>();
+    if (state == null) return null;
+
+    return WiredashController(state._services.wiredashModel);
+  }
+
   /// The [WiredashController] from the closest [Wiredash] instance that
   /// encloses the given context.
   ///
@@ -115,25 +126,34 @@ class Wiredash extends StatefulWidget {
   /// ```dart
   /// Wiredash.of(context).show();
   /// ```
-  static WiredashController? of(BuildContext context) {
+  static WiredashController of(BuildContext context) {
     final state = context.findAncestorStateOfType<WiredashState>();
-    if (state == null) return null;
-    return WiredashController(state);
+    return WiredashController(state!._services.wiredashModel);
   }
 }
 
 class WiredashState extends State<Wiredash> {
-  late GlobalKey<CaptureState> captureKey;
-  late GlobalKey<NavigatorState> navigatorKey;
+  final Key _appKey = const ValueKey('app');
 
-  late UserManager userManager;
-  late BuildInfoManager buildInfoManager;
+  final Key _backdropKey = const ValueKey('backdrop');
 
-  late WiredashApi _api;
-  late FeedbackModel _feedbackModel;
+  bool _isWiredashClosed = true;
 
-  late WiredashOptionsData _options;
-  late WiredashThemeData _theme;
+  final WiredashServices _services = WiredashServices();
+
+  WiredashServices get debugServices {
+    WiredashServices? services;
+    assert(
+      () {
+        services = _services;
+        return true;
+      }(),
+    );
+    if (services == null) {
+      throw "Services can't be accessed in production code";
+    }
+    return services!;
+  }
 
   @override
   void initState() {
@@ -142,89 +162,104 @@ class WiredashState extends State<Wiredash> {
       projectId: widget.projectId,
       secret: widget.secret,
     );
-
-    captureKey = GlobalKey<CaptureState>();
-    navigatorKey = widget.navigatorKey;
-
-    _updateDependencies();
-
-    _api = WiredashApi(
-      httpClient: Client(),
-      projectId: widget.projectId,
-      secret: widget.secret,
-    );
-
-    userManager = UserManager();
-    buildInfoManager = BuildInfoManager(PlatformBuildInfo());
-
-    const fileSystem = LocalFileSystem();
-    final storage = PendingFeedbackItemStorage(
-      fileSystem,
-      SharedPreferences.getInstance,
-      () async => (await getApplicationDocumentsDirectory()).path,
-    );
-
-    final feedbackSubmitter = kIsWeb
-        ? DirectFeedbackSubmitter(_api)
-        : (RetryingFeedbackSubmitter(fileSystem, storage, _api)
-          ..submitPendingFeedbackItems());
-
-    _feedbackModel = FeedbackModel(
-      captureKey,
-      navigatorKey,
-      userManager,
-      feedbackSubmitter,
-      DeviceInfoGenerator(
-        buildInfoManager,
-        WidgetsBinding.instance!.window,
-      ),
-    );
+    _services.updateWidget(widget);
+    _services.addListener(() {
+      setState(() {
+        // rebuild wiredash
+      });
+    });
+    _services.backdropController.addListener(() {
+      setState(() {
+        _isWiredashClosed = _services.backdropController.backdropStatus ==
+            WiredashBackdropStatus.closed;
+      });
+    });
   }
 
   @override
   void dispose() {
-    _feedbackModel.dispose();
+    _services.dispose();
     super.dispose();
   }
 
   @override
   void didUpdateWidget(Wiredash oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _updateDependencies();
-  }
-
-  void _updateDependencies() {
-    setState(() {
-      _options = widget.options ?? WiredashOptionsData();
-      _theme = widget.theme ?? WiredashThemeData();
-    });
+    debugProjectCredentialValidator.validate(
+      projectId: widget.projectId,
+      secret: widget.secret,
+    );
+    _services.updateWidget(widget);
   }
 
   @override
   Widget build(BuildContext context) {
-    return WiredashProvider(
-      userManager: userManager,
-      feedbackModel: _feedbackModel,
-      child: WiredashOptions(
-        data: _options,
-        child: WiredashLocalizations(
-          child: WiredashTheme(
-            data: _theme,
-            child: WiredashScaffold(
-              child: Capture(
-                key: captureKey,
-                initialColor: _theme.firstPenColor,
-                child: widget.child,
+    final theme = widget.theme ??
+        _services.wiredashModel.themeFromContext ??
+        WiredashThemeData();
+
+    // Assign app an key so it doesn't lose state when wrapped, unwrapped
+    // with widgets
+    final Widget app = KeyedSubtree(
+      key: _appKey,
+      child: widget.child,
+    );
+
+    final appBuilder = Builder(
+      builder: (context) {
+        Widget widget = app;
+        // Only wrap when active to get as little side-effect as possible.
+        if (!_isWiredashClosed) {
+          // This is the place to wrap the app itself, not the whole backdrop
+          widget = Picasso(
+            controller: _services.picassoController,
+            child: ScreenCapture(
+              controller: _services.screenCaptureController,
+              child: widget,
+            ),
+          );
+        }
+
+        return widget;
+      },
+    );
+
+    final Widget backdrop = NotAWidgetsApp(
+      locale: widget.options?.currentLocale,
+      textDirection: widget.options?.textDirection,
+      child: WiredashLocalizations(
+        child: WiredashTheme(
+          data: theme,
+          child: Stack(
+            children: [
+              WiredashBackdrop(
+                key: _backdropKey,
+                controller: _services.backdropController,
+                child: appBuilder,
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    // Finally provide the models to wiredash and the UI
+    return WiredashModelProvider(
+      wiredashModel: _services.wiredashModel,
+      child: FeedbackModelProvider(
+        feedbackModel: _services.feedbackModel,
+        child: BackdropControllerProvider(
+          backdropController: _services.backdropController,
+          child: PicassoControllerProvider(
+            picassoController: _services.picassoController,
+            child: WiredashOptions(
+              data: _services.wiredashOptions,
+              child: backdrop,
             ),
           ),
         ),
       ),
     );
-  }
-
-  void show() {
-    _feedbackModel.show();
   }
 }
 

@@ -15,7 +15,7 @@ class MethodInvocationCatcher {
 
   AssertableInvocation get latest {
     if (_invocations.isEmpty) {
-      throw "$methodName was not called.";
+      throw '$methodName was not called.';
     }
     return _invocations.last;
   }
@@ -44,7 +44,8 @@ class MethodInvocationCatcher {
     if (_invocations.length == n) {
       return;
     }
-    throw 'Expected $n invocations, actual invocations: ${_invocations.length}\n${_invocations.join('\n')}';
+    throw 'Expected $n invocations, actual invocations: ${_invocations.length}'
+        '\n${_invocations.join('\n')}';
   }
 
   void verifyHasNoInvocation() {
@@ -67,14 +68,14 @@ class AssertableInvocation {
         return original.positionalArguments[argument];
         // ignore: avoid_catching_errors
       } on RangeError {
-        throw "there is no positional arguments at index $argument."
-            "\nInvocation: $this";
+        throw 'there is no positional arguments at index $argument.'
+            '\nInvocation: $this';
       }
     }
     if (argument is String) {
       if (!original.namedArguments.containsKey(Symbol(argument))) {
-        throw "there is no positional arguments named $argument."
-            "\nInvocation: $this";
+        throw 'there is no positional arguments named $argument.'
+            '\nInvocation: $this';
       }
       return original.namedArguments[Symbol(argument)];
     }
@@ -84,7 +85,10 @@ class AssertableInvocation {
 
   @override
   String toString() {
-    return "${original.memberName}(named: ${original.namedArguments}, positional: ${original.positionalArguments})";
+    return '${original.memberName}('
+        'named: ${original.namedArguments}, '
+        'positional: ${original.positionalArguments}'
+        ')';
   }
 }
 

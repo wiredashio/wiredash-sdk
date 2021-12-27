@@ -11,7 +11,7 @@ class AnimatedFadeIn extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AnimatedFadeInState createState() => _AnimatedFadeInState();
+  State<AnimatedFadeIn> createState() => _AnimatedFadeInState();
 }
 
 class _AnimatedFadeInState extends State<AnimatedFadeIn>

@@ -6,14 +6,14 @@ on:
     branches:
       - stable
       - beta
-      - dev
+      - master
 
 jobs:
-  pr-min:
+  # Wiredash is developed on beta, we therefore check code style here
+  code_style:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:1.26.0-17.5.pre
-    if: github.base_ref == 'stable' || github.ref == 'refs/heads/stable'
+      image: cirrusci/flutter:beta
     steps:
       - uses: actions/checkout@v2.3.4
       - name: Flutter version
@@ -21,7 +21,21 @@ jobs:
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
       - name: Analyze
-        run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings .
+        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings .
+      - name: Check formatting
+        run: sudo --preserve-env=PATH env flutter format --fix --set-exit-if-changed .
+
+  pr-min:
+    runs-on: ubuntu-latest
+    container:
+      image: cirrusci/flutter:2.5.0
+    if: github.base_ref == 'stable' || github.ref == 'refs/heads/stable'
+    steps:
+      - uses: actions/checkout@v2.3.4
+      - name: Flutter version
+        run: flutter doctor -v
+      - name: Download dependencies
+        run: sudo --preserve-env=PATH env flutter packages get
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
@@ -38,8 +52,6 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
-      - name: Analyze
-        run: sudo --preserve-env=PATH env dartanalyzer --fatal-infos --fatal-warnings .
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
@@ -56,31 +68,23 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
-      - name: Analyze
-        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings .
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
         run: cd example && sudo --preserve-env=PATH env flutter build web
-      - name: Check formatting
-        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed .
 
-  pr-dev:
+  pr-master:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:dev
-    if: github.base_ref == 'dev' || github.ref == 'refs/heads/dev'
+      image: cirrusci/flutter:master
+    if: github.base_ref == 'master' || github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v2.3.4
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
-      - name: Analyze
-        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings .
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
         run: cd example && sudo --preserve-env=PATH env flutter build web
-      - name: Check formatting
-        run: sudo --preserve-env=PATH env dartfmt --dry-run --set-exit-if-changed .

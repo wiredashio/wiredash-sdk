@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -8,10 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/utils/uuid.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
 import '../../util/invocation_catcher.dart';
 
@@ -73,12 +74,31 @@ void main() {
       final pendingItem = await withUuidV4Generator(
         uuidGenerator,
         () => storage.addPendingItem(
-          const FeedbackItem(
-            deviceInfo: DeviceInfo(),
+          const PersistedFeedbackItem(
+            appInfo: AppInfo(
+              appLocale: 'de_DE',
+            ),
+            buildInfo: BuildInfo(compilationMode: CompilationMode.release),
+            deviceId: '1234',
+            deviceInfo: DeviceInfo(
+              pixelRatio: 1.0,
+              textScaleFactor: 1.0,
+              platformLocale: 'en_US',
+              platformSupportedLocales: ['en_US', 'de_DE'],
+              platformBrightness: Brightness.dark,
+              gestureInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              padding:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              viewInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              physicalGeometry: Rect.zero,
+              physicalSize: Size(800, 1200),
+            ),
             email: 'email@example.com',
             message: 'Hello world!',
-            type: 'bug',
-            user: 'Testy McTestFace',
+            labels: ['bug'],
+            userId: 'Testy McTestFace',
           ),
           kTransparentImage,
         ),
@@ -86,7 +106,7 @@ void main() {
 
       final latestCall = fakeSharedPreferences.setStringListInvocations.latest;
       expect(latestCall[0], 'io.wiredash.pending_feedback_items');
-      expect(latestCall[1], [json.encode(pendingItem.toJson())]);
+      expect(latestCall[1], [serializePendingFeedbackItem(pendingItem)]);
 
       expect(fileSystem.file('0.png').existsSync(), isTrue);
     });
@@ -98,29 +118,43 @@ void main() {
           .writeAsBytes(kTransparentImage);
 
       final existingItem = json.encode({
-        'id': '1',
         'feedbackItem': {
+          'appInfo': {
+            'appLocale': 'de_DE',
+          },
+          'buildInfo': {
+            'buildCommit': 'abcdef12',
+            'buildNumber': '543',
+            'buildVersion': '1.2.3',
+            'compilationMode': 'release',
+          },
+          'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'deviceInfo': {
-            'appIsDebug': true,
-            'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-            'locale': 'en_US',
+            'gestureInsets': [0.0, 0.0, 0.0, 0.0],
             'padding': [0.0, 66.0, 0.0, 0.0],
+            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
+            'platformBrightness': 'dark',
+            'platformLocale': 'en_US',
             'platformOS': 'android',
             'platformOSBuild': 'RSR1.201013.001',
+            'platformSupportedLocales': ['en_US', 'de_DE'],
             'platformVersion':
-                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+                    '"android_ia32"',
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
           'email': '<existing item email>',
+          'labels': ['<existing item type>'],
           'message': '<existing item message>',
-          'type': '<existing item type>',
-          'user': '<existing item user>',
           'sdkVersion': 1,
+          'userId': '<existing item user>',
         },
-        'screenshotPath': '<existing item screenshot>'
+        'id': '1',
+        'screenshotPath': '<existing item screenshot>',
+        'version': 1,
       });
       fakeSharedPreferences
           .setStringList('io.wiredash.pending_feedback_items', [existingItem]);
@@ -128,12 +162,36 @@ void main() {
       final pendingFeedbackItem = await withUuidV4Generator(
         uuidGenerator,
         () => storage.addPendingItem(
-          const FeedbackItem(
-            deviceInfo: DeviceInfo(),
+          const PersistedFeedbackItem(
+            appInfo: AppInfo(
+              appLocale: 'de_DE',
+            ),
+            buildInfo: BuildInfo(
+              compilationMode: CompilationMode.release,
+              buildCommit: 'abcdef13',
+              buildNumber: '543',
+              buildVersion: '1.2.3',
+            ),
+            deviceId: '1234',
+            deviceInfo: DeviceInfo(
+              pixelRatio: 1.0,
+              textScaleFactor: 1.0,
+              platformLocale: 'en_US',
+              platformSupportedLocales: ['en_US', 'de_DE'],
+              platformBrightness: Brightness.dark,
+              gestureInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              padding:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              viewInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              physicalGeometry: Rect.zero,
+              physicalSize: Size(800, 1200),
+            ),
             email: 'email@example.com',
             message: 'Hello world!',
-            type: 'bug',
-            user: 'Testy McTestFace',
+            labels: ['<existing item type>'],
+            userId: 'Testy McTestFace',
           ),
           kTransparentImage,
         ),
@@ -143,9 +201,7 @@ void main() {
       expect(lastCall[0], 'io.wiredash.pending_feedback_items');
       expect(lastCall[1], [
         existingItem,
-        json.encode(
-          pendingFeedbackItem.toJson(),
-        )
+        serializePendingFeedbackItem(pendingFeedbackItem),
       ]);
 
       expect(
@@ -167,29 +223,44 @@ void main() {
       );
 
       final pendingItem = json.encode({
-        'id': '<existing item id>',
         'feedbackItem': {
-          'deviceInfo': {
+          'appInfo': {
             'appIsDebug': true,
-            'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-            'locale': 'en_US',
+            'appLocale': 'de_DE',
+          },
+          'buildInfo': {
+            'buildCommit': 'abcdef12',
+            'buildNumber': '543',
+            'buildVersion': '1.2.3',
+            'compilationMode': 'release',
+          },
+          'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+          'deviceInfo': {
+            'gestureInsets': [0.0, 0.0, 0.0, 0.0],
             'padding': [0.0, 66.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
+            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'pixelRatio': 2.75,
+            'platformBrightness': 'dark',
+            'platformLocale': 'en_US',
             'platformOS': 'android',
             'platformOSBuild': 'RSR1.201013.001',
+            'platformSupportedLocales': ['en_US', 'de_DE'],
             'platformVersion':
-                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+                    '"android_ia32"',
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
           'email': '<existing item email>',
+          'labels': ['<existing item type>'],
           'message': '<existing item message>',
-          'type': '<existing item type>',
-          'user': '<existing item user>',
           'sdkVersion': 1,
+          'userId': '<existing item user>',
         },
-        'screenshotPath': '<existing item screenshot>'
+        'id': '<existing item id>',
+        'screenshotPath': '<existing item screenshot>',
+        'version': 1,
       });
 
       await fakeSharedPreferences
@@ -228,54 +299,83 @@ void main() {
       );
 
       final item1 = json.encode({
-        'id': '<id for item to be preserved>',
         'feedbackItem': {
-          'deviceInfo': {
-            'appIsDebug': true,
-            'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-            'locale': 'en_US',
-            'padding': [0.0, 66.0, 0.0, 0.0],
-            'physicalSize': [1080.0, 2088.0],
-            'pixelRatio': 2.75,
-            'platformOS': 'android',
-            'platformOSBuild': 'RSR1.201013.001',
-            'platformVersion':
-                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
-            'textScaleFactor': 1.0,
-            'viewInsets': [0.0, 0.0, 0.0, 685.0],
+          'appInfo': {
+            'appLocale': 'de_DE',
           },
-          'email': '<email for item to be preserved>',
-          'message': '<message for item to be preserved>',
-          'type': '<type for item to be preserved>',
-          'user': '<item user for item to be preserved>',
-          'sdkVersion': 1,
-        },
-        'screenshotPath': '<screenshot for item to be preserved>'
-      });
-      final item2 = json.encode({
-        'id': '<existing item id>',
-        'feedbackItem': {
+          'buildInfo': {
+            'buildCommit': 'abcdef12',
+            'buildNumber': '543',
+            'buildVersion': '1.2.3',
+            'compilationMode': 'release',
+          },
+          'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'deviceInfo': {
-            'appIsDebug': true,
-            'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-            'locale': 'en_US',
+            'gestureInsets': [0.0, 0.0, 0.0, 0.0],
             'padding': [0.0, 66.0, 0.0, 0.0],
+            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
+            'platformBrightness': 'dark',
+            'platformLocale': 'en_US',
             'platformOS': 'android',
             'platformOSBuild': 'RSR1.201013.001',
+            'platformSupportedLocales': ['en_US', 'de_DE'],
             'platformVersion':
-                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+                    '"android_ia32"',
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
           'email': '<existing item email>',
+          'labels': ['<existing item type>'],
           'message': '<existing item message>',
-          'type': '<existing item type>',
-          'user': '<existing item user>',
           'sdkVersion': 1,
+          'userId': '<existing item user>',
         },
-        'screenshotPath': '<existing item screenshot>'
+        'id': '<id for item to be preserved>',
+        'screenshotPath': '<screenshot for item to be preserved>',
+        'version': 1,
+      });
+      final item2 = json.encode({
+        'feedbackItem': {
+          'appInfo': {
+            'appIsDebug': true,
+            'appLocale': 'de_DE',
+          },
+          'buildInfo': {
+            'buildCommit': 'abcdef12',
+            'buildNumber': '543',
+            'buildVersion': '1.2.3',
+            'compilationMode': 'release',
+          },
+          'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+          'deviceInfo': {
+            'gestureInsets': [0.0, 0.0, 0.0, 0.0],
+            'padding': [0.0, 66.0, 0.0, 0.0],
+            'physicalSize': [1080.0, 2088.0],
+            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
+            'pixelRatio': 2.75,
+            'platformBrightness': 'dark',
+            'platformLocale': 'en_US',
+            'platformOS': 'android',
+            'platformOSBuild': 'RSR1.201013.001',
+            'platformSupportedLocales': ['en_US', 'de_DE'],
+            'platformVersion':
+                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+                    '"android_ia32"',
+            'textScaleFactor': 1.0,
+            'viewInsets': [0.0, 0.0, 0.0, 685.0],
+          },
+          'email': '<existing item email>',
+          'labels': ['<existing item type>'],
+          'message': '<existing item message>',
+          'sdkVersion': 1,
+          'userId': '<existing item user>',
+        },
+        'id': '<existing item id>',
+        'screenshotPath': '<existing item screenshot>',
+        'version': 1,
       });
       await fakeSharedPreferences
           .setStringList('io.wiredash.pending_feedback_items', [item1, item2]);
@@ -298,16 +398,16 @@ void main() {
     });
 
     test(
-        'does not crash when clearing an item and the screenshot file does not exist',
-        () async {
+        'does not crash when clearing an item and the screenshot '
+        'file does not exist', () async {
       final item = json.encode({
         'id': '<existing item id>',
         'feedbackItem': {
           'deviceInfo': {},
           'email': '<existing item email>',
+          'labels': ['<existing item type>'],
           'message': '<existing item message>',
-          'type': '<existing item type>',
-          'user': '<existing item user>'
+          'userId': '<existing item user>'
         },
         'screenshotPath': '<existing item screenshot>'
       });
@@ -315,7 +415,8 @@ void main() {
           .setStringList('io.wiredash.pending_feedback_items', [item]);
       await storage.clearPendingItem('<existing item id>');
 
-      // If the test didn't crash until this point, it's considered a passing test.
+      // If the test didn't crash until this point, it's considered a passing
+      // test.
     });
 
     test('removes items which can not be parsed', () async {
@@ -348,29 +449,43 @@ void main() {
       });
 
       final legalItem = json.encode({
-        'id': '<id for item to be preserved>',
         'feedbackItem': {
+          'appInfo': {
+            'appLocale': 'de_DE',
+          },
+          'buildInfo': {
+            'buildCommit': 'abcdef12',
+            'buildNumber': '543',
+            'buildVersion': '1.2.3',
+            'compilationMode': 'release',
+          },
+          'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'deviceInfo': {
-            'appIsDebug': true,
-            'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-            'locale': 'en_US',
+            'gestureInsets': [0.0, 0.0, 0.0, 0.0],
             'padding': [0.0, 66.0, 0.0, 0.0],
+            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'physicalSize': [1080.0, 2088.0],
             'pixelRatio': 2.75,
+            'platformBrightness': 'dark',
+            'platformLocale': 'en_US',
             'platformOS': 'android',
             'platformOSBuild': 'RSR1.201013.001',
+            'platformSupportedLocales': ['en_US', 'de_DE'],
             'platformVersion':
-                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+                '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+                    '"android_ia32"',
             'textScaleFactor': 1.0,
             'viewInsets': [0.0, 0.0, 0.0, 685.0],
           },
-          'email': '<email for item to be preserved>',
-          'message': '<message for item to be preserved>',
-          'type': '<type for item to be preserved>',
-          'user': '<item user for item to be preserved>',
+          'email': '<existing item email>',
+          'labels': ['<existing item type>'],
+          'message': '<existing item message>',
           'sdkVersion': 1,
+          'userId': '<existing item user>',
         },
-        'screenshotPath': '<screenshot for item to be preserved>'
+        'id': '1',
+        'screenshotPath': '<existing item screenshot>',
+        'version': 1,
       });
 
       await fakeSharedPreferences.setStringList(
@@ -383,6 +498,10 @@ void main() {
       FlutterError.onError = (FlutterErrorDetails details) {
         caught = details;
       };
+      addTearDown(() {
+        // reset error reporter after test
+        FlutterError.onError = oldOnErrorHandler;
+      });
 
       final retrieved = await storage.retrieveAllPendingItems();
 
@@ -393,7 +512,7 @@ void main() {
       expect(
         caught.stack.toString(),
         stringContainsInOrder([
-          'PendingFeedbackItem.fromJson',
+          'deserializePendingFeedbackItem',
           'PendingFeedbackItemStorage.retrieveAllPendingItems',
         ]),
       );
@@ -404,12 +523,31 @@ void main() {
       final pendingItem = await withUuidV4Generator(
         uuidGenerator,
         () => storage.addPendingItem(
-          const FeedbackItem(
-            deviceInfo: DeviceInfo(),
+          const PersistedFeedbackItem(
+            appInfo: AppInfo(
+              appLocale: 'de_DE',
+            ),
+            buildInfo: BuildInfo(compilationMode: CompilationMode.release),
+            deviceId: '1234',
+            deviceInfo: DeviceInfo(
+              pixelRatio: 1.0,
+              textScaleFactor: 1.0,
+              platformLocale: 'en_US',
+              platformSupportedLocales: ['en_US', 'de_DE'],
+              platformBrightness: Brightness.dark,
+              gestureInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              padding:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              viewInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+              physicalGeometry: Rect.zero,
+              physicalSize: Size(800, 1200),
+            ),
             email: 'email@example.com',
+            labels: ['bug'],
             message: 'Hello world!',
-            type: 'bug',
-            user: 'Testy McTestFace',
+            userId: 'Testy McTestFace',
           ),
           kTransparentImage,
         ),
@@ -419,7 +557,10 @@ void main() {
       // where saved
       final lastCall = fakeSharedPreferences.setStringListInvocations.latest;
       expect(lastCall[0], 'io.wiredash.pending_feedback_items');
-      expect(lastCall[1], [legalItem, json.encode(pendingItem.toJson())]);
+      expect(
+        lastCall[1],
+        [legalItem, serializePendingFeedbackItem(pendingItem)],
+      );
 
       // screenshot was deleted as well, leave nothing behind!
       expect(

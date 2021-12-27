@@ -1,182 +1,327 @@
 import 'dart:typed_data';
 
-import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/capture/capture.dart';
-import 'package:wiredash/src/common/device_info/device_info_generator.dart';
-import 'package:wiredash/src/common/user/user_manager.dart';
-import 'package:wiredash/src/common/widgets/dismissible_page_route.dart';
-import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
+import 'package:flutter/foundation.dart';
+import 'package:wiredash/src/common/build_info/build_info_manager.dart';
+import 'package:wiredash/src/common/services/services.dart';
+import 'package:wiredash/src/common/utils/delay.dart';
+import 'package:wiredash/src/common/utils/error_report.dart';
+import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
+import 'package:wiredash/wiredash.dart';
 
-import 'data/feedback_item.dart';
-import 'feedback_sheet.dart';
+enum FeedbackFlowStatus {
+  none,
+  message,
+  labels,
+  screenshotsOverview,
+  screenshotNavigating,
+  screenshotCapturing,
+  screenshotDrawing,
+  screenshotSaving,
+  email,
+  submitting
+}
 
 class FeedbackModel with ChangeNotifier {
-  FeedbackModel(
-    this._captureKey,
-    this._navigatorKey,
-    this._userManager,
-    this._feedbackSubmitter,
-    this._deviceInfoGenerator,
-  );
+  FeedbackModel(WiredashServices services) : _services = services;
 
-  final GlobalKey<CaptureState> _captureKey;
-  final GlobalKey<NavigatorState> _navigatorKey;
-  final UserManager _userManager;
-  final FeedbackSubmitter _feedbackSubmitter;
-  final DeviceInfoGenerator _deviceInfoGenerator;
+  final WiredashServices _services;
+  FeedbackFlowStatus _feedbackFlowStatus = FeedbackFlowStatus.message;
 
-  FeedbackType feedbackType = FeedbackType.bug;
-  String? feedbackMessage;
-  Uint8List? screenshot;
+  FeedbackFlowStatus get feedbackFlowStatus => _feedbackFlowStatus;
 
-  FeedbackUiState _feedbackUiState = FeedbackUiState.hidden;
+  final BuildInfoManager buildInfoManager = BuildInfoManager();
 
-  FeedbackUiState get feedbackUiState => _feedbackUiState;
+  String? get feedbackMessage => _feedbackMessage;
+  String? _feedbackMessage;
 
-  set feedbackUiState(FeedbackUiState newValue) {
-    if (_feedbackUiState == newValue) return;
-    _feedbackUiState = newValue;
-    _handleUiChange();
+  Uint8List? _screenshot;
+
+  String? get userEmail => _userEmail ?? _metaData?.userEmail;
+  String? _userEmail;
+
+  List<Label> get selectedLabels => List.unmodifiable(_selectedLabels);
+  List<Label> _selectedLabels = [];
+
+  List<Label> get labels =>
+      _services.wiredashWidget.feedbackOptions?.labels ?? [];
+
+  set selectedLabels(List<Label> list) {
+    _selectedLabels = list;
     notifyListeners();
   }
 
-  bool _loading = false;
+  bool get isActive => _feedbackFlowStatus != FeedbackFlowStatus.none;
 
-  bool get loading => _loading;
+  bool get hasScreenshots => _screenshot != null;
+  Uint8List? get screenshot => _screenshot;
 
-  set loading(bool newValue) {
-    if (_loading == newValue) return;
-    _loading = newValue;
+  bool get submitting => _submitting;
+  bool _submitting = false;
+
+  bool get submitted => _submitted;
+  bool _submitted = false;
+
+  Delay? _fakeSubmitDelay;
+  Delay? _closeDelay;
+
+  CustomizableWiredashMetaData? _metaData;
+  DeviceInfo? _deviceInfo;
+  BuildInfo? _buildInfo;
+
+  Object? _submissionError;
+  Object? get submissionError => _submissionError;
+
+  List<FeedbackFlowStatus> get steps {
+    if (submitted) {
+      return [FeedbackFlowStatus.submitting];
+    }
+
+    final stack = [FeedbackFlowStatus.message];
+
+    if (_feedbackMessage != null) {
+      if (labels.isNotEmpty) stack.add(FeedbackFlowStatus.labels);
+      stack.add(FeedbackFlowStatus.screenshotsOverview);
+      stack.add(FeedbackFlowStatus.email);
+    }
+    if (submitting || submitted || submissionError != null) {
+      stack.add(FeedbackFlowStatus.submitting);
+    }
+    return stack;
+  }
+
+  set feedbackMessage(String? feedbackMessage) {
+    final trimmed = feedbackMessage?.trim();
+    if (trimmed == '') {
+      _feedbackMessage = null;
+    } else {
+      _feedbackMessage = trimmed;
+    }
     notifyListeners();
   }
 
-  void _handleUiChange() {
-    switch (_feedbackUiState) {
-      case FeedbackUiState.intro:
-        _clearFeedback();
-        break;
-      case FeedbackUiState.capture:
-        _captureKey.currentState!.show().then((image) {
-          screenshot = image;
-          _feedbackUiState = FeedbackUiState.feedback;
-          _navigatorKey.currentState!.push(
-            DismissiblePageRoute(
-              builder: (context) => const FeedbackSheet(),
-              background: image,
-              onPagePopped: () {
-                feedbackUiState = FeedbackUiState.hidden;
-              },
-            ),
-          );
-        });
-        break;
-      case FeedbackUiState.submit:
-        _sendFeedback();
-        break;
-      default:
-      // do nothing
+  set userEmail(String? userEmail) {
+    final trimmed = userEmail?.trim();
+    if (trimmed == '') {
+      _userEmail = null;
+    } else {
+      _userEmail = trimmed;
+    }
+    notifyListeners();
+  }
+
+  int? get currentStepIndex {
+    final state = feedbackFlowStatus;
+    final index = steps.indexOf(state);
+    if (index == -1) {
+      return null;
+    }
+    return index;
+  }
+
+  Future<void> goToNextStep() async {
+    final index = currentStepIndex;
+    if (index == null) {
+      throw StateError('Unknown step index');
+    }
+    final nextStepIndex = index + 1;
+    if (nextStepIndex < steps.length) {
+      final step = steps[nextStepIndex];
+      await goToStep(step);
+    } else {
+      throw StateError('reached the end of the stack (length ${steps.length})');
     }
   }
 
-  void _clearFeedback() {
-    feedbackMessage = null;
-    screenshot = null;
-    notifyListeners();
-  }
-
-  Future<void> _sendFeedback() async {
-    loading = true;
-    notifyListeners();
-
-    final item = FeedbackItem(
-      deviceInfo: _deviceInfoGenerator.generate(),
-      email: _userManager.userEmail,
-      message: feedbackMessage!,
-      type: feedbackType.label,
-      user: _userManager.userId,
-    );
-
-    try {
-      await _feedbackSubmitter.submit(item, screenshot);
-      _clearFeedback();
-      _feedbackUiState = FeedbackUiState.submitted;
-    } catch (e) {
-      _feedbackUiState = FeedbackUiState.submissionError;
+  Future<void> goToPreviousStep() async {
+    final index = currentStepIndex;
+    if (index == null) {
+      throw StateError('Unknown step index');
     }
-    loading = false;
-    notifyListeners();
+    final prevStepIndex = index - 1;
+    if (prevStepIndex >= 0) {
+      final step = steps[prevStepIndex];
+      await goToStep(step);
+    } else {
+      throw StateError('Already at first item');
+    }
   }
 
-  void show() {
+  Future<void> goToStep(FeedbackFlowStatus newStatus) async {
+    switch (newStatus) {
+      case FeedbackFlowStatus.none:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
+        break;
+      case FeedbackFlowStatus.message:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
+        break;
+      case FeedbackFlowStatus.labels:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
+        break;
+      case FeedbackFlowStatus.screenshotsOverview:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
+
+        await _services.backdropController.animateToOpen();
+        break;
+      case FeedbackFlowStatus.screenshotNavigating:
+        _feedbackFlowStatus = newStatus;
+        _services.picassoController.isActive = false;
+        notifyListeners();
+
+        await _services.backdropController.animateToCentered();
+        break;
+      case FeedbackFlowStatus.screenshotCapturing:
+        _feedbackFlowStatus = newStatus;
+        _services.picassoController.isActive = false;
+        notifyListeners();
+
+        await _services.screenCaptureController.captureScreen();
+        // TODO show loading indicator?
+        _deviceInfo = _services.deviceInfoGenerator.generate();
+        final metaData = _services.wiredashModel.metaData;
+        // Allow devs to collect additional information
+        await _services.wiredashWidget.feedbackOptions?.collectMetaData
+            ?.call(metaData);
+        _buildInfo = _services.buildInfoManager.buildInfo;
+        _metaData = metaData;
+        notifyListeners();
+
+        await goToStep(FeedbackFlowStatus.screenshotDrawing);
+        break;
+      case FeedbackFlowStatus.screenshotDrawing:
+        _feedbackFlowStatus = newStatus;
+        _services.picassoController.isActive = true;
+        notifyListeners();
+        break;
+      case FeedbackFlowStatus.screenshotSaving:
+        _feedbackFlowStatus = newStatus;
+        _services.picassoController.isActive = false;
+        notifyListeners();
+
+        _screenshot = await _services.picassoController.paintDrawingOntoImage(
+          _services.screenCaptureController.screenshot!,
+        );
+        notifyListeners();
+
+        await _services.backdropController.animateToOpen();
+        _services.screenCaptureController.releaseScreen();
+
+        await goToStep(FeedbackFlowStatus.screenshotsOverview);
+        break;
+      case FeedbackFlowStatus.email:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
+        break;
+      case FeedbackFlowStatus.submitting:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
+        break;
+    }
+  }
+
+  Future<void> submitFeedback() async {
+    _submitting = true;
+    _submissionError = null;
+    notifyListeners();
+    goToStep(FeedbackFlowStatus.submitting);
+    bool fakeSubmit = false;
     assert(
-      _navigatorKey.currentState != null,
-      '''
-Wiredash couldn't access your app's root navigator.
-
-This is likely to happen when you forget to add the navigator key to your 
-Material- / Cupertino- or WidgetsApp widget. 
-
-To fix this, simply assign the same GlobalKey you assigned to Wiredash 
-to your Material- / Cupertino- or WidgetsApp widget, like so:
-
-return Wiredash(
-  projectId: "YOUR-PROJECT-ID",
-  secret: "YOUR-SECRET",
-  navigatorKey: _navigatorKey, // <-- should be the same
-  child: MaterialApp(
-    navigatorKey: _navigatorKey, // <-- should be the same
-    title: 'Flutter Demo',
-    home: ...
-  ),
-);
-
-For more info on how to setup Wiredash, check out 
-https://github.com/wiredashio/wiredash-sdk
-
-If this did not fix the issue, please file an issue at 
-https://github.com/wiredashio/wiredash-sdk/issues
-
-Thanks!
-''',
+      () {
+        fakeSubmit = false;
+        return true;
+      }(),
     );
-
-    if (_navigatorKey.currentState == null ||
-        feedbackUiState == FeedbackUiState.capture ||
-        feedbackUiState != FeedbackUiState.hidden) return;
-
-    feedbackUiState = FeedbackUiState.intro;
-    final route = DismissiblePageRoute(
-      builder: (context) => const FeedbackSheet(),
-      onPagePopped: () => feedbackUiState = FeedbackUiState.hidden,
-    );
-    _navigatorKey.currentState!.push(route).then((_) {
-      if (_feedbackUiState == FeedbackUiState.capture) {
-        // The capture mode pops this route but it stays in capture mode
-        // and doesn't switch to hidden
-        return;
+    try {
+      if (fakeSubmit) {
+        // ignore: avoid_print
+        if (kDebugMode) print('Submitting feedback (fake)');
+        _fakeSubmitDelay?.dispose();
+        _fakeSubmitDelay = Delay(const Duration(seconds: 2));
+        await _fakeSubmitDelay!.future;
+        _submitted = true;
+        _submitting = false;
+        notifyListeners();
+      } else {
+        // ignore: avoid_print
+        if (kDebugMode) print('Submitting feedback');
+        try {
+          final item = await createFeedback();
+          await _services.feedbackSubmitter.submit(item, _screenshot);
+          _submitted = true;
+          notifyListeners();
+        } catch (e, stack) {
+          reportWiredashError(e, stack, 'Feedback submission failed');
+          _submissionError = e;
+        }
       }
-      _feedbackUiState = FeedbackUiState.hidden;
-    });
+    } finally {
+      _submitting = false;
+      notifyListeners();
+    }
+
+    if (_submitted) {
+      _closeDelay?.dispose();
+      _closeDelay = Delay(const Duration(seconds: 1));
+      await _closeDelay!.future;
+      await returnToAppPostSubmit();
+    }
   }
-}
 
-enum FeedbackType { bug, improvement, praise }
+  Future<void> returnToAppPostSubmit() async {
+    if (submitted == false) return;
+    await _services.backdropController.animateToClosed();
+    _services.discardFeedback();
+  }
 
-extension FeedbackTypeMembers on FeedbackType {
-  String get label => const {
-        FeedbackType.bug: "bug",
-        FeedbackType.improvement: "improvement",
-        FeedbackType.praise: "praise",
-      }[this]!;
-}
+  Future<PersistedFeedbackItem> createFeedback() async {
+    final deviceId = await _services.deviceIdGenerator.deviceId();
+    _buildInfo ??= _services.buildInfoManager.buildInfo;
+    _deviceInfo ??= _services.deviceInfoGenerator.generate();
 
-enum FeedbackUiState {
-  hidden,
-  intro,
-  capture,
-  feedback,
-  email,
-  submit,
-  submitted,
-  submissionError,
+    if (_metaData == null) {
+      final metaData = _services.wiredashModel.metaData;
+      // Allow devs to collect additional information
+      await _services.wiredashWidget.feedbackOptions?.collectMetaData
+          ?.call(metaData);
+      _metaData = metaData;
+    }
+
+    return PersistedFeedbackItem(
+      deviceId: deviceId,
+      appInfo: AppInfo(
+        appLocale: _services.wiredashOptions.currentLocale.toLanguageTag(),
+      ),
+      buildInfo: _buildInfo!.copyWith(
+        buildCommit: _metaData?.buildCommit,
+        buildNumber: _metaData?.buildNumber,
+        buildVersion: _metaData?.buildVersion,
+      ),
+      deviceInfo: _deviceInfo!,
+      email: userEmail,
+      message: _feedbackMessage!,
+      labels: _selectedLabels.map((it) => it.id).toList(),
+      customMetaData: _metaData?.custom,
+      userId: _metaData?.userId,
+    );
+  }
+
+  @override
+  void dispose() {
+    _fakeSubmitDelay?.dispose();
+    _closeDelay?.dispose();
+    super.dispose();
+  }
+
+  @override
+  void removeListener(VoidCallback listener) {
+    try {
+      super.removeListener(listener);
+      // ignore: avoid_catching_errors
+    } on FlutterError {
+      // ignore when it is already disposed due to recreation
+    }
+  }
 }

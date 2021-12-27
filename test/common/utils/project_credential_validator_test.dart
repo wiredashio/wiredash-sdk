@@ -19,7 +19,8 @@ void main() {
               .having(
                 (e) => e.message,
                 'message',
-                'It seems like you forgot to add the projectId from your Wiredash console in your Wiredash widget.',
+                'It seems like you forgot to add the projectId from your '
+                    'Wiredash console in your Wiredash widget.',
               ),
         ),
       );
@@ -34,7 +35,8 @@ void main() {
               .having(
                 (e) => e.message,
                 'message',
-                'It seems like you forgot to add the secret from your Wiredash console in your Wiredash widget.',
+                'It seems like you forgot to add the secret from your Wiredash '
+                    'console in your Wiredash widget.',
               ),
         ),
       );
