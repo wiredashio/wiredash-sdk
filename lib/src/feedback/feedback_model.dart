@@ -314,4 +314,14 @@ class FeedbackModel with ChangeNotifier {
     _closeDelay?.dispose();
     super.dispose();
   }
+
+  @override
+  void removeListener(VoidCallback listener) {
+    try {
+      super.removeListener(listener);
+      // ignore: avoid_catching_errors
+    } on FlutterError {
+      // ignore when it is already disposed due to recreation
+    }
+  }
 }
