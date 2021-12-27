@@ -29,7 +29,7 @@ class _Step6SubmitState extends State<Step6Submit> {
                         height: 24,
                       ),
                       Icon(
-                        Wirecons.bell,
+                        Wirecons.arrow_right,
                         size: 48,
                         color: context.theme.primaryColor,
                       ),
