@@ -112,8 +112,8 @@ class _Label extends StatelessWidget {
           constraints: const BoxConstraints(maxHeight: 41, minHeight: 41),
           decoration: BoxDecoration(
             color: Color.lerp(
-              context.theme.primaryBackgroundColor,
               context.theme.secondaryBackgroundColor,
+              context.theme.secondaryColor,
               anims.hoveredAnim.value +
                   anims.pressedAnim.value +
                   anims.selectedAnim.value,
@@ -138,7 +138,11 @@ class _Label extends StatelessWidget {
               curve: Curves.ease,
               style: TextStyle(
                 fontWeight: FontWeight.w800,
-                color: context.theme.primaryColor,
+                color: Color.lerp(
+                  context.theme.primaryColor.withOpacity(0.8),
+                  context.theme.primaryColor,
+                  anims.selectedAnim.value,
+                ),
               ),
               child: Text(label.title),
             ),
