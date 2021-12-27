@@ -15,7 +15,7 @@ jobs:
     container:
       image: cirrusci/flutter:beta
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
@@ -30,7 +30,7 @@ jobs:
     container:
       image: cirrusci/flutter:2.5.0
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
@@ -45,7 +45,7 @@ jobs:
     container:
       image: cirrusci/flutter:stable
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
@@ -60,7 +60,7 @@ jobs:
     container:
       image: cirrusci/flutter:beta
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
@@ -76,7 +76,7 @@ jobs:
       image: cirrusci/flutter:master
     steps:
       - run: sudo chown -R $USER:$USER ${{ github.workspace }}
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
