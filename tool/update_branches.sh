@@ -12,10 +12,6 @@ git checkout beta
 git pull --ff-only
 git merge stable --ff
 
-git checkout dev
-git pull --ff-only
-git merge beta --ff
-
 git push origin beta
 git push origin dev
 
