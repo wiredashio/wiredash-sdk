@@ -29,7 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:2.5.0
-    if: github.base_ref == 'stable' || github.ref == 'refs/heads/stable'
     steps:
       - uses: actions/checkout@v2.3.4
       - name: Flutter version
@@ -45,7 +44,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:stable
-    if: github.base_ref == 'stable' || github.ref == 'refs/heads/stable'
     steps:
       - uses: actions/checkout@v2.3.4
       - name: Flutter version
@@ -61,7 +59,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:beta
-    if: github.base_ref == 'beta' || github.ref == 'refs/heads/beta'
     steps:
       - uses: actions/checkout@v2.3.4
       - name: Flutter version
@@ -77,7 +74,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:master
-    if: github.base_ref == 'master' || github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v2.3.4
       - name: Flutter version
