@@ -260,7 +260,8 @@ class _AnimatedClickTargetState extends State<AnimatedClickTarget>
             _focusedController,
             _pressedController,
             _hoveredController,
-            _enabledController
+            _enabledController,
+            _selectedController,
           ]),
           builder: (context, _) {
             return widget.builder(context, state, anims);
