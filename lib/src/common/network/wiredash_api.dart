@@ -43,6 +43,11 @@ class WiredashApi {
     );
     final req = MultipartRequest('POST', uri)..files.add(multipartFile);
     final response = await _send(req);
+
+    if (response.statusCode == 401) {
+      throw UnauthenticatedWiredashApiException(response, _projectId, _secret);
+    }
+
     if (response.statusCode != 200) {
       throw WiredashApiException(
         message: 'image upload failed',
