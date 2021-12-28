@@ -22,7 +22,6 @@ class WiredashApi {
 
   final Client _httpClient;
 
-  // TODO make mutable
   final String _projectId;
   final String _secret;
   final Future<String> Function() _deviceIdProvider;
@@ -194,7 +193,6 @@ extension FeedbackBody on PersistedFeedbackItem {
       'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
     });
 
-    // TODO double check on min Flutter version
     // Not yet required but we can trust those are non null
     values.addAll({
       'appLocale': nonNull(appInfo.appLocale),

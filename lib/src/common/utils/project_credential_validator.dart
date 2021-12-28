@@ -30,8 +30,6 @@ class ProjectCredentialValidator {
           );
         }
 
-        // TODO: In the future, send projectId & secret to the backend server
-        //  for validation.
         return true;
       }(),
     );

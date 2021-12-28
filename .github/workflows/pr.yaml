@@ -15,7 +15,7 @@ jobs:
     container:
       image: cirrusci/flutter:beta
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
@@ -29,9 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:2.5.0
-    if: github.base_ref == 'stable' || github.ref == 'refs/heads/stable'
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
@@ -45,9 +44,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:stable
-    if: github.base_ref == 'stable' || github.ref == 'refs/heads/stable'
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
@@ -61,9 +59,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:beta
-    if: github.base_ref == 'beta' || github.ref == 'refs/heads/beta'
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
@@ -76,10 +73,9 @@ jobs:
   pr-master:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:master
-    if: github.base_ref == 'master' || github.ref == 'refs/heads/master'
+      image: cirrusci/flutter:latest
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies

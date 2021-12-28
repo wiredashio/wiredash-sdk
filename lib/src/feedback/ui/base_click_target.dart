@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 
 const buttonBlue = Color(0xFF1A56DB);
 
-// TODO document
 class BaseClickTarget extends StatefulWidget {
   const BaseClickTarget({
     Key? key,
@@ -149,7 +148,6 @@ class TargetStateAnimations {
   });
 }
 
-// TODO document
 class AnimatedClickTarget extends StatefulWidget {
   const AnimatedClickTarget({
     Key? key,
@@ -262,7 +260,8 @@ class _AnimatedClickTargetState extends State<AnimatedClickTarget>
             _focusedController,
             _pressedController,
             _hoveredController,
-            _enabledController
+            _enabledController,
+            _selectedController,
           ]),
           builder: (context, _) {
             return widget.builder(context, state, anims);

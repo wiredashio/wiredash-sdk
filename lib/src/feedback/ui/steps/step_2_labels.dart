@@ -34,8 +34,7 @@ class _Step2LabelsState extends State<Step2Labels>
                 'Which label represents your type of feedback?',
                 style: context.theme.titleTextStyle,
               ),
-              // TODO replace with automatic scaled spacing from theme
-              const SizedBox(height: 32),
+              SizedBox(height: context.theme.verticalPadding),
               _LabelRecommendations(
                 labels: feedbackModel.labels,
                 isLabelSelected: selectedLabels.contains,
