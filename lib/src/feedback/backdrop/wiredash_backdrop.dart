@@ -221,6 +221,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// (re-)calculates the rects for the different states
   void _calculateRects() {
+    final wiredashPadding = widget.padding ?? EdgeInsets.zero;
     final Size screenSize = _mediaQueryData.size;
 
     // scale to show app in safeArea
@@ -229,12 +230,19 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       final minContentWidthPadding = context.theme.horizontalPadding * 2;
       final maxContentWidth = screenSize.width -
           math.max(
-            _mediaQueryData.viewPadding.horizontal,
-            minContentWidthPadding,
+            wiredashPadding.horizontal,
+            math.max(
+              _mediaQueryData.viewPadding.horizontal,
+              minContentWidthPadding,
+            ),
           );
 
-      final maxContentHeight =
-          screenSize.height - math.max(0, _mediaQueryData.viewPadding.vertical);
+      final maxContentHeight = screenSize.height -
+          math.max(
+            0,
+            // wiredashPadding.vertical,
+            _mediaQueryData.viewPadding.vertical,
+          );
 
       return math.min(
         maxContentWidth / screenSize.width,
@@ -243,8 +251,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }();
 
     _rectAppCentered = Rect.fromCenter(
-      center:
-          screenSize.center(Offset.zero) + _mediaQueryData.viewInsets.topLeft,
+      center: screenSize.center(Offset.zero) +
+          _mediaQueryData.viewInsets.topLeft / 2 +
+          wiredashPadding.topLeft / 2,
       width: screenSize.width * centerScaleFactor,
       height: screenSize.height * centerScaleFactor,
     );
@@ -262,6 +271,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     if (!isKeyboardOpen) {
       preferredAppHeight -= minAppPeakHeight;
       preferredAppHeight -= buttonBarHeight / 2;
+      preferredAppHeight -= wiredashPadding.top / 2;
     }
     final preferredContentHeight =
         _mediaQueryData.size.height - preferredAppHeight;
@@ -278,13 +288,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     _rectContentArea = Rect.fromLTWH(
       0,
-      0, // TODO top padding?
+      0,
       context.theme.maxContentWidth,
       contentHeight - buttonBarHeight,
-    ).centerHorizontally(
-      maxWidth: screenSize.width,
-      minPadding: context.theme.horizontalPadding,
-    );
+    ).removePadding(wiredashPadding.copyWith(bottom: 0)).centerHorizontally(
+          maxWidth: screenSize.width,
+          minPadding: context.theme.horizontalPadding,
+        );
 
     _rectAppOutOfFocus = Rect.fromLTWH(
       0,
@@ -799,6 +809,10 @@ class _KeepAppAliveState extends State<_KeepAppAlive>
 }
 
 extension on Rect {
+  Rect removePadding(EdgeInsets padding) {
+    return padding.deflateRect(this);
+  }
+
   Rect centerHorizontally({required double maxWidth, double minPadding = 0.0}) {
     double padding = (maxWidth - width) / 2;
     if (padding < minPadding) {

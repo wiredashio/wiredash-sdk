@@ -64,6 +64,7 @@ class Wiredash extends StatefulWidget {
     this.options,
     this.theme,
     this.feedbackOptions,
+    this.padding,
     required this.child,
   }) : super(key: key);
 
@@ -96,6 +97,12 @@ class Wiredash extends StatefulWidget {
   /// );
   /// ```
   final WiredashThemeData? theme;
+
+  /// The padding inside wiredash, parts of the screen it should not draw into
+  ///
+  /// This is useful for macOS applications that draw the window titlebar
+  /// themselves.
+  final EdgeInsets? padding;
 
   /// Your application
   final Widget child;
@@ -235,6 +242,7 @@ class WiredashState extends State<Wiredash> {
               WiredashBackdrop(
                 key: _backdropKey,
                 controller: _services.backdropController,
+                padding: widget.padding,
                 child: appBuilder,
               ),
             ],
