@@ -73,9 +73,8 @@ jobs:
   pr-master:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:master
+      image: cirrusci/flutter:latest
     steps:
-      - run: sudo chown -R $USER:$USER ${{ github.workspace }}
       - uses: actions/checkout@v2.4.0
       - name: Flutter version
         run: flutter doctor -v
