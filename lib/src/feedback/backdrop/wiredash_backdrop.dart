@@ -442,6 +442,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       widget.controller._state = this;
       widget.controller.addListener(_markAsDirty);
     }
+    if (oldWidget.padding != widget.padding) {
+      _calculateRects();
+    }
   }
 
   void _markAsDirty() {
