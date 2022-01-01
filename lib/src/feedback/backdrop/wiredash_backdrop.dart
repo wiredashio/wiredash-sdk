@@ -36,11 +36,13 @@ class WiredashBackdrop extends StatefulWidget {
     Key? key,
     required this.child,
     required this.controller,
+    this.padding,
   }) : super(key: key);
 
   /// The wrapped app
   final Widget child;
   final BackdropController controller;
+  final EdgeInsets? padding;
 
   static BackdropController of(BuildContext context) {
     final state = context.findAncestorStateOfType<_WiredashBackdropState>();
