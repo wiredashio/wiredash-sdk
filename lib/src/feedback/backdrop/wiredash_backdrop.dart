@@ -577,7 +577,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: _cornerRadiusAnimation.value,
-                  color: context.theme.primaryBackgroundColor,
+                  color: context.theme.appBackgroundColor,
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFF000000).withOpacity(0.04),
