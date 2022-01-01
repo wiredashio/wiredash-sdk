@@ -484,9 +484,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       rect: _rectContentArea,
       child: MediaQuery(
         data: _mediaQueryData.removePadding(removeBottom: true),
-        child: const Focus(
+        child: Focus(
           debugLabel: 'wiredash backdrop content',
-          child: WiredashFeedbackFlow(),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: widget.controller.backdropStatus ==
+                        WiredashBackdropStatus.centered ||
+                    widget.controller.backdropStatus ==
+                        WiredashBackdropStatus.openingCentered
+                ? 0.0
+                : 1.0,
+            child: const WiredashFeedbackFlow(),
+          ),
         ),
       ),
     );
