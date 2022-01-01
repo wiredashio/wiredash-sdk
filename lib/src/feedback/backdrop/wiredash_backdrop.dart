@@ -293,8 +293,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       0,
       context.theme.maxContentWidth,
       contentHeight - buttonBarHeight,
-    ).removePadding(wiredashPadding.copyWith(bottom: 0)).centerHorizontally(
-          maxWidth: screenSize.width,
+    )
+        .removePadding(
+          wiredashPadding.copyWith(bottom: 0),
+        )
+        .centerHorizontally(
+          maxWidth: screenSize.width - wiredashPadding.horizontal,
           minPadding: context.theme.horizontalPadding,
         );
 
@@ -303,10 +307,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       contentHeight,
       screenSize.width * centerScaleFactor,
       screenSize.height * centerScaleFactor,
-    ).centerHorizontally(
-      maxWidth: screenSize.width,
-      minPadding: context.theme.horizontalPadding,
-    );
+    )
+        .removePadding(
+          wiredashPadding.copyWith(bottom: 0, top: 0),
+        )
+        .centerHorizontally(
+          maxWidth: screenSize.width - wiredashPadding.horizontal,
+          minPadding: context.theme.horizontalPadding,
+        );
 
     _rectNavigationButtons = Rect.fromLTWH(
       _rectAppOutOfFocus.left,
@@ -427,7 +435,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     _mediaQueryData = newMq;
     if (newMq.size != oldMq.size ||
         // keyboard detection
-        newMq.viewInsets != oldMq.viewInsets) {
+        newMq.viewInsets != oldMq.viewInsets ||
+        newMq.padding != oldMq.padding) {
       _calculateRects();
       _swapAnimation();
     }
@@ -444,6 +453,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }
     if (oldWidget.padding != widget.padding) {
       _calculateRects();
+      _swapAnimation();
     }
   }
 
@@ -559,6 +569,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       opacity: _backdropStatus == WiredashBackdropStatus.closing ? 0.0 : 1.0,
       child: FeedbackNavigation(
         defaultLocation: _rectNavigationButtons,
+        windowPadding: widget.padding,
       ),
     );
   }
@@ -772,11 +783,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             heightDifference;
         // The scale the app should be scaled to, compared to fullscreen
         final appScale =
-            _transformAnimation.value!.width / _rectAppFillsScreen.width;
+            (_transformAnimation.value!.width) / _rectAppFillsScreen.width;
 
         // ignore: join_return_with_assignment
         app = Transform.translate(
-          offset: Offset(0, yTranslation),
+          offset: Offset(
+            ((widget.padding?.left ?? 0) - (widget.padding?.right ?? 0)) / 2,
+            yTranslation,
+          ),
           child: Transform.scale(
             scale: appScale,
             alignment: Alignment.bottomCenter,
@@ -824,7 +838,7 @@ extension on Rect {
       padding = minPadding;
     }
     return Rect.fromLTWH(
-      padding,
+      left + padding,
       top,
       maxWidth - padding * 2,
       height,

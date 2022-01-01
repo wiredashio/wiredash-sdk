@@ -12,9 +12,11 @@ class FeedbackNavigation extends StatefulWidget {
   const FeedbackNavigation({
     Key? key,
     required this.defaultLocation,
+    this.windowPadding,
   }) : super(key: key);
 
   final Rect defaultLocation;
+  final EdgeInsets? windowPadding;
 
   @override
   State<FeedbackNavigation> createState() => _FeedbackNavigationState();
@@ -55,7 +57,8 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
     const double buttonTransitionWidth = 30;
     _prevButtonAnimation = Tween(
       begin: Offset(widget.defaultLocation.left, 0),
-      end: const Offset(-buttonTransitionWidth, 0),
+      end:
+          Offset(-buttonTransitionWidth + (widget.windowPadding?.left ?? 0), 0),
     ).animate(
       CurvedAnimation(
         parent: _controller,
