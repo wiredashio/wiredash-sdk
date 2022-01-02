@@ -63,7 +63,7 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                     style: context.theme.bodyTextStyle,
                     onFieldSubmitted: (_) {
                       if (context.feedbackModel.validateForm()) {
-                        context.feedbackModel.submitFeedback();
+                        context.feedbackModel.goToNextStep();
                       }
                     },
                     validator: (data) {

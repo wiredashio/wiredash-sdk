@@ -2,7 +2,8 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wiredash/src/common/options/feedback_options.dart';
-import 'package:wiredash/src/feedback/data/label.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/feedback/ui/steps/step_6_submit.dart';
 
 import 'util/robot.dart';
 import 'util/wiredash_tester.dart';
@@ -13,20 +14,16 @@ void main() {
       final WiredashTestRobot robot = await goToEmailStep(tester);
       await robot.enterEmail('dash@flutter.io');
       await robot.submitEmailViaButton();
-      await tester.waitUntil(
-        find.text('Thanks for your feedback!'),
-        findsOneWidget,
-      );
+      expect(find.byType(Step6Submit), findsOneWidget);
     });
+
     testWidgets('Submit works without email', (tester) async {
       final WiredashTestRobot robot = await goToEmailStep(tester);
       await robot.enterEmail('');
       await robot.submitEmailViaButton();
-      await tester.waitUntil(
-        find.text('Thanks for your feedback!'),
-        findsOneWidget,
-      );
+      expect(find.byType(Step6Submit), findsOneWidget);
     });
+
     testWidgets('Submit via button - Shows error for invalid email',
         (tester) async {
       final WiredashTestRobot robot = await goToEmailStep(tester);
@@ -48,6 +45,23 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets('Don not ask for email', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(tester);
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.skipScreenshot();
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        isNot(FeedbackFlowStatus.email),
+      );
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.submit,
+      );
+    });
   });
 }
 
@@ -55,16 +69,17 @@ Future<WiredashTestRobot> goToEmailStep(WidgetTester tester) async {
   final robot = await WiredashTestRobot.launchApp(
     tester,
     feedbackOptions: const WiredashFeedbackOptions(
-      labels: [
-        Label(id: 'label-bug', title: 'Bug'),
-      ],
+      askForUserEmail: true,
     ),
   );
 
   await robot.openWiredash();
   await robot.enterFeedbackMessage('test message');
   await robot.goToNextStep();
-  await robot.skipLabels();
   await robot.skipScreenshot();
+  expect(
+    robot.services.feedbackModel.feedbackFlowStatus,
+    FeedbackFlowStatus.email,
+  );
   return robot;
 }

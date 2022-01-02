@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/translate_transition.dart';
@@ -206,6 +207,14 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           label: 'Go back',
           onTap: () => context.feedbackModel.goToPreviousStep(),
         );
+
+      case FeedbackFlowStatus.submit:
+        return TronButton(
+          color: context.theme.secondaryColor,
+          icon: Wirecons.arrow_narrow_left,
+          label: 'Go back',
+          onTap: () => context.feedbackModel.goToPreviousStep(),
+        );
       case FeedbackFlowStatus.submitting:
         return null;
     }
@@ -274,13 +283,22 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
       case FeedbackFlowStatus.email:
         return TronButton(
           color: context.theme.primaryColor,
-          icon: Wirecons.check,
+          icon: Wirecons.arrow_narrow_right,
           label: 'Next',
           onTap: () {
             if (context.feedbackModel.validateForm()) {
-              context.feedbackModel.submitFeedback();
+              context.feedbackModel.goToNextStep();
             }
           },
+        );
+      case FeedbackFlowStatus.submit:
+        return TronButton(
+          color: context.theme.primaryColor,
+          label: 'Submit',
+          onTap: () {
+            context.feedbackModel.submitFeedback();
+          },
+          icon: Wirecons.check,
         );
       case FeedbackFlowStatus.submitting:
         final error = context.feedbackModel.submissionError;
