@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/common/utils/email_validator.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
+import 'package:wiredash/wiredash.dart';
 
 class Step5Email extends StatefulWidget {
   const Step5Email({Key? key}) : super(key: key);
@@ -55,14 +56,27 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                     'Enter your email to get updates regarding your issue',
                     style: context.theme.titleTextStyle,
                   ),
-                  TextField(
+                  TextFormField(
                     controller: _controller,
                     keyboardType: TextInputType.emailAddress,
                     cursorColor: context.theme.primaryColor,
                     style: context.theme.bodyTextStyle,
-                    onSubmitted: (_) {
-                      context.feedbackModel
-                          .goToStep(FeedbackFlowStatus.submitting);
+                    onFieldSubmitted: (_) {
+                      if (context.feedbackModel.validateForm()) {
+                        context.feedbackModel.submitFeedback();
+                      }
+                    },
+                    validator: (data) {
+                      final email = data ?? '';
+                      if (email.isEmpty) {
+                        // leaving this field empty is ok
+                        return null;
+                      }
+                      final valid = const EmailValidator().validate(email);
+                      return valid
+                          ? null
+                          : WiredashLocalizations.of(context)!
+                              .validationHintEmail;
                     },
                     decoration: InputDecoration(
                       border: InputBorder.none,

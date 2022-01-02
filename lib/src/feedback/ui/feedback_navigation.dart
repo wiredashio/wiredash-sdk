@@ -264,7 +264,7 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           label: 'Next',
           onTap: () {
             if (context.feedbackModel.hasScreenshots) {
-              context.feedbackModel.goToStep(FeedbackFlowStatus.email);
+              context.feedbackModel.goToNextStep();
             } else {
               context.feedbackModel
                   .goToStep(FeedbackFlowStatus.screenshotNavigating);
@@ -277,7 +277,9 @@ class _FeedbackNavigationState extends State<FeedbackNavigation>
           icon: Wirecons.check,
           label: 'Next',
           onTap: () {
-            context.feedbackModel.submitFeedback();
+            if (context.feedbackModel.validateForm()) {
+              context.feedbackModel.submitFeedback();
+            }
           },
         );
       case FeedbackFlowStatus.submitting:
