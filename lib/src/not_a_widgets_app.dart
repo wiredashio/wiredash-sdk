@@ -74,6 +74,7 @@ class _NotAWidgetsAppState extends State<NotAWidgetsApp> {
 
     // Make Wiredash a Material widget to support TextFields, etc.
     child = Material(
+      color: Colors.transparent,
       child: child,
     );
 

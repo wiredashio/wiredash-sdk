@@ -42,7 +42,8 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       return;
     }
     if (oldIndex != newIndex) {
-      final state = _lpvKey.currentState!;
+      final state = _lpvKey.currentState;
+      if (state == null) return;
       // jump to next page after the widget has been rebuild and LarryPageView
       // knows about the new itemCount
       WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {

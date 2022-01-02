@@ -36,11 +36,13 @@ class WiredashBackdrop extends StatefulWidget {
     Key? key,
     required this.child,
     required this.controller,
+    this.padding,
   }) : super(key: key);
 
   /// The wrapped app
   final Widget child;
   final BackdropController controller;
+  final EdgeInsets? padding;
 
   static BackdropController of(BuildContext context) {
     final state = context.findAncestorStateOfType<_WiredashBackdropState>();
@@ -221,6 +223,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// (re-)calculates the rects for the different states
   void _calculateRects() {
+    final wiredashPadding = widget.padding ?? EdgeInsets.zero;
     final Size screenSize = _mediaQueryData.size;
 
     // scale to show app in safeArea
@@ -229,12 +232,19 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       final minContentWidthPadding = context.theme.horizontalPadding * 2;
       final maxContentWidth = screenSize.width -
           math.max(
-            _mediaQueryData.viewPadding.horizontal,
-            minContentWidthPadding,
+            wiredashPadding.horizontal,
+            math.max(
+              _mediaQueryData.viewPadding.horizontal,
+              minContentWidthPadding,
+            ),
           );
 
-      final maxContentHeight =
-          screenSize.height - math.max(0, _mediaQueryData.viewPadding.vertical);
+      final maxContentHeight = screenSize.height -
+          math.max(
+            0,
+            // wiredashPadding.vertical,
+            _mediaQueryData.viewPadding.vertical,
+          );
 
       return math.min(
         maxContentWidth / screenSize.width,
@@ -243,8 +253,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }();
 
     _rectAppCentered = Rect.fromCenter(
-      center:
-          screenSize.center(Offset.zero) + _mediaQueryData.viewInsets.topLeft,
+      center: screenSize.center(Offset.zero) +
+          _mediaQueryData.viewInsets.topLeft / 2 +
+          wiredashPadding.topLeft / 2,
       width: screenSize.width * centerScaleFactor,
       height: screenSize.height * centerScaleFactor,
     );
@@ -262,6 +273,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     if (!isKeyboardOpen) {
       preferredAppHeight -= minAppPeakHeight;
       preferredAppHeight -= buttonBarHeight / 2;
+      preferredAppHeight -= wiredashPadding.top / 2;
     }
     final preferredContentHeight =
         _mediaQueryData.size.height - preferredAppHeight;
@@ -278,23 +290,31 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     _rectContentArea = Rect.fromLTWH(
       0,
-      0, // TODO top padding?
+      0,
       context.theme.maxContentWidth,
       contentHeight - buttonBarHeight,
-    ).centerHorizontally(
-      maxWidth: screenSize.width,
-      minPadding: context.theme.horizontalPadding,
-    );
+    )
+        .removePadding(
+          wiredashPadding.copyWith(bottom: 0),
+        )
+        .centerHorizontally(
+          maxWidth: screenSize.width - wiredashPadding.horizontal,
+          minPadding: context.theme.horizontalPadding,
+        );
 
     _rectAppOutOfFocus = Rect.fromLTWH(
       0,
       contentHeight,
       screenSize.width * centerScaleFactor,
       screenSize.height * centerScaleFactor,
-    ).centerHorizontally(
-      maxWidth: screenSize.width,
-      minPadding: context.theme.horizontalPadding,
-    );
+    )
+        .removePadding(
+          wiredashPadding.copyWith(bottom: 0, top: 0),
+        )
+        .centerHorizontally(
+          maxWidth: screenSize.width - wiredashPadding.horizontal,
+          minPadding: context.theme.horizontalPadding,
+        );
 
     _rectNavigationButtons = Rect.fromLTWH(
       _rectAppOutOfFocus.left,
@@ -415,7 +435,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     _mediaQueryData = newMq;
     if (newMq.size != oldMq.size ||
         // keyboard detection
-        newMq.viewInsets != oldMq.viewInsets) {
+        newMq.viewInsets != oldMq.viewInsets ||
+        newMq.padding != oldMq.padding) {
       _calculateRects();
       _swapAnimation();
     }
@@ -429,6 +450,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       oldWidget.controller.removeListener(_markAsDirty);
       widget.controller._state = this;
       widget.controller.addListener(_markAsDirty);
+    }
+    if (oldWidget.padding != widget.padding) {
+      _calculateRects();
+      _swapAnimation();
     }
   }
 
@@ -459,9 +484,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       rect: _rectContentArea,
       child: MediaQuery(
         data: _mediaQueryData.removePadding(removeBottom: true),
-        child: const Focus(
+        child: Focus(
           debugLabel: 'wiredash backdrop content',
-          child: WiredashFeedbackFlow(),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: widget.controller.backdropStatus ==
+                        WiredashBackdropStatus.centered ||
+                    widget.controller.backdropStatus ==
+                        WiredashBackdropStatus.openingCentered
+                ? 0.0
+                : 1.0,
+            child: const WiredashFeedbackFlow(),
+          ),
         ),
       ),
     );
@@ -544,6 +578,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       opacity: _backdropStatus == WiredashBackdropStatus.closing ? 0.0 : 1.0,
       child: FeedbackNavigation(
         defaultLocation: _rectNavigationButtons,
+        windowPadding: widget.padding,
       ),
     );
   }
@@ -567,6 +602,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: _cornerRadiusAnimation.value,
+                  color: context.theme.appBackgroundColor,
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFF000000).withOpacity(0.04),
@@ -756,11 +792,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             heightDifference;
         // The scale the app should be scaled to, compared to fullscreen
         final appScale =
-            _transformAnimation.value!.width / _rectAppFillsScreen.width;
+            (_transformAnimation.value!.width) / _rectAppFillsScreen.width;
 
         // ignore: join_return_with_assignment
         app = Transform.translate(
-          offset: Offset(0, yTranslation),
+          offset: Offset(
+            ((widget.padding?.left ?? 0) - (widget.padding?.right ?? 0)) / 2,
+            yTranslation,
+          ),
           child: Transform.scale(
             scale: appScale,
             alignment: Alignment.bottomCenter,
@@ -798,13 +837,17 @@ class _KeepAppAliveState extends State<_KeepAppAlive>
 }
 
 extension on Rect {
+  Rect removePadding(EdgeInsets padding) {
+    return padding.deflateRect(this);
+  }
+
   Rect centerHorizontally({required double maxWidth, double minPadding = 0.0}) {
     double padding = (maxWidth - width) / 2;
     if (padding < minPadding) {
       padding = minPadding;
     }
     return Rect.fromLTWH(
-      padding,
+      left + padding,
       top,
       maxWidth - padding * 2,
       height,

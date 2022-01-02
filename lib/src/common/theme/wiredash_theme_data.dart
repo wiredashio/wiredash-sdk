@@ -12,6 +12,7 @@ class WiredashThemeData {
     Color? secondaryTextColor,
     Color? primaryBackgroundColor,
     Color? secondaryBackgroundColor,
+    Color? appBackgroundColor,
     Color? errorColor,
     String? fontFamily,
     Size? windowSize,
@@ -28,6 +29,7 @@ class WiredashThemeData {
             primaryBackgroundColor ?? const Color(0xffffffff),
         secondaryBackgroundColor:
             secondaryBackgroundColor ?? const Color(0xfff5f6f8),
+        appBackgroundColor: appBackgroundColor ?? const Color(0xfff5f6f8),
         errorColor: errorColor ?? const Color(0xffff5c6a),
         fontFamily: fontFamily ?? _fontFamily,
         windowSize: windowSize ?? Size.zero,
@@ -44,6 +46,7 @@ class WiredashThemeData {
             primaryBackgroundColor ?? const Color(0xffffffff),
         secondaryBackgroundColor:
             secondaryBackgroundColor ?? const Color(0xfff5f6f8),
+        appBackgroundColor: appBackgroundColor ?? const Color(0xfff5f6f8),
         errorColor: errorColor ?? const Color(0xffff5c6a),
         fontFamily: fontFamily ?? _fontFamily,
         windowSize: windowSize ?? Size.zero,
@@ -95,6 +98,7 @@ class WiredashThemeData {
     required this.secondaryTextColor,
     required this.primaryBackgroundColor,
     required this.secondaryBackgroundColor,
+    required this.appBackgroundColor,
     required this.errorColor,
     required this.deviceClass,
     required this.fontFamily,
@@ -112,6 +116,8 @@ class WiredashThemeData {
   final Color primaryBackgroundColor;
   final Color secondaryBackgroundColor;
   final Color errorColor;
+
+  final Color appBackgroundColor;
 
   final DeviceClass deviceClass;
   final Size windowSize;
@@ -253,6 +259,7 @@ class WiredashThemeData {
           secondaryTextColor == other.secondaryTextColor &&
           primaryBackgroundColor == other.primaryBackgroundColor &&
           secondaryBackgroundColor == other.secondaryBackgroundColor &&
+          appBackgroundColor == other.appBackgroundColor &&
           errorColor == other.errorColor &&
           deviceClass == other.deviceClass &&
           windowSize == other.windowSize &&
@@ -267,6 +274,7 @@ class WiredashThemeData {
       secondaryTextColor.hashCode ^
       primaryBackgroundColor.hashCode ^
       secondaryBackgroundColor.hashCode ^
+      appBackgroundColor.hashCode ^
       errorColor.hashCode ^
       deviceClass.hashCode ^
       windowSize.hashCode ^
@@ -282,6 +290,7 @@ class WiredashThemeData {
         'secondaryTextColor: $secondaryTextColor, '
         'primaryBackgroundColor: $primaryBackgroundColor, '
         'secondaryBackgroundColor: $secondaryBackgroundColor, '
+        'appBackgroundColor: $appBackgroundColor, '
         'errorColor: $errorColor, '
         'deviceClass: $deviceClass, '
         'fontFamily: $fontFamily, '
@@ -297,6 +306,7 @@ class WiredashThemeData {
     Color? secondaryTextColor,
     Color? primaryBackgroundColor,
     Color? secondaryBackgroundColor,
+    Color? appBackgroundColor,
     Color? errorColor,
     DeviceClass? deviceClass,
     String? fontFamily,
@@ -312,6 +322,7 @@ class WiredashThemeData {
           primaryBackgroundColor ?? this.primaryBackgroundColor,
       secondaryBackgroundColor:
           secondaryBackgroundColor ?? this.secondaryBackgroundColor,
+      appBackgroundColor: appBackgroundColor ?? this.appBackgroundColor,
       errorColor: errorColor ?? this.errorColor,
       deviceClass: deviceClass ?? this.deviceClass,
       fontFamily: fontFamily ?? this.fontFamily,
