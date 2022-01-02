@@ -61,7 +61,7 @@ jobs:
   master:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:master
+      image: cirrusci/flutter:latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
