@@ -18,6 +18,7 @@ import 'package:wiredash/src/feedback/ui/steps/step_1_feedback_message.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_2_labels.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_3_screenshot_overview.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_5_email.dart';
+import 'package:wiredash/src/feedback/ui/steps/step_6_submit.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 
 import 'mock_api.dart';
@@ -131,7 +132,7 @@ class WiredashTestRobot {
   }
 
   Future<void> submitFeedback() async {
-    expect(find.byType(Step5Email), findsOneWidget);
+    expect(find.byType(Step6Submit), findsOneWidget);
     await tester.tap(find.byIcon(Wirecons.check));
     print('submit feedback');
     await tester.pump();
@@ -139,19 +140,27 @@ class WiredashTestRobot {
 
   Future<void> skipEmail() async {
     expect(find.byType(Step5Email), findsOneWidget);
-    await tester.tap(find.byIcon(Wirecons.check));
-    print('Skipped email');
-    await tester.pump();
+    await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
+    await tester.pumpAndSettle();
+
+    final newStatus = services.feedbackModel.feedbackFlowStatus;
+    print('Skipped email, next $newStatus');
   }
 
   Future<void> submitEmailViaButton() async {
-    await tester.tap(find.byIcon(Wirecons.check));
-    await tester.pump();
+    await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
+    await tester.pumpAndSettle();
+
+    final newStatus = services.feedbackModel.feedbackFlowStatus;
+    print('Submitted email, next $newStatus');
   }
 
   Future<void> submitEmailViaKeyboard() async {
     await tester.testTextInput.receiveAction(TextInputAction.send);
-    await tester.pump();
+    await tester.pumpAndSettle();
+
+    final newStatus = services.feedbackModel.feedbackFlowStatus;
+    print('Submitted email, next $newStatus');
   }
 
   Future<void> goToNextStep() async {

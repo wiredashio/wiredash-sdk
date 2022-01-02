@@ -65,7 +65,7 @@ void main() {
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
       await robot.skipScreenshot();
-      await robot.skipEmail();
+      await robot.submitFeedback();
       await tester.waitUntil(
         find.text('Thanks for your feedback!'),
         findsOneWidget,
@@ -87,7 +87,7 @@ void main() {
       await robot.takeScreenshot();
       await robot.confirmDrawing();
       await robot.goToNextStep();
-      await robot.skipEmail();
+      await robot.submitFeedback();
       await tester.waitUntil(
         find.text('Thanks for your feedback!'),
         findsOneWidget,
@@ -123,7 +123,7 @@ void main() {
       await robot.goToNextStep();
 
       await robot.skipScreenshot();
-      await robot.skipEmail();
+      await robot.submitFeedback();
       await tester.waitUntil(
         find.text('Thanks for your feedback!'),
         findsOneWidget,
@@ -136,7 +136,12 @@ void main() {
     });
 
     testWidgets('Send feedback with email', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot.launchApp(
+        tester,
+        feedbackOptions: const WiredashFeedbackOptions(
+          askForUserEmail: true,
+        ),
+      );
       final mockApi = MockWiredashApi();
       robot.mockWiredashApi(mockApi);
 
@@ -145,6 +150,7 @@ void main() {
       await robot.goToNextStep();
       await robot.skipScreenshot();
       await robot.enterEmail('dash@flutter.io');
+      await robot.goToNextStep();
       await robot.submitFeedback();
       await tester.waitUntil(
         find.text('Thanks for your feedback!'),
@@ -162,6 +168,7 @@ void main() {
       final robot = await WiredashTestRobot.launchApp(
         tester,
         feedbackOptions: const WiredashFeedbackOptions(
+          askForUserEmail: true,
           labels: [
             Label(id: 'lbl-1', title: 'One', description: 'First'),
             Label(id: 'lbl-2', title: 'Two', description: 'Second'),
@@ -185,6 +192,7 @@ void main() {
       await robot.goToNextStep();
 
       await robot.enterEmail('dash@flutter.io');
+      await robot.goToNextStep();
       await robot.submitFeedback();
 
       await tester.waitUntil(

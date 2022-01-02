@@ -61,7 +61,8 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
       feedbackOptions: WiredashFeedbackOptions(
         collectMetaData: (metaData) => metaData
           ..userEmail = 'dash@wiredash.io'
-          ..custom['isPremium'] = false,
+          ..custom['isPremium'] = false
+          ..custom['nested'] = {'wire': 'dash'},
         askForUserEmail: true,
         labels: [
           Label(
@@ -69,16 +70,16 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
             title: 'Bug',
           ),
           Label(
-            id: 'lbl-2r98yask',
-            title: 'Abfall',
+            id: 'lbl-6543df23s',
+            title: 'Improvement',
           ),
           Label(
             id: 'lbl-de3w2fds',
-            title: 'Backend',
+            title: 'UX/UI',
           ),
           Label(
             id: 'lbl-2r98yas4',
-            title: 'Da muss Frederik noch mal ran',
+            title: 'Payment',
           ),
         ],
       ),

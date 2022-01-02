@@ -11,6 +11,7 @@ import 'package:wiredash/src/feedback/ui/steps/step_2_labels.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_3_screenshot_overview.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_5_email.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_6_submit.dart';
+import 'package:wiredash/src/feedback/ui/steps/step_7_submitting.dart';
 
 class WiredashFeedbackFlow extends StatefulWidget {
   const WiredashFeedbackFlow({Key? key}) : super(key: key);
@@ -101,8 +102,11 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
           if (status == FeedbackFlowStatus.email) {
             return const Step5Email();
           }
-          if (status == FeedbackFlowStatus.submitting) {
+          if (status == FeedbackFlowStatus.submit) {
             return const Step6Submit();
+          }
+          if (status == FeedbackFlowStatus.submitting) {
+            return const Step7SubmittingAndError();
           }
           throw 'Unknown step $status at index $index';
         }();
@@ -164,6 +168,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
         return 3;
       case FeedbackFlowStatus.email:
         return 4;
+      case FeedbackFlowStatus.submit:
       case FeedbackFlowStatus.submitting:
         return 5;
     }

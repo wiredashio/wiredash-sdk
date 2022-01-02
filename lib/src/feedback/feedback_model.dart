@@ -20,7 +20,8 @@ enum FeedbackFlowStatus {
   screenshotDrawing,
   screenshotSaving,
   email,
-  submitting
+  submit,
+  submitting,
 }
 
 class FeedbackModel with ChangeNotifier {
@@ -93,7 +94,10 @@ class FeedbackModel with ChangeNotifier {
         // doesn't support rendering to canvas
         stack.add(FeedbackFlowStatus.screenshotsOverview);
       }
-      stack.add(FeedbackFlowStatus.email);
+      if (_services.wiredashWidget.feedbackOptions?.askForUserEmail == true) {
+        stack.add(FeedbackFlowStatus.email);
+      }
+      stack.add(FeedbackFlowStatus.submit);
     }
     if (submitting || submitted || submissionError != null) {
       stack.add(FeedbackFlowStatus.submitting);
@@ -230,6 +234,12 @@ class FeedbackModel with ChangeNotifier {
         _feedbackFlowStatus = newStatus;
         notifyListeners();
         break;
+
+      case FeedbackFlowStatus.submit:
+        _feedbackFlowStatus = newStatus;
+        notifyListeners();
+        break;
+
       case FeedbackFlowStatus.submitting:
         _feedbackFlowStatus = newStatus;
         notifyListeners();

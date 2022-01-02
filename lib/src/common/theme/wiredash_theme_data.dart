@@ -150,7 +150,7 @@ class WiredashThemeData {
         fontFamily: fontFamily,
         fontSize: 14,
         color: primaryTextColor,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.bold,
       );
 
   TextStyle get bodyTextStyle => TextStyle(
