@@ -92,6 +92,19 @@ class LarryPageViewState extends State<LarryPageView>
   }
 
   @override
+  void didUpdateWidget(covariant LarryPageView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.pageIndex < oldWidget.pageIndex &&
+        widget.stepCount < oldWidget.stepCount) {
+      _nextPageTimer?.cancel();
+      _animatingPageOut = false;
+      _offset = 0;
+      _controller.reset();
+      _controller.value = 0;
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     _childScrollController.dispose();
