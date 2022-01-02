@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:wiredash/src/feedback/data/label.dart';
 
