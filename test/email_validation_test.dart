@@ -46,7 +46,7 @@ void main() {
       );
     });
 
-    testWidgets('Don not ask for email', (tester) async {
+    testWidgets('Do not ask for email', (tester) async {
       final robot = await WiredashTestRobot.launchApp(tester);
 
       await robot.openWiredash();
