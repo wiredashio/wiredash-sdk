@@ -1,3 +1,9 @@
+## 1.0.0-alpha.2 - Desktop improvements
+* [#164](https://github.com/wiredashio/wiredash-sdk/pull/164) Support for transparent apps macOS apps
+* Hide backdrop content in screenshot mode
+* [#165](https://github.com/wiredashio/wiredash-sdk/pull/165) Validate email address
+* [#166](https://github.com/wiredashio/wiredash-sdk/pull/166) Make email address optional. Set `WiredashFeedbackOptions(askForUserEmail: true)` to enable it
+
 ## 1.0.0-alpha.1 - A Whole New World
 * Completely rewritten UI layer
 * Custom metadata properties
