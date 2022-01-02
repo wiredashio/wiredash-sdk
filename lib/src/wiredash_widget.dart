@@ -210,8 +210,8 @@ class WiredashState extends State<Wiredash> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = widget.theme ??
-        _services.wiredashModel.themeFromContext ??
+    final theme = _services.wiredashModel.themeFromContext ??
+        widget.theme ??
         WiredashThemeData();
 
     // Assign app an key so it doesn't lose state when wrapped, unwrapped
