@@ -21,12 +21,9 @@ class WiredashFeedbackFlow extends StatefulWidget {
 
 class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     with TickerProviderStateMixin {
-  final GlobalKey<LarryPageViewState> stepFormKey =
-      GlobalKey<LarryPageViewState>();
+  final GlobalKey<LarryPageViewState> _lpvKey = GlobalKey();
 
   int _index = 0;
-
-  final GlobalKey<LarryPageViewState> _lpvKey = GlobalKey();
 
   @override
   void didChangeDependencies() {
@@ -125,7 +122,10 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       },
       child: Stack(
         children: [
-          larryPageView,
+          Form(
+            key: feedbackModel.stepFormKey,
+            child: larryPageView,
+          ),
           _buildProgressIndicator(),
         ],
       ),

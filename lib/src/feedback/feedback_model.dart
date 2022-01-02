@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
 import 'package:wiredash/src/common/renderer/renderer.dart';
 import 'package:wiredash/src/common/services/services.dart';
@@ -31,6 +32,8 @@ class FeedbackModel with ChangeNotifier {
   FeedbackFlowStatus get feedbackFlowStatus => _feedbackFlowStatus;
 
   final BuildInfoManager buildInfoManager = BuildInfoManager();
+
+  final GlobalKey<FormState> stepFormKey = GlobalKey<FormState>();
 
   String? get feedbackMessage => _feedbackMessage;
   String? _feedbackMessage;
@@ -74,7 +77,10 @@ class FeedbackModel with ChangeNotifier {
 
   List<FeedbackFlowStatus> get steps {
     if (submitted) {
-      return [FeedbackFlowStatus.submitting];
+      // Return just a single step, no back/forward possible
+      return [
+        FeedbackFlowStatus.submitting,
+      ];
     }
 
     final stack = [FeedbackFlowStatus.message];
@@ -125,6 +131,9 @@ class FeedbackModel with ChangeNotifier {
   }
 
   Future<void> goToNextStep() async {
+    if (!validateForm()) {
+      throw FormValidationException();
+    }
     final index = currentStepIndex;
     if (index == null) {
       throw StateError('Unknown step index');
@@ -330,4 +339,15 @@ class FeedbackModel with ChangeNotifier {
       // ignore when it is already disposed due to recreation
     }
   }
+
+  /// Returns `true` when there are no errors
+  bool validateForm() {
+    final state = stepFormKey.currentState;
+    if (state == null) {
+      return true;
+    }
+    return state.validate();
+  }
 }
+
+class FormValidationException implements Exception {}
