@@ -4,6 +4,8 @@ import 'package:wiredash/src/common/options/feedback_options.dart';
 import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
+import 'package:wiredash/src/wiredash_controller.dart';
+import 'package:wiredash/src/wiredash_widget.dart';
 
 class WiredashModel with ChangeNotifier {
   WiredashModel(this.services);
@@ -29,6 +31,12 @@ class WiredashModel with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Temporary theme that overrides the `Wiredash.theme` property for the
+  /// current 'show' session
+  ///
+  /// Also see
+  /// - [Wiredash.of]
+  /// - [WiredashController.show]
   WiredashThemeData? _themeFromContext;
   WiredashThemeData? get themeFromContext => _themeFromContext;
 
