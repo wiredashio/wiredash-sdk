@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:wiredash/src/media_query_from_window.dart';
 
 /// Wrapper for widgets like [TextField] that expect,
 /// but don't have a [WidgetsApp] as parent.
@@ -68,7 +67,7 @@ class _NotAWidgetsAppState extends State<NotAWidgetsApp> {
     );
 
     // Inject a MediaQuery with information from the app window
-    child = MediaQueryFromWindow(
+    child = MediaQuery.fromWindow(
       child: child,
     );
 
