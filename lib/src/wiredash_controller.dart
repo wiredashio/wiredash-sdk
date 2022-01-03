@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/build_info/build_info.dart';
+import 'package:wiredash/src/common/utils/context_cache.dart';
 import 'package:wiredash/src/feedback/wiredash_model.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -86,41 +87,33 @@ class WiredashController {
   ///
   /// If a Wiredash feedback flow is already active (=a feedback sheet is open),
   /// does nothing.
-  void show([BuildContext? context]) {
+  void show({bool? inheritMaterialTheme, bool? inheritCupertinoTheme}) {
+    assert(
+      () {
+        if (inheritCupertinoTheme == true && inheritMaterialTheme == true) {
+          throw 'You can not enabled both, '
+              'inheritCupertinoTheme and inheritMaterialTheme';
+        }
+        return true;
+      }(),
+    );
     // reset theme at every call
     _model.themeFromContext = null;
+    final context = _model.services.wiredashWidget.showBuildContext;
     if (context != null) {
       // generate theme from current context
-      final materialTheme = Theme.of(context);
-      final cupertinoTheme = CupertinoTheme.of(context);
-      final materialColor = materialTheme.colorScheme.secondary;
-      final cupertinoColor = cupertinoTheme.primaryColor;
-
-      late Color color;
-      const defaultCupertinoTheme = CupertinoThemeData();
-      // When the primary cupertino color is set, use this one
-      if (defaultCupertinoTheme.primaryColor != cupertinoColor) {
-        color = cupertinoColor;
-      } else {
-        // always fallback to material color, which is more likely to be set
-        // in the flutter world
-        color = materialColor;
-      }
-
-      late Brightness brightness;
-      if (materialTheme.brightness == Brightness.dark ||
-          cupertinoTheme.brightness == Brightness.dark) {
-        // When one is dark, assume either of them is explicitly set
-        brightness = Brightness.dark;
-      } else {
-        // fallback to light
-        brightness = Brightness.light;
-      }
-
-      if (materialTheme != ThemeData.fallback()) {
+      if (inheritMaterialTheme == true) {
+        final materialTheme = Theme.of(context);
         _model.themeFromContext = WiredashThemeData.fromColor(
-          color: color,
-          brightness: brightness,
+          color: materialTheme.colorScheme.secondary,
+          brightness: materialTheme.brightness,
+        );
+      }
+      if (inheritCupertinoTheme == true) {
+        final cupertinoTheme = CupertinoTheme.of(context);
+        _model.themeFromContext = WiredashThemeData.fromColor(
+          color: cupertinoTheme.primaryColor,
+          brightness: cupertinoTheme.brightness ?? Brightness.light,
         );
       }
     }

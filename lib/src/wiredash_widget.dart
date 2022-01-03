@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/utils/context_cache.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/common/widgets/screencapture.dart';
 import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
@@ -121,7 +122,9 @@ class Wiredash extends StatefulWidget {
   static WiredashController? maybeOf(BuildContext context) {
     final state = context.findAncestorStateOfType<WiredashState>();
     if (state == null) return null;
-
+    // cache context in a short lived object like the widget
+    // it gets later retrieved by the `show()` method to read the theme
+    state.widget.showBuildContext = context;
     return WiredashController(state._services.wiredashModel);
   }
 
@@ -135,7 +138,13 @@ class Wiredash extends StatefulWidget {
   /// ```
   static WiredashController of(BuildContext context) {
     final state = context.findAncestorStateOfType<WiredashState>();
-    return WiredashController(state!._services.wiredashModel);
+    if (state == null) {
+      throw StateError('Could not find WiredashState in ancestors');
+    }
+    // cache context in a short lived object like the widget
+    // it gets later retrieved by the `show()` method to read the theme
+    state.widget.showBuildContext = context;
+    return WiredashController(state._services.wiredashModel);
   }
 }
 
@@ -201,8 +210,8 @@ class WiredashState extends State<Wiredash> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = widget.theme ??
-        _services.wiredashModel.themeFromContext ??
+    final theme = _services.wiredashModel.themeFromContext ??
+        widget.theme ??
         WiredashThemeData();
 
     // Assign app an key so it doesn't lose state when wrapped, unwrapped
