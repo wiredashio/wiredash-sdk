@@ -1,6 +1,6 @@
 # Release checklist
 
-- run `pana` and check score is 110/100
+- run `pana` and check score is 120/120
 - Bump version in `pubspec.yaml`
 - Make sure `prod` backend is used, not `dev`
 - Increment `wiredashSdkVersion` in `lib/src/version.dart` by `1` for patch releases, by `10` for minor releases
