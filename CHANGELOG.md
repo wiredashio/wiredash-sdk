@@ -3,6 +3,7 @@
 * Hide backdrop content in screenshot mode
 * [#165](https://github.com/wiredashio/wiredash-sdk/pull/165) Validate email address
 * [#166](https://github.com/wiredashio/wiredash-sdk/pull/166) Make email address optional. Set `WiredashFeedbackOptions(askForUserEmail: true)` to enable it
+* [#167](https://github.com/wiredashio/wiredash-sdk/pull/167) New `inheritMaterialTheme` and `inheritCupertinoTheme` properties for `Wiredash.of(context).show()` to inherit the theme
 
 ## 1.0.0-alpha.1 - A Whole New World
 * Completely rewritten UI layer
