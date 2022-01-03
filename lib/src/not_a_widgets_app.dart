@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:wiredash/src/media_query_from_window.dart';
 
 /// Wrapper for widgets like [TextField] that expect,
@@ -53,9 +53,9 @@ class _NotAWidgetsAppState extends State<NotAWidgetsApp> {
       child: Localizations(
         locale: widget.locale ?? window.locale,
         delegates: const [
-          DefaultMaterialLocalizations.delegate,
-          DefaultWidgetsLocalizations.delegate,
-          DefaultCupertinoLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
         ],
         child: child,
       ),
