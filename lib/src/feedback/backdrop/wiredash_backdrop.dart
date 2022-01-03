@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/feedback/backdrop/pull_to_close_detector.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
@@ -120,6 +121,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// Detect window size changes in [didChangeDependencies]
   MediaQueryData _mediaQueryData = const MediaQueryData();
+  WiredashThemeData _wiredashThemeData = WiredashThemeData();
 
   /// calculated positions for the different backdrop positions / states
   Rect _rectAppOutOfFocus = Rect.zero;
@@ -433,7 +435,17 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final oldMq = _mediaQueryData;
     final newMq = MediaQuery.of(context);
     _mediaQueryData = newMq;
+
+    final oldTheme = _wiredashThemeData;
+    final newTheme = context.theme;
+    _wiredashThemeData = newTheme;
+
+    // Reduce the number of rect calculations by explicitly checking if
+    // dependencies of _calculateRects changed.
     if (newMq.size != oldMq.size ||
+        oldTheme.horizontalPadding != newTheme.horizontalPadding ||
+        oldTheme.verticalPadding != newTheme.verticalPadding ||
+        oldTheme.maxContentWidth != newTheme.maxContentWidth ||
         // keyboard detection
         newMq.viewInsets != oldMq.viewInsets ||
         newMq.padding != oldMq.padding) {
