@@ -152,9 +152,11 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     return Positioned(
       top: 16,
       right: 0,
-      child: TronProgressIndicator(
-        totalSteps: 5,
-        currentStep: _getCurrentProgressStep(),
+      child: SafeArea(
+        child: TronProgressIndicator(
+          totalSteps: 5,
+          currentStep: _getCurrentProgressStep(),
+        ),
       ),
     );
   }
