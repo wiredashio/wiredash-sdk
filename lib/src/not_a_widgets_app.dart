@@ -23,18 +23,18 @@ class NotAWidgetsApp extends StatefulWidget {
 }
 
 class _NotAWidgetsAppState extends State<NotAWidgetsApp> {
-  OverlayEntry? entry;
+  OverlayEntry? _entry;
 
   @override
   void didUpdateWidget(covariant NotAWidgetsApp oldWidget) {
     super.didUpdateWidget(oldWidget);
-    entry?.markNeedsBuild();
+    _entry?.markNeedsBuild();
   }
 
   @override
   Widget build(BuildContext context) {
     // Overlay is required for text edit functions such as copy/paste on mobile
-    entry = OverlayEntry(
+    _entry = OverlayEntry(
       builder: (context) {
         // use a stateful widget as direct child or hot reload will not
         // work for that widget
@@ -42,7 +42,9 @@ class _NotAWidgetsAppState extends State<NotAWidgetsApp> {
       },
     );
 
-    Widget child = Overlay(initialEntries: [entry!]);
+    Widget child = Overlay(initialEntries: [_entry!]);
+    // Widget child = widget.child;
+    // return child;
 
     // Any Text requires a directionality
     child = Directionality(
@@ -58,12 +60,6 @@ class _NotAWidgetsAppState extends State<NotAWidgetsApp> {
         ],
         child: child,
       ),
-    );
-
-    // Both DefaultTextEditingShortcuts and DefaultTextEditingActions are
-    // required to make text edits like deletion of characters possible on macOS
-    child = DefaultTextEditingShortcuts(
-      child: child,
     );
 
     // Inject a MediaQuery with information from the app window

@@ -194,9 +194,11 @@ class ScrollBox extends StatefulWidget {
 class _ScrollBoxState extends State<ScrollBox> {
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: ThemeData(brightness: Brightness.light),
-      child: widget.child,
+    return DefaultTextEditingShortcuts(
+      child: Theme(
+        data: ThemeData(brightness: Brightness.light),
+        child: widget.child,
+      ),
     );
   }
 }
