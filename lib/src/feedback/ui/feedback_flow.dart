@@ -194,19 +194,9 @@ class ScrollBox extends StatefulWidget {
 class _ScrollBoxState extends State<ScrollBox> {
   @override
   Widget build(BuildContext context) {
-    final controller = StepInformation.of(context).innerScrollController;
     return Theme(
       data: ThemeData(brightness: Brightness.light),
-      child: Scrollbar(
-        interactive: false,
-        controller: controller,
-        isAlwaysShown: true,
-        child: SingleChildScrollView(
-          controller: controller,
-          padding: widget.padding,
-          child: widget.child,
-        ),
-      ),
+      child: widget.child,
     );
   }
 }
