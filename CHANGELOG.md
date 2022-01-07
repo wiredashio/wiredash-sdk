@@ -1,3 +1,9 @@
+## 1.0.0-alpha.3 - No Overlay for you
+* [#168](https://github.com/wiredashio/wiredash-sdk/pull/168) Fix responsive padding calculation on window resize
+* [#169](https://github.com/wiredashio/wiredash-sdk/pull/169) Don't wrap user app in `Overlay`
+* [#170](https://github.com/wiredashio/wiredash-sdk/pull/170) Fix dark theme on summary screen
+* [#171](https://github.com/wiredashio/wiredash-sdk/pull/171) Fix screenshot layout for devices with a notch
+
 ## 1.0.0-alpha.2 - Desktop improvements
 * [#164](https://github.com/wiredashio/wiredash-sdk/pull/164) Support for transparent apps macOS apps
 * Hide backdrop content in screenshot mode
