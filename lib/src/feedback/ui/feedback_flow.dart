@@ -12,7 +12,7 @@ import 'package:wiredash/src/feedback/ui/steps/step_3_screenshot_overview.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_5_email.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_6_submit.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_7_submitting.dart';
-import 'package:wiredash/src/not_a_widgets_app.dart';
+import 'package:wiredash/src/support/material_support_layer.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
 
 class WiredashFeedbackFlow extends StatefulWidget {
