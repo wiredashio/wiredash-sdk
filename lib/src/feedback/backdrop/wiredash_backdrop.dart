@@ -227,6 +227,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   void _calculateRects() {
     final wiredashPadding = widget.padding ?? EdgeInsets.zero;
     final Size screenSize = _mediaQueryData.size;
+    final mqPadding = _mediaQueryData.padding;
 
     // scale to show app in safeArea
     final centerScaleFactor = () {
@@ -271,7 +272,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final bool isKeyboardOpen = _mediaQueryData.viewInsets.bottom > 100;
 
     // center the navigation buttons
-    var preferredAppHeight = _mediaQueryData.size.height * 0.5;
+    double preferredAppHeight = _mediaQueryData.size.height * 0.5;
     if (!isKeyboardOpen) {
       preferredAppHeight -= minAppPeakHeight;
       preferredAppHeight -= buttonBarHeight / 2;
@@ -280,10 +281,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final preferredContentHeight =
         _mediaQueryData.size.height - preferredAppHeight;
 
-    final contentHeightWithButtons = math.max(
-      math.min(preferredContentHeight, maxContentAreaHeight),
-      minContentAreaHeight,
+    final contentHeightWithButtons = preferredContentHeight.clapWithin(
+      min: minContentAreaHeight,
+      max: maxContentAreaHeight,
     );
+
     // On super small screen (landscape phones) scale to 0 and
     // make 100% sure the appPeak is visible
     final double contentHeight =
@@ -306,7 +308,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     _rectAppOutOfFocus = Rect.fromLTWH(
       0,
-      contentHeight,
+      contentHeight - mqPadding.top / 2,
       screenSize.width * centerScaleFactor,
       screenSize.height * centerScaleFactor,
     )
@@ -325,8 +327,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       buttonBarHeight,
     );
 
-    _rectAppFillsScreen =
+    final rectFullscreen =
         Rect.fromPoints(Offset.zero, screenSize.bottomRight(Offset.zero));
+    _rectAppFillsScreen = Rect.fromLTRB(
+      rectFullscreen.left + mqPadding.left,
+      0,
+      rectFullscreen.right - mqPadding.right,
+      rectFullscreen.bottom + mqPadding.bottom - mqPadding.top / 2,
+    );
   }
 
   /// Sets the correct animation for the current [_backdropStatus]
@@ -859,6 +867,15 @@ extension on Rect {
     return padding.deflateRect(this);
   }
 
+  Rect copyWith({double? left, double? top, double? right, double? bottom}) {
+    return Rect.fromLTRB(
+      left ?? this.left,
+      top ?? this.top,
+      right ?? this.right,
+      bottom ?? this.bottom,
+    );
+  }
+
   Rect centerHorizontally({required double maxWidth, double minPadding = 0.0}) {
     double padding = (maxWidth - width) / 2;
     if (padding < minPadding) {
@@ -870,5 +887,11 @@ extension on Rect {
       maxWidth - padding * 2,
       height,
     );
+  }
+}
+
+extension on double {
+  double clapWithin({required double min, required double max}) {
+    return clamp(min, max) as double;
   }
 }
