@@ -12,6 +12,8 @@ import 'package:wiredash/src/feedback/ui/steps/step_3_screenshot_overview.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_5_email.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_6_submit.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_7_submitting.dart';
+import 'package:wiredash/src/support/material_support_layer.dart';
+import 'package:wiredash/src/wiredash_model_provider.dart';
 
 class WiredashFeedbackFlow extends StatefulWidget {
   const WiredashFeedbackFlow({Key? key}) : super(key: key);
@@ -124,14 +126,20 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       onTap: () {
         Focus.maybeOf(context)?.unfocus();
       },
-      child: Stack(
-        children: [
-          Form(
-            key: feedbackModel.stepFormKey,
-            child: larryPageView,
+      child: MaterialSupportLayer(
+        locale: context
+            .wiredashModel.services.wiredashWidget.options?.currentLocale,
+        child: DefaultTextEditingShortcuts(
+          child: Stack(
+            children: [
+              Form(
+                key: feedbackModel.stepFormKey,
+                child: larryPageView,
+              ),
+              _buildProgressIndicator(),
+            ],
           ),
-          _buildProgressIndicator(),
-        ],
+        ),
       ),
     );
   }

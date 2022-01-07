@@ -27,7 +27,7 @@ class _Step6SubmitState extends State<Step6Submit> {
               style: context.theme.titleTextStyle,
               textAlign: TextAlign.left,
             ),
-            Expanded(
+            Flexible(
               child: ScrollBox(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

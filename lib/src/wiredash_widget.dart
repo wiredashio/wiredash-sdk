@@ -11,7 +11,7 @@ import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
-import 'package:wiredash/src/not_a_widgets_app.dart';
+import 'package:wiredash/src/support/not_a_widgets_app.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -241,7 +241,6 @@ class WiredashState extends State<Wiredash> {
     );
 
     final Widget backdrop = NotAWidgetsApp(
-      locale: widget.options?.currentLocale,
       textDirection: widget.options?.textDirection,
       child: WiredashLocalizations(
         child: WiredashTheme(
