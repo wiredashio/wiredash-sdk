@@ -269,7 +269,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     const double minAppPeakHeight = 56;
 
     final double buttonBarHeight = context.theme.buttonBarHeight;
-    final bool isKeyboardOpen = _mediaQueryData.viewInsets.bottom > 100;
 
     // center the navigation buttons
     double preferredAppHeight = _mediaQueryData.size.height * 0.5;
@@ -864,15 +863,6 @@ class _KeepAppAliveState extends State<_KeepAppAlive>
 extension on Rect {
   Rect removePadding(EdgeInsets padding) {
     return padding.deflateRect(this);
-  }
-
-  Rect copyWith({double? left, double? top, double? right, double? bottom}) {
-    return Rect.fromLTRB(
-      left ?? this.left,
-      top ?? this.top,
-      right ?? this.right,
-      bottom ?? this.bottom,
-    );
   }
 
   Rect centerHorizontally({required double maxWidth, double minPadding = 0.0}) {
