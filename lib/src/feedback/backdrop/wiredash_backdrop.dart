@@ -273,11 +273,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     // center the navigation buttons
     double preferredAppHeight = _mediaQueryData.size.height * 0.5;
-    if (!isKeyboardOpen) {
-      preferredAppHeight -= minAppPeakHeight;
-      preferredAppHeight -= buttonBarHeight / 2;
-      preferredAppHeight -= wiredashPadding.top / 2;
-    }
+    preferredAppHeight -= minAppPeakHeight;
+    preferredAppHeight -= buttonBarHeight / 2;
+    preferredAppHeight -= wiredashPadding.top / 2;
+
     final preferredContentHeight =
         _mediaQueryData.size.height - preferredAppHeight;
 
