@@ -29,12 +29,8 @@ class _Step6SubmitState extends State<Step6Submit> {
             ),
             Flexible(
               child: ScrollBox(
-                child: Theme(
-                  data: Theme.of(context).copyWith(
-                    listTileTheme: ListTileThemeData(
-                      textColor: context.theme.secondaryTextColor,
-                    ),
-                  ),
+                child: ListTileTheme(
+                  textColor: context.theme.secondaryTextColor,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
