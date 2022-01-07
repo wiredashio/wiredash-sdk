@@ -229,25 +229,23 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final Size screenSize = _mediaQueryData.size;
     final mqPadding = _mediaQueryData.padding;
 
+    const centerPadding = EdgeInsets.symmetric(vertical: 20);
     // scale to show app in safeArea
     final centerScaleFactor = () {
       // center
-      final minContentWidthPadding = context.theme.horizontalPadding * 2;
       final maxContentWidth = screenSize.width -
           math.max(
             wiredashPadding.horizontal,
-            math.max(
-              _mediaQueryData.viewPadding.horizontal,
-              minContentWidthPadding,
-            ),
-          );
+            _mediaQueryData.viewPadding.horizontal,
+          ) -
+          centerPadding.horizontal;
 
       final maxContentHeight = screenSize.height -
           math.max(
-            0,
-            // wiredashPadding.vertical,
+            wiredashPadding.vertical,
             _mediaQueryData.viewPadding.vertical,
-          );
+          ) -
+          centerPadding.vertical;
 
       return math.min(
         maxContentWidth / screenSize.width,
@@ -255,13 +253,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       );
     }();
 
-    _rectAppCentered = Rect.fromCenter(
-      center: screenSize.center(Offset.zero) +
-          _mediaQueryData.viewInsets.topLeft / 2 +
-          wiredashPadding.topLeft / 2,
-      width: screenSize.width * centerScaleFactor,
-      height: screenSize.height * centerScaleFactor,
-    );
+    _rectAppCentered = Rect.fromLTWH(
+      (screenSize.width - (screenSize.width * centerScaleFactor)) / 2,
+      math.max(wiredashPadding.top, mqPadding.top) + centerPadding.top,
+      screenSize.width * centerScaleFactor,
+      screenSize.height * centerScaleFactor,
+    ).translate(wiredashPadding.left / 2 - wiredashPadding.right / 2, 0);
 
     // iPhone SE is 320 width
     const double minContentAreaHeight = 320.0;
@@ -306,17 +303,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     _rectAppOutOfFocus = Rect.fromLTWH(
       0,
-      contentHeight - mqPadding.top / 2,
+      _rectContentArea.bottom + buttonBarHeight,
       screenSize.width * centerScaleFactor,
       screenSize.height * centerScaleFactor,
     )
-        .removePadding(
-          wiredashPadding.copyWith(bottom: 0, top: 0),
-        )
         .centerHorizontally(
           maxWidth: screenSize.width - wiredashPadding.horizontal,
           minPadding: context.theme.horizontalPadding,
-        );
+        )
+        .translate(wiredashPadding.left, 0);
 
     _rectNavigationButtons = Rect.fromLTWH(
       _rectAppOutOfFocus.left,
@@ -331,7 +326,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       rectFullscreen.left + mqPadding.left,
       0,
       rectFullscreen.right - mqPadding.right,
-      rectFullscreen.bottom + mqPadding.bottom - mqPadding.top / 2,
+      rectFullscreen.bottom + mqPadding.bottom - mqPadding.top,
     );
   }
 
@@ -536,7 +531,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       child: DecoratedBox(
         decoration: _backgroundDecoration(),
         child: Stack(
-          children: stackChildren,
+          children: [
+            ..._debugRects(),
+            ...stackChildren,
+          ],
         ),
       ),
     );
@@ -594,6 +592,76 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         ],
       ),
     );
+  }
+
+  /// Returns the rects as colored widgets on screen
+  List<Widget> _debugRects() {
+    bool debug = false;
+    assert(() {
+      // enable debugging here
+      debug = false;
+      return true;
+    }());
+
+    if (!debug) return [];
+    return [
+      Positioned.fromRect(
+        rect: _rectContentArea,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.yellow.withOpacity(0.5),
+            ),
+          ),
+        ),
+      ),
+      Positioned.fromRect(
+        rect: _rectAppOutOfFocus,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              width: 3,
+              color: Colors.blue.withOpacity(0.5),
+            ),
+          ),
+        ),
+      ),
+      Positioned(
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: _mediaQueryData.size.height - _mediaQueryData.padding.top,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.orange.withOpacity(0.1),
+            border: Border.all(
+              width: 1,
+              color: Colors.orange,
+            ),
+          ),
+        ),
+      ),
+      Positioned.fromRect(
+        rect: _rectAppCentered,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.red.withOpacity(0.5),
+            ),
+          ),
+        ),
+      ),
+      Positioned.fromRect(
+        rect: _rectNavigationButtons,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.green.withOpacity(0.5),
+            ),
+          ),
+        ),
+      ),
+    ];
   }
 
   Widget _buildNavigationButtons() {
@@ -809,14 +877,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         }
 
         // the difference of height between open and closed rect
-        final heightDifference =
-            _rectAppFillsScreen.height - _transformAnimation.value!.height;
-        final yTranslation = _pullAppYController.value +
-            _transformAnimation.value!.top -
-            heightDifference;
+        final yTranslation =
+            _pullAppYController.value + _transformAnimation.value!.top;
         // The scale the app should be scaled to, compared to fullscreen
         final appScale =
-            (_transformAnimation.value!.width) / _rectAppFillsScreen.width;
+            _transformAnimation.value!.width / _rectAppFillsScreen.width;
 
         // ignore: join_return_with_assignment
         app = Transform.translate(
@@ -826,7 +891,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           ),
           child: Transform.scale(
             scale: appScale,
-            alignment: Alignment.bottomCenter,
+            alignment: Alignment.topCenter,
             child: app,
           ),
         );
