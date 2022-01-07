@@ -241,7 +241,6 @@ class WiredashState extends State<Wiredash> {
     );
 
     final Widget backdrop = NotAWidgetsApp(
-      locale: widget.options?.currentLocale,
       textDirection: widget.options?.textDirection,
       child: WiredashLocalizations(
         child: WiredashTheme(

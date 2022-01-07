@@ -10,6 +10,7 @@ import 'package:wiredash/src/wiredash_widget.dart';
 class WiredashModel with ChangeNotifier {
   WiredashModel(this.services);
 
+  // TODO make private?
   final WiredashServices services;
 
   CustomizableWiredashMetaData? _metaData;
