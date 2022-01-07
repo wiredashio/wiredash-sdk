@@ -122,22 +122,17 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       },
     );
 
-    return GestureDetector(
-      onTap: () {
-        Focus.maybeOf(context)?.unfocus();
-      },
-      child: MaterialSupportLayer(
-        locale: context
-            .wiredashModel.services.wiredashWidget.options?.currentLocale,
-        child: Stack(
-          children: [
-            Form(
-              key: feedbackModel.stepFormKey,
-              child: larryPageView,
-            ),
-            _buildProgressIndicator(),
-          ],
-        ),
+    return MaterialSupportLayer(
+      locale:
+          context.wiredashModel.services.wiredashWidget.options?.currentLocale,
+      child: Stack(
+        children: [
+          Form(
+            key: feedbackModel.stepFormKey,
+            child: larryPageView,
+          ),
+          _buildProgressIndicator(),
+        ],
       ),
     );
   }

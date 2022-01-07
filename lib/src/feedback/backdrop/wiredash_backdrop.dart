@@ -522,10 +522,16 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       navButtons: _buildNavigationButtons(),
     );
 
-    return DecoratedBox(
-      decoration: _backgroundDecoration(),
-      child: Stack(
-        children: stackChildren,
+    return GestureDetector(
+      onTap: () {
+        // Close soft keyboard
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: DecoratedBox(
+        decoration: _backgroundDecoration(),
+        child: Stack(
+          children: stackChildren,
+        ),
       ),
     );
   }
