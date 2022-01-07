@@ -9,28 +9,6 @@ import 'package:wiredash/src/feedback/backdrop/pull_to_close_detector.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
 
-enum WiredashBackdropStatus {
-  closed,
-
-  /// The app is transitioning from [open] to [closing]
-  closing,
-
-  /// The app is transitioning from [closing] to [open]
-  opening,
-
-  /// the app is pinned to the bottom, partially hidden and non-interactive
-  open,
-
-  /// The app is transitioning from [open] to [centered]
-  openingCentered,
-
-  /// The app is transitioning from [centered] to [open]
-  closingCentered,
-
-  /// The app in floating in the center for screenshots
-  centered,
-}
-
 /// The Wiredash UI behind the app
 class WiredashBackdrop extends StatefulWidget {
   const WiredashBackdrop({
@@ -54,47 +32,6 @@ class WiredashBackdrop extends StatefulWidget {
   State<WiredashBackdrop> createState() => _WiredashBackdropState();
 
   static const Duration animationDuration = Duration(milliseconds: 500);
-}
-
-class BackdropController extends ChangeNotifier {
-  _WiredashBackdropState? _state;
-  WiredashBackdropStatus _backdropStatus = WiredashBackdropStatus.closed;
-
-  bool get isWiredashActive => _backdropStatus != WiredashBackdropStatus.closed;
-
-  bool get isAppInteractive => _isAppInteractive;
-  bool _isAppInteractive = false;
-
-  Animation<Rect?> get appPosition => _state!._transformAnimation;
-
-  WiredashBackdropStatus get backdropStatus => _backdropStatus;
-
-  set backdropStatus(WiredashBackdropStatus value) {
-    _backdropStatus = value;
-    notifyListeners();
-  }
-
-  Future<void> animateToOpen() async {
-    _isAppInteractive = false;
-    notifyListeners();
-
-    await _state!._animateToOpen();
-    notifyListeners();
-  }
-
-  Future<void> animateToCentered() async {
-    await _state!._animateToCentered();
-
-    _isAppInteractive = true;
-    notifyListeners();
-  }
-
-  Future<void> animateToClosed() async {
-    await _state!._animateToClosed();
-
-    _isAppInteractive = true;
-    notifyListeners();
-  }
 }
 
 class _WiredashBackdropState extends State<WiredashBackdrop>
@@ -158,51 +95,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     _animCurves();
   }
 
-  /// switch to lame linear curves that match the finger location exactly
-  void _pullCurves() {
-    _driverAnimation.curve = Curves.linear;
-  }
-
-  /// switch to cool bouncy curves
-  void _animCurves() {
-    _driverAnimation.curve = Curves.easeOutCubic;
-  }
-
   @override
   void dispose() {
     _backdropAnimationController.dispose();
     super.dispose();
-  }
-
-  Future<void> _animateToOpen() async {
-    if (_backdropStatus == WiredashBackdropStatus.closed) {
-      _backdropStatus = WiredashBackdropStatus.opening;
-    } else if (_backdropStatus == WiredashBackdropStatus.centered) {
-      _backdropStatus = WiredashBackdropStatus.closingCentered;
-    } else {
-      // no need for animating, we're already in a desired state
-      return;
-    }
-    _swapAnimation();
-
-    await _backdropAnimationController.forward();
-  }
-
-  Future<void> _animateToCentered() async {
-    _backdropStatus = WiredashBackdropStatus.openingCentered;
-    _swapAnimation();
-
-    await _backdropAnimationController.forward();
-  }
-
-  Future<void> _animateToClosed() async {
-    if (_backdropStatus == WiredashBackdropStatus.closed) {
-      return;
-    }
-    _backdropStatus = WiredashBackdropStatus.closing;
-    _swapAnimation();
-
-    await _backdropAnimationController.forward();
   }
 
   @override
@@ -223,11 +119,117 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final oldMq = _mediaQueryData;
+    final newMq = MediaQuery.of(context);
+    _mediaQueryData = newMq;
+
+    final oldTheme = _wiredashThemeData;
+    final newTheme = context.theme;
+    _wiredashThemeData = newTheme;
+
+    // Reduce the number of rect calculations by explicitly checking if
+    // dependencies of _calculateRects changed.
+    if (newMq.size != oldMq.size ||
+        oldTheme.horizontalPadding != newTheme.horizontalPadding ||
+        oldTheme.verticalPadding != newTheme.verticalPadding ||
+        oldTheme.maxContentWidth != newTheme.maxContentWidth ||
+        // keyboard detection
+        newMq.viewInsets != oldMq.viewInsets ||
+        newMq.padding != oldMq.padding) {
+      _calculateRects();
+      _swapAnimation();
+    }
+  }
+
+  @override
+  void didUpdateWidget(WiredashBackdrop oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller._state = null;
+      oldWidget.controller.removeListener(_markAsDirty);
+      widget.controller._state = this;
+      widget.controller.addListener(_markAsDirty);
+    }
+    if (oldWidget.padding != widget.padding) {
+      _calculateRects();
+      _swapAnimation();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Widget child = widget.child;
+
+    if (_backdropStatus == WiredashBackdropStatus.closed) {
+      // Wiredash is closed, show the app without being wrapped in Transforms
+      return child;
+    }
+
+    final app = Focus(
+      debugLabel: 'wiredash app wrapper',
+      canRequestFocus: widget.controller._isAppInteractive,
+      // Users would be unable to leave the app once it got focus
+      skipTraversal: true,
+      child: _KeepAppAlive(
+        child: child,
+      ),
+    );
+
+    final content = Positioned.fromRect(
+      rect: _rectContentArea,
+      child: MediaQuery(
+        data: _mediaQueryData.removePadding(removeBottom: true),
+        child: Focus(
+          debugLabel: 'wiredash backdrop content',
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: widget.controller.backdropStatus ==
+                        WiredashBackdropStatus.centered ||
+                    widget.controller.backdropStatus ==
+                        WiredashBackdropStatus.openingCentered
+                ? 0.0
+                : 1.0,
+            child: const WiredashFeedbackFlow(),
+          ),
+        ),
+      ),
+    );
+
+    final stackChildren = _orderStackChildren(
+      app: _buildAppPositioningAnimation(
+        child: _buildAppFrame(
+          child: app,
+        ),
+      ),
+      content: content,
+      navButtons: _buildNavigationButtons(),
+    );
+
+    return GestureDetector(
+      onTap: () {
+        // Close soft keyboard
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: DecoratedBox(
+        decoration: _backgroundDecoration(),
+        child: Stack(
+          children: [
+            ..._debugRects(),
+            ...stackChildren,
+          ],
+        ),
+      ),
+    );
+  }
+
   /// (re-)calculates the rects for the different states
   void _calculateRects() {
     final wiredashPadding = widget.padding ?? EdgeInsets.zero;
-    final Size screenSize = _mediaQueryData.size;
     final mqPadding = _mediaQueryData.padding;
+    final Size screenSize = _mediaQueryData.size;
 
     const centerPadding = EdgeInsets.symmetric(vertical: 20);
     // scale to show app in safeArea
@@ -330,216 +332,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
   }
 
-  /// Sets the correct animation for the current [_backdropStatus]
-  void _swapAnimation() {
-    _backdropAnimationController.reset();
-    switch (_backdropStatus) {
-      case WiredashBackdropStatus.open:
-        _transformAnimation =
-            RectTween(begin: _rectAppOutOfFocus, end: _rectAppOutOfFocus)
-                .animate(_driverAnimation);
-        _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(20),
-          end: BorderRadius.circular(20),
-        ).animate(_driverAnimation);
-        break;
-
-      case WiredashBackdropStatus.closed:
-        _transformAnimation =
-            RectTween(begin: _rectAppFillsScreen, end: _rectAppFillsScreen)
-                .animate(_driverAnimation);
-        _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(0),
-          end: BorderRadius.circular(0),
-        ).animate(_driverAnimation);
-        break;
-
-      case WiredashBackdropStatus.centered:
-        _transformAnimation =
-            RectTween(begin: _rectAppCentered, end: _rectAppCentered)
-                .animate(_driverAnimation);
-        _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(20),
-          end: BorderRadius.circular(20),
-        ).animate(_driverAnimation);
-        break;
-
-      case WiredashBackdropStatus.opening:
-        _transformAnimation =
-            RectTween(begin: _rectAppFillsScreen, end: _rectAppOutOfFocus)
-                .animate(_driverAnimation);
-        _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(0),
-          end: BorderRadius.circular(20),
-        ).animate(_driverAnimation);
-        break;
-
-      case WiredashBackdropStatus.closing:
-        _transformAnimation =
-            RectTween(begin: _rectAppOutOfFocus, end: _rectAppFillsScreen)
-                .animate(_driverAnimation);
-        _backdropAnimationController.value = 0.0;
-        _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(20),
-          end: BorderRadius.circular(0),
-        ).animate(_driverAnimation);
-        break;
-
-      case WiredashBackdropStatus.openingCentered:
-        _transformAnimation =
-            RectTween(begin: _rectAppOutOfFocus, end: _rectAppCentered)
-                .animate(_driverAnimation);
-        _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(20),
-          end: BorderRadius.circular(20),
-        ).animate(_driverAnimation);
-        break;
-
-      case WiredashBackdropStatus.closingCentered:
-        _transformAnimation =
-            RectTween(begin: _rectAppCentered, end: _rectAppOutOfFocus)
-                .animate(_driverAnimation);
-        _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(20),
-          end: BorderRadius.circular(20),
-        ).animate(_driverAnimation);
-        break;
-    }
-  }
-
-  void _animControllerStatusListener(AnimationStatus status) {
-    if (status != AnimationStatus.completed) {
-      return;
-    }
-    if (_pulling) {
-      return;
-    }
-    setState(() {
-      if (_backdropStatus == WiredashBackdropStatus.opening) {
-        _backdropStatus = WiredashBackdropStatus.open;
-      }
-      if (_backdropStatus == WiredashBackdropStatus.openingCentered) {
-        _backdropStatus = WiredashBackdropStatus.centered;
-      }
-      if (_backdropStatus == WiredashBackdropStatus.closingCentered) {
-        _backdropStatus = WiredashBackdropStatus.open;
-      }
-      if (_backdropStatus == WiredashBackdropStatus.closing) {
-        _backdropStatus = WiredashBackdropStatus.closed;
-      }
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final oldMq = _mediaQueryData;
-    final newMq = MediaQuery.of(context);
-    _mediaQueryData = newMq;
-
-    final oldTheme = _wiredashThemeData;
-    final newTheme = context.theme;
-    _wiredashThemeData = newTheme;
-
-    // Reduce the number of rect calculations by explicitly checking if
-    // dependencies of _calculateRects changed.
-    if (newMq.size != oldMq.size ||
-        oldTheme.horizontalPadding != newTheme.horizontalPadding ||
-        oldTheme.verticalPadding != newTheme.verticalPadding ||
-        oldTheme.maxContentWidth != newTheme.maxContentWidth ||
-        // keyboard detection
-        newMq.viewInsets != oldMq.viewInsets ||
-        newMq.padding != oldMq.padding) {
-      _calculateRects();
-      _swapAnimation();
-    }
-  }
-
-  @override
-  void didUpdateWidget(WiredashBackdrop oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller) {
-      oldWidget.controller._state = null;
-      oldWidget.controller.removeListener(_markAsDirty);
-      widget.controller._state = this;
-      widget.controller.addListener(_markAsDirty);
-    }
-    if (oldWidget.padding != widget.padding) {
-      _calculateRects();
-      _swapAnimation();
-    }
-  }
-
-  void _markAsDirty() {
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Widget app = widget.child;
-
-    if (_backdropStatus == WiredashBackdropStatus.closed) {
-      // Wiredash is closed, show the app without being wrapped in Transforms
-      return app;
-    }
-
-    app = Focus(
-      debugLabel: 'wiredash app wrapper',
-      canRequestFocus: widget.controller._isAppInteractive,
-      // Users would be unable to leave the app once it got focus
-      skipTraversal: true,
-      child: _KeepAppAlive(
-        child: app,
-      ),
-    );
-
-    final content = Positioned.fromRect(
-      rect: _rectContentArea,
-      child: MediaQuery(
-        data: _mediaQueryData.removePadding(removeBottom: true),
-        child: Focus(
-          debugLabel: 'wiredash backdrop content',
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 300),
-            opacity: widget.controller.backdropStatus ==
-                        WiredashBackdropStatus.centered ||
-                    widget.controller.backdropStatus ==
-                        WiredashBackdropStatus.openingCentered
-                ? 0.0
-                : 1.0,
-            child: const WiredashFeedbackFlow(),
-          ),
-        ),
-      ),
-    );
-
-    final stackChildren = _orderStackChildren(
-      app: _buildAppPositioningAnimation(
-        child: _buildAppFrame(
-          child: app,
-        ),
-      ),
-      content: content,
-      navButtons: _buildNavigationButtons(),
-    );
-
-    return GestureDetector(
-      onTap: () {
-        // Close soft keyboard
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: DecoratedBox(
-        decoration: _backgroundDecoration(),
-        child: Stack(
-          children: [
-            ..._debugRects(),
-            ...stackChildren,
-          ],
-        ),
-      ),
-    );
-  }
-
   /// Reorders the stack items (z-index) depending on the backdrop state
   ///
   /// Keeps [navButtons] at the very top when possible. Moves the [app] to the
@@ -597,11 +389,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   /// Returns the rects as colored widgets on screen
   List<Widget> _debugRects() {
     bool debug = false;
-    assert(() {
-      // enable debugging here
-      debug = false;
-      return true;
-    }());
+    assert(
+      () {
+        // enable debugging here
+        debug = false;
+        return true;
+      }(),
+    );
 
     if (!debug) return [];
     return [
@@ -635,7 +429,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           decoration: BoxDecoration(
             color: Colors.orange.withOpacity(0.1),
             border: Border.all(
-              width: 1,
               color: Colors.orange,
             ),
           ),
@@ -791,6 +584,16 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
   }
 
+  /// switch to lame linear curves that match the finger location exactly
+  void _pullCurves() {
+    _driverAnimation.curve = Curves.linear;
+  }
+
+  /// switch to cool bouncy curves
+  void _animCurves() {
+    _driverAnimation.curve = Curves.easeOutCubic;
+  }
+
   /// Animates the app from fullscreen to inline in the list
   Widget _buildAppPositioningAnimation({required Widget child}) {
     return AnimatedBuilder(
@@ -901,6 +704,205 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       child: child,
     );
   }
+
+  Future<void> _animateToOpen() async {
+    if (_backdropStatus == WiredashBackdropStatus.closed) {
+      _backdropStatus = WiredashBackdropStatus.opening;
+    } else if (_backdropStatus == WiredashBackdropStatus.centered) {
+      _backdropStatus = WiredashBackdropStatus.closingCentered;
+    } else {
+      // no need for animating, we're already in a desired state
+      return;
+    }
+    _swapAnimation();
+
+    await _backdropAnimationController.forward();
+  }
+
+  Future<void> _animateToCentered() async {
+    _backdropStatus = WiredashBackdropStatus.openingCentered;
+    _swapAnimation();
+
+    await _backdropAnimationController.forward();
+  }
+
+  Future<void> _animateToClosed() async {
+    if (_backdropStatus == WiredashBackdropStatus.closed) {
+      return;
+    }
+    _backdropStatus = WiredashBackdropStatus.closing;
+    _swapAnimation();
+
+    await _backdropAnimationController.forward();
+  }
+
+  /// Sets the correct animation for the current [_backdropStatus]
+  void _swapAnimation() {
+    _backdropAnimationController.reset();
+    switch (_backdropStatus) {
+      case WiredashBackdropStatus.open:
+        _transformAnimation =
+            RectTween(begin: _rectAppOutOfFocus, end: _rectAppOutOfFocus)
+                .animate(_driverAnimation);
+        _cornerRadiusAnimation = BorderRadiusTween(
+          begin: BorderRadius.circular(20),
+          end: BorderRadius.circular(20),
+        ).animate(_driverAnimation);
+        break;
+
+      case WiredashBackdropStatus.closed:
+        _transformAnimation =
+            RectTween(begin: _rectAppFillsScreen, end: _rectAppFillsScreen)
+                .animate(_driverAnimation);
+        _cornerRadiusAnimation = BorderRadiusTween(
+          begin: BorderRadius.circular(0),
+          end: BorderRadius.circular(0),
+        ).animate(_driverAnimation);
+        break;
+
+      case WiredashBackdropStatus.centered:
+        _transformAnimation =
+            RectTween(begin: _rectAppCentered, end: _rectAppCentered)
+                .animate(_driverAnimation);
+        _cornerRadiusAnimation = BorderRadiusTween(
+          begin: BorderRadius.circular(20),
+          end: BorderRadius.circular(20),
+        ).animate(_driverAnimation);
+        break;
+
+      case WiredashBackdropStatus.opening:
+        _transformAnimation =
+            RectTween(begin: _rectAppFillsScreen, end: _rectAppOutOfFocus)
+                .animate(_driverAnimation);
+        _cornerRadiusAnimation = BorderRadiusTween(
+          begin: BorderRadius.circular(0),
+          end: BorderRadius.circular(20),
+        ).animate(_driverAnimation);
+        break;
+
+      case WiredashBackdropStatus.closing:
+        _transformAnimation =
+            RectTween(begin: _rectAppOutOfFocus, end: _rectAppFillsScreen)
+                .animate(_driverAnimation);
+        _backdropAnimationController.value = 0.0;
+        _cornerRadiusAnimation = BorderRadiusTween(
+          begin: BorderRadius.circular(20),
+          end: BorderRadius.circular(0),
+        ).animate(_driverAnimation);
+        break;
+
+      case WiredashBackdropStatus.openingCentered:
+        _transformAnimation =
+            RectTween(begin: _rectAppOutOfFocus, end: _rectAppCentered)
+                .animate(_driverAnimation);
+        _cornerRadiusAnimation = BorderRadiusTween(
+          begin: BorderRadius.circular(20),
+          end: BorderRadius.circular(20),
+        ).animate(_driverAnimation);
+        break;
+
+      case WiredashBackdropStatus.closingCentered:
+        _transformAnimation =
+            RectTween(begin: _rectAppCentered, end: _rectAppOutOfFocus)
+                .animate(_driverAnimation);
+        _cornerRadiusAnimation = BorderRadiusTween(
+          begin: BorderRadius.circular(20),
+          end: BorderRadius.circular(20),
+        ).animate(_driverAnimation);
+        break;
+    }
+  }
+
+  void _animControllerStatusListener(AnimationStatus status) {
+    if (status != AnimationStatus.completed) {
+      return;
+    }
+    if (_pulling) {
+      return;
+    }
+    setState(() {
+      if (_backdropStatus == WiredashBackdropStatus.opening) {
+        _backdropStatus = WiredashBackdropStatus.open;
+      }
+      if (_backdropStatus == WiredashBackdropStatus.openingCentered) {
+        _backdropStatus = WiredashBackdropStatus.centered;
+      }
+      if (_backdropStatus == WiredashBackdropStatus.closingCentered) {
+        _backdropStatus = WiredashBackdropStatus.open;
+      }
+      if (_backdropStatus == WiredashBackdropStatus.closing) {
+        _backdropStatus = WiredashBackdropStatus.closed;
+      }
+    });
+  }
+
+  void _markAsDirty() {
+    setState(() {});
+  }
+}
+
+/// Controls where the app is located in [WiredashBackdrop]
+class BackdropController extends ChangeNotifier {
+  _WiredashBackdropState? _state;
+  WiredashBackdropStatus _backdropStatus = WiredashBackdropStatus.closed;
+
+  bool get isWiredashActive => _backdropStatus != WiredashBackdropStatus.closed;
+
+  bool get isAppInteractive => _isAppInteractive;
+  bool _isAppInteractive = false;
+
+  Animation<Rect?> get appPosition => _state!._transformAnimation;
+
+  WiredashBackdropStatus get backdropStatus => _backdropStatus;
+
+  set backdropStatus(WiredashBackdropStatus value) {
+    _backdropStatus = value;
+    notifyListeners();
+  }
+
+  Future<void> animateToOpen() async {
+    _isAppInteractive = false;
+    notifyListeners();
+
+    await _state!._animateToOpen();
+    notifyListeners();
+  }
+
+  Future<void> animateToCentered() async {
+    await _state!._animateToCentered();
+
+    _isAppInteractive = true;
+    notifyListeners();
+  }
+
+  Future<void> animateToClosed() async {
+    await _state!._animateToClosed();
+
+    _isAppInteractive = true;
+    notifyListeners();
+  }
+}
+
+enum WiredashBackdropStatus {
+  closed,
+
+  /// The app is transitioning from [open] to [closing]
+  closing,
+
+  /// The app is transitioning from [closing] to [open]
+  opening,
+
+  /// the app is pinned to the bottom, partially hidden and non-interactive
+  open,
+
+  /// The app is transitioning from [open] to [centered]
+  openingCentered,
+
+  /// The app is transitioning from [centered] to [open]
+  closingCentered,
+
+  /// The app in floating in the center for screenshots
+  centered,
 }
 
 /// Keeps the app alive, even when not in viewport
