@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 
 /// Provides parent Widgets that are required by material widgets that are
 /// not wrapped into an [MaterialApp]
@@ -55,11 +56,26 @@ class _MaterialSupportLayerState extends State<MaterialSupportLayer> {
       child: child,
     );
 
+    final wiredashTheme = context.theme;
+    final materialTheme = wiredashTheme.brightness == Brightness.dark
+        ? ThemeData.dark()
+        : ThemeData.light();
+    child = Theme(
+      data: materialTheme,
+      child: child,
+    );
+
     // Make Wiredash a Material widget to support TextFields, etc.
     child = Material(
       color: Colors.transparent,
       child: child,
     );
+
+    // allow text editing (i.e. delete on macos)
+    child = DefaultTextEditingShortcuts(
+      child: child,
+    );
+
     return child;
   }
 }

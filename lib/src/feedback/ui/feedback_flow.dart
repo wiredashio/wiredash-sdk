@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
@@ -129,16 +132,14 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       child: MaterialSupportLayer(
         locale: context
             .wiredashModel.services.wiredashWidget.options?.currentLocale,
-        child: DefaultTextEditingShortcuts(
-          child: Stack(
-            children: [
-              Form(
-                key: feedbackModel.stepFormKey,
-                child: larryPageView,
-              ),
-              _buildProgressIndicator(),
-            ],
-          ),
+        child: Stack(
+          children: [
+            Form(
+              key: feedbackModel.stepFormKey,
+              child: larryPageView,
+            ),
+            _buildProgressIndicator(),
+          ],
         ),
       ),
     );
@@ -203,19 +204,24 @@ class _ScrollBoxState extends State<ScrollBox> {
   @override
   Widget build(BuildContext context) {
     final controller = StepInformation.of(context).innerScrollController;
-    return Theme(
-      data: ThemeData(brightness: Brightness.light),
-      child: Scrollbar(
+    Widget child = SingleChildScrollView(
+      controller: controller,
+      padding: widget.padding,
+      child: widget.child,
+    );
+    final targetPlatform = Theme.of(context).platform;
+    final bool isTouchInput = targetPlatform == TargetPlatform.iOS ||
+        targetPlatform == TargetPlatform.android;
+    if (isTouchInput) {
+      child = Scrollbar(
         interactive: false,
         controller: controller,
         isAlwaysShown: true,
-        child: SingleChildScrollView(
-          controller: controller,
-          padding: widget.padding,
-          child: widget.child,
-        ),
-      ),
-    );
+        child: child,
+      );
+    }
+
+    return child;
   }
 }
 
