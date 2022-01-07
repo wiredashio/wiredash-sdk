@@ -20,9 +20,28 @@ class NotAWidgetsApp extends StatefulWidget {
 }
 
 class _NotAWidgetsAppState extends State<NotAWidgetsApp> {
+  final GlobalKey _childKey = GlobalKey(debugLabel: 'child-child');
+
   @override
   Widget build(BuildContext context) {
-    Widget child = widget.child;
+    Widget child = KeyedSubtree(
+      key: _childKey,
+      child: widget.child,
+    );
+
+    // Allow inspection of widgets
+    if (WidgetsApp.debugShowWidgetInspectorOverride) {
+      child = WidgetInspector(
+        selectButtonBuilder: (BuildContext context, void Function() onPressed) {
+          return FloatingActionButton(
+            onPressed: onPressed,
+            mini: true,
+            child: const Icon(Icons.search),
+          );
+        },
+        child: child,
+      );
+    }
 
     // Any Text requires a directionality
     child = Directionality(

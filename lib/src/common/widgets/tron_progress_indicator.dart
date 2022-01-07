@@ -38,7 +38,10 @@ class _TronProgressIndicatorState extends State<TronProgressIndicator>
   @override
   void didUpdateWidget(covariant TronProgressIndicator oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _updateTweens();
+    if (oldWidget.currentStep != widget.currentStep ||
+        oldWidget.totalSteps != widget.currentStep) {
+      _updateTweens();
+    }
   }
 
   @override

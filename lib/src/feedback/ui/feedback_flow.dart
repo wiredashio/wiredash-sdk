@@ -122,22 +122,17 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       },
     );
 
-    return GestureDetector(
-      onTap: () {
-        Focus.maybeOf(context)?.unfocus();
-      },
-      child: MaterialSupportLayer(
-        locale: context
-            .wiredashModel.services.wiredashWidget.options?.currentLocale,
-        child: Stack(
-          children: [
-            Form(
-              key: feedbackModel.stepFormKey,
-              child: larryPageView,
-            ),
-            _buildProgressIndicator(),
-          ],
-        ),
+    return MaterialSupportLayer(
+      locale:
+          context.wiredashModel.services.wiredashWidget.options?.currentLocale,
+      child: Stack(
+        children: [
+          Form(
+            key: feedbackModel.stepFormKey,
+            child: larryPageView,
+          ),
+          _buildProgressIndicator(),
+        ],
       ),
     );
   }
@@ -152,9 +147,11 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     return Positioned(
       top: 16,
       right: 0,
-      child: TronProgressIndicator(
-        totalSteps: 5,
-        currentStep: _getCurrentProgressStep(),
+      child: SafeArea(
+        child: TronProgressIndicator(
+          totalSteps: 5,
+          currentStep: _getCurrentProgressStep(),
+        ),
       ),
     );
   }
@@ -213,7 +210,7 @@ class _ScrollBoxState extends State<ScrollBox> {
       child = Scrollbar(
         interactive: false,
         controller: controller,
-        isAlwaysShown: true,
+        isAlwaysShown: false,
         child: child,
       );
     }

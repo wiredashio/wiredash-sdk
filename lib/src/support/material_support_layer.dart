@@ -28,6 +28,8 @@ class _MaterialSupportLayerState extends State<MaterialSupportLayer> {
   @override
   void didUpdateWidget(covariant MaterialSupportLayer oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // Rebuild wrapped widget tree when something changes
+    // This fixes Hot-Reload
     _entry?.markNeedsBuild();
   }
 
