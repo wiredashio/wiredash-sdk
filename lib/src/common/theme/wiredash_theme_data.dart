@@ -211,24 +211,17 @@ class WiredashThemeData {
   }
 
   double get buttonBarHeight {
-    if (windowSize.shortestSide <= 600) {
-      return 64;
+    if (windowSize.height <= 600) {
+      return 70;
     }
     return 96;
   }
 
   double get verticalPadding {
-    switch (deviceClass) {
-      case DeviceClass.handsetSmall320:
-      case DeviceClass.handsetMedium360:
-      case DeviceClass.handsetLarge400:
-      case DeviceClass.tabletSmall600:
-      case DeviceClass.tabletLarge720:
-        return 40;
-      case DeviceClass.desktopSmall1024:
-      case DeviceClass.desktopLarge1440:
-        return 64;
+    if (windowSize.height <= 400) {
+      return 40;
     }
+    return 64;
   }
 
   double get maxContentWidth {
