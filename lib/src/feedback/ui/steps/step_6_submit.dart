@@ -29,9 +29,11 @@ class _Step6SubmitState extends State<Step6Submit> {
             ),
             Flexible(
               child: ScrollBox(
-                child: ListTileTheme(
-                  data: ListTileThemeData(
-                    textColor: context.theme.secondaryTextColor,
+                child: Theme(
+                  data: Theme.of(context).copyWith(
+                    listTileTheme: ListTileThemeData(
+                      textColor: context.theme.secondaryTextColor,
+                    ),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -130,7 +132,8 @@ class _Step6SubmitState extends State<Step6Submit> {
                                   contentPadding: EdgeInsets.zero,
                                   title: const Text('Dart version'),
                                   subtitle: Text(
-                                      '${data.deviceInfo.platformVersion}'),
+                                    '${data.deviceInfo.platformVersion}',
+                                  ),
                                 ),
                               if (data.customMetaData != null)
                                 ListTile(
