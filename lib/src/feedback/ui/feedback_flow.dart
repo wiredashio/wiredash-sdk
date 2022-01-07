@@ -126,14 +126,20 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       onTap: () {
         Focus.maybeOf(context)?.unfocus();
       },
-      child: Stack(
-        children: [
-          Form(
-            key: feedbackModel.stepFormKey,
-            child: larryPageView,
+      child: MaterialSupportLayer(
+        locale: context
+            .wiredashModel.services.wiredashWidget.options?.currentLocale,
+        child: DefaultTextEditingShortcuts(
+          child: Stack(
+            children: [
+              Form(
+                key: feedbackModel.stepFormKey,
+                child: larryPageView,
+              ),
+              _buildProgressIndicator(),
+            ],
           ),
-          _buildProgressIndicator(),
-        ],
+        ),
       ),
     );
   }
@@ -196,12 +202,16 @@ class ScrollBox extends StatefulWidget {
 class _ScrollBoxState extends State<ScrollBox> {
   @override
   Widget build(BuildContext context) {
-    return MaterialSupportLayer(
-      locale:
-          context.wiredashModel.services.wiredashWidget.options?.currentLocale,
-      child: DefaultTextEditingShortcuts(
-        child: Theme(
-          data: ThemeData(brightness: Brightness.light),
+    final controller = StepInformation.of(context).innerScrollController;
+    return Theme(
+      data: ThemeData(brightness: Brightness.light),
+      child: Scrollbar(
+        interactive: false,
+        controller: controller,
+        isAlwaysShown: true,
+        child: SingleChildScrollView(
+          controller: controller,
+          padding: widget.padding,
           child: widget.child,
         ),
       ),
