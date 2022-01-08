@@ -39,10 +39,8 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      currentStep: 1,
-      totalSteps: 3,
-      title: 'Send us your feedback',
-      description: 'Add a short description of what you encountered',
+      title: Text('Send us your feedback'),
+      description: Text('Add a short description of what you encountered'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,

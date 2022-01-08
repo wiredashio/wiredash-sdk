@@ -198,37 +198,58 @@ class _ScrollBoxState extends State<ScrollBox> {
   }
 }
 
-class StepPageScaffold extends StatelessWidget {
+class StepPageScaffold extends StatefulWidget {
   const StepPageScaffold({
-    required this.currentStep,
-    required this.totalSteps,
+    this.currentStep,
+    this.totalSteps,
     required this.title,
     this.description,
     required this.child,
     Key? key,
   }) : super(key: key);
 
-  final int currentStep;
-  final int totalSteps;
+  final int? currentStep;
+  final int? totalSteps;
 
-  final String title;
-  final String? description;
+  final Widget title;
+  final Widget? description;
 
   final Widget child;
 
+  @override
+  State<StepPageScaffold> createState() => _StepPageScaffoldState();
+}
+
+class _StepPageScaffoldState extends State<StepPageScaffold> {
+  int _totalSteps() {
+    return widget.totalSteps ?? context.feedbackModel.maxSteps;
+  }
+
+  int _currentStep() {
+    return widget.currentStep ??
+        ((context.feedbackModel.currentStepIndex ?? 0) + 1);
+  }
+
   Widget _buildProgressIndicator(BuildContext context) {
+    var currentStep = _currentStep();
+    final total = _totalSteps();
+    if (currentStep > total) {
+      // especially the last "Submit" step should show the number on the
+      // previous page
+      currentStep = total;
+    }
     return Align(
       alignment: Alignment.centerLeft,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           TronProgressIndicator(
-            totalSteps: totalSteps,
             currentStep: currentStep,
+            totalSteps: total,
           ),
           const SizedBox(width: 12),
           Text(
-            'Step $currentStep of $totalSteps',
+            'Step $currentStep of $total',
             style: context.theme.captionTextStyle,
           )
         ],
@@ -241,15 +262,18 @@ class StepPageScaffold extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: context.theme.headlineTextStyle),
-        if (description != null)
+        DefaultTextStyle(
+          style: context.theme.headlineTextStyle,
+          child: widget.title,
+        ),
+        if (widget.description != null)
           const SizedBox(
             height: 8,
           ),
-        if (description != null)
-          Text(
-            description!,
+        if (widget.description != null)
+          DefaultTextStyle(
             style: context.theme.bodyTextStyle,
+            child: widget.description!,
           )
       ],
     );
@@ -269,7 +293,7 @@ class StepPageScaffold extends StatelessWidget {
               const SizedBox(height: 24),
               _buildTitle(context),
               const SizedBox(height: 32),
-              child
+              widget.child
             ],
           ),
         ),

@@ -20,7 +20,8 @@ class TronButton extends StatefulWidget {
   }) : super(key: key);
 
   final Color? color;
-  final IconData? leadingIcon, trailingIcon;
+  final IconData? leadingIcon;
+  final IconData? trailingIcon;
   final Offset iconOffset;
   final String label;
   final VoidCallback? onTap;
@@ -143,6 +144,8 @@ class _TronButtonState extends State<TronButton>
                             ),
                           if (widget.leadingIcon != null)
                             const SizedBox(width: 8),
+                          if (widget.trailingIcon != null)
+                            const SizedBox(width: 4),
                           DefaultTextStyle(
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -150,6 +153,8 @@ class _TronButtonState extends State<TronButton>
                                 .copyWith(color: _iconColor),
                             child: Text(widget.label),
                           ),
+                          if (widget.leadingIcon != null)
+                            const SizedBox(width: 4),
                           if (widget.trailingIcon != null)
                             const SizedBox(width: 8),
                           if (widget.trailingIcon != null)

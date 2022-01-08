@@ -21,8 +21,8 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
       return StepPageScaffold(
         currentStep: 2,
         totalSteps: 3,
-        title: 'Attached screenshots',
-        description: 'Add, edit or remove images',
+        title: Text('Attached screenshots'),
+        description: Text('Add, edit or remove images'),
         child: Row(
           children: [
             ClipRRect(
@@ -73,11 +73,9 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
       );
     } else {
       return StepPageScaffold(
-        currentStep: 2,
-        totalSteps: 3,
-        title: 'Include a screenshot for more context?',
-        description:
-            'You’ll be able to navigate the app and choose when to take a screenshot',
+        title: Text('Include a screenshot for more context?'),
+        description: Text(
+            'You’ll be able to navigate the app and choose when to take a screenshot'),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,

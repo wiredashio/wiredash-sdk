@@ -76,6 +76,21 @@ class FeedbackModel with ChangeNotifier {
   Object? _submissionError;
   Object? get submissionError => _submissionError;
 
+  int get maxSteps {
+    // message
+    // screenshot
+    var steps = 2;
+
+    if (_services.wiredashWidget.feedbackOptions?.askForUserEmail == true) {
+      steps++;
+    }
+    if (_services.wiredashWidget.feedbackOptions?.labels?.isNotEmpty == true) {
+      steps++;
+    }
+
+    return steps;
+  }
+
   List<FeedbackFlowStatus> get steps {
     if (submitted) {
       // Return just a single step, no back/forward possible

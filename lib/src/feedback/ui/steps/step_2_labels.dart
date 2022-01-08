@@ -21,9 +21,7 @@ class _Step2LabelsState extends State<Step2Labels>
     final feedbackModel = context.feedbackModel;
     final selectedLabels = feedbackModel.selectedLabels;
     return StepPageScaffold(
-      currentStep: 2,
-      totalSteps: 3,
-      title: 'Which label represents your feedback?',
+      title: Text('Which label represents your feedback?'),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,

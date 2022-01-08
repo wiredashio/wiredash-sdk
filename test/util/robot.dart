@@ -71,11 +71,6 @@ class WiredashTestRobot {
     return robot;
   }
 
-  final _navigationButtonFinder = find.descendant(
-    of: find.byType(FeedbackNavigation),
-    matching: find.byType(TronButton),
-  );
-
   Wiredash get widget {
     final element = find.byType(Wiredash).evaluate().first as StatefulElement;
     return element.widget as Wiredash;
