@@ -10,19 +10,17 @@ import 'package:wiredash/src/common/widgets/tron_icon.dart';
 
 class TronButton extends StatefulWidget {
   const TronButton({
-    this.icon,
+    this.leadingIcon,
+    this.trailingIcon,
     required this.label,
     this.onTap,
     this.color,
     this.iconOffset = Offset.zero,
     Key? key,
-    this.child,
-  })  : assert(child != null && icon == null || child == null && icon != null),
-        super(key: key);
+  }) : super(key: key);
 
   final Color? color;
-  final IconData? icon;
-  final Widget? child;
+  final IconData? leadingIcon, trailingIcon;
   final Offset iconOffset;
   final String label;
   final VoidCallback? onTap;
@@ -111,9 +109,9 @@ class _TronButtonState extends State<TronButton>
           label: widget.label,
           child: ConstrainedBox(
             constraints: const BoxConstraints(
-              minWidth: 80,
+              minWidth: 48,
               maxWidth: 200,
-              minHeight: 48,
+              minHeight: 38,
               maxHeight: 48,
             ),
             child: ScaleTransition(
@@ -129,37 +127,33 @@ class _TronButtonState extends State<TronButton>
                   excludeFromSemantics: true,
                   child: ScaleTransition(
                     scale: _iconScaleAnimation,
-                    child: _AnimatedSlideBackport(
-                      duration: _duration,
-                      offset: widget.iconOffset,
-                      child: Builder(
-                        builder: (context) {
-                          if (widget.child != null) {
-                            return Align(
-                              widthFactor: 1,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                child: DefaultTextStyle(
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: context.theme.tronButtonTextStyle
-                                      .copyWith(
-                                    color: _iconColor,
-                                  ),
-                                  child: widget.child!,
-                                ),
-                              ),
-                            );
-                          }
-                          if (widget.icon != null) {
-                            return TronIcon(
-                              widget.icon!,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (widget.leadingIcon != null)
+                            TronIcon(
+                              widget.leadingIcon!,
                               color: _iconColor,
-                            );
-                          }
-                          return const SizedBox();
-                        },
+                            ),
+                          if (widget.leadingIcon != null)
+                            const SizedBox(width: 8),
+                          DefaultTextStyle(
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.theme.tronButtonTextStyle
+                                .copyWith(color: _iconColor),
+                            child: Text(widget.label),
+                          ),
+                          if (widget.trailingIcon != null)
+                            const SizedBox(width: 8),
+                          if (widget.trailingIcon != null)
+                            TronIcon(
+                              widget.trailingIcon!,
+                              color: _iconColor,
+                            ),
+                        ],
                       ),
                     ),
                   ),
