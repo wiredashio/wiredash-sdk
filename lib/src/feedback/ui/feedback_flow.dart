@@ -233,10 +233,12 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
   Widget _buildProgressIndicator(BuildContext context) {
     var currentStep = _currentStep();
     final total = _totalSteps();
+    bool completed = false;
     if (currentStep > total) {
       // especially the last "Submit" step should show the number on the
       // previous page
       currentStep = total;
+      completed = true;
     }
     return Align(
       alignment: Alignment.centerLeft,
@@ -244,7 +246,7 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TronProgressIndicator(
-            currentStep: currentStep,
+            currentStep: completed ? total : currentStep - 1,
             totalSteps: total,
           ),
           const SizedBox(width: 12),
