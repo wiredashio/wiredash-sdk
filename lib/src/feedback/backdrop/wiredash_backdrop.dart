@@ -263,11 +263,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     ).translate(wiredashPadding.left / 2 - wiredashPadding.right / 2, 0);
 
     // iPhone SE is 320 width
-    const double minContentAreaHeight = 320.0;
+    const double minContentAreaHeight = 400.0;
     const double maxContentAreaHeight = 640.0;
     const double minAppPeakHeight = 56;
 
-    final double buttonBarHeight = context.theme.buttonBarHeight;
+    final double buttonBarHeight = 0;
 
     // center the navigation buttons
     double preferredAppHeight = _mediaQueryData.size.height * 0.5;
@@ -458,6 +458,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }
 
   Widget _buildNavigationButtons() {
+    return SizedBox.shrink();
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 150),
       opacity: _backdropStatus == WiredashBackdropStatus.closing ? 0.0 : 1.0,
