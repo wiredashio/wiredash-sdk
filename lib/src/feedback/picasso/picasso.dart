@@ -73,7 +73,7 @@ class _PicassoState extends State<Picasso> {
   final _strokesStreamController = StreamController<List<Stroke?>>.broadcast();
   final _currentStrokeStreamController = StreamController<Stroke?>.broadcast();
 
-  Size _sketcherCanvasSize = const Size(1, 1);
+  Size _sketcherCanvasSize = ui.window.physicalSize;
 
   @override
   void initState() {
@@ -209,6 +209,8 @@ class _PicassoState extends State<Picasso> {
   Future<Uint8List> _paintOntoImage(ui.Image image) async {
     final imageSize = Size(image.width.toDouble(), image.height.toDouble());
     final recording = ui.PictureRecorder();
+    assert(_sketcherCanvasSize.width > 0);
+    assert(_sketcherCanvasSize.height > 0);
     final canvas = Canvas(
       recording,
       Rect.fromLTWH(0.0, 0.0, imageSize.width, imageSize.height),
