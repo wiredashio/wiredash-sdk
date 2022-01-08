@@ -28,6 +28,7 @@ class PicassoController extends ChangeNotifier {
   double _strokeWidth = 5.0;
 
   bool get isActive => _isActive;
+
   set isActive(bool value) {
     _isActive = value;
     notifyListeners();
@@ -71,6 +72,8 @@ class _PicassoState extends State<Picasso> {
 
   final _strokesStreamController = StreamController<List<Stroke?>>.broadcast();
   final _currentStrokeStreamController = StreamController<Stroke?>.broadcast();
+
+  Size _sketcherCanvasSize = ui.window.physicalSize;
 
   @override
   void initState() {
@@ -133,6 +136,7 @@ class _PicassoState extends State<Picasso> {
             return CustomPaint(
               painter: Sketcher(
                 strokes: _strokes,
+                onPaint: (size) => _sketcherCanvasSize = size,
               ),
             );
           },
@@ -205,11 +209,17 @@ class _PicassoState extends State<Picasso> {
   Future<Uint8List> _paintOntoImage(ui.Image image) async {
     final imageSize = Size(image.width.toDouble(), image.height.toDouble());
     final recording = ui.PictureRecorder();
+    assert(_sketcherCanvasSize.width > 0);
+    assert(_sketcherCanvasSize.height > 0);
     final canvas = Canvas(
       recording,
       Rect.fromLTWH(0.0, 0.0, imageSize.width, imageSize.height),
-    )..drawImage(image, Offset.zero, Paint());
-    // ..scale(imageSize.width / size.width, imageSize.height / size.height);
+    )
+      ..drawImage(image, Offset.zero, Paint())
+      ..scale(
+        imageSize.width / _sketcherCanvasSize.width,
+        imageSize.height / _sketcherCanvasSize.height,
+      );
 
     Sketcher(strokes: _strokes).paint(canvas, imageSize);
 

@@ -5,11 +5,14 @@ import 'package:wiredash/src/feedback/picasso/stroke.dart';
 
 class Sketcher extends CustomPainter {
   final List<Stroke?> strokes;
+  final void Function(Size canvasSize)? onPaint;
 
-  Sketcher({required this.strokes});
+  Sketcher({required this.strokes, this.onPaint});
 
   @override
   void paint(Canvas canvas, Size size) {
+    onPaint?.call(size);
+
     final paint = Paint()..strokeCap = StrokeCap.round;
 
     for (final stroke in strokes) {
