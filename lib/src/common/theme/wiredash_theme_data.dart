@@ -132,7 +132,7 @@ class WiredashThemeData {
   TextStyle get headlineTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
-        fontSize: 28,
+        fontSize: windowSize.width > 480 ? 32 : 24,
         color: primaryTextColor,
         fontWeight: FontWeight.bold,
       );
@@ -150,13 +150,13 @@ class WiredashThemeData {
         fontFamily: fontFamily,
         fontSize: 14,
         color: primaryTextColor,
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w600,
       );
 
   TextStyle get bodyTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
-        fontSize: 16,
+        fontSize: windowSize.width > 480 ? 16 : 14,
         color: primaryTextColor,
         fontWeight: FontWeight.normal,
       );
@@ -164,7 +164,7 @@ class WiredashThemeData {
   TextStyle get body2TextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
-        fontSize: 16,
+        fontSize: windowSize.width > 480 ? 16 : 14,
         color: secondaryTextColor,
         fontWeight: FontWeight.normal,
       );
@@ -172,7 +172,7 @@ class WiredashThemeData {
   TextStyle get captionTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
-        fontSize: 10,
+        fontSize: 12,
         color: secondaryTextColor,
         fontWeight: FontWeight.normal,
       );

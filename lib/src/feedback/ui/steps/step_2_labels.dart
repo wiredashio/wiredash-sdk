@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/widgets/tron_button.dart';
+import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/base_click_target.dart';
@@ -19,40 +21,46 @@ class _Step2LabelsState extends State<Step2Labels>
     final feedbackModel = context.feedbackModel;
     final selectedLabels = feedbackModel.selectedLabels;
     return StepPageScaffold(
-      child: SafeArea(
-        child: ScrollBox(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+      currentStep: 2,
+      totalSteps: 3,
+      title: 'Which label represents your feedback?',
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _LabelRecommendations(
+            labels: feedbackModel.labels,
+            isLabelSelected: selectedLabels.contains,
+            toggleSelection: (label) {
+              setState(() {
+                if (selectedLabels.contains(label)) {
+                  feedbackModel.selectedLabels = selectedLabels.toList()
+                    ..remove(label);
+                } else {
+                  feedbackModel.selectedLabels = selectedLabels.toList()
+                    ..add(label);
+                }
+              });
+            },
+          ),
+          const SizedBox(height: 40),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Optional step',
-                style: context.theme.captionTextStyle,
+              TronButton(
+                color: context.theme.secondaryColor,
+                leadingIcon: Wirecons.arrow_left,
+                label: 'Back',
+                onTap: context.feedbackModel.goToPreviousStep,
               ),
-              const SizedBox(height: 12),
-              Text(
-                'Which label represents your type of feedback?',
-                style: context.theme.titleTextStyle,
-              ),
-              SizedBox(height: context.theme.verticalPadding),
-              _LabelRecommendations(
-                labels: feedbackModel.labels,
-                isLabelSelected: selectedLabels.contains,
-                toggleSelection: (label) {
-                  setState(() {
-                    if (selectedLabels.contains(label)) {
-                      feedbackModel.selectedLabels = selectedLabels.toList()
-                        ..remove(label);
-                    } else {
-                      feedbackModel.selectedLabels = selectedLabels.toList()
-                        ..add(label);
-                    }
-                  });
-                },
+              TronButton(
+                label: 'Next',
+                trailingIcon: Wirecons.arrow_right,
+                onTap: context.feedbackModel.goToNextStep,
               ),
             ],
-          ),
-        ),
+          )
+        ],
       ),
     );
   }

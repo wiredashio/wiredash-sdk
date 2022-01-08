@@ -37,62 +37,44 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      child: SafeArea(
-        child: ScrollBox(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Optional step',
-                    style: context.theme.captionTextStyle,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Enter your email to get updates regarding your issue',
-                    style: context.theme.titleTextStyle,
-                  ),
-                  TextFormField(
-                    controller: _controller,
-                    keyboardType: TextInputType.emailAddress,
-                    cursorColor: context.theme.primaryColor,
-                    style: context.theme.bodyTextStyle,
-                    onFieldSubmitted: (_) {
-                      if (context.feedbackModel.validateForm()) {
-                        context.feedbackModel.goToNextStep();
-                      }
-                    },
-                    validator: (data) {
-                      final email = data ?? '';
-                      if (email.isEmpty) {
-                        // leaving this field empty is ok
-                        return null;
-                      }
-                      final valid = const EmailValidator().validate(email);
-                      return valid
-                          ? null
-                          : WiredashLocalizations.of(context)!
-                              .validationHintEmail;
-                    },
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      hintText: 'i.e. example@wiredash.io',
-                      contentPadding: const EdgeInsets.only(top: 16),
-                      hintStyle: context.theme.body2TextStyle,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+      currentStep: 3,
+      totalSteps: 3,
+      title: 'Get email updates for your issue',
+      description: 'Add your email address below or leave empty',
+      child: TextFormField(
+        controller: _controller,
+        keyboardType: TextInputType.emailAddress,
+        cursorColor: context.theme.primaryColor,
+        style: context.theme.bodyTextStyle,
+        onFieldSubmitted: (_) {
+          if (context.feedbackModel.validateForm()) {
+            context.feedbackModel.goToNextStep();
+          }
+        },
+        validator: (data) {
+          final email = data ?? '';
+          if (email.isEmpty) {
+            // leaving this field empty is ok
+            return null;
+          }
+          final valid = const EmailValidator().validate(email);
+          return valid
+              ? null
+              : WiredashLocalizations.of(context)!.validationHintEmail;
+        },
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: context.theme.primaryBackgroundColor,
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: context.theme.secondaryColor),
           ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: context.theme.secondaryColor),
+          ),
+          hintText: 'mail@example.com',
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          hintStyle: context.theme.body2TextStyle,
         ),
       ),
     );

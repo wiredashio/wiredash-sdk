@@ -16,142 +16,140 @@ class _Step6SubmitState extends State<Step6Submit> {
   @override
   Widget build(BuildContext context) {
     final model = context.feedbackModel;
-    return StepPageScaffold(
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 36),
-            Text(
-              'Submit your feedback',
-              style: context.theme.titleTextStyle,
-              textAlign: TextAlign.left,
-            ),
-            Flexible(
-              child: ScrollBox(
-                child: ListTileTheme(
-                  textColor: context.theme.secondaryTextColor,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 8),
-                      Text(
-                        'Please review your data before submission. '
-                        'You can navigate back to adjust your feedback',
-                        style: context.theme.body2TextStyle,
-                        textAlign: TextAlign.left,
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 36),
+          Text(
+            'Submit your feedback',
+            style: context.theme.titleTextStyle,
+            textAlign: TextAlign.left,
+          ),
+          Flexible(
+            child: ScrollBox(
+              child: ListTileTheme(
+                textColor: context.theme.secondaryTextColor,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    Text(
+                      'Please review your data before submission. '
+                      'You can navigate back to adjust your feedback',
+                      style: context.theme.body2TextStyle,
+                      textAlign: TextAlign.left,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Details',
+                      style: context.theme.bodyTextStyle.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Details',
-                        style: context.theme.bodyTextStyle.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                      FutureBuilder<PersistedFeedbackItem>(
-                        future: model.createFeedback(),
-                        builder: (context, snapshot) {
-                          final data = snapshot.data;
-                          if (data == null) {
-                            return const SizedBox();
-                          }
-                          return Column(
-                            children: [
+                      textAlign: TextAlign.left,
+                    ),
+                    FutureBuilder<PersistedFeedbackItem>(
+                      future: model.createFeedback(),
+                      builder: (context, snapshot) {
+                        final data = snapshot.data;
+                        if (data == null) {
+                          return const SizedBox();
+                        }
+                        return Column(
+                          children: [
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: const Text('Message'),
+                              subtitle: Text(data.message),
+                            ),
+                            if (model.selectedLabels.isNotEmpty)
                               ListTile(
                                 contentPadding: EdgeInsets.zero,
-                                title: const Text('Message'),
-                                subtitle: Text(data.message),
-                              ),
-                              if (model.selectedLabels.isNotEmpty)
-                                ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  title: const Text('Labels'),
-                                  subtitle: Text(
-                                    model.selectedLabels
-                                        .map((it) => it.title)
-                                        .join(', '),
-                                  ),
-                                ),
-                              if (model.hasScreenshots)
-                                const ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  title: Text('Screenshots'),
-                                  // TODO add exact number
-                                  subtitle: Text('1 Screenshot'),
-                                ),
-                              if (data.email != null)
-                                ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  title: const Text('Contact email'),
-                                  subtitle: Text(data.email ?? ''),
-                                ),
-                              ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                title: const Text('Locale'),
+                                title: const Text('Labels'),
                                 subtitle: Text(
-                                  data.appInfo.appLocale,
+                                  model.selectedLabels
+                                      .map((it) => it.title)
+                                      .join(', '),
                                 ),
                               ),
-                              if (data.deviceInfo.userAgent != null)
-                                ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  title: const Text('User agent'),
-                                  subtitle:
-                                      Text('${data.deviceInfo.userAgent}'),
-                                ),
-                              if (!kIsWeb)
-                                ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  title: const Text('Platform'),
-                                  subtitle: Text(
-                                    '${data.deviceInfo.platformOS} '
-                                    '${data.deviceInfo.platformOSVersion} '
-                                    '(${data.deviceInfo.platformLocale})',
-                                  ),
-                                ),
+                            if (model.hasScreenshots)
+                              const ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text('Screenshots'),
+                                // TODO add exact number
+                                subtitle: Text('1 Screenshot'),
+                              ),
+                            if (data.email != null)
                               ListTile(
                                 contentPadding: EdgeInsets.zero,
-                                title: const Text('Build Info'),
+                                title: const Text('Contact email'),
+                                subtitle: Text(data.email ?? ''),
+                              ),
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: const Text('Locale'),
+                              subtitle: Text(
+                                data.appInfo.appLocale,
+                              ),
+                            ),
+                            if (data.deviceInfo.userAgent != null)
+                              ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: const Text('User agent'),
+                                subtitle:
+                                    Text('${data.deviceInfo.userAgent}'),
+                              ),
+                            if (!kIsWeb)
+                              ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: const Text('Platform'),
                                 subtitle: Text(
-                                  [
-                                    data.buildInfo.compilationMode,
-                                    data.buildInfo.buildNumber,
-                                    data.buildInfo.buildVersion,
-                                    data.buildInfo.buildCommit
-                                  ].where((it) => it != null).join(', '),
+                                  '${data.deviceInfo.platformOS} '
+                                  '${data.deviceInfo.platformOSVersion} '
+                                  '(${data.deviceInfo.platformLocale})',
                                 ),
                               ),
-                              if (!kIsWeb)
-                                ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  title: const Text('Dart version'),
-                                  subtitle: Text(
-                                    '${data.deviceInfo.platformVersion}',
-                                  ),
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: const Text('Build Info'),
+                              subtitle: Text(
+                                [
+                                  data.buildInfo.compilationMode,
+                                  data.buildInfo.buildNumber,
+                                  data.buildInfo.buildVersion,
+                                  data.buildInfo.buildCommit
+                                ].where((it) => it != null).join(', '),
+                              ),
+                            ),
+                            if (!kIsWeb)
+                              ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: const Text('Dart version'),
+                                subtitle: Text(
+                                  '${data.deviceInfo.platformVersion}',
                                 ),
-                              if (data.customMetaData != null)
-                                ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  title: const Text('Custom metaData'),
-                                  subtitle: Text(
-                                    data.customMetaData!.entries
-                                        .map((it) => '${it.key}=${it.value}, ')
-                                        .join(),
-                                  ),
+                              ),
+                            if (data.customMetaData != null)
+                              ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: const Text('Custom metaData'),
+                                subtitle: Text(
+                                  data.customMetaData!.entries
+                                      .map((it) => '${it.key}=${it.value}, ')
+                                      .join(),
                                 ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
