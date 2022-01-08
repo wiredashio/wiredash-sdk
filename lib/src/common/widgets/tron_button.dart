@@ -88,7 +88,11 @@ class _TronButtonState extends State<TronButton>
     final hsl = HSLColor.fromColor(buttonColor);
     final blackOrWhite = luminance < 0.4 ? Colors.white : Colors.black;
 
-    return blackOrWhite.withOpacity(math.max(hsl.saturation, 0.6));
+    if (!_enabled) {
+      return blackOrWhite.withOpacity(0.3);
+    }
+
+    return blackOrWhite.withOpacity(math.max(hsl.saturation, 0.8));
   }
 
   @override

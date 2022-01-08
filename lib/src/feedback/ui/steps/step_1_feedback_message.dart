@@ -87,7 +87,9 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
               TronButton(
                 label: 'Next',
                 trailingIcon: Wirecons.arrow_right,
-                onTap: context.feedbackModel.goToNextStep,
+                onTap: context.feedbackModel.feedbackMessage == null
+                    ? null
+                    : context.feedbackModel.goToNextStep,
               ),
             ],
           )
