@@ -7,7 +7,6 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/feedback/backdrop/pull_to_close_detector.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
-import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
 
 /// The Wiredash UI behind the app
 class WiredashBackdrop extends StatefulWidget {
@@ -458,15 +457,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }
 
   Widget _buildNavigationButtons() {
-    return SizedBox.shrink();
-    return AnimatedOpacity(
-      duration: const Duration(milliseconds: 150),
-      opacity: _backdropStatus == WiredashBackdropStatus.closing ? 0.0 : 1.0,
-      child: FeedbackNavigation(
-        defaultLocation: _rectNavigationButtons,
-        windowPadding: widget.padding,
-      ),
-    );
+    return const SizedBox.shrink();
+    // return AnimatedOpacity(
+    //   duration: const Duration(milliseconds: 150),
+    //   opacity: _backdropStatus == WiredashBackdropStatus.closing ? 0.0 : 1.0,
+    //   child: FeedbackNavigation(
+    //     defaultLocation: _rectNavigationButtons,
+    //     windowPadding: widget.padding,
+    //   ),
+    // );
   }
 
   /// Clips and adds shadow to the app
