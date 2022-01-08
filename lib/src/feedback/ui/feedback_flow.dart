@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/widgets/tron_progress_indicator.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
@@ -131,27 +130,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             key: feedbackModel.stepFormKey,
             child: larryPageView,
           ),
-          _buildProgressIndicator(),
         ],
-      ),
-    );
-  }
-
-  /// Builds the circular progress indicator in the top left
-  Widget _buildProgressIndicator() {
-    if (context.theme.deviceClass == DeviceClass.handsetSmall320) {
-      // hide progress indicator on small screens
-      return const SizedBox();
-    }
-
-    return Positioned(
-      top: 16,
-      right: 0,
-      child: SafeArea(
-        child: TronProgressIndicator(
-          totalSteps: 5,
-          currentStep: _getCurrentProgressStep(),
-        ),
       ),
     );
   }
@@ -221,17 +200,80 @@ class _ScrollBoxState extends State<ScrollBox> {
 
 class StepPageScaffold extends StatelessWidget {
   const StepPageScaffold({
+    required this.currentStep,
+    required this.totalSteps,
+    required this.title,
+    this.description,
     required this.child,
     Key? key,
   }) : super(key: key);
 
+  final int currentStep;
+  final int totalSteps;
+
+  final String title;
+  final String? description;
+
   final Widget child;
+
+  Widget _buildProgressIndicator(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TronProgressIndicator(
+            totalSteps: totalSteps,
+            currentStep: currentStep,
+          ),
+          const SizedBox(width: 12),
+          Text(
+            'Step $currentStep of $totalSteps',
+            style: context.theme.captionTextStyle,
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTitle(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: context.theme.headlineTextStyle),
+        if (description != null)
+          const SizedBox(
+            height: 8,
+          ),
+        if (description != null)
+          Text(
+            description!,
+            style: context.theme.bodyTextStyle,
+          )
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.centerLeft,
-      child: child,
+      child: ScrollBox(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildProgressIndicator(context),
+              const SizedBox(height: 24),
+              _buildTitle(context),
+              const SizedBox(height: 32),
+              child
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
