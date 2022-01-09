@@ -146,12 +146,14 @@ class _TronButtonState extends State<TronButton>
                             const SizedBox(width: 8),
                           if (widget.trailingIcon != null)
                             const SizedBox(width: 4),
-                          DefaultTextStyle(
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.theme.tronButtonTextStyle
-                                .copyWith(color: _iconColor),
-                            child: Text(widget.label),
+                          Flexible(
+                            child: DefaultTextStyle(
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.theme.tronButtonTextStyle
+                                  .copyWith(color: _iconColor),
+                              child: Text(widget.label),
+                            ),
                           ),
                           if (widget.leadingIcon != null)
                             const SizedBox(width: 4),

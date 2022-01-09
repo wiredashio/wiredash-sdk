@@ -81,34 +81,43 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TronButton(
-                  color: context.theme.secondaryColor,
-                  leadingIcon: Wirecons.arrow_left,
-                  label: 'Back',
-                  onTap: context.feedbackModel.goToPreviousStep,
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TronButton(
-                      color: context.theme.secondaryColor,
-                      label: 'Skip',
-                      trailingIcon: Wirecons.chevron_double_right,
-                      onTap: context.feedbackModel.goToNextStep,
+            SizedBox(
+              width: double.infinity,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  TronButton(
+                    color: context.theme.secondaryColor,
+                    leadingIcon: Wirecons.arrow_left,
+                    label: 'Back',
+                    onTap: context.feedbackModel.goToPreviousStep,
+                  ),
+                  Expanded(
+                    child: Wrap(
+                      spacing: 20,
+                      runSpacing: 10,
+                      alignment: WrapAlignment.end,
+                      verticalDirection: VerticalDirection.up,
+                      runAlignment: WrapAlignment.spaceBetween,
+                      children: [
+                        TronButton(
+                          color: context.theme.secondaryColor,
+                          label: 'Skip',
+                          trailingIcon: Wirecons.chevron_double_right,
+                          onTap: context.feedbackModel.goToNextStep,
+                        ),
+                        // const SizedBox(width: 12),
+                        TronButton(
+                          label: 'Add screenshot',
+                          trailingIcon: Wirecons.arrow_right,
+                          onTap: () => context.feedbackModel.goToStep(
+                              FeedbackFlowStatus.screenshotNavigating),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    TronButton(
-                      label: 'Add screenshot',
-                      trailingIcon: Wirecons.arrow_right,
-                      onTap: () => context.feedbackModel
-                          .goToStep(FeedbackFlowStatus.screenshotNavigating),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             )
           ],
         ),

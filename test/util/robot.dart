@@ -97,11 +97,16 @@ class WiredashTestRobot {
     await tester.enterText(find.byType(TextField), message);
     await tester.pumpAndSettle();
     await tester.waitUntil(
-      find.byIcon(Wirecons.arrow_narrow_right),
-      findsOneWidget,
+      tester.getSemantics(find.widgetWithText(TronButton, 'Next')),
+      matchesSemantics(
+        isEnabled: true,
+        isButton: true,
+        isFocusable: true,
+        hasEnabledState: true,
+      ),
     );
-    expect(find.byIcon(Wirecons.arrow_narrow_right), findsOneWidget);
-    expect(find.byIcon(Wirecons.chevron_double_up), findsOneWidget);
+    expect(find.text('Next'), findsOneWidget);
+    expect(find.text('Cancel'), findsOneWidget);
     print('entered feedback message: $message');
   }
 
@@ -114,7 +119,7 @@ class WiredashTestRobot {
 
   Future<void> skipScreenshot() async {
     expect(find.byType(Step3ScreenshotOverview), findsOneWidget);
-    await tester.tap(find.byIcon(Wirecons.chevron_double_right));
+    await tester.tap(find.text('Skip'));
     await tester.pumpAndSettle();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Skipped taking screenshot, next $newStatus');
@@ -128,7 +133,7 @@ class WiredashTestRobot {
 
   Future<void> submitFeedback() async {
     expect(find.byType(Step6Submit), findsOneWidget);
-    await tester.tap(find.byIcon(Wirecons.check));
+    await tester.tap(find.text('Submit'));
     print('submit feedback');
     await tester.pump();
   }
@@ -160,7 +165,7 @@ class WiredashTestRobot {
 
   Future<void> goToNextStep() async {
     final oldStatus = services.feedbackModel.feedbackFlowStatus;
-    await tester.tap(_navigationButtonFinder.last);
+    await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Jumped from $oldStatus to next $newStatus');
@@ -168,7 +173,7 @@ class WiredashTestRobot {
 
   Future<void> goToPrevStep() async {
     final oldStatus = services.feedbackModel.feedbackFlowStatus;
-    await tester.tap(_navigationButtonFinder.first);
+    await tester.tap(find.text('Back'));
     await tester.pumpAndSettle();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Jumped from $oldStatus to prev $newStatus');
