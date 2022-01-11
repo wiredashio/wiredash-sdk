@@ -77,10 +77,6 @@ class _MaterialSupportLayerState extends State<MaterialSupportLayer> {
     child = DefaultTextEditingShortcuts(
       child: child,
     );
-    // allow deletion of text on macos
-    child = DefaultTextEditingActions(
-      child: child,
-    );
 
     return child;
   }
