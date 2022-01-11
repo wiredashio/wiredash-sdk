@@ -28,7 +28,7 @@ jobs:
   pr-min:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:2.5.0
+      image: cirrusci/flutter:2.8.0
     steps:
       - uses: actions/checkout@v2.4.0
       - name: Flutter version
