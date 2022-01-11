@@ -57,20 +57,3 @@ jobs:
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
         run: cd example && sudo --preserve-env=PATH env flutter build web
-
-  master:
-    runs-on: ubuntu-latest
-    container:
-      image: cirrusci/flutter:latest
-    steps:
-      - uses: actions/checkout@v2.3.4
-        with:
-          ref: beta
-      - name: Flutter version
-        run: flutter doctor -v
-      - name: Download dependencies
-        run: sudo --preserve-env=PATH env flutter packages get
-      - name: Test
-        run: sudo --preserve-env=PATH env flutter test
-      - name: Build
-        run: cd example && sudo --preserve-env=PATH env flutter build web
