@@ -27,7 +27,7 @@ jobs:
   pr-min:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:2.5.0
+      image: cirrusci/flutter:2.8.0
     steps:
       - uses: actions/checkout@v2.4.0
       - name: Flutter version
@@ -43,6 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:stable
+    if: ${{ github.base_ref != 'beta' || github.base_ref == null && github.ref != 'beta' }}
     steps:
       - uses: actions/checkout@v2.4.0
       - name: Flutter version
