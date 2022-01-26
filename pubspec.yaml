@@ -6,7 +6,7 @@ repository: https://github.com/wiredashio/wiredash-sdk
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
-  flutter: ">=2.9.0-0.1.pre"
+  flutter: ">=2.8.0"
 
 dependencies:
   collection: ">=1.15.0 <2.0.0"
