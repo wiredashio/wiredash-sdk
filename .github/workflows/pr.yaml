@@ -9,11 +9,10 @@ on:
       - master
 
 jobs:
-  # Wiredash is developed on beta, we therefore check code style here
   code_style:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:beta
+      image: cirrusci/flutter:stable
     steps:
       - uses: actions/checkout@v2.4.0
       - name: Flutter version
@@ -28,7 +27,7 @@ jobs:
   pr-min:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:2.5.0
+      image: cirrusci/flutter:2.8.0
     steps:
       - uses: actions/checkout@v2.4.0
       - name: Flutter version
@@ -44,6 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:stable
+    if: ${{ github.base_ref != 'beta' || github.base_ref == null && github.ref != 'beta' }}
     steps:
       - uses: actions/checkout@v2.4.0
       - name: Flutter version
@@ -59,21 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cirrusci/flutter:beta
-    steps:
-      - uses: actions/checkout@v2.4.0
-      - name: Flutter version
-        run: flutter doctor -v
-      - name: Download dependencies
-        run: sudo --preserve-env=PATH env flutter packages get
-      - name: Test
-        run: sudo --preserve-env=PATH env flutter test
-      - name: Build
-        run: cd example && sudo --preserve-env=PATH env flutter build web
-
-  pr-master:
-    runs-on: ubuntu-latest
-    container:
-      image: cirrusci/flutter:latest
+    if: ${{ github.base_ref == 'beta' || github.base_ref == null && github.ref == 'beta' }}
     steps:
       - uses: actions/checkout@v2.4.0
       - name: Flutter version
