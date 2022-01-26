@@ -65,7 +65,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2.4.0
         with:
-          ref: dev
+          ref: beta
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
