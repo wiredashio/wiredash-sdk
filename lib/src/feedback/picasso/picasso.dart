@@ -60,8 +60,11 @@ class PicassoController extends ChangeNotifier {
     _state!._redo();
   }
 
-  Future<Uint8List> paintDrawingOntoImage(ui.Image image) async {
-    return _state!._paintOntoImage(image);
+  Future<Uint8List> paintDrawingOntoImage(
+    ui.Image image,
+    Color backgroundColor,
+  ) async {
+    return _state!._paintOntoImage(image, backgroundColor);
   }
 }
 
@@ -206,7 +209,10 @@ class _PicassoState extends State<Picasso> {
     }
   }
 
-  Future<Uint8List> _paintOntoImage(ui.Image image) async {
+  Future<Uint8List> _paintOntoImage(
+    ui.Image image,
+    Color backgroundColor,
+  ) async {
     final imageSize = Size(image.width.toDouble(), image.height.toDouble());
     final recording = ui.PictureRecorder();
     assert(_sketcherCanvasSize.width > 0);
@@ -214,13 +220,19 @@ class _PicassoState extends State<Picasso> {
     final canvas = Canvas(
       recording,
       Rect.fromLTWH(0.0, 0.0, imageSize.width, imageSize.height),
-    )
-      ..drawImage(image, Offset.zero, Paint())
-      ..scale(
-        imageSize.width / _sketcherCanvasSize.width,
-        imageSize.height / _sketcherCanvasSize.height,
-      );
+    );
 
+    // draw the background
+    canvas.drawColor(backgroundColor, BlendMode.src);
+
+    // Draw the screenshot
+    canvas.drawImage(image, Offset.zero, Paint());
+    canvas.scale(
+      imageSize.width / _sketcherCanvasSize.width,
+      imageSize.height / _sketcherCanvasSize.height,
+    );
+
+    // draw drawing
     Sketcher(strokes: _strokes).paint(canvas, imageSize);
 
     final masterpiece = await recording.endRecording().toImage(

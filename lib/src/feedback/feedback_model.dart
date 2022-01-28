@@ -237,6 +237,8 @@ class FeedbackModel with ChangeNotifier {
 
         _screenshot = await _services.picassoController.paintDrawingOntoImage(
           _services.screenCaptureController.screenshot!,
+          _services.wiredashWidget.theme?.appBackgroundColor ??
+              const Color(0xffcccccc),
         );
         notifyListeners();
 
