@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/tron_button.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 
@@ -18,6 +19,7 @@ class _Step6SubmitState extends State<Step6Submit> {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
+      flowStatus: FeedbackFlowStatus.submit,
       title: const Text('Submit your feedback'),
       description: const Text(
         'Please review your data before submission. '

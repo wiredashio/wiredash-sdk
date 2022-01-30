@@ -19,6 +19,7 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
   Widget build(BuildContext context) {
     if (context.feedbackModel.hasScreenshots) {
       return StepPageScaffold(
+        flowStatus: FeedbackFlowStatus.screenshotsOverview,
         currentStep: 2,
         totalSteps: 3,
         title: const Text('Attached screenshots'),
@@ -94,6 +95,7 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
       );
     } else {
       return StepPageScaffold(
+        flowStatus: FeedbackFlowStatus.screenshotsOverview,
         title: const Text('Include a screenshot for more context?'),
         description: const Text(
           'You’ll be able to navigate the app and choose when to take a screenshot',

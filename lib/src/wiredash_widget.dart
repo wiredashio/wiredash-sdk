@@ -248,104 +248,107 @@ class WiredashState extends State<Wiredash> {
       child: WiredashLocalizations(
         child: WiredashTheme(
           data: theme,
-          child: Stack(
-            children: [
-              WiredashBackdrop(
-                key: _backdropKey,
-                controller: _services.backdropController,
-                padding: widget.padding,
-                app: appBuilder,
-                contentBuilder: (_) => const WiredashFeedbackFlow(),
-                // TODO move somewhere else
-                foregroundLayerBuilder: (context, appRect) {
-                  final status = _services.backdropController.backdropStatus;
+          child: WiredashBackdrop(
+            key: _backdropKey,
+            controller: _services.backdropController,
+            padding: widget.padding,
+            app: appBuilder,
+            contentBuilder: (_) => const WiredashFeedbackFlow(),
+            // TODO move somewhere else
+            foregroundLayerBuilder: (context, appRect) {
+              final status = _services.backdropController.backdropStatus;
 
-                  final animatingCenter =
-                      status == WiredashBackdropStatus.openingCentered ||
-                          status == WiredashBackdropStatus.closingCentered;
-                  if (status == WiredashBackdropStatus.centered ||
-                      animatingCenter) {
-                    final feedbackStatus =
-                        context.feedbackModel.feedbackFlowStatus;
-                    // TODO fade in
-                    return Column(
-                      children: [
-                        SizedBox(
-                          height: appRect.top,
-                          width: double.infinity,
-                          child: Padding(
-                            // padding: EdgeInsets.zero,
-                            padding: EdgeInsets.only(
-                              left: appRect.left,
-                              right: appRect.left,
-                            ),
-                            child: Row(
-                              children: [
-                                TronButton(
-                                  label: 'Back',
-                                  onTap: () {
-                                    context.feedbackModel.goToStep(
-                                      FeedbackFlowStatus.screenshotsOverview,
-                                    );
-                                  },
-                                ),
-                                if (feedbackStatus ==
-                                    FeedbackFlowStatus.screenshotNavigating)
-                                  TronButton(
-                                    color: context.theme.primaryColor,
-                                    leadingIcon: Wirecons.camera,
-                                    iconOffset: const Offset(-.15, 0),
-                                    label: 'Capture',
-                                    onTap: () => context.feedbackModel.goToStep(
-                                      FeedbackFlowStatus.screenshotCapturing,
-                                    ),
-                                  ),
-                                if (feedbackStatus ==
-                                    FeedbackFlowStatus.screenshotDrawing)
-                                  TronButton(
-                                    color: context.picasso.color,
-                                    leadingIcon: Wirecons.pencil,
-                                    iconOffset: const Offset(.15, 0),
-                                    label: 'Change paint',
-                                    onTap: () {
-                                      debugPrint('Open paint menu');
-                                      context.picasso.undo();
-                                    },
-                                  ),
-                                if (feedbackStatus ==
-                                    FeedbackFlowStatus.screenshotDrawing)
-                                  TronButton(
-                                    color: context.theme.primaryColor,
-                                    leadingIcon: Wirecons.check,
-                                    iconOffset: const Offset(-.15, 0),
-                                    label: 'Next',
-                                    onTap: () => context.feedbackModel.goToStep(
-                                      FeedbackFlowStatus.screenshotSaving,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
+              final animatingCenter =
+                  status == WiredashBackdropStatus.openingCentered ||
+                      status == WiredashBackdropStatus.closingCentered;
+              if (status == WiredashBackdropStatus.centered ||
+                  animatingCenter) {
+                final feedbackStatus = context.feedbackModel.feedbackFlowStatus;
+                // TODO fade in
+                return Column(
+                  children: [
+                    SizedBox(
+                      height: appRect.top,
+                      width: double.infinity,
+                      child: Padding(
+                        // padding: EdgeInsets.zero,
+                        padding: EdgeInsets.only(
+                          left: appRect.left,
+                          right: appRect.left,
                         ),
-                        // poor way to prevent overflow during enter/exit anim
-                        if (!animatingCenter)
-                          Container(
-                            height: appRect.height,
-                          ),
-                        if (!animatingCenter)
-                          Expanded(
-                            child: Container(
-                              width: double.infinity,
-                              color: Colors.orange.withOpacity(0.1),
+                        child: Row(
+                          children: [
+                            TronButton(
+                              label: 'Back',
+                              onTap: () {
+                                context.feedbackModel.goToStep(
+                                  FeedbackFlowStatus.screenshotsOverview,
+                                );
+                              },
                             ),
-                          ),
-                      ],
-                    );
-                  }
-                  return null;
-                },
-              ),
-            ],
+                            const Padding(
+                              padding: EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: FeedbackProgressIndicator(
+                                flowStatus:
+                                    FeedbackFlowStatus.screenshotsOverview,
+                              ),
+                            ),
+                            const Spacer(),
+                            if (feedbackStatus ==
+                                FeedbackFlowStatus.screenshotNavigating)
+                              TronButton(
+                                color: context.theme.primaryColor,
+                                leadingIcon: Wirecons.camera,
+                                iconOffset: const Offset(-.15, 0),
+                                label: 'Capture',
+                                onTap: () => context.feedbackModel.goToStep(
+                                  FeedbackFlowStatus.screenshotCapturing,
+                                ),
+                              ),
+                            if (feedbackStatus ==
+                                FeedbackFlowStatus.screenshotDrawing)
+                              TronButton(
+                                color: context.picasso.color,
+                                leadingIcon: Wirecons.pencil,
+                                iconOffset: const Offset(.15, 0),
+                                label: 'Change paint',
+                                onTap: () {
+                                  debugPrint('Open paint menu');
+                                  context.picasso.undo();
+                                },
+                              ),
+                            if (feedbackStatus ==
+                                FeedbackFlowStatus.screenshotDrawing)
+                              TronButton(
+                                color: context.theme.primaryColor,
+                                leadingIcon: Wirecons.check,
+                                iconOffset: const Offset(-.15, 0),
+                                label: 'Next',
+                                onTap: () => context.feedbackModel.goToStep(
+                                  FeedbackFlowStatus.screenshotSaving,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // poor way to prevent overflow during enter/exit anim
+                    if (!animatingCenter)
+                      Container(
+                        height: appRect.height,
+                      ),
+                    if (!animatingCenter)
+                      Expanded(
+                        child: Container(
+                          width: double.infinity,
+                          color: Colors.orange.withOpacity(0.1),
+                        ),
+                      ),
+                  ],
+                );
+              }
+              return null;
+            },
           ),
         ),
       ),

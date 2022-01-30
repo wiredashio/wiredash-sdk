@@ -21,7 +21,7 @@ enum FeedbackFlowStatus {
   screenshotSaving,
   email,
   submit,
-  submitting,
+  submittingAndRetry,
 }
 
 class FeedbackModel with ChangeNotifier {
@@ -91,33 +91,62 @@ class FeedbackModel with ChangeNotifier {
     return steps;
   }
 
+  /// Returns the current stack of steps
   List<FeedbackFlowStatus> get steps {
     if (submitted) {
       // Return just a single step, no back/forward possible
       return [
-        FeedbackFlowStatus.submitting,
+        FeedbackFlowStatus.submittingAndRetry,
       ];
     }
 
-    final stack = [FeedbackFlowStatus.message];
-
-    if (_feedbackMessage != null) {
-      if (labels.isNotEmpty) stack.add(FeedbackFlowStatus.labels);
-      final renderer = getRenderer();
-      if (renderer != Renderer.html) {
-        // Don't show the screenshot option with html renderer, because it
-        // doesn't support rendering to canvas
-        stack.add(FeedbackFlowStatus.screenshotsOverview);
-      }
-      if (_services.wiredashWidget.feedbackOptions?.askForUserEmail == true) {
-        stack.add(FeedbackFlowStatus.email);
-      }
-      stack.add(FeedbackFlowStatus.submit);
+    if (_feedbackMessage == null) {
+      return [FeedbackFlowStatus.message];
     }
+
+    return _completeStack;
+  }
+
+  /// The list of steps a user has to go through to submit feedback
+  List<FeedbackFlowStatus> get _completeStack {
+    final List<FeedbackFlowStatus> stack = [];
+
+    // message is always there
+    stack.add(FeedbackFlowStatus.message);
+
+    if (labels.isNotEmpty) stack.add(FeedbackFlowStatus.labels);
+    final renderer = getRenderer();
+    if (renderer != Renderer.html) {
+      // Don't show the screenshot option with html renderer, because it
+      // doesn't support rendering to canvas
+      stack.add(FeedbackFlowStatus.screenshotsOverview);
+    }
+    if (_services.wiredashWidget.feedbackOptions?.askForUserEmail == true) {
+      stack.add(FeedbackFlowStatus.email);
+    }
+    stack.add(FeedbackFlowStatus.submit);
+
     if (submitting || submitted || submissionError != null) {
-      stack.add(FeedbackFlowStatus.submitting);
+      stack.add(FeedbackFlowStatus.submittingAndRetry);
     }
     return stack;
+  }
+
+  int indexForFlowStatus(FeedbackFlowStatus flowStatus) {
+    FeedbackFlowStatus statusInStack = flowStatus;
+    if (flowStatus == FeedbackFlowStatus.screenshotDrawing ||
+        flowStatus == FeedbackFlowStatus.screenshotNavigating ||
+        flowStatus == FeedbackFlowStatus.screenshotCapturing) {
+      // these states are not actually in the page stack LarryPageView shows
+      // The index is still the same as the overview
+      statusInStack = FeedbackFlowStatus.screenshotsOverview;
+    }
+
+    final index = _completeStack.indexOf(statusInStack);
+    if (index == -1) {
+      throw StateError('Could not find $statusInStack in stack)');
+    }
+    return index;
   }
 
   set feedbackMessage(String? feedbackMessage) {
@@ -257,7 +286,7 @@ class FeedbackModel with ChangeNotifier {
         notifyListeners();
         break;
 
-      case FeedbackFlowStatus.submitting:
+      case FeedbackFlowStatus.submittingAndRetry:
         _feedbackFlowStatus = newStatus;
         notifyListeners();
         break;
@@ -268,7 +297,7 @@ class FeedbackModel with ChangeNotifier {
     _submitting = true;
     _submissionError = null;
     notifyListeners();
-    goToStep(FeedbackFlowStatus.submitting);
+    goToStep(FeedbackFlowStatus.submittingAndRetry);
     bool fakeSubmit = false;
     assert(
       () {

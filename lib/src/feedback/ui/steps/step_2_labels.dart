@@ -3,6 +3,7 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/tron_button.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/data/label.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/base_click_target.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
@@ -21,6 +22,7 @@ class _Step2LabelsState extends State<Step2Labels>
     final feedbackModel = context.feedbackModel;
     final selectedLabels = feedbackModel.selectedLabels;
     return StepPageScaffold(
+      flowStatus: FeedbackFlowStatus.labels,
       title: const Text(
         'Which label represents your feedback?',
       ),

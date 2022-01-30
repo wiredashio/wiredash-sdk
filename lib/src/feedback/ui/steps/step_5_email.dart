@@ -3,6 +3,7 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/utils/email_validator.dart';
 import 'package:wiredash/src/common/widgets/tron_button.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/wiredash.dart';
@@ -39,6 +40,7 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
+      flowStatus: FeedbackFlowStatus.email,
       title: const Text('Get email updates for your issue'),
       description: const Text('Add your email address below or leave empty'),
       child: Column(

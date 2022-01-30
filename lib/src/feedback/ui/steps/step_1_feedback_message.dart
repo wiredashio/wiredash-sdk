@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/tron_button.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
@@ -39,6 +40,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
+      flowStatus: FeedbackFlowStatus.message,
       title: const Text('Send us your feedback'),
       description: const Text(
         'Add a short description of what you encountered',

@@ -106,7 +106,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
           if (status == FeedbackFlowStatus.submit) {
             return const Step6Submit();
           }
-          if (status == FeedbackFlowStatus.submitting) {
+          if (status == FeedbackFlowStatus.submittingAndRetry) {
             return const Step7SubmittingAndError();
           }
           throw 'Unknown step $status at index $index';
@@ -184,12 +184,14 @@ class StepPageScaffold extends StatefulWidget {
     required this.title,
     this.description,
     required this.child,
+    required this.flowStatus,
     Key? key,
   }) : super(key: key);
 
   final int? currentStep;
   final int? totalSteps;
 
+  final FeedbackFlowStatus flowStatus;
   final Widget title;
   final Widget? description;
 
@@ -200,44 +202,6 @@ class StepPageScaffold extends StatefulWidget {
 }
 
 class _StepPageScaffoldState extends State<StepPageScaffold> {
-  int _totalSteps() {
-    return widget.totalSteps ?? context.feedbackModel.maxSteps;
-  }
-
-  int _currentStep() {
-    return widget.currentStep ??
-        ((context.feedbackModel.currentStepIndex ?? 0) + 1);
-  }
-
-  Widget _buildProgressIndicator(BuildContext context) {
-    var currentStep = _currentStep();
-    final total = _totalSteps();
-    bool completed = false;
-    if (currentStep > total) {
-      // especially the last "Submit" step should show the number on the
-      // previous page
-      currentStep = total;
-      completed = true;
-    }
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TronProgressIndicator(
-            currentStep: completed ? total : currentStep - 1,
-            totalSteps: total,
-          ),
-          const SizedBox(width: 12),
-          Text(
-            'Step $currentStep of $total',
-            style: context.theme.captionTextStyle,
-          )
-        ],
-      ),
-    );
-  }
-
   Widget _buildTitle(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -270,7 +234,7 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildProgressIndicator(context),
+              FeedbackProgressIndicator(flowStatus: widget.flowStatus),
               const SizedBox(height: 24),
               _buildTitle(context),
               const SizedBox(height: 32),
@@ -278,6 +242,55 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Inherits the step information from [FeedbackModel]
+class FeedbackProgressIndicator extends StatefulWidget {
+  const FeedbackProgressIndicator({
+    Key? key,
+    required this.flowStatus,
+  }) : super(key: key);
+
+  final FeedbackFlowStatus flowStatus;
+
+  @override
+  State<FeedbackProgressIndicator> createState() =>
+      _FeedbackProgressIndicatorState();
+}
+
+class _FeedbackProgressIndicatorState extends State<FeedbackProgressIndicator> {
+  @override
+  Widget build(BuildContext context) {
+    final feedbackModel = context.feedbackModel;
+    final stepIndex = feedbackModel.indexForFlowStatus(widget.flowStatus);
+    var currentStep = stepIndex + 1;
+    final total = feedbackModel.maxSteps;
+
+    bool completed = false;
+    if (currentStep > total) {
+      // especially the last "Submit" step should show the number on the
+      // previous page
+      currentStep = total;
+      completed = true;
+    }
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TronProgressIndicator(
+            currentStep: completed ? total : currentStep - 1,
+            totalSteps: total,
+          ),
+          const SizedBox(width: 12),
+          Text(
+            'Step $currentStep of $total',
+            style: context.theme.captionTextStyle,
+          )
+        ],
       ),
     );
   }
