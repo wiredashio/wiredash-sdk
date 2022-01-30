@@ -300,8 +300,12 @@ class WiredashState extends State<Wiredash> {
                         child: Align(
                           alignment: Alignment.bottomCenter,
                           child: AnimatedSlide(
-                            duration: const Duration(milliseconds: 750),
-                            curve: Curves.easeInOutCubicEmphasized,
+                            duration: const Duration(seconds: 1),
+                            curve: const Interval(
+                              0.5,
+                              1,
+                              curve: Curves.easeOutCirc,
+                            ),
                             offset: Offset(
                               0,
                               context.feedbackModel.feedbackFlowStatus ==
