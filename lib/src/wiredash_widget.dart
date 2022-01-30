@@ -279,7 +279,7 @@ class WiredashState extends State<Wiredash> {
                         },
                       ),
                       if (context.theme.windowSize.width > 680) ...[
-                        const Spacer(flex: 1),
+                        const Spacer(),
                         const Padding(
                           padding: EdgeInsets.only(left: 8.0, right: 8.0),
                           child: FeedbackProgressIndicator(
@@ -292,7 +292,7 @@ class WiredashState extends State<Wiredash> {
                         ),
                       ],
                       if (context.theme.windowSize.width > 500) ...[
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Expanded(
                           flex: 10,
                           child: Padding(
@@ -306,7 +306,7 @@ class WiredashState extends State<Wiredash> {
                             ),
                           ),
                         ),
-                        const Spacer(flex: 1),
+                        const Spacer(),
                       ] else
                         const Spacer(flex: 10),
                       if (feedbackStatus ==

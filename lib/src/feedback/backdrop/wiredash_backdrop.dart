@@ -294,17 +294,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final keyboardHeight = () {
       if (isKeyboardOpen) {
         return _maxKeyboardHeight;
+      } else if (screenSize.height - _maxKeyboardHeight <
+          minContentAreaHeight) {
+        // there's not enough space to always include the padding
+        return 0;
       } else {
-        if (screenSize.height - _maxKeyboardHeight < minContentAreaHeight) {
-          // there's not enough space to always include the padding
-          return 0;
-        } else {
-          // Always include the keyboardHeight, prevent flickering when there
-          // is enough space
-          return _maxKeyboardHeight;
-        }
+        // Always include the keyboardHeight, prevent flickering when there
+        // is enough space
+        return _maxKeyboardHeight;
       }
-      return 0;
     }();
 
     // don't peak app on small screens in landscape when the keyboard is open
@@ -946,6 +944,7 @@ extension on Rect {
 }
 
 extension on double {
+  // ignore: unused_element
   double clapWithin({required double min, required double max}) {
     return clamp(min, max) as double;
   }

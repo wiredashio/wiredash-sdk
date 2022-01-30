@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'dart:ui' show Brightness;
 
 import 'package:flutter/rendering.dart';
@@ -219,10 +218,6 @@ class WiredashThemeData {
       600: 64,
     });
     return keypoints.interpolate(windowSize.width);
-    if (windowSize.height <= 400) {
-      return 40;
-    }
-    return 64;
   }
 
   double get maxContentWidth {
