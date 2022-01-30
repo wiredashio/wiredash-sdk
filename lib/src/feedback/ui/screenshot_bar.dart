@@ -38,56 +38,58 @@ class ScreenshotBar extends StatelessWidget {
       );
     }
 
-    return Row(
-      children: [
-        TronButton(
-          label: 'Back',
-          leadingIcon: Wirecons.arrow_left,
-          color: context.theme.secondaryColor,
-          onTap: () {
-            context.feedbackModel.cancelScreenshotCapturingMode();
-          },
-        ),
-        if (context.theme.windowSize.width > 680) ...[
-          const Spacer(),
-          const Padding(
-            padding: EdgeInsets.only(left: 8.0, right: 8.0),
-            child: FeedbackProgressIndicator(
-              flowStatus: FeedbackFlowStatus.screenshotsOverview,
-            ),
+    return SafeArea(
+      child: Row(
+        children: [
+          TronButton(
+            label: 'Back',
+            leadingIcon: Wirecons.arrow_left,
+            color: context.theme.secondaryColor,
+            onTap: () {
+              context.feedbackModel.cancelScreenshotCapturingMode();
+            },
           ),
-          const SizedBox(
-            height: 28,
-            child: VerticalDivider(),
-          ),
-        ],
-        if (context.theme.windowSize.width > 500) ...[
-          const SizedBox(width: 8),
-          Expanded(
-            flex: 10,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                feedbackStatus == FeedbackFlowStatus.screenshotDrawing
-                    ? "Draw to highlight what's important"
-                    : 'Include a screenshot for more context',
-                style: context.theme.appbarTitle,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
+          if (context.theme.windowSize.width > 680) ...[
+            const Spacer(),
+            const Padding(
+              padding: EdgeInsets.only(left: 8.0, right: 8.0),
+              child: FeedbackProgressIndicator(
+                flowStatus: FeedbackFlowStatus.screenshotsOverview,
               ),
             ),
+            const SizedBox(
+              height: 28,
+              child: VerticalDivider(),
+            ),
+          ],
+          if (context.theme.windowSize.width > 500) ...[
+            const SizedBox(width: 8),
+            Expanded(
+              flex: 10,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  feedbackStatus == FeedbackFlowStatus.screenshotDrawing
+                      ? "Draw to highlight what's important"
+                      : 'Include a screenshot for more context',
+                  style: context.theme.appbarTitle,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
+              ),
+            ),
+            const Spacer(),
+          ] else
+            const Spacer(flex: 10),
+          ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 140),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: trailing,
+            ),
           ),
-          const Spacer(),
-        ] else
-          const Spacer(flex: 10),
-        ConstrainedBox(
-          constraints: const BoxConstraints(minWidth: 140),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: trailing,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

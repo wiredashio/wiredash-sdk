@@ -108,28 +108,30 @@ class Step3WithGallery extends StatelessWidget {
             height: 200,
             child: Row(
               children: [
-                Elevation(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(2),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Image.memory(
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Elevation(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(2),
+                        child: Image.memory(
                           context.feedbackModel.screenshot!,
                           fit: BoxFit.contain,
                         ),
-                        TronButton(
-                          leadingIcon: Wirecons.refresh,
-                          color: context.theme.secondaryColor,
-                          onTap: () {
-                            context.feedbackModel
-                                .enterScreenshotCapturingMode();
-                          },
-                          label: 'Replace',
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: TronButton(
+                        leadingIcon: Wirecons.refresh,
+                        color: context.theme.secondaryColor,
+                        onTap: () {
+                          context.feedbackModel.enterScreenshotCapturingMode();
+                        },
+                        label: 'Replace',
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(width: 16),
                 if (kDebugMode)
