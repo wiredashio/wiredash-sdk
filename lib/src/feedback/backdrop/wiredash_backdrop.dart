@@ -703,9 +703,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }
 
   Future<void> _animateToOpen() async {
-    if (_backdropStatus == WiredashBackdropStatus.closed) {
+    if (_backdropStatus == WiredashBackdropStatus.closed ||
+        _backdropStatus == WiredashBackdropStatus.closing) {
       _backdropStatus = WiredashBackdropStatus.opening;
-    } else if (_backdropStatus == WiredashBackdropStatus.centered) {
+    } else if (_backdropStatus == WiredashBackdropStatus.centered ||
+        _backdropStatus == WiredashBackdropStatus.openingCentered) {
       _backdropStatus = WiredashBackdropStatus.closingCentered;
     } else {
       // no need for animating, we're already in a desired state
