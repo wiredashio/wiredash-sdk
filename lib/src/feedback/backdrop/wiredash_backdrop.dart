@@ -409,7 +409,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// Returns the rects as colored widgets on screen
   List<Widget> _debugRects() {
-    bool debug = true;
+    bool debug = false; // not touchy here, edit in assert
     assert(
       () {
         // enable debugging here
