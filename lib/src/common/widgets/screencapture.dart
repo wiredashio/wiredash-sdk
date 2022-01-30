@@ -35,7 +35,11 @@ class ScreenCaptureController extends ChangeNotifier {
   }
 }
 
-class _ScreenCaptureState extends State<ScreenCapture> {
+class _ScreenCaptureState extends State<ScreenCapture>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _screenshotFlashAnimation;
+
   final _repaintBoundaryGlobalKey = GlobalKey();
   MemoryImage? _screenshotMemoryImage;
 
@@ -43,11 +47,23 @@ class _ScreenCaptureState extends State<ScreenCapture> {
   void initState() {
     super.initState();
     widget.controller._state = this;
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+
+    _screenshotFlashAnimation = Tween(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOutCubicEmphasized,
+      ),
+    );
   }
 
   Future<ui.Image?> captureScreen() async {
     final canvas = _repaintBoundaryGlobalKey.currentContext?.findRenderObject()
-        as RenderRepaintBoundary?;
+    as RenderRepaintBoundary?;
     if (canvas == null) return null;
 
     final _screenshot = await canvas.toImage(pixelRatio: 1.5);
@@ -61,7 +77,7 @@ class _ScreenCaptureState extends State<ScreenCapture> {
 
   Future<void> precacheScreenshot(ui.Image screenshot) async {
     final byteData =
-        await screenshot.toByteData(format: ui.ImageByteFormat.png);
+    await screenshot.toByteData(format: ui.ImageByteFormat.png);
     if (byteData == null) return;
 
     final image = MemoryImage(byteData.buffer.asUint8List());
@@ -74,6 +90,7 @@ class _ScreenCaptureState extends State<ScreenCapture> {
     if (!mounted) return;
     setState(() {
       _screenshotMemoryImage = image;
+      _controller.forward(from: 0);
     });
   }
 
@@ -81,6 +98,18 @@ class _ScreenCaptureState extends State<ScreenCapture> {
     setState(() {
       _screenshotMemoryImage = null;
     });
+  }
+
+  Widget _buildScreenshotFlash() {
+    return FadeTransition(
+      opacity: _screenshotFlashAnimation,
+      child: const DecoratedBox(
+        decoration: BoxDecoration(
+          color: Color(0xffffffff),
+        ),
+        child: SizedBox.expand(),
+      ),
+    );
   }
 
   @override
@@ -95,8 +124,10 @@ class _ScreenCaptureState extends State<ScreenCapture> {
             child: widget.child,
           ),
         ),
-        if (_screenshotMemoryImage != null)
+        if (_screenshotMemoryImage != null) ...[
           Image(image: _screenshotMemoryImage!),
+          _buildScreenshotFlash()
+        ],
       ],
     );
   }
