@@ -287,7 +287,7 @@ class _FeedbackProgressIndicatorState extends State<FeedbackProgressIndicator> {
         Text(
           'Step $currentStep of $total',
           style: context.theme.captionTextStyle,
-        )
+        ),
       ],
     );
   }

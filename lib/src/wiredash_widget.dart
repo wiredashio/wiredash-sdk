@@ -278,14 +278,37 @@ class WiredashState extends State<Wiredash> {
                           );
                         },
                       ),
-                      if (context.theme.windowSize.width > 500)
+                      if (context.theme.windowSize.width > 680) ...[
+                        const Spacer(flex: 1),
                         const Padding(
                           padding: EdgeInsets.only(left: 8.0, right: 8.0),
                           child: FeedbackProgressIndicator(
                             flowStatus: FeedbackFlowStatus.screenshotsOverview,
                           ),
                         ),
-                      const Spacer(),
+                        const SizedBox(
+                          height: 28,
+                          child: VerticalDivider(),
+                        ),
+                      ],
+                      if (context.theme.windowSize.width > 500) ...[
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 10,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              'Include a screenshot for more context',
+                              style: context.theme.appbarTitle,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                          ),
+                        ),
+                        const Spacer(flex: 1),
+                      ] else
+                        const Spacer(flex: 10),
                       if (feedbackStatus ==
                           FeedbackFlowStatus.screenshotNavigating)
                         TronButton(
@@ -296,18 +319,6 @@ class WiredashState extends State<Wiredash> {
                           onTap: () => context.feedbackModel.goToStep(
                             FeedbackFlowStatus.screenshotCapturing,
                           ),
-                        ),
-                      if (feedbackStatus ==
-                          FeedbackFlowStatus.screenshotDrawing)
-                        TronButton(
-                          color: context.picasso.color,
-                          leadingIcon: Wirecons.pencil,
-                          iconOffset: const Offset(.15, 0),
-                          label: 'Change paint',
-                          onTap: () {
-                            debugPrint('Open paint menu');
-                            context.picasso.undo();
-                          },
                         ),
                       if (feedbackStatus ==
                           FeedbackFlowStatus.screenshotDrawing)
@@ -335,7 +346,8 @@ class WiredashState extends State<Wiredash> {
                           right: appRect.left,
                         ),
                         child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 400),
+                          duration: const Duration(milliseconds: 500),
+                          reverseDuration: const Duration(milliseconds: 200),
                           // hide buttons early when exiting centered
                           child: status ==
                                       WiredashBackdropStatus.openingCentered ||

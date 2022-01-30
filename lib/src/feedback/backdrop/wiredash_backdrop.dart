@@ -70,6 +70,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   Rect _rectAppFillsScreen = Rect.zero;
   Rect _rectContentArea = Rect.zero;
 
+  /// Saves the max keyboard height once detected to prevent jumping of the UI
+  /// when keyboard opens/closes
+  double _maxKeyboardHeight = 0.0;
+
   WiredashBackdropStatus get _backdropStatus =>
       widget.controller.backdropStatus;
 
@@ -133,8 +137,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final newTheme = context.theme;
     _wiredashThemeData = newTheme;
 
-    // Reduce the number of rect calculations by explicitly checking if
-    // dependencies of _calculateRects changed.
     if (newMq.size != oldMq.size ||
         oldTheme.horizontalPadding != newTheme.horizontalPadding ||
         oldTheme.verticalPadding != newTheme.verticalPadding ||
@@ -142,8 +144,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         // keyboard detection
         newMq.viewInsets != oldMq.viewInsets ||
         newMq.padding != oldMq.padding) {
+      // Reduce the number of rect calculations by explicitly checking if
+      // dependencies of _calculateRects changed.
       _calculateRects();
       _swapAnimation();
+    }
+
+    if (newMq.orientation != oldMq.orientation) {
+      // soft keyboards have different heights based on the orientation
+      _maxKeyboardHeight = 0.0;
     }
   }
 
@@ -277,24 +286,35 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     const double maxContentAreaHeight = 640.0;
     const double minAppPeakHeight = 56;
 
-    // center the navigation buttons
-    double preferredAppHeight = _mediaQueryData.size.height * 0.5;
-    preferredAppHeight -= minAppPeakHeight;
-    preferredAppHeight -= wiredashPadding.top / 2;
+    // TODO check on android with soft keyboard and soft navigation keys
+    final currentKeyboardHeight = _mediaQueryData.viewInsets.bottom;
+    final bool isKeyboardOpen =
+        currentKeyboardHeight.isRoughly(_maxKeyboardHeight, 0.2);
+    _maxKeyboardHeight = math.max(currentKeyboardHeight, _maxKeyboardHeight);
+    final keyboardHeight = () {
+      if (isKeyboardOpen) {
+        return _maxKeyboardHeight;
+      } else {
+        if (screenSize.height - _maxKeyboardHeight < minContentAreaHeight) {
+          // there's not enough space to always include the padding
+          return 0;
+        } else {
+          // Always include the keyboardHeight, prevent flickering when there
+          // is enough space
+          return _maxKeyboardHeight;
+        }
+      }
+      return 0;
+    }();
 
-    final preferredContentHeight =
-        _mediaQueryData.size.height - preferredAppHeight;
+    // don't peak app on small screens in landscape when the keyboard is open
+    final bool peakApp = !isKeyboardOpen ||
+        (screenSize.height - minAppPeakHeight - _maxKeyboardHeight) >
+            minContentAreaHeight;
 
-    final contentHeightWithButtons = preferredContentHeight.clapWithin(
-      min: minContentAreaHeight,
-      max: maxContentAreaHeight,
-    );
-
-    // On super small screen (landscape phones) scale to 0 and
-    // make 100% sure the appPeak is visible
     final double contentHeight =
-        math.min(contentHeightWithButtons, screenSize.height) -
-            minAppPeakHeight;
+        math.min(maxContentAreaHeight, screenSize.height - keyboardHeight) -
+            (peakApp ? minAppPeakHeight : 0);
 
     _rectContentArea = Rect.fromLTWH(
       0,
@@ -313,8 +333,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     _rectAppOutOfFocus = Rect.fromLTWH(
       0,
       _rectContentArea.bottom,
-      screenSize.width * centerScaleFactor,
-      screenSize.height * centerScaleFactor,
+      screenSize.width,
+      screenSize.height,
     )
         .centerHorizontally(
           maxWidth: screenSize.width - wiredashPadding.horizontal,
@@ -362,16 +382,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             child: background,
           )
         : null;
-
-    // if (_backdropStatus == WiredashBackdropStatus.closing ||
-    //     _backdropStatus == WiredashBackdropStatus.opening) {
-    //   // Move app above nav buttons
-    //   return [
-    //     keyedContent,
-    //     keyedNav,
-    //     keyedApp,
-    //   ];
-    // }
 
     // Place buttons at the very top by default
     return [
@@ -938,5 +948,13 @@ extension on Rect {
 extension on double {
   double clapWithin({required double min, required double max}) {
     return clamp(min, max) as double;
+  }
+
+  /// Returns true when [value] is within bounds of `this * `[fraction]
+  bool isRoughly(num value, double fraction) {
+    final delta = this * fraction;
+    final upperBound = this + delta;
+    final lowerBound = this - delta;
+    return value > lowerBound && value < upperBound;
   }
 }

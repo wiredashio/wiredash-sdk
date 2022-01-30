@@ -139,6 +139,14 @@ class WiredashThemeData {
         fontWeight: FontWeight.bold,
       );
 
+  TextStyle get appbarTitle => TextStyle(
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 16,
+        color: primaryTextColor,
+        fontWeight: FontWeight.bold,
+      );
+
   TextStyle get titleTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
