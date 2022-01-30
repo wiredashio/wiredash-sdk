@@ -55,7 +55,8 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
             child: TextField(
               controller: _controller,
               keyboardType: TextInputType.multiline,
-              maxLines: context.theme.windowSize.height > 400 ? 3 : 2,
+              minLines: context.theme.windowSize.height > 400 ? 3 : 2,
+              maxLines: 10,
               maxLength: 2048,
               buildCounter: _getCounterText,
               style: context.theme.bodyTextStyle,
