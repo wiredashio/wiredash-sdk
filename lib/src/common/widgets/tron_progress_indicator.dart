@@ -128,7 +128,11 @@ class _TronProgressPainter extends CustomPainter {
       ..style = PaintingStyle.fill
       ..color = colorCurrent;
 
-    canvas.drawCircle(size.center(Offset.zero), size.width / 2, circlePaint);
+    canvas.drawCircle(
+      size.center(Offset.zero),
+      (size.width - _borderWidth) / 2,
+      circlePaint,
+    );
 
     fillPaint.color = colorNext;
     canvas.drawArc(
