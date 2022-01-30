@@ -1,6 +1,8 @@
+import 'dart:math' as math;
 import 'dart:ui' show Brightness;
 
 import 'package:flutter/rendering.dart';
+import 'package:wiredash/src/common/utils/key_point_interpolator.dart';
 
 class WiredashThemeData {
   factory WiredashThemeData({
@@ -192,32 +194,23 @@ class WiredashThemeData {
       );
 
   double get horizontalPadding {
-    switch (deviceClass) {
-      case DeviceClass.handsetSmall320:
-        return 8;
-      case DeviceClass.handsetMedium360:
-        return 16;
-      case DeviceClass.handsetLarge400:
-        return 32;
-      case DeviceClass.tabletSmall600:
-        return 64;
-      case DeviceClass.tabletLarge720:
-        return 64;
-      case DeviceClass.desktopSmall1024:
-        return 128;
-      case DeviceClass.desktopLarge1440:
-        return 128;
-    }
-  }
-
-  double get buttonBarHeight {
-    if (windowSize.height <= 600) {
-      return 70;
-    }
-    return 96;
+    final keypoints = KeyPointInterpolator({
+      320: 8,
+      360: 16,
+      400: 32,
+      600: 64,
+      720: 64,
+      1024: 128,
+    });
+    return keypoints.interpolate(windowSize.width);
   }
 
   double get verticalPadding {
+    final keypoints = KeyPointInterpolator({
+      400: 40,
+      600: 64,
+    });
+    return keypoints.interpolate(windowSize.width);
     if (windowSize.height <= 400) {
       return 40;
     }
@@ -225,19 +218,14 @@ class WiredashThemeData {
   }
 
   double get maxContentWidth {
-    switch (deviceClass) {
-      case DeviceClass.handsetSmall320:
-      case DeviceClass.handsetMedium360:
-      case DeviceClass.handsetLarge400:
-      case DeviceClass.tabletSmall600:
-        return double.infinity;
-      case DeviceClass.tabletLarge720:
-        return 640;
-      case DeviceClass.desktopSmall1024:
-        return 720;
-      case DeviceClass.desktopLarge1440:
-        return 800;
-    }
+    final width = windowSize.width;
+    final keypoints = KeyPointInterpolator({
+      0: 0,
+      720: 720,
+      1024: 1024.0 - 1024.0 * 0.30,
+      40690: 40690.0 - 40690.0 * 0.30,
+    });
+    return keypoints.interpolate(width);
   }
 
   @override
