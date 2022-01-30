@@ -44,41 +44,45 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
       title: const Text('Get email updates for your issue'),
       description: const Text('Add your email address below or leave empty'),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextFormField(
-            controller: _controller,
-            keyboardType: TextInputType.emailAddress,
-            cursorColor: context.theme.primaryColor,
-            style: context.theme.bodyTextStyle,
-            onFieldSubmitted: (_) {
-              if (context.feedbackModel.validateForm()) {
-                context.feedbackModel.goToNextStep();
-              }
-            },
-            validator: (data) {
-              final email = data ?? '';
-              if (email.isEmpty) {
-                // leaving this field empty is ok
-                return null;
-              }
-              final valid = const EmailValidator().validate(email);
-              return valid
-                  ? null
-                  : WiredashLocalizations.of(context)!.validationHintEmail;
-            },
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: context.theme.primaryBackgroundColor,
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: context.theme.secondaryColor),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: TextFormField(
+              controller: _controller,
+              keyboardType: TextInputType.emailAddress,
+              cursorColor: context.theme.primaryColor,
+              style: context.theme.bodyTextStyle,
+              onFieldSubmitted: (_) {
+                if (context.feedbackModel.validateForm()) {
+                  context.feedbackModel.goToNextStep();
+                }
+              },
+              validator: (data) {
+                final email = data ?? '';
+                if (email.isEmpty) {
+                  // leaving this field empty is ok
+                  return null;
+                }
+                final valid = const EmailValidator().validate(email);
+                return valid
+                    ? null
+                    : WiredashLocalizations.of(context)!.validationHintEmail;
+              },
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: context.theme.primaryBackgroundColor,
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: context.theme.secondaryColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: context.theme.secondaryColor),
+                ),
+                hintText: 'mail@example.com',
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                hintStyle: context.theme.body2TextStyle,
               ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: context.theme.secondaryColor),
-              ),
-              hintText: 'mail@example.com',
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              hintStyle: context.theme.body2TextStyle,
             ),
           ),
           const SizedBox(height: 40),

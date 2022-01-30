@@ -26,6 +26,9 @@ class _Step2LabelsState extends State<Step2Labels>
       title: const Text(
         'Which label represents your feedback?',
       ),
+      description: const Text(
+        'Selecting the correct category helps forwarding your feedback to the best person to resolve your issue',
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
