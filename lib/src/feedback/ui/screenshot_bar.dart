@@ -22,9 +22,7 @@ class ScreenshotBar extends StatelessWidget {
         leadingIcon: Wirecons.camera,
         iconOffset: const Offset(-.15, 0),
         label: 'Capture',
-        onTap: () => context.feedbackModel.goToStep(
-          FeedbackFlowStatus.screenshotCapturing,
-        ),
+        onTap: () => context.feedbackModel.captureScreenshot(),
       );
     }
 
@@ -36,9 +34,7 @@ class ScreenshotBar extends StatelessWidget {
         leadingIcon: Wirecons.check,
         iconOffset: const Offset(-.15, 0),
         label: 'Next',
-        onTap: () => context.feedbackModel.goToStep(
-          FeedbackFlowStatus.screenshotSaving,
-        ),
+        onTap: () => context.feedbackModel.createMasterpiece(),
       );
     }
 
@@ -49,9 +45,7 @@ class ScreenshotBar extends StatelessWidget {
           leadingIcon: Wirecons.arrow_left,
           color: context.theme.secondaryColor,
           onTap: () {
-            context.feedbackModel.goToStep(
-              FeedbackFlowStatus.screenshotsOverview,
-            );
+            context.feedbackModel.cancelScreenshotCapturingMode();
           },
         ),
         if (context.theme.windowSize.width > 680) ...[
@@ -74,7 +68,9 @@ class ScreenshotBar extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
-                'Include a screenshot for more context',
+                feedbackStatus == FeedbackFlowStatus.screenshotDrawing
+                    ? "Draw to highlight what's important"
+                    : 'Include a screenshot for more context',
                 style: context.theme.appbarTitle,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
