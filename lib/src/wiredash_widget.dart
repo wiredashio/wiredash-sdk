@@ -5,15 +5,13 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/utils/context_cache.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/common/widgets/screencapture.dart';
-import 'package:wiredash/src/common/widgets/tron_button.dart';
-import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
 import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
-import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
+import 'package:wiredash/src/feedback/ui/screenshot_bar.dart';
 import 'package:wiredash/src/support/not_a_widgets_app.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
 import 'package:wiredash/wiredash.dart';
@@ -263,76 +261,9 @@ class WiredashState extends State<Wiredash> {
                       status == WiredashBackdropStatus.closingCentered;
               if (animatingCenter ||
                   status == WiredashBackdropStatus.centered) {
-                final feedbackStatus = context.feedbackModel.feedbackFlowStatus;
                 final topBar = SizedBox(
                   height: appRect.top,
-                  child: Row(
-                    children: [
-                      TronButton(
-                        label: 'Back',
-                        leadingIcon: Wirecons.arrow_left,
-                        color: context.theme.secondaryColor,
-                        onTap: () {
-                          context.feedbackModel.goToStep(
-                            FeedbackFlowStatus.screenshotsOverview,
-                          );
-                        },
-                      ),
-                      if (context.theme.windowSize.width > 680) ...[
-                        const Spacer(),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 8.0, right: 8.0),
-                          child: FeedbackProgressIndicator(
-                            flowStatus: FeedbackFlowStatus.screenshotsOverview,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 28,
-                          child: VerticalDivider(),
-                        ),
-                      ],
-                      if (context.theme.windowSize.width > 500) ...[
-                        const SizedBox(width: 8),
-                        Expanded(
-                          flex: 10,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              'Include a screenshot for more context',
-                              style: context.theme.appbarTitle,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                      ] else
-                        const Spacer(flex: 10),
-                      if (feedbackStatus ==
-                          FeedbackFlowStatus.screenshotNavigating)
-                        TronButton(
-                          color: context.theme.primaryColor,
-                          leadingIcon: Wirecons.camera,
-                          iconOffset: const Offset(-.15, 0),
-                          label: 'Capture',
-                          onTap: () => context.feedbackModel.goToStep(
-                            FeedbackFlowStatus.screenshotCapturing,
-                          ),
-                        ),
-                      if (feedbackStatus ==
-                          FeedbackFlowStatus.screenshotDrawing)
-                        TronButton(
-                          color: context.theme.primaryColor,
-                          leadingIcon: Wirecons.check,
-                          iconOffset: const Offset(-.15, 0),
-                          label: 'Next',
-                          onTap: () => context.feedbackModel.goToStep(
-                            FeedbackFlowStatus.screenshotSaving,
-                          ),
-                        ),
-                    ],
-                  ),
+                  child: const ScreenshotBar(),
                 );
                 content = Column(
                   children: [
