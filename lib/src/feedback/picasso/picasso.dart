@@ -25,7 +25,7 @@ class PicassoController extends ChangeNotifier {
 
   bool _isActive = false;
   Color _color = const Color(0xff6B46C1);
-  double _strokeWidth = 5.0;
+  double _strokeWidth = 8.0;
 
   bool get isActive => _isActive;
 
