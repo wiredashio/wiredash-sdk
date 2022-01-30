@@ -7,9 +7,11 @@ import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/common/widgets/screencapture.dart';
 import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
 import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
+import 'package:wiredash/src/feedback/ui/color_palette.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/feedback/ui/screenshot_bar.dart';
 import 'package:wiredash/src/support/not_a_widgets_app.dart';
@@ -295,9 +297,29 @@ class WiredashState extends State<Wiredash> {
                       ),
                     if (!animatingCenter)
                       Expanded(
-                        child: Container(
-                          width: double.infinity,
-                          color: Colors.orange.withOpacity(0.1),
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: AnimatedSlide(
+                            duration: const Duration(milliseconds: 750),
+                            curve: Curves.easeInOutCubicEmphasized,
+                            offset: Offset(
+                              0,
+                              context.feedbackModel.feedbackFlowStatus ==
+                                      FeedbackFlowStatus.screenshotDrawing
+                                  ? 0
+                                  : 1,
+                            ),
+                            child: ColorPalette(
+                              initialColor: _services.picassoController.color,
+                              initialStrokeWidth:
+                                  _services.picassoController.strokeWidth,
+                              onNewColorSelected: (color) =>
+                                  _services.picassoController.color = color,
+                              onNewStrokeWidthSelected: (width) => _services
+                                  .picassoController.strokeWidth = width,
+                              onUndo: _services.picassoController.undo,
+                            ),
+                          ),
                         ),
                       ),
                   ],
