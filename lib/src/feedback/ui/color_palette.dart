@@ -103,15 +103,8 @@ class _ColorPaletteState extends State<ColorPalette>
                       },
                     ),
                     const SizedBox(width: 8),
-                    MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: () => _controller.forward(),
-                        child: Icon(
-                          Wirecons.minus_sm,
-                          color: context.theme.primaryColor,
-                        ),
-                      ),
+                    StrokeWidthDot(
+                      onTap: () => _controller.forward(),
                     ),
                     const SizedBox(width: 8),
                   ],
@@ -203,6 +196,87 @@ class HorizontalColorPicker extends StatelessWidget {
   }
 }
 
+class StrokeWidthDot extends StatefulWidget {
+  const StrokeWidthDot({Key? key, this.onTap}) : super(key: key);
+
+  final VoidCallback? onTap;
+
+  @override
+  State<StrokeWidthDot> createState() => _StrokeWidthDotState();
+}
+
+class _StrokeWidthDotState extends State<StrokeWidthDot> {
+  bool _hovered = false;
+
+  void _updateHoveredState(bool isHovered) {
+    setState(() {
+      _hovered = isHovered;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => widget.onTap?.call(),
+      behavior: HitTestBehavior.translucent,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => _updateHoveredState(true),
+        onExit: (_) => _updateHoveredState(false),
+        child: SizedBox(
+          width: 30,
+          height: 30,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 16,
+                  height: 2,
+                  decoration: BoxDecoration(
+                    color: context.theme.primaryColor,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 150),
+                  curve: Curves.easeOut,
+                  child: SizedBox(
+                    height: _hovered ? 4.5 : 3,
+                  ),
+                ),
+                Container(
+                  width: 16,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    color: context.theme.primaryColor,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 150),
+                  curve: Curves.easeOut,
+                  child: SizedBox(
+                    height: _hovered ? 4.5 : 3,
+                  ),
+                ),
+                Container(
+                  width: 16,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: context.theme.primaryColor,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class AnimatedColorDot extends StatefulWidget {
   const AnimatedColorDot({
     Key? key,
@@ -216,7 +290,7 @@ class AnimatedColorDot extends StatefulWidget {
   final VoidCallback onTap;
 
   @override
-  _AnimatedColorDotState createState() => _AnimatedColorDotState();
+  State<AnimatedColorDot> createState() => _AnimatedColorDotState();
 }
 
 class _AnimatedColorDotState extends State<AnimatedColorDot>
