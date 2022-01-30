@@ -50,8 +50,7 @@ class _PullToCloseDetectorState extends State<PullToCloseDetector> {
       VerticalDragGestureRecognizer(debugOwner: this)
         ..onStart = _handleDragStart
         ..onUpdate = _handleDragUpdate
-        ..onEnd = _handleDragEnd
-        ..onCancel = _handleDragCancel;
+        ..onEnd = _handleDragEnd;
 
   @override
   void initState() {
@@ -92,10 +91,6 @@ class _PullToCloseDetectorState extends State<PullToCloseDetector> {
     } else {
       widget.startReopenSimulation(velocity);
     }
-  }
-
-  Future<void> _handleDragCancel() async {
-    widget.startReopenSimulation(0);
   }
 
   @override
