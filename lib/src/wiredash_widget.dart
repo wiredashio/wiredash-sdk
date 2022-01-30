@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/services/services.dart';
@@ -6,11 +5,15 @@ import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/utils/context_cache.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/common/widgets/screencapture.dart';
+import 'package:wiredash/src/common/widgets/tron_button.dart';
+import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
 import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
+import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/src/support/not_a_widgets_app.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
 import 'package:wiredash/wiredash.dart';
@@ -251,7 +254,96 @@ class WiredashState extends State<Wiredash> {
                 key: _backdropKey,
                 controller: _services.backdropController,
                 padding: widget.padding,
-                child: appBuilder,
+                app: appBuilder,
+                contentBuilder: (_) => const WiredashFeedbackFlow(),
+                // TODO move somewhere else
+                foregroundLayerBuilder: (context, appRect) {
+                  final status = _services.backdropController.backdropStatus;
+
+                  final animatingCenter =
+                      status == WiredashBackdropStatus.openingCentered ||
+                          status == WiredashBackdropStatus.closingCentered;
+                  if (status == WiredashBackdropStatus.centered ||
+                      animatingCenter) {
+                    final feedbackStatus =
+                        context.feedbackModel.feedbackFlowStatus;
+                    // TODO fade in
+                    return Column(
+                      children: [
+                        SizedBox(
+                          height: appRect.top,
+                          width: double.infinity,
+                          child: Padding(
+                            // padding: EdgeInsets.zero,
+                            padding: EdgeInsets.only(
+                              left: appRect.left,
+                              right: appRect.left,
+                            ),
+                            child: Row(
+                              children: [
+                                TronButton(
+                                  label: 'Back',
+                                  onTap: () {
+                                    context.feedbackModel.goToStep(
+                                      FeedbackFlowStatus.screenshotsOverview,
+                                    );
+                                  },
+                                ),
+                                if (feedbackStatus ==
+                                    FeedbackFlowStatus.screenshotNavigating)
+                                  TronButton(
+                                    color: context.theme.primaryColor,
+                                    leadingIcon: Wirecons.camera,
+                                    iconOffset: const Offset(-.15, 0),
+                                    label: 'Capture',
+                                    onTap: () => context.feedbackModel.goToStep(
+                                      FeedbackFlowStatus.screenshotCapturing,
+                                    ),
+                                  ),
+                                if (feedbackStatus ==
+                                    FeedbackFlowStatus.screenshotDrawing)
+                                  TronButton(
+                                    color: context.picasso.color,
+                                    leadingIcon: Wirecons.pencil,
+                                    iconOffset: const Offset(.15, 0),
+                                    label: 'Change paint',
+                                    onTap: () {
+                                      debugPrint('Open paint menu');
+                                      context.picasso.undo();
+                                    },
+                                  ),
+                                if (feedbackStatus ==
+                                    FeedbackFlowStatus.screenshotDrawing)
+                                  TronButton(
+                                    color: context.theme.primaryColor,
+                                    leadingIcon: Wirecons.check,
+                                    iconOffset: const Offset(-.15, 0),
+                                    label: 'Next',
+                                    onTap: () => context.feedbackModel.goToStep(
+                                      FeedbackFlowStatus.screenshotSaving,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // poor way to prevent overflow during enter/exit anim
+                        if (!animatingCenter)
+                          Container(
+                            height: appRect.height,
+                          ),
+                        if (!animatingCenter)
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              color: Colors.orange.withOpacity(0.1),
+                            ),
+                          ),
+                      ],
+                    );
+                  }
+                  return null;
+                },
               ),
             ],
           ),

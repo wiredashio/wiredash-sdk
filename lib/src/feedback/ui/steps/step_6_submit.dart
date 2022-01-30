@@ -18,8 +18,8 @@ class _Step6SubmitState extends State<Step6Submit> {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      title: Text('Submit your feedback'),
-      description: Text(
+      title: const Text('Submit your feedback'),
+      description: const Text(
         'Please review your data before submission. '
         'You can navigate back to adjust your feedback',
       ),

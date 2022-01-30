@@ -134,27 +134,6 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       ),
     );
   }
-
-  int _getCurrentProgressStep() {
-    switch (context.feedbackModel.feedbackFlowStatus) {
-      case FeedbackFlowStatus.none:
-      case FeedbackFlowStatus.message:
-        return 1;
-      case FeedbackFlowStatus.labels:
-        return 2;
-      case FeedbackFlowStatus.screenshotsOverview:
-      case FeedbackFlowStatus.screenshotNavigating:
-      case FeedbackFlowStatus.screenshotCapturing:
-      case FeedbackFlowStatus.screenshotDrawing:
-      case FeedbackFlowStatus.screenshotSaving:
-        return 3;
-      case FeedbackFlowStatus.email:
-        return 4;
-      case FeedbackFlowStatus.submit:
-      case FeedbackFlowStatus.submitting:
-        return 5;
-    }
-  }
 }
 
 /// Scrollable area with scrollbar

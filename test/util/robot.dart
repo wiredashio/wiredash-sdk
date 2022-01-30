@@ -13,7 +13,6 @@ import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
-import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_1_feedback_message.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_2_labels.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_3_screenshot_overview.dart';

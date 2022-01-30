@@ -39,8 +39,8 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      title: Text('Get email updates for your issue'),
-      description: Text('Add your email address below or leave empty'),
+      title: const Text('Get email updates for your issue'),
+      description: const Text('Add your email address below or leave empty'),
       child: Column(
         children: [
           TextFormField(
@@ -95,7 +95,7 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                 onTap: context.feedbackModel.goToNextStep,
               ),
             ],
-          )
+          ),
         ],
       ),
     );

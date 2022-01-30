@@ -6,21 +6,26 @@ import 'package:flutter/physics.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/feedback/backdrop/pull_to_close_detector.dart';
-import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 
 /// The Wiredash UI behind the app
 class WiredashBackdrop extends StatefulWidget {
   const WiredashBackdrop({
     Key? key,
-    required this.child,
+    required this.contentBuilder,
+    required this.app,
     required this.controller,
     this.padding,
+    this.backgroundLayerBuilder,
+    this.foregroundLayerBuilder,
   }) : super(key: key);
 
   /// The wrapped app
-  final Widget child;
+  final Widget app;
   final BackdropController controller;
   final EdgeInsets? padding;
+  final Widget Function(BuildContext) contentBuilder;
+  final Widget? Function(BuildContext, Rect appRect)? backgroundLayerBuilder;
+  final Widget? Function(BuildContext, Rect appRect)? foregroundLayerBuilder;
 
   static BackdropController of(BuildContext context) {
     final state = context.findAncestorStateOfType<_WiredashBackdropState>();
@@ -64,7 +69,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   Rect _rectAppCentered = Rect.zero;
   Rect _rectAppFillsScreen = Rect.zero;
   Rect _rectContentArea = Rect.zero;
-  Rect _rectNavigationButtons = Rect.zero;
 
   WiredashBackdropStatus get _backdropStatus =>
       widget.controller.backdropStatus;
@@ -160,7 +164,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   @override
   Widget build(BuildContext context) {
-    final Widget child = widget.child;
+    final Widget child = widget.app;
 
     if (_backdropStatus == WiredashBackdropStatus.closed) {
       // Wiredash is closed, show the app without being wrapped in Transforms
@@ -191,7 +195,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                         WiredashBackdropStatus.openingCentered
                 ? 0.0
                 : 1.0,
-            child: const WiredashFeedbackFlow(),
+            child: widget.contentBuilder(context),
           ),
         ),
       ),
@@ -204,7 +208,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         ),
       ),
       content: content,
-      navButtons: _buildNavigationButtons(),
+      foreground: widget.foregroundLayerBuilder
+          ?.call(context, _transformAnimation.value!),
+      background: widget.backgroundLayerBuilder
+          ?.call(context, _transformAnimation.value!),
     );
 
     return GestureDetector(
@@ -230,7 +237,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final mqPadding = _mediaQueryData.padding;
     final Size screenSize = _mediaQueryData.size;
 
-    const centerPadding = EdgeInsets.symmetric(vertical: 20);
+    const centerPadding = EdgeInsets.only(
+      top: 80, // navigation bar
+      bottom: 80, // color bar
+    );
+
     // scale to show app in safeArea
     final centerScaleFactor = () {
       // center
@@ -266,12 +277,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     const double maxContentAreaHeight = 640.0;
     const double minAppPeakHeight = 56;
 
-    final double buttonBarHeight = 0;
-
     // center the navigation buttons
     double preferredAppHeight = _mediaQueryData.size.height * 0.5;
     preferredAppHeight -= minAppPeakHeight;
-    preferredAppHeight -= buttonBarHeight / 2;
     preferredAppHeight -= wiredashPadding.top / 2;
 
     final preferredContentHeight =
@@ -292,7 +300,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       0,
       0,
       context.theme.maxContentWidth,
-      contentHeight - buttonBarHeight,
+      contentHeight,
     )
         .removePadding(
           wiredashPadding.copyWith(bottom: 0),
@@ -304,7 +312,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     _rectAppOutOfFocus = Rect.fromLTWH(
       0,
-      _rectContentArea.bottom + buttonBarHeight,
+      _rectContentArea.bottom,
       screenSize.width * centerScaleFactor,
       screenSize.height * centerScaleFactor,
     )
@@ -313,13 +321,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           minPadding: context.theme.horizontalPadding,
         )
         .translate(wiredashPadding.left, 0);
-
-    _rectNavigationButtons = Rect.fromLTWH(
-      _rectAppOutOfFocus.left,
-      _rectContentArea.bottom,
-      _rectAppOutOfFocus.width,
-      buttonBarHeight,
-    );
 
     final rectFullscreen =
         Rect.fromPoints(Offset.zero, screenSize.bottomRight(Offset.zero));
@@ -338,7 +339,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   List<Widget> _orderStackChildren({
     required Widget app,
     required Widget content,
-    required Widget navButtons,
+    required Widget? foreground,
+    required Widget? background,
   }) {
     final keyedApp = KeyedSubtree(
       key: const ValueKey('app'),
@@ -348,26 +350,35 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       key: const ValueKey('content'),
       child: content,
     );
-    final keyedNav = KeyedSubtree(
-      key: const ValueKey('nav'),
-      child: navButtons,
-    );
+    final keyedForeground = foreground != null
+        ? KeyedSubtree(
+            key: const ValueKey('app-foreground'),
+            child: foreground,
+          )
+        : null;
+    final keyedBackground = background != null
+        ? KeyedSubtree(
+            key: const ValueKey('app-background'),
+            child: background,
+          )
+        : null;
 
-    if (_backdropStatus == WiredashBackdropStatus.closing ||
-        _backdropStatus == WiredashBackdropStatus.opening) {
-      // Move app above nav buttons
-      return [
-        keyedContent,
-        keyedNav,
-        keyedApp,
-      ];
-    }
+    // if (_backdropStatus == WiredashBackdropStatus.closing ||
+    //     _backdropStatus == WiredashBackdropStatus.opening) {
+    //   // Move app above nav buttons
+    //   return [
+    //     keyedContent,
+    //     keyedNav,
+    //     keyedApp,
+    //   ];
+    // }
 
     // Place buttons at the very top by default
     return [
       keyedContent,
+      if (keyedBackground != null) keyedBackground,
       keyedApp,
-      keyedNav,
+      if (keyedForeground != null) keyedForeground,
     ];
   }
 
@@ -387,7 +398,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// Returns the rects as colored widgets on screen
   List<Widget> _debugRects() {
-    bool debug = false;
+    bool debug = true;
     assert(
       () {
         // enable debugging here
@@ -443,29 +454,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           ),
         ),
       ),
-      Positioned.fromRect(
-        rect: _rectNavigationButtons,
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.green.withOpacity(0.5),
-            ),
-          ),
-        ),
-      ),
     ];
-  }
-
-  Widget _buildNavigationButtons() {
-    return const SizedBox.shrink();
-    // return AnimatedOpacity(
-    //   duration: const Duration(milliseconds: 150),
-    //   opacity: _backdropStatus == WiredashBackdropStatus.closing ? 0.0 : 1.0,
-    //   child: FeedbackNavigation(
-    //     defaultLocation: _rectNavigationButtons,
-    //     windowPadding: widget.padding,
-    //   ),
-    // );
   }
 
   /// Clips and adds shadow to the app

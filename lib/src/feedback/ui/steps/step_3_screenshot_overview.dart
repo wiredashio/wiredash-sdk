@@ -21,61 +21,83 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
       return StepPageScaffold(
         currentStep: 2,
         totalSteps: 3,
-        title: Text('Attached screenshots'),
-        description: Text('Add, edit or remove images'),
-        child: Row(
+        title: const Text('Attached screenshots'),
+        description: const Text('Add, edit or remove images'),
+        child: Column(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Stack(
-                children: [
-                  Image.memory(
-                    context.feedbackModel.screenshot!,
-                    width: 160, // 160
-                  ),
-                  Positioned.fill(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Colors.black38, Colors.black12],
+            Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Stack(
+                    children: [
+                      Image.memory(
+                        context.feedbackModel.screenshot!,
+                        width: 160, // 160
+                      ),
+                      Positioned.fill(
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.black38, Colors.black12],
+                            ),
+                          ),
+                          width: 160,
+                          alignment: Alignment.center,
+                          child: const Icon(
+                            Wirecons.trash,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                      width: 160,
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Wirecons.trash,
-                        color: Colors.white,
-                      ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 16),
+                Container(
+                  width: 160,
+                  height: 100,
+                  // 100
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: context.theme.secondaryColor,
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Wirecons.plus,
+                    color: context.theme.primaryColor,
+                  ),
+                )
+              ],
             ),
-            const SizedBox(width: 16),
-            Container(
-              width: 160,
-              height: 100,
-              // 100
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: context.theme.secondaryColor,
-              ),
-              alignment: Alignment.center,
-              child: Icon(
-                Wirecons.plus,
-                color: context.theme.primaryColor,
-              ),
-            )
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TronButton(
+                  color: context.theme.secondaryColor,
+                  leadingIcon: Wirecons.arrow_left,
+                  label: 'Back',
+                  onTap: context.feedbackModel.goToPreviousStep,
+                ),
+                TronButton(
+                  label: 'Next',
+                  trailingIcon: Wirecons.arrow_right,
+                  onTap: context.feedbackModel.goToNextStep,
+                ),
+              ],
+            ),
           ],
         ),
       );
     } else {
       return StepPageScaffold(
-        title: Text('Include a screenshot for more context?'),
-        description: Text(
-            'You’ll be able to navigate the app and choose when to take a screenshot'),
+        title: const Text('Include a screenshot for more context?'),
+        description: const Text(
+          'You’ll be able to navigate the app and choose when to take a screenshot',
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -111,7 +133,8 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
                           label: 'Add screenshot',
                           trailingIcon: Wirecons.arrow_right,
                           onTap: () => context.feedbackModel.goToStep(
-                              FeedbackFlowStatus.screenshotNavigating),
+                            FeedbackFlowStatus.screenshotNavigating,
+                          ),
                         ),
                       ],
                     ),
