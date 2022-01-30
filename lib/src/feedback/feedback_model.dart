@@ -178,7 +178,7 @@ class FeedbackModel with ChangeNotifier {
     return index;
   }
 
-  Future<void> goToNextStep() async {
+  void goToNextStep() {
     if (!validateForm()) {
       throw FormValidationException();
     }
@@ -189,13 +189,14 @@ class FeedbackModel with ChangeNotifier {
     final nextStepIndex = index + 1;
     if (nextStepIndex < steps.length) {
       final step = steps[nextStepIndex];
-      await goToStep(step);
+      _goToStep(step);
     } else {
       throw StateError('reached the end of the stack (length ${steps.length})');
     }
   }
 
-  Future<void> goToPreviousStep() async {
+  /// Goes to the previous step in [steps]
+  void goToPreviousStep() {
     final index = currentStepIndex;
     if (index == null) {
       throw StateError('Unknown step index');
@@ -203,101 +204,89 @@ class FeedbackModel with ChangeNotifier {
     final prevStepIndex = index - 1;
     if (prevStepIndex >= 0) {
       final step = steps[prevStepIndex];
-      await goToStep(step);
+      _goToStep(step);
     } else {
       throw StateError('Already at first item');
     }
   }
 
-  Future<void> goToStep(FeedbackFlowStatus newStatus) async {
-    switch (newStatus) {
-      case FeedbackFlowStatus.none:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
-        break;
-      case FeedbackFlowStatus.message:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
-        break;
-      case FeedbackFlowStatus.labels:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
-        break;
-      case FeedbackFlowStatus.screenshotsOverview:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
+  /// Enters the screenshot mode, executes the following steps:
+  /// - [FeedbackFlowStatus.screenshotNavigating]
+  /// - [FeedbackFlowStatus.screenshotCapturing]
+  /// - [FeedbackFlowStatus.screenshotDrawing]
+  /// - [FeedbackFlowStatus.screenshotSaving]
+  Future<void> enterScreenshotCapturingMode() async {
+    _goToStep(FeedbackFlowStatus.screenshotNavigating);
+    _services.picassoController.isActive = false;
+    notifyListeners();
 
-        await _services.backdropController.animateToOpen();
-        break;
-      case FeedbackFlowStatus.screenshotNavigating:
-        _feedbackFlowStatus = newStatus;
-        _services.picassoController.isActive = false;
-        notifyListeners();
+    await _services.backdropController.animateToCentered();
+  }
 
-        await _services.backdropController.animateToCentered();
-        break;
-      case FeedbackFlowStatus.screenshotCapturing:
-        _feedbackFlowStatus = newStatus;
-        _services.picassoController.isActive = false;
-        notifyListeners();
+  /// Combines the drawing and the screenshot into a single masterpiece
+  Future<void> createMasterpiece() async {
+    _goToStep(FeedbackFlowStatus.screenshotSaving);
+    _services.picassoController.isActive = false;
+    notifyListeners();
 
-        await _services.screenCaptureController.captureScreen();
-        // TODO show loading indicator?
-        _deviceInfo = _services.deviceInfoGenerator.generate();
-        final metaData = _services.wiredashModel.metaData;
-        // Allow devs to collect additional information
-        await _services.wiredashWidget.feedbackOptions?.collectMetaData
-            ?.call(metaData);
-        _buildInfo = _services.buildInfoManager.buildInfo;
-        _metaData = metaData;
-        notifyListeners();
+    _screenshot = await _services.picassoController.paintDrawingOntoImage(
+      _services.screenCaptureController.screenshot!,
+      _services.wiredashWidget.theme?.appBackgroundColor ??
+          const Color(0xffcccccc),
+    );
+    notifyListeners();
 
-        await goToStep(FeedbackFlowStatus.screenshotDrawing);
-        break;
-      case FeedbackFlowStatus.screenshotDrawing:
-        _feedbackFlowStatus = newStatus;
-        _services.picassoController.isActive = true;
-        notifyListeners();
-        break;
-      case FeedbackFlowStatus.screenshotSaving:
-        _feedbackFlowStatus = newStatus;
-        _services.picassoController.isActive = false;
-        notifyListeners();
+    // give Flutter a few ms for GC before starting the closing animation
+    await Future.delayed(const Duration(milliseconds: 100));
 
-        _screenshot = await _services.picassoController.paintDrawingOntoImage(
-          _services.screenCaptureController.screenshot!,
-          _services.wiredashWidget.theme?.appBackgroundColor ??
-              const Color(0xffcccccc),
-        );
-        notifyListeners();
+    await _services.backdropController.animateToOpen();
+    _services.screenCaptureController.releaseScreen();
 
-        await _services.backdropController.animateToOpen();
-        _services.screenCaptureController.releaseScreen();
+    _goToStep(FeedbackFlowStatus.screenshotsOverview);
+  }
 
-        await goToStep(FeedbackFlowStatus.screenshotsOverview);
-        break;
-      case FeedbackFlowStatus.email:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
-        break;
+  /// Captures the pixels of the app and the app metadata
+  ///
+  /// Call [createMasterpiece] to finalize the screenshot (with drawing)
+  Future<void> captureScreenshot() async {
+    _goToStep(FeedbackFlowStatus.screenshotCapturing);
+    _services.picassoController.isActive = false;
+    notifyListeners();
 
-      case FeedbackFlowStatus.submit:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
-        break;
+    // captures screenshot, it is saved in screenCaptureController
+    await _services.screenCaptureController.captureScreen();
+    // TODO show loading indicator?
+    _deviceInfo = _services.deviceInfoGenerator.generate();
+    final metaData = _services.wiredashModel.metaData;
+    // Allow devs to collect additional information
+    await _services.wiredashWidget.feedbackOptions?.collectMetaData
+        ?.call(metaData);
+    _buildInfo = _services.buildInfoManager.buildInfo;
+    _metaData = metaData;
+    notifyListeners();
 
-      case FeedbackFlowStatus.submittingAndRetry:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
-        break;
-    }
+    _services.picassoController.isActive = true;
+    _goToStep(FeedbackFlowStatus.screenshotDrawing);
+  }
+
+  Future<void> cancelScreenshotCapturingMode() async {
+    _goToStep(FeedbackFlowStatus.screenshotsOverview);
+
+    await _services.backdropController.animateToOpen();
+  }
+
+  /// Debugging happens often here, this is a good point to start logging
+  /// because it triggers all status changes
+  void _goToStep(FeedbackFlowStatus newStatus) {
+    _feedbackFlowStatus = newStatus;
+    notifyListeners();
   }
 
   Future<void> submitFeedback() async {
     _submitting = true;
     _submissionError = null;
     notifyListeners();
-    goToStep(FeedbackFlowStatus.submittingAndRetry);
+    _goToStep(FeedbackFlowStatus.submittingAndRetry);
     bool fakeSubmit = false;
     assert(
       () {

@@ -28,6 +28,7 @@ class _Step6SubmitState extends State<Step6Submit> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 48),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

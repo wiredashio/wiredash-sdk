@@ -1,5 +1,6 @@
 // ignore_for_file: join_return_with_assignment
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Wrapper with default that most widgets required that are now wrapped by a
@@ -30,7 +31,7 @@ class _NotAWidgetsAppState extends State<NotAWidgetsApp> {
     );
 
     // Allow inspection of widgets
-    if (WidgetsApp.debugShowWidgetInspectorOverride) {
+    if (kDebugMode && WidgetsApp.debugShowWidgetInspectorOverride) {
       child = WidgetInspector(
         selectButtonBuilder: (BuildContext context, void Function() onPressed) {
           return FloatingActionButton(

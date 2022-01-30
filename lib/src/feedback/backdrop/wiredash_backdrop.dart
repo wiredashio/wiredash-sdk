@@ -6,6 +6,7 @@ import 'package:flutter/physics.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/feedback/backdrop/pull_to_close_detector.dart';
+import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
 
 /// The Wiredash UI behind the app
 class WiredashBackdrop extends StatefulWidget {
@@ -228,13 +229,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         // Close soft keyboard
         FocusManager.instance.primaryFocus?.unfocus();
       },
-      child: DecoratedBox(
-        decoration: _backgroundDecoration(),
-        child: Stack(
-          children: [
-            ..._debugRects(),
-            ...stackChildren,
-          ],
+      child: SemiTransparentStatusBar(
+        child: DecoratedBox(
+          decoration: _backgroundDecoration(),
+          child: Stack(
+            children: [
+              ..._debugRects(),
+              ...stackChildren,
+            ],
+          ),
         ),
       ),
     );
@@ -246,8 +249,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final mqPadding = _mediaQueryData.padding;
     final Size screenSize = _mediaQueryData.size;
 
-    const centerPadding = EdgeInsets.only(
-      top: 80, // navigation bar
+    final centerPadding = EdgeInsets.only(
+      top: 80 + mqPadding.top, // navigation bar
       bottom: 80, // color bar
     );
 
@@ -406,7 +409,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// Returns the rects as colored widgets on screen
   List<Widget> _debugRects() {
-    bool debug = true;
+    bool debug = false; // not touchy here, edit in assert
     assert(
       () {
         // enable debugging here

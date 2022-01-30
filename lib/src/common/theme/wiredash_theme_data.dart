@@ -225,8 +225,8 @@ class WiredashThemeData {
     final keypoints = KeyPointInterpolator({
       0: 0,
       720: 720,
-      1024: 1024.0 - 1024.0 * 0.30,
-      40690: 40690.0 - 40690.0 * 0.30,
+      1024: 1024.0 * 0.75,
+      2048: 1024,
     });
     return keypoints.interpolate(width);
   }

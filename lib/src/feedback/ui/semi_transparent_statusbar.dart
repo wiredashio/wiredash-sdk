@@ -25,9 +25,9 @@ class SemiTransparentStatusBar extends StatelessWidget {
       return child;
     }
     final backdrop = context.backdropController;
-    final isLight =
-        context.wiredashModel.services.wiredashWidget.theme?.brightness ==
-            Brightness.light;
+    final brightness =
+        context.wiredashModel.services.wiredashWidget.theme?.brightness;
+    final isDark = brightness == Brightness.dark;
     return Stack(
       children: [
         child,
@@ -37,16 +37,15 @@ class SemiTransparentStatusBar extends StatelessWidget {
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 300),
               opacity: () {
-                if (backdrop.backdropStatus == WiredashBackdropStatus.closed) {
+                if (backdrop.backdropStatus == WiredashBackdropStatus.closed ||
+                    backdrop.backdropStatus == WiredashBackdropStatus.closing ||
+                    backdrop.backdropStatus == WiredashBackdropStatus.opening) {
                   return 0.0;
                 }
-                if (!backdrop.isAppInteractive) {
-                  return 1.0;
-                }
-                return 0.0;
+                return 1.0;
               }(),
               child: Container(
-                color: isLight ? Colors.black26 : Colors.white30,
+                color: isDark ? Colors.white30 : Colors.black26,
                 height: MediaQuery.of(context).padding.top,
               ),
             ),
