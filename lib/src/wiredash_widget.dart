@@ -257,15 +257,73 @@ class WiredashState extends State<Wiredash> {
             // TODO move somewhere else
             foregroundLayerBuilder: (context, appRect) {
               final status = _services.backdropController.backdropStatus;
-
+              Widget? content;
               final animatingCenter =
                   status == WiredashBackdropStatus.openingCentered ||
                       status == WiredashBackdropStatus.closingCentered;
-              if (status == WiredashBackdropStatus.centered ||
-                  animatingCenter) {
+              if (animatingCenter ||
+                  status == WiredashBackdropStatus.centered) {
                 final feedbackStatus = context.feedbackModel.feedbackFlowStatus;
-                // TODO fade in
-                return Column(
+                final topBar = SizedBox(
+                  height: appRect.top,
+                  child: Row(
+                    children: [
+                      TronButton(
+                        label: 'Back',
+                        leadingIcon: Wirecons.arrow_left,
+                        color: context.theme.secondaryColor,
+                        onTap: () {
+                          context.feedbackModel.goToStep(
+                            FeedbackFlowStatus.screenshotsOverview,
+                          );
+                        },
+                      ),
+                      if (context.theme.windowSize.width > 500)
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0, right: 8.0),
+                          child: FeedbackProgressIndicator(
+                            flowStatus: FeedbackFlowStatus.screenshotsOverview,
+                          ),
+                        ),
+                      const Spacer(),
+                      if (feedbackStatus ==
+                          FeedbackFlowStatus.screenshotNavigating)
+                        TronButton(
+                          color: context.theme.primaryColor,
+                          leadingIcon: Wirecons.camera,
+                          iconOffset: const Offset(-.15, 0),
+                          label: 'Capture',
+                          onTap: () => context.feedbackModel.goToStep(
+                            FeedbackFlowStatus.screenshotCapturing,
+                          ),
+                        ),
+                      if (feedbackStatus ==
+                          FeedbackFlowStatus.screenshotDrawing)
+                        TronButton(
+                          color: context.picasso.color,
+                          leadingIcon: Wirecons.pencil,
+                          iconOffset: const Offset(.15, 0),
+                          label: 'Change paint',
+                          onTap: () {
+                            debugPrint('Open paint menu');
+                            context.picasso.undo();
+                          },
+                        ),
+                      if (feedbackStatus ==
+                          FeedbackFlowStatus.screenshotDrawing)
+                        TronButton(
+                          color: context.theme.primaryColor,
+                          leadingIcon: Wirecons.check,
+                          iconOffset: const Offset(-.15, 0),
+                          label: 'Next',
+                          onTap: () => context.feedbackModel.goToStep(
+                            FeedbackFlowStatus.screenshotSaving,
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+                content = Column(
                   children: [
                     SizedBox(
                       height: appRect.top,
@@ -276,59 +334,14 @@ class WiredashState extends State<Wiredash> {
                           left: appRect.left,
                           right: appRect.left,
                         ),
-                        child: Row(
-                          children: [
-                            TronButton(
-                              label: 'Back',
-                              onTap: () {
-                                context.feedbackModel.goToStep(
-                                  FeedbackFlowStatus.screenshotsOverview,
-                                );
-                              },
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: FeedbackProgressIndicator(
-                                flowStatus:
-                                    FeedbackFlowStatus.screenshotsOverview,
-                              ),
-                            ),
-                            const Spacer(),
-                            if (feedbackStatus ==
-                                FeedbackFlowStatus.screenshotNavigating)
-                              TronButton(
-                                color: context.theme.primaryColor,
-                                leadingIcon: Wirecons.camera,
-                                iconOffset: const Offset(-.15, 0),
-                                label: 'Capture',
-                                onTap: () => context.feedbackModel.goToStep(
-                                  FeedbackFlowStatus.screenshotCapturing,
-                                ),
-                              ),
-                            if (feedbackStatus ==
-                                FeedbackFlowStatus.screenshotDrawing)
-                              TronButton(
-                                color: context.picasso.color,
-                                leadingIcon: Wirecons.pencil,
-                                iconOffset: const Offset(.15, 0),
-                                label: 'Change paint',
-                                onTap: () {
-                                  debugPrint('Open paint menu');
-                                  context.picasso.undo();
-                                },
-                              ),
-                            if (feedbackStatus ==
-                                FeedbackFlowStatus.screenshotDrawing)
-                              TronButton(
-                                color: context.theme.primaryColor,
-                                leadingIcon: Wirecons.check,
-                                iconOffset: const Offset(-.15, 0),
-                                label: 'Next',
-                                onTap: () => context.feedbackModel.goToStep(
-                                  FeedbackFlowStatus.screenshotSaving,
-                                ),
-                              ),
-                          ],
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 400),
+                          // hide buttons early when exiting centered
+                          child: status ==
+                                      WiredashBackdropStatus.openingCentered ||
+                                  status == WiredashBackdropStatus.centered
+                              ? topBar
+                              : null,
                         ),
                       ),
                     ),
@@ -347,7 +360,8 @@ class WiredashState extends State<Wiredash> {
                   ],
                 );
               }
-              return null;
+
+              return content;
             },
           ),
         ),

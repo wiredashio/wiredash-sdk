@@ -276,22 +276,19 @@ class _FeedbackProgressIndicatorState extends State<FeedbackProgressIndicator> {
       currentStep = total;
       completed = true;
     }
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TronProgressIndicator(
-            currentStep: completed ? total : currentStep - 1,
-            totalSteps: total,
-          ),
-          const SizedBox(width: 12),
-          Text(
-            'Step $currentStep of $total',
-            style: context.theme.captionTextStyle,
-          )
-        ],
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TronProgressIndicator(
+          currentStep: completed ? total : currentStep - 1,
+          totalSteps: total,
+        ),
+        const SizedBox(width: 12),
+        Text(
+          'Step $currentStep of $total',
+          style: context.theme.captionTextStyle,
+        )
+      ],
     );
   }
 }
