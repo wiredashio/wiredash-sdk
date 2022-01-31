@@ -244,19 +244,24 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
               Row(
                 children: [
                   FeedbackProgressIndicator(flowStatus: widget.flowStatus),
-                  if (widget.shortTitle != null) ...[
+                  if (widget.shortTitle != null &&
+                      context.theme.windowSize.width > 400) ...[
                     SizedBox(
                       height: 16,
                       child: VerticalDivider(
                         color: context.theme.captionTextStyle.color,
                       ),
                     ),
-                    DefaultTextStyle(
-                      style: context.theme.captionTextStyle,
-                      child: widget.shortTitle!,
-                    ),
-                  ],
-                  const Spacer(),
+                    Expanded(
+                      child: DefaultTextStyle(
+                        style: context.theme.captionTextStyle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        child: widget.shortTitle!,
+                      ),
+                    )
+                  ] else
+                    const Spacer(),
                   TronLabeledButton(
                     onTap: () {
                       setState(() {
@@ -264,13 +269,17 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
                           setState(() {
                             _reallyTimer =
                                 Timer(const Duration(seconds: 3), () {
-                              setState(() {
+                              if (mounted) {
+                                setState(() {
+                                  _reallyTimer = null;
+                                });
+                              } else {
                                 _reallyTimer = null;
-                              });
+                              }
                             });
                           });
                         } else {
-                          context.wiredashModel.services.discardFeedback();
+                          context.wiredashModel.hide(discardFeedback: true);
                           _reallyTimer = null;
                         }
                       });

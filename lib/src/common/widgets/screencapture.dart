@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/feedback/picasso/picasso.dart';
+import 'package:wiredash/src/wiredash_model_provider.dart';
 
 class ScreenCapture extends StatefulWidget {
   const ScreenCapture({
@@ -18,23 +21,6 @@ class ScreenCapture extends StatefulWidget {
   State<ScreenCapture> createState() => _ScreenCaptureState();
 }
 
-class ScreenCaptureController extends ChangeNotifier {
-  late _ScreenCaptureState? _state;
-
-  ui.Image? get screenshot => _screenshot;
-  ui.Image? _screenshot;
-
-  Future<ui.Image?> captureScreen() async {
-    _screenshot = await _state!.captureScreen();
-    notifyListeners();
-    return _screenshot;
-  }
-
-  void releaseScreen() {
-    _state!.releaseScreen();
-  }
-}
-
 class _ScreenCaptureState extends State<ScreenCapture>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
@@ -42,6 +28,9 @@ class _ScreenCaptureState extends State<ScreenCapture>
 
   final _repaintBoundaryGlobalKey = GlobalKey();
   MemoryImage? _screenshotMemoryImage;
+  ui.Size? _screenshotSize;
+
+  static const _screenshotPixelRatio = 1.5;
 
   @override
   void initState() {
@@ -66,9 +55,9 @@ class _ScreenCaptureState extends State<ScreenCapture>
         as RenderRepaintBoundary?;
     if (canvas == null) return null;
 
-    final _screenshot = await canvas.toImage(pixelRatio: 1.5);
+    final _screenshot = await canvas.toImage(pixelRatio: _screenshotPixelRatio);
 
-    precacheScreenshot(_screenshot).catchError((e, stack) {
+    await precacheScreenshot(_screenshot).catchError((e, stack) {
       debugPrint(e?.toString());
       debugPrint(stack?.toString());
     });
@@ -90,6 +79,10 @@ class _ScreenCaptureState extends State<ScreenCapture>
     if (!mounted) return;
     setState(() {
       _screenshotMemoryImage = image;
+      _screenshotSize = Size(
+        screenshot.width.toDouble() / _screenshotPixelRatio,
+        screenshot.height.toDouble() / _screenshotPixelRatio,
+      );
       _controller.forward(from: 0);
     });
   }
@@ -101,13 +94,15 @@ class _ScreenCaptureState extends State<ScreenCapture>
   }
 
   Widget _buildScreenshotFlash() {
-    return FadeTransition(
-      opacity: _screenshotFlashAnimation,
-      child: const DecoratedBox(
-        decoration: BoxDecoration(
-          color: Color(0xffffffff),
+    return IgnorePointer(
+      child: FadeTransition(
+        opacity: _screenshotFlashAnimation,
+        child: const DecoratedBox(
+          decoration: BoxDecoration(
+            color: Color(0xffffffff),
+          ),
+          child: SizedBox.expand(),
         ),
-        child: SizedBox.expand(),
       ),
     );
   }
@@ -125,10 +120,43 @@ class _ScreenCaptureState extends State<ScreenCapture>
           ),
         ),
         if (_screenshotMemoryImage != null) ...[
-          Image(image: _screenshotMemoryImage!),
-          _buildScreenshotFlash()
+          // Allow overflow to right/bottom when screen becomes smaller
+          Positioned(
+            top: 0,
+            left: 0,
+            // Once the screenshot is made, resizing isn't allowed anymore
+            child: SizedBox.fromSize(
+              size: _screenshotSize,
+              // Don't show drawings outside of Picasso
+              child: ClipRect(
+                // keep Picasso directly connected to the Image so they scale equally
+                child: Picasso(
+                  controller: context.wiredashModel.services.picassoController,
+                  child: Image(image: _screenshotMemoryImage!),
+                ),
+              ),
+            ),
+          ),
+          _buildScreenshotFlash(),
         ],
       ],
     );
+  }
+}
+
+class ScreenCaptureController extends ChangeNotifier {
+  late _ScreenCaptureState? _state;
+
+  ui.Image? get screenshot => _screenshot;
+  ui.Image? _screenshot;
+
+  Future<ui.Image?> captureScreen() async {
+    _screenshot = await _state!.captureScreen();
+    notifyListeners();
+    return _screenshot;
+  }
+
+  void releaseScreen() {
+    _state!.releaseScreen();
   }
 }

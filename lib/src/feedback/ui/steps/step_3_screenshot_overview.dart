@@ -105,68 +105,74 @@ class Step3WithGallery extends StatelessWidget {
       shortTitle: const Text('Screenshots'),
       description: const Text('Add, edit or remove images'),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 200,
-            child: Row(
-              children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Elevation(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(2),
-                        child: Image.memory(
-                          context.feedbackModel.screenshot!,
-                          fit: BoxFit.contain,
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+              height: 200,
+              child: Row(
+                children: [
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Elevation(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(2),
+                          child: Image.memory(
+                            context.feedbackModel.screenshot!,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: TronButton(
-                        leadingIcon: Wirecons.refresh,
-                        color: context.theme.secondaryColor,
-                        onTap: () {
-                          context.feedbackModel.enterScreenshotCapturingMode();
-                        },
-                        label: 'Replace',
+                      Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: TronButton(
+                          leadingIcon: Wirecons.refresh,
+                          color: context.theme.secondaryColor,
+                          onTap: () {
+                            context.feedbackModel
+                                .enterScreenshotCapturingMode();
+                          },
+                          label: 'Replace',
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 16),
-                if (kDebugMode)
-                  Elevation(
-                    child: AspectRatio(
-                      aspectRatio: context.theme.windowSize.aspectRatio,
-                      child: AnimatedClickTarget(
-                        onTap: () {
-                          context.feedbackModel.enterScreenshotCapturingMode();
-                        },
-                        builder: (context, state, anims) {
-                          return Container(
-                            width: 160,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Color.lerp(
-                                context.theme.secondaryColor,
-                                context.theme.primaryColor,
-                                anims.pressedAnim.value * 0.2,
-                              )!
-                                  .darken(anims.hoveredAnim.value * 0.05),
-                            ),
-                            alignment: Alignment.center,
-                            child: Icon(
-                              Wirecons.plus,
-                              color: context.theme.primaryColor,
-                            ),
-                          );
-                        },
+                    ],
+                  ),
+                  const SizedBox(width: 16),
+                  if (kDebugMode)
+                    Elevation(
+                      child: AspectRatio(
+                        aspectRatio: context.theme.windowSize.aspectRatio,
+                        child: AnimatedClickTarget(
+                          onTap: () {
+                            context.feedbackModel
+                                .enterScreenshotCapturingMode();
+                          },
+                          builder: (context, state, anims) {
+                            return Container(
+                              width: 160,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Color.lerp(
+                                  context.theme.secondaryColor,
+                                  context.theme.primaryColor,
+                                  anims.pressedAnim.value * 0.2,
+                                )!
+                                    .darken(anims.hoveredAnim.value * 0.05),
+                              ),
+                              alignment: Alignment.center,
+                              child: Icon(
+                                Wirecons.plus,
+                                color: context.theme.primaryColor,
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  )
-              ],
+                    )
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 16),
