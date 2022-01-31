@@ -232,12 +232,9 @@ class WiredashState extends State<Wiredash> {
         // Only wrap when active to get as little side-effect as possible.
         if (!_isWiredashClosed) {
           // This is the place to wrap the app itself, not the whole backdrop
-          widget = Picasso(
-            controller: _services.picassoController,
-            child: ScreenCapture(
-              controller: _services.screenCaptureController,
-              child: widget,
-            ),
+          widget = ScreenCapture(
+            controller: _services.screenCaptureController,
+            child: widget,
           );
         }
 
