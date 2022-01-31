@@ -57,7 +57,7 @@ class _ScreenCaptureState extends State<ScreenCapture>
 
     final _screenshot = await canvas.toImage(pixelRatio: _screenshotPixelRatio);
 
-    precacheScreenshot(_screenshot).catchError((e, stack) {
+    await precacheScreenshot(_screenshot).catchError((e, stack) {
       debugPrint(e?.toString());
       debugPrint(stack?.toString());
     });

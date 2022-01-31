@@ -20,54 +20,6 @@ class Picasso extends StatefulWidget {
   State<Picasso> createState() => _PicassoState();
 }
 
-class PicassoController extends ChangeNotifier {
-  late _PicassoState? _state;
-
-  bool _isActive = false;
-  Color _color = const Color(0xff6B46C1);
-  double _strokeWidth = 8.0;
-
-  bool get isActive => _isActive;
-
-  set isActive(bool value) {
-    _isActive = value;
-    notifyListeners();
-  }
-
-  Color get color => _color;
-
-  set color(Color value) {
-    _color = value;
-    notifyListeners();
-  }
-
-  double get strokeWidth => _strokeWidth;
-
-  set strokeWidth(double value) {
-    _strokeWidth = value;
-    notifyListeners();
-  }
-
-  void clear() {
-    _state!._clear();
-  }
-
-  void undo() {
-    _state!._undo();
-  }
-
-  void redo() {
-    _state!._redo();
-  }
-
-  Future<Uint8List> paintDrawingOntoImage(
-    ui.Image image,
-    Color backgroundColor,
-  ) async {
-    return _state!._paintOntoImage(image, backgroundColor);
-  }
-}
-
 class _PicassoState extends State<Picasso> {
   List<Stroke> _strokes = const [];
   List<Stroke> _undoneStrokes = const [];
@@ -242,5 +194,53 @@ class _PicassoState extends State<Picasso> {
 
     final bytes = await masterpiece.toByteData(format: ui.ImageByteFormat.png);
     return bytes!.buffer.asUint8List();
+  }
+}
+
+class PicassoController extends ChangeNotifier {
+  late _PicassoState? _state;
+
+  bool _isActive = false;
+  Color _color = const Color(0xff6B46C1);
+  double _strokeWidth = 8.0;
+
+  bool get isActive => _isActive;
+
+  set isActive(bool value) {
+    _isActive = value;
+    notifyListeners();
+  }
+
+  Color get color => _color;
+
+  set color(Color value) {
+    _color = value;
+    notifyListeners();
+  }
+
+  double get strokeWidth => _strokeWidth;
+
+  set strokeWidth(double value) {
+    _strokeWidth = value;
+    notifyListeners();
+  }
+
+  void clear() {
+    _state!._clear();
+  }
+
+  void undo() {
+    _state!._undo();
+  }
+
+  void redo() {
+    _state!._redo();
+  }
+
+  Future<Uint8List> paintDrawingOntoImage(
+    ui.Image image,
+    Color backgroundColor,
+  ) async {
+    return _state!._paintOntoImage(image, backgroundColor);
   }
 }
