@@ -25,8 +25,16 @@ class WiredashBackdrop extends StatefulWidget {
   final BackdropController controller;
   final EdgeInsets? padding;
   final Widget Function(BuildContext) contentBuilder;
-  final Widget? Function(BuildContext, Rect appRect)? backgroundLayerBuilder;
-  final Widget? Function(BuildContext, Rect appRect)? foregroundLayerBuilder;
+  final Widget? Function(
+    BuildContext,
+    Rect appRect,
+    MediaQueryData mediaQueryData,
+  )? backgroundLayerBuilder;
+  final Widget? Function(
+    BuildContext,
+    Rect appRect,
+    MediaQueryData mediaQueryData,
+  )? foregroundLayerBuilder;
 
   static BackdropController of(BuildContext context) {
     final state = context.findAncestorStateOfType<_WiredashBackdropState>();
@@ -219,9 +227,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       ),
       content: content,
       foreground: widget.foregroundLayerBuilder
-          ?.call(context, _transformAnimation.value!),
+          ?.call(context, _transformAnimation.value!, _mediaQueryData),
       background: widget.backgroundLayerBuilder
-          ?.call(context, _transformAnimation.value!),
+          ?.call(context, _transformAnimation.value!, _mediaQueryData),
     );
 
     return GestureDetector(
@@ -250,26 +258,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final Size screenSize = _mediaQueryData.size;
 
     final centerPadding = EdgeInsets.only(
-      top: 80 + mqPadding.top, // navigation bar
-      bottom: 80, // color bar
+      top: 80 + math.max(mqPadding.top, wiredashPadding.top), // navigation bar
+      bottom: 80 + math.max(mqPadding.bottom, wiredashPadding.top), // color bar
     );
 
     // scale to show app in safeArea
     final centerScaleFactor = () {
       // center
-      final maxContentWidth = screenSize.width -
-          math.max(
-            wiredashPadding.horizontal,
-            _mediaQueryData.viewPadding.horizontal,
-          ) -
-          centerPadding.horizontal;
-
-      final maxContentHeight = screenSize.height -
-          math.max(
-            wiredashPadding.vertical,
-            _mediaQueryData.viewPadding.vertical,
-          ) -
-          centerPadding.vertical;
+      final maxContentWidth = screenSize.width - centerPadding.horizontal;
+      final maxContentHeight = screenSize.height - centerPadding.vertical;
 
       return math.min(
         maxContentWidth / screenSize.width,
@@ -279,7 +276,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     _rectAppCentered = Rect.fromLTWH(
       (screenSize.width - (screenSize.width * centerScaleFactor)) / 2,
-      math.max(wiredashPadding.top, mqPadding.top) + centerPadding.top,
+      wiredashPadding.top + centerPadding.top,
       screenSize.width * centerScaleFactor,
       screenSize.height * centerScaleFactor,
     ).translate(wiredashPadding.left / 2 - wiredashPadding.right / 2, 0);
@@ -876,9 +873,9 @@ class BackdropController extends ChangeNotifier {
   }
 
   Future<void> animateToCentered() async {
+    _isAppInteractive = true;
     await _state!._animateToCentered();
 
-    _isAppInteractive = true;
     notifyListeners();
   }
 

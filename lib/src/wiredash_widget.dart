@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/services/services.dart';
@@ -259,83 +261,11 @@ class WiredashState extends State<Wiredash> {
                 key: ValueKey(context.feedbackModel),
               );
             },
-            // TODO move somewhere else
-            foregroundLayerBuilder: (context, appRect) {
-              final status = _services.backdropController.backdropStatus;
-              Widget? content;
-              final animatingCenter =
-                  status == WiredashBackdropStatus.openingCentered ||
-                      status == WiredashBackdropStatus.closingCentered;
-              if (animatingCenter ||
-                  status == WiredashBackdropStatus.centered) {
-                final topBar = SizedBox(
-                  height: appRect.top,
-                  child: const ScreenshotBar(),
-                );
-                content = Column(
-                  children: [
-                    SizedBox(
-                      height: appRect.top,
-                      width: double.infinity,
-                      child: Padding(
-                        // padding: EdgeInsets.zero,
-                        padding: EdgeInsets.only(
-                          left: appRect.left,
-                          right: appRect.left,
-                        ),
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 500),
-                          reverseDuration: const Duration(milliseconds: 200),
-                          // hide buttons early when exiting centered
-                          child: status ==
-                                      WiredashBackdropStatus.openingCentered ||
-                                  status == WiredashBackdropStatus.centered
-                              ? topBar
-                              : null,
-                        ),
-                      ),
-                    ),
-                    // poor way to prevent overflow during enter/exit anim
-                    if (!animatingCenter)
-                      Container(
-                        height: appRect.height,
-                      ),
-                    if (!animatingCenter)
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: AnimatedSlide(
-                            duration: const Duration(seconds: 1),
-                            curve: const Interval(
-                              0.5,
-                              1,
-                              curve: Curves.easeOutCirc,
-                            ),
-                            offset: Offset(
-                              0,
-                              context.feedbackModel.feedbackFlowStatus ==
-                                      FeedbackFlowStatus.screenshotDrawing
-                                  ? 0
-                                  : 1,
-                            ),
-                            child: ColorPalette(
-                              initialColor: _services.picassoController.color,
-                              initialStrokeWidth:
-                                  _services.picassoController.strokeWidth,
-                              onNewColorSelected: (color) =>
-                                  _services.picassoController.color = color,
-                              onNewStrokeWidthSelected: (width) => _services
-                                  .picassoController.strokeWidth = width,
-                              onUndo: _services.picassoController.undo,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                );
-              }
-
-              return content;
+            foregroundLayerBuilder: (c, r, mq) {
+              return _buildForegroundLayer(c, r, mq, _services);
+            },
+            backgroundLayerBuilder: (c, r, mq) {
+              return _buildBackgroundLayer(c, r, mq, _services);
             },
           ),
         ),
@@ -360,6 +290,152 @@ class WiredashState extends State<Wiredash> {
       ),
     );
   }
+}
+
+Widget? _buildForegroundLayer(
+  BuildContext context,
+  Rect appRect,
+  MediaQueryData mediaQueryData,
+  WiredashServices services,
+) {
+  final List<Widget> stackChildren = [];
+
+  final status = services.backdropController.backdropStatus;
+  Widget? content;
+  final animatingCenter = status == WiredashBackdropStatus.openingCentered ||
+      status == WiredashBackdropStatus.closingCentered;
+  if (animatingCenter || status == WiredashBackdropStatus.centered) {
+    final topBar = SafeArea(
+      bottom: false,
+      left: false,
+      right: false,
+      child: SizedBox(
+        height: appRect.top,
+        child: const ScreenshotBar(),
+      ),
+    );
+
+    stackChildren.add(
+      SizedBox(
+        height: appRect.top,
+        width: double.infinity,
+        child: Padding(
+          // padding: EdgeInsets.zero,
+          padding: EdgeInsets.only(
+            left: appRect.left,
+            right: appRect.left,
+          ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            reverseDuration: const Duration(milliseconds: 200),
+            // hide buttons early when exiting centered
+            child: status == WiredashBackdropStatus.openingCentered ||
+                    status == WiredashBackdropStatus.centered
+                ? topBar
+                : null,
+          ),
+        ),
+      ),
+    );
+
+    final bottomBar = Align(
+      alignment: Alignment.bottomCenter,
+      child: AnimatedSlide(
+        duration: const Duration(seconds: 1),
+        curve: const Interval(
+          0.5,
+          1,
+          curve: Curves.easeOutCirc,
+        ),
+        offset: Offset(
+          0,
+          context.feedbackModel.feedbackFlowStatus ==
+                  FeedbackFlowStatus.screenshotDrawing
+              ? 0
+              : 1,
+        ),
+        child: ColorPalette(
+          initialColor: services.picassoController.color,
+          initialStrokeWidth: services.picassoController.strokeWidth,
+          onNewColorSelected: (color) =>
+              services.picassoController.color = color,
+          onNewStrokeWidthSelected: (width) =>
+              services.picassoController.strokeWidth = width,
+          onUndo: services.picassoController.undo,
+        ),
+      ),
+    );
+
+    // poor way to prevent overflow during enter/exit anim
+    if (!animatingCenter) {
+      stackChildren.add(bottomBar);
+    }
+  }
+
+  if (stackChildren.isEmpty) {
+    return null;
+  }
+  return Stack(children: stackChildren);
+}
+
+Widget? _buildBackgroundLayer(
+  BuildContext context,
+  Rect appRect,
+  MediaQueryData mediaQueryData,
+  WiredashServices services,
+) {
+  final List<Widget> stackChildren = [];
+
+  final status = services.backdropController.backdropStatus;
+  final animatingCenter = status == WiredashBackdropStatus.openingCentered ||
+      status == WiredashBackdropStatus.closingCentered;
+  if (animatingCenter || status == WiredashBackdropStatus.centered) {
+    if (appRect.width < 500) {
+      final bottomText = Align(
+        alignment: Alignment.bottomCenter,
+        child: SizedBox(
+          height: math.max(mediaQueryData.size.height - appRect.bottom, 0),
+          width: appRect.width,
+          child: SafeArea(
+            top: false,
+            left: false,
+            right: false,
+            child: AnimatedSlide(
+              duration: const Duration(seconds: 1),
+              curve: const Interval(
+                0.5,
+                1,
+                curve: Curves.easeOutCirc,
+              ),
+              offset: Offset(
+                0,
+                context.feedbackModel.feedbackFlowStatus ==
+                        FeedbackFlowStatus.screenshotNavigating
+                    ? 0
+                    : 4,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    'Include a screenshot for more context',
+                    style: context.theme.appbarTitle,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      stackChildren.add(bottomText);
+    }
+  }
+
+  if (stackChildren.isEmpty) {
+    return null;
+  }
+  return Stack(children: stackChildren);
 }
 
 @visibleForTesting
