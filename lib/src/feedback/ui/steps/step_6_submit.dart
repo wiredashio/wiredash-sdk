@@ -18,6 +18,7 @@ class Step6Submit extends StatefulWidget {
 
 class _Step6SubmitState extends State<Step6Submit> {
   bool showDetails = false;
+
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(

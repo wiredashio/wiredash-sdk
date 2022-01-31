@@ -9,6 +9,7 @@ class MockWiredashApi implements WiredashApi {
   List<PersistedFeedbackItem> submissions = [];
   MethodInvocationCatcher sendFeedbackInvocations =
       MethodInvocationCatcher('sendFeedback');
+
   @override
   Future<void> sendFeedback(
     PersistedFeedbackItem feedback, {

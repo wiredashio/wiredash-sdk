@@ -63,7 +63,7 @@ class _ScreenCaptureState extends State<ScreenCapture>
 
   Future<ui.Image?> captureScreen() async {
     final canvas = _repaintBoundaryGlobalKey.currentContext?.findRenderObject()
-    as RenderRepaintBoundary?;
+        as RenderRepaintBoundary?;
     if (canvas == null) return null;
 
     final _screenshot = await canvas.toImage(pixelRatio: 1.5);
@@ -77,7 +77,7 @@ class _ScreenCaptureState extends State<ScreenCapture>
 
   Future<void> precacheScreenshot(ui.Image screenshot) async {
     final byteData =
-    await screenshot.toByteData(format: ui.ImageByteFormat.png);
+        await screenshot.toByteData(format: ui.ImageByteFormat.png);
     if (byteData == null) return;
 
     final image = MemoryImage(byteData.buffer.asUint8List());

@@ -140,10 +140,12 @@ class WiredashTestRobot {
 
   Future<void> submitFeedback() async {
     expect(find.byType(Step6Submit), findsOneWidget);
-    await tester.tap(find.descendant(
-      of: find.byType(TronButton),
-      matching: find.text('Submit'),
-    ));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(TronButton),
+        matching: find.text('Submit'),
+      ),
+    );
     print('submit feedback');
     await tester.pump();
   }

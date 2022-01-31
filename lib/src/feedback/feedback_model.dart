@@ -58,6 +58,7 @@ class FeedbackModel with ChangeNotifier {
   bool get isActive => _feedbackFlowStatus != FeedbackFlowStatus.none;
 
   bool get hasScreenshots => _screenshot != null;
+
   Uint8List? get screenshot => _screenshot;
 
   bool get submitting => _submitting;
@@ -74,6 +75,7 @@ class FeedbackModel with ChangeNotifier {
   BuildInfo? _buildInfo;
 
   Object? _submissionError;
+
   Object? get submissionError => _submissionError;
 
   int get maxSteps {

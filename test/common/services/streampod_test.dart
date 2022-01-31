@@ -51,16 +51,19 @@ void main() {
 
 class _ApiKey {
   _ApiKey(this.value);
+
   final String value;
 }
 
 class _Api {
   final _ApiKey key;
+
   _Api(this.key);
 }
 
 class _Repo {
   final _Api api;
+
   _Repo(this.api);
 
   String get apiKey => api.key.value;

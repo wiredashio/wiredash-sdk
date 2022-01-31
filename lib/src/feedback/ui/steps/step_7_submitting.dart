@@ -79,8 +79,7 @@ class _Step7SubmittingAndErrorState extends State<Step7SubmittingAndError> {
                         ),
                         children: [
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(error.toString()),
                           ),
                         ],
