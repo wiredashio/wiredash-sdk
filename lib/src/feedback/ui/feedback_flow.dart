@@ -276,7 +276,7 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
                             });
                           });
                         } else {
-                          context.wiredashModel.services.discardFeedback();
+                          context.wiredashModel.hide(discardFeedback: true);
                           _reallyTimer = null;
                         }
                       });
