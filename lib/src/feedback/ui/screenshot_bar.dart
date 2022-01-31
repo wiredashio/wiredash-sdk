@@ -33,7 +33,7 @@ class ScreenshotBar extends StatelessWidget {
         color: context.theme.primaryColor,
         leadingIcon: Wirecons.check,
         iconOffset: const Offset(-.15, 0),
-        label: 'Next',
+        label: 'Save',
         onTap: () => context.feedbackModel.createMasterpiece(),
       );
     }
