@@ -42,6 +42,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
     return StepPageScaffold(
       flowStatus: FeedbackFlowStatus.message,
       title: const Text('Send us your feedback'),
+      shortTitle: const Text('Compose message'),
       description: const Text(
         'Add a short description of what you encountered',
       ),
@@ -84,7 +85,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
             children: [
               TronButton(
                 color: context.theme.secondaryColor,
-                label: 'Cancel',
+                label: 'Close',
                 onTap: context.wiredashModel.hide,
               ),
               TronButton(

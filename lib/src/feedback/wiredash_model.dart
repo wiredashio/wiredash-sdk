@@ -64,8 +64,11 @@ class WiredashModel with ChangeNotifier {
   }
 
   /// Closes wiredash
-  Future<void> hide() async {
+  Future<void> hide({bool discardFeedback = false}) async {
     await services.backdropController.animateToClosed();
+    if (discardFeedback) {
+      services.discardFeedback();
+    }
   }
 }
 

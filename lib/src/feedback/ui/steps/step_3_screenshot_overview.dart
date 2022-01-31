@@ -37,6 +37,7 @@ class Step3NotAttachments extends StatelessWidget {
     return StepPageScaffold(
       flowStatus: FeedbackFlowStatus.screenshotsOverview,
       title: const Text('Include a screenshot for more context?'),
+      shortTitle: const Text('Screenshots'),
       description: const Text(
         'You’ll be able to navigate the app and choose when to take a screenshot',
       ),
@@ -101,6 +102,7 @@ class Step3WithGallery extends StatelessWidget {
       currentStep: 2,
       totalSteps: 3,
       title: const Text('Attached screenshots'),
+      shortTitle: const Text('Screenshots'),
       description: const Text('Add, edit or remove images'),
       child: Column(
         children: [
@@ -135,35 +137,32 @@ class Step3WithGallery extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 if (kDebugMode)
-                  Positioned.fill(
-                    child: Elevation(
-                      child: AspectRatio(
-                        aspectRatio: context.theme.windowSize.aspectRatio,
-                        child: AnimatedClickTarget(
-                          onTap: () {
-                            context.feedbackModel
-                                .enterScreenshotCapturingMode();
-                          },
-                          builder: (context, state, anims) {
-                            return Container(
-                              width: 160,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Color.lerp(
-                                  context.theme.secondaryColor,
-                                  context.theme.primaryColor,
-                                  anims.pressedAnim.value * 0.2,
-                                )!
-                                    .darken(anims.hoveredAnim.value * 0.05),
-                              ),
-                              alignment: Alignment.center,
-                              child: Icon(
-                                Wirecons.plus,
-                                color: context.theme.primaryColor,
-                              ),
-                            );
-                          },
-                        ),
+                  Elevation(
+                    child: AspectRatio(
+                      aspectRatio: context.theme.windowSize.aspectRatio,
+                      child: AnimatedClickTarget(
+                        onTap: () {
+                          context.feedbackModel.enterScreenshotCapturingMode();
+                        },
+                        builder: (context, state, anims) {
+                          return Container(
+                            width: 160,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Color.lerp(
+                                context.theme.secondaryColor,
+                                context.theme.primaryColor,
+                                anims.pressedAnim.value * 0.2,
+                              )!
+                                  .darken(anims.hoveredAnim.value * 0.05),
+                            ),
+                            alignment: Alignment.center,
+                            child: Icon(
+                              Wirecons.plus,
+                              color: context.theme.primaryColor,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   )

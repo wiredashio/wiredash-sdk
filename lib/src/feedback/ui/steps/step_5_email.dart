@@ -42,6 +42,7 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
     return StepPageScaffold(
       flowStatus: FeedbackFlowStatus.email,
       title: const Text('Get email updates for your issue'),
+      shortTitle: const Text('Contact'),
       description: const Text('Add your email address below or leave empty'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

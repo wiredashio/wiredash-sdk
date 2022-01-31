@@ -19,7 +19,7 @@ class StrokeWidthSlider extends StatefulWidget {
   final Function(double)? onNewWidthSelected;
 
   @override
-  _StrokeWidthSliderState createState() => _StrokeWidthSliderState();
+  State<StrokeWidthSlider> createState() => _StrokeWidthSliderState();
 }
 
 class _StrokeWidthSliderState extends State<StrokeWidthSlider> {
@@ -53,37 +53,39 @@ class _StrokeWidthSliderState extends State<StrokeWidthSlider> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      _widgetWidth = constraints.maxWidth;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        _widgetWidth = constraints.maxWidth;
 
-      if (_dragPosition == Offset.zero) {
-        _progress = (widget.currentWidth - widget.minWidth) /
-            (widget.maxWidth - widget.minWidth);
-      } else {
-        _progress = _dragPosition.dx / _widgetWidth;
-      }
+        if (_dragPosition == Offset.zero) {
+          _progress = (widget.currentWidth - widget.minWidth) /
+              (widget.maxWidth - widget.minWidth);
+        } else {
+          _progress = _dragPosition.dx / _widgetWidth;
+        }
 
-      return MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: Container(
-          color: context.theme.primaryBackgroundColor,
-          child: GestureDetector(
-            onPanDown: (value) => _capDragPosition(value.localPosition),
-            onPanUpdate: (value) => _capDragPosition(value.localPosition),
-            onPanEnd: (value) => _reportNewWidth(),
-            onPanCancel: () => _reportNewWidth(),
-            child: CustomPaint(
-              painter: StrokeWidthSliderPainter(
-                minWidth: widget.minWidth,
-                maxWidth: widget.maxWidth,
-                progress: _progress,
-                color: widget.color,
+        return MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: Container(
+            color: context.theme.primaryBackgroundColor,
+            child: GestureDetector(
+              onPanDown: (value) => _capDragPosition(value.localPosition),
+              onPanUpdate: (value) => _capDragPosition(value.localPosition),
+              onPanEnd: (value) => _reportNewWidth(),
+              onPanCancel: () => _reportNewWidth(),
+              child: CustomPaint(
+                painter: StrokeWidthSliderPainter(
+                  minWidth: widget.minWidth,
+                  maxWidth: widget.maxWidth,
+                  progress: _progress,
+                  color: widget.color,
+                ),
+                child: const SizedBox.expand(),
               ),
-              child: const SizedBox.expand(),
             ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }

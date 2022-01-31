@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/widgets/tron_labeled_button.dart';
 import 'package:wiredash/src/common/widgets/tron_progress_indicator.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
@@ -182,6 +185,7 @@ class StepPageScaffold extends StatefulWidget {
     this.currentStep,
     this.totalSteps,
     required this.title,
+    this.shortTitle,
     this.description,
     required this.child,
     required this.flowStatus,
@@ -193,6 +197,7 @@ class StepPageScaffold extends StatefulWidget {
 
   final FeedbackFlowStatus flowStatus;
   final Widget title;
+  final Widget? shortTitle;
   final Widget? description;
 
   final Widget child;
@@ -202,6 +207,8 @@ class StepPageScaffold extends StatefulWidget {
 }
 
 class _StepPageScaffoldState extends State<StepPageScaffold> {
+  Timer? _reallyTimer;
+
   Widget _buildTitle(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -234,7 +241,49 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              FeedbackProgressIndicator(flowStatus: widget.flowStatus),
+              Row(
+                children: [
+                  FeedbackProgressIndicator(flowStatus: widget.flowStatus),
+                  if (widget.shortTitle != null) ...[
+                    SizedBox(
+                      height: 16,
+                      child: VerticalDivider(
+                        color: context.theme.captionTextStyle.color,
+                      ),
+                    ),
+                    DefaultTextStyle(
+                      style: context.theme.captionTextStyle,
+                      child: widget.shortTitle!,
+                    ),
+                  ],
+                  const Spacer(),
+                  TronLabeledButton(
+                    onTap: () {
+                      setState(() {
+                        if (_reallyTimer == null) {
+                          setState(() {
+                            _reallyTimer =
+                                Timer(const Duration(seconds: 3), () {
+                              setState(() {
+                                _reallyTimer = null;
+                              });
+                            });
+                          });
+                        } else {
+                          context.wiredashModel.services.discardFeedback();
+                          _reallyTimer = null;
+                        }
+                      });
+                    },
+                    child: _reallyTimer == null
+                        ? const Text('Discard Feedback')
+                        : Text(
+                            'Really? Discard!',
+                            style: TextStyle(color: context.theme.errorColor),
+                          ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 24),
               _buildTitle(context),
               const SizedBox(height: 32),
@@ -244,6 +293,12 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _reallyTimer?.cancel();
+    super.dispose();
   }
 }
 

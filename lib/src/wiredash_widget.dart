@@ -253,7 +253,12 @@ class WiredashState extends State<Wiredash> {
             controller: _services.backdropController,
             padding: widget.padding,
             app: appBuilder,
-            contentBuilder: (_) => const WiredashFeedbackFlow(),
+            contentBuilder: (context) {
+              return WiredashFeedbackFlow(
+                // this allows discarding feedback in the message step
+                key: ValueKey(context.feedbackModel),
+              );
+            },
             // TODO move somewhere else
             foregroundLayerBuilder: (context, appRect) {
               final status = _services.backdropController.backdropStatus;

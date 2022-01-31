@@ -49,7 +49,7 @@ class ScreenshotBar extends StatelessWidget {
               context.feedbackModel.cancelScreenshotCapturingMode();
             },
           ),
-          if (context.theme.windowSize.width > 680) ...[
+          if (context.theme.windowSize.width > 720) ...[
             const Spacer(),
             const Padding(
               padding: EdgeInsets.only(left: 8.0, right: 8.0),
@@ -68,6 +68,7 @@ class ScreenshotBar extends StatelessWidget {
               flex: 10,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                // TODO animate text changes
                 child: Text(
                   feedbackStatus == FeedbackFlowStatus.screenshotDrawing
                       ? "Draw to highlight what's important"
