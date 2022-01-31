@@ -71,6 +71,7 @@ class _TronIconState extends State<TronIcon>
       opacity: _fadeAnimation,
       child: Icon(
         _oldIcon ?? widget.icon,
+        size: 20,
         color: widget.color,
       ),
     );

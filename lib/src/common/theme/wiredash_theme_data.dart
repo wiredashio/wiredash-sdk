@@ -1,6 +1,7 @@
 import 'dart:ui' show Brightness;
 
 import 'package:flutter/rendering.dart';
+import 'package:wiredash/src/common/utils/key_point_interpolator.dart';
 
 class WiredashThemeData {
   factory WiredashThemeData({
@@ -132,7 +133,15 @@ class WiredashThemeData {
   TextStyle get headlineTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
-        fontSize: 28,
+        fontSize: windowSize.shortestSide > 480 ? 32 : 24,
+        color: primaryTextColor,
+        fontWeight: FontWeight.bold,
+      );
+
+  TextStyle get appbarTitle => TextStyle(
+        package: packageName,
+        fontFamily: fontFamily,
+        fontSize: 16,
         color: primaryTextColor,
         fontWeight: FontWeight.bold,
       );
@@ -150,13 +159,13 @@ class WiredashThemeData {
         fontFamily: fontFamily,
         fontSize: 14,
         color: primaryTextColor,
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w600,
       );
 
   TextStyle get bodyTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
-        fontSize: 16,
+        fontSize: windowSize.shortestSide > 480 ? 16 : 14,
         color: primaryTextColor,
         fontWeight: FontWeight.normal,
       );
@@ -164,7 +173,7 @@ class WiredashThemeData {
   TextStyle get body2TextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
-        fontSize: 16,
+        fontSize: windowSize.shortestSide > 480 ? 16 : 14,
         color: secondaryTextColor,
         fontWeight: FontWeight.normal,
       );
@@ -172,7 +181,7 @@ class WiredashThemeData {
   TextStyle get captionTextStyle => TextStyle(
         package: packageName,
         fontFamily: fontFamily,
-        fontSize: 10,
+        fontSize: 12,
         color: secondaryTextColor,
         fontWeight: FontWeight.normal,
       );
@@ -192,52 +201,34 @@ class WiredashThemeData {
       );
 
   double get horizontalPadding {
-    switch (deviceClass) {
-      case DeviceClass.handsetSmall320:
-        return 8;
-      case DeviceClass.handsetMedium360:
-        return 16;
-      case DeviceClass.handsetLarge400:
-        return 32;
-      case DeviceClass.tabletSmall600:
-        return 64;
-      case DeviceClass.tabletLarge720:
-        return 64;
-      case DeviceClass.desktopSmall1024:
-        return 128;
-      case DeviceClass.desktopLarge1440:
-        return 128;
-    }
-  }
-
-  double get buttonBarHeight {
-    if (windowSize.height <= 600) {
-      return 70;
-    }
-    return 96;
+    final keypoints = KeyPointInterpolator({
+      320: 8,
+      360: 16,
+      400: 32,
+      600: 64,
+      720: 64,
+      1024: 128,
+    });
+    return keypoints.interpolate(windowSize.width);
   }
 
   double get verticalPadding {
-    if (windowSize.height <= 400) {
-      return 40;
-    }
-    return 64;
+    final keypoints = KeyPointInterpolator({
+      400: 40,
+      600: 64,
+    });
+    return keypoints.interpolate(windowSize.width);
   }
 
   double get maxContentWidth {
-    switch (deviceClass) {
-      case DeviceClass.handsetSmall320:
-      case DeviceClass.handsetMedium360:
-      case DeviceClass.handsetLarge400:
-      case DeviceClass.tabletSmall600:
-        return double.infinity;
-      case DeviceClass.tabletLarge720:
-        return 640;
-      case DeviceClass.desktopSmall1024:
-        return 720;
-      case DeviceClass.desktopLarge1440:
-        return 800;
-    }
+    final width = windowSize.width;
+    final keypoints = KeyPointInterpolator({
+      0: 0,
+      720: 720,
+      1024: 1024.0 * 0.75,
+      2048: 1024,
+    });
+    return keypoints.interpolate(width);
   }
 
   @override

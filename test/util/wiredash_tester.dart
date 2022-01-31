@@ -18,7 +18,7 @@ extension WiredashTester on WidgetTester {
   }
 
   Future<void> waitUntil(
-    Finder finder,
+    dynamic finder,
     Matcher matcher, {
     Duration timeout = const Duration(seconds: 3),
   }) async {

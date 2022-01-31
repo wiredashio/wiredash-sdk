@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/services/services.dart';
@@ -8,9 +7,13 @@ import 'package:wiredash/src/common/utils/project_credential_validator.dart';
 import 'package:wiredash/src/common/widgets/screencapture.dart';
 import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
 import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
+import 'package:wiredash/src/feedback/ui/color_palette.dart';
+import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
+import 'package:wiredash/src/feedback/ui/screenshot_bar.dart';
 import 'package:wiredash/src/support/not_a_widgets_app.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
 import 'package:wiredash/wiredash.dart';
@@ -245,15 +248,95 @@ class WiredashState extends State<Wiredash> {
       child: WiredashLocalizations(
         child: WiredashTheme(
           data: theme,
-          child: Stack(
-            children: [
-              WiredashBackdrop(
-                key: _backdropKey,
-                controller: _services.backdropController,
-                padding: widget.padding,
-                child: appBuilder,
-              ),
-            ],
+          child: WiredashBackdrop(
+            key: _backdropKey,
+            controller: _services.backdropController,
+            padding: widget.padding,
+            app: appBuilder,
+            contentBuilder: (context) {
+              return WiredashFeedbackFlow(
+                // this allows discarding feedback in the message step
+                key: ValueKey(context.feedbackModel),
+              );
+            },
+            // TODO move somewhere else
+            foregroundLayerBuilder: (context, appRect) {
+              final status = _services.backdropController.backdropStatus;
+              Widget? content;
+              final animatingCenter =
+                  status == WiredashBackdropStatus.openingCentered ||
+                      status == WiredashBackdropStatus.closingCentered;
+              if (animatingCenter ||
+                  status == WiredashBackdropStatus.centered) {
+                final topBar = SizedBox(
+                  height: appRect.top,
+                  child: const ScreenshotBar(),
+                );
+                content = Column(
+                  children: [
+                    SizedBox(
+                      height: appRect.top,
+                      width: double.infinity,
+                      child: Padding(
+                        // padding: EdgeInsets.zero,
+                        padding: EdgeInsets.only(
+                          left: appRect.left,
+                          right: appRect.left,
+                        ),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          reverseDuration: const Duration(milliseconds: 200),
+                          // hide buttons early when exiting centered
+                          child: status ==
+                                      WiredashBackdropStatus.openingCentered ||
+                                  status == WiredashBackdropStatus.centered
+                              ? topBar
+                              : null,
+                        ),
+                      ),
+                    ),
+                    // poor way to prevent overflow during enter/exit anim
+                    if (!animatingCenter)
+                      Container(
+                        height: appRect.height,
+                      ),
+                    if (!animatingCenter)
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: AnimatedSlide(
+                            duration: const Duration(seconds: 1),
+                            curve: const Interval(
+                              0.5,
+                              1,
+                              curve: Curves.easeOutCirc,
+                            ),
+                            offset: Offset(
+                              0,
+                              context.feedbackModel.feedbackFlowStatus ==
+                                      FeedbackFlowStatus.screenshotDrawing
+                                  ? 0
+                                  : 1,
+                            ),
+                            child: ColorPalette(
+                              initialColor: _services.picassoController.color,
+                              initialStrokeWidth:
+                                  _services.picassoController.strokeWidth,
+                              onNewColorSelected: (color) =>
+                                  _services.picassoController.color = color,
+                              onNewStrokeWidthSelected: (width) => _services
+                                  .picassoController.strokeWidth = width,
+                              onUndo: _services.picassoController.undo,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              }
+
+              return content;
+            },
           ),
         ),
       ),

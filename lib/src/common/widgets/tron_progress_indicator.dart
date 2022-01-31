@@ -33,6 +33,7 @@ class _TronProgressIndicatorState extends State<TronProgressIndicator>
     super.initState();
     _controller = AnimationController(vsync: this, duration: _duration);
     _updateTweens();
+    _controller.forward(from: 1);
   }
 
   @override
@@ -41,6 +42,7 @@ class _TronProgressIndicatorState extends State<TronProgressIndicator>
     if (oldWidget.currentStep != widget.currentStep ||
         oldWidget.totalSteps != widget.currentStep) {
       _updateTweens();
+      _controller.forward(from: 0);
     }
   }
 
@@ -73,8 +75,6 @@ class _TronProgressIndicatorState extends State<TronProgressIndicator>
         curve: const Interval(0.05, 1, curve: Curves.easeOut),
       ),
     );
-
-    _controller.forward(from: 0);
   }
 
   @override
@@ -128,7 +128,11 @@ class _TronProgressPainter extends CustomPainter {
       ..style = PaintingStyle.fill
       ..color = colorCurrent;
 
-    canvas.drawCircle(size.center(Offset.zero), size.width / 2, circlePaint);
+    canvas.drawCircle(
+      size.center(Offset.zero),
+      (size.width - _borderWidth) / 2,
+      circlePaint,
+    );
 
     fillPaint.color = colorNext;
     canvas.drawArc(

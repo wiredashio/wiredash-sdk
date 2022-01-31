@@ -5,6 +5,7 @@ class Delay {
   Delay(this.duration, {this.errorOnDispose = false}) {
     _timer = Timer(duration, _afterDelay);
   }
+
   final Duration duration;
 
   /// When true, the [future] throws an error on complete. When false it never

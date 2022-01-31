@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/common/utils/color_ext.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 
-const _lightBlue = Color(0xFFC6D5F6);
-
-class LabeledButton extends ImplicitlyAnimatedWidget {
-  const LabeledButton({
+/// Clickable text
+class TronLabeledButton extends ImplicitlyAnimatedWidget {
+  const TronLabeledButton({
     Key? key,
     required this.child,
     this.onTap,
@@ -21,12 +19,12 @@ class LabeledButton extends ImplicitlyAnimatedWidget {
   final EdgeInsetsGeometry? padding;
 
   @override
-  AnimatedWidgetBaseState<LabeledButton> createState() => _BigBlueButtonState();
+  AnimatedWidgetBaseState<TronLabeledButton> createState() =>
+      _LabeledButtonState();
 }
 
-class _BigBlueButtonState extends AnimatedWidgetBaseState<LabeledButton> {
+class _LabeledButtonState extends AnimatedWidgetBaseState<TronLabeledButton> {
   ColorTween? _colorTween;
-  Tween<double>? _iconScaleTween;
   Tween<double>? _buttonScaleTween;
 
   bool _focused = false;
@@ -58,7 +56,7 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<LabeledButton> {
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              height: 32,
+              height: 24,
               child: PhysicalShape(
                 color: _colorTween!.evaluate(animation)!,
                 elevation: _focused ? 2 : 0,
@@ -83,25 +81,16 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<LabeledButton> {
                   },
                   behavior: HitTestBehavior.opaque,
                   excludeFromSemantics: true,
-                  child: IconTheme(
-                    data: const IconThemeData(color: Color(0xffffffff)),
-                    child: ScaleTransition(
-                      scale: _iconScaleTween!.animate(animation),
-                      child: DefaultTextStyle(
-                        style: const TextStyle(
-                          color: Color(0xFF1A56DB),
-                          fontSize: 14,
-                          height: 1,
-                          // TODO add Inter font?
-                          fontWeight: FontWeight.w800,
-                        ),
-                        child: Center(
-                          widthFactor: 1,
-                          child: Padding(
-                            padding: widget.padding ??
-                                const EdgeInsets.symmetric(horizontal: 16),
-                            child: widget.child,
-                          ),
+                  child: ScaleTransition(
+                    scale: _buttonScaleTween!.animate(animation),
+                    child: DefaultTextStyle(
+                      style: context.theme.captionTextStyle,
+                      child: Center(
+                        widthFactor: 1,
+                        child: Padding(
+                          padding: widget.padding ??
+                              const EdgeInsets.symmetric(horizontal: 8),
+                          child: widget.child,
                         ),
                       ),
                     ),
@@ -115,33 +104,36 @@ class _BigBlueButtonState extends AnimatedWidgetBaseState<LabeledButton> {
     );
   }
 
+  late Color color = Colors.transparent;
+
+  @override
+  void initState() {
+    color = WiredashTheme.of(context, listen: false)!.secondaryColor;
+    super.initState();
+  }
+
   @override
   void forEachTween(TweenVisitor<dynamic> visitor) {
     _colorTween = visitor(
       _colorTween,
       () {
         if (widget.onTap == null) {
-          return _lightBlue.lighten(0.3);
+          return color.withOpacity(0);
         }
         if (_pressed) {
           // ignore: avoid_redundant_argument_values
-          return _lightBlue.darken(0.1);
+          return color;
         }
         if (_hovered) {
-          return _lightBlue.darken(0.05);
+          return color.withOpacity(0.5);
         }
-        return _lightBlue;
+        return color.withOpacity(0);
       }(),
       (dynamic value) => ColorTween(begin: value as Color?),
     ) as ColorTween?;
-    _iconScaleTween = visitor(
-      _iconScaleTween,
-      _pressed ? 1.1 : 1.0,
-      (dynamic value) => Tween<double>(begin: value as double?),
-    ) as Tween<double>?;
     _buttonScaleTween = visitor(
       _buttonScaleTween,
-      _pressed ? 2.0 : 0.0,
+      _pressed ? 1.05 : 1.0,
       (dynamic value) => Tween<double>(begin: value as double?),
     ) as Tween<double>?;
   }

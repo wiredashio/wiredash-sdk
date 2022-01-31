@@ -21,7 +21,7 @@ enum FeedbackFlowStatus {
   screenshotSaving,
   email,
   submit,
-  submitting,
+  submittingAndRetry,
 }
 
 class FeedbackModel with ChangeNotifier {
@@ -58,6 +58,7 @@ class FeedbackModel with ChangeNotifier {
   bool get isActive => _feedbackFlowStatus != FeedbackFlowStatus.none;
 
   bool get hasScreenshots => _screenshot != null;
+
   Uint8List? get screenshot => _screenshot;
 
   bool get submitting => _submitting;
@@ -74,35 +75,80 @@ class FeedbackModel with ChangeNotifier {
   BuildInfo? _buildInfo;
 
   Object? _submissionError;
+
   Object? get submissionError => _submissionError;
 
+  int get maxSteps {
+    // message
+    // screenshot
+    var steps = 2;
+
+    if (_services.wiredashWidget.feedbackOptions?.askForUserEmail == true) {
+      steps++;
+    }
+    if (_services.wiredashWidget.feedbackOptions?.labels?.isNotEmpty == true) {
+      steps++;
+    }
+
+    return steps;
+  }
+
+  /// Returns the current stack of steps
   List<FeedbackFlowStatus> get steps {
     if (submitted) {
       // Return just a single step, no back/forward possible
       return [
-        FeedbackFlowStatus.submitting,
+        FeedbackFlowStatus.submittingAndRetry,
       ];
     }
 
-    final stack = [FeedbackFlowStatus.message];
-
-    if (_feedbackMessage != null) {
-      if (labels.isNotEmpty) stack.add(FeedbackFlowStatus.labels);
-      final renderer = getRenderer();
-      if (renderer != Renderer.html) {
-        // Don't show the screenshot option with html renderer, because it
-        // doesn't support rendering to canvas
-        stack.add(FeedbackFlowStatus.screenshotsOverview);
-      }
-      if (_services.wiredashWidget.feedbackOptions?.askForUserEmail == true) {
-        stack.add(FeedbackFlowStatus.email);
-      }
-      stack.add(FeedbackFlowStatus.submit);
+    if (_feedbackMessage == null) {
+      return [FeedbackFlowStatus.message];
     }
+
+    return _completeStack;
+  }
+
+  /// The list of steps a user has to go through to submit feedback
+  List<FeedbackFlowStatus> get _completeStack {
+    final List<FeedbackFlowStatus> stack = [];
+
+    // message is always there
+    stack.add(FeedbackFlowStatus.message);
+
+    if (labels.isNotEmpty) stack.add(FeedbackFlowStatus.labels);
+    final renderer = getRenderer();
+    if (renderer != Renderer.html) {
+      // Don't show the screenshot option with html renderer, because it
+      // doesn't support rendering to canvas
+      stack.add(FeedbackFlowStatus.screenshotsOverview);
+    }
+    if (_services.wiredashWidget.feedbackOptions?.askForUserEmail == true) {
+      stack.add(FeedbackFlowStatus.email);
+    }
+    stack.add(FeedbackFlowStatus.submit);
+
     if (submitting || submitted || submissionError != null) {
-      stack.add(FeedbackFlowStatus.submitting);
+      stack.add(FeedbackFlowStatus.submittingAndRetry);
     }
     return stack;
+  }
+
+  int indexForFlowStatus(FeedbackFlowStatus flowStatus) {
+    FeedbackFlowStatus statusInStack = flowStatus;
+    if (flowStatus == FeedbackFlowStatus.screenshotDrawing ||
+        flowStatus == FeedbackFlowStatus.screenshotNavigating ||
+        flowStatus == FeedbackFlowStatus.screenshotCapturing) {
+      // these states are not actually in the page stack LarryPageView shows
+      // The index is still the same as the overview
+      statusInStack = FeedbackFlowStatus.screenshotsOverview;
+    }
+
+    final index = _completeStack.indexOf(statusInStack);
+    if (index == -1) {
+      throw StateError('Could not find $statusInStack in stack)');
+    }
+    return index;
   }
 
   set feedbackMessage(String? feedbackMessage) {
@@ -134,7 +180,7 @@ class FeedbackModel with ChangeNotifier {
     return index;
   }
 
-  Future<void> goToNextStep() async {
+  void goToNextStep() {
     if (!validateForm()) {
       throw FormValidationException();
     }
@@ -145,13 +191,14 @@ class FeedbackModel with ChangeNotifier {
     final nextStepIndex = index + 1;
     if (nextStepIndex < steps.length) {
       final step = steps[nextStepIndex];
-      await goToStep(step);
+      _goToStep(step);
     } else {
       throw StateError('reached the end of the stack (length ${steps.length})');
     }
   }
 
-  Future<void> goToPreviousStep() async {
+  /// Goes to the previous step in [steps]
+  void goToPreviousStep() {
     final index = currentStepIndex;
     if (index == null) {
       throw StateError('Unknown step index');
@@ -159,101 +206,89 @@ class FeedbackModel with ChangeNotifier {
     final prevStepIndex = index - 1;
     if (prevStepIndex >= 0) {
       final step = steps[prevStepIndex];
-      await goToStep(step);
+      _goToStep(step);
     } else {
       throw StateError('Already at first item');
     }
   }
 
-  Future<void> goToStep(FeedbackFlowStatus newStatus) async {
-    switch (newStatus) {
-      case FeedbackFlowStatus.none:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
-        break;
-      case FeedbackFlowStatus.message:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
-        break;
-      case FeedbackFlowStatus.labels:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
-        break;
-      case FeedbackFlowStatus.screenshotsOverview:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
+  /// Enters the screenshot mode, executes the following steps:
+  /// - [FeedbackFlowStatus.screenshotNavigating]
+  /// - [FeedbackFlowStatus.screenshotCapturing]
+  /// - [FeedbackFlowStatus.screenshotDrawing]
+  /// - [FeedbackFlowStatus.screenshotSaving]
+  Future<void> enterScreenshotCapturingMode() async {
+    _goToStep(FeedbackFlowStatus.screenshotNavigating);
+    _services.picassoController.isActive = false;
+    notifyListeners();
 
-        await _services.backdropController.animateToOpen();
-        break;
-      case FeedbackFlowStatus.screenshotNavigating:
-        _feedbackFlowStatus = newStatus;
-        _services.picassoController.isActive = false;
-        notifyListeners();
+    await _services.backdropController.animateToCentered();
+  }
 
-        await _services.backdropController.animateToCentered();
-        break;
-      case FeedbackFlowStatus.screenshotCapturing:
-        _feedbackFlowStatus = newStatus;
-        _services.picassoController.isActive = false;
-        notifyListeners();
+  /// Combines the drawing and the screenshot into a single masterpiece
+  Future<void> createMasterpiece() async {
+    _goToStep(FeedbackFlowStatus.screenshotSaving);
+    _services.picassoController.isActive = false;
+    notifyListeners();
 
-        await _services.screenCaptureController.captureScreen();
-        // TODO show loading indicator?
-        _deviceInfo = _services.deviceInfoGenerator.generate();
-        final metaData = _services.wiredashModel.metaData;
-        // Allow devs to collect additional information
-        await _services.wiredashWidget.feedbackOptions?.collectMetaData
-            ?.call(metaData);
-        _buildInfo = _services.buildInfoManager.buildInfo;
-        _metaData = metaData;
-        notifyListeners();
+    _screenshot = await _services.picassoController.paintDrawingOntoImage(
+      _services.screenCaptureController.screenshot!,
+      _services.wiredashWidget.theme?.appBackgroundColor ??
+          const Color(0xffcccccc),
+    );
+    notifyListeners();
 
-        await goToStep(FeedbackFlowStatus.screenshotDrawing);
-        break;
-      case FeedbackFlowStatus.screenshotDrawing:
-        _feedbackFlowStatus = newStatus;
-        _services.picassoController.isActive = true;
-        notifyListeners();
-        break;
-      case FeedbackFlowStatus.screenshotSaving:
-        _feedbackFlowStatus = newStatus;
-        _services.picassoController.isActive = false;
-        notifyListeners();
+    // give Flutter a few ms for GC before starting the closing animation
+    await Future.delayed(const Duration(milliseconds: 100));
 
-        _screenshot = await _services.picassoController.paintDrawingOntoImage(
-          _services.screenCaptureController.screenshot!,
-          _services.wiredashWidget.theme?.appBackgroundColor ??
-              const Color(0xffcccccc),
-        );
-        notifyListeners();
+    await _services.backdropController.animateToOpen();
+    _services.screenCaptureController.releaseScreen();
 
-        await _services.backdropController.animateToOpen();
-        _services.screenCaptureController.releaseScreen();
+    _goToStep(FeedbackFlowStatus.screenshotsOverview);
+  }
 
-        await goToStep(FeedbackFlowStatus.screenshotsOverview);
-        break;
-      case FeedbackFlowStatus.email:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
-        break;
+  /// Captures the pixels of the app and the app metadata
+  ///
+  /// Call [createMasterpiece] to finalize the screenshot (with drawing)
+  Future<void> captureScreenshot() async {
+    _goToStep(FeedbackFlowStatus.screenshotCapturing);
+    _services.picassoController.isActive = false;
+    notifyListeners();
 
-      case FeedbackFlowStatus.submit:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
-        break;
+    // captures screenshot, it is saved in screenCaptureController
+    await _services.screenCaptureController.captureScreen();
+    // TODO show loading indicator?
+    _deviceInfo = _services.deviceInfoGenerator.generate();
+    final metaData = _services.wiredashModel.metaData;
+    // Allow devs to collect additional information
+    await _services.wiredashWidget.feedbackOptions?.collectMetaData
+        ?.call(metaData);
+    _buildInfo = _services.buildInfoManager.buildInfo;
+    _metaData = metaData;
+    notifyListeners();
 
-      case FeedbackFlowStatus.submitting:
-        _feedbackFlowStatus = newStatus;
-        notifyListeners();
-        break;
-    }
+    _services.picassoController.isActive = true;
+    _goToStep(FeedbackFlowStatus.screenshotDrawing);
+  }
+
+  Future<void> cancelScreenshotCapturingMode() async {
+    _goToStep(FeedbackFlowStatus.screenshotsOverview);
+
+    await _services.backdropController.animateToOpen();
+  }
+
+  /// Debugging happens often here, this is a good point to start logging
+  /// because it triggers all status changes
+  void _goToStep(FeedbackFlowStatus newStatus) {
+    _feedbackFlowStatus = newStatus;
+    notifyListeners();
   }
 
   Future<void> submitFeedback() async {
     _submitting = true;
     _submissionError = null;
     notifyListeners();
-    goToStep(FeedbackFlowStatus.submitting);
+    _goToStep(FeedbackFlowStatus.submittingAndRetry);
     bool fakeSubmit = false;
     assert(
       () {

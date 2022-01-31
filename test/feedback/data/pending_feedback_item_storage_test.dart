@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter/foundation.dart';
+
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
@@ -31,6 +32,7 @@ class FakeSharedPreferences extends Fake implements SharedPreferences {
 
   final MethodInvocationCatcher getStringListInvocations =
       MethodInvocationCatcher('getStringList');
+
   @override
   List<String>? getStringList(String key) {
     final result = getStringListInvocations.addMethodCall(args: [key]);

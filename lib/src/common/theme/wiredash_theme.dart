@@ -28,10 +28,15 @@ class WiredashTheme extends StatelessWidget {
     );
   }
 
-  static WiredashThemeData? of(BuildContext context) {
-    final _InheritedWiredashTheme? inheritedTheme =
-        context.dependOnInheritedWidgetOfExactType<_InheritedWiredashTheme>();
-    return inheritedTheme?.themeData;
+  static WiredashThemeData? of(BuildContext context, {bool listen = true}) {
+    if (listen) {
+      final _InheritedWiredashTheme? inheritedTheme =
+          context.dependOnInheritedWidgetOfExactType<_InheritedWiredashTheme>();
+      return inheritedTheme?.themeData;
+    }
+    final _InheritedWiredashTheme? theme =
+        context.findAncestorWidgetOfExactType<_InheritedWiredashTheme>();
+    return theme?.themeData;
   }
 
   static DeviceClass _calculateDeviceClass(BoxConstraints constraints) {

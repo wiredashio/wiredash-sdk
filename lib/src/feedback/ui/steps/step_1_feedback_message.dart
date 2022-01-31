@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/widgets/tron_button.dart';
+import 'package:wiredash/src/common/widgets/wirecons.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
+import 'package:wiredash/src/wiredash_model_provider.dart';
 
 class Step1FeedbackMessage extends StatefulWidget {
   const Step1FeedbackMessage({Key? key}) : super(key: key);
@@ -36,56 +40,64 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      child: SafeArea(
-        child: ScrollBox(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // reduce size when it doesn't fit
-              Flexible(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        'Give us feedback',
-                        style: context.theme.titleTextStyle,
-                      ),
-                    ),
-                    Flexible(
-                      child: TextField(
-                        controller: _controller,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
-                        maxLength: 2048,
-                        buildCounter: _getCounterText,
-                        minLines: 1,
-                        style: context.theme.bodyTextStyle,
-                        cursorColor: context.theme.primaryColor,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          hintText: 'e.g. there’s an unknown error when I try '
-                              'to update my email in the profile menu',
-                          contentPadding: const EdgeInsets.only(top: 16),
-                          hintStyle: context.theme.body2TextStyle,
-                        ),
-                      ),
-                    ),
-                  ],
+      flowStatus: FeedbackFlowStatus.message,
+      title: const Text('Send us your feedback'),
+      shortTitle: const Text('Compose message'),
+      description: const Text(
+        'Add a short description of what you encountered',
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // reduce size when it doesn't fit
+          Flexible(
+            child: TextField(
+              controller: _controller,
+              keyboardType: TextInputType.multiline,
+              minLines: context.theme.windowSize.height > 400 ? 3 : 2,
+              maxLines: 10,
+              maxLength: 2048,
+              buildCounter: _getCounterText,
+              style: context.theme.bodyTextStyle,
+              cursorColor: context.theme.primaryColor,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: context.theme.primaryBackgroundColor,
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: context.theme.secondaryColor),
                 ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: context.theme.secondaryColor),
+                ),
+                errorBorder: InputBorder.none,
+                hintText:
+                    'There’s an unknown error when I try to change my avatar...',
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                hintStyle: context.theme.body2TextStyle,
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TronButton(
+                color: context.theme.secondaryColor,
+                label: 'Close',
+                onTap: context.wiredashModel.hide,
+              ),
+              TronButton(
+                label: 'Next',
+                trailingIcon: Wirecons.arrow_right,
+                onTap: context.feedbackModel.feedbackMessage == null
+                    ? null
+                    : context.feedbackModel.goToNextStep,
               ),
             ],
-          ),
-        ),
+          )
+        ],
       ),
     );
   }

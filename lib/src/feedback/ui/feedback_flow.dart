@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
+import 'package:wiredash/src/common/widgets/tron_labeled_button.dart';
 import 'package:wiredash/src/common/widgets/tron_progress_indicator.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
@@ -107,7 +109,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
           if (status == FeedbackFlowStatus.submit) {
             return const Step6Submit();
           }
-          if (status == FeedbackFlowStatus.submitting) {
+          if (status == FeedbackFlowStatus.submittingAndRetry) {
             return const Step7SubmittingAndError();
           }
           throw 'Unknown step $status at index $index';
@@ -131,50 +133,9 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
             key: feedbackModel.stepFormKey,
             child: larryPageView,
           ),
-          _buildProgressIndicator(),
         ],
       ),
     );
-  }
-
-  /// Builds the circular progress indicator in the top left
-  Widget _buildProgressIndicator() {
-    if (context.theme.deviceClass == DeviceClass.handsetSmall320) {
-      // hide progress indicator on small screens
-      return const SizedBox();
-    }
-
-    return Positioned(
-      top: 16,
-      right: 0,
-      child: SafeArea(
-        child: TronProgressIndicator(
-          totalSteps: 5,
-          currentStep: _getCurrentProgressStep(),
-        ),
-      ),
-    );
-  }
-
-  int _getCurrentProgressStep() {
-    switch (context.feedbackModel.feedbackFlowStatus) {
-      case FeedbackFlowStatus.none:
-      case FeedbackFlowStatus.message:
-        return 1;
-      case FeedbackFlowStatus.labels:
-        return 2;
-      case FeedbackFlowStatus.screenshotsOverview:
-      case FeedbackFlowStatus.screenshotNavigating:
-      case FeedbackFlowStatus.screenshotCapturing:
-      case FeedbackFlowStatus.screenshotDrawing:
-      case FeedbackFlowStatus.screenshotSaving:
-        return 3;
-      case FeedbackFlowStatus.email:
-        return 4;
-      case FeedbackFlowStatus.submit:
-      case FeedbackFlowStatus.submitting:
-        return 5;
-    }
   }
 }
 
@@ -219,19 +180,170 @@ class _ScrollBoxState extends State<ScrollBox> {
   }
 }
 
-class StepPageScaffold extends StatelessWidget {
+class StepPageScaffold extends StatefulWidget {
   const StepPageScaffold({
+    this.currentStep,
+    this.totalSteps,
+    required this.title,
+    this.shortTitle,
+    this.description,
     required this.child,
+    required this.flowStatus,
     Key? key,
   }) : super(key: key);
+
+  final int? currentStep;
+  final int? totalSteps;
+
+  final FeedbackFlowStatus flowStatus;
+  final Widget title;
+  final Widget? shortTitle;
+  final Widget? description;
 
   final Widget child;
 
   @override
+  State<StepPageScaffold> createState() => _StepPageScaffoldState();
+}
+
+class _StepPageScaffoldState extends State<StepPageScaffold> {
+  Timer? _reallyTimer;
+
+  Widget _buildTitle(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DefaultTextStyle(
+          style: context.theme.headlineTextStyle,
+          child: widget.title,
+        ),
+        if (widget.description != null)
+          const SizedBox(
+            height: 8,
+          ),
+        if (widget.description != null)
+          DefaultTextStyle(
+            style: context.theme.bodyTextStyle,
+            child: widget.description!,
+          )
+      ],
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.centerLeft,
-      child: child,
+      child: ScrollBox(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  FeedbackProgressIndicator(flowStatus: widget.flowStatus),
+                  if (widget.shortTitle != null) ...[
+                    SizedBox(
+                      height: 16,
+                      child: VerticalDivider(
+                        color: context.theme.captionTextStyle.color,
+                      ),
+                    ),
+                    DefaultTextStyle(
+                      style: context.theme.captionTextStyle,
+                      child: widget.shortTitle!,
+                    ),
+                  ],
+                  const Spacer(),
+                  TronLabeledButton(
+                    onTap: () {
+                      setState(() {
+                        if (_reallyTimer == null) {
+                          setState(() {
+                            _reallyTimer =
+                                Timer(const Duration(seconds: 3), () {
+                              setState(() {
+                                _reallyTimer = null;
+                              });
+                            });
+                          });
+                        } else {
+                          context.wiredashModel.services.discardFeedback();
+                          _reallyTimer = null;
+                        }
+                      });
+                    },
+                    child: _reallyTimer == null
+                        ? const Text('Discard Feedback')
+                        : Text(
+                            'Really? Discard!',
+                            style: TextStyle(color: context.theme.errorColor),
+                          ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _buildTitle(context),
+              const SizedBox(height: 32),
+              widget.child
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _reallyTimer?.cancel();
+    super.dispose();
+  }
+}
+
+/// Inherits the step information from [FeedbackModel]
+class FeedbackProgressIndicator extends StatefulWidget {
+  const FeedbackProgressIndicator({
+    Key? key,
+    required this.flowStatus,
+  }) : super(key: key);
+
+  final FeedbackFlowStatus flowStatus;
+
+  @override
+  State<FeedbackProgressIndicator> createState() =>
+      _FeedbackProgressIndicatorState();
+}
+
+class _FeedbackProgressIndicatorState extends State<FeedbackProgressIndicator> {
+  @override
+  Widget build(BuildContext context) {
+    final feedbackModel = context.feedbackModel;
+    final stepIndex = feedbackModel.indexForFlowStatus(widget.flowStatus);
+    var currentStep = stepIndex + 1;
+    final total = feedbackModel.maxSteps;
+
+    bool completed = false;
+    if (currentStep > total) {
+      // especially the last "Submit" step should show the number on the
+      // previous page
+      currentStep = total;
+      completed = true;
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TronProgressIndicator(
+          currentStep: completed ? total : currentStep - 1,
+          totalSteps: total,
+        ),
+        const SizedBox(width: 12),
+        Text(
+          'Step $currentStep of $total',
+          style: context.theme.captionTextStyle,
+        ),
+      ],
     );
   }
 }

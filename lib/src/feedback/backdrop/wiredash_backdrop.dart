@@ -6,22 +6,27 @@ import 'package:flutter/physics.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/feedback/backdrop/pull_to_close_detector.dart';
-import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
-import 'package:wiredash/src/feedback/ui/feedback_navigation.dart';
+import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
 
 /// The Wiredash UI behind the app
 class WiredashBackdrop extends StatefulWidget {
   const WiredashBackdrop({
     Key? key,
-    required this.child,
+    required this.contentBuilder,
+    required this.app,
     required this.controller,
     this.padding,
+    this.backgroundLayerBuilder,
+    this.foregroundLayerBuilder,
   }) : super(key: key);
 
   /// The wrapped app
-  final Widget child;
+  final Widget app;
   final BackdropController controller;
   final EdgeInsets? padding;
+  final Widget Function(BuildContext) contentBuilder;
+  final Widget? Function(BuildContext, Rect appRect)? backgroundLayerBuilder;
+  final Widget? Function(BuildContext, Rect appRect)? foregroundLayerBuilder;
 
   static BackdropController of(BuildContext context) {
     final state = context.findAncestorStateOfType<_WiredashBackdropState>();
@@ -65,7 +70,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   Rect _rectAppCentered = Rect.zero;
   Rect _rectAppFillsScreen = Rect.zero;
   Rect _rectContentArea = Rect.zero;
-  Rect _rectNavigationButtons = Rect.zero;
+
+  /// Saves the max keyboard height once detected to prevent jumping of the UI
+  /// when keyboard opens/closes
+  double _maxKeyboardHeight = 0.0;
 
   WiredashBackdropStatus get _backdropStatus =>
       widget.controller.backdropStatus;
@@ -130,8 +138,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final newTheme = context.theme;
     _wiredashThemeData = newTheme;
 
-    // Reduce the number of rect calculations by explicitly checking if
-    // dependencies of _calculateRects changed.
     if (newMq.size != oldMq.size ||
         oldTheme.horizontalPadding != newTheme.horizontalPadding ||
         oldTheme.verticalPadding != newTheme.verticalPadding ||
@@ -139,8 +145,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         // keyboard detection
         newMq.viewInsets != oldMq.viewInsets ||
         newMq.padding != oldMq.padding) {
+      // Reduce the number of rect calculations by explicitly checking if
+      // dependencies of _calculateRects changed.
       _calculateRects();
       _swapAnimation();
+    }
+
+    if (newMq.orientation != oldMq.orientation) {
+      // soft keyboards have different heights based on the orientation
+      _maxKeyboardHeight = 0.0;
     }
   }
 
@@ -161,7 +174,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   @override
   Widget build(BuildContext context) {
-    final Widget child = widget.child;
+    final Widget child = widget.app;
 
     if (_backdropStatus == WiredashBackdropStatus.closed) {
       // Wiredash is closed, show the app without being wrapped in Transforms
@@ -192,7 +205,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                         WiredashBackdropStatus.openingCentered
                 ? 0.0
                 : 1.0,
-            child: const WiredashFeedbackFlow(),
+            child: widget.contentBuilder(context),
           ),
         ),
       ),
@@ -205,7 +218,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         ),
       ),
       content: content,
-      navButtons: _buildNavigationButtons(),
+      foreground: widget.foregroundLayerBuilder
+          ?.call(context, _transformAnimation.value!),
+      background: widget.backgroundLayerBuilder
+          ?.call(context, _transformAnimation.value!),
     );
 
     return GestureDetector(
@@ -213,13 +229,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         // Close soft keyboard
         FocusManager.instance.primaryFocus?.unfocus();
       },
-      child: DecoratedBox(
-        decoration: _backgroundDecoration(),
-        child: Stack(
-          children: [
-            ..._debugRects(),
-            ...stackChildren,
-          ],
+      child: SemiTransparentStatusBar(
+        child: DecoratedBox(
+          decoration: _backgroundDecoration(),
+          child: Stack(
+            children: [
+              ..._debugRects(),
+              ...stackChildren,
+            ],
+          ),
         ),
       ),
     );
@@ -231,7 +249,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final mqPadding = _mediaQueryData.padding;
     final Size screenSize = _mediaQueryData.size;
 
-    const centerPadding = EdgeInsets.symmetric(vertical: 20);
+    final centerPadding = EdgeInsets.only(
+      top: 80 + mqPadding.top, // navigation bar
+      bottom: 80, // color bar
+    );
+
     // scale to show app in safeArea
     final centerScaleFactor = () {
       // center
@@ -263,37 +285,43 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     ).translate(wiredashPadding.left / 2 - wiredashPadding.right / 2, 0);
 
     // iPhone SE is 320 width
-    const double minContentAreaHeight = 320.0;
+    const double minContentAreaHeight = 400.0;
     const double maxContentAreaHeight = 640.0;
     const double minAppPeakHeight = 56;
 
-    final double buttonBarHeight = context.theme.buttonBarHeight;
+    // TODO check on android with soft keyboard and soft navigation keys
+    final currentKeyboardHeight = _mediaQueryData.viewInsets.bottom;
+    final bool isKeyboardOpen =
+        currentKeyboardHeight.isRoughly(_maxKeyboardHeight, 0.2);
+    _maxKeyboardHeight = math.max(currentKeyboardHeight, _maxKeyboardHeight);
+    final keyboardHeight = () {
+      if (isKeyboardOpen) {
+        return _maxKeyboardHeight;
+      } else if (screenSize.height - _maxKeyboardHeight <
+          minContentAreaHeight) {
+        // there's not enough space to always include the padding
+        return 0;
+      } else {
+        // Always include the keyboardHeight, prevent flickering when there
+        // is enough space
+        return _maxKeyboardHeight;
+      }
+    }();
 
-    // center the navigation buttons
-    double preferredAppHeight = _mediaQueryData.size.height * 0.5;
-    preferredAppHeight -= minAppPeakHeight;
-    preferredAppHeight -= buttonBarHeight / 2;
-    preferredAppHeight -= wiredashPadding.top / 2;
+    // don't peak app on small screens in landscape when the keyboard is open
+    final bool peakApp = !isKeyboardOpen ||
+        (screenSize.height - minAppPeakHeight - _maxKeyboardHeight) >
+            minContentAreaHeight;
 
-    final preferredContentHeight =
-        _mediaQueryData.size.height - preferredAppHeight;
-
-    final contentHeightWithButtons = preferredContentHeight.clapWithin(
-      min: minContentAreaHeight,
-      max: maxContentAreaHeight,
-    );
-
-    // On super small screen (landscape phones) scale to 0 and
-    // make 100% sure the appPeak is visible
     final double contentHeight =
-        math.min(contentHeightWithButtons, screenSize.height) -
-            minAppPeakHeight;
+        math.min(maxContentAreaHeight, screenSize.height - keyboardHeight) -
+            (peakApp ? minAppPeakHeight : 0);
 
     _rectContentArea = Rect.fromLTWH(
       0,
       0,
       context.theme.maxContentWidth,
-      contentHeight - buttonBarHeight,
+      contentHeight,
     )
         .removePadding(
           wiredashPadding.copyWith(bottom: 0),
@@ -305,22 +333,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     _rectAppOutOfFocus = Rect.fromLTWH(
       0,
-      _rectContentArea.bottom + buttonBarHeight,
-      screenSize.width * centerScaleFactor,
-      screenSize.height * centerScaleFactor,
+      _rectContentArea.bottom,
+      screenSize.width,
+      screenSize.height,
     )
         .centerHorizontally(
           maxWidth: screenSize.width - wiredashPadding.horizontal,
           minPadding: context.theme.horizontalPadding,
         )
         .translate(wiredashPadding.left, 0);
-
-    _rectNavigationButtons = Rect.fromLTWH(
-      _rectAppOutOfFocus.left,
-      _rectContentArea.bottom,
-      _rectAppOutOfFocus.width,
-      buttonBarHeight,
-    );
 
     final rectFullscreen =
         Rect.fromPoints(Offset.zero, screenSize.bottomRight(Offset.zero));
@@ -339,7 +360,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   List<Widget> _orderStackChildren({
     required Widget app,
     required Widget content,
-    required Widget navButtons,
+    required Widget? foreground,
+    required Widget? background,
   }) {
     final keyedApp = KeyedSubtree(
       key: const ValueKey('app'),
@@ -349,26 +371,25 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       key: const ValueKey('content'),
       child: content,
     );
-    final keyedNav = KeyedSubtree(
-      key: const ValueKey('nav'),
-      child: navButtons,
-    );
-
-    if (_backdropStatus == WiredashBackdropStatus.closing ||
-        _backdropStatus == WiredashBackdropStatus.opening) {
-      // Move app above nav buttons
-      return [
-        keyedContent,
-        keyedNav,
-        keyedApp,
-      ];
-    }
+    final keyedForeground = foreground != null
+        ? KeyedSubtree(
+            key: const ValueKey('app-foreground'),
+            child: foreground,
+          )
+        : null;
+    final keyedBackground = background != null
+        ? KeyedSubtree(
+            key: const ValueKey('app-background'),
+            child: background,
+          )
+        : null;
 
     // Place buttons at the very top by default
     return [
       keyedContent,
+      if (keyedBackground != null) keyedBackground,
       keyedApp,
-      keyedNav,
+      if (keyedForeground != null) keyedForeground,
     ];
   }
 
@@ -388,7 +409,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// Returns the rects as colored widgets on screen
   List<Widget> _debugRects() {
-    bool debug = false;
+    bool debug = false; // not touchy here, edit in assert
     assert(
       () {
         // enable debugging here
@@ -444,28 +465,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           ),
         ),
       ),
-      Positioned.fromRect(
-        rect: _rectNavigationButtons,
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.green.withOpacity(0.5),
-            ),
-          ),
-        ),
-      ),
     ];
-  }
-
-  Widget _buildNavigationButtons() {
-    return AnimatedOpacity(
-      duration: const Duration(milliseconds: 150),
-      opacity: _backdropStatus == WiredashBackdropStatus.closing ? 0.0 : 1.0,
-      child: FeedbackNavigation(
-        defaultLocation: _rectNavigationButtons,
-        windowPadding: widget.padding,
-      ),
-    );
   }
 
   /// Clips and adds shadow to the app
@@ -706,9 +706,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }
 
   Future<void> _animateToOpen() async {
-    if (_backdropStatus == WiredashBackdropStatus.closed) {
+    if (_backdropStatus == WiredashBackdropStatus.closed ||
+        _backdropStatus == WiredashBackdropStatus.closing) {
       _backdropStatus = WiredashBackdropStatus.opening;
-    } else if (_backdropStatus == WiredashBackdropStatus.centered) {
+    } else if (_backdropStatus == WiredashBackdropStatus.centered ||
+        _backdropStatus == WiredashBackdropStatus.openingCentered) {
       _backdropStatus = WiredashBackdropStatus.closingCentered;
     } else {
       // no need for animating, we're already in a desired state
@@ -728,6 +730,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   Future<void> _animateToClosed() async {
     if (_backdropStatus == WiredashBackdropStatus.closed) {
+      // already in correct state
+      return;
+    }
+    if (_backdropStatus == WiredashBackdropStatus.closing) {
+      // already playing correct anim
       return;
     }
     _backdropStatus = WiredashBackdropStatus.closing;
@@ -947,7 +954,16 @@ extension on Rect {
 }
 
 extension on double {
+  // ignore: unused_element
   double clapWithin({required double min, required double max}) {
     return clamp(min, max) as double;
+  }
+
+  /// Returns true when [value] is within bounds of `this * `[fraction]
+  bool isRoughly(num value, double fraction) {
+    final delta = this * fraction;
+    final upperBound = this + delta;
+    final lowerBound = this - delta;
+    return value > lowerBound && value < upperBound;
   }
 }

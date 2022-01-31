@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/utils/email_validator.dart';
+import 'package:wiredash/src/common/widgets/tron_button.dart';
+import 'package:wiredash/src/common/widgets/wirecons.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
 import 'package:wiredash/wiredash.dart';
@@ -37,63 +40,76 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      child: SafeArea(
-        child: ScrollBox(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+      flowStatus: FeedbackFlowStatus.email,
+      title: const Text('Get email updates for your issue'),
+      shortTitle: const Text('Contact'),
+      description: const Text('Add your email address below or leave empty'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: TextFormField(
+              controller: _controller,
+              keyboardType: TextInputType.emailAddress,
+              cursorColor: context.theme.primaryColor,
+              style: context.theme.bodyTextStyle,
+              onFieldSubmitted: (_) {
+                if (context.feedbackModel.validateForm()) {
+                  context.feedbackModel.goToNextStep();
+                }
+              },
+              validator: (data) {
+                final email = data ?? '';
+                if (email.isEmpty) {
+                  // leaving this field empty is ok
+                  return null;
+                }
+                final valid = const EmailValidator().validate(email);
+                return valid
+                    ? null
+                    : WiredashLocalizations.of(context)!.validationHintEmail;
+              },
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: context.theme.primaryBackgroundColor,
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: context.theme.secondaryColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: context.theme.secondaryColor),
+                ),
+                hintText: 'mail@example.com',
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                hintStyle: context.theme.body2TextStyle,
+              ),
+            ),
+          ),
+          const SizedBox(height: 40),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Optional step',
-                    style: context.theme.captionTextStyle,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Enter your email to get updates regarding your issue',
-                    style: context.theme.titleTextStyle,
-                  ),
-                  TextFormField(
-                    controller: _controller,
-                    keyboardType: TextInputType.emailAddress,
-                    cursorColor: context.theme.primaryColor,
-                    style: context.theme.bodyTextStyle,
-                    onFieldSubmitted: (_) {
-                      if (context.feedbackModel.validateForm()) {
-                        context.feedbackModel.goToNextStep();
-                      }
-                    },
-                    validator: (data) {
-                      final email = data ?? '';
-                      if (email.isEmpty) {
-                        // leaving this field empty is ok
-                        return null;
-                      }
-                      final valid = const EmailValidator().validate(email);
-                      return valid
-                          ? null
-                          : WiredashLocalizations.of(context)!
-                              .validationHintEmail;
-                    },
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      hintText: 'i.e. example@wiredash.io',
-                      contentPadding: const EdgeInsets.only(top: 16),
-                      hintStyle: context.theme.body2TextStyle,
-                    ),
-                  ),
-                ],
+              TronButton(
+                color: context.theme.secondaryColor,
+                leadingIcon: Wirecons.arrow_left,
+                label: 'Back',
+                onTap: context.feedbackModel.goToPreviousStep,
+              ),
+              TronButton(
+                label: 'Next',
+                trailingIcon: Wirecons.arrow_right,
+                onTap: () {
+                  try {
+                    context.feedbackModel.goToNextStep();
+                  } on FormValidationException {
+                    // validator triggered, TextFormField shows error
+                  }
+                },
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }

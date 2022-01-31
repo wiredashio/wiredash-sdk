@@ -122,6 +122,7 @@ class DependencyTracker {
   DependencyTracker(this.provider);
 
   final InstanceFactory provider;
+
   Locator get locator => provider.locator;
 
   int? _prevActive;

@@ -32,17 +32,29 @@ class WiredashServices extends ChangeNotifier {
   final Locator _locator = Locator();
 
   WiredashModel get wiredashModel => _locator.get();
+
   FeedbackModel get feedbackModel => _locator.get();
+
   BackdropController get backdropController => _locator.get();
+
   DeviceInfoGenerator get deviceInfoGenerator => _locator.get();
+
   PicassoController get picassoController => _locator.get();
+
   ScreenCaptureController get screenCaptureController => _locator.get();
+
   BuildInfoManager get buildInfoManager => _locator.get();
+
   FeedbackSubmitter get feedbackSubmitter => _locator.get();
+
   DeviceIdGenerator get deviceIdGenerator => _locator.get();
+
   Wiredash get wiredashWidget => _locator.get();
+
   WiredashOptionsData get wiredashOptions => _locator.get();
+
   WiredashApi get api => _locator.get();
+
   DiscardFeedbackUseCase get discardFeedback => _locator.get();
 
   void updateWidget(Wiredash wiredashWidget) {

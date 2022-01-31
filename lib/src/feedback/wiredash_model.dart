@@ -14,6 +14,7 @@ class WiredashModel with ChangeNotifier {
   final WiredashServices services;
 
   CustomizableWiredashMetaData? _metaData;
+
   CustomizableWiredashMetaData get metaData {
     if (_metaData == null) {
       _metaData = CustomizableWiredashMetaData();
@@ -39,6 +40,7 @@ class WiredashModel with ChangeNotifier {
   /// - [Wiredash.of]
   /// - [WiredashController.show]
   WiredashThemeData? _themeFromContext;
+
   WiredashThemeData? get themeFromContext => _themeFromContext;
 
   set themeFromContext(WiredashThemeData? themeFromContext) {
@@ -64,8 +66,11 @@ class WiredashModel with ChangeNotifier {
   }
 
   /// Closes wiredash
-  Future<void> hide() async {
+  Future<void> hide({bool discardFeedback = false}) async {
     await services.backdropController.animateToClosed();
+    if (discardFeedback) {
+      services.discardFeedback();
+    }
   }
 }
 
