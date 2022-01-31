@@ -233,7 +233,6 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    print(context.theme.windowSize.width);
     return Align(
       child: ScrollBox(
         padding: const EdgeInsets.symmetric(vertical: 12),

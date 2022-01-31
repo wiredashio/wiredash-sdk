@@ -11,7 +11,6 @@ import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart
 import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
-import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
 import 'package:wiredash/src/feedback/ui/color_palette.dart';
 import 'package:wiredash/src/feedback/ui/feedback_flow.dart';
@@ -298,7 +297,6 @@ Widget? _buildForegroundLayer(
   final List<Widget> stackChildren = [];
 
   final status = services.backdropController.backdropStatus;
-  Widget? content;
   final animatingCenter = status == WiredashBackdropStatus.openingCentered ||
       status == WiredashBackdropStatus.closingCentered;
   if (animatingCenter || status == WiredashBackdropStatus.centered) {
