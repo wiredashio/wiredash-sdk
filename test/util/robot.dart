@@ -152,7 +152,7 @@ class WiredashTestRobot {
 
   Future<void> skipEmail() async {
     expect(find.byType(Step5Email), findsOneWidget);
-    await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
+    await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;
@@ -160,7 +160,8 @@ class WiredashTestRobot {
   }
 
   Future<void> submitEmailViaButton() async {
-    await tester.tap(find.byIcon(Wirecons.arrow_narrow_right));
+    expect(find.byType(Step5Email), findsOneWidget);
+    await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;

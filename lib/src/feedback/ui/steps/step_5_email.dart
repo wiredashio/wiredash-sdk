@@ -99,7 +99,13 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
               TronButton(
                 label: 'Next',
                 trailingIcon: Wirecons.arrow_right,
-                onTap: context.feedbackModel.goToNextStep,
+                onTap: () {
+                  try {
+                    context.feedbackModel.goToNextStep();
+                  } on FormValidationException {
+                    // validator triggered, TextFormField shows error
+                  }
+                },
               ),
             ],
           ),
