@@ -269,9 +269,13 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
                           setState(() {
                             _reallyTimer =
                                 Timer(const Duration(seconds: 3), () {
-                              setState(() {
+                              if (mounted) {
+                                setState(() {
+                                  _reallyTimer = null;
+                                });
+                              } else {
                                 _reallyTimer = null;
-                              });
+                              }
                             });
                           });
                         } else {
