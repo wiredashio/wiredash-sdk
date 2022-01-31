@@ -1,13 +1,14 @@
 ## 1.0.0-alpha.4 - Desktop in focus
-* Improved Desktop UI
-* Draw `appBackgroundColor` behind app on screenshot 
+* [#177](https://github.com/wiredashio/wiredash-sdk/pull/177) Improved Desktop UI
+* [#176](https://github.com/wiredashio/wiredash-sdk/pull/176) Draw `appBackgroundColor` behind app on screenshot 
 * Discard feedback button
 * Color selection and drawing undo
 * Allow retake of screenshot
-* Scale drawing to match the screenshot size (based on screen ppi)
+* [#172](https://github.com/wiredashio/wiredash-sdk/pull/172) Scale drawing to match the screenshot size (based on screen ppi)
+* Scaling the window after capturing a screenshot doesn't change the drawing position anymore
 * Hide feedback details on Summary page behind button
 * Make status bar text readable on iOS
-* Raise min Flutter SDK to 2.8, (2.9 is required for macOS)
+* [#175](https://github.com/wiredashio/wiredash-sdk/pull/175) Raise min Flutter SDK to 2.8, (2.9 is required for macOS)
 
 ## 1.0.0-alpha.3 - No Overlay for you
 * [#168](https://github.com/wiredashio/wiredash-sdk/pull/168) Fix responsive padding calculation on window resize
