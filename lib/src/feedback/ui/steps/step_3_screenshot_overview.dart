@@ -105,6 +105,7 @@ class Step3WithGallery extends StatelessWidget {
       shortTitle: const Text('Screenshots'),
       description: const Text('Add, edit or remove images'),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
