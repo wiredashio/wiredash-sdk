@@ -153,9 +153,9 @@ class Wiredash extends StatefulWidget {
 }
 
 class WiredashState extends State<Wiredash> {
-  final Key _appKey = const ValueKey('app');
+  final GlobalKey _appKey = GlobalKey(debugLabel: 'app');
 
-  final Key _backdropKey = const ValueKey('backdrop');
+  final GlobalKey _backdropKey = GlobalKey(debugLabel: 'backdrop');
 
   bool _isWiredashClosed = true;
 
