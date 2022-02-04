@@ -34,6 +34,7 @@ class WiredashTestRobot {
   static Future<WiredashTestRobot> launchApp(
     WidgetTester tester, {
     WiredashFeedbackOptions? feedbackOptions,
+    Widget Function(BuildContext)? builder,
   }) async {
     SharedPreferences.setMockInitialValues({});
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -53,13 +54,14 @@ class WiredashTestRobot {
         ),
         child: MaterialApp(
           home: Builder(
-            builder: (context) {
-              return Scaffold(
-                floatingActionButton: FloatingActionButton(
-                  onPressed: Wiredash.of(context).show,
-                ),
-              );
-            },
+            builder: builder ??
+                (context) {
+                  return Scaffold(
+                    floatingActionButton: FloatingActionButton(
+                      onPressed: Wiredash.of(context).show,
+                    ),
+                  );
+                },
           ),
         ),
       ),
@@ -96,6 +98,15 @@ class WiredashTestRobot {
     await tester.pumpAndSettle();
     expect(find.byType(WiredashFeedbackFlow), findsOneWidget);
     print('opened Wiredash');
+  }
+
+  Future<void> closeWiredash() async {
+    // tap app which is located at the bottom of the screen
+    final bottomRight = tester.getBottomRight(find.byType(Wiredash));
+    await tester.tapAt(Offset(bottomRight.dx / 2, bottomRight.dy - 20));
+    await tester.pumpAndSettle();
+    expect(find.byType(WiredashFeedbackFlow), findsNothing);
+    print('closed Wiredash');
   }
 
   Future<void> enterFeedbackMessage(String message) async {
