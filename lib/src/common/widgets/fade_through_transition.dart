@@ -1,0 +1,796 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+
+/// An internal representation of a child widget subtree that, now or in the past,
+/// was set on the [PageTransitionSwitcher.child] field and is now in the process of
+/// transitioning.
+///
+/// The internal representation includes fields that we don't want to expose to
+/// the public API (like the controllers).
+class _ChildEntry {
+  /// Creates a [_ChildEntry].
+  ///
+  /// The [primaryController], [secondaryController], [transition] and
+  /// [widgetChild] parameters must not be null.
+  _ChildEntry({
+    required this.primaryController,
+    required this.secondaryController,
+    required this.transition,
+    required this.widgetChild,
+  });
+
+  /// The animation controller for the child's transition.
+  final AnimationController primaryController;
+
+  /// The (curved) animation being used to drive the transition.
+  final AnimationController secondaryController;
+
+  /// The currently built transition for this child.
+  Widget transition;
+
+  /// The widget's child at the time this entry was created or updated.
+  /// Used to rebuild the transition if necessary.
+  Widget widgetChild;
+
+  /// Release the resources used by this object.
+  ///
+  /// The object is no longer usable after this method is called.
+  void dispose() {
+    primaryController.dispose();
+    secondaryController.dispose();
+  }
+
+  @override
+  String toString() {
+    return 'PageTransitionSwitcherEntry#${shortHash(this)}($widgetChild)';
+  }
+}
+
+/// Signature for builders used to generate custom layouts for
+/// [PageTransitionSwitcher].
+///
+/// The builder should return a widget which contains the given children, laid
+/// out as desired. It must not return null. The builder should be able to
+/// handle an empty list of `entries`.
+typedef PageTransitionSwitcherLayoutBuilder = Widget Function(
+  List<Widget> entries,
+);
+
+/// Signature for builders used to generate custom transitions for
+/// [PageTransitionSwitcher].
+///
+/// The function should return a widget which wraps the given `child`.
+///
+/// When a [PageTransitionSwitcher]'s `child` is replaced, the new child's
+/// `primaryAnimation` runs forward and the value of its `secondaryAnimation` is
+/// usually fixed at 0.0. At the same time, the old child's `secondaryAnimation`
+/// runs forward, and the value of its primaryAnimation is usually fixed at 1.0.
+///
+/// The widget returned by the [PageTransitionSwitcherTransitionBuilder] can
+/// incorporate both animations. It will use the primary animation to define how
+/// its child appears, and the secondary animation to define how its child
+/// disappears.
+typedef PageTransitionSwitcherTransitionBuilder = Widget Function(
+  Widget child,
+  Animation<double> primaryAnimation,
+  Animation<double> secondaryAnimation,
+);
+
+/// A widget that transitions from an old child to a new child whenever [child]
+/// changes using an animation specified by [transitionBuilder].
+///
+/// This is a variation of an [AnimatedSwitcher], but instead of using the
+/// same transition for enter and exit, two separate transitions can be
+/// specified, similar to how the enter and exit transitions of a [PageRoute]
+/// are defined.
+///
+/// When a new [child] is specified, the [transitionBuilder] is effectively
+/// applied twice, once to the old child and once to the new one. When
+/// [reverse] is false, the old child's `secondaryAnimation` runs forward, and
+/// the value of its `primaryAnimation` is usually fixed at 1.0. The new child's
+/// `primaryAnimation` runs forward and the value of its `secondaryAnimation` is
+/// usually fixed at 0.0. The widget returned by the [transitionBuilder] can
+/// incorporate both animations. It will use the primary animation to define how
+/// its child appears, and the secondary animation to define how its child
+/// disappears. This is similar to the transition associated with pushing a new
+/// [PageRoute] on top of another.
+///
+/// When [reverse] is true, the old child's `primaryAnimation` runs in reverse
+/// and the value of its `secondaryAnimation` is usually fixed at 0.0. The new
+/// child's `secondaryAnimation` runs in reverse and the value of its
+/// `primaryAnimation` is usually fixed at 1.0. This is similar to popping a
+/// [PageRoute] to reveal another [PageRoute] underneath it.
+///
+/// This process is the same as the one used by [PageRoute.buildTransitions].
+///
+/// The following example shows a [transitionBuilder] that slides out the
+/// old child to the right (driven by the `secondaryAnimation`) while the new
+/// child fades in (driven by the `primaryAnimation`):
+///
+/// ```dart
+/// transitionBuilder: (
+///   Widget child,
+///   Animation<double> primaryAnimation,
+///   Animation<double> secondaryAnimation,
+/// ) {
+///   return SlideTransition(
+///     position: Tween<Offset>(
+///       begin: Offset.zero,
+///       end: const Offset(1.5, 0.0),
+///     ).animate(secondaryAnimation),
+///     child: FadeTransition(
+///       opacity: Tween<double>(
+///         begin: 0.0,
+///         end: 1.0,
+///       ).animate(primaryAnimation),
+///       child: child,
+///     ),
+///   );
+/// },
+/// ```
+///
+/// If the children are swapped fast enough (i.e. before [duration] elapses),
+/// more than one old child can exist and be transitioning out while the
+/// newest one is transitioning in.
+///
+/// If the *new* child is the same widget type and key as the *old* child,
+/// but with different parameters, then [PageTransitionSwitcher] will *not* do a
+/// transition between them, since as far as the framework is concerned, they
+/// are the same widget and the existing widget can be updated with the new
+/// parameters. To force the transition to occur, set a [Key] on each child
+/// widget that you wish to be considered unique (typically a [ValueKey] on the
+/// widget data that distinguishes this child from the others). For example,
+/// changing the child from `SizedBox(width: 10)` to `SizedBox(width: 100)`
+/// would not trigger a transition but changing the child from
+/// `SizedBox(width: 10)` to `SizedBox(key: Key('foo'), width: 100)` would.
+/// Similarly, changing the child to `Container(width: 10)` would trigger a
+/// transition.
+///
+/// The same key can be used for a new child as was used for an already-outgoing
+/// child; the two will not be considered related. For example, if a progress
+/// indicator with key A is first shown, then an image with key B, then another
+/// progress indicator with key A again, all in rapid succession, then the old
+/// progress indicator and the image will be fading out while a new progress
+/// indicator is fading in.
+///
+/// PageTransitionSwitcher uses the [layoutBuilder] property to lay out the
+/// old and new child widgets. By default, [defaultLayoutBuilder] is used.
+/// See the documentation for [layoutBuilder] for suggestions on how to
+/// configure the layout of the incoming and outgoing child widgets if
+/// [defaultLayoutBuilder] is not your desired layout.
+class PageTransitionSwitcher extends StatefulWidget {
+  /// Creates a [PageTransitionSwitcher].
+  ///
+  /// The [duration], [reverse], and [transitionBuilder] parameters
+  /// must not be null.
+  const PageTransitionSwitcher({
+    Key? key,
+    this.duration = const Duration(milliseconds: 300),
+    this.reverse = false,
+    required this.transitionBuilder,
+    this.layoutBuilder = defaultLayoutBuilder,
+    this.child,
+  }) : super(key: key);
+
+  /// The current child widget to display.
+  ///
+  /// If there was an old child, it will be transitioned out using the
+  /// secondary animation of the [transitionBuilder], while the new child
+  /// transitions in using the primary animation of the [transitionBuilder].
+  ///
+  /// If there was no old child, then this child will transition in using
+  /// the primary animation of the [transitionBuilder].
+  ///
+  /// The child is considered to be "new" if it has a different type or [Key]
+  /// (see [Widget.canUpdate]).
+  final Widget? child;
+
+  /// The duration of the transition from the old [child] value to the new one.
+  ///
+  /// This duration is applied to the given [child] when that property is set to
+  /// a new child. Changing [duration] will not affect the durations of
+  /// transitions already in progress.
+  final Duration duration;
+
+  /// Indicates whether the new [child] will visually appear on top of or
+  /// underneath the old child.
+  ///
+  /// When this is false, the new child will transition in on top of the
+  /// old child while its primary animation and the secondary
+  /// animation of the old child are running forward. This is similar to
+  /// the transition associated with pushing a new [PageRoute] on top of
+  /// another.
+  ///
+  /// When this is true, the new child will transition in below the
+  /// old child while its secondary animation and the primary
+  /// animation of the old child are running in reverse. This is similar to
+  /// the transition associated with popping a [PageRoute] to reveal a new
+  /// [PageRoute] below it.
+  final bool reverse;
+
+  /// A function that wraps a new [child] with a primary and secondary animation
+  /// set define how the child appears and disappears.
+  ///
+  /// This is only called when a new [child] is set (not for each build), or
+  /// when a new [transitionBuilder] is set. If a new [transitionBuilder] is
+  /// set, then the transition is rebuilt for the current child and all old
+  /// children using the new [transitionBuilder]. The function must not return
+  /// null.
+  ///
+  /// The child provided to the transitionBuilder may be null.
+  final PageTransitionSwitcherTransitionBuilder transitionBuilder;
+
+  /// A function that wraps all of the children that are transitioning out, and
+  /// the [child] that's transitioning in, with a widget that lays all of them
+  /// out. This is called every time this widget is built. The function must not
+  /// return null.
+  ///
+  /// The default [PageTransitionSwitcherLayoutBuilder] used is
+  /// [defaultLayoutBuilder].
+  ///
+  /// The following example shows a [layoutBuilder] that places all entries in a
+  /// [Stack] that sizes itself to match the largest of the active entries.
+  /// All children are aligned on the top left corner of the [Stack].
+  ///
+  /// ```dart
+  /// PageTransitionSwitcher(
+  ///   duration: const Duration(milliseconds: 100),
+  ///   child: Container(color: Colors.red),
+  ///   layoutBuilder: (
+  ///     List<Widget> entries,
+  ///   ) {
+  ///     return Stack(
+  ///       children: entries,
+  ///       alignment: Alignment.topLeft,
+  ///     );
+  ///   },
+  /// ),
+  /// ```
+  /// See [PageTransitionSwitcherLayoutBuilder] for more information about
+  /// how a layout builder should function.
+  final PageTransitionSwitcherLayoutBuilder layoutBuilder;
+
+  /// The default layout builder for [PageTransitionSwitcher].
+  ///
+  /// This function is the default way for how the new and old child widgets are placed
+  /// during the transition between the two widgets. All children are placed in a
+  /// [Stack] that sizes itself to match the largest of the child or a previous child.
+  /// The children are centered on each other.
+  ///
+  /// See [PageTransitionSwitcherTransitionBuilder] for more information on the function
+  /// signature.
+  static Widget defaultLayoutBuilder(List<Widget> entries) {
+    return Stack(
+      children: entries,
+      alignment: Alignment.center,
+    );
+  }
+
+  @override
+  _PageTransitionSwitcherState createState() => _PageTransitionSwitcherState();
+}
+
+class _PageTransitionSwitcherState extends State<PageTransitionSwitcher>
+    with TickerProviderStateMixin {
+  final List<_ChildEntry> _activeEntries = <_ChildEntry>[];
+  _ChildEntry? _currentEntry;
+  int _childNumber = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _addEntryForNewChild(shouldAnimate: false);
+  }
+
+  @override
+  void didUpdateWidget(PageTransitionSwitcher oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // If the transition builder changed, then update all of the old
+    // transitions.
+    if (widget.transitionBuilder != oldWidget.transitionBuilder) {
+      _activeEntries.forEach(_updateTransitionForEntry);
+    }
+
+    final bool hasNewChild = widget.child != null;
+    final bool hasOldChild = _currentEntry != null;
+    if (hasNewChild != hasOldChild ||
+        hasNewChild &&
+            !Widget.canUpdate(widget.child!, _currentEntry!.widgetChild)) {
+      // Child has changed, fade current entry out and add new entry.
+      _childNumber += 1;
+      _addEntryForNewChild(shouldAnimate: true);
+    } else if (_currentEntry != null) {
+      assert(hasOldChild && hasNewChild);
+      assert(Widget.canUpdate(widget.child!, _currentEntry!.widgetChild));
+      // Child has been updated. Make sure we update the child widget and
+      // transition in _currentEntry even though we're not going to start a new
+      // animation, but keep the key from the old transition so that we
+      // update the transition instead of replacing it.
+      _currentEntry!.widgetChild = widget.child!;
+      _updateTransitionForEntry(_currentEntry!); // uses entry.widgetChild
+    }
+  }
+
+  void _addEntryForNewChild({required bool shouldAnimate}) {
+    assert(shouldAnimate || _currentEntry == null);
+    if (_currentEntry != null) {
+      assert(shouldAnimate);
+      if (widget.reverse) {
+        _currentEntry!.primaryController.reverse();
+      } else {
+        _currentEntry!.secondaryController.forward();
+      }
+      _currentEntry = null;
+    }
+    if (widget.child == null) {
+      return;
+    }
+    final AnimationController primaryController = AnimationController(
+      duration: widget.duration,
+      vsync: this,
+    );
+    final AnimationController secondaryController = AnimationController(
+      duration: widget.duration,
+      vsync: this,
+    );
+    if (shouldAnimate) {
+      if (widget.reverse) {
+        primaryController.value = 1.0;
+        secondaryController.value = 1.0;
+        secondaryController.reverse();
+      } else {
+        primaryController.forward();
+      }
+    } else {
+      assert(_activeEntries.isEmpty);
+      primaryController.value = 1.0;
+    }
+    _currentEntry = _newEntry(
+      child: widget.child!,
+      primaryController: primaryController,
+      secondaryController: secondaryController,
+      builder: widget.transitionBuilder,
+    );
+    if (widget.reverse && _activeEntries.isNotEmpty) {
+      // Add below old child.
+      _activeEntries.insert(_activeEntries.length - 1, _currentEntry!);
+    } else {
+      // Add on top of old child.
+      _activeEntries.add(_currentEntry!);
+    }
+  }
+
+  _ChildEntry _newEntry({
+    required Widget child,
+    required PageTransitionSwitcherTransitionBuilder builder,
+    required AnimationController primaryController,
+    required AnimationController secondaryController,
+  }) {
+    final Widget transition = builder(
+      child,
+      primaryController,
+      secondaryController,
+    );
+    final _ChildEntry entry = _ChildEntry(
+      widgetChild: child,
+      transition: KeyedSubtree.wrap(
+        transition,
+        _childNumber,
+      ),
+      primaryController: primaryController,
+      secondaryController: secondaryController,
+    );
+    secondaryController.addStatusListener((AnimationStatus status) {
+      if (status == AnimationStatus.completed) {
+        assert(mounted);
+        assert(_activeEntries.contains(entry));
+        setState(() {
+          _activeEntries.remove(entry);
+          entry.dispose();
+        });
+      }
+    });
+    primaryController.addStatusListener((AnimationStatus status) {
+      if (status == AnimationStatus.dismissed) {
+        assert(mounted);
+        assert(_activeEntries.contains(entry));
+        setState(() {
+          _activeEntries.remove(entry);
+          entry.dispose();
+        });
+      }
+    });
+    return entry;
+  }
+
+  void _updateTransitionForEntry(_ChildEntry entry) {
+    final Widget transition = widget.transitionBuilder(
+      entry.widgetChild,
+      entry.primaryController,
+      entry.secondaryController,
+    );
+    entry.transition = KeyedSubtree(
+      key: entry.transition.key,
+      child: transition,
+    );
+  }
+
+  @override
+  void dispose() {
+    for (final _ChildEntry entry in _activeEntries) {
+      entry.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.layoutBuilder(_activeEntries
+        .map<Widget>((_ChildEntry entry) => entry.transition)
+        .toList());
+  }
+}
+
+/// Used by [PageTransitionsTheme] to define a page route transition animation
+/// in which the outgoing page fades out, then the incoming page fades in and
+/// scale up.
+///
+/// This pattern is recommended for a transition between UI elements that do not
+/// have a strong relationship to one another.
+///
+/// Scale is only applied to incoming elements to emphasize new content over
+/// old.
+///
+/// The following example shows how the FadeThroughPageTransitionsBuilder can
+/// be used in a [PageTransitionsTheme] to change the default transitions
+/// of [MaterialPageRoute]s.
+///
+/// ```dart
+/// MaterialApp(
+///   theme: ThemeData(
+///     pageTransitionsTheme: PageTransitionsTheme(
+///       builders: {
+///         TargetPlatform.android: FadeThroughPageTransitionsBuilder(),
+///         TargetPlatform.iOS: FadeThroughPageTransitionsBuilder(),
+///       },
+///     ),
+///   ),
+///   routes: {
+///     '/': (BuildContext context) {
+///       return Container(
+///         color: Colors.red,
+///         child: Center(
+///           child: TextButton(
+///             child: Text('Push route'),
+///             onPressed: () {
+///               Navigator.of(context).pushNamed('/a');
+///             },
+///           ),
+///         ),
+///       );
+///     },
+///     '/a' : (BuildContext context) {
+///       return Container(
+///         color: Colors.blue,
+///         child: Center(
+///           child: TextButton(
+///             child: Text('Pop route'),
+///             onPressed: () {
+///               Navigator.of(context).pop();
+///             },
+///           ),
+///         ),
+///       );
+///     },
+///   },
+/// );
+/// ```
+class FadeThroughPageTransitionsBuilder extends PageTransitionsBuilder {
+  /// Creates a [FadeThroughPageTransitionsBuilder].
+  const FadeThroughPageTransitionsBuilder({this.fillColor});
+
+  /// The color to use for the background color during the transition.
+  ///
+  /// This defaults to the [Theme]'s [ThemeData.canvasColor].
+  final Color? fillColor;
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T>? route,
+    BuildContext? context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return FadeThroughTransition(
+      animation: animation,
+      secondaryAnimation: secondaryAnimation,
+      fillColor: fillColor,
+      child: child,
+    );
+  }
+}
+
+/// Defines a transition in which outgoing elements fade out, then incoming
+/// elements fade in and scale up.
+///
+/// The fade through pattern provides a transition animation between UI elements
+/// that do not have a strong relationship to one another. As an example, the
+/// [BottomNavigationBar] may use this animation to transition the currently
+/// displayed content when a new [BottomNavigationBarItem] is selected.
+///
+/// Scale is only applied to incoming elements to emphasize new content over
+/// old.
+///
+/// Consider using [FadeThroughPageTransitionsBuilder] within a
+/// [PageTransitionsTheme] if you want to apply this kind of transition to
+/// [MaterialPageRoute] transitions within a Navigator (see
+/// [FadeThroughPageTransitionsBuilder] for some example code). Or use this transition
+/// directly in a [PageTransitionSwitcher.transitionBuilder] to transition
+/// from one widget to another as seen in the following example:
+///
+/// ```dart
+///  int _selectedIndex = 0;
+///
+///  final List<Color> _colors = [Colors.blue, Colors.red, Colors.yellow];
+///
+///  @override
+///  Widget build(BuildContext context) {
+///    return Scaffold(
+///      appBar: AppBar(
+///        title: const Text('Switcher Sample'),
+///      ),
+///      body: PageTransitionSwitcher(
+///        transitionBuilder: (
+///          Widget child,
+///          Animation<double> primaryAnimation,
+///          Animation<double> secondaryAnimation,
+///        ) {
+///          return FadeThroughTransition(
+///            child: child,
+///            animation: primaryAnimation,
+///            secondaryAnimation: secondaryAnimation,
+///          );
+///        },
+///        child: Container(
+///          key: ValueKey<int>(_selectedIndex),
+///          color: _colors[_selectedIndex],
+///        ),
+///      ),
+///      bottomNavigationBar: BottomNavigationBar(
+///        items: const <BottomNavigationBarItem>[
+///          BottomNavigationBarItem(
+///            icon: Icon(Icons.home),
+///            title: Text('Blue'),
+///          ),
+///          BottomNavigationBarItem(
+///            icon: Icon(Icons.business),
+///            title: Text('Red'),
+///          ),
+///          BottomNavigationBarItem(
+///            icon: Icon(Icons.school),
+///            title: Text('Yellow'),
+///          ),
+///        ],
+///        currentIndex: _selectedIndex,
+///        selectedItemColor: Colors.amber[800],
+///        onTap: (int index) {
+///          setState(() {
+///            _selectedIndex = index;
+///          });
+///        },
+///      ),
+///    );
+///  }
+/// ```
+class FadeThroughTransition extends StatelessWidget {
+  /// Creates a [FadeThroughTransition].
+  ///
+  /// The [animation] and [secondaryAnimation] argument are required and must
+  /// not be null.
+  const FadeThroughTransition({
+    Key? key,
+    required this.animation,
+    required this.secondaryAnimation,
+    this.fillColor,
+    this.child,
+  }) : super(key: key);
+
+  /// The animation that drives the [child]'s entrance and exit.
+  ///
+  /// See also:
+  ///
+  ///  * [TransitionRoute.animate], which is the value given to this property
+  ///    when the [FadeThroughTransition] is used as a page transition.
+  final Animation<double> animation;
+
+  /// The animation that transitions [child] when new content is pushed on top
+  /// of it.
+  ///
+  /// See also:
+  ///
+  ///  * [TransitionRoute.secondaryAnimation], which is the value given to this
+  //     property when the [FadeThroughTransition] is used as a page transition.
+  final Animation<double> secondaryAnimation;
+
+  /// The color to use for the background color during the transition.
+  ///
+  /// This defaults to the [Theme]'s [ThemeData.canvasColor].
+  final Color? fillColor;
+
+  /// The widget below this widget in the tree.
+  ///
+  /// This widget will transition in and out as driven by [animation] and
+  /// [secondaryAnimation].
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    return _ZoomedFadeInFadeOut(
+      animation: animation,
+      child: Container(
+        color: fillColor ?? Theme.of(context).canvasColor,
+        child: _ZoomedFadeInFadeOut(
+          animation: ReverseAnimation(secondaryAnimation),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+class _ZoomedFadeInFadeOut extends StatelessWidget {
+  const _ZoomedFadeInFadeOut({Key? key, required this.animation, this.child})
+      : super(key: key);
+
+  final Animation<double> animation;
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    return DualTransitionBuilder(
+      animation: animation,
+      forwardBuilder: (
+        BuildContext context,
+        Animation<double> animation,
+        Widget? child,
+      ) {
+        return _FadeIn(
+          animation: animation,
+          child: child,
+        );
+      },
+      reverseBuilder: (
+        BuildContext context,
+        Animation<double> animation,
+        Widget? child,
+      ) {
+        return _FadeOut(
+          child: child,
+          animation: animation,
+        );
+      },
+      child: child,
+    );
+  }
+}
+
+class _ZoomedFadeIn extends StatelessWidget {
+  const _ZoomedFadeIn({
+    this.child,
+    required this.animation,
+  });
+
+  final Widget? child;
+  final Animation<double> animation;
+
+  static final CurveTween _inCurve = CurveTween(
+    curve: const Cubic(0.0, 0.0, 0.2, 1.0),
+  );
+  static final TweenSequence<double> _scaleIn = TweenSequence<double>(
+    <TweenSequenceItem<double>>[
+      TweenSequenceItem<double>(
+        tween: ConstantTween<double>(0.92),
+        weight: 6 / 20,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: 1.0, end: 1.0).chain(_inCurve),
+        weight: 14 / 20,
+      ),
+    ],
+  );
+  static final TweenSequence<double> _fadeInOpacity = TweenSequence<double>(
+    <TweenSequenceItem<double>>[
+      TweenSequenceItem<double>(
+        tween: ConstantTween<double>(0.0),
+        weight: 6 / 20,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: 0.0, end: 1.0).chain(_inCurve),
+        weight: 14 / 20,
+      ),
+    ],
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fadeInOpacity.animate(animation),
+      child: child,
+    );
+  }
+}
+
+class _FadeIn extends StatelessWidget {
+  const _FadeIn({
+    this.child,
+    required this.animation,
+  });
+
+  final Widget? child;
+  final Animation<double> animation;
+
+  static final CurveTween _inCurve = CurveTween(
+    curve: const Cubic(0.0, 0.0, 0.2, 1.0),
+  );
+  static final TweenSequence<double> _fadeInOpacity = TweenSequence<double>(
+    <TweenSequenceItem<double>>[
+      TweenSequenceItem<double>(
+        tween: ConstantTween<double>(0.0),
+        weight: 6 / 20,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: 0.0, end: 1.0).chain(_inCurve),
+        weight: 14 / 20,
+      ),
+    ],
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fadeInOpacity.animate(animation),
+      child: child,
+    );
+  }
+}
+
+class _FadeOut extends StatelessWidget {
+  const _FadeOut({
+    this.child,
+    required this.animation,
+  });
+
+  final Widget? child;
+  final Animation<double> animation;
+
+  static final CurveTween _outCurve = CurveTween(
+    curve: const Cubic(0.4, 0.0, 1.0, 1.0),
+  );
+  static final TweenSequence<double> _fadeOutOpacity = TweenSequence<double>(
+    <TweenSequenceItem<double>>[
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: 1.0, end: 0.0).chain(_outCurve),
+        weight: 6 / 20,
+      ),
+      TweenSequenceItem<double>(
+        tween: ConstantTween<double>(0.0),
+        weight: 14 / 20,
+      ),
+    ],
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fadeOutOpacity.animate(animation),
+      child: child,
+    );
+  }
+}
