@@ -50,6 +50,12 @@ class _ScreenCaptureState extends State<ScreenCapture>
     );
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   Future<ui.Image?> captureScreen() async {
     final canvas = _repaintBoundaryGlobalKey.currentContext?.findRenderObject()
         as RenderRepaintBoundary?;
