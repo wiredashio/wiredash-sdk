@@ -218,40 +218,6 @@ class _ZoomedFadeIn extends StatelessWidget {
   }
 }
 
-class _FadeIn extends StatelessWidget {
-  const _FadeIn({
-    this.child,
-    required this.animation,
-  });
-
-  final Widget? child;
-  final Animation<double> animation;
-
-  static final CurveTween _inCurve = CurveTween(
-    curve: const Cubic(0.0, 0.0, 0.2, 1.0),
-  );
-  static final TweenSequence<double> _fadeInOpacity = TweenSequence<double>(
-    <TweenSequenceItem<double>>[
-      TweenSequenceItem<double>(
-        tween: ConstantTween<double>(0.0),
-        weight: 6 / 20,
-      ),
-      TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 0.0, end: 1.0).chain(_inCurve),
-        weight: 14 / 20,
-      ),
-    ],
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeInOpacity.animate(animation),
-      child: child,
-    );
-  }
-}
-
 class _FadeOut extends StatelessWidget {
   const _FadeOut({
     this.child,

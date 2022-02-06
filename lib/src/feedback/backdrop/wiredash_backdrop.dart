@@ -6,7 +6,7 @@ import 'package:flutter/physics.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/widgets/animated_fade_widget_switcher.dart';
-import 'package:wiredash/src/feedback/backdrop/FakeAppStatusBar.dart';
+import 'package:wiredash/src/feedback/backdrop/fake_app_status_bar.dart';
 import 'package:wiredash/src/feedback/backdrop/pull_to_close_detector.dart';
 import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
 

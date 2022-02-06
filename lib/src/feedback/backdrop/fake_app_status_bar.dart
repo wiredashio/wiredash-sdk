@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
 
 /// Fakes the system statusbar when the app is floating in [WiredashBackdrop]
