@@ -91,7 +91,7 @@ class ScreenshotBar extends StatelessWidget {
               constraints: BoxConstraints(
                 minWidth: 140,
                 maxWidth: constraints.maxWidth / 2,
-              ),
+              ).normalize(),
               child: AnimatedFadeWidgetSwitcher(
                 fadeInOnEnter: false,
                 zoomFactor: 0.5,
