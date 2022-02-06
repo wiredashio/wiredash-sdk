@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
+import 'package:wiredash/src/common/widgets/animated_fade_widget_switcher.dart';
 import 'package:wiredash/src/feedback/backdrop/pull_to_close_detector.dart';
 import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
 
@@ -473,8 +474,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, child) {
-        final double barContentHeight =
-            math.min(12, _mediaQueryData.viewPadding.top);
         return Stack(
           fit: StackFit.passthrough,
           clipBehavior: Clip.none,
@@ -512,75 +511,86 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               left: 0,
               right: 0,
               height: _mediaQueryData.viewPadding.top,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 300),
-                opacity: () {
-                  if (_backdropStatus == WiredashBackdropStatus.closing) {
-                    return 0.0;
-                  }
-                  if (!widget.controller.isAppInteractive) {
-                    return 1.0;
-                  }
-                  return 0.0;
-                }(),
-                child: DefaultTextStyle(
-                  style: TextStyle(
-                    shadows: const [
-                      Shadow(
-                        offset: Offset(2, 2),
-                        blurRadius: 2,
-                        color: Color.fromARGB(30, 0, 0, 0),
-                      ),
-                    ],
-                    color: Colors.white,
-                    fontSize: barContentHeight,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: _cornerRadiusAnimation.value!.copyWith(
-                        bottomLeft: Radius.zero,
-                        bottomRight: Radius.zero,
-                      ),
-                      color: Colors.black12,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 2,
-                      ),
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: Opacity(
-                              opacity: 0.5,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Image.asset(
-                                    'assets/images/logo_white.png',
-                                    package: 'wiredash',
-                                    height: barContentHeight,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  const Text('Wiredash'),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const Center(
-                            child: Text('Return to App'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              child: _buildAppStatusBar(),
             ),
           ],
         );
       },
       child: child,
+    );
+  }
+
+  /// Draws the wiredash branded app where usually the phones statusbar is
+  /// located
+  Widget _buildAppStatusBar() {
+    final double barContentHeight =
+        math.min(12, _mediaQueryData.viewPadding.top);
+    final bool showBar = () {
+      if (_backdropStatus == WiredashBackdropStatus.closing) {
+        return false;
+      }
+      if (!widget.controller.isAppInteractive) {
+        return true;
+      }
+      return false;
+    }();
+
+    return AnimatedFadeWidgetSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: !showBar
+          ? null
+          : DefaultTextStyle(
+              style: TextStyle(
+                shadows: const [
+                  Shadow(
+                    offset: Offset(2, 2),
+                    blurRadius: 2,
+                    color: Color.fromARGB(30, 0, 0, 0),
+                  ),
+                ],
+                color: Colors.white,
+                fontSize: barContentHeight,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: _cornerRadiusAnimation.value!.copyWith(
+                    bottomLeft: Radius.zero,
+                    bottomRight: Radius.zero,
+                  ),
+                  color: Colors.black12,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 2,
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Opacity(
+                          opacity: 0.5,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Image.asset(
+                                'assets/images/logo_white.png',
+                                package: 'wiredash',
+                                height: barContentHeight,
+                              ),
+                              const SizedBox(width: 8),
+                              const Text('Wiredash'),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const Center(
+                        child: Text('Return to App'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
     );
   }
 
