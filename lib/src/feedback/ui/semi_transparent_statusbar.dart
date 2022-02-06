@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
 import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
-import 'package:wiredash/src/wiredash_model_provider.dart';
 
 /// Draws a semi transparent statusbar on iOS to mimic the behavior on Android.
 ///
@@ -24,30 +25,31 @@ class SemiTransparentStatusBar extends StatelessWidget {
       // only draw it on iOS
       return child;
     }
+
     final backdrop = context.backdropController;
-    final brightness =
-        context.wiredashModel.services.wiredashWidget.theme?.brightness;
-    final isDark = brightness == Brightness.dark;
+    final bgColor = context.theme.primaryBackgroundColor;
+    final luminance = bgColor.computeLuminance();
+    final statusbarTextColor = luminance < 0.4
+        ? SystemUiOverlayStyle.light
+        : SystemUiOverlayStyle.dark;
+
+    final bool showStatusBar =
+        backdrop.backdropStatus != WiredashBackdropStatus.closed &&
+            backdrop.backdropStatus != WiredashBackdropStatus.closing;
     return Stack(
       children: [
         child,
         Align(
           alignment: Alignment.topCenter,
-          child: IgnorePointer(
-            child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 300),
-              opacity: () {
-                if (backdrop.backdropStatus == WiredashBackdropStatus.closed ||
-                    backdrop.backdropStatus == WiredashBackdropStatus.closing ||
-                    backdrop.backdropStatus == WiredashBackdropStatus.opening) {
-                  return 0.0;
-                }
-                return 1.0;
-              }(),
-              child: Container(
-                color: isDark ? Colors.white30 : Colors.black26,
-                height: MediaQuery.of(context).padding.top,
-              ),
+          child: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: statusbarTextColor,
+            child: IgnorePointer(
+              child: showStatusBar
+                  ? SizedBox(
+                      width: double.infinity,
+                      height: MediaQuery.of(context).padding.top,
+                    )
+                  : null,
             ),
           ),
         ),

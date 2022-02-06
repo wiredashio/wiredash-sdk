@@ -6,6 +6,7 @@ import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/utils/context_cache.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
+import 'package:wiredash/src/common/widgets/animated_fade_widget_switcher.dart';
 import 'package:wiredash/src/common/widgets/screencapture.dart';
 import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
 import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
@@ -320,9 +321,7 @@ Widget? _buildForegroundLayer(
             left: appRect.left,
             right: appRect.left,
           ),
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 500),
-            reverseDuration: const Duration(milliseconds: 200),
+          child: AnimatedFadeWidgetSwitcher(
             // hide buttons early when exiting centered
             child: status == WiredashBackdropStatus.openingCentered ||
                     status == WiredashBackdropStatus.centered

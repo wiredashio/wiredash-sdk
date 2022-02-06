@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/widgets/animated_fade_widget_switcher.dart';
 import 'package:wiredash/src/common/widgets/tron_button.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
@@ -18,6 +19,7 @@ class ScreenshotBar extends StatelessWidget {
 
     if (feedbackStatus == FeedbackFlowStatus.screenshotNavigating) {
       trailing = TronButton(
+        key: const Key('capture'),
         color: context.theme.primaryColor,
         leadingIcon: Wirecons.camera,
         iconOffset: const Offset(-.15, 0),
@@ -29,6 +31,7 @@ class ScreenshotBar extends StatelessWidget {
     if (feedbackStatus == FeedbackFlowStatus.screenshotSaving ||
         feedbackStatus == FeedbackFlowStatus.screenshotDrawing) {
       trailing = TronButton(
+        key: const Key('save'),
         color: context.theme.primaryColor,
         leadingIcon: Wirecons.check,
         iconOffset: const Offset(-.15, 0),
@@ -85,8 +88,13 @@ class ScreenshotBar extends StatelessWidget {
             ] else
               const Spacer(flex: 10),
             ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 140),
-              child: Align(
+              constraints: BoxConstraints(
+                minWidth: 140,
+                maxWidth: constraints.maxWidth / 2,
+              ).normalize(),
+              child: AnimatedFadeWidgetSwitcher(
+                fadeInOnEnter: false,
+                zoomFactor: 0.5,
                 alignment: Alignment.centerRight,
                 child: trailing,
               ),
