@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/widgets/animated_fade_widget_switcher.dart';
 import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
 import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
@@ -27,9 +29,11 @@ class SemiTransparentStatusBar extends StatelessWidget {
     }
 
     final backdrop = context.backdropController;
-    final brightness =
-        context.wiredashModel.services.wiredashWidget.theme?.brightness;
-    final isLight = brightness == Brightness.light;
+    final bgColor = context.theme.primaryBackgroundColor;
+    final luminance = bgColor.computeLuminance();
+    final statusbarTextColor = luminance < 0.4
+        ? SystemUiOverlayStyle.light
+        : SystemUiOverlayStyle.dark;
 
     final bool showStatusBar =
         backdrop.backdropStatus != WiredashBackdropStatus.closed &&
@@ -39,17 +43,15 @@ class SemiTransparentStatusBar extends StatelessWidget {
         child,
         Align(
           alignment: Alignment.topCenter,
-          child: IgnorePointer(
-            child: AnimatedFadeWidgetSwitcher(
-              fadeInOnEnter: true,
-              duration: const Duration(milliseconds: 300),
-              child: !showStatusBar
-                  ? null
-                  : Container(
+          child: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: statusbarTextColor,
+            child: IgnorePointer(
+              child: showStatusBar
+                  ? SizedBox(
                       width: double.infinity,
                       height: MediaQuery.of(context).padding.top,
-                      color: isLight ? Colors.white30 : Colors.black26,
-                    ),
+                    )
+                  : null,
             ),
           ),
         ),
