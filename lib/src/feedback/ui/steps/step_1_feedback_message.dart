@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/utils/color_ext.dart';
 import 'package:wiredash/src/common/widgets/tron_button.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
@@ -72,6 +73,9 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                   borderSide: BorderSide(color: context.theme.secondaryColor),
                 ),
                 errorBorder: InputBorder.none,
+                hoverColor: context.theme.brightness == Brightness.light
+                    ? context.theme.primaryBackgroundColor.darken(0.015)
+                    : context.theme.primaryBackgroundColor.lighten(0.015),
                 hintText:
                     'There’s an unknown error when I try to change my avatar...',
                 contentPadding:

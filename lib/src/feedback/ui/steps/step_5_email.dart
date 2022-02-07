@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/utils/color_ext.dart';
 import 'package:wiredash/src/common/utils/email_validator.dart';
 import 'package:wiredash/src/common/widgets/tron_button.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
@@ -80,6 +81,9 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                   borderSide: BorderSide(color: context.theme.secondaryColor),
                 ),
                 hintText: 'mail@example.com',
+                hoverColor: context.theme.brightness == Brightness.light
+                    ? context.theme.primaryBackgroundColor.darken(0.015)
+                    : context.theme.primaryBackgroundColor.lighten(0.015),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 hintStyle: context.theme.body2TextStyle,
