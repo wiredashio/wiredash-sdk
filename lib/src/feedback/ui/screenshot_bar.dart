@@ -74,13 +74,27 @@ class ScreenshotBar extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   // TODO animate text changes
-                  child: Text(
-                    feedbackStatus == FeedbackFlowStatus.screenshotDrawing
-                        ? "Draw to highlight what's important"
-                        : 'Include a screenshot for more context',
+                  child: DefaultTextStyle(
                     style: context.theme.appbarTitle,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
+                    child: AnimatedFadeWidgetSwitcher(
+                      fadeInOnEnter: false,
+                      child: () {
+                        switch (feedbackStatus) {
+                          case FeedbackFlowStatus.screenshotDrawing:
+                            return const Text(
+                              "Draw to highlight what's important",
+                            );
+                          case FeedbackFlowStatus.screenshotNavigating:
+                            return const Text(
+                              'Include a screenshot for more context',
+                            );
+                          default:
+                            return const SizedBox();
+                        }
+                      }(),
+                    ),
                   ),
                 ),
               ),
