@@ -9,6 +9,7 @@ import 'package:wiredash/src/common/widgets/animated_fade_widget_switcher.dart';
 import 'package:wiredash/src/feedback/backdrop/fake_app_status_bar.dart';
 import 'package:wiredash/src/feedback/backdrop/pull_to_close_detector.dart';
 import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
+import 'package:wiredash/src/wiredash_model_provider.dart';
 
 /// The Wiredash UI behind the app
 class WiredashBackdrop extends StatefulWidget {
@@ -98,7 +99,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   @override
   void initState() {
     super.initState();
-    widget.controller._state = this;
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      widget.controller._state = this;
+    });
     _backdropAnimationController
         .addStatusListener(_animControllerStatusListener);
     _backdropAnimationController.addListener(_markAsDirty);
@@ -115,6 +118,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   @override
   void dispose() {
+    widget.controller._state = null;
+    widget.controller.removeListener(_markAsDirty);
     _backdropAnimationController.dispose();
     super.dispose();
   }
@@ -603,6 +608,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               widget.controller._isAppInteractive = true;
               await Future.wait([a1, a2]);
               _backdropStatus = WiredashBackdropStatus.closed;
+              await context.wiredashModel.hide();
               _swapAnimation();
             },
             startReopenSimulation: (velocity) async {
@@ -632,7 +638,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           app = GestureDetector(
             onTap: () async {
               _pullCurves();
-              await widget.controller.animateToClosed();
+              await context.wiredashModel.hide();
               _animCurves();
             },
             child: app,
@@ -810,9 +816,20 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
 /// Controls where the app is located in [WiredashBackdrop]
 class BackdropController extends ChangeNotifier {
-  _WiredashBackdropState? _state;
+  bool get hasState {
+    return _state != null;
+  }
+
+  _WiredashBackdropState? __state;
+  _WiredashBackdropState? get _state => __state;
+  set _state(_WiredashBackdropState? value) {
+    __state = value;
+    safeNotifyListeners();
+  }
+
   WiredashBackdropStatus _backdropStatus = WiredashBackdropStatus.closed;
 
+  @Deprecated('moved into wiredashmodel')
   bool get isWiredashActive => _backdropStatus != WiredashBackdropStatus.closed;
 
   bool get isAppInteractive => _isAppInteractive;
@@ -824,29 +841,36 @@ class BackdropController extends ChangeNotifier {
 
   set backdropStatus(WiredashBackdropStatus value) {
     _backdropStatus = value;
-    notifyListeners();
+    safeNotifyListeners();
   }
 
   Future<void> animateToOpen() async {
     _isAppInteractive = false;
-    notifyListeners();
+    safeNotifyListeners();
 
     await _state!._animateToOpen();
-    notifyListeners();
+    safeNotifyListeners();
   }
 
   Future<void> animateToCentered() async {
     _isAppInteractive = true;
     await _state!._animateToCentered();
 
-    notifyListeners();
+    safeNotifyListeners();
   }
 
   Future<void> animateToClosed() async {
     await _state!._animateToClosed();
 
     _isAppInteractive = true;
-    notifyListeners();
+    safeNotifyListeners();
+  }
+
+  /// Only calls [notifyListeners()] when
+  void safeNotifyListeners() {
+    if (__state != null) {
+      notifyListeners();
+    }
   }
 }
 

@@ -334,8 +334,7 @@ class FeedbackModel with ChangeNotifier {
 
   Future<void> returnToAppPostSubmit() async {
     if (submitted == false) return;
-    await _services.backdropController.animateToClosed();
-    _services.discardFeedback();
+    await _services.wiredashModel.hide(discardFeedback: true);
   }
 
   Future<PersistedFeedbackItem> createFeedback() async {

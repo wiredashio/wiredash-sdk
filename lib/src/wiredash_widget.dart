@@ -158,8 +158,6 @@ class WiredashState extends State<Wiredash> {
 
   final GlobalKey _backdropKey = GlobalKey(debugLabel: 'backdrop');
 
-  bool _isWiredashClosed = true;
-
   final WiredashServices _services = WiredashServices();
 
   WiredashServices get debugServices {
@@ -184,17 +182,14 @@ class WiredashState extends State<Wiredash> {
       secret: widget.secret,
     );
     _services.updateWidget(widget);
-    _services.addListener(() {
-      setState(() {
-        // rebuild wiredash
-      });
-    });
-    _services.backdropController.addListener(() {
-      setState(() {
-        _isWiredashClosed = _services.backdropController.backdropStatus ==
-            WiredashBackdropStatus.closed;
-      });
-    });
+    _services.addListener(_markNeedsBuild);
+    _services.wiredashModel.addListener(_markNeedsBuild);
+    _services.backdropController.addListener(_markNeedsBuild);
+  }
+
+  void _markNeedsBuild() {
+    // rebuild the Wiredash widget state
+    setState(() {});
   }
 
   @override
@@ -215,10 +210,6 @@ class WiredashState extends State<Wiredash> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = _services.wiredashModel.themeFromContext ??
-        widget.theme ??
-        WiredashThemeData();
-
     // Assign app an key so it doesn't lose state when wrapped, unwrapped
     // with widgets
     final Widget app = KeyedSubtree(
@@ -226,21 +217,15 @@ class WiredashState extends State<Wiredash> {
       child: widget.child,
     );
 
-    final appBuilder = Builder(
-      builder: (context) {
-        Widget widget = app;
-        // Only wrap when active to get as little side-effect as possible.
-        if (!_isWiredashClosed) {
-          // This is the place to wrap the app itself, not the whole backdrop
-          widget = ScreenCapture(
-            controller: _services.screenCaptureController,
-            child: widget,
-          );
-        }
+    if (!_services.wiredashModel.isWiredashActive) {
+      // We don't wrap the app at all with any wiredash related widget until
+      // users requested to open wiredash
+      return app;
+    }
 
-        return widget;
-      },
-    );
+    final theme = _services.wiredashModel.themeFromContext ??
+        widget.theme ??
+        WiredashThemeData();
 
     final Widget backdrop = NotAWidgetsApp(
       textDirection: widget.options?.textDirection,
@@ -251,7 +236,10 @@ class WiredashState extends State<Wiredash> {
             key: _backdropKey,
             controller: _services.backdropController,
             padding: widget.padding,
-            app: appBuilder,
+            app: ScreenCapture(
+              controller: _services.screenCaptureController,
+              child: app,
+            ),
             contentBuilder: (context) {
               return WiredashFeedbackFlow(
                 // this allows discarding feedback in the message step
