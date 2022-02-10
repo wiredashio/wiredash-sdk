@@ -11,5 +11,5 @@ import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 /// - [DirectFeedbackSubmitter]
 abstract class FeedbackSubmitter {
   /// Submits the feedback item to the backend
-  Future<void> submit(PersistedFeedbackItem item, Uint8List? screenshot);
+  Future<void> submit(PersistedFeedbackItem item);
 }

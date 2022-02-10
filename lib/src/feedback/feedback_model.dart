@@ -311,7 +311,7 @@ class FeedbackModel with ChangeNotifier {
         if (kDebugMode) print('Submitting feedback');
         try {
           final item = await createFeedback();
-          await _services.feedbackSubmitter.submit(item, _screenshot);
+          await _services.feedbackSubmitter.submit(item);
           _submitted = true;
           notifyListeners();
         } catch (e, stack) {
@@ -351,20 +351,28 @@ class FeedbackModel with ChangeNotifier {
     }
 
     return PersistedFeedbackItem(
-      deviceId: deviceId,
       appInfo: AppInfo(
         appLocale: _services.wiredashOptions.currentLocale.toLanguageTag(),
       ),
+      attachments: [
+        // TODO collect multiple
+        if (_screenshot != null)
+          PersistedAttachment.screenshot(
+            file: FileDataEventuallyOnDisk.inMemory(_screenshot!),
+            deviceInfo: _deviceInfo!,
+          )
+      ],
       buildInfo: _buildInfo!.copyWith(
         buildCommit: _metaData?.buildCommit,
         buildNumber: _metaData?.buildNumber,
         buildVersion: _metaData?.buildVersion,
       ),
+      customMetaData: _metaData?.custom,
+      deviceId: deviceId,
       deviceInfo: _deviceInfo!,
       email: userEmail,
       message: _feedbackMessage!,
       labels: _selectedLabels.map((it) => it.id).toList(),
-      customMetaData: _metaData?.custom,
       userId: _metaData?.userId,
     );
   }

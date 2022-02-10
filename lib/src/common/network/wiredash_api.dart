@@ -65,15 +65,13 @@ class WiredashApi {
   ///
   /// POST /sendFeedback
   Future<void> sendFeedback(
-    PersistedFeedbackItem feedback, {
-    List<ImageBlob> images = const [],
-  }) async {
+    PersistedFeedbackItem feedback,
+  ) async {
     final uri = Uri.parse('$_host/sendFeedback');
     final Request request = Request('POST', uri);
     request.headers['Content-Type'] = 'application/json';
 
     final args = feedback.toFeedbackBody();
-    args.addAll({'images': images.map((blob) => blob.data).toList()});
     request.body = jsonEncode(args);
 
     final response = await _send(request);
@@ -184,27 +182,26 @@ extension FeedbackBody on PersistedFeedbackItem {
 
     // Required values
     values.addAll({
-      'deviceId': nonNull(deviceId),
-      'compilationMode': nonNull(buildInfo.compilationMode).jsonEncode(),
-      if (labels != null) 'labels': nonNull(labels!),
-      'message': nonNull(message),
-      'sdkVersion': nonNull(sdkVersion),
-      'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
-      'windowSize': nonNull(deviceInfo.physicalSize).toJson(),
-      'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
-    });
-
-    // Not yet required but we can trust those are non null
-    values.addAll({
       'appLocale': nonNull(appInfo.appLocale),
+      'compilationMode': nonNull(buildInfo.compilationMode).jsonEncode(),
+      'deviceId': nonNull(deviceId),
+      'message': nonNull(message),
+      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode(),
       'platformLocale': nonNull(deviceInfo.platformLocale),
       'platformSupportedLocales': nonNull(deviceInfo.platformSupportedLocales),
-      'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
-      'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
-      'windowPadding': nonNull(deviceInfo.padding).toJson(),
-      'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
-      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode(),
+      'sdkVersion': nonNull(sdkVersion),
     });
+
+    if (attachments.isNotEmpty) {
+      final items = attachments.map((it) {
+        if (it is Screenshot) {
+          return it.toJson();
+        } else {
+          throw "Unsupported attachment type ${it.runtimeType}";
+        }
+      }).toList();
+      values.addAll({'attachments': items});
+    }
 
     final buildCommit = buildInfo.buildCommit;
     if (buildCommit != null) {
@@ -219,6 +216,11 @@ extension FeedbackBody on PersistedFeedbackItem {
     final buildVersion = buildInfo.buildVersion;
     if (buildVersion != null) {
       values.addAll({'buildVersion': buildVersion});
+    }
+
+    final _labels = labels;
+    if (_labels != null) {
+      values.addAll({'labels': _labels});
     }
 
     final platformDartVersion = deviceInfo.platformVersion;
@@ -328,5 +330,23 @@ extension on CompilationMode {
       case CompilationMode.debug:
         return 'debug';
     }
+  }
+}
+
+extension on Screenshot {
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> values = {
+      'type': 'screenshot',
+      'image': file.imageBlob!.data,
+      'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
+      'windowSize': nonNull(deviceInfo.physicalSize).toJson(),
+      'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
+      'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
+      'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
+      'windowPadding': nonNull(deviceInfo.padding).toJson(),
+      'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
+    };
+
+    return values;
   }
 }

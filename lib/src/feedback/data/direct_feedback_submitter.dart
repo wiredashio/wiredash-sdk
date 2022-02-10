@@ -12,19 +12,29 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
   final WiredashApi _api;
 
   @override
-  Future<void> submit(PersistedFeedbackItem item, Uint8List? screenshot) async {
+  Future<void> submit(PersistedFeedbackItem item) async {
     try {
-      ImageBlob? screenshotUri;
-      if (screenshot != null) {
-        screenshotUri = await _api.sendImage(screenshot);
+      final List<PersistedAttachment> uploadedAttachments = [];
+
+      // Upload screenshots that are not yet uploaded
+      for (final attachment in item.attachments) {
+        if (attachment is Screenshot) {
+          final blob = await _api.sendImage(attachment.file.binaryData!);
+          final uploaded = attachment.copyWith(
+            file: FileDataEventuallyOnDisk.uploaded(blob),
+          );
+          uploadedAttachments.add(uploaded);
+        } else {
+          throw "Unknown attachment type ${attachment.runtimeType}";
+        }
       }
 
-      await _api.sendFeedback(
-        item,
-        images: [
-          if (screenshotUri != null) screenshotUri,
-        ],
+      final withUploadedScreenshots = item.copyWith(
+        attachments: uploadedAttachments,
       );
+
+      await _api.sendFeedback(withUploadedScreenshots);
+
       // ignore: avoid_print
       print('Feedback submitted ✌️ ${item.message}');
     } on UnauthenticatedWiredashApiException catch (e, stack) {

@@ -19,24 +19,28 @@ class DeviceInfo {
   /// Area not covered with system UI
   ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/padding.html
+  ///   // screenshot
   final WindowPadding padding;
 
   /// The dimensions of the rectangle into which the scene rendered in this
   /// view will be drawn on the screen, in physical pixels.
   ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/physicalSize.html
+  ///   // screenshot
   final Size physicalSize;
 
   /// The dimensions and location of the rectangle into which the scene
   /// rendered in this view will be drawn on the screen, in physical pixels.
   ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/physicalGeometry.html
+  ///   // screenshot
   final Rect physicalGeometry;
 
   /// The number of device pixels for each logical pixel for the screen this
   /// view is displayed on.
   ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/devicePixelRatio.html
+  ///   // screenshot
   final double pixelRatio;
 
   /// Is the system dark or light themed?
@@ -62,15 +66,18 @@ class DeviceInfo {
   /// Text scale factor, default 1.0
   ///
   /// https://api.flutter.dev/flutter/dart-ui/SingletonFlutterWindow/textScaleFactor.html
+  ///   // screenshot
   final double textScaleFactor;
 
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/viewInsets.html
+  ///   // screenshot
   final WindowPadding viewInsets;
 
   /// Area where Android does not intercept i.e. for the back button gesture
   /// (swipe from the side of the screen)
   ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/systemGestureInsets.html
+  ///   // screenshot
   final WindowPadding gestureInsets;
 
   /// When in web, the full user agent String of the browser
