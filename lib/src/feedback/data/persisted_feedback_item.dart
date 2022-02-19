@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/app_info.dart';
 import 'package:wiredash/src/common/build_info/build_info.dart';
 import 'package:wiredash/src/common/device_info/device_info.dart';
@@ -50,7 +53,7 @@ class PersistedFeedbackItem {
       identical(this, other) ||
       other is PersistedFeedbackItem &&
           runtimeType == other.runtimeType &&
-          attachments == other.attachments &&
+          listEquals(attachments, other.attachments) &&
           buildInfo == other.buildInfo &&
           deviceId == other.deviceId &&
           email == other.email &&
@@ -58,13 +61,14 @@ class PersistedFeedbackItem {
           userId == other.userId &&
           sdkVersion == other.sdkVersion &&
           deviceInfo == other.deviceInfo &&
-          labels == other.labels &&
+          listEquals(labels, other.labels) &&
           appInfo == other.appInfo &&
-          customMetaData == other.customMetaData;
+          const DeepCollectionEquality.unordered()
+              .equals(customMetaData, other.customMetaData);
 
   @override
   int get hashCode =>
-      attachments.hashCode ^
+      hashList(attachments) ^
       buildInfo.hashCode ^
       deviceId.hashCode ^
       email.hashCode ^
@@ -72,24 +76,24 @@ class PersistedFeedbackItem {
       userId.hashCode ^
       sdkVersion.hashCode ^
       deviceInfo.hashCode ^
-      labels.hashCode ^
+      hashList(labels) ^
       appInfo.hashCode ^
-      customMetaData.hashCode;
+      const DeepCollectionEquality.unordered().hash(customMetaData);
 
   @override
   String toString() {
-    return 'PersistedFeedbackItem{'
-        'buildInfo: $buildInfo, '
-        'deviceId: $deviceId, '
-        'email: $email, '
-        'message: $message, '
-        'userId: $userId, '
-        'deviceInfo: $deviceInfo, '
-        'sdkVersion: $sdkVersion, '
-        'labels: $labels, '
-        'appInfo: $appInfo, '
-        'customMetaData: $customMetaData, '
-        'attachments: $attachments, '
+    return 'PersistedFeedbackItem{\n'
+        'buildInfo: $buildInfo,\n'
+        'deviceId: $deviceId,\n'
+        'email: $email,\n'
+        'message: $message,\n'
+        'userId: $userId,\n'
+        'deviceInfo: $deviceInfo,\n'
+        'sdkVersion: $sdkVersion,\n'
+        'labels: $labels,\n'
+        'appInfo: $appInfo,\n'
+        'customMetaData: $customMetaData,\n'
+        'attachments: $attachments\n'
         '}';
   }
 
@@ -122,8 +126,12 @@ class PersistedFeedbackItem {
   }
 }
 
-class PersistedAttachment {
-  PersistedAttachment._();
+abstract class PersistedAttachment {
+  const PersistedAttachment();
+
+  FileDataEventuallyOnDisk get file;
+
+  bool get isUploaded => file.isUploaded;
 
   // ignore: prefer_constructors_over_static_methods
   static Screenshot screenshot({
@@ -137,12 +145,13 @@ class PersistedAttachment {
   }
 }
 
-class Screenshot implements PersistedAttachment {
+class Screenshot extends PersistedAttachment {
   const Screenshot._({
     required this.file,
     required this.deviceInfo,
   });
 
+  @override
   final FileDataEventuallyOnDisk file;
   final DeviceInfo deviceInfo;
 
@@ -179,28 +188,33 @@ class Screenshot implements PersistedAttachment {
 /// Usually on disk, but maybe already in memory
 class FileDataEventuallyOnDisk {
   final Uint8List? _data;
-  final String? _pathToFile;
-  final ImageBlob? imageBlob;
+  final String? pathToFile;
+  final AttachmentId? attachmentId;
 
   FileDataEventuallyOnDisk.inMemory(Uint8List data)
       : _data = data,
-        _pathToFile = null,
-        imageBlob = null;
+        pathToFile = null,
+        attachmentId = null;
 
   FileDataEventuallyOnDisk.file(File file)
-      : _pathToFile = file.path,
+      : pathToFile = file.path,
         _data = null,
-        imageBlob = null;
+        attachmentId = null;
 
-  FileDataEventuallyOnDisk.uploaded(ImageBlob blob)
-      : imageBlob = blob,
+  FileDataEventuallyOnDisk.uploaded(AttachmentId attachmentId)
+      // ignore: prefer_initializing_formals
+      : attachmentId = attachmentId,
         _data = null,
-        _pathToFile = null;
+        pathToFile = null;
+
+  bool get isOnDisk => pathToFile != null;
+  bool get isUploaded => attachmentId != null;
+  bool get isInMemomry => _data != null;
 
   Uint8List? get binaryData {
     if (_data != null) return _data!;
-    if (_pathToFile != null) {
-      return File(_pathToFile!).readAsBytesSync();
+    if (pathToFile != null) {
+      return File(pathToFile!).readAsBytesSync();
     }
     return null;
   }
@@ -211,8 +225,15 @@ class FileDataEventuallyOnDisk {
       other is FileDataEventuallyOnDisk &&
           runtimeType == other.runtimeType &&
           _data == other._data &&
-          _pathToFile == other._pathToFile;
+          pathToFile == other.pathToFile;
 
   @override
-  int get hashCode => _data.hashCode ^ _pathToFile.hashCode;
+  int get hashCode => _data.hashCode ^ pathToFile.hashCode;
+
+  @override
+  String toString() {
+    if (isUploaded) return "FileDataEventuallyOnDisk.uploaded($attachmentId)";
+    if (isOnDisk) return "FileDataEventuallyOnDisk.file($pathToFile)";
+    return 'FileDataEventuallyOnDisk.inMemory(${_data!.lengthInBytes}bytes)';
+  }
 }

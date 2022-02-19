@@ -37,8 +37,8 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   ///
   /// If sending fails, uses exponential backoff and tries again up to 7 times.
   @override
-  Future<void> submit(PersistedFeedbackItem item, Uint8List? screenshot) async {
-    await _pendingFeedbackItemStorage.addPendingItem(item, screenshot);
+  Future<void> submit(PersistedFeedbackItem item) async {
+    await _pendingFeedbackItemStorage.addPendingItem(item);
 
     // Intentionally not "await"-ed. Since we've persisted the pending feedback
     // item, we can pretty safely assume it's going to be eventually sent, so
@@ -102,25 +102,49 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
     while (true) {
       attempt++;
       try {
-        // TODO don't upload images again when submission fails
-        final ImageBlob? imageUri = await () async {
-          final screenshotPath = item.screenshotPath;
-          if (screenshotPath != null) {
-            if (await fs.file(screenshotPath).exists()) {
-              final Uint8List screenshot =
-                  await fs.file(screenshotPath).readAsBytes();
-              return _api.sendImage(screenshot);
-            }
-          }
-          return null;
-        }();
+        // keep a copy here that always representes the latest state
+        PendingFeedbackItem copy = item;
 
-        await _api.sendFeedback(
-          item.feedbackItem,
-          images: [
-            if (imageUri != null) imageUri,
-          ],
-        );
+        /// Updates [copy] and [_pendingFeedbackItemStorage] once file is uploaded
+        Future<void> updateAttachment(
+          PersistedAttachment oldAttachment,
+          PersistedAttachment update,
+        ) async {
+          copy = item.copyWith(
+            feedbackItem: item.feedbackItem.copyWith(
+              attachments: item.feedbackItem.attachments.toList()
+                ..remove(oldAttachment)
+                ..add(update),
+            ),
+          );
+
+          await _pendingFeedbackItemStorage.updatePendingItem(copy);
+        }
+
+        for (final attachment in item.feedbackItem.attachments) {
+          if (attachment is Screenshot) {
+            final screenshot = attachment.file;
+            if (screenshot.isUploaded) {
+              continue;
+            }
+            assert(screenshot.isOnDisk || screenshot.isInMemomry);
+            final AttachmentId attachemntId =
+                await _api.uploadScreenshot(screenshot.binaryData!);
+
+            final uploaded = PersistedAttachment.screenshot(
+              file: FileDataEventuallyOnDisk.uploaded(attachemntId),
+              deviceInfo: attachment.deviceInfo,
+            );
+            await updateAttachment(attachment, uploaded);
+          }
+        }
+
+        // once all feedback is uploaded
+        assert(copy.feedbackItem.attachments.every((it) => it.isUploaded));
+
+        // actually submit the feedback
+        await _api.sendFeedback(copy.feedbackItem);
+
         // ignore: avoid_print
         print('Feedback submitted ✌️ ${item.feedbackItem.message}');
         await _pendingFeedbackItemStorage.clearPendingItem(item.id);

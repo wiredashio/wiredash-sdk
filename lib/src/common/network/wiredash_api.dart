@@ -30,18 +30,48 @@ class WiredashApi {
 
   // static const String _host = 'https://api.wiredash.dev/sdk';
 
-  /// Uploads an image to the Wiredash image hosting
-  ///
-  /// POST /sendImage
-  Future<ImageBlob> sendImage(Uint8List screenshot) async {
-    final uri = Uri.parse('$_host/sendImage');
-    final multipartFile = MultipartFile.fromBytes(
-      'file',
-      screenshot,
-      filename: 'file',
+  /// Uploads an screenshot to the Wiredash image hosting, returning a unique
+  /// [AttachmentId]
+  Future<AttachmentId> uploadScreenshot(Uint8List screenshot) {
+    return uploadAttachment(
+      screenshot: screenshot,
+      type: AttachmentType.screenshot,
+      filename: 'Screenshot_${DateTime.now().toUtc().toIso8601String()}',
       contentType: MediaType('image', 'png'),
     );
-    final req = MultipartRequest('POST', uri)..files.add(multipartFile);
+  }
+
+  /// Uploads a attachment to the Wiredash hosting service
+  ///
+  /// POST /uploadAttachment
+  Future<AttachmentId> uploadAttachment({
+    required Uint8List screenshot,
+    required AttachmentType type,
+    String? filename,
+    MediaType? contentType,
+  }) async {
+    final uri = Uri.parse('$_host/uploadAttachment');
+
+    final String mappedType;
+    switch (type) {
+      case AttachmentType.screenshot:
+        mappedType = 'screenshot';
+        break;
+    }
+
+    final req = MultipartRequest('POST', uri)
+      ..files.add(
+        MultipartFile.fromBytes(
+          'file',
+          screenshot,
+          filename: filename,
+          contentType: contentType,
+        ),
+      )
+      ..fields.addAll({
+        'type': mappedType,
+      });
+
     final response = await _send(req);
 
     if (response.statusCode == 401) {
@@ -50,15 +80,13 @@ class WiredashApi {
 
     if (response.statusCode != 200) {
       throw WiredashApiException(
-        message: 'image upload failed',
+        message: 'screenshot upload failed',
         response: response,
       );
     }
 
-    // backend returns a rather complex image object. We don't care much about
-    // the actual content, It will be attached to feedbacks as is
     final map = jsonDecode(response.body) as Map<String, dynamic>;
-    return ImageBlob(map);
+    return AttachmentId(map['id'] as String);
   }
 
   /// Reports a feedback
@@ -155,25 +183,6 @@ class UnauthenticatedWiredashApiException extends WiredashApiException {
         '${response?.body}'
         '}';
   }
-}
-
-/// A response from backend after image upload
-///
-/// This image object has to be sent as-is back to the backend
-class ImageBlob {
-  ImageBlob(this.data);
-
-  final Map<String, dynamic> data;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ImageBlob &&
-          runtimeType == other.runtimeType &&
-          data == other.data;
-
-  @override
-  int get hashCode => data.hashCode;
 }
 
 extension FeedbackBody on PersistedFeedbackItem {
@@ -293,6 +302,146 @@ T nonNull<T extends Object>(T value) {
   return value;
 }
 
+enum AttachmentType {
+  screenshot,
+}
+
+class ScreenshotDeviceInfo {
+  final Rect physicalGeometry;
+  final Brightness platformBrightness;
+  final WindowPadding platformGestureInsets;
+  final WindowPadding windowInsets;
+  final WindowPadding windowPadding;
+  final double windowPixelRatio;
+  final Size windowSize;
+  final double windowTextScaleFactor;
+
+//<editor-fold desc="Data Methods">
+
+  const ScreenshotDeviceInfo({
+    required this.physicalGeometry,
+    required this.platformBrightness,
+    required this.platformGestureInsets,
+    required this.windowInsets,
+    required this.windowPadding,
+    required this.windowPixelRatio,
+    required this.windowSize,
+    required this.windowTextScaleFactor,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ScreenshotDeviceInfo &&
+          runtimeType == other.runtimeType &&
+          physicalGeometry == other.physicalGeometry &&
+          platformBrightness == other.platformBrightness &&
+          platformGestureInsets == other.platformGestureInsets &&
+          windowInsets == other.windowInsets &&
+          windowPadding == other.windowPadding &&
+          windowPixelRatio == other.windowPixelRatio &&
+          windowSize == other.windowSize &&
+          windowTextScaleFactor == other.windowTextScaleFactor);
+
+  @override
+  int get hashCode =>
+      physicalGeometry.hashCode ^
+      platformBrightness.hashCode ^
+      platformGestureInsets.hashCode ^
+      windowInsets.hashCode ^
+      windowPadding.hashCode ^
+      windowPixelRatio.hashCode ^
+      windowSize.hashCode ^
+      windowTextScaleFactor.hashCode;
+
+  @override
+  String toString() {
+    return 'ScreenshotDeviceInfo{' +
+        ' physicalGeometry: $physicalGeometry,' +
+        ' platformBrightness: $platformBrightness,' +
+        ' platformGestureInsets: $platformGestureInsets,' +
+        ' windowInsets: $windowInsets,' +
+        ' windowPadding: $windowPadding,' +
+        ' windowPixelRatio: $windowPixelRatio,' +
+        ' windowSize: $windowSize,' +
+        ' windowTextScaleFactor: $windowTextScaleFactor,' +
+        '}';
+  }
+
+  ScreenshotDeviceInfo copyWith({
+    Rect? physicalGeometry,
+    Brightness? platformBrightness,
+    WindowPadding? platformGestureInsets,
+    WindowPadding? windowInsets,
+    WindowPadding? windowPadding,
+    double? windowPixelRatio,
+    Size? windowSize,
+    double? windowTextScaleFactor,
+  }) {
+    return ScreenshotDeviceInfo(
+      physicalGeometry: physicalGeometry ?? this.physicalGeometry,
+      platformBrightness: platformBrightness ?? this.platformBrightness,
+      platformGestureInsets:
+          platformGestureInsets ?? this.platformGestureInsets,
+      windowInsets: windowInsets ?? this.windowInsets,
+      windowPadding: windowPadding ?? this.windowPadding,
+      windowPixelRatio: windowPixelRatio ?? this.windowPixelRatio,
+      windowSize: windowSize ?? this.windowSize,
+      windowTextScaleFactor:
+          windowTextScaleFactor ?? this.windowTextScaleFactor,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'physicalGeometry': nonNull(this.physicalGeometry).toJson(),
+      'platformBrightness': nonNull(this.platformBrightness).jsonEncode(),
+      'platformGestureInsets': nonNull(this.platformGestureInsets).toJson(),
+      'windowInsets': nonNull(this.windowInsets).toJson(),
+      'windowPadding': nonNull(this.windowPadding).toJson(),
+      'windowPixelRatio': nonNull(this.windowPixelRatio),
+      'windowSize': nonNull(this.windowSize).toJson(),
+      'windowTextScaleFactor': nonNull(this.windowTextScaleFactor),
+    };
+  }
+
+  factory ScreenshotDeviceInfo.fromMap(Map<String, dynamic> map) {
+    return ScreenshotDeviceInfo(
+      physicalGeometry: map['physicalGeometry'] as Rect,
+      platformBrightness: map['platformBrightness'] as Brightness,
+      platformGestureInsets: map['platformGestureInsets'] as WindowPadding,
+      windowInsets: map['windowInsets'] as WindowPadding,
+      windowPadding: map['windowPadding'] as WindowPadding,
+      windowPixelRatio: map['windowPixelRatio'] as double,
+      windowSize: map['windowSize'] as Size,
+      windowTextScaleFactor: map['windowTextScaleFactor'] as double,
+    );
+  }
+
+//</editor-fold>
+}
+
+class AttachmentId {
+  final String value;
+
+  AttachmentId(this.value);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AttachmentId &&
+          runtimeType == other.runtimeType &&
+          value == other.value;
+
+  @override
+  int get hashCode => value.hashCode;
+
+  @override
+  String toString() {
+    return 'AttachmentId{$value}';
+  }
+}
+
 extension on WindowPadding {
   List<double> toJson() {
     return [left, top, right, bottom];
@@ -336,15 +485,15 @@ extension on CompilationMode {
 extension on Screenshot {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> values = {
-      'type': 'screenshot',
-      'image': file.imageBlob!.data,
+      'id': file.attachmentId!.value,
+      'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
+      'brightness': nonNull(deviceInfo.physicalGeometry).toJson(),
+      'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
       'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
       'windowSize': nonNull(deviceInfo.physicalSize).toJson(),
       'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
-      'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
       'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
       'windowPadding': nonNull(deviceInfo.padding).toJson(),
-      'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
     };
 
     return values;

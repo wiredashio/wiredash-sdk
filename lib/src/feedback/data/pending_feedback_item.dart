@@ -1,7 +1,9 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
+import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
@@ -36,134 +38,169 @@ class PendingFeedbackItem {
         'feedbackItem: $feedbackItem'
         '}';
   }
+
+  PendingFeedbackItem copyWith({
+    String? id,
+    PersistedFeedbackItem? feedbackItem,
+  }) {
+    return PendingFeedbackItem(
+      id: id ?? this.id,
+      feedbackItem: feedbackItem ?? this.feedbackItem,
+    );
+  }
 }
-//
-// /// Deserializes feedbacks from json
-// ///
-// /// Crashes hard when parsing fails
-// PendingFeedbackItem deserializePendingFeedbackItem(String json) {
-//   final map = jsonDecode(json) as Map;
-//   final version = map['version'] as int?;
-//   if (version == null) {
-//     // initial version, which doesn't contain all required values.
-//     throw "Can't parse feedback without version";
-//   }
-//   if (version == 1) {
-//     return PendingFeedbackItemParserV1.fromJson(map);
-//   }
-//   throw 'Unknown version "$version" of PendingFeedbackItem';
-// }
-//
-// String serializePendingFeedbackItem(PendingFeedbackItem item) {
-//   final json = item.toJson();
-//   return jsonEncode(json);
-// }
-//
-// class PendingFeedbackItemParserV1 {
-//   static PendingFeedbackItem fromJson(Map json) {
-//     final feedbackItemJson = json['feedbackItem'] as Map<dynamic, dynamic>;
-//
-//     final deviceInfoJson =
-//         feedbackItemJson['deviceInfo'] as Map<dynamic, dynamic>;
-//     final physicalSize = deviceInfoJson['physicalSize'] as List<dynamic>;
-//     final physicalGeometry =
-//         deviceInfoJson['physicalGeometry'] as List<dynamic>;
-//     final deviceInfo = DeviceInfo(
-//       gestureInsets: WiredashWindowPadding.fromJson(
-//         deviceInfoJson['gestureInsets'] as List<dynamic>,
-//       ),
-//       platformLocale: deviceInfoJson['platformLocale'] as String,
-//       platformSupportedLocales:
-//           (deviceInfoJson['platformSupportedLocales'] as List<dynamic>)
-//               .cast<String>(),
-//       padding: WiredashWindowPadding.fromJson(
-//         deviceInfoJson['padding'] as List<dynamic>,
-//       ),
-//       platformBrightness: () {
-//         final value = deviceInfoJson['platformBrightness'];
-//         if (value == 'light') return Brightness.light;
-//         if (value == 'dark') return Brightness.dark;
-//         throw 'Unknown brightness value $value';
-//       }(),
-//       physicalSize: Size(
-//         (physicalSize[0] as num).toDouble(),
-//         (physicalSize[1] as num).toDouble(),
-//       ),
-//       pixelRatio: (deviceInfoJson['pixelRatio'] as num).toDouble(),
-//       platformOS: deviceInfoJson['platformOS'] as String?,
-//       platformOSVersion: deviceInfoJson['platformOSBuild'] as String?,
-//       platformVersion: deviceInfoJson['platformVersion'] as String?,
-//       textScaleFactor: (deviceInfoJson['textScaleFactor'] as num).toDouble(),
-//       viewInsets: WiredashWindowPadding.fromJson(
-//         deviceInfoJson['viewInsets'] as List<dynamic>,
-//       ),
-//       userAgent: deviceInfoJson['userAgent'] as String?,
-//       physicalGeometry: Rect.fromLTRB(
-//         (physicalGeometry[0] as num).toDouble(),
-//         (physicalGeometry[1] as num).toDouble(),
-//         (physicalGeometry[2] as num).toDouble(),
-//         (physicalGeometry[3] as num).toDouble(),
-//       ),
-//     );
-//
-//     final buildInfoJson =
-//         feedbackItemJson['buildInfo'] as Map<dynamic, dynamic>? ?? {};
-//     final buildInfo = BuildInfo(
-//       compilationMode: () {
-//         final mode = buildInfoJson['compilationMode'] as String;
-//         if (mode == 'debug') return CompilationMode.debug;
-//         if (mode == 'profile') return CompilationMode.profile;
-//         return CompilationMode.release;
-//       }(),
-//       buildCommit: buildInfoJson['buildCommit'] as String?,
-//       buildNumber: buildInfoJson['buildNumber'] as String?,
-//       buildVersion: buildInfoJson['buildVersion'] as String?,
-//     );
-//
-//     final appInfoJson = feedbackItemJson['appInfo'] as Map<dynamic, dynamic>;
-//     final appInfo = AppInfo(
-//       appLocale: appInfoJson['appLocale'] as String,
-//     );
-//     final feedbackItem = PersistedFeedbackItem(
-//       appInfo: appInfo,
-//       buildInfo: buildInfo,
-//       customMetaData: (feedbackItemJson['customMetaData'] as Map?)?.map(
-//         (key, value) => MapEntry(key.toString(), jsonDecode(value.toString())),
-//       ),
-//       deviceInfo: deviceInfo,
-//       deviceId: feedbackItemJson['deviceId'] as String,
-//       email: feedbackItemJson['email'] as String?,
-//       message: feedbackItemJson['message'] as String,
-//       sdkVersion: feedbackItemJson['sdkVersion'] as int,
-//       labels: (feedbackItemJson['labels'] as List<dynamic>?)
-//           ?.map((it) => it as String)
-//           .toList(),
-//       userId: feedbackItemJson['userId'] as String?,
-//     );
-//
-//     return PendingFeedbackItem(
-//       id: json['id'] as String,
-//       feedbackItem: feedbackItem,
-//       screenshotPath: json['screenshotPath'] as String?,
-//     );
-//   }
-// }
-//
-// /// Visible for testing
-// extension SerializePendingFeedbackItem on PendingFeedbackItem {
-//   Map<String, dynamic> toJson() {
-//     return SplayTreeMap.from({
-//       'id': id,
-//       'feedbackItem': feedbackItem.toJson(),
-//       if (screenshotPath != null) 'screenshotPath': screenshotPath,
-//       'version': _serializationVersion,
-//     });
-//   }
-// }
+
+/// Deserializes feedbacks from json
+///
+/// Crashes hard when parsing fails
+PendingFeedbackItem deserializePendingFeedbackItem(String json) {
+  final map = jsonDecode(json) as Map;
+  final version = map['version'] as int?;
+  if (version == null) {
+    // initial version, which doesn't contain all required values.
+    throw "Can't parse feedback without version";
+  }
+  if (version <= 1) {
+    throw 'Ignore outdated serialization version $version';
+  }
+  if (version == 2) {
+    return PendingFeedbackItemParserV2.fromJson(map);
+  }
+  throw 'Unknown version "$version" of PendingFeedbackItem';
+}
+
+String serializePendingFeedbackItem(PendingFeedbackItem item) {
+  final json = item.toJson();
+  return jsonEncode(json);
+}
+
+class PendingFeedbackItemParserV2 {
+  static DeviceInfo _parseDeviceInfo(Map deviceInfoJson) {
+    final physicalSize = deviceInfoJson['physicalSize'] as List<dynamic>;
+    final physicalGeometry =
+        deviceInfoJson['physicalGeometry'] as List<dynamic>;
+    return DeviceInfo(
+      gestureInsets: WiredashWindowPadding.fromJson(
+        deviceInfoJson['gestureInsets'] as List<dynamic>,
+      ),
+      platformLocale: deviceInfoJson['platformLocale'] as String,
+      platformSupportedLocales:
+          (deviceInfoJson['platformSupportedLocales'] as List<dynamic>)
+              .cast<String>(),
+      padding: WiredashWindowPadding.fromJson(
+        deviceInfoJson['padding'] as List<dynamic>,
+      ),
+      platformBrightness: () {
+        final value = deviceInfoJson['platformBrightness'];
+        if (value == 'light') return Brightness.light;
+        if (value == 'dark') return Brightness.dark;
+        throw 'Unknown brightness value $value';
+      }(),
+      physicalSize: Size(
+        (physicalSize[0] as num).toDouble(),
+        (physicalSize[1] as num).toDouble(),
+      ),
+      pixelRatio: (deviceInfoJson['pixelRatio'] as num).toDouble(),
+      platformOS: deviceInfoJson['platformOS'] as String?,
+      platformOSVersion: deviceInfoJson['platformOSBuild'] as String?,
+      platformVersion: deviceInfoJson['platformVersion'] as String?,
+      textScaleFactor: (deviceInfoJson['textScaleFactor'] as num).toDouble(),
+      viewInsets: WiredashWindowPadding.fromJson(
+        deviceInfoJson['viewInsets'] as List<dynamic>,
+      ),
+      userAgent: deviceInfoJson['userAgent'] as String?,
+      physicalGeometry: Rect.fromLTRB(
+        (physicalGeometry[0] as num).toDouble(),
+        (physicalGeometry[1] as num).toDouble(),
+        (physicalGeometry[2] as num).toDouble(),
+        (physicalGeometry[3] as num).toDouble(),
+      ),
+    );
+  }
+
+  static PendingFeedbackItem fromJson(Map json) {
+    final feedbackItemJson = json['feedbackItem'] as Map<dynamic, dynamic>;
+
+    final deviceInfoJson =
+        feedbackItemJson['deviceInfo'] as Map<dynamic, dynamic>;
+    final deviceInfo = _parseDeviceInfo(deviceInfoJson);
+
+    final buildInfoJson =
+        feedbackItemJson['buildInfo'] as Map<dynamic, dynamic>? ?? {};
+    final buildInfo = BuildInfo(
+      compilationMode: () {
+        final mode = buildInfoJson['compilationMode'] as String;
+        if (mode == 'debug') return CompilationMode.debug;
+        if (mode == 'profile') return CompilationMode.profile;
+        return CompilationMode.release;
+      }(),
+      buildCommit: buildInfoJson['buildCommit'] as String?,
+      buildNumber: buildInfoJson['buildNumber'] as String?,
+      buildVersion: buildInfoJson['buildVersion'] as String?,
+    );
+
+    final appInfoJson = feedbackItemJson['appInfo'] as Map<dynamic, dynamic>;
+    final appInfo = AppInfo(
+      appLocale: appInfoJson['appLocale'] as String,
+    );
+    final attachments =
+        (feedbackItemJson['attachments'] as List<dynamic>?)?.map((item) {
+      final map = item as Map<dynamic, dynamic>;
+      final path = map['path'] as String?;
+      final attachmentId = map['id'] as String?;
+      final file = path != null
+          ? FileDataEventuallyOnDisk.file(File(path))
+          : FileDataEventuallyOnDisk.uploaded(
+              AttachmentId(attachmentId!),
+            );
+      final deviceInfoJson = map['deviceInfo'] as Map;
+      return PersistedAttachment.screenshot(
+        file: file,
+        deviceInfo: _parseDeviceInfo(deviceInfoJson),
+      );
+    }).toList();
+
+    final feedbackItem = PersistedFeedbackItem(
+      appInfo: appInfo,
+      buildInfo: buildInfo,
+      customMetaData: (feedbackItemJson['customMetaData'] as Map?)?.map(
+        (key, value) => MapEntry(key.toString(), jsonDecode(value.toString())),
+      ),
+      deviceInfo: deviceInfo,
+      deviceId: feedbackItemJson['deviceId'] as String,
+      email: feedbackItemJson['email'] as String?,
+      message: feedbackItemJson['message'] as String,
+      sdkVersion: feedbackItemJson['sdkVersion'] as int,
+      labels: (feedbackItemJson['labels'] as List<dynamic>?)
+          ?.map((it) => it as String)
+          .toList(),
+      userId: feedbackItemJson['userId'] as String?,
+      attachments: attachments ?? [],
+    );
+
+    return PendingFeedbackItem(
+      id: json['id'] as String,
+      feedbackItem: feedbackItem,
+    );
+  }
+}
+
+/// Visible for testing
+extension SerializePendingFeedbackItem on PendingFeedbackItem {
+  Map<String, dynamic> toJson() {
+    return SplayTreeMap.from({
+      'id': id,
+      'feedbackItem': feedbackItem.toJson(),
+      // if (screenshotPath != null) 'screenshotPath': screenshotPath,
+      'version': _serializationVersion,
+    });
+  }
+}
 
 extension _SerializePersistedFeedbackItem on PersistedFeedbackItem {
   Map<String, dynamic> toJson() {
     return SplayTreeMap.from({
+      'attachments': attachments.map((it) => it.toJson()).toList(),
       'deviceInfo': deviceInfo.toJson(),
       'appInfo': SplayTreeMap.from({
         'appLocale': appInfo.appLocale,
@@ -202,6 +239,27 @@ extension _SerializePersistedFeedbackItem on PersistedFeedbackItem {
     });
     data.removeWhere((key, value) => value == null);
     return SplayTreeMap.from(data);
+  }
+}
+
+extension _SerializePersistedAttachment on PersistedAttachment {
+  Map<String, dynamic> toJson() {
+    final values = SplayTreeMap<String, dynamic>.from({});
+
+    if (file.isInMemomry) {
+      throw 'Can not serialize in memory files';
+    }
+    if (file.isOnDisk) {
+      values.addAll({'path': file.pathToFile!});
+    }
+    if (file.isUploaded) {
+      values.addAll({'id': file.attachmentId!.value});
+    }
+    if (this is Screenshot) {
+      final screenshot = this as Screenshot;
+      values.addAll({'deviceInfo': screenshot.deviceInfo.toJson()});
+    }
+    return values;
   }
 }
 

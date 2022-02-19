@@ -57,38 +57,107 @@ void main() {
           'ignoreNull': null, // ignores
           'function': () => null, // reports but doesn't crash
         },
+        attachments: [
+          PersistedAttachment.screenshot(
+            file: FileDataEventuallyOnDisk.uploaded(
+              AttachmentId('screenshot_123'),
+            ),
+            deviceInfo: DeviceInfo(
+              platformLocale: 'en_US',
+              platformSupportedLocales: ['en_US', 'de_DE'],
+              padding:
+                  WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+              physicalSize: Size(1080, 2088),
+              physicalGeometry: Rect.zero,
+              pixelRatio: 2.75,
+              platformOS: 'android',
+              platformOSVersion: 'RSR1.201013.001',
+              platformVersion:
+                  '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on'
+                  ' "android_ia32"',
+              textScaleFactor: 1,
+              viewInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+              platformBrightness: Brightness.dark,
+              gestureInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+            ),
+          ),
+          PersistedAttachment.screenshot(
+            file: FileDataEventuallyOnDisk.uploaded(
+              AttachmentId('screenshot_124'),
+            ),
+            deviceInfo: DeviceInfo(
+              platformLocale: 'de_DE',
+              platformSupportedLocales: ['en_US', 'de_DE'],
+              padding: WiredashWindowPadding(
+                  left: 0, top: 66, right: 0, bottom: 360),
+              physicalSize: Size(1080, 2088),
+              physicalGeometry: Rect.zero,
+              pixelRatio: 2.75,
+              platformOS: 'android',
+              platformOSVersion: 'RSR1.201013.001',
+              platformVersion:
+                  '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on'
+                  ' "android_ia32"',
+              textScaleFactor: 1,
+              viewInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+              platformBrightness: Brightness.dark,
+              gestureInsets:
+                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+            ),
+          ),
+        ],
       ).toFeedbackBody();
 
       expect(
         body,
         {
           'appLocale': 'de_DE',
-          'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'compilationMode': 'debug',
           'customMetaData': {
             'customText': 'text',
             'nestedObject': {'frodo': 'ring', 'sam': 'lembas'}
           },
+          'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'labels': ['bug'],
           'message': 'Hello world!',
           'sdkVersion': 1,
-          'windowPixelRatio': 2.75,
-          'windowSize': [1080.0, 2088.0],
-          'windowTextScaleFactor': 1.0,
           'platformLocale': 'en_US',
           'platformSupportedLocales': ['en_US', 'de_DE'],
           'platformBrightness': 'dark',
           'platformDartVersion':
               '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200)'
                   ' on "android_ia32"',
-          'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
-          'windowInsets': [0.0, 0.0, 0.0, 685.0],
-          'windowPadding': [0.0, 66.0, 0.0, 0.0],
-          'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
           'platformOS': 'android',
           'platformOSVersion': 'RSR1.201013.001',
           'userEmail': 'email@example.com',
           'userId': 'Testy McTestFace',
+          'attachments': [
+            {
+              'id': 'screenshot_123',
+              'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
+              'brightness': [0.0, 0.0, 0.0, 0.0],
+              'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
+              'windowPixelRatio': 2.75,
+              'windowSize': [1080.0, 2088.0],
+              'windowTextScaleFactor': 1.0,
+              'windowInsets': [0.0, 0.0, 0.0, 685.0],
+              'windowPadding': [0.0, 66.0, 0.0, 0.0]
+            },
+            {
+              'id': 'screenshot_124',
+              'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
+              'brightness': [0.0, 0.0, 0.0, 0.0],
+              'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
+              'windowPixelRatio': 2.75,
+              'windowSize': [1080.0, 2088.0],
+              'windowTextScaleFactor': 1.0,
+              'windowInsets': [0.0, 0.0, 0.0, 685.0],
+              'windowPadding': [0.0, 66.0, 0.0, 360.0]
+            }
+          ],
         },
       );
       expect(
@@ -99,6 +168,7 @@ void main() {
         ]),
       );
     });
+
     test('empty email should not be sent as empty string', () {
       final body = const PersistedFeedbackItem(
         appInfo: AppInfo(
@@ -131,6 +201,7 @@ void main() {
         labels: ['bug'],
         userId: 'Testy McTestFace',
         sdkVersion: 1,
+        attachments: [],
       ).toFeedbackBody();
 
       expect(
@@ -142,19 +213,12 @@ void main() {
           'labels': ['bug'],
           'message': 'Hello world!',
           'sdkVersion': 1,
-          'windowPixelRatio': 2.75,
-          'windowSize': [1080.0, 2088.0],
-          'windowTextScaleFactor': 1.0,
           'platformLocale': 'en_US',
           'platformSupportedLocales': ['en_US', 'de_DE'],
           'platformBrightness': 'dark',
           'platformDartVersion':
               '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on'
                   ' "android_ia32"',
-          'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
-          'windowInsets': [0.0, 0.0, 0.0, 685.0],
-          'windowPadding': [0.0, 66.0, 0.0, 0.0],
-          'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
           'platformOS': 'android',
           'platformOSVersion': 'RSR1.201013.001',
           'userId': 'Testy McTestFace',

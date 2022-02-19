@@ -19,21 +19,18 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
       // Upload screenshots that are not yet uploaded
       for (final attachment in item.attachments) {
         if (attachment is Screenshot) {
-          final blob = await _api.sendImage(attachment.file.binaryData!);
-          final uploaded = attachment.copyWith(
-            file: FileDataEventuallyOnDisk.uploaded(blob),
-          );
+          // simplification: upload all attachments
+          final id = await _api.uploadScreenshot(attachment.file.binaryData!);
+          final uploaded =
+              attachment.copyWith(file: FileDataEventuallyOnDisk.uploaded(id));
           uploadedAttachments.add(uploaded);
         } else {
           throw "Unknown attachment type ${attachment.runtimeType}";
         }
       }
 
-      final withUploadedScreenshots = item.copyWith(
-        attachments: uploadedAttachments,
-      );
-
-      await _api.sendFeedback(withUploadedScreenshots);
+      final updatedItem = item.copyWith(attachments: uploadedAttachments);
+      await _api.sendFeedback(updatedItem);
 
       // ignore: avoid_print
       print('Feedback submitted ✌️ ${item.message}');
