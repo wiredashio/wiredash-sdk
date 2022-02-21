@@ -36,13 +36,23 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   ///
   /// If sending fails, uses exponential backoff and tries again up to 7 times.
   @override
-  Future<void> submit(PersistedFeedbackItem item) async {
-    await _pendingFeedbackItemStorage.addPendingItem(item);
+  Future<PendingFeedbackItem?> submit(PersistedFeedbackItem item) async {
+    PendingFeedbackItem? pending =
+        await _pendingFeedbackItemStorage.addPendingItem(item);
 
-    // Intentionally not "await"-ed. Since we've persisted the pending feedback
-    // item, we can pretty safely assume it's going to be eventually sent, so
-    // the future can complete after persisting the item.
+    try {
+      // Immediately try to submit the feedback
+      await _submitWithRetry(pending, maxAttempts: 1);
+      // item is submitted and not pending anymore
+      pending = null;
+    } catch (e) {
+      // ignore when feedback couldn't be submitted
+    }
+
+    // Intentionally not "await"-ed. Trigger submission of queued feedback
     submitPendingFeedbackItems();
+
+    return pending;
   }
 
   /// Checks if there are any pending feedback items stored in persistent
@@ -94,7 +104,11 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
     }
   }
 
-  Future<void> _submitWithRetry<T>(PendingFeedbackItem item) async {
+  Future<void> _submitWithRetry<T>(
+    PendingFeedbackItem item, {
+    int maxAttempts = 8,
+  }) async {
+    assert(maxAttempts > 0);
     var attempt = 0;
 
     // ignore: literal_only_boolean_expressions
@@ -177,21 +191,21 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
         );
         break;
       } catch (e, stack) {
-        if (attempt >= _maxAttempts) {
+        if (attempt >= maxAttempts) {
           // Exit after max attempts
           reportWiredashError(
             e,
             stack,
-            'Could not send feedback after $attempt retries',
+            'Could not send feedback after $attempt attempts',
           );
-          break;
+          rethrow;
         }
 
         // Report error and retry with exponential backoff
         reportWiredashError(
           e,
           stack,
-          'Could not send feedback to server after $attempt retries. '
+          'Could not send feedback to server after $attempt attempts. '
           'Retrying...',
           debugOnly: true,
         );
@@ -215,7 +229,6 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
 
 const _delayFactor = Duration(seconds: 1);
 const _maxDelay = Duration(seconds: 30);
-const _maxAttempts = 8;
 
 Duration _exponentialBackoff(int attempt) {
   if (attempt <= 0) return Duration.zero;
