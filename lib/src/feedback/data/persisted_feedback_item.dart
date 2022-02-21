@@ -225,10 +225,12 @@ class FileDataEventuallyOnDisk {
       other is FileDataEventuallyOnDisk &&
           runtimeType == other.runtimeType &&
           _data == other._data &&
-          pathToFile == other.pathToFile;
+          pathToFile == other.pathToFile &&
+          attachmentId == other.attachmentId;
 
   @override
-  int get hashCode => _data.hashCode ^ pathToFile.hashCode;
+  int get hashCode =>
+      _data.hashCode ^ pathToFile.hashCode ^ attachmentId.hashCode;
 
   @override
   String toString() {

@@ -1,25 +1,11 @@
-import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
-
-UuidV4Generator get uuidV4 =>
-    Zone.current[_uuidGeneratorKey] as UuidV4Generator? ??
-    const UuidV4Generator();
-
-final _uuidGeneratorKey = Object();
-
-@visibleForTesting
-T withUuidV4Generator<T>(UuidV4Generator generator, T Function() callback) {
-  return runZoned<T>(callback, zoneValues: {_uuidGeneratorKey: generator});
-}
-
-@visibleForTesting
 class UuidV4Generator {
   const UuidV4Generator();
 
+  static final random = math.Random.secure();
+
   String generate() {
-    final random = math.Random.secure();
     final bytes = List.generate(16, (_) => random.nextInt(256));
 
     bytes[6] = (bytes[6] & 0x0F) | 0x40;

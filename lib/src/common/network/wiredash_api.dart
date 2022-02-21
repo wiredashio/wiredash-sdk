@@ -30,17 +30,6 @@ class WiredashApi {
 
   // static const String _host = 'https://api.wiredash.dev/sdk';
 
-  /// Uploads an screenshot to the Wiredash image hosting, returning a unique
-  /// [AttachmentId]
-  Future<AttachmentId> uploadScreenshot(Uint8List screenshot) {
-    return uploadAttachment(
-      screenshot: screenshot,
-      type: AttachmentType.screenshot,
-      filename: 'Screenshot_${DateTime.now().toUtc().toIso8601String()}',
-      contentType: MediaType('image', 'png'),
-    );
-  }
-
   /// Uploads a attachment to the Wiredash hosting service
   ///
   /// POST /uploadAttachment
@@ -125,6 +114,19 @@ class WiredashApi {
 
     final streamedResponse = await _httpClient.send(request);
     return Response.fromStream(streamedResponse);
+  }
+}
+
+extension UploadScreenshotApi on WiredashApi {
+  /// Uploads an screenshot to the Wiredash image hosting, returning a unique
+  /// [AttachmentId]
+  Future<AttachmentId> uploadScreenshot(Uint8List screenshot) {
+    return uploadAttachment(
+      screenshot: screenshot,
+      type: AttachmentType.screenshot,
+      filename: 'Screenshot_${DateTime.now().toUtc().toIso8601String()}',
+      contentType: MediaType('image', 'png'),
+    );
   }
 }
 
@@ -356,15 +358,15 @@ class ScreenshotDeviceInfo {
 
   @override
   String toString() {
-    return 'ScreenshotDeviceInfo{' +
-        ' physicalGeometry: $physicalGeometry,' +
-        ' platformBrightness: $platformBrightness,' +
-        ' platformGestureInsets: $platformGestureInsets,' +
-        ' windowInsets: $windowInsets,' +
-        ' windowPadding: $windowPadding,' +
-        ' windowPixelRatio: $windowPixelRatio,' +
-        ' windowSize: $windowSize,' +
-        ' windowTextScaleFactor: $windowTextScaleFactor,' +
+    return 'ScreenshotDeviceInfo{'
+        'physicalGeometry: $physicalGeometry, '
+        'platformBrightness: $platformBrightness, '
+        'platformGestureInsets: $platformGestureInsets, '
+        'windowInsets: $windowInsets, '
+        'windowPadding: $windowPadding, '
+        'windowPixelRatio: $windowPixelRatio, '
+        'windowSize: $windowSize, '
+        'windowTextScaleFactor: $windowTextScaleFactor, '
         '}';
   }
 
@@ -394,14 +396,14 @@ class ScreenshotDeviceInfo {
 
   Map<String, dynamic> toJson() {
     return {
-      'physicalGeometry': nonNull(this.physicalGeometry).toJson(),
-      'platformBrightness': nonNull(this.platformBrightness).jsonEncode(),
-      'platformGestureInsets': nonNull(this.platformGestureInsets).toJson(),
-      'windowInsets': nonNull(this.windowInsets).toJson(),
-      'windowPadding': nonNull(this.windowPadding).toJson(),
-      'windowPixelRatio': nonNull(this.windowPixelRatio),
-      'windowSize': nonNull(this.windowSize).toJson(),
-      'windowTextScaleFactor': nonNull(this.windowTextScaleFactor),
+      'physicalGeometry': nonNull(physicalGeometry).toJson(),
+      'platformBrightness': nonNull(platformBrightness).jsonEncode(),
+      'platformGestureInsets': nonNull(platformGestureInsets).toJson(),
+      'windowInsets': nonNull(windowInsets).toJson(),
+      'windowPadding': nonNull(windowPadding).toJson(),
+      'windowPixelRatio': nonNull(windowPixelRatio),
+      'windowSize': nonNull(windowSize).toJson(),
+      'windowTextScaleFactor': nonNull(windowTextScaleFactor),
     };
   }
 

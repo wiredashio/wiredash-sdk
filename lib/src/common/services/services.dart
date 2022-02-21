@@ -12,6 +12,7 @@ import 'package:wiredash/src/common/build_info/device_id_generator.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/services/streampod.dart';
+import 'package:wiredash/src/common/utils/uuid.dart';
 import 'package:wiredash/src/common/widgets/screencapture.dart';
 import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
@@ -142,9 +143,11 @@ void _setupServices(WiredashServices sl) {
 
       const fileSystem = LocalFileSystem();
       final storage = PendingFeedbackItemStorage(
-        fileSystem,
-        SharedPreferences.getInstance,
-        () async => (await getApplicationDocumentsDirectory()).path,
+        fileSystem: fileSystem,
+        sharedPreferencesProvider: SharedPreferences.getInstance,
+        dirPathProvider: () async =>
+            (await getApplicationDocumentsDirectory()).path,
+        uuidV4Generator: const UuidV4Generator(),
       );
       final retryingFeedbackSubmitter =
           RetryingFeedbackSubmitter(fileSystem, storage, locator.api);

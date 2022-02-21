@@ -33,9 +33,9 @@ class PendingFeedbackItem {
 
   @override
   String toString() {
-    return 'PendingFeedbackItem{'
-        'id: $id, '
-        'feedbackItem: $feedbackItem'
+    return 'PendingFeedbackItem{\n'
+        'id: $id,\n'
+        'feedbackItem: $feedbackItem\n'
         '}';
   }
 
@@ -69,6 +69,7 @@ PendingFeedbackItem deserializePendingFeedbackItem(String json) {
   throw 'Unknown version "$version" of PendingFeedbackItem';
 }
 
+/// Serializes feedbacks to json
 String serializePendingFeedbackItem(PendingFeedbackItem item) {
   final json = item.toJson();
   return jsonEncode(json);
@@ -200,7 +201,8 @@ extension SerializePendingFeedbackItem on PendingFeedbackItem {
 extension _SerializePersistedFeedbackItem on PersistedFeedbackItem {
   Map<String, dynamic> toJson() {
     return SplayTreeMap.from({
-      'attachments': attachments.map((it) => it.toJson()).toList(),
+      if (attachments.isNotEmpty)
+        'attachments': attachments.map((it) => it.toJson()).toList(),
       'deviceInfo': deviceInfo.toJson(),
       'appInfo': SplayTreeMap.from({
         'appLocale': appInfo.appLocale,

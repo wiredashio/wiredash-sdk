@@ -91,7 +91,11 @@ void main() {
               platformLocale: 'de_DE',
               platformSupportedLocales: ['en_US', 'de_DE'],
               padding: WiredashWindowPadding(
-                  left: 0, top: 66, right: 0, bottom: 360),
+                left: 0,
+                top: 66,
+                right: 0,
+                bottom: 360,
+              ),
               physicalSize: Size(1080, 2088),
               physicalGeometry: Rect.zero,
               pixelRatio: 2.75,

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:file/file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,15 +10,20 @@ import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 /// A temporary place for [PersistedFeedbackItem] classes and user-generated
 /// screenshot to sit in until they get sent into the Wiredash console.
 class PendingFeedbackItemStorage {
-  PendingFeedbackItemStorage(
-    this._fs,
-    this._sharedPreferences,
-    this._getScreenshotStorageDirectoryPath,
-  );
+  PendingFeedbackItemStorage({
+    required FileSystem fileSystem,
+    required Future<SharedPreferences> Function() sharedPreferencesProvider,
+    required Future<String> Function() dirPathProvider,
+    required UuidV4Generator uuidV4Generator,
+  })  : _fs = fileSystem,
+        _sharedPreferences = sharedPreferencesProvider,
+        _getScreenshotStorageDirectoryPath = dirPathProvider,
+        _uuidV4Generator = uuidV4Generator;
 
   final FileSystem _fs;
   final Future<SharedPreferences> Function() _sharedPreferences;
   final Future<String> Function() _getScreenshotStorageDirectoryPath;
+  final UuidV4Generator _uuidV4Generator;
 
   static const _feedbackItemsKey = 'io.wiredash.pending_feedback_items';
 
@@ -83,8 +87,9 @@ class PendingFeedbackItemStorage {
         }
         // save file to disk
         final screenshotsDir = await _getScreenshotStorageDirectoryPath();
+        final uniqueFileName = _uuidV4Generator.generate();
         final file = await _fs
-            .file('$screenshotsDir/${uuidV4.generate()}.png')
+            .file('$screenshotsDir/$uniqueFileName.png')
             .writeAsBytes(attachment.file.binaryData!);
         serializedAttachments.add(
           attachment.copyWith(file: FileDataEventuallyOnDisk.file(file)),
@@ -94,7 +99,7 @@ class PendingFeedbackItemStorage {
     final serializable = item.copyWith(attachments: serializedAttachments);
 
     final pendingItem = PendingFeedbackItem(
-      id: uuidV4.generate(),
+      id: _uuidV4Generator.generate(),
       feedbackItem: serializable,
     );
 

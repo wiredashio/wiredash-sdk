@@ -30,12 +30,4 @@ class MockWiredashApi implements WiredashApi {
   }) async {
     return AttachmentId(Random().nextDouble().toString());
   }
-
-  @override
-  Future<AttachmentId> uploadScreenshot(Uint8List screenshot) async {
-    return uploadAttachment(
-      screenshot: screenshot,
-      type: AttachmentType.screenshot,
-    );
-  }
 }
