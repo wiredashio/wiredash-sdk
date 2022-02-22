@@ -13,12 +13,8 @@ class MockWiredashApi implements WiredashApi {
       MethodInvocationCatcher('sendFeedback');
 
   @override
-  Future<void> sendFeedback(
-    PersistedFeedbackItem feedback, {
-    List<AttachmentId> images = const [],
-  }) async {
-    return sendFeedbackInvocations
-        .addMethodCall(namedArgs: {'images': images}, args: [feedback]);
+  Future<void> sendFeedback(PersistedFeedbackItem feedback) async {
+    return sendFeedbackInvocations.addMethodCall(args: [feedback]);
   }
 
   @override
