@@ -69,7 +69,7 @@ class WiredashApi {
 
     if (response.statusCode != 200) {
       throw WiredashApiException(
-        message: 'screenshot upload failed',
+        message: '$type upload failed',
         response: response,
       );
     }
@@ -124,6 +124,7 @@ extension UploadScreenshotApi on WiredashApi {
     return uploadAttachment(
       screenshot: screenshot,
       type: AttachmentType.screenshot,
+      // TODO generate filename when taking the screenshot
       filename: 'Screenshot_${DateTime.now().toUtc().toIso8601String()}',
       contentType: MediaType('image', 'png'),
     );

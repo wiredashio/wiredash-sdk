@@ -43,7 +43,9 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
       // Immediately try to submit the feedback
       await _submitWithRetry(pending, maxAttempts: 1);
 
+      // Only submit remaining feedback when submitting the current on worked
       // Intentionally not "await"-ed. Trigger submission of queued feedback
+      // Calling it doesn't affect the return value (in case of error)
       submitPendingFeedbackItems();
     } catch (e) {
       // ignore when feedback couldn't be submitted
@@ -100,7 +102,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
 
       await _submitPendingFeedbackItems(submittingLeftovers: true);
     }
-    _pendingCompleter!.complete(null);
+    _pendingCompleter?.complete(null);
     _pendingCompleter = null;
   }
 

@@ -191,7 +191,6 @@ extension SerializePendingFeedbackItem on PendingFeedbackItem {
     return SplayTreeMap.from({
       'id': id,
       'feedbackItem': feedbackItem.toJson(),
-      // if (screenshotPath != null) 'screenshotPath': screenshotPath,
       'version': _serializationVersion,
     });
   }

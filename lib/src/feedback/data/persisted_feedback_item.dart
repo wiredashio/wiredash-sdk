@@ -143,8 +143,11 @@ abstract class PersistedAttachment {
       deviceInfo: deviceInfo,
     );
   }
+
+  // TODO add freezed like when() for more attachment types
 }
 
+/// A attachment type the user created using Wiredash screenshot feature
 class Screenshot extends PersistedAttachment {
   const Screenshot._({
     required this.file,
@@ -185,7 +188,8 @@ class Screenshot extends PersistedAttachment {
   }
 }
 
-/// Usually on disk, but maybe already in memory
+/// A [PersistedAttachment] type that is either in-memory, on disk or already
+/// uploaded to the cloud
 class FileDataEventuallyOnDisk {
   final Uint8List? data;
   final String? pathToFile;
