@@ -108,7 +108,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
 
   Future<void> _submitWithRetry<T>(
     PendingFeedbackItem item, {
-    int maxAttempts = 8,
+    int maxAttempts = 7,
   }) async {
     assert(maxAttempts > 0);
     var attempt = 0;

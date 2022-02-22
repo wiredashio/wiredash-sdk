@@ -336,8 +336,10 @@ const testDeviceInfo = FlutterDeviceInfo(
   physicalSize: Size(800, 1200),
 );
 
-PersistedFeedbackItem createFeedback(
-    {List<PersistedAttachment>? attachments, String? message}) {
+PersistedFeedbackItem createFeedback({
+  List<PersistedAttachment>? attachments,
+  String? message,
+}) {
   return PersistedFeedbackItem(
     appInfo: const AppInfo(appLocale: 'de_DE'),
     buildInfo: const BuildInfo(compilationMode: CompilationMode.release),

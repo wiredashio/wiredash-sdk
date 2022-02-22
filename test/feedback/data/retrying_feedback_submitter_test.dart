@@ -202,86 +202,58 @@ void main() {
       final lastSendCall = mockApi.sendFeedbackInvocations.latest;
       expect(lastSendCall[0], item2);
     });
-    //
-    // test('submit() - if fails, retries up to 8 times with exponential backoff',
-    //     () async {
-    //   const item = PersistedFeedbackItem(
-    //     appInfo: AppInfo(
-    //       appLocale: 'de_DE',
-    //     ),
-    //     buildInfo: BuildInfo(compilationMode: CompilationMode.release),
-    //     deviceId: '1234',
-    //     deviceInfo: DeviceInfo(
-    //       pixelRatio: 1.0,
-    //       textScaleFactor: 1.0,
-    //       platformLocale: 'en_US',
-    //       platformSupportedLocales: ['en_US', 'de_DE'],
-    //       platformBrightness: Brightness.dark,
-    //       gestureInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-    //       padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
-    //       viewInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-    //       physicalGeometry: Rect.zero,
-    //       physicalSize: Size(800, 1200),
-    //     ),
-    //     email: 'email@example.com',
-    //     message: 'test post pls ignore',
-    //     labels: ['feedback'],
-    //     userId: 'Testy McTestFace',
-    //   );
-    //
-    //   final initialTime = DateTime(2000, 01, 01, 00, 00, 00, 000);
-    //   final retryLog = <DateTime>[];
-    //
-    //   fakeAsync(
-    //     (async) {
-    //       final clock = async.getClock(initialTime);
-    //       mockApi.sendFeedbackInvocations.interceptor = (iv) {
-    //         retryLog.add(clock.now());
-    //         throw Exception();
-    //       };
-    //
-    //       retryingFeedbackSubmitter.submit(item, kTransparentImage);
-    //
-    //       // Hop on the time machine...
-    //       async.elapse(const Duration(minutes: 5));
-    //
-    //       // Sending one feedback item should be retried no more than 8 times.
-    //       final sendAttempts = mockApi
-    //           .sendFeedbackInvocations.invocations
-    //           .where((iv) {
-    //         final matchItem = iv[0] == item;
-    //         final matchImage = (iv['images'] as List?)?.length == 1;
-    //         return matchItem && matchImage;
-    //       });
-    //       expect(sendAttempts.length, 8);
-    //
-    //       // Should've retried sending feedback at these very specific times.
-    //       expect(retryLog, [
-    //         DateTime(2000, 01, 01, 00, 00, 00, 000),
-    //         DateTime(2000, 01, 01, 00, 00, 02, 000),
-    //         DateTime(2000, 01, 01, 00, 00, 06, 000),
-    //         DateTime(2000, 01, 01, 00, 00, 14, 000),
-    //         DateTime(2000, 01, 01, 00, 00, 30, 000),
-    //         DateTime(2000, 01, 01, 00, 01, 00, 000),
-    //         DateTime(2000, 01, 01, 00, 01, 30, 000),
-    //         DateTime(2000, 01, 01, 00, 02, 00, 000),
-    //       ]);
-    //
-    //       expect(storage._deletedItemIds, isEmpty);
-    //       expect(storage._currentItems, [
-    //         const PendingFeedbackItem(
-    //           id: '1',
-    //           feedbackItem: item,
-    //           screenshotPath: '1.png',
-    //         ),
-    //       ]);
-    //     },
-    //     initialTime: initialTime,
-    //   );
-    // });
-    //
+
+    test('submit() - if fails, retries up to 8 times with exponential backoff',
+        () async {
+      final item = createFeedback(message: '1');
+
+      final initialTime = DateTime(2000, 01, 01, 00, 00, 00, 000);
+      final retryLog = <DateTime>[];
+
+      fakeAsync(
+        (async) {
+          final clock = async.getClock(initialTime);
+          mockApi.sendFeedbackInvocations.interceptor = (iv) {
+            retryLog.add(clock.now());
+            throw Exception();
+          };
+          // no retry, just try
+          retryingFeedbackSubmitter.submit(item);
+          async.elapse(const Duration(minutes: 1));
+
+          // 7 retries
+          retryingFeedbackSubmitter.submitPendingFeedbackItems();
+
+          // Hop on the time machine...
+          async.elapse(const Duration(minutes: 5));
+
+          // Sending one feedback item should be retried no more than 8 times.
+          final sendAttempts =
+              mockApi.sendFeedbackInvocations.invocations.where((iv) {
+            return iv[0] == item;
+          });
+          expect(sendAttempts.length, 8);
+
+          // Should've retried sending feedback at these very specific times.
+          expect(retryLog, [
+            DateTime(2000, 01, 01, 00, 00, 00, 000),
+            DateTime(2000, 01, 01, 00, 01, 00, 000),
+            DateTime(2000, 01, 01, 00, 01, 02, 000),
+            DateTime(2000, 01, 01, 00, 01, 06, 000),
+            DateTime(2000, 01, 01, 00, 01, 14, 000),
+            DateTime(2000, 01, 01, 00, 01, 30, 000),
+            DateTime(2000, 01, 01, 00, 02, 00, 000),
+            DateTime(2000, 01, 01, 00, 02, 30, 000),
+          ]);
+        },
+        initialTime: initialTime,
+      );
+
+      final items = await storage.retrieveAllPendingItems();
+      expect(items, hasLength(1));
+      expect(items.first.feedbackItem, item);
+    });
+
     // test('submit() - does not retry for UnauthenticatedWiredashApiException',
     //     () async {
     //   const item = PersistedFeedbackItem(
