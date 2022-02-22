@@ -16,7 +16,7 @@ void main() {
       attachments: [
         PersistedAttachment.screenshot(
           file: FileDataEventuallyOnDisk.file('path/to/file.png'),
-          deviceInfo: DeviceInfo(
+          deviceInfo: FlutterDeviceInfo(
             pixelRatio: 2.75,
             platformOS: 'android',
             platformOSVersion: 'RSR1.201013.001',
@@ -49,7 +49,7 @@ void main() {
         'nestedObject': {'frodo': 'ring', 'sam': 'lembas'},
       },
       deviceId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-      deviceInfo: DeviceInfo(
+      deviceInfo: FlutterDeviceInfo(
         pixelRatio: 2.75,
         platformOS: 'android',
         platformOSVersion: 'RSR1.201013.001',
@@ -84,7 +84,7 @@ void main() {
       attachments: [],
       buildInfo: BuildInfo(compilationMode: CompilationMode.profile),
       deviceId: '1234',
-      deviceInfo: DeviceInfo(
+      deviceInfo: FlutterDeviceInfo(
         pixelRatio: 1.0,
         textScaleFactor: 1.0,
         platformLocale: 'en_US',

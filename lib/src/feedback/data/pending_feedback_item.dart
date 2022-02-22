@@ -75,11 +75,11 @@ String serializePendingFeedbackItem(PendingFeedbackItem item) {
 }
 
 class PendingFeedbackItemParserV2 {
-  static DeviceInfo _parseDeviceInfo(Map deviceInfoJson) {
+  static FlutterDeviceInfo _parseDeviceInfo(Map deviceInfoJson) {
     final physicalSize = deviceInfoJson['physicalSize'] as List<dynamic>;
     final physicalGeometry =
         deviceInfoJson['physicalGeometry'] as List<dynamic>;
-    return DeviceInfo(
+    return FlutterDeviceInfo(
       gestureInsets: WiredashWindowPadding.fromJson(
         deviceInfoJson['gestureInsets'] as List<dynamic>,
       ),
@@ -264,7 +264,7 @@ extension _SerializePersistedAttachment on PersistedAttachment {
   }
 }
 
-extension _SerializeDeviceInfo on DeviceInfo {
+extension _SerializeDeviceInfo on FlutterDeviceInfo {
   Map<String, dynamic> toJson() {
     final values = SplayTreeMap<String, dynamic>.from({});
 

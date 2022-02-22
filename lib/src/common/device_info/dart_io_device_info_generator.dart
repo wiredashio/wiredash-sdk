@@ -10,7 +10,7 @@ class _DartIoDeviceInfoGenerator implements DeviceInfoGenerator {
   final SingletonFlutterWindow window;
 
   @override
-  DeviceInfo generate() {
+  FlutterDeviceInfo generate() {
     final base = DeviceInfoGenerator.baseDeviceInfo(window);
     return base.copyWith(
       platformOS: Platform.operatingSystem,

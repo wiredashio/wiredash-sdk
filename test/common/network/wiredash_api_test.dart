@@ -28,7 +28,7 @@ void main() {
           compilationMode: CompilationMode.debug,
         ),
         deviceId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-        deviceInfo: DeviceInfo(
+        deviceInfo: FlutterDeviceInfo(
           platformLocale: 'en_US',
           platformSupportedLocales: ['en_US', 'de_DE'],
           padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
@@ -62,7 +62,7 @@ void main() {
             file: FileDataEventuallyOnDisk.uploaded(
               AttachmentId('screenshot_123'),
             ),
-            deviceInfo: DeviceInfo(
+            deviceInfo: FlutterDeviceInfo(
               platformLocale: 'en_US',
               platformSupportedLocales: ['en_US', 'de_DE'],
               padding:
@@ -87,7 +87,7 @@ void main() {
             file: FileDataEventuallyOnDisk.uploaded(
               AttachmentId('screenshot_124'),
             ),
-            deviceInfo: DeviceInfo(
+            deviceInfo: FlutterDeviceInfo(
               platformLocale: 'de_DE',
               platformSupportedLocales: ['en_US', 'de_DE'],
               padding: WiredashWindowPadding(
@@ -182,7 +182,7 @@ void main() {
           compilationMode: CompilationMode.release,
         ),
         deviceId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-        deviceInfo: DeviceInfo(
+        deviceInfo: FlutterDeviceInfo(
           platformLocale: 'en_US',
           platformSupportedLocales: ['en_US', 'de_DE'],
           padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),

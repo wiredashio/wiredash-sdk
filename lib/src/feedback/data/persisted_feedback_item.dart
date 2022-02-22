@@ -43,7 +43,7 @@ class PersistedFeedbackItem {
   final String message;
   final String? userId;
   final int sdkVersion;
-  final DeviceInfo deviceInfo;
+  final FlutterDeviceInfo deviceInfo;
   final List<String>? labels;
   final AppInfo appInfo;
   final Map<String, Object?>? customMetaData;
@@ -105,7 +105,7 @@ class PersistedFeedbackItem {
     String? message,
     String? userId,
     int? sdkVersion,
-    DeviceInfo? deviceInfo,
+    FlutterDeviceInfo? deviceInfo,
     List<String>? labels,
     AppInfo? appInfo,
     Map<String, Object?>? customMetaData,
@@ -136,7 +136,7 @@ abstract class PersistedAttachment {
   // ignore: prefer_constructors_over_static_methods
   static Screenshot screenshot({
     required FileDataEventuallyOnDisk file,
-    required DeviceInfo deviceInfo,
+    required FlutterDeviceInfo deviceInfo,
   }) {
     return Screenshot._(
       file: file,
@@ -153,7 +153,7 @@ class Screenshot extends PersistedAttachment {
 
   @override
   final FileDataEventuallyOnDisk file;
-  final DeviceInfo deviceInfo;
+  final FlutterDeviceInfo deviceInfo;
 
   @override
   String toString() {
@@ -176,7 +176,7 @@ class Screenshot extends PersistedAttachment {
 
   Screenshot copyWith({
     FileDataEventuallyOnDisk? file,
-    DeviceInfo? deviceInfo,
+    FlutterDeviceInfo? deviceInfo,
   }) {
     return PersistedAttachment.screenshot(
       file: file ?? this.file,

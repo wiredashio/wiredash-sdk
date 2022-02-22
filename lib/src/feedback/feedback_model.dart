@@ -70,7 +70,7 @@ class FeedbackModel with ChangeNotifier {
   Delay? _closeDelay;
 
   CustomizableWiredashMetaData? _metaData;
-  late DeviceInfo _deviceInfo;
+  late FlutterDeviceInfo _deviceInfo;
 
   Object? _submissionError;
 

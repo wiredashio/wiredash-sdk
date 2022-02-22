@@ -324,7 +324,7 @@ class IncrementalUuidV4Generator implements UuidV4Generator {
   }
 }
 
-const testDeviceInfo = DeviceInfo(
+const testDeviceInfo = FlutterDeviceInfo(
   pixelRatio: 1.0,
   textScaleFactor: 1.0,
   platformLocale: 'en_US',
