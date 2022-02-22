@@ -185,17 +185,8 @@ extension FeedbackBody on PersistedFeedbackItem {
   Map<String, dynamic> toFeedbackBody() {
     final Map<String, Object> values = {};
 
-    // Required values
-    values.addAll({
-      'appLocale': nonNull(appInfo.appLocale),
-      'compilationMode': nonNull(buildInfo.compilationMode).jsonEncode(),
-      'deviceId': nonNull(deviceId),
-      'message': nonNull(message),
-      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode(),
-      'platformLocale': nonNull(deviceInfo.platformLocale),
-      'platformSupportedLocales': nonNull(deviceInfo.platformSupportedLocales),
-      'sdkVersion': nonNull(sdkVersion),
-    });
+    // Values are sorted alphabetically for easy comparison with the backend
+    values.addAll({'appLocale': nonNull(appInfo.appLocale)});
 
     if (attachments.isNotEmpty) {
       final items = attachments.map((it) {
@@ -223,15 +214,29 @@ extension FeedbackBody on PersistedFeedbackItem {
       values.addAll({'buildVersion': buildVersion});
     }
 
+    values.addAll({
+      'compilationMode': nonNull(buildInfo.compilationMode).jsonEncode(),
+    });
+
+    values.addAll({'deviceId': nonNull(deviceId)});
+
     final _labels = labels;
     if (_labels != null) {
       values.addAll({'labels': _labels});
     }
 
+    values.addAll({'message': nonNull(message)});
+
+    values.addAll({
+      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode()
+    });
+
     final platformDartVersion = deviceInfo.platformVersion;
     if (platformDartVersion != null) {
       values.addAll({'platformDartVersion': platformDartVersion});
     }
+
+    values.addAll({'platformLocale': nonNull(deviceInfo.platformLocale)});
 
     final platformOS = deviceInfo.platformOS;
     if (platformOS != null) {
@@ -243,11 +248,17 @@ extension FeedbackBody on PersistedFeedbackItem {
       values.addAll({'platformOSVersion': platformOSVersion});
     }
 
+    values.addAll({
+      'platformSupportedLocales': nonNull(deviceInfo.platformSupportedLocales)
+    });
+
     // Web only
     final platformUserAgent = deviceInfo.userAgent;
     if (platformUserAgent != null) {
       values.addAll({'platformUserAgent': platformUserAgent});
     }
+
+    values.addAll({'sdkVersion': nonNull(sdkVersion)});
 
     final userEmail = email;
     if (userEmail != null && userEmail.isNotEmpty) {
@@ -290,6 +301,24 @@ extension FeedbackBody on PersistedFeedbackItem {
   }
 }
 
+extension on Screenshot {
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> values = {
+      'id': file.attachmentId!.value,
+      'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
+      'brightness': nonNull(deviceInfo.physicalGeometry).toJson(),
+      'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
+      'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
+      'windowSize': nonNull(deviceInfo.physicalSize).toJson(),
+      'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
+      'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
+      'windowPadding': nonNull(deviceInfo.padding).toJson(),
+    };
+
+    return values;
+  }
+}
+
 /// Explicitly defines a values a non null, making it a compile time error
 /// when [value] becomes nullable
 ///
@@ -302,121 +331,8 @@ enum AttachmentType {
   screenshot,
 }
 
-class ScreenshotDeviceInfo {
-  final Rect physicalGeometry;
-  final Brightness platformBrightness;
-  final WindowPadding platformGestureInsets;
-  final WindowPadding windowInsets;
-  final WindowPadding windowPadding;
-  final double windowPixelRatio;
-  final Size windowSize;
-  final double windowTextScaleFactor;
-
-//<editor-fold desc="Data Methods">
-
-  const ScreenshotDeviceInfo({
-    required this.physicalGeometry,
-    required this.platformBrightness,
-    required this.platformGestureInsets,
-    required this.windowInsets,
-    required this.windowPadding,
-    required this.windowPixelRatio,
-    required this.windowSize,
-    required this.windowTextScaleFactor,
-  });
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is ScreenshotDeviceInfo &&
-          runtimeType == other.runtimeType &&
-          physicalGeometry == other.physicalGeometry &&
-          platformBrightness == other.platformBrightness &&
-          platformGestureInsets == other.platformGestureInsets &&
-          windowInsets == other.windowInsets &&
-          windowPadding == other.windowPadding &&
-          windowPixelRatio == other.windowPixelRatio &&
-          windowSize == other.windowSize &&
-          windowTextScaleFactor == other.windowTextScaleFactor);
-
-  @override
-  int get hashCode =>
-      physicalGeometry.hashCode ^
-      platformBrightness.hashCode ^
-      platformGestureInsets.hashCode ^
-      windowInsets.hashCode ^
-      windowPadding.hashCode ^
-      windowPixelRatio.hashCode ^
-      windowSize.hashCode ^
-      windowTextScaleFactor.hashCode;
-
-  @override
-  String toString() {
-    return 'ScreenshotDeviceInfo{'
-        'physicalGeometry: $physicalGeometry, '
-        'platformBrightness: $platformBrightness, '
-        'platformGestureInsets: $platformGestureInsets, '
-        'windowInsets: $windowInsets, '
-        'windowPadding: $windowPadding, '
-        'windowPixelRatio: $windowPixelRatio, '
-        'windowSize: $windowSize, '
-        'windowTextScaleFactor: $windowTextScaleFactor, '
-        '}';
-  }
-
-  ScreenshotDeviceInfo copyWith({
-    Rect? physicalGeometry,
-    Brightness? platformBrightness,
-    WindowPadding? platformGestureInsets,
-    WindowPadding? windowInsets,
-    WindowPadding? windowPadding,
-    double? windowPixelRatio,
-    Size? windowSize,
-    double? windowTextScaleFactor,
-  }) {
-    return ScreenshotDeviceInfo(
-      physicalGeometry: physicalGeometry ?? this.physicalGeometry,
-      platformBrightness: platformBrightness ?? this.platformBrightness,
-      platformGestureInsets:
-          platformGestureInsets ?? this.platformGestureInsets,
-      windowInsets: windowInsets ?? this.windowInsets,
-      windowPadding: windowPadding ?? this.windowPadding,
-      windowPixelRatio: windowPixelRatio ?? this.windowPixelRatio,
-      windowSize: windowSize ?? this.windowSize,
-      windowTextScaleFactor:
-          windowTextScaleFactor ?? this.windowTextScaleFactor,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'physicalGeometry': nonNull(physicalGeometry).toJson(),
-      'platformBrightness': nonNull(platformBrightness).jsonEncode(),
-      'platformGestureInsets': nonNull(platformGestureInsets).toJson(),
-      'windowInsets': nonNull(windowInsets).toJson(),
-      'windowPadding': nonNull(windowPadding).toJson(),
-      'windowPixelRatio': nonNull(windowPixelRatio),
-      'windowSize': nonNull(windowSize).toJson(),
-      'windowTextScaleFactor': nonNull(windowTextScaleFactor),
-    };
-  }
-
-  factory ScreenshotDeviceInfo.fromMap(Map<String, dynamic> map) {
-    return ScreenshotDeviceInfo(
-      physicalGeometry: map['physicalGeometry'] as Rect,
-      platformBrightness: map['platformBrightness'] as Brightness,
-      platformGestureInsets: map['platformGestureInsets'] as WindowPadding,
-      windowInsets: map['windowInsets'] as WindowPadding,
-      windowPadding: map['windowPadding'] as WindowPadding,
-      windowPixelRatio: map['windowPixelRatio'] as double,
-      windowSize: map['windowSize'] as Size,
-      windowTextScaleFactor: map['windowTextScaleFactor'] as double,
-    );
-  }
-
-//</editor-fold>
-}
-
+/// The reference id returned by the backend identifying the binary attachment
+/// hosted in the wiredash cloud
 class AttachmentId {
   final String value;
 
@@ -445,7 +361,6 @@ extension on WindowPadding {
 }
 
 extension on Rect {
-  // ignore: unused_element
   List<double> toJson() {
     return [left, top, right, bottom];
   }
@@ -475,23 +390,5 @@ extension on CompilationMode {
       case CompilationMode.debug:
         return 'debug';
     }
-  }
-}
-
-extension on Screenshot {
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> values = {
-      'id': file.attachmentId!.value,
-      'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
-      'brightness': nonNull(deviceInfo.physicalGeometry).toJson(),
-      'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
-      'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
-      'windowSize': nonNull(deviceInfo.physicalSize).toJson(),
-      'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
-      'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
-      'windowPadding': nonNull(deviceInfo.padding).toJson(),
-    };
-
-    return values;
   }
 }
