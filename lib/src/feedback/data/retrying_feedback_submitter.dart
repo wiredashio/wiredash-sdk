@@ -43,12 +43,12 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
     try {
       // Immediately try to submit the feedback
       await _submitWithRetry(pending, maxAttempts: 1);
+
+      // Intentionally not "await"-ed. Trigger submission of queued feedback
+      submitPendingFeedbackItems();
     } catch (e) {
       // ignore when feedback couldn't be submitted
     }
-
-    // Intentionally not "await"-ed. Trigger submission of queued feedback
-    //submitPendingFeedbackItems();
   }
 
   /// Checks if there are any pending feedback items stored in persistent
@@ -59,15 +59,18 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   /// connection comes back online.
   Future<void> submitPendingFeedbackItems() => _submitPendingFeedbackItems();
 
+  Completer<void>? _pendingCompleter;
+
   Future<void> _submitPendingFeedbackItems({
     bool submittingLeftovers = false,
   }) async {
     if (_submitting) {
       _hasLeftoverItems = true;
-      return;
+      return _pendingCompleter!.future;
     }
 
     _submitting = true;
+    _pendingCompleter ??= Completer();
     final items = await _pendingFeedbackItemStorage.retrieveAllPendingItems();
 
     for (final item in items) {
@@ -98,6 +101,8 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
 
       await _submitPendingFeedbackItems(submittingLeftovers: true);
     }
+    _pendingCompleter!.complete(null);
+    _pendingCompleter = null;
   }
 
   Future<void> _submitWithRetry<T>(
