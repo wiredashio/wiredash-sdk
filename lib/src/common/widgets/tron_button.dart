@@ -12,18 +12,24 @@ class TronButton extends StatefulWidget {
   const TronButton({
     this.leadingIcon,
     this.trailingIcon,
-    required this.label,
+    this.label,
+    this.child,
     this.onTap,
     this.color,
     this.iconOffset = Offset.zero,
     Key? key,
-  }) : super(key: key);
+  })  : assert(
+          label != null || child != null,
+          'Set label or child, one is required',
+        ),
+        super(key: key);
 
   final Color? color;
   final IconData? leadingIcon;
   final IconData? trailingIcon;
   final Offset iconOffset;
-  final String label;
+  final String? label;
+  final Widget? child;
   final VoidCallback? onTap;
 
   @override
@@ -98,20 +104,18 @@ class _TronButtonState extends State<TronButton>
 
   @override
   Widget build(BuildContext context) {
+    final semanticsLabel = widget.label ??
+        (widget.child is Text ? (widget.child as Text?)?.data : null);
     return Focus(
-      // focusNode: widget.focusNode,
-      // canRequestFocus: _canRequestFocus,
       onFocusChange: _handleFocusUpdate,
-      // autofocus: widget.autofocus,
       child: MouseRegion(
-        cursor:
-            _enabled ? SystemMouseCursors.click : SystemMouseCursors.forbidden,
+        cursor: _enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
         onEnter: _handleMouseEnter,
         onExit: _handleMouseExit,
         child: Semantics(
           button: true,
           enabled: _enabled,
-          label: widget.label,
+          label: semanticsLabel,
           child: ConstrainedBox(
             constraints: const BoxConstraints(
               minWidth: 48,
@@ -152,7 +156,7 @@ class _TronButtonState extends State<TronButton>
                               overflow: TextOverflow.ellipsis,
                               style: context.theme.tronButtonTextStyle
                                   .copyWith(color: _iconColor),
-                              child: Text(widget.label),
+                              child: widget.child ?? Text(widget.label!),
                             ),
                           ),
                           if (widget.leadingIcon != null)
