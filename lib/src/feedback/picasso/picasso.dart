@@ -83,6 +83,10 @@ class _PicassoState extends State<Picasso> {
   }
 
   Widget _buildAllPreviousStrokes(BuildContext context) {
+    // 98.2% useful based on metrics in Flutter Inspector 👌
+    // Diagnosis:
+    // > this is an outstandingly useful repaint boundary and should
+    // > definitely be kept
     return RepaintBoundary(
       child: SizedBox.expand(
         child: StreamBuilder<List<Stroke?>>(

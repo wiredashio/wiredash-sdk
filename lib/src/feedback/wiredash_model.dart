@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart';
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/options/feedback_options.dart';
 import 'package:wiredash/src/common/services/services.dart';
@@ -33,6 +34,16 @@ class WiredashModel with ChangeNotifier {
     notifyListeners();
   }
 
+  bool _isWiredashActive = false;
+
+  /// True when wiredash is opening/open/closing
+  bool get isWiredashActive => _isWiredashActive;
+
+  set isWiredashActive(bool isWiredashActive) {
+    _isWiredashActive = isWiredashActive;
+    notifyListeners();
+  }
+
   /// Temporary theme that overrides the `Wiredash.theme` property for the
   /// current 'show' session
   ///
@@ -61,13 +72,22 @@ class WiredashModel with ChangeNotifier {
 
   /// Opens wiredash behind the app
   Future<void> show() async {
-    if (services.backdropController.isWiredashActive) return;
+    if (isWiredashActive) return;
+
+    isWiredashActive = true;
+
+    // wait for backdropController to have a valid state
+    await _postFrameCallbackStream()
+        .map((element) => services.backdropController.hasState)
+        .firstWhere((element) => element);
+
     await services.backdropController.animateToOpen();
   }
 
   /// Closes wiredash
   Future<void> hide({bool discardFeedback = false}) async {
     await services.backdropController.animateToClosed();
+    isWiredashActive = false;
     if (discardFeedback) {
       services.discardFeedback();
     }
@@ -103,5 +123,15 @@ class _DisposableValueNotifier<T> extends ValueNotifier<T> {
   void dispose() {
     onDispose();
     super.dispose();
+  }
+}
+
+Stream<Duration> _postFrameCallbackStream() async* {
+  while (true) {
+    final completer = Completer<Duration>();
+    WidgetsBinding.instance!.addPostFrameCallback((Duration timestamp) {
+      completer.complete(timestamp);
+    });
+    yield await completer.future;
   }
 }
