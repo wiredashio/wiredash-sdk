@@ -132,32 +132,26 @@ extension UploadScreenshotApi on WiredashApi {
 
 /// Generic error from the Wiredash API
 class WiredashApiException implements Exception {
-  WiredashApiException({String? message, this.response}) : _message = message;
+  WiredashApiException({this.message, this.response});
 
-  String? get message {
-    final String? bodyMessage = () {
-      try {
-        final json = jsonDecode(response?.body ?? '') as Map?;
-        return json?['message'] as String?;
-      } catch (e) {
-        return response?.body;
-      }
-    }();
-    if (_message == null) {
-      return bodyMessage;
+  String? get messageFromServer {
+    try {
+      final json = jsonDecode(response?.body ?? '') as Map?;
+      return json?['message'] as String?;
+    } catch (e) {
+      return response?.body;
     }
-    return '$_message $bodyMessage';
   }
 
-  final String? _message;
+  final String? message;
   final Response? response;
 
   @override
   String toString() {
     return 'WiredashApiException{'
-        '${response?.statusCode}, '
-        'message: $message, '
-        'body: ${response?.body}'
+        '"$message", '
+        'code: ${response?.statusCode}, '
+        'resp: $messageFromServer'
         '}';
   }
 }
