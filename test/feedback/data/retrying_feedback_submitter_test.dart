@@ -2,6 +2,7 @@
 
 import 'dart:typed_data';
 import 'dart:ui';
+import 'dart:io' as io;
 
 import 'package:fake_async/fake_async.dart';
 import 'package:file/file.dart';
@@ -123,8 +124,7 @@ void main() {
     test('submit() - submits the item right away', () async {
       // When submtting feedback
       final item = createFeedback();
-      final persisted = await retryingFeedbackSubmitter.submit(item);
-      expect(persisted, isNull);
+      await retryingFeedbackSubmitter.submit(item);
 
       // Nothing on disk
       final saved = await storage.retrieveAllPendingItems();
@@ -142,67 +142,62 @@ void main() {
 
       // When submtting feedback
       final item = createFeedback();
-      final persisted = await retryingFeedbackSubmitter.submit(item);
-      expect(persisted, isNotNull);
+      await retryingFeedbackSubmitter.submit(item);
 
       // It is persisted on disk
       final saved = await storage.retrieveAllPendingItems();
-      expect(saved, [persisted]);
+      expect(saved, [PendingFeedbackItem(id: '0', feedbackItem: item)]);
     });
-    //
-    // test(
-    //     'submit() - does not crash when screenshot file does not exist '
-    //     'anymore for some reason', () async {
-    //   const item = PersistedFeedbackItem(
-    //     appInfo: AppInfo(
-    //       appLocale: 'de_DE',
-    //     ),
-    //     buildInfo: BuildInfo(compilationMode: CompilationMode.release),
-    //     deviceId: '1234',
-    //     deviceInfo: DeviceInfo(
-    //       pixelRatio: 1.0,
-    //       textScaleFactor: 1.0,
-    //       platformLocale: 'en_US',
-    //       platformSupportedLocales: ['en_US', 'de_DE'],
-    //       platformBrightness: Brightness.dark,
-    //       gestureInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-    //       padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
-    //       viewInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-    //       physicalGeometry: Rect.zero,
-    //       physicalSize: Size(800, 1200),
-    //     ),
-    //     email: 'email@example.com',
-    //     message: 'test post pls ignore',
-    //     labels: ['feedback'],
-    //     userId: 'Testy McTestFace',
-    //   );
-    //
-    //   fakeAsync((async) {
-    //     retryingFeedbackSubmitter.submit(item, kTransparentImage);
-    //
-    //     // Ensure that the screenshot exists, then delete it, and make sure it
-    //     // was deleted successfully.
-    //     expect(fileSystem.file('1.png').existsSync(), isTrue);
-    //     fileSystem.file('1.png').deleteSync();
-    //     expect(fileSystem.file('1.png').existsSync(), isFalse);
-    //
-    //     // Should've not sent the feedback just yet.
-    //     mockNetworkManager.sendFeedbackInvocations.verifyHasNoInvocation();
-    //
-    //     // Hop on the time machine...
-    //     async.elapse(const Duration(minutes: 5));
-    //
-    //     // Should just submit the feedback item once, without the screenshot, as
-    //     // the file didn't exist.
-    //     mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
-    //     final submitCall = mockNetworkManager.sendFeedbackInvocations.latest;
-    //     expect(submitCall[0], item);
-    //     expect(submitCall['images'], []);
-    //   });
-    // });
-    //
+
+    test(
+        'submit() - does not crash when screenshot file does not exist '
+        'anymore for some reason', () async {
+      final item = createFeedback(
+        attachments: [
+          PersistedAttachment.screenshot(
+            file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
+            deviceInfo: testDeviceInfo,
+          ),
+        ],
+      );
+
+      // error at first
+      mockApi.sendFeedbackInvocations.interceptor = (_) {
+        throw "No internet";
+      };
+
+      // error submission, save file on disk
+      await retryingFeedbackSubmitter.submit(item);
+
+      // Should've not sent the feedback just yet.
+      mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
+      expect(await storage.retrieveAllPendingItems(), hasLength(1));
+
+      // Ensure that the screenshot exists, then delete it, and make sure it
+      // was deleted successfully.
+      expect(fileSystem.file('0.png').existsSync(), isTrue);
+      fileSystem.file('0.png').deleteSync();
+      expect(fileSystem.file('0.png').existsSync(), isFalse);
+
+      // submission works now
+      final uuid = IncrementalUuidV4Generator();
+      mockApi.sendFeedbackInvocations.interceptor = (_) {
+        return AttachmentId(uuid.generate());
+      };
+      // Submit the item without image now
+      await retryingFeedbackSubmitter.submitPendingFeedbackItems();
+
+      // Should just submit the feedback item once, without the screenshot, as
+      // the file didn't exist.
+      mockApi.sendFeedbackInvocations.verifyInvocationCount(2);
+      expect(await storage.retrieveAllPendingItems(), hasLength(0));
+      expect(
+        mockApi.sendFeedbackInvocations.latest[0],
+        item.copyWith(attachments: []),
+      );
+      mockApi.uploadAttachmentInvocations.verifyHasNoInvocation();
+    });
+
     // test('submit() - future completes before interacting with NetworkManager',
     //     () async {
     //   const item = PersistedFeedbackItem(
@@ -233,7 +228,7 @@ void main() {
     //
     //   await retryingFeedbackSubmitter.submit(item, kTransparentImage);
     //
-    //   mockNetworkManager.sendFeedbackInvocations.verifyHasNoInvocation();
+    //   mockApi.sendFeedbackInvocations.verifyHasNoInvocation();
     // });
     //
     // test(
@@ -277,8 +272,8 @@ void main() {
     //     expect(storage._deletedItemIds, ['1']);
     //
     //     // Feedback should be sent, and only once.
-    //     mockNetworkManager.uploadAttachmentInvocations.verifyInvocationCount(1);
-    //     mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
+    //     mockApi.uploadAttachmentInvocations.verifyInvocationCount(1);
+    //     mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
     //   });
     // });
     //
@@ -340,7 +335,7 @@ void main() {
     //
     //   fakeAsync((async) {
     //     var firstFileSubmitted = false;
-    //     mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
+    //     mockApi.sendFeedbackInvocations.interceptor = (iv) {
     //       if (firstFileSubmitted) throw Exception();
     //       firstFileSubmitted = true;
     //     };
@@ -373,19 +368,19 @@ void main() {
     //     ]);
     //
     //     expect(
-    //       mockNetworkManager.uploadAttachmentInvocations.invocations.length > 1,
+    //       mockApi.uploadAttachmentInvocations.invocations.length > 1,
     //       true,
     //     );
     //
     //     final lastUploadCall =
-    //         mockNetworkManager.uploadAttachmentInvocations.latest;
+    //         mockApi.uploadAttachmentInvocations.latest;
     //     expect(lastUploadCall[0], kTransparentImage);
     //
     //     expect(
-    //       mockNetworkManager.sendFeedbackInvocations.invocations.length > 1,
+    //       mockApi.sendFeedbackInvocations.invocations.length > 1,
     //       true,
     //     );
-    //     final lastSendCall = mockNetworkManager.sendFeedbackInvocations.latest;
+    //     final lastSendCall = mockApi.sendFeedbackInvocations.latest;
     //     expect(lastSendCall[0], item);
     //     expect(lastSendCall['images'], hasLength(1));
     //     expect((lastSendCall['images'] as List?)?[0], isA<ImageBlob>());
@@ -426,7 +421,7 @@ void main() {
     //   fakeAsync(
     //     (async) {
     //       final clock = async.getClock(initialTime);
-    //       mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
+    //       mockApi.sendFeedbackInvocations.interceptor = (iv) {
     //         retryLog.add(clock.now());
     //         throw Exception();
     //       };
@@ -437,7 +432,7 @@ void main() {
     //       async.elapse(const Duration(minutes: 5));
     //
     //       // Sending one feedback item should be retried no more than 8 times.
-    //       final sendAttempts = mockNetworkManager
+    //       final sendAttempts = mockApi
     //           .sendFeedbackInvocations.invocations
     //           .where((iv) {
     //         final matchItem = iv[0] == item;
@@ -505,7 +500,7 @@ void main() {
     //   fakeAsync(
     //     (async) {
     //       final clock = async.getClock(initialTime);
-    //       mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
+    //       mockApi.sendFeedbackInvocations.interceptor = (iv) {
     //         retryLog.add(clock.now());
     //         throw UnauthenticatedWiredashApiException(
     //           Response('error', 401),
@@ -520,7 +515,7 @@ void main() {
     //       async.elapse(const Duration(minutes: 5));
     //
     //       // Sending one feedback item should be retried no more than 8 times.
-    //       mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
+    //       mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
     //
     //       // Log shows only one entry
     //       expect(retryLog, [
@@ -569,7 +564,7 @@ void main() {
     //   );
     //
     //   fakeAsync((async) {
-    //     mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
+    //     mockApi.sendFeedbackInvocations.interceptor = (iv) {
     //       final response = Response(
     //         '{"message": "child "deviceInfo" fails because [child "platformOS"'
     //         ' fails because ["platformOS" is required]]"}',
@@ -582,7 +577,7 @@ void main() {
     //     async.elapse(const Duration(seconds: 1));
     //
     //     // Sending one feedback item should be retried no more than 8 times.
-    //     mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
+    //     mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
     //
     //     // Item has beend deleted
     //     expect(storage._deletedItemIds, ['1']);
@@ -619,7 +614,7 @@ void main() {
     //   );
     //
     //   fakeAsync((async) {
-    //     mockNetworkManager.sendFeedbackInvocations.interceptor = (iv) {
+    //     mockApi.sendFeedbackInvocations.interceptor = (iv) {
     //       final response =
     //           Response('{"message":""compilationMode" is not allowed"}', 400);
     //       throw WiredashApiException(response: response);
@@ -629,7 +624,7 @@ void main() {
     //     async.elapse(const Duration(seconds: 1));
     //
     //     // Sending one feedback item should be retried no more than 8 times.
-    //     mockNetworkManager.sendFeedbackInvocations.verifyInvocationCount(1);
+    //     mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
     //
     //     // Item has beend deleted
     //     expect(storage._deletedItemIds, ['1']);

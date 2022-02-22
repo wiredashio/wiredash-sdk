@@ -181,8 +181,10 @@ void main() {
       expect(secondPending.id, '3');
 
       expect(filesOnDisk(), ['./0.png', './2.png']);
-      expect(await storage.retrieveAllPendingItems(),
-          [firstPending, secondPending]);
+      expect(
+        await storage.retrieveAllPendingItems(),
+        [firstPending, secondPending],
+      );
 
       await storage.clearPendingItem(firstPending.id);
 

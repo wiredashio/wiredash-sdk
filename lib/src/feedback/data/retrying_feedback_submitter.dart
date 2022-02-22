@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' as io;
 import 'dart:math' as math;
 
 import 'package:file/file.dart';
@@ -36,23 +37,18 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   ///
   /// If sending fails, uses exponential backoff and tries again up to 7 times.
   @override
-  Future<PendingFeedbackItem?> submit(PersistedFeedbackItem item) async {
-    PendingFeedbackItem? pending =
-        await _pendingFeedbackItemStorage.addPendingItem(item);
+  Future<void> submit(PersistedFeedbackItem item) async {
+    final pending = await _pendingFeedbackItemStorage.addPendingItem(item);
 
     try {
       // Immediately try to submit the feedback
       await _submitWithRetry(pending, maxAttempts: 1);
-      // item is submitted and not pending anymore
-      pending = null;
     } catch (e) {
       // ignore when feedback couldn't be submitted
     }
 
     // Intentionally not "await"-ed. Trigger submission of queued feedback
-    submitPendingFeedbackItems();
-
-    return pending;
+    //submitPendingFeedbackItems();
   }
 
   /// Checks if there are any pending feedback items stored in persistent
@@ -121,14 +117,15 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
         /// Updates [copy] and [_pendingFeedbackItemStorage] once file is uploaded
         Future<void> updateAttachment(
           PersistedAttachment oldAttachment,
-          PersistedAttachment update,
+          PersistedAttachment? update,
         ) async {
+          final atts = item.feedbackItem.attachments.toList()
+            ..remove(oldAttachment);
+          if (update != null) {
+            atts.add(update);
+          }
           copy = item.copyWith(
-            feedbackItem: item.feedbackItem.copyWith(
-              attachments: item.feedbackItem.attachments.toList()
-                ..remove(oldAttachment)
-                ..add(update),
-            ),
+            feedbackItem: item.feedbackItem.copyWith(attachments: atts),
           );
 
           await _pendingFeedbackItemStorage.updatePendingItem(copy);
@@ -141,14 +138,31 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
               continue;
             }
             assert(screenshot.isOnDisk || screenshot.isInMemomry);
-            final AttachmentId attachemntId =
-                await _api.uploadScreenshot(screenshot.binaryData!);
+            if (screenshot.isInMemomry) {
+              final AttachmentId attachemntId =
+                  await _api.uploadScreenshot(screenshot.binaryData!);
 
-            final uploaded = PersistedAttachment.screenshot(
-              file: FileDataEventuallyOnDisk.uploaded(attachemntId),
-              deviceInfo: attachment.deviceInfo,
-            );
-            await updateAttachment(attachment, uploaded);
+              final uploaded = PersistedAttachment.screenshot(
+                file: FileDataEventuallyOnDisk.uploaded(attachemntId),
+                deviceInfo: attachment.deviceInfo,
+              );
+              await updateAttachment(attachment, uploaded);
+            } else if (screenshot.isOnDisk) {
+              final file = io.File(screenshot.pathToFile!);
+              if (file.existsSync()) {
+                final AttachmentId attachemntId =
+                    await _api.uploadScreenshot(screenshot.binaryData!);
+
+                final uploaded = PersistedAttachment.screenshot(
+                  file: FileDataEventuallyOnDisk.uploaded(attachemntId),
+                  deviceInfo: attachment.deviceInfo,
+                );
+                await updateAttachment(attachment, uploaded);
+              } else {
+                // remove item as it doesn't exist on disk anymore
+                await updateAttachment(attachment, null);
+              }
+            }
           }
         }
 
