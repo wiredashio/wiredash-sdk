@@ -17,8 +17,8 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
       // Upload screenshots that are not yet uploaded
       for (final attachment in item.attachments) {
         if (attachment is Screenshot) {
-          // simplification: upload all attachments
-          final id = await _api.uploadScreenshot(attachment.file.binaryData!);
+          // simplification: upload all attachments from memory
+          final id = await _api.uploadScreenshot(attachment.file.data!);
           final uploaded =
               attachment.copyWith(file: FileDataEventuallyOnDisk.uploaded(id));
           uploadedAttachments.add(uploaded);

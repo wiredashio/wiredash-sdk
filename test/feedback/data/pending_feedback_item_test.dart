@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:test/test.dart';
@@ -16,7 +15,7 @@ void main() {
       ),
       attachments: [
         PersistedAttachment.screenshot(
-          file: FileDataEventuallyOnDisk.file(File('path/to/file.png')),
+          file: FileDataEventuallyOnDisk.file('path/to/file.png'),
           deviceInfo: DeviceInfo(
             pixelRatio: 2.75,
             platformOS: 'android',
@@ -217,12 +216,32 @@ void main() {
         _full.toJson(),
         {
           'id': 'abc123',
-          'screenshotPath': 'path/to/file.png',
-          'version': 1,
+          'version': 2,
           'feedbackItem': {
             'appInfo': {
               'appLocale': 'de_DE',
             },
+            'attachments': [
+              {
+                'deviceInfo': {
+                  'gestureInsets': [0.0, 0.0, 0.0, 0.0],
+                  'padding': [0.0, 66.0, 0.0, 0.0],
+                  'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
+                  'physicalSize': [1080.0, 2088.0],
+                  'pixelRatio': 2.75,
+                  'platformBrightness': 'dark',
+                  'platformLocale': 'en_US',
+                  'platformOS': 'android',
+                  'platformOSBuild': 'RSR1.201013.001',
+                  'platformSupportedLocales': ['en_US', 'de_DE'],
+                  'platformVersion':
+                      '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+                  'textScaleFactor': 1.0,
+                  'viewInsets': [0.0, 0.0, 0.0, 685.0]
+                },
+                'path': 'path/to/file.png',
+              }
+            ],
             'buildInfo': {
               'buildVersion': '1.2.3',
               'buildNumber': '543',
@@ -264,7 +283,7 @@ void main() {
     test('Minimal toJson()', () {
       expect(_minimal.toJson(), {
         'id': 'abc123',
-        'version': 1,
+        'version': 2,
         'feedbackItem': {
           'deviceId': '1234',
           'message': 'Hello world!',

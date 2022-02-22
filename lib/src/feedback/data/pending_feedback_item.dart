@@ -1,6 +1,5 @@
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:wiredash/src/common/network/wiredash_api.dart';
@@ -150,7 +149,7 @@ class PendingFeedbackItemParserV2 {
       final path = map['path'] as String?;
       final attachmentId = map['id'] as String?;
       final file = path != null
-          ? FileDataEventuallyOnDisk.file(File(path))
+          ? FileDataEventuallyOnDisk.file(path)
           : FileDataEventuallyOnDisk.uploaded(
               AttachmentId(attachmentId!),
             );

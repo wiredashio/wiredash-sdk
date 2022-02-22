@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:file/file.dart';
@@ -88,11 +89,12 @@ class PendingFeedbackItemStorage {
         // save file to disk
         final screenshotsDir = await _getScreenshotStorageDirectoryPath();
         final uniqueFileName = _uuidV4Generator.generate();
-        final file = await _fs
-            .file('$screenshotsDir/$uniqueFileName.png')
-            .writeAsBytes(attachment.file.binaryData!);
+        final filePath = _fs.path
+            .normalize(_fs.path.join(screenshotsDir, '$uniqueFileName.png'));
+        final data = attachment.file.binaryData(_fs)!;
+        await _fs.file(filePath).writeAsBytes(data);
         serializedAttachments.add(
-          attachment.copyWith(file: FileDataEventuallyOnDisk.file(file)),
+          attachment.copyWith(file: FileDataEventuallyOnDisk.file(filePath)),
         );
       }
     }
@@ -139,17 +141,34 @@ class PendingFeedbackItemStorage {
 
   /// Replaces the item with the same [PendingFeedbackItem.id]
   Future<void> updatePendingItem(PendingFeedbackItem item) async {
-    await _mutatePendingItems((list) {
-      list.removeWhere((e) => e.id == item.id);
+    await _mutatePendingItems((list) async {
+      final removed = list.firstWhere((e) => e.id == item.id);
+      list.remove(removed);
       list.add(item);
+
+      final oldDiskAttachments = removed.feedbackItem.attachments
+          .where((element) => element.file.isOnDisk);
+      final newDiskAttachments = item.feedbackItem.attachments
+          .where((element) => element.file.isOnDisk);
+      final uploaded = oldDiskAttachments
+          .where((element) => !newDiskAttachments.contains(element))
+          .toList();
+
+      /// Delete local files of attachments that have been uploaded
+      for (final u in uploaded) {
+        final screenshot = _fs.file(u.file.pathToFile);
+        if (await screenshot.exists()) {
+          await screenshot.delete();
+        }
+      }
     });
   }
 
   Future<void> _mutatePendingItems(
-    void Function(List<PendingFeedbackItem>) block,
+    FutureOr<void> Function(List<PendingFeedbackItem>) block,
   ) async {
     final items = List.of(await retrieveAllPendingItems());
-    block(items);
+    await block(items);
     await _savePendingItems(items);
   }
 

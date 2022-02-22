@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io' as io;
 import 'dart:math' as math;
 
 import 'package:file/file.dart';
@@ -145,7 +144,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
             assert(screenshot.isOnDisk || screenshot.isInMemomry);
             if (screenshot.isInMemomry) {
               final AttachmentId attachemntId =
-                  await _api.uploadScreenshot(screenshot.binaryData!);
+                  await _api.uploadScreenshot(screenshot.binaryData(fs)!);
 
               final uploaded = PersistedAttachment.screenshot(
                 file: FileDataEventuallyOnDisk.uploaded(attachemntId),
@@ -153,10 +152,10 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
               );
               await updateAttachment(attachment, uploaded);
             } else if (screenshot.isOnDisk) {
-              final file = io.File(screenshot.pathToFile!);
+              final file = fs.file(screenshot.pathToFile);
               if (file.existsSync()) {
                 final AttachmentId attachemntId =
-                    await _api.uploadScreenshot(screenshot.binaryData!);
+                    await _api.uploadScreenshot(screenshot.binaryData(fs)!);
 
                 final uploaded = PersistedAttachment.screenshot(
                   file: FileDataEventuallyOnDisk.uploaded(attachemntId),

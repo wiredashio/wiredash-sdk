@@ -1,15 +1,10 @@
 // ignore_for_file: avoid_redundant_argument_values
 
 import 'dart:typed_data';
-import 'dart:ui';
-import 'dart:io' as io;
 
-import 'package:fake_async/fake_async.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:http/http.dart';
 import 'package:http_parser/src/media_type.dart';
-import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
@@ -107,7 +102,7 @@ void main() {
       storage = PendingFeedbackItemStorage(
         fileSystem: fileSystem,
         uuidV4Generator: IncrementalUuidV4Generator(),
-        dirPathProvider: () async => '',
+        dirPathProvider: () async => '.',
         sharedPreferencesProvider: () async => preferences,
       );
       mockApi = MockApi();
@@ -162,7 +157,7 @@ void main() {
       );
 
       // error at first
-      mockApi.sendFeedbackInvocations.interceptor = (_) {
+      mockApi.uploadAttachmentInvocations.interceptor = (_) {
         throw "No internet";
       };
 
@@ -170,7 +165,7 @@ void main() {
       await retryingFeedbackSubmitter.submit(item);
 
       // Should've not sent the feedback just yet.
-      mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
+      mockApi.sendFeedbackInvocations.verifyInvocationCount(0);
       expect(await storage.retrieveAllPendingItems(), hasLength(1));
 
       // Ensure that the screenshot exists, then delete it, and make sure it
@@ -181,7 +176,7 @@ void main() {
 
       // submission works now
       final uuid = IncrementalUuidV4Generator();
-      mockApi.sendFeedbackInvocations.interceptor = (_) {
+      mockApi.uploadAttachmentInvocations.interceptor = (_) {
         return AttachmentId(uuid.generate());
       };
       // Submit the item without image now
@@ -189,94 +184,58 @@ void main() {
 
       // Should just submit the feedback item once, without the screenshot, as
       // the file didn't exist.
-      mockApi.sendFeedbackInvocations.verifyInvocationCount(2);
+      mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
       expect(await storage.retrieveAllPendingItems(), hasLength(0));
       expect(
         mockApi.sendFeedbackInvocations.latest[0],
         item.copyWith(attachments: []),
       );
-      mockApi.uploadAttachmentInvocations.verifyHasNoInvocation();
+      mockApi.uploadAttachmentInvocations.verifyInvocationCount(1);
     });
 
-    // test('submit() - future completes before interacting with NetworkManager',
-    //     () async {
-    //   const item = PersistedFeedbackItem(
-    //     appInfo: AppInfo(
-    //       appLocale: 'de_DE',
-    //     ),
-    //     buildInfo: BuildInfo(compilationMode: CompilationMode.release),
-    //     deviceId: '1234',
-    //     deviceInfo: DeviceInfo(
-    //       pixelRatio: 1.0,
-    //       textScaleFactor: 1.0,
-    //       platformLocale: 'en_US',
-    //       platformSupportedLocales: ['en_US', 'de_DE'],
-    //       platformBrightness: Brightness.dark,
-    //       gestureInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-    //       padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
-    //       viewInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-    //       physicalGeometry: Rect.zero,
-    //       physicalSize: Size(800, 1200),
-    //     ),
-    //     email: 'email@example.com',
-    //     message: 'test post pls ignore',
-    //     labels: ['feedback'],
-    //     userId: 'Testy McTestFace',
-    //   );
-    //
-    //   await retryingFeedbackSubmitter.submit(item, kTransparentImage);
-    //
-    //   mockApi.sendFeedbackInvocations.verifyHasNoInvocation();
-    // });
-    //
-    // test(
-    //     'submit() - if successful, gets rid of the feedback item '
-    //     'in the storage', () async {
-    //   const item = PersistedFeedbackItem(
-    //     appInfo: AppInfo(
-    //       appLocale: 'de_DE',
-    //     ),
-    //     buildInfo: BuildInfo(compilationMode: CompilationMode.release),
-    //     deviceId: '1234',
-    //     deviceInfo: DeviceInfo(
-    //       pixelRatio: 1.0,
-    //       textScaleFactor: 1.0,
-    //       platformLocale: 'en_US',
-    //       platformSupportedLocales: ['en_US', 'de_DE'],
-    //       platformBrightness: Brightness.dark,
-    //       gestureInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-    //       padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
-    //       viewInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-    //       physicalGeometry: Rect.zero,
-    //       physicalSize: Size(800, 1200),
-    //     ),
-    //     email: 'email@example.com',
-    //     message: 'test post pls ignore',
-    //     labels: ['feedback'],
-    //     userId: 'Testy McTestFace',
-    //   );
-    //
-    //   fakeAsync((async) {
-    //     retryingFeedbackSubmitter.submit(item, kTransparentImage);
-    //
-    //     // Hop on the time machine...
-    //     async.elapse(const Duration(minutes: 5));
-    //
-    //     // Storage should not have the pending feedback item or file anymore.
-    //     expect(fileSystem.file('1.png').existsSync(), isFalse);
-    //     expect(storage._currentItems, isEmpty);
-    //     expect(storage._deletedItemIds, ['1']);
-    //
-    //     // Feedback should be sent, and only once.
-    //     mockApi.uploadAttachmentInvocations.verifyInvocationCount(1);
-    //     mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
-    //   });
-    // });
-    //
+    test(
+        'submit() - if successful, gets rid of the feedback item '
+        'in the storage', () async {
+      final item = createFeedback(
+        attachments: [
+          PersistedAttachment.screenshot(
+            file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
+            deviceInfo: testDeviceInfo,
+          ),
+        ],
+      );
+
+      // error at first
+      mockApi.uploadAttachmentInvocations.interceptor = (_) {
+        throw "No internet";
+      };
+
+      // error submission, save file on disk
+      await retryingFeedbackSubmitter.submit(item);
+
+      // Should've not sent the feedback just yet.
+      mockApi.uploadAttachmentInvocations.verifyInvocationCount(1);
+      mockApi.sendFeedbackInvocations.verifyHasNoInvocation();
+      final pendingItems = await storage.retrieveAllPendingItems();
+      expect(pendingItems, hasLength(1));
+      final filePath =
+          pendingItems.first.feedbackItem.attachments.first.file.pathToFile;
+      expect(fileSystem.file(filePath).existsSync(), isTrue);
+
+      // submission works now
+      final uuid = IncrementalUuidV4Generator();
+      mockApi.uploadAttachmentInvocations.interceptor = (_) {
+        return AttachmentId(uuid.generate());
+      };
+      // Submit the item with image
+      await retryingFeedbackSubmitter.submitPendingFeedbackItems();
+
+      // After submission the storage is empty
+      mockApi.uploadAttachmentInvocations.verifyInvocationCount(2);
+      expect(await storage.retrieveAllPendingItems(), hasLength(0));
+      expect(fileSystem.file(filePath).existsSync(), isFalse);
+    });
+
     // test(
     //     'submit() - when has existing items and submits only the first one '
     //     'successfully, does not remove the failed items from storage',

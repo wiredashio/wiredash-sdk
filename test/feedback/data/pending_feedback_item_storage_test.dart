@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io' as io;
 import 'dart:ui';
 
 import 'package:file/file.dart';
@@ -32,13 +31,13 @@ void main() {
       storage = PendingFeedbackItemStorage(
         fileSystem: fileSystem,
         sharedPreferencesProvider: () async => prefs,
-        dirPathProvider: () async => '',
+        dirPathProvider: () async => '.',
         uuidV4Generator: uuidGenerator,
       );
     });
 
     List<String> filesOnDisk() =>
-        fileSystem.directory('.').listSync().map((it) => it.path).toList()
+        fileSystem.directory('').listSync().map((it) => it.path).toList()
           ..sort();
 
     test('can persist one feedback item', () async {
@@ -55,7 +54,7 @@ void main() {
             deviceInfo: testDeviceInfo,
           ),
           PersistedAttachment.screenshot(
-            file: FileDataEventuallyOnDisk.file(io.File('existing.png')),
+            file: FileDataEventuallyOnDisk.file('existing.png'),
             deviceInfo: testDeviceInfo,
           ),
         ],
@@ -64,7 +63,7 @@ void main() {
 
       expect(
         pendingItem.feedbackItem.attachments[0].file,
-        FileDataEventuallyOnDisk.file(io.File('/0.png')),
+        FileDataEventuallyOnDisk.file('0.png'),
       );
       expect(
         pendingItem.feedbackItem.attachments[1].file,
@@ -72,7 +71,7 @@ void main() {
       );
       expect(
         pendingItem.feedbackItem.attachments[2].file,
-        FileDataEventuallyOnDisk.file(io.File('existing.png')),
+        FileDataEventuallyOnDisk.file('existing.png'),
       );
 
       expect(
@@ -86,8 +85,8 @@ void main() {
 
       // 0.png because of incrementing uuid
       expect(filesOnDisk(), [
-        './0.png',
-        './existing.png',
+        '0.png',
+        'existing.png',
       ]);
     });
 
@@ -130,9 +129,9 @@ void main() {
 
       // 3 saved files
       expect(filesOnDisk(), [
-        './0.png',
-        './1.png',
-        './3.png', // uuidGenerator is also used to create the pending item id
+        '0.png',
+        '1.png',
+        '3.png', // uuidGenerator is also used to create the pending item id
       ]);
     });
 
@@ -147,7 +146,7 @@ void main() {
       );
       final pendingItem = await storage.addPendingItem(item);
       expect(await storage.retrieveAllPendingItems(), [pendingItem]);
-      expect(filesOnDisk(), ['./0.png']);
+      expect(filesOnDisk(), ['0.png']);
 
       await storage.clearPendingItem(pendingItem.id);
 
@@ -167,7 +166,7 @@ void main() {
       );
       final firstPending = await storage.addPendingItem(first);
       expect(firstPending.id, '1');
-      expect(filesOnDisk(), ['./0.png']);
+      expect(filesOnDisk(), ['0.png']);
 
       final second = createFeedback(
         attachments: [
@@ -180,7 +179,7 @@ void main() {
       final secondPending = await storage.addPendingItem(second);
       expect(secondPending.id, '3');
 
-      expect(filesOnDisk(), ['./0.png', './2.png']);
+      expect(filesOnDisk(), ['0.png', '2.png']);
       expect(
         await storage.retrieveAllPendingItems(),
         [firstPending, secondPending],
@@ -189,7 +188,7 @@ void main() {
       await storage.clearPendingItem(firstPending.id);
 
       expect(await storage.retrieveAllPendingItems(), [secondPending]);
-      expect(filesOnDisk(), ['./2.png']);
+      expect(filesOnDisk(), ['2.png']);
     });
 
     test('removes items which can not be parsed', () async {
@@ -217,9 +216,8 @@ void main() {
           feedbackItem: createFeedback(
             attachments: [
               PersistedAttachment.screenshot(
-                file: FileDataEventuallyOnDisk.file(
-                  io.File('<existing item screenshot>'),
-                ),
+                file:
+                    FileDataEventuallyOnDisk.file('<existing item screenshot>'),
                 deviceInfo: testDeviceInfo,
               ),
             ],

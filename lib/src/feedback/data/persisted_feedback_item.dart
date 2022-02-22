@@ -1,7 +1,7 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
+import 'package:file/file.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/common/build_info/app_info.dart';
@@ -187,55 +187,58 @@ class Screenshot extends PersistedAttachment {
 
 /// Usually on disk, but maybe already in memory
 class FileDataEventuallyOnDisk {
-  final Uint8List? _data;
+  final Uint8List? data;
   final String? pathToFile;
   final AttachmentId? attachmentId;
 
   FileDataEventuallyOnDisk.inMemory(Uint8List data)
-      : _data = data,
+      // ignore: prefer_initializing_formals
+      : data = data,
         pathToFile = null,
         attachmentId = null;
 
-  FileDataEventuallyOnDisk.file(File file)
-      : pathToFile = file.path,
-        _data = null,
+  FileDataEventuallyOnDisk.file(String path)
+      : pathToFile = path,
+        data = null,
         attachmentId = null;
 
   FileDataEventuallyOnDisk.uploaded(AttachmentId attachmentId)
       // ignore: prefer_initializing_formals
       : attachmentId = attachmentId,
-        _data = null,
+        data = null,
         pathToFile = null;
 
   bool get isOnDisk => pathToFile != null;
   bool get isUploaded => attachmentId != null;
-  bool get isInMemomry => _data != null;
-
-  Uint8List? get binaryData {
-    if (_data != null) return _data!;
-    if (pathToFile != null) {
-      return File(pathToFile!).readAsBytesSync();
-    }
-    return null;
-  }
+  bool get isInMemomry => data != null;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is FileDataEventuallyOnDisk &&
           runtimeType == other.runtimeType &&
-          _data == other._data &&
+          data == other.data &&
           pathToFile == other.pathToFile &&
           attachmentId == other.attachmentId;
 
   @override
   int get hashCode =>
-      _data.hashCode ^ pathToFile.hashCode ^ attachmentId.hashCode;
+      data.hashCode ^ pathToFile.hashCode ^ attachmentId.hashCode;
 
   @override
   String toString() {
     if (isUploaded) return "FileDataEventuallyOnDisk.uploaded($attachmentId)";
     if (isOnDisk) return "FileDataEventuallyOnDisk.file($pathToFile)";
-    return 'FileDataEventuallyOnDisk.inMemory(${_data!.lengthInBytes}bytes)';
+    return 'FileDataEventuallyOnDisk.inMemory(${data!.lengthInBytes}bytes)';
+  }
+}
+
+extension BinaryDataFromFile on FileDataEventuallyOnDisk {
+  Uint8List? binaryData(FileSystem filesystem) {
+    if (data != null) return data!;
+    if (pathToFile != null) {
+      return filesystem.file(pathToFile).readAsBytesSync();
+    }
+    return null;
   }
 }
