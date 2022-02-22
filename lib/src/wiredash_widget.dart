@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/services/services.dart';
@@ -10,6 +12,7 @@ import 'package:wiredash/src/common/widgets/animated_fade_widget_switcher.dart';
 import 'package:wiredash/src/common/widgets/screencapture.dart';
 import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
 import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
+import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/feedback_model_provider.dart';
 import 'package:wiredash/src/feedback/picasso/picasso_provider.dart';
@@ -160,6 +163,8 @@ class WiredashState extends State<Wiredash> {
 
   final WiredashServices _services = WiredashServices();
 
+  Timer? _submitTimer;
+
   WiredashServices get debugServices {
     WiredashServices? services;
     assert(
@@ -185,6 +190,22 @@ class WiredashState extends State<Wiredash> {
     _services.addListener(_markNeedsBuild);
     _services.wiredashModel.addListener(_markNeedsBuild);
     _services.backdropController.addListener(_markNeedsBuild);
+
+    _submitTimer =
+        Timer(const Duration(seconds: 5), scheduleFeedbackSubmission);
+  }
+
+  /// Submits pending feedbacks on app start (slightly delayed)
+  void scheduleFeedbackSubmission() {
+    _submitTimer = null;
+    final submitter = _services.feedbackSubmitter;
+    if (submitter is RetryingFeedbackSubmitter) {
+      submitter.submitPendingFeedbackItems();
+
+      if (kDebugMode) {
+        //submitter.deletePendingFeedbacks();
+      }
+    }
   }
 
   void _markNeedsBuild() {
@@ -194,6 +215,8 @@ class WiredashState extends State<Wiredash> {
 
   @override
   void dispose() {
+    _submitTimer?.cancel();
+    _submitTimer = null;
     _services.dispose();
     super.dispose();
   }

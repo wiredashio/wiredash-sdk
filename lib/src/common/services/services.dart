@@ -151,11 +151,6 @@ void _setupServices(WiredashServices sl) {
       );
       final retryingFeedbackSubmitter =
           RetryingFeedbackSubmitter(fileSystem, storage, locator.api);
-      if (kDebugMode) {
-        retryingFeedbackSubmitter.deletePendingFeedbacks();
-      }
-      // TODO make sure this is triggered at app start
-      retryingFeedbackSubmitter.submitPendingFeedbackItems();
       return retryingFeedbackSubmitter;
     },
   );
