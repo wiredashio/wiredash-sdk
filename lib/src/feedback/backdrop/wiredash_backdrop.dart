@@ -820,10 +820,10 @@ class BackdropController extends ChangeNotifier {
     return _state != null;
   }
 
-  _WiredashBackdropState? __state;
-  _WiredashBackdropState? get _state => __state;
+  _WiredashBackdropState? _stateField;
+  _WiredashBackdropState? get _state => _stateField;
   set _state(_WiredashBackdropState? value) {
-    __state = value;
+    _stateField = value;
     safeNotifyListeners();
   }
 
@@ -868,7 +868,7 @@ class BackdropController extends ChangeNotifier {
 
   /// Only calls [notifyListeners()] when
   void safeNotifyListeners() {
-    if (__state != null) {
+    if (_stateField != null) {
       notifyListeners();
     }
   }
