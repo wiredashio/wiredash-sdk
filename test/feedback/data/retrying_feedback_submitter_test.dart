@@ -1,7 +1,9 @@
 // ignore_for_file: avoid_redundant_argument_values
 
+import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:fake_async/fake_async.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:http_parser/src/media_type.dart';
@@ -15,79 +17,6 @@ import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 
 import '../../util/invocation_catcher.dart';
 import 'pending_feedback_item_storage_test.dart';
-
-class MockApi implements WiredashApi {
-  final MethodInvocationCatcher sendFeedbackInvocations =
-      MethodInvocationCatcher('sendFeedback');
-
-  @override
-  Future<void> sendFeedback(PersistedFeedbackItem feedback) async {
-    return await sendFeedbackInvocations.addMethodCall(args: [feedback]);
-  }
-
-  final MethodInvocationCatcher uploadAttachmentInvocations =
-      MethodInvocationCatcher('uploadAttachment');
-
-  @override
-  Future<AttachmentId> uploadAttachment({
-    required Uint8List screenshot,
-    required AttachmentType type,
-    String? filename,
-    MediaType? contentType,
-  }) async {
-    final response = await uploadAttachmentInvocations.addMethodCall(
-      namedArgs: {
-        'screenshot': screenshot,
-        'type': type,
-        'filename': filename,
-        'contentType': contentType,
-      },
-    );
-    if (response != null) {
-      return response as AttachmentId;
-    }
-    throw 'Not mocked';
-  }
-}
-//
-// class FakePendingFeedbackItemStorage implements PendingFeedbackItemStorage {
-//   FakePendingFeedbackItemStorage(this.fs);
-//
-//   final FileSystem fs;
-//
-//   final _currentItems = <PendingFeedbackItem>[];
-//   final _deletedItemIds = <String>[];
-//
-//   @override
-//   Future<void> clearPendingItem(String itemId) async {
-//     final screenshot = fs.file('$itemId.png');
-//     if (await screenshot.exists()) await screenshot.delete();
-//
-//     _deletedItemIds.add(itemId);
-//     _currentItems.removeWhere((it) => it.id == itemId);
-//   }
-//
-//   @override
-//   Future<PendingFeedbackItem> addPendingItem(PersistedFeedbackItem item) async {
-//     final id = _currentItems.length + 1;
-//
-//     final pendingItem = PendingFeedbackItem(id: '$id', feedbackItem: item);
-//     _currentItems.add(pendingItem);
-//     return pendingItem;
-//   }
-//
-//   @override
-//   Future<List<PendingFeedbackItem>> retrieveAllPendingItems() async {
-//     return List.of(_currentItems);
-//   }
-//
-//   @override
-//   Future<void> updatePendingItem(PendingFeedbackItem item) async {
-//     _currentItems
-//       ..removeWhere((it) => item.id == it.id)
-//       ..add(item);
-//   }
-// }
 
 void main() {
   group('RetryingFeedbackSubmitter', () {
@@ -236,115 +165,43 @@ void main() {
       expect(fileSystem.file(filePath).existsSync(), isFalse);
     });
 
-    // test(
-    //     'submit() - when has existing items and submits only the first one '
-    //     'successfully, does not remove the failed items from storage',
-    //     () async {
-    //   const item = PersistedFeedbackItem(
-    //     appInfo: AppInfo(
-    //       appLocale: 'de_DE',
-    //     ),
-    //     buildInfo: BuildInfo(compilationMode: CompilationMode.release),
-    //     deviceId: '1234',
-    //     deviceInfo: DeviceInfo(
-    //       pixelRatio: 1.0,
-    //       textScaleFactor: 1.0,
-    //       platformLocale: 'en_US',
-    //       platformSupportedLocales: ['en_US', 'de_DE'],
-    //       platformBrightness: Brightness.dark,
-    //       gestureInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-    //       padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
-    //       viewInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-    //       physicalGeometry: Rect.zero,
-    //       physicalSize: Size(800, 1200),
-    //     ),
-    //     email: 'email@example.com',
-    //     message: 'test post pls ignore',
-    //     labels: ['feedback'],
-    //     userId: 'Testy McTestFace',
-    //   );
-    //
-    //   // Prepopulate storage with 2 existing items.
-    //   await storage.addPendingItem(
-    //     item,
-    //     kTransparentImage,
-    //   );
-    //   await storage.addPendingItem(
-    //     item,
-    //     kTransparentImage,
-    //   );
-    //
-    //   // Make sure they exist.
-    //   expect(await fileSystem.file('1.png').exists(), isTrue);
-    //   expect(await fileSystem.file('2.png').exists(), isTrue);
-    //   expect(storage._currentItems, [
-    //     const PendingFeedbackItem(
-    //       id: '1',
-    //       feedbackItem: item,
-    //       screenshotPath: '1.png',
-    //     ),
-    //     const PendingFeedbackItem(
-    //       id: '2',
-    //       feedbackItem: item,
-    //       screenshotPath: '2.png',
-    //     ),
-    //   ]);
-    //
-    //   fakeAsync((async) {
-    //     var firstFileSubmitted = false;
-    //     mockApi.sendFeedbackInvocations.interceptor = (iv) {
-    //       if (firstFileSubmitted) throw Exception();
-    //       firstFileSubmitted = true;
-    //     };
-    //
-    //     // Persist a new item - in this case with an id of '3' and '3.png' as
-    //     // the screenshot path. Triggers submitting of pending items, starting
-    //     // from '1'.
-    //     retryingFeedbackSubmitter.submit(item, kTransparentImage);
-    //
-    //     // Hop on the time machine...
-    //     async.elapse(const Duration(minutes: 5));
-    //
-    //     // Storage should not have the item 1 anymore, but 2 and 3 should still
-    //     // be there.
-    //     expect(fileSystem.file('1.png').existsSync(), isFalse);
-    //     expect(fileSystem.file('2.png').existsSync(), isTrue);
-    //     expect(fileSystem.file('3.png').existsSync(), isTrue);
-    //     expect(storage._deletedItemIds, ['1']);
-    //     expect(storage._currentItems, [
-    //       const PendingFeedbackItem(
-    //         id: '2',
-    //         feedbackItem: item,
-    //         screenshotPath: '2.png',
-    //       ),
-    //       const PendingFeedbackItem(
-    //         id: '3',
-    //         feedbackItem: item,
-    //         screenshotPath: '3.png',
-    //       ),
-    //     ]);
-    //
-    //     expect(
-    //       mockApi.uploadAttachmentInvocations.invocations.length > 1,
-    //       true,
-    //     );
-    //
-    //     final lastUploadCall =
-    //         mockApi.uploadAttachmentInvocations.latest;
-    //     expect(lastUploadCall[0], kTransparentImage);
-    //
-    //     expect(
-    //       mockApi.sendFeedbackInvocations.invocations.length > 1,
-    //       true,
-    //     );
-    //     final lastSendCall = mockApi.sendFeedbackInvocations.latest;
-    //     expect(lastSendCall[0], item);
-    //     expect(lastSendCall['images'], hasLength(1));
-    //     expect((lastSendCall['images'] as List?)?[0], isA<ImageBlob>());
-    //   });
-    // });
+    test(
+        'submit() - when has existing items and submits only the first one '
+        'successfully, does not remove the failed items from storage',
+        () async {
+      // Don't upload while submitting the items
+      mockApi.sendFeedbackInvocations.interceptor = (iv) {
+        throw "No Internet";
+      };
+
+      // error submission, save file on disk
+      final item = createFeedback(message: '1');
+      await retryingFeedbackSubmitter.submit(item);
+      final item2 = createFeedback(message: '2');
+      await retryingFeedbackSubmitter.submit(item2);
+
+      // error only the first submission
+      var firstFileSubmitted = false;
+      mockApi.sendFeedbackInvocations.interceptor = (iv) {
+        if (!firstFileSubmitted) {
+          firstFileSubmitted = true;
+          throw WiredashApiException(message: "Something unexpected happened");
+        }
+        return null /*void*/;
+      };
+
+      await retryingFeedbackSubmitter.submitPendingFeedbackItems();
+
+      // one item was subitted, the other one is still pending
+      expect(await storage.retrieveAllPendingItems(), hasLength(1));
+      expect(
+        mockApi.sendFeedbackInvocations.invocations.length > 1,
+        true,
+      );
+
+      final lastSendCall = mockApi.sendFeedbackInvocations.latest;
+      expect(lastSendCall[0], item2);
+    });
     //
     // test('submit() - if fails, retries up to 8 times with exponential backoff',
     //     () async {
@@ -591,4 +448,38 @@ void main() {
     //   });
     // });
   });
+}
+
+class MockApi implements WiredashApi {
+  final MethodInvocationCatcher sendFeedbackInvocations =
+      MethodInvocationCatcher('sendFeedback');
+
+  @override
+  Future<void> sendFeedback(PersistedFeedbackItem feedback) async {
+    return await sendFeedbackInvocations.addMethodCall(args: [feedback]);
+  }
+
+  final MethodInvocationCatcher uploadAttachmentInvocations =
+      MethodInvocationCatcher('uploadAttachment');
+
+  @override
+  Future<AttachmentId> uploadAttachment({
+    required Uint8List screenshot,
+    required AttachmentType type,
+    String? filename,
+    MediaType? contentType,
+  }) async {
+    final response = await uploadAttachmentInvocations.addMethodCall(
+      namedArgs: {
+        'screenshot': screenshot,
+        'type': type,
+        'filename': filename,
+        'contentType': contentType,
+      },
+    );
+    if (response != null) {
+      return response as AttachmentId;
+    }
+    throw 'Not mocked';
+  }
 }

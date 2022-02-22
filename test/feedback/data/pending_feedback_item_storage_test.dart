@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter/foundation.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
@@ -337,14 +336,15 @@ const testDeviceInfo = FlutterDeviceInfo(
   physicalSize: Size(800, 1200),
 );
 
-PersistedFeedbackItem createFeedback({List<PersistedAttachment>? attachments}) {
+PersistedFeedbackItem createFeedback(
+    {List<PersistedAttachment>? attachments, String? message}) {
   return PersistedFeedbackItem(
     appInfo: const AppInfo(appLocale: 'de_DE'),
     buildInfo: const BuildInfo(compilationMode: CompilationMode.release),
     deviceId: '1234',
     deviceInfo: testDeviceInfo,
     email: 'email@example.com',
-    message: 'Hello world!',
+    message: message ?? 'Hello world!',
     labels: ['bug'],
     userId: 'Testy McTestFace',
     attachments: attachments ?? [],
