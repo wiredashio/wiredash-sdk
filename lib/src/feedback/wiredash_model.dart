@@ -77,7 +77,7 @@ class WiredashModel with ChangeNotifier {
     isWiredashActive = true;
 
     // wait for backdropController to have a valid state
-    await postFrameCallbackStream()
+    await _postFrameCallbackStream()
         .map((element) => services.backdropController.hasState)
         .firstWhere((element) => element);
 
@@ -126,7 +126,7 @@ class _DisposableValueNotifier<T> extends ValueNotifier<T> {
   }
 }
 
-Stream<Duration> postFrameCallbackStream() async* {
+Stream<Duration> _postFrameCallbackStream() async* {
   while (true) {
     final completer = Completer<Duration>();
     WidgetsBinding.instance!.addPostFrameCallback((Duration timestamp) {
