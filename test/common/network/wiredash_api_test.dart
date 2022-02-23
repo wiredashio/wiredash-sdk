@@ -130,7 +130,6 @@ void main() {
           'sdkVersion': 1,
           'platformLocale': 'en_US',
           'platformSupportedLocales': ['en_US', 'de_DE'],
-          'platformBrightness': 'dark',
           'platformDartVersion':
               '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200)'
                   ' on "android_ia32"',
@@ -219,7 +218,6 @@ void main() {
           'sdkVersion': 1,
           'platformLocale': 'en_US',
           'platformSupportedLocales': ['en_US', 'de_DE'],
-          'platformBrightness': 'dark',
           'platformDartVersion':
               '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on'
                   ' "android_ia32"',

@@ -26,9 +26,9 @@ class WiredashApi {
   final String _secret;
   final Future<String> Function() _deviceIdProvider;
 
-  static const String _host = 'https://api.wiredash.io/sdk';
+  // static const String _host = 'https://api.wiredash.io/sdk';
 
-  // static const String _host = 'https://api.wiredash.dev/sdk';
+  static const String _host = 'https://api.wiredash.dev/sdk';
 
   /// Uploads a attachment to the Wiredash hosting service
   ///
@@ -219,6 +219,33 @@ extension FeedbackBody on PersistedFeedbackItem {
       'compilationMode': nonNull(buildInfo.compilationMode).jsonEncode(),
     });
 
+    final _customMetaData = customMetaData?.map((key, value) {
+      if (value == null) {
+        return MapEntry(key, null);
+      }
+      try {
+        // try encoding. We don't care about the actual encoded content because
+        // it will be later by the http library encoded
+        jsonEncode(value);
+        // encoding worked, it's valid data
+        return MapEntry(key, value);
+      } catch (e, stack) {
+        reportWiredashError(
+          e,
+          stack,
+          'Could not serialize customMetaData property '
+          '$key=${value.toString()}',
+        );
+        return MapEntry(key, null);
+      }
+    });
+    if (_customMetaData != null) {
+      _customMetaData.removeWhere((key, value) => value == null);
+      if (_customMetaData.isNotEmpty) {
+        values.addAll({'customMetaData': _customMetaData});
+      }
+    }
+
     values.addAll({'deviceId': nonNull(deviceId)});
 
     final _labels = labels;
@@ -227,10 +254,6 @@ extension FeedbackBody on PersistedFeedbackItem {
     }
 
     values.addAll({'message': nonNull(message)});
-
-    values.addAll({
-      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode()
-    });
 
     final platformDartVersion = deviceInfo.platformVersion;
     if (platformDartVersion != null) {
@@ -269,33 +292,6 @@ extension FeedbackBody on PersistedFeedbackItem {
     final String? _userId = userId;
     if (_userId != null) {
       values.addAll({'userId': _userId});
-    }
-
-    final _customMetaData = customMetaData?.map((key, value) {
-      if (value == null) {
-        return MapEntry(key, null);
-      }
-      try {
-        // try encoding. We don't care about the actual encoded content because
-        // it will be later by the http library encoded
-        jsonEncode(value);
-        // encoding worked, it's valid data
-        return MapEntry(key, value);
-      } catch (e, stack) {
-        reportWiredashError(
-          e,
-          stack,
-          'Could not serialize customMetaData property '
-          '$key=${value.toString()}',
-        );
-        return MapEntry(key, null);
-      }
-    });
-    if (_customMetaData != null) {
-      _customMetaData.removeWhere((key, value) => value == null);
-      if (_customMetaData.isNotEmpty) {
-        values.addAll({'customMetaData': _customMetaData});
-      }
     }
 
     return values.map((k, v) => MapEntry(k, v));
