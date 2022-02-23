@@ -11,6 +11,7 @@ import 'package:http_parser/src/media_type.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
+import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
@@ -49,7 +50,10 @@ void main() {
     test('submit() - submits the item right away', () async {
       // When submtting feedback
       final item = createFeedback();
-      await retryingFeedbackSubmitter.submit(item);
+      expect(
+        await retryingFeedbackSubmitter.submit(item),
+        SubmissionState.submitted,
+      );
 
       // Nothing on disk
       final saved = await storage.retrieveAllPendingItems();
@@ -67,7 +71,10 @@ void main() {
 
       // When submtting feedback
       final item = createFeedback();
-      await retryingFeedbackSubmitter.submit(item);
+      expect(
+        await retryingFeedbackSubmitter.submit(item),
+        SubmissionState.pending,
+      );
 
       // It is persisted on disk
       final saved = await storage.retrieveAllPendingItems();
@@ -92,7 +99,10 @@ void main() {
       };
 
       // error submission, save file on disk
-      await retryingFeedbackSubmitter.submit(item);
+      expect(
+        await retryingFeedbackSubmitter.submit(item),
+        SubmissionState.pending,
+      );
 
       // Should've not sent the feedback just yet.
       mockApi.sendFeedbackInvocations.verifyInvocationCount(0);
@@ -141,7 +151,10 @@ void main() {
       };
 
       // error submission, save file on disk
-      await retryingFeedbackSubmitter.submit(item);
+      expect(
+        await retryingFeedbackSubmitter.submit(item),
+        SubmissionState.pending,
+      );
 
       // Should've not sent the feedback just yet.
       mockApi.uploadAttachmentInvocations.verifyInvocationCount(1);
@@ -172,14 +185,20 @@ void main() {
         () async {
       // Don't upload while submitting the items
       mockApi.sendFeedbackInvocations.interceptor = (iv) {
-        throw "No Internet";
+        throw "No internet";
       };
 
       // error submission, save file on disk
       final item = createFeedback(message: '1');
-      await retryingFeedbackSubmitter.submit(item);
+      expect(
+        await retryingFeedbackSubmitter.submit(item),
+        SubmissionState.pending,
+      );
       final item2 = createFeedback(message: '2');
-      await retryingFeedbackSubmitter.submit(item2);
+      expect(
+        await retryingFeedbackSubmitter.submit(item2),
+        SubmissionState.pending,
+      );
 
       // error only the first submission
       var firstFileSubmitted = false;
@@ -204,7 +223,8 @@ void main() {
       expect(lastSendCall[0], item2);
     });
 
-    test('submit() - if fails, retries up to 8 times with exponential backoff',
+    test(
+        'submitPendingFeedbackItems() - if fails, retries up to 8 times with exponential backoff',
         () async {
       final item = createFeedback(message: '1');
 
@@ -255,7 +275,29 @@ void main() {
       expect(items.first.feedbackItem, item);
     });
 
-    test('submit() - does not retry for UnauthenticatedWiredashApiException',
+    test('submit() - throws UnauthenticatedWiredashApiException', () async {
+      final item = createFeedback();
+
+      mockApi.sendFeedbackInvocations.interceptor = (iv) {
+        throw UnauthenticatedWiredashApiException(
+          Response('error', 401),
+          'projectX',
+          'abcdefg1234',
+        );
+      };
+
+      await expectLater(
+        () => retryingFeedbackSubmitter.submit(item),
+        throwsA(
+          isA<UnauthenticatedWiredashApiException>()
+              .having((e) => e.projectId, 'projectId', 'projectX')
+              .having((e) => e.secret, 'secret', 'abcdefg1234'),
+        ),
+      );
+    });
+
+    test(
+        'submitPendingFeedbackItems() - does not retry for UnauthenticatedWiredashApiException',
         () async {
       final item = createFeedback();
 
@@ -267,6 +309,9 @@ void main() {
           final clock = async.getClock(initialTime);
           mockApi.sendFeedbackInvocations.interceptor = (iv) {
             retryLog.add(clock.now());
+            if (retryLog.length == 1) {
+              throw 'random error';
+            }
             throw UnauthenticatedWiredashApiException(
               Response('error', 401),
               'projectX',
@@ -275,7 +320,9 @@ void main() {
           };
 
           // add item (pending)
-          retryingFeedbackSubmitter.submit(item);
+          retryingFeedbackSubmitter.submit(item).then((value) {
+            expect(value, SubmissionState.pending);
+          });
           async.elapse(const Duration(minutes: 1));
 
           // start retry counting from here on
@@ -299,106 +346,58 @@ void main() {
       );
 
       final items = await storage.retrieveAllPendingItems();
-      expect(items, hasLength(1));
-      expect(items.first.feedbackItem, item);
+      // UnauthenticatedWiredashApiException removes item
+      expect(items, hasLength(0));
     });
-    //
-    // test('submit() - does not retry when server reports missing properties',
-    //     () async {
-    //   const item = PersistedFeedbackItem(
-    //     appInfo: AppInfo(
-    //       appLocale: 'de_DE',
-    //     ),
-    //     buildInfo: BuildInfo(compilationMode: CompilationMode.release),
-    //     deviceId: '1234',
-    //     deviceInfo: DeviceInfo(
-    //       pixelRatio: 1.0,
-    //       textScaleFactor: 1.0,
-    //       platformLocale: 'en_US',
-    //       platformSupportedLocales: ['en_US', 'de_DE'],
-    //       platformBrightness: Brightness.dark,
-    //       gestureInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-    //       padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
-    //       viewInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-    //       physicalGeometry: Rect.zero,
-    //       physicalSize: Size(800, 1200),
-    //     ),
-    //     email: 'email@example.com',
-    //     message: 'test post pls ignore',
-    //     labels: ['feedback'],
-    //     userId: 'Testy McTestFace',
-    //   );
-    //
-    //   fakeAsync((async) {
-    //     mockApi.sendFeedbackInvocations.interceptor = (iv) {
-    //       final response = Response(
-    //         '{"message": "child "deviceInfo" fails because [child "platformOS"'
-    //         ' fails because ["platformOS" is required]]"}',
-    //         400,
-    //       );
-    //       throw WiredashApiException(response: response);
-    //     };
-    //
-    //     retryingFeedbackSubmitter.submit(item, kTransparentImage);
-    //     async.elapse(const Duration(seconds: 1));
-    //
-    //     // Sending one feedback item should be retried no more than 8 times.
-    //     mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
-    //
-    //     // Item has beend deleted
-    //     expect(storage._deletedItemIds, ['1']);
-    //     expect(storage._currentItems, isEmpty);
-    //   });
-    // });
-    //
-    // test('submit() - does not retry when server reports unknown property',
-    //     () async {
-    //   const item = PersistedFeedbackItem(
-    //     appInfo: AppInfo(
-    //       appLocale: 'de_DE',
-    //     ),
-    //     buildInfo: BuildInfo(compilationMode: CompilationMode.release),
-    //     deviceId: '1234',
-    //     deviceInfo: DeviceInfo(
-    //       pixelRatio: 1.0,
-    //       textScaleFactor: 1.0,
-    //       platformLocale: 'en_US',
-    //       platformSupportedLocales: ['en_US', 'de_DE'],
-    //       platformBrightness: Brightness.dark,
-    //       gestureInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-    //       padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
-    //       viewInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-    //       physicalGeometry: Rect.zero,
-    //       physicalSize: Size(800, 1200),
-    //     ),
-    //     email: 'email@example.com',
-    //     message: 'test post pls ignore',
-    //     labels: ['feedback'],
-    //     userId: 'Testy McTestFace',
-    //   );
-    //
-    //   fakeAsync((async) {
-    //     mockApi.sendFeedbackInvocations.interceptor = (iv) {
-    //       final response =
-    //           Response('{"message":""compilationMode" is not allowed"}', 400);
-    //       throw WiredashApiException(response: response);
-    //     };
-    //
-    //     retryingFeedbackSubmitter.submit(item, kTransparentImage);
-    //     async.elapse(const Duration(seconds: 1));
-    //
-    //     // Sending one feedback item should be retried no more than 8 times.
-    //     mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
-    //
-    //     // Item has beend deleted
-    //     expect(storage._deletedItemIds, ['1']);
-    //     expect(storage._currentItems, isEmpty);
-    //   });
-    // });
+
+    test(
+        'submit() - does not retry when server reports missing properties '
+        'even deletes the feedback', () async {
+      final item = createFeedback();
+
+      mockApi.sendFeedbackInvocations.interceptor = (iv) {
+        final response = Response(
+          '{"message": "child "deviceInfo" fails because [child "platformOS"'
+          ' fails because ["platformOS" is required]]"}',
+          400,
+        );
+        throw WiredashApiException(response: response);
+      };
+
+      // submit item fails
+      await expectLater(() => retryingFeedbackSubmitter.submit(item),
+          throwsA(isA<WiredashApiException>()));
+      // item is not pending because it will never work
+      expect(await storage.retrieveAllPendingItems(), hasLength(0));
+    });
+
+    test('submit() - does not retry when server reports unknown property',
+        () async {
+      final item = createFeedback();
+
+      mockApi.sendFeedbackInvocations.interceptor = (iv) {
+        final response = Response(
+            '''{"message":"\\"compilationMode\\" is not allowed"}''', 400);
+        throw WiredashApiException(response: response);
+      };
+
+      await expectLater(
+        () => retryingFeedbackSubmitter.submit(item),
+        throwsA(
+          isA<WiredashApiException>().having(
+            (e) => e.messageFromServer,
+            'response',
+            '"compilationMode" is not allowed',
+          ),
+        ),
+      );
+
+      // Sending one feedback item should be retried no more than 8 times.
+      mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
+
+      // Item has beend deleted
+      expect(await storage.retrieveAllPendingItems(), hasLength(0));
+    });
   });
 }
 

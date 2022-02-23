@@ -10,7 +10,7 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
   final WiredashApi _api;
 
   @override
-  Future<void> submit(PersistedFeedbackItem item) async {
+  Future<SubmissionState> submit(PersistedFeedbackItem item) async {
     try {
       final List<PersistedAttachment> uploadedAttachments = [];
 
@@ -32,6 +32,7 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
 
       // ignore: avoid_print
       print('Feedback submitted ✌️ ${item.message}');
+      return SubmissionState.submitted;
     } on UnauthenticatedWiredashApiException catch (e, stack) {
       // Project configuration is off, retry at next app start
       reportWiredashError(

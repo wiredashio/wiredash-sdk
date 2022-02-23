@@ -5,6 +5,7 @@ import 'package:wiredash/src/common/renderer/renderer.dart';
 import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/src/common/utils/delay.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
+import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -63,8 +64,12 @@ class FeedbackModel with ChangeNotifier {
   bool get submitting => _submitting;
   bool _submitting = false;
 
-  bool get submitted => _submitted;
-  bool _submitted = false;
+  /// When true the feedback is either submitted (on server) or pending
+  /// (on disk) waiting for the next opportunity to be submitted (offline case)
+  ///
+  /// In both cases, nothing the user can do
+  bool get feedbackProcessed => _feedbackProcessed;
+  bool _feedbackProcessed = false;
 
   Delay? _fakeSubmitDelay;
   Delay? _closeDelay;
@@ -72,9 +77,9 @@ class FeedbackModel with ChangeNotifier {
   CustomizableWiredashMetaData? _metaData;
   late FlutterDeviceInfo _deviceInfo;
 
-  Object? _submissionError;
-
+  /// The error when submitting the feedback
   Object? get submissionError => _submissionError;
+  Object? _submissionError;
 
   int get maxSteps {
     // message
@@ -93,7 +98,7 @@ class FeedbackModel with ChangeNotifier {
 
   /// Returns the current stack of steps
   List<FeedbackFlowStatus> get steps {
-    if (submitted) {
+    if (feedbackProcessed) {
       // Return just a single step, no back/forward possible
       return [
         FeedbackFlowStatus.submittingAndRetry,
@@ -126,7 +131,7 @@ class FeedbackModel with ChangeNotifier {
     }
     stack.add(FeedbackFlowStatus.submit);
 
-    if (submitting || submitted || submissionError != null) {
+    if (submitting || feedbackProcessed || submissionError != null) {
       stack.add(FeedbackFlowStatus.submittingAndRetry);
     }
     return stack;
@@ -306,7 +311,7 @@ class FeedbackModel with ChangeNotifier {
         _fakeSubmitDelay?.dispose();
         _fakeSubmitDelay = Delay(const Duration(seconds: 2));
         await _fakeSubmitDelay!.future;
-        _submitted = true;
+        _feedbackProcessed = true;
         _submitting = false;
         notifyListeners();
       } else {
@@ -314,8 +319,11 @@ class FeedbackModel with ChangeNotifier {
         if (kDebugMode) print('Submitting feedback');
         try {
           final item = await createFeedback();
-          await _services.feedbackSubmitter.submit(item);
-          _submitted = true;
+          final submission = await _services.feedbackSubmitter.submit(item);
+          if (submission == SubmissionState.pending) {
+            if (kDebugMode) print("Feedback is pending");
+          }
+          _feedbackProcessed = true;
           notifyListeners();
         } catch (e, stack) {
           reportWiredashError(e, stack, 'Feedback submission failed');
@@ -327,7 +335,7 @@ class FeedbackModel with ChangeNotifier {
       notifyListeners();
     }
 
-    if (_submitted) {
+    if (_feedbackProcessed) {
       _closeDelay?.dispose();
       _closeDelay = Delay(const Duration(seconds: 1));
       await _closeDelay!.future;
@@ -336,7 +344,7 @@ class FeedbackModel with ChangeNotifier {
   }
 
   Future<void> returnToAppPostSubmit() async {
-    if (submitted == false) return;
+    if (feedbackProcessed == false) return;
     await _services.wiredashModel.hide(discardFeedback: true);
   }
 

@@ -178,4 +178,9 @@ class PendingFeedbackItemStorage {
         items.map((it) => serializePendingFeedbackItem(it)).toList();
     await preferences.setStringList(_feedbackItemsKey, values);
   }
+
+  Future<bool> contains(String id) async {
+    final items = await retrieveAllPendingItems();
+    return items.map((it) => it.id).contains(id);
+  }
 }

@@ -36,19 +36,31 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   ///
   /// If sending fails, uses exponential backoff and tries again up to 7 times.
   @override
-  Future<void> submit(PersistedFeedbackItem item) async {
+  Future<SubmissionState> submit(PersistedFeedbackItem item) async {
     final pending = await _pendingFeedbackItemStorage.addPendingItem(item);
 
     try {
       // Immediately try to submit the feedback
       await _submitWithRetry(pending, maxAttempts: 1);
+      final isStillPending =
+          await _pendingFeedbackItemStorage.contains(pending.id);
+      if (isStillPending) {
+        return SubmissionState.pending;
+      } else {
+        return SubmissionState.submitted;
+      }
 
-      // Only submit remaining feedback when submitting the current on worked
-      // Intentionally not "await"-ed. Trigger submission of queued feedback
+      // Only submit remaining feedback when submitting the current one worked
+      // Intentionally not "await"-ed. Triggers submission of queued feedback
       // Calling it doesn't affect the return value (in case of error)
       submitPendingFeedbackItems();
     } catch (e) {
-      // ignore when feedback couldn't be submitted
+      final isStillPending =
+          await _pendingFeedbackItemStorage.contains(pending.id);
+      if (isStillPending) {
+        return SubmissionState.pending;
+      }
+      rethrow;
     }
   }
 
@@ -116,6 +128,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
     // ignore: literal_only_boolean_expressions
     while (true) {
       attempt++;
+      print("Submitting item ${item.id} attempt #$attempt");
       try {
         // keep a copy here that always representes the latest state
         PendingFeedbackItem copy = item;
@@ -183,13 +196,14 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
         await _pendingFeedbackItemStorage.clearPendingItem(item.id);
         break;
       } on UnauthenticatedWiredashApiException catch (e, stack) {
-        // Project configuration is off, retry at next app start
+        // Project configuration is off, show error immediately
         reportWiredashError(
           e,
           stack,
           'Wiredash project configuration is wrong, next retry after '
           'next app start',
         );
+        await _pendingFeedbackItemStorage.clearPendingItem(item.id);
         rethrow;
       } on WiredashApiException catch (e, stack) {
         if (e.response?.statusCode == 400) {
