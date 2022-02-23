@@ -56,7 +56,7 @@ class WiredashController {
   /// to the feedback. The [userEmail] parameter can be used to prefill the
   /// email input field but it's up to the user to decide if he want's to
   /// include his email with the feedback.
-  @Deprecated('use mutateMetaData((metaData) => metaData)')
+  @Deprecated('use modifyMetaData((metaData) => metaData)')
   void setUserProperties({String? userId, String? userEmail}) {
     modifyMetaData(
       (metaData) => metaData
@@ -69,7 +69,7 @@ class WiredashController {
   ///
   /// If these values are also provided through dart-define during compile time
   /// then they will be overwritten by this method
-  @Deprecated('use mutateMetaData((metaData) => metaData)')
+  @Deprecated('use modifyMetaData((metaData) => metaData)')
   void setBuildProperties({String? buildVersion, String? buildNumber}) {
     modifyMetaData(
       (metaData) => metaData
