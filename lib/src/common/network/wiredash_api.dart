@@ -137,11 +137,26 @@ class WiredashApiException implements Exception {
 
   String? get messageFromServer {
     try {
+      // Official error format for wiredash backend
       final json = jsonDecode(response?.body ?? '') as Map?;
-      return json?['message'] as String?;
-    } catch (e) {
-      return response?.body;
+      final message = json?['errorMessage'] as String?;
+      final code = json?['errorCode'] as String?;
+      if (code != null) {
+        return '[$code] ${message ?? '<no message>'}';
+      }
+      return message!;
+    } catch (_) {
+      // ignore
     }
+    try {
+      // Parsing errors often have this format
+      final json = jsonDecode(response?.body ?? '') as Map?;
+      final message = json?['message'] as String?;
+      return message!;
+    } catch (_) {
+      // ignore
+    }
+    return response?.body;
   }
 
   final String? message;
