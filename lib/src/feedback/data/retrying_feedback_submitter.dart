@@ -190,7 +190,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
           'Wiredash project configuration is wrong, next retry after '
           'next app start',
         );
-        break;
+        rethrow;
       } on WiredashApiException catch (e, stack) {
         if (e.response?.statusCode == 400) {
           // The request is invalid. The feedback will never be delivered
@@ -202,7 +202,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
             'server. Will be discarded',
           );
           await _pendingFeedbackItemStorage.clearPendingItem(item.id);
-          break;
+          rethrow;
         }
         reportWiredashError(
           e,

@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:fake_async/fake_async.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:http/http.dart';
 import 'package:http_parser/src/media_type.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -254,74 +255,53 @@ void main() {
       expect(items.first.feedbackItem, item);
     });
 
-    // test('submit() - does not retry for UnauthenticatedWiredashApiException',
-    //     () async {
-    //   const item = PersistedFeedbackItem(
-    //     appInfo: AppInfo(
-    //       appLocale: 'de_DE',
-    //     ),
-    //     buildInfo: BuildInfo(compilationMode: CompilationMode.release),
-    //     deviceId: '1234',
-    //     deviceInfo: DeviceInfo(
-    //       pixelRatio: 1.0,
-    //       textScaleFactor: 1.0,
-    //       platformLocale: 'en_US',
-    //       platformSupportedLocales: ['en_US', 'de_DE'],
-    //       platformBrightness: Brightness.dark,
-    //       gestureInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-    //       padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
-    //       viewInsets:
-    //           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-    //       physicalGeometry: Rect.zero,
-    //       physicalSize: Size(800, 1200),
-    //     ),
-    //     email: 'email@example.com',
-    //     message: 'test post pls ignore',
-    //     labels: ['feedback'],
-    //     userId: 'Testy McTestFace',
-    //   );
-    //
-    //   final initialTime = DateTime(2000, 01, 01, 00, 00, 00, 000);
-    //   final retryLog = <DateTime>[];
-    //
-    //   fakeAsync(
-    //     (async) {
-    //       final clock = async.getClock(initialTime);
-    //       mockApi.sendFeedbackInvocations.interceptor = (iv) {
-    //         retryLog.add(clock.now());
-    //         throw UnauthenticatedWiredashApiException(
-    //           Response('error', 401),
-    //           'projectX',
-    //           'abcdefg1234',
-    //         );
-    //       };
-    //
-    //       retryingFeedbackSubmitter.submit(item, kTransparentImage);
-    //
-    //       // Hop on the time machine...
-    //       async.elapse(const Duration(minutes: 5));
-    //
-    //       // Sending one feedback item should be retried no more than 8 times.
-    //       mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
-    //
-    //       // Log shows only one entry
-    //       expect(retryLog, [
-    //         DateTime(2000, 01, 01, 00, 00, 00, 000),
-    //       ]);
-    //
-    //       expect(storage._deletedItemIds, isEmpty);
-    //       expect(storage._currentItems, [
-    //         const PendingFeedbackItem(
-    //           id: '1',
-    //           feedbackItem: item,
-    //           screenshotPath: '1.png',
-    //         ),
-    //       ]);
-    //     },
-    //     initialTime: initialTime,
-    //   );
-    // });
+    test('submit() - does not retry for UnauthenticatedWiredashApiException',
+        () async {
+      final item = createFeedback();
+
+      final initialTime = DateTime(2000, 01, 01, 00, 00, 00, 000);
+      final retryLog = <DateTime>[];
+
+      fakeAsync(
+        (async) {
+          final clock = async.getClock(initialTime);
+          mockApi.sendFeedbackInvocations.interceptor = (iv) {
+            retryLog.add(clock.now());
+            throw UnauthenticatedWiredashApiException(
+              Response('error', 401),
+              'projectX',
+              'abcdefg1234',
+            );
+          };
+
+          // add item (pending)
+          retryingFeedbackSubmitter.submit(item);
+          async.elapse(const Duration(minutes: 1));
+
+          // start retry counting from here on
+          mockApi.sendFeedbackInvocations.clear();
+
+          // send with retry
+          retryingFeedbackSubmitter.submitPendingFeedbackItems();
+          // Hop on the time machine...
+          async.elapse(const Duration(minutes: 5));
+
+          // Sending one feedback item should not be retried
+          mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
+
+          // Log shows only one entry
+          expect(retryLog, [
+            DateTime(2000, 01, 01, 00, 00, 00, 000), // submit()
+            DateTime(2000, 01, 01, 00, 01, 00, 000), // submitPendingFeedback
+          ]);
+        },
+        initialTime: initialTime,
+      );
+
+      final items = await storage.retrieveAllPendingItems();
+      expect(items, hasLength(1));
+      expect(items.first.feedbackItem, item);
+    });
     //
     // test('submit() - does not retry when server reports missing properties',
     //     () async {
