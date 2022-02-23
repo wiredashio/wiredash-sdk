@@ -142,7 +142,7 @@ void main() {
             {
               'id': 'screenshot_123',
               'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
-              'brightness': [0.0, 0.0, 0.0, 0.0],
+              'platformBrightness': 'dark',
               'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
               'windowPixelRatio': 2.75,
               'windowSize': [1080.0, 2088.0],
@@ -153,7 +153,7 @@ void main() {
             {
               'id': 'screenshot_124',
               'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
-              'brightness': [0.0, 0.0, 0.0, 0.0],
+              'platformBrightness': 'dark',
               'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
               'windowPixelRatio': 2.75,
               'windowSize': [1080.0, 2088.0],

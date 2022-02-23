@@ -307,7 +307,7 @@ extension on Screenshot {
     final Map<String, dynamic> values = {
       'id': file.attachmentId!.value,
       'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
-      'brightness': nonNull(deviceInfo.physicalGeometry).toJson(),
+      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode(),
       'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
       'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
       'windowSize': nonNull(deviceInfo.physicalSize).toJson(),
