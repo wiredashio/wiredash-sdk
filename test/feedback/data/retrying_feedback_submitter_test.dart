@@ -365,8 +365,10 @@ void main() {
       };
 
       // submit item fails
-      await expectLater(() => retryingFeedbackSubmitter.submit(item),
-          throwsA(isA<WiredashApiException>()));
+      await expectLater(
+        () => retryingFeedbackSubmitter.submit(item),
+        throwsA(isA<WiredashApiException>()),
+      );
       // item is not pending because it will never work
       expect(await storage.retrieveAllPendingItems(), hasLength(0));
     });
@@ -377,7 +379,9 @@ void main() {
 
       mockApi.sendFeedbackInvocations.interceptor = (iv) {
         final response = Response(
-            '''{"message":"\\"compilationMode\\" is not allowed"}''', 400);
+          '''{"message":"\\"compilationMode\\" is not allowed"}''',
+          400,
+        );
         throw WiredashApiException(response: response);
       };
 

@@ -47,13 +47,13 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
       if (isStillPending) {
         return SubmissionState.pending;
       } else {
+        // Only submit remaining feedback when submitting the current one worked
+        // Intentionally not "await"-ed. Triggers submission of queued feedback
+        // Calling it doesn't affect the return value (in case of error)
+        scheduleMicrotask(submitPendingFeedbackItems);
+
         return SubmissionState.submitted;
       }
-
-      // Only submit remaining feedback when submitting the current one worked
-      // Intentionally not "await"-ed. Triggers submission of queued feedback
-      // Calling it doesn't affect the return value (in case of error)
-      submitPendingFeedbackItems();
     } catch (e) {
       final isStillPending =
           await _pendingFeedbackItemStorage.contains(pending.id);
@@ -128,7 +128,6 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
     // ignore: literal_only_boolean_expressions
     while (true) {
       attempt++;
-      print("Submitting item ${item.id} attempt #$attempt");
       try {
         // keep a copy here that always representes the latest state
         PendingFeedbackItem copy = item;
