@@ -140,7 +140,7 @@ class WiredashApiException implements Exception {
       // Official error format for wiredash backend
       final json = jsonDecode(response?.body ?? '') as Map?;
       final message = json?['errorMessage'] as String?;
-      final code = json?['errorCode'] as String?;
+      final code = json?['errorCode'] as int?;
       if (code != null) {
         return '[$code] ${message ?? '<no message>'}';
       }

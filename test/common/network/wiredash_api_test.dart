@@ -3,6 +3,7 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
@@ -225,6 +226,21 @@ void main() {
           'platformOSVersion': 'RSR1.201013.001',
           'userId': 'Testy McTestFace',
         },
+      );
+    });
+
+    test('parse official error message', () {
+      final exception = WiredashApiException(
+        message: 'sdk message',
+        response: Response(
+          '''{"errorCode":-1,"errorMessage":"Cannot read properties of undefined (reading '0')"}''',
+          400,
+        ),
+      );
+      expect(exception.message, 'sdk message');
+      expect(
+        exception.messageFromServer,
+        "[-1] Cannot read properties of undefined (reading '0')",
       );
     });
   });
