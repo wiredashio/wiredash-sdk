@@ -269,10 +269,22 @@ extension FeedbackBody on PersistedFeedbackItem {
 
     values.addAll({'message': nonNull(message)});
 
+    values.addAll({
+      'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
+    });
+
+    values.addAll({
+      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode()
+    });
+
     final platformDartVersion = deviceInfo.platformVersion;
     if (platformDartVersion != null) {
       values.addAll({'platformDartVersion': platformDartVersion});
     }
+
+    values.addAll({
+      'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
+    });
 
     values.addAll({'platformLocale': nonNull(deviceInfo.platformLocale)});
 
@@ -308,6 +320,26 @@ extension FeedbackBody on PersistedFeedbackItem {
       values.addAll({'userId': _userId});
     }
 
+    values.addAll({
+      'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
+    });
+
+    values.addAll({
+      'windowPadding': nonNull(deviceInfo.padding).toJson(),
+    });
+
+    values.addAll({
+      'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
+    });
+
+    values.addAll({
+      'windowSize': nonNull(deviceInfo.physicalSize).toJson(),
+    });
+
+    values.addAll({
+      'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
+    });
+
     return values.map((k, v) => MapEntry(k, v));
   }
 }
@@ -316,14 +348,6 @@ extension on Screenshot {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> values = {
       'id': file.attachmentId!.value,
-      'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
-      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode(),
-      'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
-      'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
-      'windowSize': nonNull(deviceInfo.physicalSize).toJson(),
-      'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
-      'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
-      'windowPadding': nonNull(deviceInfo.padding).toJson(),
     };
 
     return values;

@@ -138,28 +138,20 @@ void main() {
           'platformOSVersion': 'RSR1.201013.001',
           'userEmail': 'email@example.com',
           'userId': 'Testy McTestFace',
+          'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
+          'platformBrightness': 'dark',
+          'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
+          'windowPixelRatio': 2.75,
+          'windowSize': [1080.0, 2088.0],
+          'windowTextScaleFactor': 1.0,
+          'windowInsets': [0.0, 0.0, 0.0, 685.0],
+          'windowPadding': [0.0, 66.0, 0.0, 0.0],
           'attachments': [
             {
               'id': 'screenshot_123',
-              'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
-              'platformBrightness': 'dark',
-              'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
-              'windowPixelRatio': 2.75,
-              'windowSize': [1080.0, 2088.0],
-              'windowTextScaleFactor': 1.0,
-              'windowInsets': [0.0, 0.0, 0.0, 685.0],
-              'windowPadding': [0.0, 66.0, 0.0, 0.0]
             },
             {
               'id': 'screenshot_124',
-              'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
-              'platformBrightness': 'dark',
-              'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
-              'windowPixelRatio': 2.75,
-              'windowSize': [1080.0, 2088.0],
-              'windowTextScaleFactor': 1.0,
-              'windowInsets': [0.0, 0.0, 0.0, 685.0],
-              'windowPadding': [0.0, 66.0, 0.0, 360.0]
             }
           ],
         },
@@ -225,6 +217,14 @@ void main() {
           'platformOS': 'android',
           'platformOSVersion': 'RSR1.201013.001',
           'userId': 'Testy McTestFace',
+          'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
+          'platformBrightness': 'dark',
+          'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
+          'windowPixelRatio': 2.75,
+          'windowSize': [1080.0, 2088.0],
+          'windowTextScaleFactor': 1.0,
+          'windowInsets': [0.0, 0.0, 0.0, 685.0],
+          'windowPadding': [0.0, 66.0, 0.0, 0.0]
         },
       );
     });
