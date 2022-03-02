@@ -119,7 +119,8 @@ class Step3WithGallery extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 16),
                       child: _Attachment(attachment: att),
                     ),
-                  const _NewAttachment(),
+                  if (context.feedbackModel.attachments.length < 3)
+                    const _NewAttachment(),
                 ],
               ),
             ),
