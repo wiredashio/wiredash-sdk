@@ -111,7 +111,7 @@ class _Step6SubmitState extends State<Step6Submit> {
                           model.selectedLabels.map((it) => it.title).join(', '),
                         ),
                       ),
-                    if (model.hasScreenshots)
+                    if (model.hasAttachments)
                       const ListTile(
                         contentPadding: EdgeInsets.zero,
                         title: Text('Screenshots'),

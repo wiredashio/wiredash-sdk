@@ -27,21 +27,39 @@ class WiredashApi {
   final Future<String> Function() _deviceIdProvider;
 
   static const String _host = 'https://api.wiredash.io/sdk';
-
   // static const String _host = 'https://api.wiredash.dev/sdk';
 
-  /// Uploads an image to the Wiredash image hosting
+  /// Uploads a attachment to the Wiredash hosting service
   ///
-  /// POST /sendImage
-  Future<ImageBlob> sendImage(Uint8List screenshot) async {
-    final uri = Uri.parse('$_host/sendImage');
-    final multipartFile = MultipartFile.fromBytes(
-      'file',
-      screenshot,
-      filename: 'file',
-      contentType: MediaType('image', 'png'),
-    );
-    final req = MultipartRequest('POST', uri)..files.add(multipartFile);
+  /// POST /uploadAttachment
+  Future<AttachmentId> uploadAttachment({
+    required Uint8List screenshot,
+    required AttachmentType type,
+    String? filename,
+    MediaType? contentType,
+  }) async {
+    final uri = Uri.parse('$_host/uploadAttachment');
+
+    final String mappedType;
+    switch (type) {
+      case AttachmentType.screenshot:
+        mappedType = 'screenshot';
+        break;
+    }
+
+    final req = MultipartRequest('POST', uri)
+      ..files.add(
+        MultipartFile.fromBytes(
+          'file',
+          screenshot,
+          filename: filename,
+          contentType: contentType,
+        ),
+      )
+      ..fields.addAll({
+        'type': mappedType,
+      });
+
     final response = await _send(req);
 
     if (response.statusCode == 401) {
@@ -50,30 +68,26 @@ class WiredashApi {
 
     if (response.statusCode != 200) {
       throw WiredashApiException(
-        message: 'image upload failed',
+        message: '$type upload failed',
         response: response,
       );
     }
 
-    // backend returns a rather complex image object. We don't care much about
-    // the actual content, It will be attached to feedbacks as is
     final map = jsonDecode(response.body) as Map<String, dynamic>;
-    return ImageBlob(map);
+    return AttachmentId(map['id'] as String);
   }
 
   /// Reports a feedback
   ///
   /// POST /sendFeedback
   Future<void> sendFeedback(
-    PersistedFeedbackItem feedback, {
-    List<ImageBlob> images = const [],
-  }) async {
+    PersistedFeedbackItem feedback,
+  ) async {
     final uri = Uri.parse('$_host/sendFeedback');
     final Request request = Request('POST', uri);
     request.headers['Content-Type'] = 'application/json';
 
     final args = feedback.toFeedbackBody();
-    args.addAll({'images': images.map((blob) => blob.data).toList()});
     request.body = jsonEncode(args);
 
     final response = await _send(request);
@@ -102,34 +116,57 @@ class WiredashApi {
   }
 }
 
+extension UploadScreenshotApi on WiredashApi {
+  /// Uploads an screenshot to the Wiredash image hosting, returning a unique
+  /// [AttachmentId]
+  Future<AttachmentId> uploadScreenshot(Uint8List screenshot) {
+    return uploadAttachment(
+      screenshot: screenshot,
+      type: AttachmentType.screenshot,
+      // TODO generate filename when taking the screenshot
+      filename: 'Screenshot_${DateTime.now().toUtc().toIso8601String()}',
+      contentType: MediaType('image', 'png'),
+    );
+  }
+}
+
 /// Generic error from the Wiredash API
 class WiredashApiException implements Exception {
-  WiredashApiException({String? message, this.response}) : _message = message;
+  WiredashApiException({this.message, this.response});
 
-  String? get message {
-    final String? bodyMessage = () {
-      try {
-        final json = jsonDecode(response?.body ?? '') as Map?;
-        return json?['message'] as String?;
-      } catch (e) {
-        return response?.body;
+  String? get messageFromServer {
+    try {
+      // Official error format for wiredash backend
+      final json = jsonDecode(response?.body ?? '') as Map?;
+      final message = json?['errorMessage'] as String?;
+      final code = json?['errorCode'] as int?;
+      if (code != null) {
+        return '[$code] ${message ?? '<no message>'}';
       }
-    }();
-    if (_message == null) {
-      return bodyMessage;
+      return message!;
+    } catch (_) {
+      // ignore
     }
-    return '$_message $bodyMessage';
+    try {
+      // Parsing errors often have this format
+      final json = jsonDecode(response?.body ?? '') as Map?;
+      final message = json?['message'] as String?;
+      return message!;
+    } catch (_) {
+      // ignore
+    }
+    return response?.body;
   }
 
-  final String? _message;
+  final String? message;
   final Response? response;
 
   @override
   String toString() {
     return 'WiredashApiException{'
-        '${response?.statusCode}, '
-        'message: $message, '
-        'body: ${response?.body}'
+        '"$message", '
+        'code: ${response?.statusCode}, '
+        'resp: $messageFromServer'
         '}';
   }
 }
@@ -159,52 +196,23 @@ class UnauthenticatedWiredashApiException extends WiredashApiException {
   }
 }
 
-/// A response from backend after image upload
-///
-/// This image object has to be sent as-is back to the backend
-class ImageBlob {
-  ImageBlob(this.data);
-
-  final Map<String, dynamic> data;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ImageBlob &&
-          runtimeType == other.runtimeType &&
-          data == other.data;
-
-  @override
-  int get hashCode => data.hashCode;
-}
-
 extension FeedbackBody on PersistedFeedbackItem {
   Map<String, dynamic> toFeedbackBody() {
     final Map<String, Object> values = {};
 
-    // Required values
-    values.addAll({
-      'deviceId': nonNull(deviceId),
-      'compilationMode': nonNull(buildInfo.compilationMode).jsonEncode(),
-      if (labels != null) 'labels': nonNull(labels!),
-      'message': nonNull(message),
-      'sdkVersion': nonNull(sdkVersion),
-      'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
-      'windowSize': nonNull(deviceInfo.physicalSize).toJson(),
-      'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
-    });
+    // Values are sorted alphabetically for easy comparison with the backend
+    values.addAll({'appLocale': nonNull(appInfo.appLocale)});
 
-    // Not yet required but we can trust those are non null
-    values.addAll({
-      'appLocale': nonNull(appInfo.appLocale),
-      'platformLocale': nonNull(deviceInfo.platformLocale),
-      'platformSupportedLocales': nonNull(deviceInfo.platformSupportedLocales),
-      'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
-      'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
-      'windowPadding': nonNull(deviceInfo.padding).toJson(),
-      'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
-      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode(),
-    });
+    if (attachments.isNotEmpty) {
+      final items = attachments.map((it) {
+        if (it is Screenshot) {
+          return it.toJson();
+        } else {
+          throw "Unsupported attachment type ${it.runtimeType}";
+        }
+      }).toList();
+      values.addAll({'attachments': items});
+    }
 
     final buildCommit = buildInfo.buildCommit;
     if (buildCommit != null) {
@@ -221,36 +229,9 @@ extension FeedbackBody on PersistedFeedbackItem {
       values.addAll({'buildVersion': buildVersion});
     }
 
-    final platformDartVersion = deviceInfo.platformVersion;
-    if (platformDartVersion != null) {
-      values.addAll({'platformDartVersion': platformDartVersion});
-    }
-
-    final platformOS = deviceInfo.platformOS;
-    if (platformOS != null) {
-      values.addAll({'platformOS': platformOS});
-    }
-
-    final platformOSVersion = deviceInfo.platformOSVersion;
-    if (platformOSVersion != null) {
-      values.addAll({'platformOSVersion': platformOSVersion});
-    }
-
-    // Web only
-    final platformUserAgent = deviceInfo.userAgent;
-    if (platformUserAgent != null) {
-      values.addAll({'platformUserAgent': platformUserAgent});
-    }
-
-    final userEmail = email;
-    if (userEmail != null && userEmail.isNotEmpty) {
-      values.addAll({'userEmail': userEmail});
-    }
-
-    final String? _userId = userId;
-    if (_userId != null) {
-      values.addAll({'userId': _userId});
-    }
+    values.addAll({
+      'compilationMode': nonNull(buildInfo.compilationMode).jsonEncode(),
+    });
 
     final _customMetaData = customMetaData?.map((key, value) {
       if (value == null) {
@@ -279,7 +260,97 @@ extension FeedbackBody on PersistedFeedbackItem {
       }
     }
 
+    values.addAll({'deviceId': nonNull(deviceId)});
+
+    final _labels = labels;
+    if (_labels != null) {
+      values.addAll({'labels': _labels});
+    }
+
+    values.addAll({'message': nonNull(message)});
+
+    values.addAll({
+      'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
+    });
+
+    values.addAll({
+      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode()
+    });
+
+    final platformDartVersion = deviceInfo.platformVersion;
+    if (platformDartVersion != null) {
+      values.addAll({'platformDartVersion': platformDartVersion});
+    }
+
+    values.addAll({
+      'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
+    });
+
+    values.addAll({'platformLocale': nonNull(deviceInfo.platformLocale)});
+
+    final platformOS = deviceInfo.platformOS;
+    if (platformOS != null) {
+      values.addAll({'platformOS': platformOS});
+    }
+
+    final platformOSVersion = deviceInfo.platformOSVersion;
+    if (platformOSVersion != null) {
+      values.addAll({'platformOSVersion': platformOSVersion});
+    }
+
+    values.addAll({
+      'platformSupportedLocales': nonNull(deviceInfo.platformSupportedLocales)
+    });
+
+    // Web only
+    final platformUserAgent = deviceInfo.userAgent;
+    if (platformUserAgent != null) {
+      values.addAll({'platformUserAgent': platformUserAgent});
+    }
+
+    values.addAll({'sdkVersion': nonNull(sdkVersion)});
+
+    final userEmail = email;
+    if (userEmail != null && userEmail.isNotEmpty) {
+      values.addAll({'userEmail': userEmail});
+    }
+
+    final String? _userId = userId;
+    if (_userId != null) {
+      values.addAll({'userId': _userId});
+    }
+
+    values.addAll({
+      'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
+    });
+
+    values.addAll({
+      'windowPadding': nonNull(deviceInfo.padding).toJson(),
+    });
+
+    values.addAll({
+      'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
+    });
+
+    values.addAll({
+      'windowSize': nonNull(deviceInfo.physicalSize).toJson(),
+    });
+
+    values.addAll({
+      'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
+    });
+
     return values.map((k, v) => MapEntry(k, v));
+  }
+}
+
+extension on Screenshot {
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> values = {
+      'id': file.attachmentId!.value,
+    };
+
+    return values;
   }
 }
 
@@ -291,6 +362,33 @@ T nonNull<T extends Object>(T value) {
   return value;
 }
 
+enum AttachmentType {
+  screenshot,
+}
+
+/// The reference id returned by the backend identifying the binary attachment
+/// hosted in the wiredash cloud
+class AttachmentId {
+  final String value;
+
+  AttachmentId(this.value);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AttachmentId &&
+          runtimeType == other.runtimeType &&
+          value == other.value;
+
+  @override
+  int get hashCode => value.hashCode;
+
+  @override
+  String toString() {
+    return 'AttachmentId{$value}';
+  }
+}
+
 extension on WindowPadding {
   List<double> toJson() {
     return [left, top, right, bottom];
@@ -298,7 +396,6 @@ extension on WindowPadding {
 }
 
 extension on Rect {
-  // ignore: unused_element
   List<double> toJson() {
     return [left, top, right, bottom];
   }

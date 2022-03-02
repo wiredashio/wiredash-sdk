@@ -5,7 +5,13 @@ import 'package:flutter/widgets.dart';
 
 export 'dart:ui' show Brightness;
 
-class DeviceInfo {
+/// All information we can gather from the Flutter Framework about the
+/// device/window/canvas
+///
+/// Created by following implementations
+/// - [_DartHtmlDeviceInfoGenerator]
+/// - [_DartIoDeviceInfoGenerator]
+class FlutterDeviceInfo {
   /// The primary locale enabled on the device
   ///
   /// https://api.flutter.dev/flutter/dart-ui/SingletonFlutterWindow/locale.html
@@ -78,7 +84,7 @@ class DeviceInfo {
   /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent
   final String? userAgent;
 
-  const DeviceInfo({
+  const FlutterDeviceInfo({
     required this.platformLocale,
     required this.platformSupportedLocales,
     required this.padding,
@@ -95,7 +101,7 @@ class DeviceInfo {
     required this.gestureInsets,
   });
 
-  DeviceInfo copyWith({
+  FlutterDeviceInfo copyWith({
     String? deviceId,
     String? platformLocale,
     List<String>? platformSupportedLocales,
@@ -112,7 +118,7 @@ class DeviceInfo {
     Brightness? platformBrightness,
     WindowPadding? gestureInsets,
   }) {
-    return DeviceInfo(
+    return FlutterDeviceInfo(
       platformLocale: platformLocale ?? this.platformLocale,
       platformSupportedLocales:
           platformSupportedLocales ?? this.platformSupportedLocales,
@@ -154,7 +160,7 @@ class DeviceInfo {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is DeviceInfo &&
+      (other is FlutterDeviceInfo &&
           runtimeType == other.runtimeType &&
           platformLocale == other.platformLocale &&
           listEquals(

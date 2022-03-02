@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/build_info/build_info_manager.dart';
@@ -7,6 +5,7 @@ import 'package:wiredash/src/common/renderer/renderer.dart';
 import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/src/common/utils/delay.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
+import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -39,7 +38,7 @@ class FeedbackModel with ChangeNotifier {
   String? get feedbackMessage => _feedbackMessage;
   String? _feedbackMessage;
 
-  Uint8List? _screenshot;
+  final List<PersistedAttachment> _attachments = [];
 
   String? get userEmail => _userEmail ?? _metaData?.userEmail;
   String? _userEmail;
@@ -50,6 +49,9 @@ class FeedbackModel with ChangeNotifier {
   List<Label> get labels =>
       _services.wiredashWidget.feedbackOptions?.labels ?? [];
 
+  List<PersistedAttachment> get attachments =>
+      _attachments.toList(growable: false);
+
   set selectedLabels(List<Label> list) {
     _selectedLabels = list;
     notifyListeners();
@@ -57,26 +59,27 @@ class FeedbackModel with ChangeNotifier {
 
   bool get isActive => _feedbackFlowStatus != FeedbackFlowStatus.none;
 
-  bool get hasScreenshots => _screenshot != null;
-
-  Uint8List? get screenshot => _screenshot;
+  bool get hasAttachments => _attachments.isNotEmpty;
 
   bool get submitting => _submitting;
   bool _submitting = false;
 
-  bool get submitted => _submitted;
-  bool _submitted = false;
+  /// When true the feedback is either submitted (on server) or pending
+  /// (on disk) waiting for the next opportunity to be submitted (offline case)
+  ///
+  /// In both cases, nothing the user can do
+  bool get feedbackProcessed => _feedbackProcessed;
+  bool _feedbackProcessed = false;
 
   Delay? _fakeSubmitDelay;
   Delay? _closeDelay;
 
   CustomizableWiredashMetaData? _metaData;
-  DeviceInfo? _deviceInfo;
-  BuildInfo? _buildInfo;
+  late FlutterDeviceInfo _deviceInfo;
 
-  Object? _submissionError;
-
+  /// The error when submitting the feedback
   Object? get submissionError => _submissionError;
+  Object? _submissionError;
 
   int get maxSteps {
     // message
@@ -95,7 +98,7 @@ class FeedbackModel with ChangeNotifier {
 
   /// Returns the current stack of steps
   List<FeedbackFlowStatus> get steps {
-    if (submitted) {
+    if (feedbackProcessed) {
       // Return just a single step, no back/forward possible
       return [
         FeedbackFlowStatus.submittingAndRetry,
@@ -128,7 +131,7 @@ class FeedbackModel with ChangeNotifier {
     }
     stack.add(FeedbackFlowStatus.submit);
 
-    if (submitting || submitted || submissionError != null) {
+    if (submitting || feedbackProcessed || submissionError != null) {
       stack.add(FeedbackFlowStatus.submittingAndRetry);
     }
     return stack;
@@ -231,10 +234,16 @@ class FeedbackModel with ChangeNotifier {
     _services.picassoController.isActive = false;
     notifyListeners();
 
-    _screenshot = await _services.picassoController.paintDrawingOntoImage(
+    final screenshot = await _services.picassoController.paintDrawingOntoImage(
       _services.screenCaptureController.screenshot!,
       _services.wiredashWidget.theme?.appBackgroundColor ??
           const Color(0xffcccccc),
+    );
+    _attachments.add(
+      PersistedAttachment.screenshot(
+        file: FileDataEventuallyOnDisk.inMemory(screenshot),
+        deviceInfo: _deviceInfo,
+      ),
     );
     notifyListeners();
 
@@ -263,7 +272,6 @@ class FeedbackModel with ChangeNotifier {
     // Allow devs to collect additional information
     await _services.wiredashWidget.feedbackOptions?.collectMetaData
         ?.call(metaData);
-    _buildInfo = _services.buildInfoManager.buildInfo;
     _metaData = metaData;
     notifyListeners();
 
@@ -303,7 +311,7 @@ class FeedbackModel with ChangeNotifier {
         _fakeSubmitDelay?.dispose();
         _fakeSubmitDelay = Delay(const Duration(seconds: 2));
         await _fakeSubmitDelay!.future;
-        _submitted = true;
+        _feedbackProcessed = true;
         _submitting = false;
         notifyListeners();
       } else {
@@ -311,8 +319,11 @@ class FeedbackModel with ChangeNotifier {
         if (kDebugMode) print('Submitting feedback');
         try {
           final item = await createFeedback();
-          await _services.feedbackSubmitter.submit(item, _screenshot);
-          _submitted = true;
+          final submission = await _services.feedbackSubmitter.submit(item);
+          if (submission == SubmissionState.pending) {
+            if (kDebugMode) print("Feedback is pending");
+          }
+          _feedbackProcessed = true;
           notifyListeners();
         } catch (e, stack) {
           reportWiredashError(e, stack, 'Feedback submission failed');
@@ -324,7 +335,7 @@ class FeedbackModel with ChangeNotifier {
       notifyListeners();
     }
 
-    if (_submitted) {
+    if (_feedbackProcessed) {
       _closeDelay?.dispose();
       _closeDelay = Delay(const Duration(seconds: 1));
       await _closeDelay!.future;
@@ -333,14 +344,14 @@ class FeedbackModel with ChangeNotifier {
   }
 
   Future<void> returnToAppPostSubmit() async {
-    if (submitted == false) return;
+    if (feedbackProcessed == false) return;
     await _services.wiredashModel.hide(discardFeedback: true);
   }
 
   Future<PersistedFeedbackItem> createFeedback() async {
     final deviceId = await _services.deviceIdGenerator.deviceId();
-    _buildInfo ??= _services.buildInfoManager.buildInfo;
-    _deviceInfo ??= _services.deviceInfoGenerator.generate();
+    final buildInfo = _services.buildInfoManager.buildInfo;
+    _deviceInfo = _services.deviceInfoGenerator.generate();
 
     if (_metaData == null) {
       final metaData = _services.wiredashModel.metaData;
@@ -351,20 +362,21 @@ class FeedbackModel with ChangeNotifier {
     }
 
     return PersistedFeedbackItem(
-      deviceId: deviceId,
       appInfo: AppInfo(
         appLocale: _services.wiredashOptions.currentLocale.toLanguageTag(),
       ),
-      buildInfo: _buildInfo!.copyWith(
+      attachments: _attachments,
+      buildInfo: buildInfo.copyWith(
         buildCommit: _metaData?.buildCommit,
         buildNumber: _metaData?.buildNumber,
         buildVersion: _metaData?.buildVersion,
       ),
-      deviceInfo: _deviceInfo!,
+      customMetaData: _metaData?.custom,
+      deviceId: deviceId,
+      deviceInfo: _deviceInfo,
       email: userEmail,
       message: _feedbackMessage!,
       labels: _selectedLabels.map((it) => it.id).toList(),
-      customMetaData: _metaData?.custom,
       userId: _metaData?.userId,
     );
   }

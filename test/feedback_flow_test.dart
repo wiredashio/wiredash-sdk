@@ -55,7 +55,7 @@ void main() {
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.message, 'test message');
-      expect(latestCall['images'], hasLength(1));
+      expect(submittedFeedback.attachments, hasLength(1));
     });
 
     testWidgets('Send feedback with labels', (tester) async {
@@ -120,7 +120,7 @@ void main() {
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.message, 'test message');
       expect(submittedFeedback.email, 'dash@flutter.io');
-      expect(latestCall['images'], hasLength(0));
+      expect(submittedFeedback.attachments, hasLength(0));
     });
 
     testWidgets('Send feedback with everything', (tester) async {

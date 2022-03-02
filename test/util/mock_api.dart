@@ -1,5 +1,7 @@
+import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:http_parser/src/media_type.dart';
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 
@@ -11,16 +13,17 @@ class MockWiredashApi implements WiredashApi {
       MethodInvocationCatcher('sendFeedback');
 
   @override
-  Future<void> sendFeedback(
-    PersistedFeedbackItem feedback, {
-    List<ImageBlob> images = const [],
-  }) async {
-    return sendFeedbackInvocations
-        .addMethodCall(namedArgs: {'images': images}, args: [feedback]);
+  Future<void> sendFeedback(PersistedFeedbackItem feedback) async {
+    return sendFeedbackInvocations.addMethodCall(args: [feedback]);
   }
 
   @override
-  Future<ImageBlob> sendImage(Uint8List screenshot) async {
-    return ImageBlob({});
+  Future<AttachmentId> uploadAttachment({
+    required Uint8List screenshot,
+    required AttachmentType type,
+    String? filename,
+    MediaType? contentType,
+  }) async {
+    return AttachmentId(Random().nextDouble().toString());
   }
 }

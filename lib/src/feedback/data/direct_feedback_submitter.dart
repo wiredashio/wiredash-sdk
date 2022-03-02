@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:wiredash/src/common/network/wiredash_api.dart';
 import 'package:wiredash/src/common/utils/error_report.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
@@ -12,21 +10,29 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
   final WiredashApi _api;
 
   @override
-  Future<void> submit(PersistedFeedbackItem item, Uint8List? screenshot) async {
+  Future<SubmissionState> submit(PersistedFeedbackItem item) async {
     try {
-      ImageBlob? screenshotUri;
-      if (screenshot != null) {
-        screenshotUri = await _api.sendImage(screenshot);
+      final List<PersistedAttachment> uploadedAttachments = [];
+
+      // Upload screenshots that are not yet uploaded
+      for (final attachment in item.attachments) {
+        if (attachment is Screenshot) {
+          // simplification: upload all attachments from memory
+          final id = await _api.uploadScreenshot(attachment.file.data!);
+          final uploaded =
+              attachment.copyWith(file: FileDataEventuallyOnDisk.uploaded(id));
+          uploadedAttachments.add(uploaded);
+        } else {
+          throw "Unknown attachment type ${attachment.runtimeType}";
+        }
       }
 
-      await _api.sendFeedback(
-        item,
-        images: [
-          if (screenshotUri != null) screenshotUri,
-        ],
-      );
+      final updatedItem = item.copyWith(attachments: uploadedAttachments);
+      await _api.sendFeedback(updatedItem);
+
       // ignore: avoid_print
       print('Feedback submitted ✌️ ${item.message}');
+      return SubmissionState.submitted;
     } on UnauthenticatedWiredashApiException catch (e, stack) {
       // Project configuration is off, retry at next app start
       reportWiredashError(

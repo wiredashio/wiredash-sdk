@@ -15,8 +15,8 @@ abstract class DeviceInfoGenerator {
     return createDeviceInfoGenerator(window);
   }
 
-  /// Collection of all [DeviceInfo] shared between all platforms
-  static DeviceInfo baseDeviceInfo(SingletonFlutterWindow window) {
+  /// Collection of all [FlutterDeviceInfo] shared between all platforms
+  static FlutterDeviceInfo baseDeviceInfo(SingletonFlutterWindow window) {
     Locale windowLocale() {
       // Flutter 1.26 (2.0.1) returns `Locale?`, 1.27 `Locale`
       // ignore: unnecessary_nullable_for_final_variable_declarations
@@ -31,7 +31,7 @@ abstract class DeviceInfoGenerator {
       return locales ?? [];
     }
 
-    return DeviceInfo(
+    return FlutterDeviceInfo(
       platformLocale: windowLocale().toLanguageTag(),
       platformSupportedLocales:
           windowLocales().map((it) => it.toLanguageTag()).toList(),
@@ -46,5 +46,6 @@ abstract class DeviceInfoGenerator {
     );
   }
 
-  DeviceInfo generate();
+  /// Collects information from Flutter
+  FlutterDeviceInfo generate();
 }

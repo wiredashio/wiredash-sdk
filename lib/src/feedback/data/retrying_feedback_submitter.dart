@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'dart:typed_data';
 
 import 'package:file/file.dart';
 import 'package:flutter/cupertino.dart';
@@ -37,13 +36,32 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   ///
   /// If sending fails, uses exponential backoff and tries again up to 7 times.
   @override
-  Future<void> submit(PersistedFeedbackItem item, Uint8List? screenshot) async {
-    await _pendingFeedbackItemStorage.addPendingItem(item, screenshot);
+  Future<SubmissionState> submit(PersistedFeedbackItem item) async {
+    final pending = await _pendingFeedbackItemStorage.addPendingItem(item);
 
-    // Intentionally not "await"-ed. Since we've persisted the pending feedback
-    // item, we can pretty safely assume it's going to be eventually sent, so
-    // the future can complete after persisting the item.
-    submitPendingFeedbackItems();
+    try {
+      // Immediately try to submit the feedback
+      await _submitWithRetry(pending, maxAttempts: 1);
+      final isStillPending =
+          await _pendingFeedbackItemStorage.contains(pending.id);
+      if (isStillPending) {
+        return SubmissionState.pending;
+      } else {
+        // Only submit remaining feedback when submitting the current one worked
+        // Intentionally not "await"-ed. Triggers submission of queued feedback
+        // Calling it doesn't affect the return value (in case of error)
+        scheduleMicrotask(submitPendingFeedbackItems);
+
+        return SubmissionState.submitted;
+      }
+    } catch (e) {
+      final isStillPending =
+          await _pendingFeedbackItemStorage.contains(pending.id);
+      if (isStillPending) {
+        return SubmissionState.pending;
+      }
+      rethrow;
+    }
   }
 
   /// Checks if there are any pending feedback items stored in persistent
@@ -54,15 +72,18 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   /// connection comes back online.
   Future<void> submitPendingFeedbackItems() => _submitPendingFeedbackItems();
 
+  Completer<void>? _pendingCompleter;
+
   Future<void> _submitPendingFeedbackItems({
     bool submittingLeftovers = false,
   }) async {
     if (_submitting) {
       _hasLeftoverItems = true;
-      return;
+      return _pendingCompleter!.future;
     }
 
     _submitting = true;
+    _pendingCompleter ??= Completer();
     final items = await _pendingFeedbackItemStorage.retrieveAllPendingItems();
 
     for (final item in items) {
@@ -93,47 +114,96 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
 
       await _submitPendingFeedbackItems(submittingLeftovers: true);
     }
+    _pendingCompleter?.complete(null);
+    _pendingCompleter = null;
   }
 
-  Future<void> _submitWithRetry<T>(PendingFeedbackItem item) async {
+  Future<void> _submitWithRetry<T>(
+    PendingFeedbackItem item, {
+    int maxAttempts = 7,
+  }) async {
+    assert(maxAttempts > 0);
     var attempt = 0;
 
     // ignore: literal_only_boolean_expressions
     while (true) {
       attempt++;
       try {
-        // TODO don't upload images again when submission fails
-        final ImageBlob? imageUri = await () async {
-          final screenshotPath = item.screenshotPath;
-          if (screenshotPath != null) {
-            if (await fs.file(screenshotPath).exists()) {
-              final Uint8List screenshot =
-                  await fs.file(screenshotPath).readAsBytes();
-              return _api.sendImage(screenshot);
+        // keep a copy here that always representes the latest state
+        PendingFeedbackItem copy = item;
+
+        /// Updates [copy] and [_pendingFeedbackItemStorage] once file is uploaded
+        Future<void> updateAttachment(
+          PersistedAttachment oldAttachment,
+          PersistedAttachment? update,
+        ) async {
+          final atts = item.feedbackItem.attachments.toList()
+            ..remove(oldAttachment);
+          if (update != null) {
+            atts.add(update);
+          }
+          copy = item.copyWith(
+            feedbackItem: item.feedbackItem.copyWith(attachments: atts),
+          );
+
+          await _pendingFeedbackItemStorage.updatePendingItem(copy);
+        }
+
+        for (final attachment in item.feedbackItem.attachments) {
+          if (attachment is Screenshot) {
+            final screenshot = attachment.file;
+            if (screenshot.isUploaded) {
+              continue;
+            }
+            assert(screenshot.isOnDisk || screenshot.isInMemomry);
+            if (screenshot.isInMemomry) {
+              final AttachmentId attachemntId =
+                  await _api.uploadScreenshot(screenshot.binaryData(fs)!);
+
+              final uploaded = PersistedAttachment.screenshot(
+                file: FileDataEventuallyOnDisk.uploaded(attachemntId),
+                deviceInfo: attachment.deviceInfo,
+              );
+              await updateAttachment(attachment, uploaded);
+            } else if (screenshot.isOnDisk) {
+              final file = fs.file(screenshot.pathToFile);
+              if (file.existsSync()) {
+                final AttachmentId attachemntId =
+                    await _api.uploadScreenshot(screenshot.binaryData(fs)!);
+
+                final uploaded = PersistedAttachment.screenshot(
+                  file: FileDataEventuallyOnDisk.uploaded(attachemntId),
+                  deviceInfo: attachment.deviceInfo,
+                );
+                await updateAttachment(attachment, uploaded);
+              } else {
+                // remove item as it doesn't exist on disk anymore
+                await updateAttachment(attachment, null);
+              }
             }
           }
-          return null;
-        }();
+        }
 
-        await _api.sendFeedback(
-          item.feedbackItem,
-          images: [
-            if (imageUri != null) imageUri,
-          ],
-        );
+        // once all feedback is uploaded
+        assert(copy.feedbackItem.attachments.every((it) => it.isUploaded));
+
+        // actually submit the feedback
+        await _api.sendFeedback(copy.feedbackItem);
+
         // ignore: avoid_print
         print('Feedback submitted ✌️ ${item.feedbackItem.message}');
         await _pendingFeedbackItemStorage.clearPendingItem(item.id);
         break;
       } on UnauthenticatedWiredashApiException catch (e, stack) {
-        // Project configuration is off, retry at next app start
+        // Project configuration is off, show error immediately
         reportWiredashError(
           e,
           stack,
           'Wiredash project configuration is wrong, next retry after '
           'next app start',
         );
-        break;
+        await _pendingFeedbackItemStorage.clearPendingItem(item.id);
+        rethrow;
       } on WiredashApiException catch (e, stack) {
         if (e.response?.statusCode == 400) {
           // The request is invalid. The feedback will never be delivered
@@ -145,7 +215,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
             'server. Will be discarded',
           );
           await _pendingFeedbackItemStorage.clearPendingItem(item.id);
-          break;
+          rethrow;
         }
         reportWiredashError(
           e,
@@ -154,21 +224,21 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
         );
         break;
       } catch (e, stack) {
-        if (attempt >= _maxAttempts) {
+        if (attempt >= maxAttempts) {
           // Exit after max attempts
           reportWiredashError(
             e,
             stack,
-            'Could not send feedback after $attempt retries',
+            'Could not send feedback after $attempt attempts',
           );
-          break;
+          rethrow;
         }
 
         // Report error and retry with exponential backoff
         reportWiredashError(
           e,
           stack,
-          'Could not send feedback to server after $attempt retries. '
+          'Could not send feedback to server after $attempt attempts. '
           'Retrying...',
           debugOnly: true,
         );
@@ -192,7 +262,6 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
 
 const _delayFactor = Duration(seconds: 1);
 const _maxDelay = Duration(seconds: 30);
-const _maxAttempts = 8;
 
 Duration _exponentialBackoff(int attempt) {
   if (attempt <= 0) return Duration.zero;
