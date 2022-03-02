@@ -256,6 +256,12 @@ class FeedbackModel with ChangeNotifier {
     _goToStep(FeedbackFlowStatus.screenshotsOverview);
   }
 
+  /// Removes the attachment
+  void deleteAttachment(PersistedAttachment attachment) {
+    _attachments.remove(attachment);
+    notifyListeners();
+  }
+
   /// Captures the pixels of the app and the app metadata
   ///
   /// Call [createMasterpiece] to finalize the screenshot (with drawing)

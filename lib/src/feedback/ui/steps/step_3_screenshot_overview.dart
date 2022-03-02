@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/utils/color_ext.dart';
+import 'package:wiredash/src/common/widgets/animated_fade_widget_switcher.dart';
 import 'package:wiredash/src/common/widgets/tron_button.dart';
 import 'package:wiredash/src/common/widgets/tron_icon.dart';
 import 'package:wiredash/src/common/widgets/wirecons.dart';
@@ -21,10 +22,15 @@ class Step3ScreenshotOverview extends StatefulWidget {
 class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
   @override
   Widget build(BuildContext context) {
-    if (!context.feedbackModel.hasAttachments) {
-      return const Step3NotAttachments();
-    }
-    return const Step3WithGallery();
+    return AnimatedFadeWidgetSwitcher(
+      duration: const Duration(seconds: 1),
+      child: () {
+        if (!context.feedbackModel.hasAttachments) {
+          return const Step3NotAttachments();
+        }
+        return const Step3WithGallery();
+      }(),
+    );
   }
 }
 
@@ -119,7 +125,8 @@ class Step3WithGallery extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 16),
                       child: _Attachment(attachment: att),
                     ),
-                  const _NewAttachment(),
+                  if (context.feedbackModel.attachments.length < 3)
+                    const _NewAttachment(),
                 ],
               ),
             ),
@@ -179,7 +186,7 @@ class _Attachment extends StatelessWidget {
           child: TronButton(
             color: context.theme.secondaryBackgroundColor,
             onTap: () {
-              context.feedbackModel.enterScreenshotCapturingMode();
+              context.feedbackModel.deleteAttachment(attachment);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
