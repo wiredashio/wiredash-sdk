@@ -171,6 +171,7 @@ class _ScrollBoxState extends State<ScrollBox> {
       child = Scrollbar(
         interactive: false,
         controller: controller,
+        // ignore: deprecated_member_use
         isAlwaysShown: false,
         child: child,
       );

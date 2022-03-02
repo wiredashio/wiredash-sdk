@@ -232,6 +232,7 @@ class _AnimatedSlideBackport extends ImplicitlyAnimatedWidget {
   /// The [offset] and [duration] arguments must not be null.
   const _AnimatedSlideBackport({
     Key? key,
+    // ignore: unused_element
     this.child,
     required this.offset,
     Curve curve = Curves.linear,
