@@ -179,7 +179,7 @@ class _Attachment extends StatelessWidget {
           child: TronButton(
             color: context.theme.secondaryBackgroundColor,
             onTap: () {
-              context.feedbackModel.enterScreenshotCapturingMode();
+              context.feedbackModel.deleteAttachment(attachment);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
