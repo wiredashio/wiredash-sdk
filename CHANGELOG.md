@@ -1,3 +1,9 @@
+## 1.0.0-alpha.5 - Multiple screenshots
+* [#183](https://github.com/wiredashio/wiredash-sdk/pull/183) Allow multiple screenshots to be attached to a feedback
+* [#179](https://github.com/wiredashio/wiredash-sdk/pull/179) Improve performance of your app by limiting the number of widgets Wiredash injects. Noticable on low-end devices such as the iPhone SE
+* [#179](https://github.com/wiredashio/wiredash-sdk/pull/179) Fix: Keep your app state when opening Wiredash. Won't happen again 🤞 
+* [#184](https://github.com/wiredashio/wiredash-sdk/pull/184) Documentation: Fix deprecation message of `setUserProperties` to reference `modifyMetaData`
+
 ## 1.0.0-alpha.4 - Desktop in focus
 * [#177](https://github.com/wiredashio/wiredash-sdk/pull/177) Improved Desktop UI
 * [#176](https://github.com/wiredashio/wiredash-sdk/pull/176) Draw `appBackgroundColor` behind app on screenshot 
