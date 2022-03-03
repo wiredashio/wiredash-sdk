@@ -137,13 +137,13 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
           PersistedAttachment oldAttachment,
           PersistedAttachment? update,
         ) async {
-          final atts = item.feedbackItem.attachments.toList()
+          final atts = copy.feedbackItem.attachments.toList()
             ..remove(oldAttachment);
           if (update != null) {
             atts.add(update);
           }
-          copy = item.copyWith(
-            feedbackItem: item.feedbackItem.copyWith(attachments: atts),
+          copy = copy.copyWith(
+            feedbackItem: copy.feedbackItem.copyWith(attachments: atts),
           );
 
           await _pendingFeedbackItemStorage.updatePendingItem(copy);
@@ -191,7 +191,10 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
         await _api.sendFeedback(copy.feedbackItem);
 
         // ignore: avoid_print
-        print('Feedback submitted ✌️ ${item.feedbackItem.message}');
+        print(
+          'Feedback with ${copy.feedbackItem.attachments.length} screenshots submitted ✌️\n'
+          'message: ${copy.feedbackItem.message}',
+        );
         await _pendingFeedbackItemStorage.clearPendingItem(item.id);
         break;
       } on UnauthenticatedWiredashApiException catch (e, stack) {

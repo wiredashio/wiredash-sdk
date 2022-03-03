@@ -1,7 +1,8 @@
-import 'dart:ui' show Brightness, WindowPadding;
+import 'dart:ui' show Brightness;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 
 export 'dart:ui' show Brightness;
 
@@ -25,7 +26,7 @@ class FlutterDeviceInfo {
   /// Area not covered with system UI
   ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/padding.html
-  final WindowPadding padding;
+  final WiredashWindowPadding padding;
 
   /// The dimensions of the rectangle into which the scene rendered in this
   /// view will be drawn on the screen, in physical pixels.
@@ -71,13 +72,13 @@ class FlutterDeviceInfo {
   final double textScaleFactor;
 
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/viewInsets.html
-  final WindowPadding viewInsets;
+  final WiredashWindowPadding viewInsets;
 
   /// Area where Android does not intercept i.e. for the back button gesture
   /// (swipe from the side of the screen)
   ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/systemGestureInsets.html
-  final WindowPadding gestureInsets;
+  final WiredashWindowPadding gestureInsets;
 
   /// When in web, the full user agent String of the browser
   ///
@@ -105,7 +106,7 @@ class FlutterDeviceInfo {
     String? deviceId,
     String? platformLocale,
     List<String>? platformSupportedLocales,
-    WindowPadding? padding,
+    WiredashWindowPadding? padding,
     Size? physicalSize,
     Rect? physicalGeometry,
     double? pixelRatio,
@@ -113,10 +114,10 @@ class FlutterDeviceInfo {
     String? platformOSVersion,
     String? platformVersion,
     double? textScaleFactor,
-    WindowPadding? viewInsets,
+    WiredashWindowPadding? viewInsets,
     String? userAgent,
     Brightness? platformBrightness,
-    WindowPadding? gestureInsets,
+    WiredashWindowPadding? gestureInsets,
   }) {
     return FlutterDeviceInfo(
       platformLocale: platformLocale ?? this.platformLocale,

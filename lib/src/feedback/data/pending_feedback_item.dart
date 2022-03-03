@@ -300,7 +300,8 @@ extension _SerializeDeviceInfo on FlutterDeviceInfo {
   }
 }
 
-/// [WindowPadding] doesn't offer a public constructor
+/// [WindowPadding] doesn't offer a public constructor and doesn't implement
+/// ==() and hashCode
 class WiredashWindowPadding implements WindowPadding {
   const WiredashWindowPadding({
     required this.left,
@@ -315,6 +316,15 @@ class WiredashWindowPadding implements WindowPadding {
       top: (json[1] as num).toDouble(),
       right: (json[2] as num).toDouble(),
       bottom: (json[3] as num).toDouble(),
+    );
+  }
+
+  factory WiredashWindowPadding.fromWindowPadding(WindowPadding padding) {
+    return WiredashWindowPadding(
+      left: padding.left,
+      top: padding.top,
+      right: padding.right,
+      bottom: padding.bottom,
     );
   }
 

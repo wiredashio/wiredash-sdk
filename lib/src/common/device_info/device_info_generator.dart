@@ -7,6 +7,7 @@ import 'package:wiredash/src/common/device_info/device_info.dart';
 import 'package:wiredash/src/common/device_info/device_info_generator_stub.dart'
     if (dart.library.html) 'package:wiredash/src/common/device_info/dart_html_device_info_generator.dart'
     if (dart.library.io) 'package:wiredash/src/common/device_info/dart_io_device_info_generator.dart';
+import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 
 abstract class DeviceInfoGenerator {
   /// Loads a [DeviceInfoGenerator] based on the environment by calling the
@@ -35,14 +36,15 @@ abstract class DeviceInfoGenerator {
       platformLocale: windowLocale().toLanguageTag(),
       platformSupportedLocales:
           windowLocales().map((it) => it.toLanguageTag()).toList(),
-      padding: window.padding,
+      padding: WiredashWindowPadding.fromWindowPadding(window.padding),
       physicalSize: window.physicalSize,
       physicalGeometry: window.physicalGeometry,
       pixelRatio: window.devicePixelRatio,
       textScaleFactor: window.textScaleFactor,
-      viewInsets: window.viewInsets,
+      viewInsets: WiredashWindowPadding.fromWindowPadding(window.viewInsets),
       platformBrightness: window.platformBrightness,
-      gestureInsets: window.systemGestureInsets,
+      gestureInsets:
+          WiredashWindowPadding.fromWindowPadding(window.systemGestureInsets),
     );
   }
 
