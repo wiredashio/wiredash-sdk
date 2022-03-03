@@ -206,8 +206,15 @@ class WiredashTestRobot {
 
   Future<void> enterScreenshotMode() async {
     expect(find.byType(Step3ScreenshotOverview), findsOneWidget);
-    expect(find.byType(Step3NotAttachments), findsOneWidget);
-    await tester.tap(find.text('Add screenshot'));
+    final noAttachemntsResult =
+        find.byType(Step3NotAttachments).evaluate().toList();
+    if (noAttachemntsResult.isNotEmpty) {
+      expect(find.byType(Step3NotAttachments), findsOneWidget);
+      await tester.tap(find.text('Add screenshot'));
+    } else {
+      expect(find.byType(Step3WithGallery), findsOneWidget);
+      await tester.tap(find.byIcon(Wirecons.plus), warnIfMissed: false);
+    }
 
     await tester.waitUntil(find.byType(ScreenshotBar), findsOneWidget);
     await tester.waitUntil(find.byIcon(Wirecons.camera), findsOneWidget);

@@ -282,6 +282,53 @@ void main() {
         isTrue,
       );
     });
+
+    test('updateItem removes file from disk', () async {
+      final first = createFeedback(
+        attachments: [
+          PersistedAttachment.screenshot(
+            file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
+            deviceInfo: testDeviceInfo,
+          ),
+        ],
+      );
+      final firstPending = await storage.addPendingItem(first);
+      expect(firstPending.id, '1');
+      expect(filesOnDisk(), ['0.png']);
+
+      final second = createFeedback(
+        attachments: [
+          PersistedAttachment.screenshot(
+            file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
+            deviceInfo: testDeviceInfo,
+          ),
+        ],
+      );
+      final secondPending = await storage.addPendingItem(second);
+      expect(secondPending.id, '3');
+
+      expect(filesOnDisk(), ['0.png', '2.png']);
+      expect(
+        await storage.retrieveAllPendingItems(),
+        [firstPending, secondPending],
+      );
+
+      // replace attachment with after upload
+      final update = firstPending.copyWith(
+        feedbackItem: firstPending.feedbackItem.copyWith(
+          attachments: [
+            PersistedAttachment.screenshot(
+              file: FileDataEventuallyOnDisk.uploaded(AttachmentId('1')),
+              deviceInfo: firstPending.feedbackItem.deviceInfo,
+            )
+          ],
+        ),
+      );
+      await storage.updatePendingItem(update);
+
+      expect(await storage.retrieveAllPendingItems(), [secondPending, update]);
+      expect(filesOnDisk(), ['2.png']);
+    });
   });
 }
 

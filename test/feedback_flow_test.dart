@@ -3,6 +3,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
+import 'package:wiredash/src/feedback/ui/steps/step_3_screenshot_overview.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'util/mock_api.dart';
@@ -56,6 +57,34 @@ void main() {
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.message, 'test message');
       expect(submittedFeedback.attachments, hasLength(1));
+    });
+
+    testWidgets('Send feedback with multiple screenshots', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(tester);
+      final mockApi = MockWiredashApi();
+      robot.mockWiredashApi(mockApi);
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.enterScreenshotMode();
+      await robot.takeScreenshot();
+      await robot.confirmDrawing();
+      await robot.enterScreenshotMode();
+      await robot.takeScreenshot();
+      await robot.confirmDrawing();
+      expect(find.byType(AttachmentPreview), findsNWidgets(2));
+      await robot.goToNextStep();
+      await robot.submitFeedback();
+      await tester.waitUntil(
+        find.text('Thanks for your feedback!'),
+        findsOneWidget,
+      );
+      final latestCall = mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      expect(submittedFeedback, isNotNull);
+      expect(submittedFeedback!.message, 'test message');
+      expect(submittedFeedback.attachments, hasLength(2));
     });
 
     testWidgets('Send feedback with labels', (tester) async {

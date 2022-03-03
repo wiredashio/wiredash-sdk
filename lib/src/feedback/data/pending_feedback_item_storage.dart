@@ -146,10 +146,13 @@ class PendingFeedbackItemStorage {
       list.remove(removed);
       list.add(item);
 
-      final oldDiskAttachments = removed.feedbackItem.attachments
-          .where((element) => element.file.isOnDisk);
+      final List<PersistedAttachment> oldDiskAttachments = removed
+          .feedbackItem.attachments
+          .where((element) => element.file.isOnDisk)
+          .toList();
       final newDiskAttachments = item.feedbackItem.attachments
-          .where((element) => element.file.isOnDisk);
+          .where((element) => element.file.isOnDisk)
+          .toList();
       final uploaded = oldDiskAttachments
           .where((element) => !newDiskAttachments.contains(element))
           .toList();

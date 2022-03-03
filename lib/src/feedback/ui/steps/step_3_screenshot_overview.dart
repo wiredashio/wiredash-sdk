@@ -123,7 +123,7 @@ class Step3WithGallery extends StatelessWidget {
                   for (final att in context.feedbackModel.attachments)
                     Padding(
                       padding: const EdgeInsets.only(right: 16),
-                      child: _Attachment(attachment: att),
+                      child: AttachmentPreview(attachment: att),
                     ),
                   if (context.feedbackModel.attachments.length < 3)
                     const _NewAttachment(),
@@ -154,8 +154,8 @@ class Step3WithGallery extends StatelessWidget {
   }
 }
 
-class _Attachment extends StatelessWidget {
-  const _Attachment({
+class AttachmentPreview extends StatelessWidget {
+  const AttachmentPreview({
     Key? key,
     required this.attachment,
   }) : super(key: key);
