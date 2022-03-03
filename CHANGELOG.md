@@ -1,3 +1,6 @@
+## 1.0.0-alpha.5
+* [#188](https://github.com/wiredashio/wiredash-sdk/pull/188) Fix upload of multiple screenshots for non-web platforms. May have caused double submission of feedback 
+
 ## 1.0.0-alpha.5 - Multiple screenshots
 * [#183](https://github.com/wiredashio/wiredash-sdk/pull/183) Allow multiple screenshots to be attached to a feedback
 * [#179](https://github.com/wiredashio/wiredash-sdk/pull/179) Improve performance of your app by limiting the number of widgets Wiredash injects. Noticable on low-end devices such as the iPhone SE
