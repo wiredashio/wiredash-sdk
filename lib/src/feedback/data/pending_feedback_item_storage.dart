@@ -157,14 +157,10 @@ class PendingFeedbackItemStorage {
           .where((element) => !newDiskAttachments.contains(element))
           .toList();
 
-      print("Old: ${oldDiskAttachments}");
-      print("New: ${newDiskAttachments}");
-
       /// Delete local files of attachments that have been uploaded
       for (final u in uploaded) {
         final screenshot = _fs.file(u.file.pathToFile);
         if (await screenshot.exists()) {
-          print("Deleting $screenshot");
           await screenshot.delete();
         }
       }
