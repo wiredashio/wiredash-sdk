@@ -1,4 +1,4 @@
-## 1.0.0-alpha.5
+## 1.0.0-alpha.6
 * [#188](https://github.com/wiredashio/wiredash-sdk/pull/188) Fix upload of multiple screenshots for non-web platforms. May have caused double submission of feedback 
 
 ## 1.0.0-alpha.5 - Multiple screenshots
