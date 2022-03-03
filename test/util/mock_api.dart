@@ -24,6 +24,8 @@ class MockWiredashApi implements WiredashApi {
     String? filename,
     MediaType? contentType,
   }) async {
-    return AttachmentId(Random().nextDouble().toString());
+    return AttachmentId(
+      Random().nextDouble().toString().replaceFirst('0.', ''),
+    );
   }
 }
