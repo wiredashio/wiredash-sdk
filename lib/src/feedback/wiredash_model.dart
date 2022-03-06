@@ -5,6 +5,7 @@ import 'package:wiredash/src/common/options/feedback_options.dart';
 import 'package:wiredash/src/common/services/services.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
+import 'package:wiredash/src/support/widget_binding_support.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 
@@ -129,7 +130,7 @@ class _DisposableValueNotifier<T> extends ValueNotifier<T> {
 Stream<Duration> _postFrameCallbackStream() async* {
   while (true) {
     final completer = Completer<Duration>();
-    WidgetsBinding.instance!.addPostFrameCallback((Duration timestamp) {
+    widgetsBindingInstance.addPostFrameCallback((Duration timestamp) {
       completer.complete(timestamp);
     });
     yield await completer.future;

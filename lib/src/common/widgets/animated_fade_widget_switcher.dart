@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 import 'package:wiredash/src/common/widgets/animations_lib.dart';
+import 'package:wiredash/src/support/widget_binding_support.dart';
 
 /// A better version of [AnimatedSwitcher] that fades the old child completely
 /// out before showing the new one
@@ -39,7 +40,7 @@ class _AnimatedFadeWidgetSwitcherState
   @override
   Widget build(BuildContext context) {
     if (_firstBuild) {
-      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      widgetsBindingInstance.addPostFrameCallback((timeStamp) {
         if (mounted) {
           setState(() {
             _firstBuild = false;

@@ -15,6 +15,7 @@ import 'package:wiredash/src/feedback/ui/steps/step_5_email.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_6_submit.dart';
 import 'package:wiredash/src/feedback/ui/steps/step_7_submitting.dart';
 import 'package:wiredash/src/support/material_support_layer.dart';
+import 'package:wiredash/src/support/widget_binding_support.dart';
 import 'package:wiredash/src/wiredash_model_provider.dart';
 
 class WiredashFeedbackFlow extends StatefulWidget {
@@ -48,7 +49,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       if (state == null) return;
       // jump to next page after the widget has been rebuild and LarryPageView
       // knows about the new itemCount
-      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      widgetsBindingInstance.addPostFrameCallback((timeStamp) {
         state.moveToPage(newIndex);
       });
     }
