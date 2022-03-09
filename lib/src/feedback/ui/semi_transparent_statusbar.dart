@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/feedback/backdrop/backdrop_controller_provider.dart';
-import 'package:wiredash/src/feedback/backdrop/wiredash_backdrop.dart';
+import 'package:wiredash/src/_wiredash_ui.dart';
 
 /// Draws a semi transparent statusbar on iOS to mimic the behavior on Android.
 ///

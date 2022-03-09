@@ -3,10 +3,10 @@ import 'dart:convert';
 
 import 'package:file/file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/common/utils/error_report.dart';
-import 'package:wiredash/src/common/utils/uuid.dart';
-import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
-import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/services/error_report.dart';
+import 'package:wiredash/src/feedback/_feedback.dart';
+import 'package:wiredash/src/utils/uuid.dart';
 
 /// A temporary place for [PersistedFeedbackItem] classes and user-generated
 /// screenshot to sit in until they get sent into the Wiredash console.

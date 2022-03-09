@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/common/utils/project_credential_validator.dart';
-import 'package:wiredash/src/wiredash_widget.dart';
+import 'package:wiredash/src/core/project_credential_validator.dart';
+import 'package:wiredash/src/core/wiredash_widget.dart';
 
 import 'util/invocation_catcher.dart';
 import 'util/robot.dart';

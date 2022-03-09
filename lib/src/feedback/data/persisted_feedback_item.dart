@@ -4,16 +4,11 @@ import 'package:collection/collection.dart';
 import 'package:file/file.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:wiredash/src/common/build_info/app_info.dart';
-import 'package:wiredash/src/common/build_info/build_info.dart';
-import 'package:wiredash/src/common/device_info/device_info.dart';
-import 'package:wiredash/src/common/network/wiredash_api.dart';
-import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
-import 'package:wiredash/src/version.dart';
-
-export 'package:wiredash/src/common/build_info/app_info.dart';
-export 'package:wiredash/src/common/build_info/build_info.dart';
-export 'package:wiredash/src/common/device_info/device_info.dart';
+import 'package:wiredash/src/core/version.dart';
+import 'package:wiredash/src/feedback/_feedback.dart';
+import 'package:wiredash/src/metadata/build_info/app_info.dart';
+import 'package:wiredash/src/metadata/build_info/build_info.dart';
+import 'package:wiredash/src/metadata/device_info/device_info.dart';
 
 /// Contains all relevant feedback information, both user-provided and
 /// automatically inferred, that will be eventually sent to the Wiredash
@@ -144,7 +139,7 @@ abstract class PersistedAttachment {
     );
   }
 
-  // TODO add freezed like when() for more attachment types
+// TODO add freezed like when() for more attachment types
 }
 
 /// A attachment type the user created using Wiredash screenshot feature
@@ -213,7 +208,9 @@ class FileDataEventuallyOnDisk {
         pathToFile = null;
 
   bool get isOnDisk => pathToFile != null;
+
   bool get isUploaded => attachmentId != null;
+
   bool get isInMemomry => data != null;
 
   @override

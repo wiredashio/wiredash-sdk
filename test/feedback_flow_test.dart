@@ -2,8 +2,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
-import 'package:wiredash/src/feedback/ui/steps/step_3_screenshot_overview.dart';
+import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'util/mock_api.dart';

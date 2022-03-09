@@ -8,11 +8,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wiredash/src/common/network/wiredash_api.dart';
-import 'package:wiredash/src/common/utils/uuid.dart';
-import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
+import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
-import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
+import 'package:wiredash/src/metadata/build_info/app_info.dart';
+import 'package:wiredash/src/metadata/build_info/build_info.dart';
+import 'package:wiredash/src/metadata/device_info/device_info.dart';
+import 'package:wiredash/src/utils/uuid.dart';
 
 import '../../util/invocation_catcher.dart';
 

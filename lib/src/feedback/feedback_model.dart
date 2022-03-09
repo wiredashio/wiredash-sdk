@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/common/build_info/build_info_manager.dart';
-import 'package:wiredash/src/common/renderer/renderer.dart';
-import 'package:wiredash/src/common/services/services.dart';
-import 'package:wiredash/src/common/utils/delay.dart';
-import 'package:wiredash/src/common/utils/error_report.dart';
-import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
-import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/feedback/_feedback.dart';
+import 'package:wiredash/src/feedback/data/delay.dart';
+import 'package:wiredash/src/metadata/build_info/app_info.dart';
+import 'package:wiredash/src/metadata/build_info/build_info_manager.dart';
+import 'package:wiredash/src/metadata/device_info/device_info.dart';
+import 'package:wiredash/src/metadata/renderer/renderer.dart';
 import 'package:wiredash/wiredash.dart';
 
 enum FeedbackFlowStatus {

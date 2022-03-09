@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:wiredash/src/common/utils/email_validator.dart';
+import 'package:wiredash/src/utils/email_validator.dart';
 
 void main() {
   group('EmailValidator', () {

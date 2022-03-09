@@ -1,11 +1,11 @@
 library wiredash;
 
-export 'src/common/options/feedback_options.dart';
-export 'src/common/options/wiredash_options_data.dart';
-export 'src/common/theme/wiredash_theme_data.dart';
-export 'src/common/translation/wiredash_localizations.dart';
-export 'src/common/translation/wiredash_translations.dart';
-export 'src/common/widgets/confidential.dart';
+export 'src/core/options/feedback_options.dart';
+export 'src/core/options/wiredash_options_data.dart';
+export 'src/core/theme/wiredash_theme_data.dart';
+export 'src/core/translation/wiredash_localizations.dart';
+export 'src/core/translation/wiredash_translations.dart';
+export 'src/core/widgets/confidential.dart';
+export 'src/core/wiredash_controller.dart';
+export 'src/core/wiredash_widget.dart' show Wiredash;
 export 'src/feedback/data/label.dart';
-export 'src/wiredash_controller.dart';
-export 'src/wiredash_widget.dart' show Wiredash;

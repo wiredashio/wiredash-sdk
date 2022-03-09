@@ -21,6 +21,6 @@ class FeedbackModelProvider extends InheritedNotifier<FeedbackModel> {
   }
 }
 
-extension WiredashExtensions on BuildContext {
+extension FeedbackModelExtension on BuildContext {
   FeedbackModel get feedbackModel => FeedbackModelProvider.of(this);
 }
