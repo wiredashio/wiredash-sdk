@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:wiredash/src/common/services/streampod.dart';
+import 'package:wiredash/src/core/services/streampod.dart';
 
 void main() {
   test('provider rebuild when dependencies change', () {

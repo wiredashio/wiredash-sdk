@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/common/theme/wiredash_theme.dart';
-import 'package:wiredash/src/common/widgets/animated_shape.dart';
-import 'package:wiredash/src/common/widgets/tron_button.dart';
-import 'package:wiredash/src/common/widgets/wirecons.dart';
+import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/feedback/ui/slider/stroke_width_slider_widget.dart';
 
 class ColorPalette extends StatefulWidget {

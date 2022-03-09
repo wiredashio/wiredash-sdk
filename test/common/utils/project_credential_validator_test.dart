@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:wiredash/src/common/utils/project_credential_validator.dart';
+import 'package:wiredash/src/core/project_credential_validator.dart';
 
 void main() {
   group('ProjectCredentialValidator', () {

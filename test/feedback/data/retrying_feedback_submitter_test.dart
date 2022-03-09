@@ -10,12 +10,10 @@ import 'package:http/http.dart';
 import 'package:http_parser/src/media_type.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wiredash/src/common/network/wiredash_api.dart';
-import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
-import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
-import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
-import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 
 import '../../util/invocation_catcher.dart';
 import 'pending_feedback_item_storage_test.dart';

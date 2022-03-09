@@ -1,9 +1,8 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wiredash/src/common/options/feedback_options.dart';
-import 'package:wiredash/src/feedback/feedback_model.dart';
-import 'package:wiredash/src/feedback/ui/steps/step_6_submit.dart';
+import 'package:wiredash/src/core/options/feedback_options.dart';
+import 'package:wiredash/src/feedback/_feedback.dart';
 
 import 'util/robot.dart';
 import 'util/wiredash_tester.dart';

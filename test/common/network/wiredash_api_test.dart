@@ -5,9 +5,12 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:test/test.dart';
-import 'package:wiredash/src/common/network/wiredash_api.dart';
-import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
-import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/feedback/_feedback.dart';
+import 'package:wiredash/src/metadata/build_info/app_info.dart';
+import 'package:wiredash/src/metadata/build_info/build_info.dart';
+import 'package:wiredash/src/metadata/device_info/device_info.dart';
 
 void main() {
   group('Serialize feedback item', () {
