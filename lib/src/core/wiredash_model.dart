@@ -14,6 +14,9 @@ class WiredashModel with ChangeNotifier {
 
   CustomizableWiredashMetaData? _metaData;
 
+  WiredashFlow? get activeFlow => _activeFlow;
+  WiredashFlow? _activeFlow;
+
   CustomizableWiredashMetaData get metaData {
     if (_metaData == null) {
       _metaData = CustomizableWiredashMetaData();
@@ -69,10 +72,13 @@ class WiredashModel with ChangeNotifier {
   }
 
   /// Opens wiredash behind the app
-  Future<void> show() async {
+  Future<void> show({required WiredashFlow flow}) async {
+    // TODO eventually switch flow when _activeFlow != flow
     if (isWiredashActive) return;
 
+    _activeFlow = flow;
     isWiredashActive = true;
+    notifyListeners();
 
     // wait for backdropController to have a valid state
     await _postFrameCallbackStream()
@@ -89,6 +95,7 @@ class WiredashModel with ChangeNotifier {
     if (discardFeedback) {
       services.discardFeedback();
     }
+    notifyListeners();
   }
 }
 
@@ -132,4 +139,9 @@ Stream<Duration> _postFrameCallbackStream() async* {
     });
     yield await completer.future;
   }
+}
+
+enum WiredashFlow {
+  feedback,
+  nps,
 }

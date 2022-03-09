@@ -29,11 +29,15 @@ class WiredashBackdrop extends StatefulWidget {
   final BackdropController controller;
   final EdgeInsets? padding;
   final Widget Function(BuildContext) contentBuilder;
+
+  /// Shown below the app, but above the backdrop [contentBuilder]
   final Widget? Function(
     BuildContext,
     Rect appRect,
     MediaQueryData mediaQueryData,
   )? backgroundLayerBuilder;
+
+  /// Shown on top of the app
   final Widget? Function(
     BuildContext,
     Rect appRect,
