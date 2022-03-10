@@ -4,7 +4,6 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/feedback/data/delay.dart';
 import 'package:wiredash/src/metadata/build_info/app_info.dart';
-import 'package:wiredash/src/metadata/build_info/build_info_manager.dart';
 import 'package:wiredash/src/metadata/device_info/device_info.dart';
 import 'package:wiredash/src/metadata/renderer/renderer.dart';
 import 'package:wiredash/wiredash.dart';
@@ -30,8 +29,6 @@ class FeedbackModel with ChangeNotifier {
   FeedbackFlowStatus _feedbackFlowStatus = FeedbackFlowStatus.message;
 
   FeedbackFlowStatus get feedbackFlowStatus => _feedbackFlowStatus;
-
-  final BuildInfoManager buildInfoManager = BuildInfoManager();
 
   final GlobalKey<FormState> stepFormKey = GlobalKey<FormState>();
 

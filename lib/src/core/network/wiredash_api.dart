@@ -8,6 +8,7 @@ import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
+import 'package:wiredash/src/nps/nps_model.dart';
 
 /// API client to communicate with the Wiredash servers
 class WiredashApi {
@@ -101,6 +102,28 @@ class WiredashApi {
     }
     throw WiredashApiException(
       message: 'submitting feedback failed',
+      response: response,
+    );
+  }
+
+  Future<void> sendNps(NpsRequestBody body) async {
+    final uri = Uri.parse('$_host/sendNps');
+    final Request request = Request('POST', uri);
+    request.headers['Content-Type'] = 'application/json';
+
+    final args = body.toJson();
+    request.body = jsonEncode(args);
+
+    final response = await _send(request);
+    if (response.statusCode == 200) {
+      // success 🎉
+      return;
+    }
+    if (response.statusCode == 401) {
+      throw UnauthenticatedWiredashApiException(response, _projectId, _secret);
+    }
+    throw WiredashApiException(
+      message: 'submitting nps failed',
       response: response,
     );
   }
@@ -426,5 +449,75 @@ extension on CompilationMode {
       case CompilationMode.debug:
         return 'debug';
     }
+  }
+}
+
+class NpsRequestBody {
+  const NpsRequestBody({
+    this.appLocale,
+    required this.deviceId,
+    required this.message,
+    this.platformLocale,
+    this.platformOS,
+    this.platformOSVersion,
+    this.platformUserAgent,
+    required this.score,
+    required this.sdkVersion,
+    this.userEmail,
+    this.userId,
+  });
+
+  final String? appLocale;
+  final String deviceId;
+  final String message;
+  final String? platformLocale;
+  final String? platformOS;
+  final String? platformOSVersion;
+  final String? platformUserAgent;
+  final NpsScore score;
+  final int sdkVersion;
+  final String? userEmail;
+  final String? userId;
+
+  Map<String, Object> toJson() {
+    final Map<String, Object> body = {};
+
+    if (appLocale != null) {
+      body['appLocale'] = appLocale!;
+    }
+
+    body['deviceId'] = deviceId;
+
+    body['message'] = message;
+
+    if (platformLocale != null) {
+      body['platformLocale'] = platformLocale!;
+    }
+
+    if (platformOS != null) {
+      body['platformOS'] = platformOS!;
+    }
+    if (platformOSVersion != null) {
+      // TODO
+      // body['platformOSVersion'] = platformOSVersion!;
+    }
+
+    if (platformUserAgent != null) {
+      body['platformUserAgent'] = platformUserAgent!;
+    }
+
+    body['score'] = score.intValue;
+
+    body['sdkVersion'] = sdkVersion;
+
+    if (userEmail != null) {
+      body['userEmail'] = userEmail!;
+    }
+
+    if (userId != null) {
+      body['userId'] = userId!;
+    }
+
+    return body;
   }
 }

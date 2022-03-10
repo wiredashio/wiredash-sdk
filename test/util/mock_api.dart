@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:http_parser/src/media_type.dart';
@@ -9,14 +8,16 @@ import 'package:wiredash/src/feedback/_feedback.dart';
 import 'invocation_catcher.dart';
 
 class MockWiredashApi implements WiredashApi {
-  List<PersistedFeedbackItem> submissions = [];
-  MethodInvocationCatcher sendFeedbackInvocations =
+  final MethodInvocationCatcher sendFeedbackInvocations =
       MethodInvocationCatcher('sendFeedback');
 
   @override
   Future<void> sendFeedback(PersistedFeedbackItem feedback) async {
-    return sendFeedbackInvocations.addMethodCall(args: [feedback]);
+    return await sendFeedbackInvocations.addMethodCall(args: [feedback]);
   }
+
+  final MethodInvocationCatcher uploadAttachmentInvocations =
+      MethodInvocationCatcher('uploadAttachment');
 
   @override
   Future<AttachmentId> uploadAttachment({
@@ -25,8 +26,25 @@ class MockWiredashApi implements WiredashApi {
     String? filename,
     MediaType? contentType,
   }) async {
-    return AttachmentId(
-      Random().nextDouble().toString().replaceFirst('0.', ''),
+    final response = await uploadAttachmentInvocations.addMethodCall(
+      namedArgs: {
+        'screenshot': screenshot,
+        'type': type,
+        'filename': filename,
+        'contentType': contentType,
+      },
     );
+    if (response != null) {
+      return response as AttachmentId;
+    }
+    throw 'Not mocked';
+  }
+
+  final MethodInvocationCatcher sendNpsInvocations =
+      MethodInvocationCatcher('sendNps');
+
+  @override
+  Future<void> sendNps(NpsRequestBody body) async {
+    return await sendNpsInvocations.addMethodCall(args: [body]);
   }
 }

@@ -6,6 +6,7 @@ export 'package:wiredash/src/core/theme/wiredash_theme.dart';
 export 'package:wiredash/src/core/theme/wiredash_theme_data.dart';
 export 'package:wiredash/src/core/widgets/animated_shape.dart';
 export 'package:wiredash/src/core/widgets/backdrop/backdrop_controller_provider.dart';
+export 'package:wiredash/src/core/widgets/backdrop/step_page_scaffold.dart';
 export 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 export 'package:wiredash/src/core/widgets/larry_page_view.dart';
 export 'package:wiredash/src/core/widgets/tron/animated_fade_widget_switcher.dart';

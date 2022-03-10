@@ -36,10 +36,13 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      flowStatus: FeedbackFlowStatus.email,
+      indicator:
+          const FeedbackProgressIndicator(flowStatus: FeedbackFlowStatus.email),
       title: const Text('Get email updates for your issue'),
       shortTitle: const Text('Contact'),
       description: const Text('Add your email address below or leave empty'),
+      discardLabel: const Text('Discard Feedback'),
+      discardConfirmLabel: const Text('Really? Discard!'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

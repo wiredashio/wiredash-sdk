@@ -11,6 +11,7 @@ import 'package:wiredash/src/core/support/not_a_widgets_app.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/feedback/feedback_backdrop.dart';
 import 'package:wiredash/src/nps/nps_backdrop.dart';
+import 'package:wiredash/src/nps/nps_model_provider.dart';
 import 'package:wiredash/wiredash.dart';
 
 /// Capture in-app user feedback, wishes, ratings and much more
@@ -247,9 +248,15 @@ class WiredashState extends State<Wiredash> {
       }
       switch (active) {
         case WiredashFlow.feedback:
-          return FeedbackBackdrop(child: app);
+          return FeedbackModelProvider(
+            feedbackModel: _services.feedbackModel,
+            child: FeedbackBackdrop(child: app),
+          );
         case WiredashFlow.nps:
-          return NpsBackdrop(child: app);
+          return NpsModelProvider(
+            npsModel: _services.npsModel,
+            child: NpsBackdrop(child: app),
+          );
       }
     }();
 
@@ -266,16 +273,13 @@ class WiredashState extends State<Wiredash> {
     // Finally provide the models to wiredash and the UI
     return WiredashModelProvider(
       wiredashModel: _services.wiredashModel,
-      child: FeedbackModelProvider(
-        feedbackModel: _services.feedbackModel,
-        child: BackdropControllerProvider(
-          backdropController: _services.backdropController,
-          child: PicassoControllerProvider(
-            picassoController: _services.picassoController,
-            child: WiredashOptions(
-              data: _services.wiredashOptions,
-              child: backdrop,
-            ),
+      child: BackdropControllerProvider(
+        backdropController: _services.backdropController,
+        child: PicassoControllerProvider(
+          picassoController: _services.picassoController,
+          child: WiredashOptions(
+            data: _services.wiredashOptions,
+            child: backdrop,
           ),
         ),
       ),
