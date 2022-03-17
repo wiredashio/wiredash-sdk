@@ -6,6 +6,7 @@ import 'package:wiredash/src/feedback/data/delay.dart';
 import 'package:wiredash/src/metadata/build_info/app_info.dart';
 import 'package:wiredash/src/metadata/device_info/device_info.dart';
 import 'package:wiredash/src/metadata/renderer/renderer.dart';
+import 'package:wiredash/src/utils/changenotifier2.dart';
 import 'package:wiredash/wiredash.dart';
 
 enum FeedbackFlowStatus {
@@ -22,7 +23,7 @@ enum FeedbackFlowStatus {
   submittingAndRetry,
 }
 
-class FeedbackModel with ChangeNotifier {
+class FeedbackModel extends ChangeNotifier2 {
   FeedbackModel(WiredashServices services) : _services = services;
 
   final WiredashServices _services;

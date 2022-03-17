@@ -15,6 +15,7 @@ class NpsStep1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return StepPageScaffold(
       title: const Text('How likely are you to recommend us?'),
+      // title: const Text('How likely are you to recommend us to your friends and colleagues?'),
       indicator: const StepIndicator(
         completed: false,
         currentStep: 1,
@@ -56,54 +57,56 @@ class NpsRater extends StatelessWidget {
       alignment: context.theme.windowSize.width > 800
           ? Alignment.centerLeft
           : Alignment.center,
-      child: LayoutBuilder(builder: (context, constraints) {
-        final maxItemWidth = constraints.maxWidth / 6;
-        return Wrap(
-          alignment: WrapAlignment.center,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (final i in [0, 1, 2, 3, 4, 5])
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: maxItemWidth),
-                    child: _RatingCard(
-                      value: i,
-                      checked: i == model.score?.intValue,
-                      onTap: () {
-                        if (model.score?.intValue == i) {
-                          model.score = null;
-                        } else {
-                          model.score = createNpsRating(i);
-                        }
-                      },
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final maxItemWidth = constraints.maxWidth / 6;
+          return Wrap(
+            alignment: WrapAlignment.center,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final i in [0, 1, 2, 3, 4, 5])
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: maxItemWidth),
+                      child: _RatingCard(
+                        value: i,
+                        checked: i == model.score?.intValue,
+                        onTap: () {
+                          if (model.score?.intValue == i) {
+                            model.score = null;
+                          } else {
+                            model.score = createNpsRating(i);
+                          }
+                        },
+                      ),
                     ),
-                  ),
-              ],
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (final i in [6, 7, 8, 9, 10])
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: maxItemWidth),
-                    child: _RatingCard(
-                      value: i,
-                      checked: i == model.score?.intValue,
-                      onTap: () {
-                        if (model.score?.intValue == i) {
-                          model.score = null;
-                        } else {
-                          model.score = createNpsRating(i);
-                        }
-                      },
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final i in [6, 7, 8, 9, 10])
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: maxItemWidth),
+                      child: _RatingCard(
+                        value: i,
+                        checked: i == model.score?.intValue,
+                        onTap: () {
+                          if (model.score?.intValue == i) {
+                            model.score = null;
+                          } else {
+                            model.score = createNpsRating(i);
+                          }
+                        },
+                      ),
                     ),
-                  ),
-              ],
-            ),
-          ],
-        );
-      }),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

@@ -167,6 +167,7 @@ void _setupServices(WiredashServices sl) {
   );
 
   sl.inject<DiscardFeedbackUseCase>((_) => DiscardFeedbackUseCase(sl));
+  sl.inject<DiscardNpsUseCase>((_) => DiscardNpsUseCase(sl));
 }
 
 /// Discards the current feedback

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/nps/nps_model.dart';
 import 'package:wiredash/src/nps/nps_model_provider.dart';
 
 class NpsStep2Message extends StatefulWidget {
@@ -47,8 +48,11 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
         total: 2,
         completed: false,
       ),
-      title: const Text('What is the most important reason for your score?'),
-      description: const Text('Lorem ispum dolor sit amet.'),
+      // title: const Text('What is the most important reason for your score?'),
+      title: const Text('What could we do to improve?'),
+      description: Text(
+        'Tell us a bit more about why you chose ${context.npsModel.score!.intValue}',
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -78,8 +82,7 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
                 hoverColor: context.theme.brightness == Brightness.light
                     ? context.theme.primaryBackgroundColor.darken(0.015)
                     : context.theme.primaryBackgroundColor.lighten(0.015),
-                hintText:
-                    'There’s an unknown error when I try to change my avatar...',
+                hintText: 'It would be great if you could improve...',
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 hintStyle: context.theme.body2TextStyle,

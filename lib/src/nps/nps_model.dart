@@ -2,8 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/feedback/data/delay.dart';
+import 'package:wiredash/src/utils/changenotifier2.dart';
+import 'package:wiredash/src/utils/object_util.dart';
 
-class NpsModel extends ChangeNotifier {
+class NpsModel extends ChangeNotifier2 {
   NpsModel(WiredashServices services) : _services = services;
 
   final WiredashServices _services;
@@ -41,7 +43,7 @@ class NpsModel extends ChangeNotifier {
 
       final body = NpsRequestBody(
         score: score!,
-        message: message!,
+        message: message,
         sdkVersion: wiredashSdkVersion,
         deviceId: deviceId,
         userId: metaData.userId,
@@ -55,13 +57,15 @@ class NpsModel extends ChangeNotifier {
       _closeDelay?.dispose();
       _closeDelay = Delay(const Duration(seconds: 1));
       await _closeDelay!.future;
+      _submitting = false;
+      notifyListeners();
       await returnToAppPostSubmit();
     } catch (e, stack) {
       reportWiredashError(e, stack, 'NPS submission failed');
-      rethrow;
-    } finally {
       _submitting = false;
       notifyListeners();
+      await returnToAppPostSubmit();
+      rethrow;
     }
   }
 
