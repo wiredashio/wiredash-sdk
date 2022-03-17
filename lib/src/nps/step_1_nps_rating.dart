@@ -52,45 +52,58 @@ class NpsRater extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.npsModel;
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
-      alignment: WrapAlignment.center,
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
+    return Align(
+      alignment: context.theme.windowSize.width > 800
+          ? Alignment.centerLeft
+          : Alignment.center,
+      child: LayoutBuilder(builder: (context, constraints) {
+        final maxItemWidth = constraints.maxWidth / 6;
+        return Wrap(
+          alignment: WrapAlignment.center,
           children: [
-            for (final i in [0, 1, 2, 3, 4, 5])
-              _RatingCard(
-                value: i,
-                checked: i == model.score?.intValue,
-                onTap: () {
-                  if (model.score?.intValue == i) {
-                    model.score = null;
-                  } else {
-                    model.score = createNpsRating(i);
-                  }
-                },
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final i in [0, 1, 2, 3, 4, 5])
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: maxItemWidth),
+                    child: _RatingCard(
+                      value: i,
+                      checked: i == model.score?.intValue,
+                      onTap: () {
+                        if (model.score?.intValue == i) {
+                          model.score = null;
+                        } else {
+                          model.score = createNpsRating(i);
+                        }
+                      },
+                    ),
+                  ),
+              ],
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final i in [6, 7, 8, 9, 10])
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: maxItemWidth),
+                    child: _RatingCard(
+                      value: i,
+                      checked: i == model.score?.intValue,
+                      onTap: () {
+                        if (model.score?.intValue == i) {
+                          model.score = null;
+                        } else {
+                          model.score = createNpsRating(i);
+                        }
+                      },
+                    ),
+                  ),
+              ],
+            ),
           ],
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final i in [6, 7, 8, 9, 10])
-              _RatingCard(
-                value: i,
-                checked: i == model.score?.intValue,
-                onTap: () {
-                  if (model.score?.intValue == i) {
-                    model.score = null;
-                  } else {
-                    model.score = createNpsRating(i);
-                  }
-                },
-              ),
-          ],
-        ),
-      ],
+        );
+      }),
     );
   }
 }
@@ -112,17 +125,17 @@ class _RatingCard extends StatelessWidget {
     return AnimatedClickTarget(
       onTap: onTap,
       builder: (context, state, anims) {
+        final theme = context.theme;
         return Card(
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
             side: BorderSide(
-              color:
-                  context.theme.primaryColor.withOpacity(checked ? 1.0 : 0.25),
-              width: 1.5,
+              color: theme.primaryColor.withOpacity(checked ? 1.0 : 0.25),
+              width: 2,
             ),
           ),
-          color: context.theme.primaryBackgroundColor,
+          color: theme.primaryBackgroundColor,
           child: SizedBox(
             width: 48,
             height: 60,
@@ -130,13 +143,22 @@ class _RatingCard extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(value.toString()),
-                  const SizedBox(height: 7),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1),
+                    child: Text(
+                      value.toString(),
+                      style: TextStyle(
+                        color: checked
+                            ? theme.primaryTextColor
+                            : theme.secondaryTextColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
                   TronIcon(
-                    checked ? Wirecons.check_circle : Wirecons.check_circle,
-                    color: context.theme.primaryColor
-                        .withOpacity(checked ? 1.0 : 0.5),
-                    size: 15,
+                    checked ? Wirecons.check_circle : Wirecons.circle,
+                    color: theme.primaryColor.withOpacity(checked ? 1.0 : 0.5),
+                    size: 18,
                   ),
                 ],
               ),
