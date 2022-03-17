@@ -469,7 +469,7 @@ class NpsRequestBody {
 
   final String? appLocale;
   final String deviceId;
-  final String message;
+  final String? message;
   final String? platformLocale;
   final String? platformOS;
   final String? platformOSVersion;
@@ -488,7 +488,9 @@ class NpsRequestBody {
 
     body['deviceId'] = deviceId;
 
-    body['message'] = message;
+    if (message != null && message!.isNotEmpty) {
+      body['message'] = message!;
+    }
 
     if (platformLocale != null) {
       body['platformLocale'] = platformLocale!;
