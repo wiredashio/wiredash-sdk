@@ -456,7 +456,8 @@ class NpsRequestBody {
   const NpsRequestBody({
     this.appLocale,
     required this.deviceId,
-    required this.message,
+    this.message,
+    required this.question,
     this.platformLocale,
     this.platformOS,
     this.platformOSVersion,
@@ -470,6 +471,7 @@ class NpsRequestBody {
   final String? appLocale;
   final String deviceId;
   final String? message;
+  final String question;
   final String? platformLocale;
   final String? platformOS;
   final String? platformOSVersion;
@@ -489,6 +491,7 @@ class NpsRequestBody {
     body['deviceId'] = deviceId;
 
     if (message != null && message!.isNotEmpty) {
+      // TODO make nullable in backend
       body['message'] = message!;
     }
 
@@ -500,7 +503,7 @@ class NpsRequestBody {
       body['platformOS'] = platformOS!;
     }
     if (platformOSVersion != null) {
-      // TODO
+      // TODO add to backend
       // body['platformOSVersion'] = platformOSVersion!;
     }
 

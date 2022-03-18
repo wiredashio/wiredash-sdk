@@ -10,11 +10,11 @@ class NpsModel extends ChangeNotifier2 {
 
   final WiredashServices _services;
   Delay? _closeDelay;
-  NpsScore? get score => _rating;
-  NpsScore? _rating;
+  NpsScore? get score => _score;
+  NpsScore? _score;
 
-  set score(NpsScore? rating) {
-    _rating = rating;
+  set score(NpsScore? value) {
+    _score = value;
     notifyListeners();
   }
 
@@ -43,6 +43,7 @@ class NpsModel extends ChangeNotifier2 {
 
       final body = NpsRequestBody(
         score: score!,
+        question: 'TODO get questiosn from translations',
         message: message,
         sdkVersion: wiredashSdkVersion,
         deviceId: deviceId,
