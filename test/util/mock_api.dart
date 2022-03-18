@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:http_parser/src/media_type.dart';
@@ -8,6 +9,17 @@ import 'package:wiredash/src/feedback/_feedback.dart';
 import 'invocation_catcher.dart';
 
 class MockWiredashApi implements WiredashApi {
+  MockWiredashApi();
+
+  factory MockWiredashApi.fake() {
+    final api = MockWiredashApi();
+    api.uploadAttachmentInvocations.interceptor = (iv) {
+      final randomFloat = Random().nextDouble().toString();
+      return AttachmentId(randomFloat.replaceFirst('0.', ''));
+    };
+    return api;
+  }
+
   final MethodInvocationCatcher sendFeedbackInvocations =
       MethodInvocationCatcher('sendFeedback');
 
