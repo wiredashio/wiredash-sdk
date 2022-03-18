@@ -464,4 +464,6 @@ class Wirecons {
       IconData(0xe9e2, fontFamily: _fontFamily, fontPackage: _fontPackage);
   static const IconData zoom_out =
       IconData(0xe9e3, fontFamily: _fontFamily, fontPackage: _fontPackage);
+  static const IconData circle =
+      IconData(0xe9e4, fontFamily: _fontFamily, fontPackage: _fontPackage);
 }

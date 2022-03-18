@@ -16,7 +16,9 @@ class _Step2LabelsState extends State<Step2Labels>
     final feedbackModel = context.feedbackModel;
     final selectedLabels = feedbackModel.selectedLabels;
     return StepPageScaffold(
-      flowStatus: FeedbackFlowStatus.labels,
+      indicator: const FeedbackProgressIndicator(
+        flowStatus: FeedbackFlowStatus.labels,
+      ),
       title: const Text(
         'Which label represents your feedback?',
       ),
@@ -24,6 +26,8 @@ class _Step2LabelsState extends State<Step2Labels>
       description: const Text(
         'Selecting the correct category helps forwarding your feedback to the best person to resolve your issue',
       ),
+      discardLabel: const Text('Discard Feedback'),
+      discardConfirmLabel: const Text('Really? Discard!'),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +63,7 @@ class _Step2LabelsState extends State<Step2Labels>
                 onTap: context.feedbackModel.goToNextStep,
               ),
             ],
-          )
+          ),
         ],
       ),
     );

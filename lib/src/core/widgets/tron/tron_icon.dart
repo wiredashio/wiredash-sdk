@@ -5,12 +5,14 @@ class TronIcon extends StatefulWidget {
     this.icon, {
     this.color,
     Key? key,
+    this.size,
     this.duration = const Duration(milliseconds: 250),
   }) : super(key: key);
 
   final Color? color;
   final Duration duration;
   final IconData icon;
+  final double? size;
 
   @override
   State<TronIcon> createState() => _TronIconState();
@@ -71,7 +73,7 @@ class _TronIconState extends State<TronIcon>
       opacity: _fadeAnimation,
       child: Icon(
         _oldIcon ?? widget.icon,
-        size: 20,
+        size: widget.size ?? 20,
         color: widget.color,
       ),
     );

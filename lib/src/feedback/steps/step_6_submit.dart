@@ -16,13 +16,17 @@ class _Step6SubmitState extends State<Step6Submit> {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      flowStatus: FeedbackFlowStatus.submit,
+      indicator: const FeedbackProgressIndicator(
+        flowStatus: FeedbackFlowStatus.submit,
+      ),
       title: const Text('Submit your feedback'),
       shortTitle: const Text('Submit'),
       description: const Text(
         'Please review your data before submission. '
         'You can navigate back to adjust your feedback',
       ),
+      discardLabel: const Text('Discard Feedback'),
+      discardConfirmLabel: const Text('Really? Discard!'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

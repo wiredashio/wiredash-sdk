@@ -36,7 +36,7 @@ void main() {
 
     testWidgets('Send feedback with screenshot', (tester) async {
       final robot = await WiredashTestRobot.launchApp(tester);
-      final mockApi = MockWiredashApi();
+      final mockApi = MockWiredashApi.fake();
       robot.mockWiredashApi(mockApi);
 
       await robot.openWiredash();
@@ -60,7 +60,7 @@ void main() {
 
     testWidgets('Send feedback with multiple screenshots', (tester) async {
       final robot = await WiredashTestRobot.launchApp(tester);
-      final mockApi = MockWiredashApi();
+      final mockApi = MockWiredashApi.fake();
       robot.mockWiredashApi(mockApi);
 
       await robot.openWiredash();
@@ -96,7 +96,7 @@ void main() {
           ],
         ),
       );
-      final mockApi = MockWiredashApi();
+      final mockApi = MockWiredashApi.fake();
       robot.mockWiredashApi(mockApi);
 
       await robot.openWiredash();
@@ -129,7 +129,7 @@ void main() {
           askForUserEmail: true,
         ),
       );
-      final mockApi = MockWiredashApi();
+      final mockApi = MockWiredashApi.fake();
       robot.mockWiredashApi(mockApi);
 
       await robot.openWiredash();
@@ -162,7 +162,7 @@ void main() {
           ],
         ),
       );
-      final mockApi = MockWiredashApi();
+      final mockApi = MockWiredashApi.fake();
       robot.mockWiredashApi(mockApi);
 
       await robot.openWiredash();

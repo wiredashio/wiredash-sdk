@@ -87,7 +87,31 @@ class WiredashController {
   ///
   /// If a Wiredash feedback flow is already active (=a feedback sheet is open),
   /// does nothing.
-  void show({bool? inheritMaterialTheme, bool? inheritCupertinoTheme}) {
+  void show({
+    bool? inheritMaterialTheme,
+    bool? inheritCupertinoTheme,
+  }) {
+    _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
+    _model.show(flow: WiredashFlow.feedback);
+  }
+
+  /// A [ValueNotifier] representing the current state of the capture UI. Use
+  /// this to change your app's configuration when the user is in the process
+  /// of taking a screenshot of your app - e.g. hiding sensitive information or
+  /// disabling specific widgets.
+  ///
+  /// The [Confidential] widget can automatically hide sensitive widgets from
+  /// being recorded in a feedback screenshot.
+  ValueNotifier<bool> get visible {
+    return _model.services.backdropController
+        .asValueNotifier((c) => c.isAppInteractive);
+  }
+
+  /// Search the user context for the app theme
+  void _captureAppTheme(
+    bool? inheritMaterialTheme,
+    bool? inheritCupertinoTheme,
+  ) {
     assert(
       () {
         if (inheritCupertinoTheme == true && inheritMaterialTheme == true) {
@@ -97,6 +121,7 @@ class WiredashController {
         return true;
       }(),
     );
+
     // reset theme at every call
     _model.themeFromContext = null;
     final context = _model.services.wiredashWidget.showBuildContext;
@@ -117,19 +142,15 @@ class WiredashController {
         );
       }
     }
-
-    _model.show();
   }
+}
 
-  /// A [ValueNotifier] representing the current state of the capture UI. Use
-  /// this to change your app's configuration when the user is in the process
-  /// of taking a screenshot of your app - e.g. hiding sensitive information or
-  /// disabling specific widgets.
-  ///
-  /// The [Confidential] widget can automatically hide sensitive widgets from
-  /// being recorded in a feedback screenshot.
-  ValueNotifier<bool> get visible {
-    return _model.services.backdropController
-        .asValueNotifier((c) => c.isAppInteractive);
+extension NpsWiredash on WiredashController {
+  void showNps({
+    bool? inheritMaterialTheme,
+    bool? inheritCupertinoTheme,
+  }) {
+    _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
+    _model.show(flow: WiredashFlow.nps);
   }
 }

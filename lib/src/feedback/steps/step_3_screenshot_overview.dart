@@ -33,7 +33,9 @@ class Step3NotAttachments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      flowStatus: FeedbackFlowStatus.screenshotsOverview,
+      indicator: const FeedbackProgressIndicator(
+        flowStatus: FeedbackFlowStatus.screenshotsOverview,
+      ),
       title: const Text('Include a screenshot for more context?'),
       shortTitle: const Text('Screenshots'),
       description: const Text(
@@ -96,12 +98,16 @@ class Step3WithGallery extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      flowStatus: FeedbackFlowStatus.screenshotsOverview,
+      indicator: const FeedbackProgressIndicator(
+        flowStatus: FeedbackFlowStatus.screenshotsOverview,
+      ),
       currentStep: 2,
       totalSteps: 3,
       title: const Text('Attached screenshots'),
       shortTitle: const Text('Screenshots'),
       description: const Text('Add, edit or remove images'),
+      discardLabel: const Text('Discard Feedback'),
+      discardConfirmLabel: const Text('Really? Discard!'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

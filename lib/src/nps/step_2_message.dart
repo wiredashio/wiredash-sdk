@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
+import 'package:wiredash/src/nps/nps_model.dart';
+import 'package:wiredash/src/nps/nps_model_provider.dart';
 
-class Step1FeedbackMessage extends StatefulWidget {
-  const Step1FeedbackMessage({Key? key}) : super(key: key);
+class NpsStep2Message extends StatefulWidget {
+  const NpsStep2Message({
+    Key? key,
+    required this.onSubmit,
+    required this.onBack,
+  }) : super(key: key);
+
+  final void Function() onSubmit;
+  final void Function() onBack;
 
   @override
-  State<Step1FeedbackMessage> createState() => _Step1FeedbackMessageState();
+  State<NpsStep2Message> createState() => _NpsStep2MessageState();
 }
 
-class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
+class _NpsStep2MessageState extends State<NpsStep2Message>
     with TickerProviderStateMixin {
   late final TextEditingController _controller;
 
@@ -18,11 +25,11 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
   void initState() {
     super.initState();
     _controller = TextEditingController(
-      text: FeedbackModelProvider.of(context, listen: false).feedbackMessage,
+      text: NpsModelProvider.of(context, listen: false).message,
     )..addListener(() {
         final text = _controller.text;
-        if (context.feedbackModel.feedbackMessage != text) {
-          context.feedbackModel.feedbackMessage = text;
+        if (context.npsModel.message != text) {
+          context.npsModel.message = text;
         }
       });
   }
@@ -36,16 +43,16 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      indicator: const FeedbackProgressIndicator(
-        flowStatus: FeedbackFlowStatus.message,
+      indicator: const StepIndicator(
+        currentStep: 2,
+        total: 2,
+        completed: false,
       ),
-      title: const Text('Send us your feedback'),
-      shortTitle: const Text('Compose message'),
-      description: const Text(
-        'Add a short description of what you encountered',
+      // title: const Text('What is the most important reason for your score?'),
+      title: const Text('What could we do to improve?'),
+      description: Text(
+        'Tell us a bit more about why you chose ${context.npsModel.score!.intValue}',
       ),
-      discardLabel: const Text('Discard Feedback'),
-      discardConfirmLabel: const Text('Really? Discard!'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -75,8 +82,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                 hoverColor: context.theme.brightness == Brightness.light
                     ? context.theme.primaryBackgroundColor.darken(0.015)
                     : context.theme.primaryBackgroundColor.lighten(0.015),
-                hintText:
-                    'There’s an unknown error when I try to change my avatar...',
+                hintText: 'It would be great if you could improve...',
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 hintStyle: context.theme.body2TextStyle,
@@ -88,15 +94,13 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
             children: [
               TronButton(
                 color: context.theme.secondaryColor,
-                label: 'Close',
-                onTap: context.wiredashModel.hide,
+                label: 'Back',
+                onTap: widget.onBack,
               ),
               TronButton(
-                label: 'Next',
-                trailingIcon: Wirecons.arrow_right,
-                onTap: context.feedbackModel.feedbackMessage == null
-                    ? null
-                    : context.feedbackModel.goToNextStep,
+                label: 'Done',
+                trailingIcon: Wirecons.check,
+                onTap: context.npsModel.submit,
               ),
             ],
           )

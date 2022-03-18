@@ -1,13 +1,9 @@
 // ignore_for_file: avoid_redundant_argument_values
 
-import 'dart:async';
-import 'dart:typed_data';
-
 import 'package:fake_async/fake_async.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:http/http.dart';
-import 'package:http_parser/src/media_type.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
@@ -15,14 +11,14 @@ import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 
-import '../../util/invocation_catcher.dart';
+import '../../util/mock_api.dart';
 import 'pending_feedback_item_storage_test.dart';
 
 void main() {
   group('RetryingFeedbackSubmitter', () {
     late FileSystem fileSystem;
     late PendingFeedbackItemStorage storage;
-    late MockApi mockApi;
+    late MockWiredashApi mockApi;
     late RetryingFeedbackSubmitter retryingFeedbackSubmitter;
 
     setUp(() {
@@ -34,7 +30,7 @@ void main() {
         dirPathProvider: () async => '.',
         sharedPreferencesProvider: () async => preferences,
       );
-      mockApi = MockApi();
+      mockApi = MockWiredashApi();
       mockApi.uploadAttachmentInvocations.interceptor = (_) {
         return AttachmentId('123');
       };
@@ -401,38 +397,4 @@ void main() {
       expect(await storage.retrieveAllPendingItems(), hasLength(0));
     });
   });
-}
-
-class MockApi implements WiredashApi {
-  final MethodInvocationCatcher sendFeedbackInvocations =
-      MethodInvocationCatcher('sendFeedback');
-
-  @override
-  Future<void> sendFeedback(PersistedFeedbackItem feedback) async {
-    return await sendFeedbackInvocations.addMethodCall(args: [feedback]);
-  }
-
-  final MethodInvocationCatcher uploadAttachmentInvocations =
-      MethodInvocationCatcher('uploadAttachment');
-
-  @override
-  Future<AttachmentId> uploadAttachment({
-    required Uint8List screenshot,
-    required AttachmentType type,
-    String? filename,
-    MediaType? contentType,
-  }) async {
-    final response = await uploadAttachmentInvocations.addMethodCall(
-      namedArgs: {
-        'screenshot': screenshot,
-        'type': type,
-        'filename': filename,
-        'contentType': contentType,
-      },
-    );
-    if (response != null) {
-      return response as AttachmentId;
-    }
-    throw 'Not mocked';
-  }
 }

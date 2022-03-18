@@ -23,6 +23,7 @@ import 'package:wiredash/src/feedback/ui/screencapture.dart';
 import 'package:wiredash/src/metadata/build_info/build_info_manager.dart';
 import 'package:wiredash/src/metadata/build_info/device_id_generator.dart';
 import 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
+import 'package:wiredash/src/nps/nps_model.dart';
 import 'package:wiredash/src/utils/uuid.dart';
 
 /// Internal service locator
@@ -36,6 +37,8 @@ class WiredashServices extends ChangeNotifier {
   WiredashModel get wiredashModel => _locator.get();
 
   FeedbackModel get feedbackModel => _locator.get();
+
+  NpsModel get npsModel => _locator.get();
 
   BackdropController get backdropController => _locator.get();
 
@@ -58,6 +61,8 @@ class WiredashServices extends ChangeNotifier {
   WiredashApi get api => _locator.get();
 
   DiscardFeedbackUseCase get discardFeedback => _locator.get();
+
+  DiscardNpsUseCase get discardNps => _locator.get();
 
   void updateWidget(Wiredash wiredashWidget) {
     inject<Wiredash>((_) => wiredashWidget);
@@ -125,6 +130,11 @@ void _setupServices(WiredashServices sl) {
     dispose: (model) => model.dispose(),
   );
 
+  sl.inject<NpsModel>(
+    (locator) => NpsModel(sl),
+    dispose: (model) => model.dispose(),
+  );
+
   sl.inject<WiredashApi>(
     (locator) {
       return WiredashApi(
@@ -157,6 +167,7 @@ void _setupServices(WiredashServices sl) {
   );
 
   sl.inject<DiscardFeedbackUseCase>((_) => DiscardFeedbackUseCase(sl));
+  sl.inject<DiscardNpsUseCase>((_) => DiscardNpsUseCase(sl));
 }
 
 /// Discards the current feedback
@@ -168,6 +179,20 @@ class DiscardFeedbackUseCase {
   void call() {
     services.inject<FeedbackModel>(
       (locator) => FeedbackModel(services),
+      dispose: (model) => model.dispose(),
+    );
+  }
+}
+
+/// Discards the current NPS
+class DiscardNpsUseCase {
+  DiscardNpsUseCase(this.services);
+
+  final WiredashServices services;
+
+  void call() {
+    services.inject<NpsModel>(
+      (locator) => NpsModel(services),
       dispose: (model) => model.dispose(),
     );
   }
