@@ -16,6 +16,7 @@ class StepPageScaffold extends StatefulWidget {
     this.discardLabel,
     this.discardConfirmLabel,
     Key? key,
+    this.onClose,
   }) : super(key: key);
 
   final int? currentStep;
@@ -27,6 +28,7 @@ class StepPageScaffold extends StatefulWidget {
   final Widget? description;
   final Widget? discardLabel;
   final Widget? discardConfirmLabel;
+  final void Function()? onClose;
 
   final Widget child;
 
@@ -90,7 +92,25 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
                     )
                   ] else
                     const Spacer(),
-                  if (widget.discardLabel != null)
+                  if (widget.onClose != null)
+                    AnimatedClickTarget(
+                      onTap: widget.onClose,
+                      builder: (
+                        BuildContext context,
+                        TargetState state,
+                        TargetStateAnimations anims,
+                      ) {
+                        return TronIcon(
+                          Wirecons.x,
+                          color: Color.lerp(
+                            context.theme.secondaryTextColor,
+                            context.theme.primaryTextColor,
+                            anims.hoveredAnim.value,
+                          ),
+                        );
+                      },
+                    )
+                  else if (widget.discardLabel != null)
                     TronLabeledButton(
                       onTap: () {
                         setState(() {

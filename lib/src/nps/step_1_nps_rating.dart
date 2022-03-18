@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/core/wiredash_model_provider.dart';
+import 'package:wiredash/src/feedback/data/delay.dart';
 import 'package:wiredash/src/nps/nps_model.dart';
 import 'package:wiredash/src/nps/nps_model_provider.dart';
 
@@ -16,6 +18,9 @@ class NpsStep1 extends StatelessWidget {
     return StepPageScaffold(
       title: const Text('How likely are you to recommend us?'),
       // title: const Text('How likely are you to recommend us to your friends and colleagues?'),
+      onClose: () {
+        context.wiredashModel.hide(discardNps: true);
+      },
       indicator: const StepIndicator(
         completed: false,
         currentStep: 1,
@@ -27,7 +32,7 @@ class NpsStep1 extends StatelessWidget {
         children: [
           const Text('0 = Not likely, 10 = most likely'),
           const SizedBox(height: 32),
-          const NpsRater(),
+          NpsRater(onSelected: onNext),
           const SizedBox(height: 32),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -45,10 +50,38 @@ class NpsStep1 extends StatelessWidget {
   }
 }
 
-class NpsRater extends StatelessWidget {
+class NpsRater extends StatefulWidget {
   const NpsRater({
     Key? key,
+    this.onSelected,
   }) : super(key: key);
+
+  final void Function()? onSelected;
+
+  @override
+  State<NpsRater> createState() => _NpsRaterState();
+}
+
+class _NpsRaterState extends State<NpsRater> {
+  Delay? _selectionDelay;
+
+  void _onTap(int score) {
+    final model = context.npsModel;
+    _selectionDelay?.dispose();
+    if (model.score?.intValue == score) {
+      model.score = null;
+    } else {
+      model.score = createNpsRating(score);
+      _fire();
+    }
+  }
+
+  Future<void> _fire() async {
+    _selectionDelay = Delay(const Duration(seconds: 1));
+    await _selectionDelay!.future;
+    if (!mounted) return;
+    widget.onSelected?.call();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,13 +105,7 @@ class NpsRater extends StatelessWidget {
                       child: _RatingCard(
                         value: i,
                         checked: i == model.score?.intValue,
-                        onTap: () {
-                          if (model.score?.intValue == i) {
-                            model.score = null;
-                          } else {
-                            model.score = createNpsRating(i);
-                          }
-                        },
+                        onTap: () => _onTap(i),
                       ),
                     ),
                 ],
@@ -92,13 +119,7 @@ class NpsRater extends StatelessWidget {
                       child: _RatingCard(
                         value: i,
                         checked: i == model.score?.intValue,
-                        onTap: () {
-                          if (model.score?.intValue == i) {
-                            model.score = null;
-                          } else {
-                            model.score = createNpsRating(i);
-                          }
-                        },
+                        onTap: () => _onTap(i),
                       ),
                     ),
                 ],
@@ -176,7 +197,6 @@ class _RatingCardState extends State<_RatingCard>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.checked != widget.checked) {
       if (widget.checked) {
-        print("forward");
         _controller.forward();
       } else {
         _controller.reverse();

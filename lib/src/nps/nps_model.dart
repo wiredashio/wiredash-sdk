@@ -3,7 +3,6 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/feedback/data/delay.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
-import 'package:wiredash/src/utils/object_util.dart';
 
 class NpsModel extends ChangeNotifier2 {
   NpsModel(WiredashServices services) : _services = services;
