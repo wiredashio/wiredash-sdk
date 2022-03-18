@@ -51,7 +51,7 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
       // title: const Text('What is the most important reason for your score?'),
       title: const Text('What could we do to improve?'),
       description: Text(
-        'Tell us a bit more about why you chose ${context.npsModel.score!.intValue}',
+        'Tell us a bit more about why you chose ${context.npsModel.score?.intValue}',
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

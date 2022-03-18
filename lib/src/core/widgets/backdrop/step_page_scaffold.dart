@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/core/widgets/measure_size.dart';
 
 /// The default layout of a step in [LarryPageView]
 class StepPageScaffold extends StatefulWidget {
@@ -65,90 +66,102 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
   @override
   Widget build(BuildContext context) {
     return Align(
-      child: ScrollBox(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+      alignment: Alignment.topLeft,
+      child: Container(
+        // color: Colors.red,
+        child: ScrollBox(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: MeasureSize(
+            onChange: (size, rect) {
+              WiredashBackdrop.of(context).contentSize = size;
+            },
+            child: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (widget.indicator != null) widget.indicator!,
-                  if (widget.shortTitle != null &&
-                      context.theme.windowSize.width > 400) ...[
-                    SizedBox(
-                      height: 16,
-                      child: VerticalDivider(
-                        color: context.theme.captionTextStyle.color,
-                      ),
-                    ),
-                    Expanded(
-                      child: DefaultTextStyle(
-                        style: context.theme.captionTextStyle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        child: widget.shortTitle!,
-                      ),
-                    )
-                  ] else
-                    const Spacer(),
-                  if (widget.onClose != null)
-                    AnimatedClickTarget(
-                      onTap: widget.onClose,
-                      builder: (
-                        BuildContext context,
-                        TargetState state,
-                        TargetStateAnimations anims,
-                      ) {
-                        return TronIcon(
-                          Wirecons.x,
-                          color: Color.lerp(
-                            context.theme.secondaryTextColor,
-                            context.theme.primaryTextColor,
-                            anims.hoveredAnim.value,
+                  Row(
+                    children: [
+                      if (widget.indicator != null) widget.indicator!,
+                      if (widget.shortTitle != null &&
+                          context.theme.windowSize.width > 400) ...[
+                        SizedBox(
+                          height: 16,
+                          child: VerticalDivider(
+                            color: context.theme.captionTextStyle.color,
                           ),
-                        );
-                      },
-                    )
-                  else if (widget.discardLabel != null)
-                    TronLabeledButton(
-                      onTap: () {
-                        setState(() {
-                          if (_reallyTimer == null) {
+                        ),
+                        Expanded(
+                          child: DefaultTextStyle(
+                            style: context.theme.captionTextStyle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            child: widget.shortTitle!,
+                          ),
+                        )
+                      ] else
+                        const Spacer(),
+                      if (widget.onClose != null)
+                        AnimatedClickTarget(
+                          onTap: widget.onClose,
+                          builder: (
+                            BuildContext context,
+                            TargetState state,
+                            TargetStateAnimations anims,
+                          ) {
+                            return TronIcon(
+                              Wirecons.x,
+                              color: Color.lerp(
+                                context.theme.secondaryTextColor,
+                                context.theme.primaryTextColor,
+                                anims.hoveredAnim.value,
+                              ),
+                            );
+                          },
+                        )
+                      else if (widget.discardLabel != null)
+                        TronLabeledButton(
+                          onTap: () {
                             setState(() {
-                              _reallyTimer =
-                                  Timer(const Duration(seconds: 3), () {
-                                if (mounted) {
-                                  setState(() {
-                                    _reallyTimer = null;
+                              if (_reallyTimer == null) {
+                                setState(() {
+                                  _reallyTimer =
+                                      Timer(const Duration(seconds: 3), () {
+                                    if (mounted) {
+                                      setState(() {
+                                        _reallyTimer = null;
+                                      });
+                                    } else {
+                                      _reallyTimer = null;
+                                    }
                                   });
-                                } else {
-                                  _reallyTimer = null;
-                                }
-                              });
+                                });
+                              } else {
+                                context.wiredashModel
+                                    .hide(discardFeedback: true);
+                                _reallyTimer = null;
+                              }
                             });
-                          } else {
-                            context.wiredashModel.hide(discardFeedback: true);
-                            _reallyTimer = null;
-                          }
-                        });
-                      },
-                      child: _reallyTimer == null
-                          ? widget.discardLabel!
-                          : DefaultTextStyle(
-                              style: TextStyle(color: context.theme.errorColor),
-                              child: widget.discardConfirmLabel ??
-                                  const Text('Really?'),
-                            ),
-                    ),
+                          },
+                          child: _reallyTimer == null
+                              ? widget.discardLabel!
+                              : DefaultTextStyle(
+                                  style: TextStyle(
+                                    color: context.theme.errorColor,
+                                  ),
+                                  child: widget.discardConfirmLabel ??
+                                      const Text('Really?'),
+                                ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  _buildTitle(context),
+                  const SizedBox(height: 32),
+                  widget.child,
                 ],
               ),
-              const SizedBox(height: 24),
-              _buildTitle(context),
-              const SizedBox(height: 32),
-              widget.child,
-            ],
+            ),
           ),
         ),
       ),
