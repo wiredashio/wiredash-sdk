@@ -111,7 +111,7 @@ class NpsRater extends StatelessWidget {
   }
 }
 
-class _RatingCard extends StatelessWidget {
+class _RatingCard extends StatefulWidget {
   const _RatingCard({
     Key? key,
     required this.value,
@@ -124,19 +124,83 @@ class _RatingCard extends StatelessWidget {
   final void Function() onTap;
 
   @override
+  _RatingCardState createState() => _RatingCardState();
+}
+
+class _RatingCardState extends State<_RatingCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Border?> _borderAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+    )..addListener(() {
+        setState(() {});
+      });
+    if (widget.checked) {
+      _controller.forward(from: 1);
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final borderTween = BorderTween(
+      begin: Border.fromBorderSide(
+        BorderSide(
+          color: context.theme.primaryColor.withOpacity(0.25),
+          width: 2,
+        ),
+      ),
+      end: Border.fromBorderSide(
+        BorderSide(
+          color: context.theme.primaryColor.withOpacity(1.0),
+          width: 2,
+        ),
+      ),
+    );
+    _borderAnimation = borderTween.animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _RatingCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.checked != widget.checked) {
+      if (widget.checked) {
+        print("forward");
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedClickTarget(
-      onTap: onTap,
+      onTap: widget.onTap,
       builder: (context, state, anims) {
         final theme = context.theme;
         return Card(
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
-            side: BorderSide(
-              color: theme.primaryColor.withOpacity(checked ? 1.0 : 0.25),
-              width: 2,
-            ),
+            side: _borderAnimation.value!.top,
           ),
           color: theme.primaryBackgroundColor,
           child: SizedBox(
@@ -148,20 +212,29 @@ class _RatingCard extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 1),
-                    child: Text(
-                      value.toString(),
+                    child: AnimatedDefaultTextStyle(
+                      curve: Curves.easeInOut,
                       style: TextStyle(
-                        color: checked
+                        color: widget.checked
                             ? theme.primaryTextColor
                             : theme.secondaryTextColor,
                       ),
+                      duration: _controller.duration!,
+                      child: Text(widget.value.toString()),
                     ),
                   ),
                   const SizedBox(height: 6),
-                  TronIcon(
-                    checked ? Wirecons.check_circle : Wirecons.circle,
-                    color: theme.primaryColor.withOpacity(checked ? 1.0 : 0.5),
-                    size: 18,
+                  AnimatedSwitcher(
+                    duration: _controller.duration! * 2,
+                    switchInCurve: Curves.easeInOut,
+                    switchOutCurve: Curves.easeInOut,
+                    child: Icon(
+                      widget.checked ? Wirecons.check_circle : Wirecons.circle,
+                      key: ValueKey(widget.checked),
+                      color: theme.primaryColor
+                          .withOpacity(widget.checked ? 1.0 : 0.5),
+                      size: 18,
+                    ),
                   ),
                 ],
               ),
