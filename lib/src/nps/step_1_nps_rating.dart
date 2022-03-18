@@ -84,6 +84,12 @@ class _NpsRaterState extends State<_NpsRater> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _selectionDelay?.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final model = context.npsModel;
     return Align(
