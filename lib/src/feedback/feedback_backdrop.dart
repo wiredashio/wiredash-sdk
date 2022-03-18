@@ -4,6 +4,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 
+/// The backdrop for [WiredashFlow.feedback]
 class FeedbackBackdrop extends StatelessWidget {
   const FeedbackBackdrop({
     Key? key,

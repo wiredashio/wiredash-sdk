@@ -32,7 +32,7 @@ class NpsStep1 extends StatelessWidget {
         children: [
           const Text('0 = Not likely, 10 = most likely'),
           const SizedBox(height: 32),
-          NpsRater(onSelected: onNext),
+          _NpsRater(onSelected: onNext),
           const SizedBox(height: 32),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -50,8 +50,8 @@ class NpsStep1 extends StatelessWidget {
   }
 }
 
-class NpsRater extends StatefulWidget {
-  const NpsRater({
+class _NpsRater extends StatefulWidget {
+  const _NpsRater({
     Key? key,
     this.onSelected,
   }) : super(key: key);
@@ -59,10 +59,10 @@ class NpsRater extends StatefulWidget {
   final void Function()? onSelected;
 
   @override
-  State<NpsRater> createState() => _NpsRaterState();
+  State<_NpsRater> createState() => _NpsRaterState();
 }
 
-class _NpsRaterState extends State<NpsRater> {
+class _NpsRaterState extends State<_NpsRater> {
   Delay? _selectionDelay;
 
   void _onTap(int score) {
