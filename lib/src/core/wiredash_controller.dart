@@ -95,14 +95,6 @@ class WiredashController {
     _model.show(flow: WiredashFlow.feedback);
   }
 
-  void showNps({
-    bool? inheritMaterialTheme,
-    bool? inheritCupertinoTheme,
-  }) {
-    _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
-    _model.show(flow: WiredashFlow.nps);
-  }
-
   /// A [ValueNotifier] representing the current state of the capture UI. Use
   /// this to change your app's configuration when the user is in the process
   /// of taking a screenshot of your app - e.g. hiding sensitive information or
@@ -150,5 +142,15 @@ class WiredashController {
         );
       }
     }
+  }
+}
+
+extension NpsWiredash on WiredashController {
+  void showNps({
+    bool? inheritMaterialTheme,
+    bool? inheritCupertinoTheme,
+  }) {
+    _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
+    _model.show(flow: WiredashFlow.nps);
   }
 }
