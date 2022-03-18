@@ -47,7 +47,6 @@ class ChangeNotifier2 implements ChangeNotifier {
     for (final listener in copy) {
       listener();
     }
-    listeners.clear();
   }
 
   /// Only notifies listeners when not disposed
