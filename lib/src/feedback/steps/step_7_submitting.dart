@@ -13,26 +13,24 @@ class Step7SubmittingAndError extends StatefulWidget {
 class _Step7SubmittingAndErrorState extends State<Step7SubmittingAndError> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: AnimatedFadeWidgetSwitcher(
-        alignment: Alignment.topCenter,
-        duration: const Duration(milliseconds: 800),
-        child: () {
-          final submitting = context.feedbackModel.submitting;
-          if (submitting) {
-            return const _Submitting();
-          }
+    return AnimatedFadeWidgetSwitcher(
+      alignment: Alignment.topCenter,
+      duration: const Duration(milliseconds: 800),
+      child: () {
+        final submitting = context.feedbackModel.submitting;
+        if (submitting) {
+          return const _Submitting();
+        }
 
-          final error = context.feedbackModel.submissionError;
-          if (error != null) {
-            return _Error(
-              error: error,
-            );
-          }
+        final error = context.feedbackModel.submissionError;
+        if (error != null) {
+          return _Error(
+            error: error,
+          );
+        }
 
-          return const _Submitted();
-        }(),
-      ),
+        return const _Submitted();
+      }(),
     );
   }
 }

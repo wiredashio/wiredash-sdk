@@ -27,44 +27,49 @@ class _Step6SubmitState extends State<Step6Submit> {
       ),
       discardLabel: const Text('Discard Feedback'),
       discardConfirmLabel: const Text('Really? Discard!'),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Builder(
+        builder: (context) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TronButton(
-                color: context.theme.secondaryColor,
-                leadingIcon: Wirecons.arrow_left,
-                label: 'Back',
-                onTap: context.feedbackModel.goToPreviousStep,
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TronButton(
+                    color: context.theme.secondaryColor,
+                    leadingIcon: Wirecons.arrow_left,
+                    label: 'Back',
+                    onTap: context.feedbackModel.goToPreviousStep,
+                  ),
+                  TronButton(
+                    label: 'Submit',
+                    leadingIcon: Wirecons.check,
+                    onTap: () {
+                      context.feedbackModel.submitFeedback();
+                    },
+                  ),
+                ],
               ),
-              TronButton(
-                label: 'Submit',
-                leadingIcon: Wirecons.check,
-                onTap: () {
-                  context.feedbackModel.submitFeedback();
-                },
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TronLabeledButton(
+                    child: Text(showDetails ? 'Hide Details' : 'Show Details'),
+                    onTap: () {
+                      StepPageScaffold.of(context)?.animateNextSizeChange();
+                      setState(() {
+                        showDetails = !showDetails;
+                      });
+                    },
+                  ),
+                ],
               ),
+              if (showDetails) feedbackDetails(),
             ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TronLabeledButton(
-                child: Text(showDetails ? 'Hide Details' : 'Show Details'),
-                onTap: () {
-                  setState(() {
-                    showDetails = !showDetails;
-                  });
-                },
-              ),
-            ],
-          ),
-          if (showDetails) feedbackDetails(),
-        ],
+          );
+        },
       ),
     );
   }
