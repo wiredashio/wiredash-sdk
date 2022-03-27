@@ -948,12 +948,15 @@ class BackdropController extends ChangeNotifier {
   Size? _contentSize;
   Size? get contentSize => _contentSize;
   set contentSize(Size? value) {
-    _contentSize = value;
-    _state?._onContentSizeChanged(
-      _contentSize,
-      animateSizeChange: animateSizeChange,
-    );
-    safeNotifyListeners();
+    if (_contentSize != value) {
+      _contentSize = value;
+      _state?._onContentSizeChanged(
+        _contentSize,
+        animateSizeChange: animateSizeChange,
+      );
+      animateSizeChange = false;
+      safeNotifyListeners();
+    }
   }
 
   bool animateSizeChange = false;

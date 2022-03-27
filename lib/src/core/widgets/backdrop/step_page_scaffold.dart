@@ -38,17 +38,21 @@ class StepPageScaffold extends StatefulWidget {
 
   @override
   State<StepPageScaffold> createState() => _StepPageScaffoldState();
-}
 
-enum StepPageAlignemnt {
-  start,
-  center,
-  end,
+  static _StepPageScaffoldState? of(BuildContext context) {
+    return context.findAncestorStateOfType<_StepPageScaffoldState>();
+  }
 }
 
 class _StepPageScaffoldState extends State<StepPageScaffold> {
   Timer? _reallyTimer;
-  bool _firstSize = true;
+  bool _animateNextSizeChange = true;
+
+  void animateNextSizeChange() {
+    _animateNextSizeChange = true;
+  }
+
+  double _lastReportedHeight = 0.0;
 
   Widget _buildTitle(BuildContext context) {
     return Column(
@@ -80,13 +84,28 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
       child: ScrollBox(
         child: MeasureSize(
           onChange: (size, rect) {
+            if (size.height == _lastReportedHeight) {
+              _animateNextSizeChange = false;
+              return;
+            }
+
+            const double multipleOf = 64;
+            // make height a multiple of 64 (round up) to prevent micro animations
+            final multipleHeight =
+                (size.height / multipleOf).ceil() * multipleOf;
+
+            print(
+                'animateSizeChange $_animateNextSizeChange, mounted: ${mounted}, size: $size');
             if (mounted) {
-              print('size: $size, rect: $rect');
-              WiredashBackdrop.of(context).animateSizeChange = _firstSize;
-              WiredashBackdrop.of(context).contentSize = size;
-              if (_firstSize) {
-                _firstSize = false;
+              if (_animateNextSizeChange = true) {
+                WiredashBackdrop.of(context).animateSizeChange = true;
               }
+              WiredashBackdrop.of(context).contentSize =
+                  Size(size.width, multipleHeight);
+              _lastReportedHeight = size.height;
+            }
+            if (_animateNextSizeChange) {
+              _animateNextSizeChange = false;
             }
           },
           child: SafeArea(
@@ -196,6 +215,12 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
     _reallyTimer?.cancel();
     super.dispose();
   }
+}
+
+enum StepPageAlignemnt {
+  start,
+  center,
+  end,
 }
 
 /// Scrollable area with scrollbar
