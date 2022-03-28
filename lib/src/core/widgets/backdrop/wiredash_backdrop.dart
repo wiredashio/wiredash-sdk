@@ -7,9 +7,11 @@ import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/core/theme/wiredash_theme.dart';
 import 'package:wiredash/src/core/widgets/backdrop/fake_app_status_bar.dart';
 import 'package:wiredash/src/core/widgets/backdrop/pull_to_close_detector.dart';
+import 'package:wiredash/src/core/widgets/backdrop/safe_area_calculator.dart';
 import 'package:wiredash/src/core/widgets/tron/animated_fade_widget_switcher.dart';
 import 'package:wiredash/src/core/wiredash_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
+import 'package:wiredash/src/utils/standard_kt.dart';
 import 'package:wiredash/wiredash.dart';
 
 /// The Wiredash UI behind the app
@@ -286,7 +288,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final mqPadding = _mediaQueryData.padding;
     final Size screenSize = _mediaQueryData.size;
 
-    print(screenSize);
     final centerPadding = EdgeInsets.only(
       top: 80 + mqPadding.top, // navigation bar
       bottom: 80 + mqPadding.bottom, // color bar
@@ -312,11 +313,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
 
     // iPhone SE is 320 width
-    const double minContentAreaHeight = 120.0;
-    const double defaultContentAreaHeight = 400.0;
+    final double minContentAreaHeight = context.theme.minContentHeight;
+    const double defaultContentAreaHeight = 320.0;
     const double minAppPeakHeight = 56;
-    // final double maxContentAreaHeight =
-    //     screenSize.height - minAppPeakHeight - mqPadding.vertical;
 
     // TODO check on android with soft keyboard and soft navigation keys
     final currentKeyboardHeight = _mediaQueryData.viewInsets.bottom;
@@ -338,73 +337,45 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       }
     }();
 
-    // don't peak app on small screens in landscape when the keyboard is open
-    // final double smallestContentHeight = screenSize.height -
-    //     minAppPeakHeight -
-    //     _maxKeyboardHeight -
-    //     mqPadding.top;
+    final calc = SafeAreaCalculator(screenSize: screenSize)
+      ..addTopInset(mqPadding.top, 'paddintTop')
+      ..addBottomInset(mqPadding.bottom, 'paddingBottom');
 
-    print('injectedContentSize: ${_injectedContentSize}');
-
-    final BoxConstraints screenConstraints = BoxConstraints.loose(screenSize);
-    BoxConstraints maxConstraints = screenConstraints;
-    print('screenConstraints: $screenConstraints');
-
-    // remove paddings for safe area
     if (isKeyboardOpen) {
-      // remove they keyboard height to make sure the content is always 100%
-      // visible and never covered by the keyboard
-      maxConstraints =
-          maxConstraints.deflate(EdgeInsets.only(bottom: _maxKeyboardHeight));
+      calc.addBottomInset(_maxKeyboardHeight, 'keyboardHeight');
     }
 
-    // When there's enough space for the content, peak the app
-    final bool peakApp = !isKeyboardOpen ||
-        maxConstraints.maxHeight - minAppPeakHeight > minContentAreaHeight;
-    if (peakApp) {
-      maxConstraints = maxConstraints
-          .deflate(const EdgeInsets.only(bottom: minAppPeakHeight));
-    }
-    // if (peakApp) {
-    //   maxConstraints = maxConstraints.deflate(
-    //     EdgeInsets.only(bottom: math.max(mqPadding.bottom, minAppPeakHeight)),
-    //   );
-    // } else {
-    // maxConstraints =
-    //     maxConstraints.deflate(EdgeInsets.only(bottom: mqPadding.bottom));
-    // }
-
-    final BoxConstraints preferredContentSize = () {
-      if (_injectedContentSize != null) {
-        return BoxConstraints.tight(_injectedContentSize!);
+    // don't peak app on small screens, i.e. on phones in landscape when the
+    // keyboard is open
+    final remainingSpace = calc.rect.height;
+    if (remainingSpace - minAppPeakHeight > minContentAreaHeight) {
+      if (isKeyboardOpen) {
+        calc.addBottomInset(
+            _maxKeyboardHeight + minAppPeakHeight, 'keyboard + appPeak');
       } else {
-        return const BoxConstraints(
-          minHeight: minContentAreaHeight,
-          maxHeight: defaultContentAreaHeight,
-        );
+        calc.addBottomInset(minAppPeakHeight, 'appPeak');
       }
-    }();
-    print('preferredContentSize: $preferredContentSize');
+    }
 
-    BoxConstraints constraints = preferredContentSize.enforce(maxConstraints);
+    print('_injectedContentSize: $_injectedContentSize');
+    final BoxConstraints preferredContentSize =
+        _injectedContentSize?.let((it) => BoxConstraints.tight(it)) ??
+            BoxConstraints(
+              minHeight: minContentAreaHeight,
+              maxHeight: defaultContentAreaHeight,
+            );
+    print('preferredContentSize: ${preferredContentSize.maxHeight}');
 
-    final double contentHeight = constraints.minHeight;
+    final naturalContentSize = preferredContentSize
+        .enforce(BoxConstraints(minHeight: minContentAreaHeight));
+    print('naturalContentSize: ${naturalContentSize}');
 
-    // final double contentHeight = math.max(
-    //   math.min(
-    //         math.max(
-    //           math.min(
-    //             _injectedContentSize?.height ?? maxContentAreaHeight,
-    //             maxContentAreaHeight,
-    //           ),
-    //           minContentAreaHeight,
-    //         ),
-    //         math.min(maxContentAreaHeight, screenSize.height - keyboardHeight),
-    //       ) -
-    //       (peakApp ? minAppPeakHeight : 0),
-    //   (_injectedContentSize?.height ?? maxContentAreaHeight) +
-    //       (peakApp ? minAppPeakHeight : 0),
-    // );
+    final safeAreaConstraints = BoxConstraints.loose(calc.size);
+
+    final BoxConstraints constraints =
+        naturalContentSize.enforce(safeAreaConstraints);
+
+    final double contentHeight = constraints.maxHeight;
 
     print('contentHeight: $contentHeight');
 
@@ -412,6 +383,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       0,
       0,
       context.theme.maxContentWidth,
+      // add top inset, allowing to draw below status bar
+      // By using SafeArea inside content the height will be removed again
       contentHeight,
     ).centerHorizontally(
       maxWidth: screenSize.width,
@@ -538,6 +511,20 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             color: Colors.orange.withOpacity(0.1),
             border: Border.all(
               color: Colors.orange,
+            ),
+          ),
+        ),
+      ),
+      Positioned(
+        left: 0,
+        right: 0,
+        // min size
+        top: _mediaQueryData.padding.top + context.theme.minContentHeight,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.greenAccent.withOpacity(0.1),
+            border: Border.all(
+              color: Colors.greenAccent,
             ),
           ),
         ),
@@ -980,6 +967,9 @@ class BackdropController extends ChangeNotifier {
 
   set backdropStatus(WiredashBackdropStatus value) {
     _backdropStatus = value;
+    if (_backdropStatus == WiredashBackdropStatus.closed) {
+      _contentSize = null;
+    }
     safeNotifyListeners();
   }
 

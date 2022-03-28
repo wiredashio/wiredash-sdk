@@ -231,6 +231,18 @@ class WiredashThemeData {
     return keypoints.interpolate(width);
   }
 
+  double get minContentHeight {
+    final height = windowSize.height;
+    final keypoints = KeyPointInterpolator({
+      0: 320,
+      320: 320, // iPhone SE landscape
+      1024: 400,
+    });
+    final result = keypoints.interpolate(height);
+    print('height: $height, result: $result');
+    return result;
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

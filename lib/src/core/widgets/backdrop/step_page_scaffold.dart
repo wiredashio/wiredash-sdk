@@ -37,14 +37,14 @@ class StepPageScaffold extends StatefulWidget {
   final Widget child;
 
   @override
-  State<StepPageScaffold> createState() => _StepPageScaffoldState();
+  State<StepPageScaffold> createState() => StepPageScaffoldState();
 
-  static _StepPageScaffoldState? of(BuildContext context) {
-    return context.findAncestorStateOfType<_StepPageScaffoldState>();
+  static StepPageScaffoldState? of(BuildContext context) {
+    return context.findAncestorStateOfType<StepPageScaffoldState>();
   }
 }
 
-class _StepPageScaffoldState extends State<StepPageScaffold> {
+class StepPageScaffoldState extends State<StepPageScaffold> {
   Timer? _reallyTimer;
   bool _animateNextSizeChange = true;
 
@@ -94,8 +94,6 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
             final multipleHeight =
                 (size.height / multipleOf).ceil() * multipleOf;
 
-            print(
-                'animateSizeChange $_animateNextSizeChange, mounted: ${mounted}, size: $size');
             if (mounted) {
               if (_animateNextSizeChange = true) {
                 WiredashBackdrop.of(context).animateSizeChange = true;
@@ -109,7 +107,7 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
             }
           },
           child: SafeArea(
-            minimum: const EdgeInsets.symmetric(vertical: 12),
+            minimum: const EdgeInsets.symmetric(vertical: 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: () {
