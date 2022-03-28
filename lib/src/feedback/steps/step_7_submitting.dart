@@ -43,6 +43,7 @@ class _Submitted extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
+      minHeight: 0,
       alignemnt: StepPageAlignemnt.center,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -78,6 +79,7 @@ class _Submitting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
+      minHeight: 0,
       alignemnt: StepPageAlignemnt.center,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -112,6 +114,7 @@ class _Error extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
+      minHeight: 0,
       alignemnt: StepPageAlignemnt.center,
       child: Column(
         children: [

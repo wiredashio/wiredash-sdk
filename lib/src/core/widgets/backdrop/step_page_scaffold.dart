@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
@@ -20,6 +21,7 @@ class StepPageScaffold extends StatefulWidget {
     Key? key,
     this.onClose,
     this.alignemnt,
+    this.minHeight,
   }) : super(key: key);
 
   final int? currentStep;
@@ -33,6 +35,7 @@ class StepPageScaffold extends StatefulWidget {
   final Widget? discardConfirmLabel;
   final void Function()? onClose;
   final StepPageAlignemnt? alignemnt;
+  final double? minHeight;
 
   final Widget child;
 
@@ -52,6 +55,9 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
     _animateNextSizeChange = true;
   }
 
+  /// Remembers the true actual height reported to Backdrop. When this changes,
+  /// reset the [_animateNextSizeChange], even if rounding results in the same
+  /// value
   double _lastReportedHeight = 0.0;
 
   Widget _buildTitle(BuildContext context) {
@@ -84,23 +90,28 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
       child: ScrollBox(
         child: MeasureSize(
           onChange: (size, rect) {
-            if (size.height == _lastReportedHeight) {
-              _animateNextSizeChange = false;
-              return;
-            }
+            final rawHeight = size.height;
 
-            const double multipleOf = 64;
             // make height a multiple of 64 (round up) to prevent micro animations
-            final multipleHeight =
-                (size.height / multipleOf).ceil() * multipleOf;
+            const double multipleOf = 64;
+            final multipleHeight = (rawHeight / multipleOf).ceil() * multipleOf;
+
+            final minHeight =
+                widget.minHeight ?? context.theme.minContentHeight;
+            final height = math.max(multipleHeight, minHeight);
 
             if (mounted) {
-              if (_animateNextSizeChange = true) {
+              if (_animateNextSizeChange == true) {
                 WiredashBackdrop.of(context).animateSizeChange = true;
               }
+              print('setting: $height');
               WiredashBackdrop.of(context).contentSize =
-                  Size(size.width, multipleHeight);
-              _lastReportedHeight = size.height;
+                  Size(size.width, height);
+              if (height == _lastReportedHeight) {
+                _animateNextSizeChange = false;
+                return;
+              }
+              _lastReportedHeight = height;
             }
             if (_animateNextSizeChange) {
               _animateNextSizeChange = false;

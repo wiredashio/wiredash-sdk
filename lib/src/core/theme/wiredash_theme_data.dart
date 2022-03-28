@@ -238,9 +238,7 @@ class WiredashThemeData {
       320: 320, // iPhone SE landscape
       1024: 400,
     });
-    final result = keypoints.interpolate(height);
-    print('height: $height, result: $result');
-    return result;
+    return keypoints.interpolate(height);
   }
 
   @override

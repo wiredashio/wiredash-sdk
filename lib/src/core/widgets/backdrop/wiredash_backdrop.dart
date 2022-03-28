@@ -182,6 +182,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   Size? _injectedContentSize;
   void _onContentSizeChanged(Size? size, {bool? animateSizeChange}) {
     if (_injectedContentSize?.height != size?.height) {
+      print('_injectedContentSize: ${size?.height}');
       _injectedContentSize = size;
       final oldAppOutOfFocusRect =
           _appTransformAnimation?.value ?? _rectAppOutOfFocus;
@@ -312,8 +313,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       screenSize.height * centerScaleFactor,
     );
 
-    // iPhone SE is 320 width
-    final double minContentAreaHeight = context.theme.minContentHeight;
+    const double minContentAreaHeight = 64;
     const double defaultContentAreaHeight = 320.0;
     const double minAppPeakHeight = 56;
 
@@ -321,21 +321,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final currentKeyboardHeight = _mediaQueryData.viewInsets.bottom;
     final bool isKeyboardOpen =
         currentKeyboardHeight.isRoughly(_maxKeyboardHeight, 0.2);
-    print('isKeyboardOpen: $isKeyboardOpen');
     _maxKeyboardHeight = math.max(currentKeyboardHeight, _maxKeyboardHeight);
-    final keyboardHeight = () {
-      if (isKeyboardOpen) {
-        return _maxKeyboardHeight;
-      } else if (screenSize.height - _maxKeyboardHeight <
-          minContentAreaHeight) {
-        // there's not enough space to always include the padding
-        return 0;
-      } else {
-        // Always include the keyboardHeight, prevent flickering when there
-        // is enough space
-        return _maxKeyboardHeight;
-      }
-    }();
 
     final calc = SafeAreaCalculator(screenSize: screenSize)
       ..addTopInset(mqPadding.top, 'paddintTop')
@@ -351,24 +337,22 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     if (remainingSpace - minAppPeakHeight > minContentAreaHeight) {
       if (isKeyboardOpen) {
         calc.addBottomInset(
-            _maxKeyboardHeight + minAppPeakHeight, 'keyboard + appPeak');
+          _maxKeyboardHeight + minAppPeakHeight,
+          'keyboard + appPeak',
+        );
       } else {
         calc.addBottomInset(minAppPeakHeight, 'appPeak');
       }
     }
 
-    print('_injectedContentSize: $_injectedContentSize');
     final BoxConstraints preferredContentSize =
         _injectedContentSize?.let((it) => BoxConstraints.tight(it)) ??
-            BoxConstraints(
+            const BoxConstraints(
               minHeight: minContentAreaHeight,
               maxHeight: defaultContentAreaHeight,
             );
-    print('preferredContentSize: ${preferredContentSize.maxHeight}');
-
     final naturalContentSize = preferredContentSize
-        .enforce(BoxConstraints(minHeight: minContentAreaHeight));
-    print('naturalContentSize: ${naturalContentSize}');
+        .enforce(const BoxConstraints(minHeight: minContentAreaHeight));
 
     final safeAreaConstraints = BoxConstraints.loose(calc.size);
 
@@ -471,7 +455,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     assert(
       () {
         // enable debugging here
-        debug = false;
+        debug = true;
         return true;
       }(),
     );
@@ -1055,6 +1039,7 @@ class _KeepAppAliveState extends State<_KeepAppAlive>
 }
 
 extension on Rect {
+  // ignore: unused_element
   Rect removePadding(EdgeInsets padding) {
     return padding.deflateRect(this);
   }

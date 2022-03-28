@@ -95,6 +95,7 @@ class _Step6SubmitState extends State<Step6Submit> {
             FutureBuilder<PersistedFeedbackItem>(
               future: model.createFeedback(),
               builder: (context, snapshot) {
+                StepPageScaffold.of(context)?.animateNextSizeChange();
                 final data = snapshot.data;
                 if (data == null) {
                   return const SizedBox();
