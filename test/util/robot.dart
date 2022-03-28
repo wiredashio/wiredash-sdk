@@ -239,10 +239,22 @@ class WiredashTestRobot {
       FeedbackFlowStatus.screenshotDrawing,
     );
     await tester.tap(find.text('Save'));
-    await tester.pumpAndSettle();
+    await tester.pumpHardAndSettle(const Duration(milliseconds: 100));
 
     // wait until the animation is closed
     await tester.waitUntil(find.text('Save'), findsNothing);
+
+    await tester.waitUntil(
+      services.feedbackModel.feedbackFlowStatus,
+      isNot(
+        anyOf(
+          FeedbackFlowStatus.screenshotDrawing,
+          FeedbackFlowStatus.screenshotCapturing,
+          FeedbackFlowStatus.screenshotNavigating,
+          FeedbackFlowStatus.screenshotSaving,
+        ),
+      ),
+    );
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Confirmed drawing $newStatus');

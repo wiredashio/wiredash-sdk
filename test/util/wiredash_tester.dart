@@ -18,7 +18,7 @@ extension WiredashTester on WidgetTester {
   }
 
   Future<void> waitUntil(
-    dynamic finder,
+    dynamic actual,
     Matcher matcher, {
     Duration timeout = const Duration(seconds: 3),
   }) async {
@@ -29,22 +29,23 @@ extension WiredashTester on WidgetTester {
     var attempt = 0;
     while (true) {
       attempt++;
-      if (matcher.matches(finder, {})) {
+      if (matcher.matches(actual, {})) {
         break;
       }
-      if (finder.runtimeType.toString().contains('_TextFinder')) {
+      if (actual.runtimeType.toString().contains('_TextFinder')) {
         print('Text on screen (${DateTime.now().difference(start)}):');
         print(allWidgets.whereType<Text>().map((e) => e.data).toList());
       }
 
       final now = DateTime.now();
+      final executing = start.difference(now).abs();
       if (now.isAfter(start.add(timeout))) {
         print(stack);
-        if (finder.runtimeType.toString().contains('_TextFinder')) {
+        if (actual.runtimeType.toString().contains('_TextFinder')) {
           print('Text on screen:');
           print(allWidgets.whereType<Text>().map((e) => e.data).toList());
         }
-        throw 'Did not find $finder after $timeout (attempt: $attempt)';
+        throw 'Did not find $actual after $timeout (attempt: $attempt)';
       }
 
       final duration =
@@ -52,8 +53,8 @@ extension WiredashTester on WidgetTester {
       if (duration > const Duration(seconds: 1)) {
         // show continuous updates
         print(
-          'Waiting for (attempt: $attempt)\n'
-          '\tFinder: $finder to match\n'
+          'Waiting for (attempt: $attempt, at $executing)\n'
+          '\tFinder: $actual to match\n'
           '\tMatcher: $matcher',
         );
       }
