@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/core/widgets/measure_size.dart';
 
 /// The default layout of a step in [LarryPageView]
@@ -60,6 +61,8 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
   /// value
   double _lastReportedHeight = 0.0;
 
+  Size _measuredSize = Size.zero;
+
   Widget _buildTitle(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -84,38 +87,38 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
   }
 
   @override
+  void didUpdateWidget(covariant StepPageScaffold oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.minHeight != widget.minHeight) {
+      widgetsBindingInstance.addPostFrameCallback((_) {
+        _reportWidgetHeight();
+      });
+    }
+  }
+
+  double _minHeight = 0.0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final newMinHeight = context.theme.minContentHeight;
+    if (_minHeight != newMinHeight) {
+      _minHeight = newMinHeight;
+      widgetsBindingInstance.addPostFrameCallback((_) {
+        _reportWidgetHeight();
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.topLeft,
       child: ScrollBox(
         child: MeasureSize(
           onChange: (size, rect) {
-            final rawHeight = size.height;
-
-            // make height a multiple of 64 (round up) to prevent micro animations
-            const double multipleOf = 64;
-            final multipleHeight = (rawHeight / multipleOf).ceil() * multipleOf;
-
-            final minHeight =
-                widget.minHeight ?? context.theme.minContentHeight;
-            final height = math.max(multipleHeight, minHeight);
-
-            if (mounted) {
-              if (_animateNextSizeChange == true) {
-                WiredashBackdrop.of(context).animateSizeChange = true;
-              }
-              print('setting: $height');
-              WiredashBackdrop.of(context).contentSize =
-                  Size(size.width, height);
-              if (height == _lastReportedHeight) {
-                _animateNextSizeChange = false;
-                return;
-              }
-              _lastReportedHeight = height;
-            }
-            if (_animateNextSizeChange) {
-              _animateNextSizeChange = false;
-            }
+            _measuredSize = size;
+            _reportWidgetHeight();
           },
           child: SafeArea(
             minimum: const EdgeInsets.symmetric(vertical: 24),
@@ -224,6 +227,36 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
     _reallyTimer?.cancel();
     super.dispose();
   }
+
+  void _reportWidgetHeight() {
+    if (_measuredSize == Size.zero) {
+      // not yet measured
+      return;
+    }
+    // make height a multiple of 64 (round up) to prevent micro animations
+    const double multipleOf = 64;
+    final multipleHeight =
+        (_measuredSize.height / multipleOf).ceil() * multipleOf;
+
+    final minHeight = widget.minHeight ?? context.theme.minContentHeight;
+    final height = math.max(multipleHeight, minHeight);
+
+    if (mounted) {
+      if (_animateNextSizeChange == true) {
+        WiredashBackdrop.of(context).animateSizeChange = true;
+      }
+      WiredashBackdrop.of(context).contentSize =
+          Size(_measuredSize.width, height);
+      if (height == _lastReportedHeight) {
+        _animateNextSizeChange = false;
+        return;
+      }
+      _lastReportedHeight = height;
+    }
+    if (_animateNextSizeChange) {
+      _animateNextSizeChange = false;
+    }
+  }
 }
 
 enum StepPageAlignemnt {
@@ -255,6 +288,7 @@ class _ScrollBoxState extends State<ScrollBox> {
     Widget child = SingleChildScrollView(
       controller: controller,
       padding: widget.padding,
+      clipBehavior: Clip.none,
       child: widget.child,
     );
     final targetPlatform = Theme.of(context).platform;
