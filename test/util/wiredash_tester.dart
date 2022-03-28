@@ -20,26 +20,31 @@ extension WiredashTester on WidgetTester {
   Future<void> waitUntil(
     dynamic actual,
     Matcher matcher, {
-    Duration timeout = const Duration(seconds: 3),
+    Duration timeout = const Duration(seconds: 5),
   }) async {
-    // print('waitUntil $finder matches within $timeout');
     final stack = StackTrace.current;
     final start = DateTime.now();
-    // await pumpAndSettle();
     var attempt = 0;
     while (true) {
       attempt++;
       if (matcher.matches(actual, {})) {
         break;
       }
-      if (actual.runtimeType.toString().contains('_TextFinder')) {
-        print('Text on screen (${DateTime.now().difference(start)}):');
-        print(allWidgets.whereType<Text>().map((e) => e.data).toList());
-      }
 
       final now = DateTime.now();
-      final executing = start.difference(now).abs();
+      final executingTime = start.difference(now).abs();
+      if (actual.runtimeType.toString().contains('_TextFinder') &&
+          attempt > 1) {
+        print(
+          'Text on screen (@ $executingTime) should '
+          'match $actual but got "${matcher.describe(StringDescription()).toString()}":',
+        );
+        print(
+            "Text on screen: ${allWidgets.whereType<Text>().map((e) => e.data).toList()}");
+      }
+
       if (now.isAfter(start.add(timeout))) {
+        // Exit with error
         print(stack);
         if (actual.runtimeType.toString().contains('_TextFinder')) {
           print('Text on screen:');
@@ -50,18 +55,20 @@ extension WiredashTester on WidgetTester {
 
       final duration =
           Duration(milliseconds: math.pow(attempt, math.e).toInt());
-      if (duration > const Duration(seconds: 1)) {
+      if (executingTime > const Duration(seconds: 1) &&
+          duration > const Duration(seconds: 1)) {
         // show continuous updates
         print(
-          'Waiting for (attempt: $attempt, at $executing)\n'
+          'Waiting for match (attempt: $attempt, @ $executingTime)\n'
           '\tFinder: $actual to match\n'
-          '\tMatcher: $matcher',
+          '\tMatcher: ${matcher.describe(StringDescription()).toString()}',
         );
       }
       if (attempt < 10) {
         await pumpAndSettle(duration);
       } else {
         await pumpHardAndSettle(duration);
+        await pump();
       }
     }
   }
