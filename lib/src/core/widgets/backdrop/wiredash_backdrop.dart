@@ -792,7 +792,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }
     _swapAnimation();
 
-    await _backdropAnimationController.forward();
+    // When cancelled, complete normally
+    await _backdropAnimationController
+        .forward()
+        .orCancel
+        .catchError((_) => null);
   }
 
   Future<void> _animateToCentered() async {
