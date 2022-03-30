@@ -14,6 +14,7 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
   @override
   Widget build(BuildContext context) {
     return AnimatedFadeWidgetSwitcher(
+      fadeInOnEnter: false,
       duration: const Duration(seconds: 1),
       child: () {
         if (!context.feedbackModel.hasAttachments) {
