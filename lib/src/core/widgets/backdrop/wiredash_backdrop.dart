@@ -191,14 +191,24 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       _injectedContentSize = size;
       final oldAppOutOfFocusRect =
           _appTransformAnimation?.value ?? _rectAppOutOfFocus;
+      final oldRectAppCentered =
+          _appTransformAnimation?.value ?? _rectAppCentered;
       _calculateRects();
       // explicitly not calling _swapAnimation(), doing it manually
       _backdropAnimationController.reset();
-      _appTransformAnimation =
-          RectTween(begin: oldAppOutOfFocusRect, end: _rectAppOutOfFocus)
-              .animate(_driverAnimation);
+      if (_backdropStatus == WiredashBackdropStatus.centered ||
+          _backdropStatus == WiredashBackdropStatus.openingCentered) {
+        _appTransformAnimation =
+            RectTween(begin: oldRectAppCentered, end: _rectAppCentered)
+                .animate(_driverAnimation);
+        _appHandleAnimation = const AlwaysStoppedAnimation(0.0);
+      } else {
+        _appTransformAnimation =
+            RectTween(begin: oldAppOutOfFocusRect, end: _rectAppOutOfFocus)
+                .animate(_driverAnimation);
+        _appHandleAnimation = const AlwaysStoppedAnimation(1.0);
+      }
       _cornerRadiusAnimation = AlwaysStoppedAnimation(_appBorderRadiusOpen);
-      _appHandleAnimation = const AlwaysStoppedAnimation(1.0);
       _backdropAnimationController.forward(
         from: animateSizeChange == true ? 0 : 1,
       );
