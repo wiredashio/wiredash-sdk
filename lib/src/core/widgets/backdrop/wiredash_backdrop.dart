@@ -127,6 +127,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   @override
   void dispose() {
     widget.controller._state = null;
+    _backdropStatus = WiredashBackdropStatus.closed;
     widget.controller.removeListener(_markAsDirty);
     _backdropAnimationController.dispose();
     super.dispose();
@@ -180,8 +181,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       // dependencies of _calculateRects changed.
       _calculateRects();
       _swapAnimation();
-      // jump immediately to end of animation
-      _backdropAnimationController.forward(from: 1.0);
     }
   }
 
