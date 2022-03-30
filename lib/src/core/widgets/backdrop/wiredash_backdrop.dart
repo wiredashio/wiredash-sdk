@@ -926,20 +926,27 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }
     // Reset in case it got changed
     _backdropAnimationController.duration = WiredashBackdrop.animationDuration;
-    setState(() {
-      if (_backdropStatus == WiredashBackdropStatus.opening) {
+
+    if (_backdropStatus == WiredashBackdropStatus.opening) {
+      setState(() {
         _backdropStatus = WiredashBackdropStatus.open;
-      }
-      if (_backdropStatus == WiredashBackdropStatus.openingCentered) {
+      });
+    }
+    if (_backdropStatus == WiredashBackdropStatus.openingCentered) {
+      setState(() {
         _backdropStatus = WiredashBackdropStatus.centered;
-      }
-      if (_backdropStatus == WiredashBackdropStatus.closingCentered) {
+      });
+    }
+    if (_backdropStatus == WiredashBackdropStatus.closingCentered) {
+      setState(() {
         _backdropStatus = WiredashBackdropStatus.open;
-      }
-      if (_backdropStatus == WiredashBackdropStatus.closing) {
+      });
+    }
+    if (_backdropStatus == WiredashBackdropStatus.closing) {
+      setState(() {
         _backdropStatus = WiredashBackdropStatus.closed;
-      }
-    });
+      });
+    }
   }
 
   void _markAsDirty() {
