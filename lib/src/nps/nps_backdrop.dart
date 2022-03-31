@@ -16,6 +16,7 @@ class NpsBackdrop extends StatelessWidget {
   Widget build(BuildContext context) {
     return WiredashBackdrop(
       controller: context.wiredashModel.services.backdropController,
+      padding: context.wiredashModel.services.wiredashWidget.padding,
       app: child,
       contentBuilder: (context) {
         return const NpsFlow();

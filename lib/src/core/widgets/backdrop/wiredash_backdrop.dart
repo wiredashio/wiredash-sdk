@@ -21,6 +21,7 @@ class WiredashBackdrop extends StatefulWidget {
     required this.contentBuilder,
     required this.app,
     required this.controller,
+    this.padding,
     this.backgroundLayerBuilder,
     this.foregroundLayerBuilder,
   }) : super(key: key);
@@ -28,6 +29,7 @@ class WiredashBackdrop extends StatefulWidget {
   /// The wrapped app
   final Widget app;
   final BackdropController controller;
+  final EdgeInsets? padding;
   final Widget Function(BuildContext) contentBuilder;
 
   /// Shown below the app, but above the backdrop [contentBuilder]
@@ -227,6 +229,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       widget.controller._state = this;
       widget.controller.addListener(_markAsDirty);
     }
+
+    if (oldWidget.padding != widget.padding) {
+      _calculateRects();
+      _swapAnimation();
+    }
   }
 
   @override
@@ -251,7 +258,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final content = Positioned.fromRect(
       rect: _rectContentArea,
       child: MediaQuery(
-        data: _mediaQueryData.removePadding(removeBottom: true),
+        data: _mediaQueryData
+            .copyWith(
+              padding: _mediaQueryData.padding
+                  .max(widget.padding ?? EdgeInsets.zero),
+            )
+            // remove the padding from the content area
+            .removePadding(removeBottom: true),
         child: Focus(
           debugLabel: 'wiredash backdrop content',
           child: AnimatedOpacity(
@@ -302,12 +315,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   /// (re-)calculates the rects for the different states
   void _calculateRects() {
+    final wiredashPadding = widget.padding ?? EdgeInsets.zero;
     final mqPadding = _mediaQueryData.padding;
     final Size screenSize = _mediaQueryData.size;
 
     final centerPadding = EdgeInsets.only(
-      top: 80 + mqPadding.top, // navigation bar
-      bottom: 80 + mqPadding.bottom, // color bar
+      top: 80 + math.max(mqPadding.top, wiredashPadding.top), // navigation bar
+      bottom: 80 + math.max(mqPadding.bottom, wiredashPadding.top), // color bar
     );
 
     // scale to show app in safeArea
@@ -324,10 +338,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     _rectAppCentered = Rect.fromLTWH(
       (screenSize.width - (screenSize.width * centerScaleFactor)) / 2,
-      centerPadding.top,
+      wiredashPadding.top + centerPadding.top,
       screenSize.width * centerScaleFactor,
       screenSize.height * centerScaleFactor,
-    );
+    ).translate(wiredashPadding.left / 2 - wiredashPadding.right / 2, 0);
 
     const double minContentAreaHeight = 64;
     const double defaultContentAreaHeight = 320.0;
@@ -341,8 +355,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     _maxKeyboardHeight = math.max(currentKeyboardHeight, _maxKeyboardHeight);
 
     final calc = SafeAreaCalculator(screenSize: screenSize)
-      ..addTopInset(mqPadding.top, 'paddintTop')
-      ..addBottomInset(mqPadding.bottom, 'paddingBottom');
+      ..addTopInset(mqPadding.top, 'mediaQueryPadding top')
+      ..addTopInset(wiredashPadding.top, 'wiredashPadding top')
+      ..addBottomInset(mqPadding.bottom, 'mediaQueryPadding bottom')
+      ..addBottomInset(wiredashPadding.bottom, 'wiredashPadding bottom');
 
     if (isKeyboardOpen) {
       calc.addBottomInset(_maxKeyboardHeight, 'keyboardHeight');
@@ -368,25 +384,26 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               minHeight: minContentAreaHeight,
               maxHeight: defaultContentAreaHeight,
             );
+    print('preferredContentSize: $preferredContentSize');
     final naturalContentSize = preferredContentSize
         .enforce(const BoxConstraints(minHeight: minContentAreaHeight));
 
     final safeAreaConstraints = BoxConstraints.loose(calc.size);
+    print('safeAreaConstraints: $safeAreaConstraints');
 
     final BoxConstraints constraints =
         naturalContentSize.enforce(safeAreaConstraints);
+    print('constraints: $constraints');
 
     final double contentHeight = constraints.maxHeight;
-
+    print('contentHeight: $contentHeight');
     _rectContentArea = Rect.fromLTWH(
       0,
       0,
       context.theme.maxContentWidth,
-      // add top inset, allowing to draw below status bar
-      // By using SafeArea inside content the height will be removed again
       contentHeight,
     ).centerHorizontally(
-      maxWidth: screenSize.width,
+      maxWidth: screenSize.width - wiredashPadding.horizontal,
       minPadding: context.theme.horizontalPadding,
     );
 
@@ -395,10 +412,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       _rectContentArea.bottom,
       screenSize.width,
       screenSize.height,
-    ).centerHorizontally(
-      maxWidth: screenSize.width,
-      minPadding: context.theme.horizontalPadding,
-    );
+    )
+        .centerHorizontally(
+          maxWidth: screenSize.width,
+          minPadding: context.theme.horizontalPadding,
+        )
+        .translate(wiredashPadding.left, 0);
 
     final rectFullscreen =
         Rect.fromPoints(Offset.zero, screenSize.bottomRight(Offset.zero));
@@ -470,7 +489,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     assert(
       () {
         // enable debugging here
-        debug = false;
+        debug = true;
         return true;
       }(),
     );
@@ -774,7 +793,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
         // ignore: join_return_with_assignment
         app = Transform.translate(
-          offset: Offset(0, yTranslation),
+          offset: Offset(
+            ((widget.padding?.left ?? 0) - (widget.padding?.right ?? 0)) / 2,
+            yTranslation,
+          ),
           child: Transform.scale(
             scale: appScale,
             alignment: Alignment.topCenter,
@@ -1137,5 +1159,16 @@ extension on double {
     final upperBound = this + delta;
     final lowerBound = this - delta;
     return value > lowerBound && value < upperBound;
+  }
+}
+
+extension on EdgeInsets {
+  EdgeInsets max(EdgeInsets other) {
+    return EdgeInsets.fromLTRB(
+      math.max(left, other.left),
+      math.max(top, other.top),
+      math.max(right, other.right),
+      math.max(bottom, other.bottom),
+    );
   }
 }
