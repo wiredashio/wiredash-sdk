@@ -116,13 +116,9 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     return MaterialSupportLayer(
       locale:
           context.wiredashModel.services.wiredashWidget.options?.currentLocale,
-      child: Stack(
-        children: [
-          Form(
-            key: feedbackModel.stepFormKey,
-            child: larryPageView,
-          ),
-        ],
+      child: Form(
+        key: feedbackModel.stepFormKey,
+        child: larryPageView,
       ),
     );
   }
