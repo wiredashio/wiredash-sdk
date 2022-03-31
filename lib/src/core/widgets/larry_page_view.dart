@@ -124,7 +124,6 @@ class LarryPageViewState extends State<LarryPageView>
           Widget child = Builder(
             builder: (context) {
               return Container(
-                // color: Colors.green,
                 child: widget.builder(context),
               );
             },

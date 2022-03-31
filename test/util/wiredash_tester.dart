@@ -40,7 +40,8 @@ extension WiredashTester on WidgetTester {
           'match $actual but got "${matcher.describe(StringDescription()).toString()}":',
         );
         print(
-            "Text on screen: ${allWidgets.whereType<Text>().map((e) => e.data).toList()}");
+          "Text on screen: ${allWidgets.whereType<Text>().map((e) => e.data).toList()}",
+        );
       }
 
       if (now.isAfter(start.add(timeout))) {
