@@ -194,9 +194,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           _appTransformAnimation?.value ?? _rectAppCentered;
       _calculateRects();
       // explicitly not calling _swapAnimation(), doing it manually
-      _backdropAnimationController.reset();
-      if (_backdropStatus == WiredashBackdropStatus.centered ||
-          _backdropStatus == WiredashBackdropStatus.openingCentered) {
+
+      if (_backdropStatus == WiredashBackdropStatus.centered) {
         _appTransformAnimation =
             RectTween(begin: oldRectAppCentered, end: _rectAppCentered)
                 .animate(_driverAnimation);
@@ -205,7 +204,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _appTransformAnimation =
             RectTween(begin: oldAppOutOfFocusRect, end: _rectAppOutOfFocus)
                 .animate(_driverAnimation);
+      }
+      if (_backdropStatus == WiredashBackdropStatus.open) {
         _appHandleAnimation = const AlwaysStoppedAnimation(1.0);
+      }
+      if (_backdropStatus == WiredashBackdropStatus.closed) {
+        _appHandleAnimation = const AlwaysStoppedAnimation(0.0);
       }
       _cornerRadiusAnimation = AlwaysStoppedAnimation(_appBorderRadiusOpen);
       _backdropAnimationController.forward(
@@ -695,10 +699,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           app = PullToCloseDetector(
             closeDirection: CloseDirection.upwards,
             onPullStart: () {
-              setState(() {
-                _pulling = true;
-                _backdropStatus = WiredashBackdropStatus.closing;
-              });
+              _pulling = true;
+              _backdropStatus = WiredashBackdropStatus.closing;
               _swapAnimation();
               _pullCurves();
               _pullAppYController.value = 0.0;
@@ -729,7 +731,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               await Future.wait([a1, a2]);
               _backdropStatus = WiredashBackdropStatus.closed;
               await context.wiredashModel.hide();
-              _swapAnimation();
             },
             startReopenSimulation: (velocity) async {
               _pulling = false;
@@ -757,9 +758,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
           app = GestureDetector(
             onTap: () async {
-              _pullCurves();
               await context.wiredashModel.hide();
-              _animCurves();
             },
             child: app,
           );
@@ -768,6 +767,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         // the difference of height between open and closed rect
         final yTranslation =
             _pullAppYController.value + _appTransformAnimation!.value!.top;
+
         // The scale the app should be scaled to, compared to fullscreen
         final appScale =
             _appTransformAnimation!.value!.width / _rectAppFillsScreen.width;
@@ -788,7 +788,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
   }
 
+  TickerFuture? _openAnim;
+
   Future<void> _animateToOpen() async {
+    _animCurves();
+    if (_backdropStatus == WiredashBackdropStatus.opening) {
+      // already opening, return running animation
+      return _openAnim!.orCancel.catchError((_) => null);
+    }
+
     if (_backdropStatus == WiredashBackdropStatus.closed ||
         _backdropStatus == WiredashBackdropStatus.closing) {
       _backdropStatus = WiredashBackdropStatus.opening;
@@ -799,35 +807,50 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       // no need for animating, we're already in a desired state
       return;
     }
+
     _swapAnimation();
 
+    _openAnim = _backdropAnimationController.forward(from: 0);
     // When cancelled, complete normally
-    await _backdropAnimationController
-        .forward()
-        .orCancel
-        .catchError((_) => null);
+    await _openAnim!.orCancel.catchError((_) => null);
+    _openAnim = null;
   }
 
   Future<void> _animateToCentered() async {
     _backdropStatus = WiredashBackdropStatus.openingCentered;
     _swapAnimation();
 
-    await _backdropAnimationController.forward();
+    await _backdropAnimationController.forward(from: 0);
   }
 
+  TickerFuture? _closeAnim;
+
   Future<void> _animateToClosed() async {
+    _animCurves();
     if (_backdropStatus == WiredashBackdropStatus.closed) {
       // already in correct state
       return;
     }
     if (_backdropStatus == WiredashBackdropStatus.closing) {
-      // already playing correct anim
-      return;
+      // already closing, return running animation
+      return _closeAnim!.orCancel.catchError((_) => null);
     }
-    _backdropStatus = WiredashBackdropStatus.closing;
-    _swapAnimation();
+    if (_backdropStatus == WiredashBackdropStatus.opening) {
+      _appHandleAnimation = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
+      );
+      _backdropStatus = WiredashBackdropStatus.closing;
+      _closeAnim = _backdropAnimationController.reverse();
+      return _closeAnim!.orCancel.catchError((_) => null);
+    } else {
+      _backdropStatus = WiredashBackdropStatus.closing;
+      _swapAnimation();
+    }
 
-    await _backdropAnimationController.forward();
+    _closeAnim = _backdropAnimationController.forward(from: 0);
+    // When cancelled, complete normally
+    await _closeAnim!.orCancel.catchError((_) => null);
+    _closeAnim = null;
   }
 
   /// Sets the correct animation for the current [_backdropStatus]
@@ -839,9 +862,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _appTransformAnimation?.value ?? _rectAppFillsScreen;
     final oldRectAppCentered =
         _appTransformAnimation?.value ?? _rectAppCentered;
-
-    // Reset current animation, if any
-    _backdropAnimationController.reset();
 
     switch (_backdropStatus) {
       case WiredashBackdropStatus.open:
@@ -876,8 +896,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           begin: _appBorderRadiusClosed,
           end: _appBorderRadiusOpen,
         ).animate(_driverAnimation);
-        _appHandleAnimation =
-            CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut);
+        _appHandleAnimation = Tween(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
+        );
         break;
 
       case WiredashBackdropStatus.closing:
