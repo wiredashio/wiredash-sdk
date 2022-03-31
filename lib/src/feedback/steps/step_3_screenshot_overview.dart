@@ -14,8 +14,12 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
   @override
   Widget build(BuildContext context) {
     return AnimatedFadeWidgetSwitcher(
+      clipBehavior: Clip.none,
       fadeInOnEnter: false,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 300),
+      onSwitch: () {
+        WiredashBackdrop.of(context).animateSizeChange = true;
+      },
       child: () {
         if (!context.feedbackModel.hasAttachments) {
           return const Step3NotAttachments();

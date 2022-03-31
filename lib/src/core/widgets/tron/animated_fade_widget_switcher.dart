@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
@@ -13,12 +14,18 @@ class AnimatedFadeWidgetSwitcher extends StatefulWidget {
     this.fadeInOnEnter,
     this.initialWidgetBuilder,
     this.zoomFactor,
+    this.onSwitch,
+    this.clipBehavior,
   }) : super(key: key);
 
   final Widget? child;
   final Duration? duration;
   final Alignment? alignment;
   final double? zoomFactor;
+  final Clip? clipBehavior;
+
+  /// Called when the widget switches from old to new child
+  final void Function()? onSwitch;
 
   /// defaults to [true], draws [initialWidgetBuilder] at first frame or nothing
   final bool? fadeInOnEnter;
@@ -35,6 +42,8 @@ class AnimatedFadeWidgetSwitcher extends StatefulWidget {
 class _AnimatedFadeWidgetSwitcherState
     extends State<AnimatedFadeWidgetSwitcher> {
   bool _firstBuild = true;
+
+  Widget? lastChild;
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +64,19 @@ class _AnimatedFadeWidgetSwitcherState
       child = widget.initialWidgetBuilder?.call();
     }
 
+    if (child != null &&
+            lastChild != null &&
+            lastChild != child &&
+            !Widget.canUpdate(lastChild!, child) ||
+        child == null && lastChild != null) {
+      widget.onSwitch?.call();
+    }
     return PageTransitionSwitcher(
       duration: widget.duration ?? const Duration(milliseconds: 300),
       layoutBuilder: (List<Widget> entries) {
         return Stack(
           alignment: widget.alignment ?? Alignment.center,
+          clipBehavior: widget.clipBehavior ?? Clip.none,
           children: entries,
         );
       },
@@ -71,7 +88,7 @@ class _AnimatedFadeWidgetSwitcherState
           child: child,
         );
       },
-      child: child,
+      child: lastChild = child,
     );
   }
 }
