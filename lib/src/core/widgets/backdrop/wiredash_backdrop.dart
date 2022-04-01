@@ -54,7 +54,8 @@ class WiredashBackdrop extends StatefulWidget {
   @override
   State<WiredashBackdrop> createState() => _WiredashBackdropState();
 
-  static const Duration animationDuration = Duration(milliseconds: 500);
+  static const double topBarHeight = 80;
+  static const double bottomBarHeight = 80;
 }
 
 class _WiredashBackdropState extends State<WiredashBackdrop>
@@ -63,7 +64,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   late final AnimationController _backdropAnimationController =
       AnimationController(
     vsync: this,
-    duration: WiredashBackdrop.animationDuration,
+    duration: const Duration(milliseconds: 500),
   );
 
   /// Used for re-positioning the app on the screen
@@ -264,7 +265,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                   .max(widget.padding ?? EdgeInsets.zero),
             )
             // remove the padding from the content area
-            .removePadding(removeBottom: true),
+            .removePadding(
+              removeBottom: true,
+              removeLeft: true,
+              removeRight: true,
+            ),
         child: Focus(
           debugLabel: 'wiredash backdrop content',
           child: AnimatedOpacity(
@@ -321,7 +326,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     final centerPadding = EdgeInsets.only(
       top: 80 + math.max(mqPadding.top, wiredashPadding.top), // navigation bar
-      bottom: 80 + math.max(mqPadding.bottom, wiredashPadding.top), // color bar
+      bottom:
+          80 + math.max(mqPadding.bottom, wiredashPadding.bottom), // color bar
     );
 
     // scale to show app in safeArea
@@ -338,7 +344,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     _rectAppCentered = Rect.fromLTWH(
       (screenSize.width - (screenSize.width * centerScaleFactor)) / 2,
-      wiredashPadding.top + centerPadding.top,
+      math.max(wiredashPadding.top, centerPadding.top),
       screenSize.width * centerScaleFactor,
       screenSize.height * centerScaleFactor,
     ).translate(wiredashPadding.left / 2 - wiredashPadding.right / 2, 0);
@@ -384,21 +390,17 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               minHeight: minContentAreaHeight,
               maxHeight: defaultContentAreaHeight,
             );
-    print('preferredContentSize: $preferredContentSize');
     final naturalContentSize = preferredContentSize
         .enforce(const BoxConstraints(minHeight: minContentAreaHeight));
 
     final safeAreaConstraints = BoxConstraints.loose(calc.size);
-    print('safeAreaConstraints: $safeAreaConstraints');
 
     final BoxConstraints constraints =
         naturalContentSize.enforce(safeAreaConstraints);
-    print('constraints: $constraints');
 
     final double contentHeight = constraints.maxHeight;
-    print('contentHeight: $contentHeight');
     _rectContentArea = Rect.fromLTWH(
-      0,
+      wiredashPadding.left,
       0,
       context.theme.maxContentWidth,
       contentHeight,
@@ -489,7 +491,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     assert(
       () {
         // enable debugging here
-        debug = true;
+        debug = false;
         return true;
       }(),
     );
@@ -529,6 +531,21 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             color: Colors.orange.withOpacity(0.1),
             border: Border.all(
               color: Colors.orange,
+            ),
+          ),
+        ),
+      ),
+      Positioned(
+        left: 0,
+        right: 0,
+        top: 0,
+        // padding top
+        height: widget.padding?.top ?? 0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.pink.withOpacity(0.1),
+            border: Border.all(
+              color: Colors.pink,
             ),
           ),
         ),
@@ -966,9 +983,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     if (_pulling) {
       return;
     }
-    // Reset in case it got changed
-    _backdropAnimationController.duration = WiredashBackdrop.animationDuration;
-
     if (_backdropStatus == WiredashBackdropStatus.opening) {
       setState(() {
         _backdropStatus = WiredashBackdropStatus.open;
