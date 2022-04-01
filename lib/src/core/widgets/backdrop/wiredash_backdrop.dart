@@ -351,8 +351,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     const double minContentAreaHeight = 64;
     const double defaultContentAreaHeight = 320.0;
-    // Could be anything really
-    const double minAppPeakHeight = 56;
 
     // TODO check on android with soft keyboard and soft navigation keys
     final currentKeyboardHeight = _mediaQueryData.viewInsets.bottom;
@@ -360,28 +358,40 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         currentKeyboardHeight.isRoughly(_maxKeyboardHeight, 0.2);
     _maxKeyboardHeight = math.max(currentKeyboardHeight, _maxKeyboardHeight);
 
-    final calc = SafeAreaCalculator(screenSize: screenSize)
+    final contentCalc = SafeAreaCalculator(screenSize: screenSize)
+      // ignoring top paddings because the content can draw behind or has to
+      // use a SafeArea
       ..addTopInset(mqPadding.top, 'mediaQueryPadding top')
       ..addTopInset(wiredashPadding.top, 'wiredashPadding top')
       ..addBottomInset(mqPadding.bottom, 'mediaQueryPadding bottom')
       ..addBottomInset(wiredashPadding.bottom, 'wiredashPadding bottom');
 
     if (isKeyboardOpen) {
-      calc.addBottomInset(_maxKeyboardHeight, 'keyboardHeight');
+      contentCalc.addBottomInset(_maxKeyboardHeight, 'keyboardHeight');
+    }
+
+    final remainingSpace = contentCalc.rect.height;
+
+    // positioning the app at the bottom works without bottom insets
+    final appCalc = contentCalc.withoutBottomInsets();
+
+    final double minAppPeakHeight =
+        remainingSpace < defaultContentAreaHeight ? 16 : 56;
+
+    if (!isKeyboardOpen) {
+      // Always peak app when the keybaord is not open
+      contentCalc.addBottomInset(minAppPeakHeight, 'appPeak');
+      appCalc.addBottomInset(minAppPeakHeight, 'appPeak');
     }
 
     // don't peak app on small screens, i.e. on phones in landscape when the
     // keyboard is open
-    final remainingSpace = calc.rect.height;
-    if (remainingSpace - minAppPeakHeight > minContentAreaHeight) {
-      if (isKeyboardOpen) {
-        calc.addBottomInset(
-          _maxKeyboardHeight + minAppPeakHeight,
-          'keyboard + appPeak',
-        );
-      } else {
-        calc.addBottomInset(minAppPeakHeight, 'appPeak');
-      }
+    if (isKeyboardOpen && remainingSpace > defaultContentAreaHeight) {
+      // when there's enough space peak app above keyboard
+      contentCalc.addBottomInset(
+        _maxKeyboardHeight + minAppPeakHeight,
+        'keyboard + appPeak',
+      );
     }
 
     final BoxConstraints preferredContentSize =
@@ -393,17 +403,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final naturalContentSize = preferredContentSize
         .enforce(const BoxConstraints(minHeight: minContentAreaHeight));
 
-    final safeAreaConstraints = BoxConstraints.loose(calc.size);
+    final BoxConstraints contentConstraints =
+        naturalContentSize.enforce(BoxConstraints.loose(contentCalc.size));
+    final BoxConstraints appConstraints =
+        naturalContentSize.enforce(BoxConstraints.loose(appCalc.size));
 
-    final BoxConstraints constraints =
-        naturalContentSize.enforce(safeAreaConstraints);
+    final double contentHeight = contentConstraints.maxHeight;
 
-    final double contentHeight = constraints.maxHeight;
     _rectContentArea = Rect.fromLTWH(
       wiredashPadding.left,
       0,
       context.theme.maxContentWidth,
-      contentHeight,
+      contentHeight + contentCalc.topInset,
     ).centerHorizontally(
       maxWidth: screenSize.width - wiredashPadding.horizontal,
       minPadding: context.theme.horizontalPadding,
@@ -411,12 +422,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     _rectAppOutOfFocus = Rect.fromLTWH(
       0,
-      _rectContentArea.bottom,
+      appConstraints.maxHeight,
       screenSize.width,
       screenSize.height,
     )
         .centerHorizontally(
-          maxWidth: screenSize.width,
+          maxWidth: screenSize.width - wiredashPadding.horizontal,
           minPadding: context.theme.horizontalPadding,
         )
         .translate(wiredashPadding.left, 0);
@@ -681,7 +692,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                           right: 0,
                           bottom: 0,
                           child: ClipRect(
-                            child: child!,
+                            child: child,
                           ),
                         ),
                       ],

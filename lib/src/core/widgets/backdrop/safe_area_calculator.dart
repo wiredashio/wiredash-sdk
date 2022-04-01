@@ -41,6 +41,31 @@ class SafeAreaCalculator {
       screenSize.height - top - bottomInset,
     );
   }
+
+  @override
+  String toString() {
+    return 'SafeAreaCalculator{screenSize: $screenSize, _topInsets: $_topInsets, _bottomInsets: $_bottomInsets}';
+  }
+
+  SafeAreaCalculator withoutTopInsets() {
+    final calc = SafeAreaCalculator(
+      screenSize: screenSize,
+    );
+    for (final entry in _bottomInsets) {
+      calc.addBottomInset(entry.height, entry.debugName);
+    }
+    return calc;
+  }
+
+  SafeAreaCalculator withoutBottomInsets() {
+    final calc = SafeAreaCalculator(
+      screenSize: screenSize,
+    );
+    for (final entry in _topInsets) {
+      calc.addTopInset(entry.height, entry.debugName);
+    }
+    return calc;
+  }
 }
 
 class _Entry implements Comparable<_Entry> {
