@@ -694,8 +694,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                       child: FadeTransition(
                         // TODO show some handle when in screencapture mode?
                         opacity: _appHandleAnimation,
-                        child: FakeAppStatusBar(
-                          height: _mediaQueryData.viewPadding.top,
+                        child: ColoredBox(
+                          color: context.theme.primaryColor,
+                          child: FakeAppStatusBar(
+                            height: _mediaQueryData.viewPadding.top,
+                          ),
                         ),
                       ),
                     ),
