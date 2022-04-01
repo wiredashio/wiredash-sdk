@@ -56,33 +56,38 @@ class WiredashThemeData {
   }
 
   factory WiredashThemeData.fromColor({
-    required Color color,
+    required Color primaryColor,
+    Color? secondaryColor,
     required Brightness brightness,
   }) {
-    final hsl = HSLColor.fromColor(color);
+    final hsl = HSLColor.fromColor(primaryColor);
 
     final theme =
-        WiredashThemeData(brightness: brightness, primaryColor: color);
+        WiredashThemeData(brightness: brightness, primaryColor: primaryColor);
 
     if (brightness == Brightness.light) {
+      final secondary = secondaryColor ??
+          hsl
+              .withHue((hsl.hue - 10) % 360)
+              .withSaturation(.60)
+              .withLightness(.90)
+              .toColor();
       return theme.copyWith(
-        secondaryColor: hsl
-            .withHue((hsl.hue - 10) % 360)
-            .withSaturation(.60)
-            .withLightness(.90)
-            .toColor(),
+        secondaryColor: secondary,
         primaryBackgroundColor:
             hsl.withSaturation(1.0).withLightness(1.0).toColor(),
         secondaryBackgroundColor:
             hsl.withSaturation(.8).withLightness(0.95).toColor(),
       );
     } else {
+      final secondary = secondaryColor ??
+          hsl
+              .withHue((hsl.hue - 10) % 360)
+              .withSaturation(.1)
+              .withLightness(.1)
+              .toColor();
       return theme.copyWith(
-        secondaryColor: hsl
-            .withHue((hsl.hue - 10) % 360)
-            .withSaturation(.1)
-            .withLightness(.1)
-            .toColor(),
+        secondaryColor: secondary,
         primaryBackgroundColor:
             hsl.withSaturation(0.04).withLightness(0.2).toColor(),
         secondaryBackgroundColor:

@@ -130,14 +130,15 @@ class WiredashController {
       if (inheritMaterialTheme == true) {
         final materialTheme = Theme.of(context);
         _model.themeFromContext = WiredashThemeData.fromColor(
-          color: materialTheme.colorScheme.secondary,
+          primaryColor: materialTheme.colorScheme.primary,
+          secondaryColor: materialTheme.colorScheme.secondary,
           brightness: materialTheme.brightness,
         );
       }
       if (inheritCupertinoTheme == true) {
         final cupertinoTheme = CupertinoTheme.of(context);
         _model.themeFromContext = WiredashThemeData.fromColor(
-          color: cupertinoTheme.primaryColor,
+          primaryColor: cupertinoTheme.primaryColor,
           brightness: cupertinoTheme.brightness ?? Brightness.light,
         );
       }
