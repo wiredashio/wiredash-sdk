@@ -680,7 +680,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                           left: 0,
                           right: 0,
                           bottom: 0,
-                          child: child!,
+                          child: ClipRect(
+                            child: child!,
+                          ),
                         ),
                       ],
                     ),
