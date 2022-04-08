@@ -46,9 +46,16 @@ class WiredashBackdrop extends StatefulWidget {
     MediaQueryData mediaQueryData,
   )? foregroundLayerBuilder;
 
-  static BackdropController of(BuildContext context) {
+  /// Gains access to the [BackdropController] from children of
+  /// [WiredashBackdrop] via the element tree
+  static BackdropController of(BuildContext context) => maybeOf(context)!;
+
+  /// Gains access to the [BackdropController] from children of
+  /// [WiredashBackdrop] via the element tree. Returns `null` if
+  /// [WiredashBackdrop] is not a parent in the widget tree.
+  static BackdropController? maybeOf(BuildContext context) {
     final state = context.findAncestorStateOfType<_WiredashBackdropState>();
-    return state!.widget.controller;
+    return state?.widget.controller;
   }
 
   @override

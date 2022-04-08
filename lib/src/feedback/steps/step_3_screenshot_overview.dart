@@ -18,7 +18,7 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
       fadeInOnEnter: false,
       duration: const Duration(milliseconds: 300),
       onSwitch: () {
-        WiredashBackdrop.of(context).animateSizeChange = true;
+        WiredashBackdrop.maybeOf(context)?.animateSizeChange = true;
       },
       child: () {
         if (!context.feedbackModel.hasAttachments) {

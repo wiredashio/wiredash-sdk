@@ -242,16 +242,18 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
     final height = math.max(multipleHeight, minHeight);
 
     if (mounted) {
-      if (_animateNextSizeChange == true) {
-        WiredashBackdrop.of(context).animateSizeChange = true;
+      final backdropController = WiredashBackdrop.maybeOf(context);
+      if (backdropController != null) {
+        if (_animateNextSizeChange == true) {
+          backdropController.animateSizeChange = true;
+        }
+        backdropController.contentSize = Size(_measuredSize.width, height);
+        if (height == _lastReportedHeight) {
+          _animateNextSizeChange = false;
+          return;
+        }
+        _lastReportedHeight = height;
       }
-      WiredashBackdrop.of(context).contentSize =
-          Size(_measuredSize.width, height);
-      if (height == _lastReportedHeight) {
-        _animateNextSizeChange = false;
-        return;
-      }
-      _lastReportedHeight = height;
     }
     if (_animateNextSizeChange) {
       _animateNextSizeChange = false;
