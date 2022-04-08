@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/core/theme/key_point_interpolator.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
+import 'package:wiredash/src/utils/standard_kt.dart';
 
 class Step3ScreenshotOverview extends StatefulWidget {
   const Step3ScreenshotOverview({Key? key}) : super(key: key);
@@ -220,22 +222,38 @@ class _NewAttachment extends StatelessWidget {
             context.feedbackModel.enterScreenshotCapturingMode();
           },
           builder: (context, state, anims) {
+            Color hoverColorAdjustment(Color color) {
+              if (!state.hovered) {
+                return color;
+              }
+              if (context.theme.brightness == Brightness.dark) {
+                return color.lighten(0.02);
+              } else {
+                return color.darken(0.02);
+              }
+            }
+
             return Container(
               width: 160,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Color.lerp(
-                  context.theme.secondaryColor,
-                  context.theme.primaryColor,
-                  anims.pressedAnim.value * 0.2,
-                )!
-                    .darken(anims.hoveredAnim.value * 0.05),
+                  context.theme.primaryBackgroundColor,
+                  context.theme.primaryContainerColor,
+                  (anims.pressedAnim.value + anims.hoveredAnim.value) * 0.1,
+                ),
               ),
               alignment: Alignment.center,
               child: AbsorbPointer(
                 child: TronButton(
-                  color: context.theme.secondaryBackgroundColor,
-                  // onTap: ,
+                  color: state.pressed
+                      ? context.theme.secondaryBackgroundColor
+                          .let(hoverColorAdjustment)
+                      : context.theme.secondaryBackgroundColor
+                          .let(hoverColorAdjustment),
+                  onTap: () {
+                    // nothing but style the button as if it is enabled.
+                  },
                   child: TronIcon(
                     Wirecons.plus,
                     color: context.theme.primaryColor,

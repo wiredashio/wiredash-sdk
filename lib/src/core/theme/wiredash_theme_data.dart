@@ -1,6 +1,7 @@
 import 'dart:ui' show Brightness;
 
 import 'package:flutter/rendering.dart';
+import 'package:wiredash/src/core/theme/color_ext.dart';
 import 'package:wiredash/src/core/theme/key_point_interpolator.dart';
 
 class WiredashThemeData {
@@ -244,6 +245,22 @@ class WiredashThemeData {
       1024: 400,
     });
     return keypoints.interpolate(height);
+  }
+
+  Color get primaryContainerColor {
+    if (brightness == Brightness.dark) {
+      return primaryColor.desaturate(0.4).darken(0.2);
+    } else {
+      return primaryColor.desaturate(0.4).lighten(0.3);
+    }
+  }
+
+  Color get secondaryContainerColor {
+    if (brightness == Brightness.dark) {
+      return secondaryColor.desaturate(0.4).darken(0.2);
+    } else {
+      return secondaryColor.desaturate(0.4).darken(0.2);
+    }
   }
 
   @override
