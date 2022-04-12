@@ -4,6 +4,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 
 import 'package:wiredash/src/core/support/material_support_layer.dart';
+import 'package:wiredash/src/nps/nps_model_provider.dart';
 import 'package:wiredash/src/nps/step_1_nps_rating.dart';
 import 'package:wiredash/src/nps/step_2_message.dart';
 
@@ -23,7 +24,7 @@ class _NpsFlowState extends State<NpsFlow> {
   Widget build(BuildContext context) {
     final lpv = LarryPageView(
       key: _lpvKey,
-      stepCount: 2,
+      stepCount: context.npsModel.score == null ? 1 : 2,
       initialPage: _index,
       pageIndex: _index,
       onPageChanged: (index) {

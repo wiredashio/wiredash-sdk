@@ -8,3 +8,4 @@ export 'package:wiredash/src/core/translation/wiredash_translations.dart';
 export 'package:wiredash/src/core/wiredash_controller.dart';
 export 'package:wiredash/src/core/wiredash_model.dart';
 export 'package:wiredash/src/core/wiredash_model_provider.dart';
+export 'package:wiredash/src/utils/standard_kt.dart';

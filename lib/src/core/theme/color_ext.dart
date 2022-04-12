@@ -12,6 +12,26 @@ extension ColorBrightness on Color {
     return hslDark.toColor();
   }
 
+  Color desaturate([double amount = .1]) {
+    assert(amount >= 0 && amount <= 1);
+
+    final hsl = HSLColor.fromColor(this);
+    final hslDark =
+        hsl.withSaturation((hsl.saturation - amount).clamp(0.0, 1.0));
+
+    return hslDark.toColor();
+  }
+
+  Color saturate([double amount = .1]) {
+    assert(amount >= 0 && amount <= 1);
+
+    final hsl = HSLColor.fromColor(this);
+    final hslDark =
+        hsl.withSaturation((hsl.saturation + amount).clamp(0.0, 1.0));
+
+    return hslDark.toColor();
+  }
+
   Color lighten([double amount = .1]) {
     assert(amount >= 0 && amount <= 1);
 

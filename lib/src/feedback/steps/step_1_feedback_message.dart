@@ -66,15 +66,16 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                 filled: true,
                 fillColor: context.theme.primaryBackgroundColor,
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: context.theme.secondaryColor),
+                  borderSide: BorderSide(
+                    color: context.theme.secondaryColor.withOpacity(0.5),
+                  ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: context.theme.secondaryColor),
+                  borderSide: BorderSide(color: context.theme.primaryColor),
                 ),
                 errorBorder: InputBorder.none,
-                hoverColor: context.theme.brightness == Brightness.light
-                    ? context.theme.primaryBackgroundColor.darken(0.015)
-                    : context.theme.primaryBackgroundColor.lighten(0.015),
+                focusColor: context.theme.primaryBackgroundColor,
+                hoverColor: context.theme.primaryBackgroundColor,
                 hintText:
                     'There’s an unknown error when I try to change my avatar...',
                 contentPadding:

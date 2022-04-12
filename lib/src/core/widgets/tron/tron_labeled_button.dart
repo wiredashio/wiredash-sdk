@@ -107,9 +107,10 @@ class _LabeledButtonState extends AnimatedWidgetBaseState<TronLabeledButton> {
   late Color color = const Color(0x00000000);
 
   @override
-  void initState() {
-    color = WiredashTheme.of(context, listen: false)!.secondaryColor;
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    color = WiredashTheme.of(context)!.secondaryColor;
   }
 
   @override
@@ -122,10 +123,10 @@ class _LabeledButtonState extends AnimatedWidgetBaseState<TronLabeledButton> {
         }
         if (_pressed) {
           // ignore: avoid_redundant_argument_values
-          return color;
+          return color.withOpacity(0.4);
         }
         if (_hovered) {
-          return color.withOpacity(0.5);
+          return color.withOpacity(0.2);
         }
         return color.withOpacity(0);
       }(),

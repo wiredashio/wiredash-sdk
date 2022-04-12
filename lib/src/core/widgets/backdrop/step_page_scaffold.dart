@@ -1,15 +1,18 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/core/support/widget_binding_support.dart';
+import 'package:wiredash/src/core/widgets/measure_size.dart';
 
 /// The default layout of a step in [LarryPageView]
 class StepPageScaffold extends StatefulWidget {
   const StepPageScaffold({
     this.currentStep,
     this.totalSteps,
-    required this.title,
+    this.title,
     this.shortTitle,
     this.description,
     required this.child,
@@ -18,37 +21,58 @@ class StepPageScaffold extends StatefulWidget {
     this.discardConfirmLabel,
     Key? key,
     this.onClose,
+    this.alignemnt,
+    this.minHeight,
   }) : super(key: key);
 
   final int? currentStep;
   final int? totalSteps;
 
   final Widget? indicator;
-  final Widget title;
+  final Widget? title;
   final Widget? shortTitle;
   final Widget? description;
   final Widget? discardLabel;
   final Widget? discardConfirmLabel;
   final void Function()? onClose;
+  final StepPageAlignemnt? alignemnt;
+  final double? minHeight;
 
   final Widget child;
 
   @override
-  State<StepPageScaffold> createState() => _StepPageScaffoldState();
+  State<StepPageScaffold> createState() => StepPageScaffoldState();
+
+  static StepPageScaffoldState? of(BuildContext context) {
+    return context.findAncestorStateOfType<StepPageScaffoldState>();
+  }
 }
 
-class _StepPageScaffoldState extends State<StepPageScaffold> {
+class StepPageScaffoldState extends State<StepPageScaffold> {
   Timer? _reallyTimer;
+  bool _animateNextSizeChange = true;
+
+  void animateNextSizeChange() {
+    _animateNextSizeChange = true;
+  }
+
+  /// Remembers the true actual height reported to Backdrop. When this changes,
+  /// reset the [_animateNextSizeChange], even if rounding results in the same
+  /// value
+  double _lastReportedHeight = 0.0;
+
+  Size _measuredSize = Size.zero;
 
   Widget _buildTitle(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DefaultTextStyle(
-          style: context.theme.headlineTextStyle,
-          child: widget.title,
-        ),
+        if (widget.title != null)
+          DefaultTextStyle(
+            style: context.theme.headlineTextStyle,
+            child: widget.title!,
+          ),
         if (widget.description != null)
           const SizedBox(
             height: 8,
@@ -63,92 +87,135 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
   }
 
   @override
+  void didUpdateWidget(covariant StepPageScaffold oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.minHeight != widget.minHeight) {
+      widgetsBindingInstance.addPostFrameCallback((_) {
+        _reportWidgetHeight();
+      });
+    }
+  }
+
+  double _minHeight = 0.0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final newMinHeight = context.theme.minContentHeight;
+    if (_minHeight != newMinHeight) {
+      _minHeight = newMinHeight;
+      widgetsBindingInstance.addPostFrameCallback((_) {
+        _reportWidgetHeight();
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Align(
+      alignment: Alignment.topLeft,
       child: ScrollBox(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  if (widget.indicator != null) widget.indicator!,
-                  if (widget.shortTitle != null &&
-                      context.theme.windowSize.width > 400) ...[
-                    SizedBox(
-                      height: 16,
-                      child: VerticalDivider(
-                        color: context.theme.captionTextStyle.color,
+        child: MeasureSize(
+          onChange: (size, rect) {
+            _measuredSize = size;
+            _reportWidgetHeight();
+          },
+          child: SafeArea(
+            minimum: const EdgeInsets.symmetric(vertical: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: () {
+                switch (widget.alignemnt) {
+                  case StepPageAlignemnt.center:
+                    return CrossAxisAlignment.center;
+                  case StepPageAlignemnt.end:
+                    return CrossAxisAlignment.end;
+                  case StepPageAlignemnt.start:
+                  default:
+                    return CrossAxisAlignment.start;
+                }
+              }(),
+              children: [
+                Row(
+                  children: [
+                    if (widget.indicator != null) widget.indicator!,
+                    if (widget.shortTitle != null &&
+                        context.theme.windowSize.width > 400) ...[
+                      SizedBox(
+                        height: 16,
+                        child: VerticalDivider(
+                          color: context.theme.captionTextStyle.color,
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: DefaultTextStyle(
-                        style: context.theme.captionTextStyle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        child: widget.shortTitle!,
-                      ),
-                    )
-                  ] else
-                    const Spacer(),
-                  if (widget.onClose != null)
-                    AnimatedClickTarget(
-                      onTap: widget.onClose,
-                      builder: (
-                        BuildContext context,
-                        TargetState state,
-                        TargetStateAnimations anims,
-                      ) {
-                        return TronIcon(
-                          Wirecons.x,
-                          color: Color.lerp(
-                            context.theme.secondaryTextColor,
-                            context.theme.primaryTextColor,
-                            anims.hoveredAnim.value,
-                          ),
-                        );
-                      },
-                    )
-                  else if (widget.discardLabel != null)
-                    TronLabeledButton(
-                      onTap: () {
-                        setState(() {
-                          if (_reallyTimer == null) {
-                            setState(() {
-                              _reallyTimer =
-                                  Timer(const Duration(seconds: 3), () {
-                                if (mounted) {
-                                  setState(() {
-                                    _reallyTimer = null;
-                                  });
-                                } else {
-                                  _reallyTimer = null;
-                                }
-                              });
-                            });
-                          } else {
-                            context.wiredashModel.hide(discardFeedback: true);
-                            _reallyTimer = null;
-                          }
-                        });
-                      },
-                      child: _reallyTimer == null
-                          ? widget.discardLabel!
-                          : DefaultTextStyle(
-                              style: TextStyle(color: context.theme.errorColor),
-                              child: widget.discardConfirmLabel ??
-                                  const Text('Really?'),
+                      Expanded(
+                        child: DefaultTextStyle(
+                          style: context.theme.captionTextStyle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          child: widget.shortTitle!,
+                        ),
+                      )
+                    ] else
+                      const Spacer(),
+                    if (widget.onClose != null)
+                      AnimatedClickTarget(
+                        onTap: widget.onClose,
+                        builder: (
+                          BuildContext context,
+                          TargetState state,
+                          TargetStateAnimations anims,
+                        ) {
+                          return TronIcon(
+                            Wirecons.x,
+                            color: Color.lerp(
+                              context.theme.secondaryTextColor,
+                              context.theme.primaryTextColor,
+                              anims.hoveredAnim.value,
                             ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              _buildTitle(context),
-              const SizedBox(height: 32),
-              widget.child,
-            ],
+                          );
+                        },
+                      )
+                    else if (widget.discardLabel != null)
+                      TronLabeledButton(
+                        onTap: () {
+                          setState(() {
+                            if (_reallyTimer == null) {
+                              setState(() {
+                                _reallyTimer =
+                                    Timer(const Duration(seconds: 3), () {
+                                  if (mounted) {
+                                    setState(() {
+                                      _reallyTimer = null;
+                                    });
+                                  } else {
+                                    _reallyTimer = null;
+                                  }
+                                });
+                              });
+                            } else {
+                              context.wiredashModel.hide(discardFeedback: true);
+                              _reallyTimer = null;
+                            }
+                          });
+                        },
+                        child: _reallyTimer == null
+                            ? widget.discardLabel!
+                            : DefaultTextStyle(
+                                style: TextStyle(
+                                  color: context.theme.errorColor,
+                                ),
+                                child: widget.discardConfirmLabel ??
+                                    const Text('Really?'),
+                              ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                _buildTitle(context),
+                const SizedBox(height: 32),
+                widget.child,
+              ],
+            ),
           ),
         ),
       ),
@@ -160,6 +227,44 @@ class _StepPageScaffoldState extends State<StepPageScaffold> {
     _reallyTimer?.cancel();
     super.dispose();
   }
+
+  void _reportWidgetHeight() {
+    if (_measuredSize == Size.zero) {
+      // not yet measured
+      return;
+    }
+    // make height a multiple of 64 (round up) to prevent micro animations
+    const double multipleOf = 64;
+    final multipleHeight =
+        (_measuredSize.height / multipleOf).ceil() * multipleOf;
+
+    final minHeight = widget.minHeight ?? context.theme.minContentHeight;
+    final height = math.max(multipleHeight, minHeight);
+
+    if (mounted) {
+      final backdropController = WiredashBackdrop.maybeOf(context);
+      if (backdropController != null) {
+        if (_animateNextSizeChange == true) {
+          backdropController.animateSizeChange = true;
+        }
+        backdropController.contentSize = Size(_measuredSize.width, height);
+        if (height == _lastReportedHeight) {
+          _animateNextSizeChange = false;
+          return;
+        }
+        _lastReportedHeight = height;
+      }
+    }
+    if (_animateNextSizeChange) {
+      _animateNextSizeChange = false;
+    }
+  }
+}
+
+enum StepPageAlignemnt {
+  start,
+  center,
+  end,
 }
 
 /// Scrollable area with scrollbar
@@ -185,6 +290,7 @@ class _ScrollBoxState extends State<ScrollBox> {
     Widget child = SingleChildScrollView(
       controller: controller,
       padding: widget.padding,
+      clipBehavior: Clip.none,
       child: widget.child,
     );
     final targetPlatform = Theme.of(context).platform;

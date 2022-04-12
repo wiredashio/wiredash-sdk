@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Fakes the system statusbar when the app is floating in [WiredashBackdrop]
@@ -13,7 +14,9 @@ class FakeAppStatusBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double barContentHeight = math.min(12, height);
+    final isMobile = defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS;
+    final double barContentHeight = math.min(isMobile ? 14 : 16, height);
 
     return DefaultTextStyle(
       style: TextStyle(
@@ -29,6 +32,7 @@ class FakeAppStatusBar extends StatelessWidget {
         fontSize: barContentHeight,
       ),
       child: Container(
+        height: height,
         decoration: const BoxDecoration(
           color: Colors.black12,
         ),
@@ -48,9 +52,9 @@ class FakeAppStatusBar extends StatelessWidget {
                       Image.asset(
                         'assets/images/logo_white.png',
                         package: 'wiredash',
-                        height: barContentHeight,
+                        height: barContentHeight + 5,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 0.5 * barContentHeight),
                       const Text('Wiredash'),
                     ],
                   ),

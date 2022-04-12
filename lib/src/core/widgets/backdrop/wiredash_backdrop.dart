@@ -1,15 +1,17 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/core/theme/wiredash_theme.dart';
 import 'package:wiredash/src/core/widgets/backdrop/fake_app_status_bar.dart';
 import 'package:wiredash/src/core/widgets/backdrop/pull_to_close_detector.dart';
-import 'package:wiredash/src/core/widgets/tron/animated_fade_widget_switcher.dart';
+import 'package:wiredash/src/core/widgets/backdrop/safe_area_calculator.dart';
 import 'package:wiredash/src/core/wiredash_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
+import 'package:wiredash/src/utils/standard_kt.dart';
 import 'package:wiredash/wiredash.dart';
 
 /// The Wiredash UI behind the app
@@ -44,15 +46,23 @@ class WiredashBackdrop extends StatefulWidget {
     MediaQueryData mediaQueryData,
   )? foregroundLayerBuilder;
 
-  static BackdropController of(BuildContext context) {
+  /// Gains access to the [BackdropController] from children of
+  /// [WiredashBackdrop] via the element tree
+  static BackdropController of(BuildContext context) => maybeOf(context)!;
+
+  /// Gains access to the [BackdropController] from children of
+  /// [WiredashBackdrop] via the element tree. Returns `null` if
+  /// [WiredashBackdrop] is not a parent in the widget tree.
+  static BackdropController? maybeOf(BuildContext context) {
     final state = context.findAncestorStateOfType<_WiredashBackdropState>();
-    return state!.widget.controller;
+    return state?.widget.controller;
   }
 
   @override
   State<WiredashBackdrop> createState() => _WiredashBackdropState();
 
-  static const Duration animationDuration = Duration(milliseconds: 500);
+  static const double topBarHeight = 80;
+  static const double bottomBarHeight = 80;
 }
 
 class _WiredashBackdropState extends State<WiredashBackdrop>
@@ -61,14 +71,17 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   late final AnimationController _backdropAnimationController =
       AnimationController(
     vsync: this,
-    duration: WiredashBackdrop.animationDuration,
+    duration: const Duration(milliseconds: 500),
   );
 
   /// Used for re-positioning the app on the screen
-  late Animation<Rect?> _transformAnimation;
+  Animation<Rect?>? _appTransformAnimation;
 
   /// Used for animating the corner radius of the app
   late Animation<BorderRadius?> _cornerRadiusAnimation;
+
+  /// How much the app handle is visible
+  late Animation<double> _appHandleAnimation;
 
   /// This CurvedAnimation is used for driving the transform and corner radius
   /// animation
@@ -124,6 +137,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   @override
   void dispose() {
     widget.controller._state = null;
+    _backdropStatus = WiredashBackdropStatus.closed;
     widget.controller.removeListener(_markAsDirty);
     _backdropAnimationController.dispose();
     super.dispose();
@@ -147,6 +161,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }
   }
 
+  final BorderRadius _appBorderRadiusClosed = BorderRadius.zero;
+  final BorderRadius _appBorderRadiusOpen = BorderRadius.circular(20);
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -157,6 +174,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final oldTheme = _wiredashThemeData;
     final newTheme = context.theme;
     _wiredashThemeData = newTheme;
+
+    if (newMq.orientation != oldMq.orientation) {
+      // soft keyboards have different heights based on the orientation
+      _maxKeyboardHeight = 0.0;
+    }
 
     if (newMq.size != oldMq.size ||
         oldTheme.horizontalPadding != newTheme.horizontalPadding ||
@@ -170,10 +192,39 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       _calculateRects();
       _swapAnimation();
     }
+  }
 
-    if (newMq.orientation != oldMq.orientation) {
-      // soft keyboards have different heights based on the orientation
-      _maxKeyboardHeight = 0.0;
+  Size? _injectedContentSize;
+  void _onContentSizeChanged(Size? size, {bool? animateSizeChange}) {
+    if (_injectedContentSize?.height != size?.height) {
+      _injectedContentSize = size;
+      final oldAppOutOfFocusRect =
+          _appTransformAnimation?.value ?? _rectAppOutOfFocus;
+      final oldRectAppCentered =
+          _appTransformAnimation?.value ?? _rectAppCentered;
+      _calculateRects();
+      // explicitly not calling _swapAnimation(), doing it manually
+
+      if (_backdropStatus == WiredashBackdropStatus.centered) {
+        _appTransformAnimation =
+            RectTween(begin: oldRectAppCentered, end: _rectAppCentered)
+                .animate(_driverAnimation);
+        _appHandleAnimation = const AlwaysStoppedAnimation(0.0);
+      } else {
+        _appTransformAnimation =
+            RectTween(begin: oldAppOutOfFocusRect, end: _rectAppOutOfFocus)
+                .animate(_driverAnimation);
+      }
+      if (_backdropStatus == WiredashBackdropStatus.open) {
+        _appHandleAnimation = const AlwaysStoppedAnimation(1.0);
+      }
+      if (_backdropStatus == WiredashBackdropStatus.closed) {
+        _appHandleAnimation = const AlwaysStoppedAnimation(0.0);
+      }
+      _cornerRadiusAnimation = AlwaysStoppedAnimation(_appBorderRadiusOpen);
+      _backdropAnimationController.forward(
+        from: animateSizeChange == true ? 0 : 1,
+      );
     }
   }
 
@@ -186,6 +237,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       widget.controller._state = this;
       widget.controller.addListener(_markAsDirty);
     }
+
     if (oldWidget.padding != widget.padding) {
       _calculateRects();
       _swapAnimation();
@@ -214,7 +266,17 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     final content = Positioned.fromRect(
       rect: _rectContentArea,
       child: MediaQuery(
-        data: _mediaQueryData.removePadding(removeBottom: true),
+        data: _mediaQueryData
+            .copyWith(
+              padding: _mediaQueryData.padding
+                  .max(widget.padding ?? EdgeInsets.zero),
+            )
+            // remove the padding from the content area
+            .removePadding(
+              removeBottom: true,
+              removeLeft: true,
+              removeRight: true,
+            ),
         child: Focus(
           debugLabel: 'wiredash backdrop content',
           child: AnimatedOpacity(
@@ -239,9 +301,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       ),
       content: content,
       foreground: widget.foregroundLayerBuilder
-          ?.call(context, _transformAnimation.value!, _mediaQueryData),
+          ?.call(context, _appTransformAnimation!.value!, _mediaQueryData),
       background: widget.backgroundLayerBuilder
-          ?.call(context, _transformAnimation.value!, _mediaQueryData),
+          ?.call(context, _appTransformAnimation!.value!, _mediaQueryData),
     );
 
     return GestureDetector(
@@ -271,7 +333,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     final centerPadding = EdgeInsets.only(
       top: 80 + math.max(mqPadding.top, wiredashPadding.top), // navigation bar
-      bottom: 80 + math.max(mqPadding.bottom, wiredashPadding.top), // color bar
+      bottom:
+          80 + math.max(mqPadding.bottom, wiredashPadding.bottom), // color bar
     );
 
     // scale to show app in safeArea
@@ -288,61 +351,85 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
     _rectAppCentered = Rect.fromLTWH(
       (screenSize.width - (screenSize.width * centerScaleFactor)) / 2,
-      wiredashPadding.top + centerPadding.top,
+      math.max(wiredashPadding.top, centerPadding.top),
       screenSize.width * centerScaleFactor,
       screenSize.height * centerScaleFactor,
     ).translate(wiredashPadding.left / 2 - wiredashPadding.right / 2, 0);
 
-    // iPhone SE is 320 width
-    const double minContentAreaHeight = 400.0;
-    const double maxContentAreaHeight = 640.0;
-    const double minAppPeakHeight = 56;
+    const double minContentAreaHeight = 64;
+    const double defaultContentAreaHeight = 320.0;
 
     // TODO check on android with soft keyboard and soft navigation keys
     final currentKeyboardHeight = _mediaQueryData.viewInsets.bottom;
     final bool isKeyboardOpen =
         currentKeyboardHeight.isRoughly(_maxKeyboardHeight, 0.2);
     _maxKeyboardHeight = math.max(currentKeyboardHeight, _maxKeyboardHeight);
-    final keyboardHeight = () {
-      if (isKeyboardOpen) {
-        return _maxKeyboardHeight;
-      } else if (screenSize.height - _maxKeyboardHeight <
-          minContentAreaHeight) {
-        // there's not enough space to always include the padding
-        return 0;
-      } else {
-        // Always include the keyboardHeight, prevent flickering when there
-        // is enough space
-        return _maxKeyboardHeight;
-      }
-    }();
 
-    // don't peak app on small screens in landscape when the keyboard is open
-    final bool peakApp = !isKeyboardOpen ||
-        (screenSize.height - minAppPeakHeight - _maxKeyboardHeight) >
-            minContentAreaHeight;
+    final contentCalc = SafeAreaCalculator(screenSize: screenSize)
+      // ignoring top paddings because the content can draw behind or has to
+      // use a SafeArea
+      ..addTopInset(mqPadding.top, 'mediaQueryPadding top')
+      ..addTopInset(wiredashPadding.top, 'wiredashPadding top')
+      ..addBottomInset(mqPadding.bottom, 'mediaQueryPadding bottom')
+      ..addBottomInset(wiredashPadding.bottom, 'wiredashPadding bottom');
 
-    final double contentHeight =
-        math.min(maxContentAreaHeight, screenSize.height - keyboardHeight) -
-            (peakApp ? minAppPeakHeight : 0);
+    if (isKeyboardOpen) {
+      contentCalc.addBottomInset(_maxKeyboardHeight, 'keyboardHeight');
+    }
+
+    final remainingSpace = contentCalc.rect.height;
+
+    // positioning the app at the bottom works without bottom insets
+    final appCalc = contentCalc.withoutBottomInsets();
+
+    final double minAppPeakHeight =
+        remainingSpace < defaultContentAreaHeight ? 16 : 56;
+
+    if (!isKeyboardOpen) {
+      // Always peak app when the keybaord is not open
+      contentCalc.addBottomInset(minAppPeakHeight, 'appPeak');
+      appCalc.addBottomInset(minAppPeakHeight, 'appPeak');
+    }
+
+    // don't peak app on small screens, i.e. on phones in landscape when the
+    // keyboard is open
+    if (isKeyboardOpen && remainingSpace > defaultContentAreaHeight) {
+      // when there's enough space peak app above keyboard
+      contentCalc.addBottomInset(
+        _maxKeyboardHeight + minAppPeakHeight,
+        'keyboard + appPeak',
+      );
+    }
+
+    final BoxConstraints preferredContentSize =
+        _injectedContentSize?.let((it) => BoxConstraints.tight(it)) ??
+            const BoxConstraints(
+              minHeight: minContentAreaHeight,
+              maxHeight: defaultContentAreaHeight,
+            );
+    final naturalContentSize = preferredContentSize
+        .enforce(const BoxConstraints(minHeight: minContentAreaHeight));
+
+    final BoxConstraints contentConstraints =
+        naturalContentSize.enforce(BoxConstraints.loose(contentCalc.size));
+    final BoxConstraints appConstraints =
+        naturalContentSize.enforce(BoxConstraints.loose(appCalc.size));
+
+    final double contentHeight = contentConstraints.maxHeight;
 
     _rectContentArea = Rect.fromLTWH(
-      0,
+      wiredashPadding.left,
       0,
       context.theme.maxContentWidth,
-      contentHeight,
-    )
-        .removePadding(
-          wiredashPadding.copyWith(bottom: 0),
-        )
-        .centerHorizontally(
-          maxWidth: screenSize.width - wiredashPadding.horizontal,
-          minPadding: context.theme.horizontalPadding,
-        );
+      contentHeight + contentCalc.topInset,
+    ).centerHorizontally(
+      maxWidth: screenSize.width - wiredashPadding.horizontal,
+      minPadding: context.theme.horizontalPadding,
+    );
 
     _rectAppOutOfFocus = Rect.fromLTWH(
       0,
-      _rectContentArea.bottom,
+      appConstraints.maxHeight,
       screenSize.width,
       screenSize.height,
     )
@@ -434,6 +521,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(
+              width: 4,
               color: Colors.yellow.withOpacity(0.5),
             ),
           ),
@@ -454,7 +542,52 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         left: 0,
         right: 0,
         top: 0,
+        // status bar
         bottom: _mediaQueryData.size.height - _mediaQueryData.padding.top,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.orange.withOpacity(0.1),
+            border: Border.all(
+              color: Colors.orange,
+            ),
+          ),
+        ),
+      ),
+      Positioned(
+        left: 0,
+        right: 0,
+        top: 0,
+        // padding top
+        height: widget.padding?.top ?? 0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.pink.withOpacity(0.1),
+            border: Border.all(
+              color: Colors.pink,
+            ),
+          ),
+        ),
+      ),
+      Positioned(
+        left: 0,
+        right: 0,
+        // min size
+        top: _mediaQueryData.padding.top + context.theme.minContentHeight,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.greenAccent.withOpacity(0.1),
+            border: Border.all(
+              color: Colors.greenAccent,
+            ),
+          ),
+        ),
+      ),
+      Positioned(
+        left: 0,
+        right: 0,
+        bottom: 0,
+        // nav buttons
+        top: _mediaQueryData.size.height - _mediaQueryData.padding.bottom,
         child: Container(
           decoration: BoxDecoration(
             color: Colors.orange.withOpacity(0.1),
@@ -474,8 +607,34 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           ),
         ),
       ),
+      Positioned(
+        left: 0,
+        right: 0,
+        // keyboard
+        top: _mediaQueryData.size.height - _mediaQueryData.viewInsets.bottom,
+        bottom: 0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.orange.withOpacity(0.1),
+            border: Border.all(
+              color: Colors.orange,
+            ),
+          ),
+        ),
+      ),
     ];
   }
+
+  final _handleHeight = () {
+    if (kIsWeb) {
+      return 36.0;
+    } else if (defaultTargetPlatform == TargetPlatform.macOS) {
+      return 44.0;
+    } else {
+      // TODO find a good value for windows/linux
+      return 36.0;
+    }
+  }();
 
   /// Clips and adds shadow to the app
   ///
@@ -485,69 +644,88 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, child) {
-        return Stack(
-          fit: StackFit.passthrough,
-          clipBehavior: Clip.none,
-          children: [
-            SizedBox(
-              height: _mediaQueryData.size.height,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: _cornerRadiusAnimation.value,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF000000).withOpacity(0.04),
-                      offset: const Offset(0, 10),
-                      blurRadius: 10,
-                    ),
-                    BoxShadow(
-                      color: const Color(0xFF000000).withOpacity(0.10),
-                      offset: const Offset(0, 20),
-                      blurRadius: 25,
-                    ),
-                  ],
+        final withDesktopHandle = _mediaQueryData.viewPadding.top == 0;
+
+        return SizedBox(
+          height: _mediaQueryData.size.height + _handleHeight,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: _cornerRadiusAnimation.value,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF000000).withOpacity(0.04),
+                  offset: const Offset(0, 10),
+                  blurRadius: 10,
                 ),
-                child: ClipRRect(
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  borderRadius: _cornerRadiusAnimation.value,
-                  child: Stack(
-                    children: [
-                      ColoredBox(
-                        color: context.theme.appBackgroundColor,
-                        child: child,
-                      ),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: _mediaQueryData.viewPadding.top,
-                        child: () {
-                          final bool showBar = () {
-                            if (_backdropStatus ==
-                                WiredashBackdropStatus.closing) {
-                              return false;
-                            }
-                            if (!widget.controller.isAppInteractive) {
-                              return true;
-                            }
-                            return false;
-                          }();
-                          return AnimatedFadeWidgetSwitcher(
-                            duration: const Duration(milliseconds: 300),
-                            child: !showBar
-                                ? null
-                                : FakeAppStatusBar(
-                                    height: _mediaQueryData.viewPadding.top,
-                                  ),
-                          );
-                        }(),
-                      ),
-                    ],
+                BoxShadow(
+                  color: const Color(0xFF000000).withOpacity(0.10),
+                  offset: const Offset(0, 20),
+                  blurRadius: 25,
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              borderRadius: _cornerRadiusAnimation.value,
+              child: Stack(
+                children: [
+                  ColoredBox(
+                    color: context.theme.appBackgroundColor,
+                    child: Stack(
+                      children: [
+                        if (withDesktopHandle)
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: ColoredBox(
+                              color: context.theme.primaryColor,
+                              child: SizedBox(
+                                // +1 to prevent flickering
+                                height:
+                                    _appHandleAnimation.value * _handleHeight +
+                                        1,
+                                child: FakeAppStatusBar(
+                                  height: _handleHeight,
+                                ),
+                              ),
+                            ),
+                          ),
+                        Positioned(
+                          top: withDesktopHandle
+                              ? _appHandleAnimation.value * _handleHeight
+                              : 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: ClipRect(
+                            child: child,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                  if (!withDesktopHandle)
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: _mediaQueryData.viewPadding.top,
+                      child: FadeTransition(
+                        // TODO show some handle when in screencapture mode?
+                        opacity: _appHandleAnimation,
+                        child: ColoredBox(
+                          color: context.theme.primaryColor,
+                          child: FakeAppStatusBar(
+                            height: _mediaQueryData.viewPadding.top,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
-          ],
+          ),
         );
       },
       child: child,
@@ -580,10 +758,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           app = PullToCloseDetector(
             closeDirection: CloseDirection.upwards,
             onPullStart: () {
-              setState(() {
-                _pulling = true;
-                _backdropStatus = WiredashBackdropStatus.closing;
-              });
+              _pulling = true;
+              _backdropStatus = WiredashBackdropStatus.closing;
               _swapAnimation();
               _pullCurves();
               _pullAppYController.value = 0.0;
@@ -614,7 +790,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               await Future.wait([a1, a2]);
               _backdropStatus = WiredashBackdropStatus.closed;
               await context.wiredashModel.hide();
-              _swapAnimation();
             },
             startReopenSimulation: (velocity) async {
               _pulling = false;
@@ -642,9 +817,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
           app = GestureDetector(
             onTap: () async {
-              _pullCurves();
               await context.wiredashModel.hide();
-              _animCurves();
             },
             child: app,
           );
@@ -652,10 +825,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
         // the difference of height between open and closed rect
         final yTranslation =
-            _pullAppYController.value + _transformAnimation.value!.top;
+            _pullAppYController.value + _appTransformAnimation!.value!.top;
+
         // The scale the app should be scaled to, compared to fullscreen
         final appScale =
-            _transformAnimation.value!.width / _rectAppFillsScreen.width;
+            _appTransformAnimation!.value!.width / _rectAppFillsScreen.width;
 
         // ignore: join_return_with_assignment
         app = Transform.translate(
@@ -676,7 +850,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     );
   }
 
+  TickerFuture? _openAnim;
+
   Future<void> _animateToOpen() async {
+    _animCurves();
+    if (_backdropStatus == WiredashBackdropStatus.opening) {
+      // already opening, return running animation
+      return _openAnim!.orCancel.catchError((_) => null);
+    }
+
     if (_backdropStatus == WiredashBackdropStatus.closed ||
         _backdropStatus == WiredashBackdropStatus.closing) {
       _backdropStatus = WiredashBackdropStatus.opening;
@@ -687,106 +869,132 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       // no need for animating, we're already in a desired state
       return;
     }
+
     _swapAnimation();
 
-    await _backdropAnimationController.forward();
+    _openAnim = _backdropAnimationController.forward(from: 0);
+    // When cancelled, complete normally
+    await _openAnim!.orCancel.catchError((_) => null);
+    _openAnim = null;
   }
 
   Future<void> _animateToCentered() async {
     _backdropStatus = WiredashBackdropStatus.openingCentered;
     _swapAnimation();
 
-    await _backdropAnimationController.forward();
+    await _backdropAnimationController.forward(from: 0);
   }
 
+  TickerFuture? _closeAnim;
+
   Future<void> _animateToClosed() async {
+    _animCurves();
     if (_backdropStatus == WiredashBackdropStatus.closed) {
       // already in correct state
       return;
     }
     if (_backdropStatus == WiredashBackdropStatus.closing) {
-      // already playing correct anim
-      return;
+      // already closing, return running animation
+      return _closeAnim!.orCancel.catchError((_) => null);
     }
-    _backdropStatus = WiredashBackdropStatus.closing;
-    _swapAnimation();
+    if (_backdropStatus == WiredashBackdropStatus.opening) {
+      _appHandleAnimation = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
+      );
+      _backdropStatus = WiredashBackdropStatus.closing;
+      _closeAnim = _backdropAnimationController.reverse();
+      return _closeAnim!.orCancel.catchError((_) => null);
+    } else {
+      _backdropStatus = WiredashBackdropStatus.closing;
+      _swapAnimation();
+    }
 
-    await _backdropAnimationController.forward();
+    _closeAnim = _backdropAnimationController.forward(from: 0);
+    // When cancelled, complete normally
+    await _closeAnim!.orCancel.catchError((_) => null);
+    _closeAnim = null;
   }
 
   /// Sets the correct animation for the current [_backdropStatus]
   void _swapAnimation() {
-    _backdropAnimationController.reset();
+    // Capture intermediate values for smooth animations
+    final oldAppOutOfFocusRect =
+        _appTransformAnimation?.value ?? _rectAppOutOfFocus;
+    final oldRectAppFillsScreen =
+        _appTransformAnimation?.value ?? _rectAppFillsScreen;
+    final oldRectAppCentered =
+        _appTransformAnimation?.value ?? _rectAppCentered;
+
     switch (_backdropStatus) {
       case WiredashBackdropStatus.open:
-        _transformAnimation =
-            RectTween(begin: _rectAppOutOfFocus, end: _rectAppOutOfFocus)
+        _appTransformAnimation =
+            RectTween(begin: oldAppOutOfFocusRect, end: _rectAppOutOfFocus)
                 .animate(_driverAnimation);
-        _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(20),
-          end: BorderRadius.circular(20),
-        ).animate(_driverAnimation);
+        _cornerRadiusAnimation = AlwaysStoppedAnimation(_appBorderRadiusOpen);
+        _appHandleAnimation = const AlwaysStoppedAnimation(1.0);
         break;
 
       case WiredashBackdropStatus.closed:
-        _transformAnimation =
-            RectTween(begin: _rectAppFillsScreen, end: _rectAppFillsScreen)
+        _appTransformAnimation =
+            RectTween(begin: oldRectAppFillsScreen, end: _rectAppFillsScreen)
                 .animate(_driverAnimation);
-        _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(0),
-          end: BorderRadius.circular(0),
-        ).animate(_driverAnimation);
+        _cornerRadiusAnimation = AlwaysStoppedAnimation(_appBorderRadiusClosed);
+        _appHandleAnimation = const AlwaysStoppedAnimation(0.0);
         break;
 
       case WiredashBackdropStatus.centered:
-        _transformAnimation =
-            RectTween(begin: _rectAppCentered, end: _rectAppCentered)
+        _appTransformAnimation =
+            RectTween(begin: oldRectAppCentered, end: _rectAppCentered)
                 .animate(_driverAnimation);
-        _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(20),
-          end: BorderRadius.circular(20),
-        ).animate(_driverAnimation);
+        _cornerRadiusAnimation = AlwaysStoppedAnimation(_appBorderRadiusOpen);
+        _appHandleAnimation = const AlwaysStoppedAnimation(0.0);
         break;
 
       case WiredashBackdropStatus.opening:
-        _transformAnimation =
-            RectTween(begin: _rectAppFillsScreen, end: _rectAppOutOfFocus)
+        _appTransformAnimation =
+            RectTween(begin: oldRectAppFillsScreen, end: _rectAppOutOfFocus)
                 .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(0),
-          end: BorderRadius.circular(20),
+          begin: _appBorderRadiusClosed,
+          end: _appBorderRadiusOpen,
         ).animate(_driverAnimation);
+        _appHandleAnimation = Tween(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
+        );
         break;
 
       case WiredashBackdropStatus.closing:
-        _transformAnimation =
-            RectTween(begin: _rectAppOutOfFocus, end: _rectAppFillsScreen)
+        _appTransformAnimation =
+            RectTween(begin: oldAppOutOfFocusRect, end: _rectAppFillsScreen)
                 .animate(_driverAnimation);
         _backdropAnimationController.value = 0.0;
         _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(20),
-          end: BorderRadius.circular(0),
+          begin: _appBorderRadiusOpen,
+          end: _appBorderRadiusClosed,
         ).animate(_driverAnimation);
+        _appHandleAnimation = Tween(begin: 1.0, end: 0.0).animate(
+          CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
+        );
         break;
 
       case WiredashBackdropStatus.openingCentered:
-        _transformAnimation =
-            RectTween(begin: _rectAppOutOfFocus, end: _rectAppCentered)
+        _appTransformAnimation =
+            RectTween(begin: oldAppOutOfFocusRect, end: _rectAppCentered)
                 .animate(_driverAnimation);
-        _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(20),
-          end: BorderRadius.circular(20),
-        ).animate(_driverAnimation);
+        _cornerRadiusAnimation = AlwaysStoppedAnimation(_appBorderRadiusOpen);
+        _appHandleAnimation = Tween(begin: 1.0, end: 0.0).animate(
+          CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
+        );
         break;
 
       case WiredashBackdropStatus.closingCentered:
-        _transformAnimation =
-            RectTween(begin: _rectAppCentered, end: _rectAppOutOfFocus)
+        _appTransformAnimation =
+            RectTween(begin: oldRectAppCentered, end: _rectAppOutOfFocus)
                 .animate(_driverAnimation);
-        _cornerRadiusAnimation = BorderRadiusTween(
-          begin: BorderRadius.circular(20),
-          end: BorderRadius.circular(20),
-        ).animate(_driverAnimation);
+        _cornerRadiusAnimation = AlwaysStoppedAnimation(_appBorderRadiusOpen);
+        _appHandleAnimation = Tween(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
+        );
         break;
     }
   }
@@ -798,20 +1006,26 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     if (_pulling) {
       return;
     }
-    setState(() {
-      if (_backdropStatus == WiredashBackdropStatus.opening) {
+    if (_backdropStatus == WiredashBackdropStatus.opening) {
+      setState(() {
         _backdropStatus = WiredashBackdropStatus.open;
-      }
-      if (_backdropStatus == WiredashBackdropStatus.openingCentered) {
+      });
+    }
+    if (_backdropStatus == WiredashBackdropStatus.openingCentered) {
+      setState(() {
         _backdropStatus = WiredashBackdropStatus.centered;
-      }
-      if (_backdropStatus == WiredashBackdropStatus.closingCentered) {
+      });
+    }
+    if (_backdropStatus == WiredashBackdropStatus.closingCentered) {
+      setState(() {
         _backdropStatus = WiredashBackdropStatus.open;
-      }
-      if (_backdropStatus == WiredashBackdropStatus.closing) {
+      });
+    }
+    if (_backdropStatus == WiredashBackdropStatus.closing) {
+      setState(() {
         _backdropStatus = WiredashBackdropStatus.closed;
-      }
-    });
+      });
+    }
   }
 
   void _markAsDirty() {
@@ -827,6 +1041,23 @@ class BackdropController extends ChangeNotifier {
 
   _WiredashBackdropState? _stateField;
   _WiredashBackdropState? get _state => _stateField;
+
+  Size? _contentSize;
+  Size? get contentSize => _contentSize;
+  set contentSize(Size? value) {
+    if (_contentSize != value) {
+      _contentSize = value;
+      _state?._onContentSizeChanged(
+        _contentSize,
+        animateSizeChange: animateSizeChange,
+      );
+      animateSizeChange = false;
+      safeNotifyListeners();
+    }
+  }
+
+  bool animateSizeChange = false;
+
   set _state(_WiredashBackdropState? value) {
     _stateField = value;
     safeNotifyListeners();
@@ -840,12 +1071,15 @@ class BackdropController extends ChangeNotifier {
   bool get isAppInteractive => _isAppInteractive;
   bool _isAppInteractive = false;
 
-  Animation<Rect?> get appPosition => _state!._transformAnimation;
+  Animation<Rect?> get appPosition => _state!._appTransformAnimation!;
 
   WiredashBackdropStatus get backdropStatus => _backdropStatus;
 
   set backdropStatus(WiredashBackdropStatus value) {
     _backdropStatus = value;
+    if (_backdropStatus == WiredashBackdropStatus.closed) {
+      _contentSize = null;
+    }
     safeNotifyListeners();
   }
 
@@ -876,6 +1110,13 @@ class BackdropController extends ChangeNotifier {
     if (_stateField != null) {
       notifyListeners();
     }
+  }
+
+  @mustCallSuper
+  @override
+  void dispose() {
+    _state = null;
+    super.dispose();
   }
 }
 
@@ -924,6 +1165,7 @@ class _KeepAppAliveState extends State<_KeepAppAlive>
 }
 
 extension on Rect {
+  // ignore: unused_element
   Rect removePadding(EdgeInsets padding) {
     return padding.deflateRect(this);
   }
@@ -954,5 +1196,16 @@ extension on double {
     final upperBound = this + delta;
     final lowerBound = this - delta;
     return value > lowerBound && value < upperBound;
+  }
+}
+
+extension on EdgeInsets {
+  EdgeInsets max(EdgeInsets other) {
+    return EdgeInsets.fromLTRB(
+      math.max(left, other.left),
+      math.max(top, other.top),
+      math.max(right, other.right),
+      math.max(bottom, other.bottom),
+    );
   }
 }

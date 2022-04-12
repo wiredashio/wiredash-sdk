@@ -1,6 +1,7 @@
 import 'dart:ui' show Brightness;
 
 import 'package:flutter/rendering.dart';
+import 'package:wiredash/src/core/theme/color_ext.dart';
 import 'package:wiredash/src/core/theme/key_point_interpolator.dart';
 
 class WiredashThemeData {
@@ -47,7 +48,7 @@ class WiredashThemeData {
             primaryBackgroundColor ?? const Color(0xffffffff),
         secondaryBackgroundColor:
             secondaryBackgroundColor ?? const Color(0xfff5f6f8),
-        appBackgroundColor: appBackgroundColor ?? const Color(0xfff5f6f8),
+        appBackgroundColor: appBackgroundColor ?? const Color(0xff3d3e3e),
         errorColor: errorColor ?? const Color(0xffff5c6a),
         fontFamily: fontFamily ?? _fontFamily,
         windowSize: windowSize ?? Size.zero,
@@ -56,33 +57,38 @@ class WiredashThemeData {
   }
 
   factory WiredashThemeData.fromColor({
-    required Color color,
+    required Color primaryColor,
+    Color? secondaryColor,
     required Brightness brightness,
   }) {
-    final hsl = HSLColor.fromColor(color);
+    final hsl = HSLColor.fromColor(primaryColor);
 
     final theme =
-        WiredashThemeData(brightness: brightness, primaryColor: color);
+        WiredashThemeData(brightness: brightness, primaryColor: primaryColor);
 
     if (brightness == Brightness.light) {
+      final secondary = secondaryColor ??
+          hsl
+              .withHue((hsl.hue - 10) % 360)
+              .withSaturation(.60)
+              .withLightness(.90)
+              .toColor();
       return theme.copyWith(
-        secondaryColor: hsl
-            .withHue((hsl.hue - 10) % 360)
-            .withSaturation(.60)
-            .withLightness(.90)
-            .toColor(),
+        secondaryColor: secondary,
         primaryBackgroundColor:
             hsl.withSaturation(1.0).withLightness(1.0).toColor(),
         secondaryBackgroundColor:
             hsl.withSaturation(.8).withLightness(0.95).toColor(),
       );
     } else {
+      final secondary = secondaryColor ??
+          hsl
+              .withHue((hsl.hue - 10) % 360)
+              .withSaturation(.1)
+              .withLightness(.1)
+              .toColor();
       return theme.copyWith(
-        secondaryColor: hsl
-            .withHue((hsl.hue - 10) % 360)
-            .withSaturation(.1)
-            .withLightness(.1)
-            .toColor(),
+        secondaryColor: secondary,
         primaryBackgroundColor:
             hsl.withSaturation(0.04).withLightness(0.2).toColor(),
         secondaryBackgroundColor:
@@ -229,6 +235,32 @@ class WiredashThemeData {
       2048: 1024,
     });
     return keypoints.interpolate(width);
+  }
+
+  double get minContentHeight {
+    final height = windowSize.height;
+    final keypoints = KeyPointInterpolator({
+      0: 320,
+      320: 320, // iPhone SE landscape
+      1024: 400,
+    });
+    return keypoints.interpolate(height);
+  }
+
+  Color get primaryContainerColor {
+    if (brightness == Brightness.dark) {
+      return primaryColor.desaturate(0.4).darken(0.2);
+    } else {
+      return primaryColor.desaturate(0.4).lighten(0.3);
+    }
+  }
+
+  Color get secondaryContainerColor {
+    if (brightness == Brightness.dark) {
+      return secondaryColor.desaturate(0.4).darken(0.2);
+    } else {
+      return secondaryColor.desaturate(0.4).darken(0.2);
+    }
   }
 
   @override

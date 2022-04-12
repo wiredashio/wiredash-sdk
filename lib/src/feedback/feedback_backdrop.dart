@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
@@ -50,13 +51,13 @@ Widget? _buildForegroundLayer(
   final animatingCenter = status == WiredashBackdropStatus.openingCentered ||
       status == WiredashBackdropStatus.closingCentered;
   if (animatingCenter || status == WiredashBackdropStatus.centered) {
-    final topBar = SafeArea(
+    const topBar = SafeArea(
       bottom: false,
       left: false,
       right: false,
       child: SizedBox(
-        height: appRect.top,
-        child: const ScreenshotBar(),
+        height: double.infinity,
+        child: ScreenshotBar(),
       ),
     );
 

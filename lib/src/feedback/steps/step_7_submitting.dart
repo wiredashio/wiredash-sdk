@@ -13,26 +13,24 @@ class Step7SubmittingAndError extends StatefulWidget {
 class _Step7SubmittingAndErrorState extends State<Step7SubmittingAndError> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: AnimatedFadeWidgetSwitcher(
-        alignment: Alignment.topCenter,
-        duration: const Duration(milliseconds: 800),
-        child: () {
-          final submitting = context.feedbackModel.submitting;
-          if (submitting) {
-            return const _Submitting();
-          }
+    return AnimatedFadeWidgetSwitcher(
+      alignment: Alignment.topCenter,
+      duration: const Duration(milliseconds: 800),
+      child: () {
+        final submitting = context.feedbackModel.submitting;
+        if (submitting) {
+          return const _Submitting();
+        }
 
-          final error = context.feedbackModel.submissionError;
-          if (error != null) {
-            return _Error(
-              error: error,
-            );
-          }
+        final error = context.feedbackModel.submissionError;
+        if (error != null) {
+          return _Error(
+            error: error,
+          );
+        }
 
-          return const _Submitted();
-        }(),
-      ),
+        return const _Submitted();
+      }(),
     );
   }
 }
@@ -44,29 +42,30 @@ class _Submitted extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScrollBox(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(
-              height: 24,
-            ),
-            Icon(
-              Wirecons.check,
-              size: 48,
-              color: context.theme.primaryColor,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Text(
-              'Thanks for your feedback!',
-              textAlign: TextAlign.center,
-              style: context.theme.titleTextStyle,
-            ),
-          ],
-        ),
+    return StepPageScaffold(
+      minHeight: 0,
+      alignemnt: StepPageAlignemnt.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+            height: 24,
+          ),
+          Icon(
+            Wirecons.check,
+            size: 48,
+            color: context.theme.primaryColor,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            'Thanks for your feedback!',
+            textAlign: TextAlign.center,
+            style: context.theme.titleTextStyle,
+          ),
+        ],
       ),
     );
   }
@@ -79,29 +78,26 @@ class _Submitting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScrollBox(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(
-              height: 24,
-            ),
-            Icon(
-              Wirecons.arrow_right,
-              size: 48,
-              color: context.theme.primaryColor,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Text(
-              'Submitting your feedback',
-              textAlign: TextAlign.center,
-              style: context.theme.titleTextStyle,
-            ),
-          ],
-        ),
+    return StepPageScaffold(
+      minHeight: 0,
+      alignemnt: StepPageAlignemnt.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Wirecons.arrow_right,
+            size: 48,
+            color: context.theme.primaryColor,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            'Submitting your feedback',
+            textAlign: TextAlign.center,
+            style: context.theme.titleTextStyle,
+          ),
+        ],
       ),
     );
   }
@@ -117,55 +113,52 @@ class _Error extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScrollBox(
-      child: Center(
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 36,
+    return StepPageScaffold(
+      minHeight: 0,
+      alignemnt: StepPageAlignemnt.center,
+      child: Column(
+        children: [
+          Icon(
+            Wirecons.x_circle,
+            size: 48,
+            color: context.theme.primaryColor,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Feedback submission failed',
+            style: context.theme.titleTextStyle,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 32),
+          Theme(
+            data: ThemeData(
+              dividerColor: Colors.transparent,
             ),
-            Icon(
-              Wirecons.x_circle,
-              size: 48,
-              color: context.theme.primaryColor,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Feedback submission failed',
-              style: context.theme.titleTextStyle,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            Theme(
-              data: ThemeData(
-                dividerColor: Colors.transparent,
+            child: ExpansionTile(
+              title: Text(
+                'Click to open error details',
+                style: context.theme.bodyTextStyle,
               ),
-              child: ExpansionTile(
-                title: Text(
-                  'Click to open error details',
-                  style: context.theme.bodyTextStyle,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(error.toString()),
                 ),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(error.toString()),
-                  ),
-                ],
-              ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TronButton(
-                leadingIcon: Wirecons.refresh,
-                onTap: () {
-                  context.feedbackModel.submitFeedback();
-                },
-                child: const Text("Retry"),
-              ),
+          ),
+          const SizedBox(height: 16),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TronButton(
+              leadingIcon: Wirecons.refresh,
+              onTap: () {
+                context.feedbackModel.submitFeedback();
+              },
+              child: const Text("Retry"),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
