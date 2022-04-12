@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
-import 'package:wiredash/src/core/theme/key_point_interpolator.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/utils/standard_kt.dart';
 
