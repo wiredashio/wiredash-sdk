@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 
 /// The backdrop for [WiredashFlow.feedback]
@@ -51,13 +52,28 @@ Widget? _buildForegroundLayer(
   final animatingCenter = status == WiredashBackdropStatus.openingCentered ||
       status == WiredashBackdropStatus.closingCentered;
   if (animatingCenter || status == WiredashBackdropStatus.centered) {
-    const topBar = SafeArea(
+    final topBar = SafeArea(
       bottom: false,
       left: false,
       right: false,
       child: SizedBox(
         height: double.infinity,
-        child: ScreenshotBar(),
+        child: BackButtonInterceptor(
+          onBackPressed: () {
+            if (status == WiredashBackdropStatus.openingCentered ||
+                status == WiredashBackdropStatus.centered) {
+              if (services.picassoController.canUndo()) {
+                services.picassoController.undo();
+                return BackButtonAction.consumed;
+              }
+
+              context.feedbackModel.cancelScreenshotCapturingMode();
+              return BackButtonAction.consumed;
+            }
+            return BackButtonAction.ignored;
+          },
+          child: const ScreenshotBar(),
+        ),
       ),
     );
 

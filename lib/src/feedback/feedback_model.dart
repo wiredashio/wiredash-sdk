@@ -221,6 +221,7 @@ class FeedbackModel extends ChangeNotifier2 {
   Future<void> enterScreenshotCapturingMode() async {
     _goToStep(FeedbackFlowStatus.screenshotNavigating);
     _services.picassoController.isActive = false;
+    _services.picassoController.clear();
     notifyListeners();
 
     await _services.backdropController.animateToCentered();

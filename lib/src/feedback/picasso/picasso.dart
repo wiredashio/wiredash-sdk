@@ -40,6 +40,7 @@ class _PicassoState extends State<Picasso> {
   @override
   void dispose() {
     widget.controller.removeListener(_updateWithControllerConfig);
+    widget.controller._state = null;
     super.dispose();
   }
 
@@ -202,7 +203,7 @@ class _PicassoState extends State<Picasso> {
 }
 
 class PicassoController extends ChangeNotifier {
-  late _PicassoState? _state;
+  _PicassoState? _state;
 
   bool _isActive = false;
   Color _color = const Color(0xff6B46C1);
@@ -230,15 +231,20 @@ class PicassoController extends ChangeNotifier {
   }
 
   void clear() {
-    _state!._clear();
+    _state?._clear();
   }
 
   void undo() {
-    _state!._undo();
+    _state?._undo();
   }
 
   void redo() {
-    _state!._redo();
+    _state?._redo();
+  }
+
+  bool canUndo() {
+    if (_state == null) return false;
+    return _state!._strokes.isNotEmpty;
   }
 
   Future<Uint8List> paintDrawingOntoImage(

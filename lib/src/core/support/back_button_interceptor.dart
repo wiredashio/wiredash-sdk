@@ -76,6 +76,9 @@ class WiredashBackButtonDispatcher extends WidgetsBindingObserver {
   @override
   Future<bool> didPopRoute() async {
     print("Intercepted didPopRoute");
+    // process listeneres in reverse order, assuming the latest listener added
+    // is the furthest down the widget tree. Ignoring that that part of the
+    // widget tree might not have the focus
     final listeners = _listeners.reversed.toList();
     for (final listener in listeners) {
       final result = listener.call();
