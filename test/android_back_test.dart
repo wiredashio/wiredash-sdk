@@ -2,6 +2,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 
@@ -25,13 +26,18 @@ void main() {
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
       await robot.skipScreenshot();
-      assertWidget(LarryPageView).child(Step6Submit).existsOnce();
+      selectByType(LarryPageView).childByType(Step6Submit).existsOnce();
 
       await robot.pressAndroidBackButton();
-      assertWidget(LarryPageView).child(Step3ScreenshotOverview).existsOnce();
+      selectByType(WiredashBackdrop)
+          .childByType(LarryPageView)
+          .childByType(Step3ScreenshotOverview)
+          .existsOnce();
 
       await robot.pressAndroidBackButton();
-      assertWidget(LarryPageView).child(Step1FeedbackMessage).existsOnce();
+      selectByType(LarryPageView)
+          .childByType(Step1FeedbackMessage)
+          .existsOnce();
       expect(robot.services.wiredashModel.isWiredashActive, isTrue);
 
       // closes wiredash
