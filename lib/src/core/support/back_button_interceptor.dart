@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
 
+/// Allows intercepting of the Android back button
 class BackButtonInterceptor extends StatefulWidget {
   const BackButtonInterceptor({
     Key? key,
@@ -10,6 +11,9 @@ class BackButtonInterceptor extends StatefulWidget {
     required this.child,
   }) : super(key: key);
 
+  /// Return [BackButtonAction.consumed] when a back action was handles and return
+  /// [BackButtonAction.ignored] to give other [BackButtonInterceptor]s the chance
+  /// to react
   final OnBackPressed onBackPressed;
   final Widget child;
 
@@ -63,6 +67,8 @@ enum BackButtonAction {
   ignored,
 }
 
+/// Observs [WidgetsBinding.instance] and forwards Android Back button actions
+/// to [BackButtonInterceptor] in the widget tree
 class WiredashBackButtonDispatcher extends WidgetsBindingObserver {
   void initialize() {
     widgetsBindingInstance.addObserver(this);
@@ -75,7 +81,6 @@ class WiredashBackButtonDispatcher extends WidgetsBindingObserver {
 
   @override
   Future<bool> didPopRoute() async {
-    print("Intercepted didPopRoute");
     // process listeneres in reverse order, assuming the latest listener added
     // is the furthest down the widget tree. Ignoring that that part of the
     // widget tree might not have the focus
@@ -90,9 +95,9 @@ class WiredashBackButtonDispatcher extends WidgetsBindingObserver {
   }
 
   static WiredashBackButtonDispatcher of(BuildContext context) {
-    final BackButtonDispatcherInheritedWidget? result =
+    final _BackButtonDispatcherInheritedWidget? result =
         context.dependOnInheritedWidgetOfExactType<
-            BackButtonDispatcherInheritedWidget>();
+            _BackButtonDispatcherInheritedWidget>();
     assert(result != null, 'No BackButtonDispatcher found in context');
     return result!.dispatcher;
   }
@@ -105,10 +110,17 @@ class WiredashBackButtonDispatcher extends WidgetsBindingObserver {
       _listeners.remove(onBackPressed);
     };
   }
+
+  /// Use this to inject this dispatcher into the widget tree. Children can
+  /// access it via [WiredashBackButtonDispatcher.of] or by using the
+  /// [BackButtonInterceptor] widget.
+  Widget wrap({required Widget child}) {
+    return _BackButtonDispatcherInheritedWidget(dispatcher: this, child: child);
+  }
 }
 
-class BackButtonDispatcherInheritedWidget extends InheritedWidget {
-  const BackButtonDispatcherInheritedWidget({
+class _BackButtonDispatcherInheritedWidget extends InheritedWidget {
+  const _BackButtonDispatcherInheritedWidget({
     Key? key,
     required this.dispatcher,
     required Widget child,
@@ -117,6 +129,6 @@ class BackButtonDispatcherInheritedWidget extends InheritedWidget {
   final WiredashBackButtonDispatcher dispatcher;
 
   @override
-  bool updateShouldNotify(BackButtonDispatcherInheritedWidget old) =>
+  bool updateShouldNotify(_BackButtonDispatcherInheritedWidget old) =>
       dispatcher != old.dispatcher;
 }

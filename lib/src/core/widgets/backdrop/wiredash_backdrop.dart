@@ -314,7 +314,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       },
       child: BackButtonInterceptor(
         onBackPressed: () {
-          print('onBackPressed $_backdropStatus');
           switch (_backdropStatus) {
             case WiredashBackdropStatus.closed:
             case WiredashBackdropStatus.closing:

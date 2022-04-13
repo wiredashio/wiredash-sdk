@@ -9,7 +9,6 @@ import 'package:wiredash/src/core/options/wiredash_options.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/not_a_widgets_app.dart';
-import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/feedback/feedback_backdrop.dart';
 import 'package:wiredash/src/nps/nps_backdrop.dart';
@@ -268,8 +267,7 @@ class WiredashState extends State<Wiredash> {
 
     final Widget backdrop = NotAWidgetsApp(
       textDirection: widget.options?.textDirection,
-      child: BackButtonDispatcherInheritedWidget(
-        dispatcher: _backButtonDispatcher,
+      child: _backButtonDispatcher.wrap(
         child: WiredashLocalizations(
           child: WiredashTheme(
             data: theme,
