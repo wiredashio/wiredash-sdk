@@ -10,6 +10,7 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/wiredash.dart';
 
+import 'assert_widget.dart';
 import 'mock_api.dart';
 import 'wiredash_tester.dart';
 
@@ -66,6 +67,11 @@ class WiredashTestRobot {
     return robot;
   }
 
+  WidgetSelector get _backdropSelector =>
+      assertWidget(Wiredash).child(WiredashBackdrop);
+  WidgetSelector get _pageViewSelector =>
+      _backdropSelector.child(LarryPageView);
+
   Wiredash get widget {
     final element = find.byType(Wiredash).evaluate().first as StatefulElement;
     return element.widget as Wiredash;
@@ -83,7 +89,7 @@ class WiredashTestRobot {
   Future<void> openWiredash() async {
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
-    expect(find.byType(WiredashFeedbackFlow), findsOneWidget);
+    _backdropSelector.child(WiredashFeedbackFlow).existsOnce();
     print('opened Wiredash');
   }
 
@@ -92,12 +98,12 @@ class WiredashTestRobot {
     final bottomRight = tester.getBottomRight(find.byType(Wiredash));
     await tester.tapAt(Offset(bottomRight.dx / 2, bottomRight.dy - 20));
     await tester.pumpAndSettle();
-    expect(find.byType(WiredashFeedbackFlow), findsNothing);
+    _backdropSelector.child(WiredashFeedbackFlow).doesNotExist();
     print('closed Wiredash');
   }
 
   Future<void> enterFeedbackMessage(String message) async {
-    expect(find.byType(Step1FeedbackMessage), findsOneWidget);
+    _pageViewSelector.child(Step1FeedbackMessage).existsOnce();
     await tester.enterText(find.byType(TextField), message);
     await tester.pumpAndSettle();
     await tester.waitUntil(
@@ -115,14 +121,14 @@ class WiredashTestRobot {
   }
 
   Future<void> enterEmail(String emailAddress) async {
-    expect(find.byType(Step5Email), findsOneWidget);
+    _pageViewSelector.child(Step5Email).existsOnce();
     await tester.enterText(find.byType(TextField), emailAddress);
     await tester.pumpAndSettle();
     print('entered email: $emailAddress');
   }
 
   Future<void> skipScreenshot() async {
-    expect(find.byType(Step3ScreenshotOverview), findsOneWidget);
+    _pageViewSelector.child(Step3ScreenshotOverview).existsOnce();
     await tester.tap(find.text('Skip'));
     await tester.pumpAndSettle();
     await tester.pumpAndSettle();
@@ -131,13 +137,13 @@ class WiredashTestRobot {
   }
 
   Future<void> skipLabels() async {
-    expect(find.byType(Step2Labels), findsOneWidget);
+    _pageViewSelector.child(Step2Labels).existsOnce();
     await goToNextStep();
     print('Skipped label selection');
   }
 
   Future<void> submitFeedback() async {
-    expect(find.byType(Step6Submit), findsOneWidget);
+    _pageViewSelector.child(Step6Submit).existsOnce();
     await tester.tap(
       find.descendant(
         of: find.byType(TronButton),
@@ -149,7 +155,7 @@ class WiredashTestRobot {
   }
 
   Future<void> skipEmail() async {
-    expect(find.byType(Step5Email), findsOneWidget);
+    _pageViewSelector.child(Step5Email).existsOnce();
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
 
@@ -158,7 +164,7 @@ class WiredashTestRobot {
   }
 
   Future<void> submitEmailViaButton() async {
-    expect(find.byType(Step5Email), findsOneWidget);
+    _pageViewSelector.child(Step5Email).existsOnce();
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
 
@@ -192,7 +198,7 @@ class WiredashTestRobot {
   }
 
   Future<void> enterScreenshotMode() async {
-    expect(find.byType(Step3ScreenshotOverview), findsOneWidget);
+    _pageViewSelector.child(Step3ScreenshotOverview).existsOnce();
     final noAttachemntsResult =
         find.byType(Step3NotAttachments).evaluate().toList();
     if (noAttachemntsResult.isNotEmpty) {
@@ -210,6 +216,7 @@ class WiredashTestRobot {
   }
 
   Future<void> takeScreenshot() async {
+    _backdropSelector.child(ScreenshotBar).existsOnce();
     expect(find.byType(ScreenshotBar), findsOneWidget);
     expect(
       services.feedbackModel.feedbackFlowStatus,
@@ -262,6 +269,11 @@ class WiredashTestRobot {
 
   Future<void> selectLabel(String labelText) async {
     await tester.tap(find.text('Two'));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> pressAndroidBackButton() async {
+    await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
   }
 }
