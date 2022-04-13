@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/core/theme/wiredash_theme.dart';
 import 'package:wiredash/src/core/widgets/backdrop/fake_app_status_bar.dart';
@@ -311,14 +312,37 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         // Close soft keyboard
         FocusManager.instance.primaryFocus?.unfocus();
       },
-      child: SemiTransparentStatusBar(
-        child: DecoratedBox(
-          decoration: _backgroundDecoration(),
-          child: Stack(
-            children: [
-              ..._debugRects(),
-              ...stackChildren,
-            ],
+      child: BackButtonInterceptor(
+        onBackPressed: () {
+          switch (_backdropStatus) {
+            case WiredashBackdropStatus.closed:
+            case WiredashBackdropStatus.closing:
+              // Nothing to do, allow app to handle the back button
+              return BackButtonAction.ignored;
+
+            case WiredashBackdropStatus.opening:
+            case WiredashBackdropStatus.open:
+            case WiredashBackdropStatus.closingCentered:
+              // in open position, close wiredash
+              context.wiredashModel.hide();
+              return BackButtonAction.consumed;
+
+            case WiredashBackdropStatus.openingCentered:
+            case WiredashBackdropStatus.centered:
+              // currently centered, go back to open
+              widget.controller.animateToOpen();
+              return BackButtonAction.consumed;
+          }
+        },
+        child: SemiTransparentStatusBar(
+          child: DecoratedBox(
+            decoration: _backgroundDecoration(),
+            child: Stack(
+              children: [
+                ..._debugRects(),
+                ...stackChildren,
+              ],
+            ),
           ),
         ),
       ),
