@@ -10,12 +10,13 @@ import 'util/mock_api.dart';
 import 'util/robot.dart';
 
 void main() {
-  group('Wiredash', () {
+  group('Android Back', () {
     setUp(() {
       SharedPreferences.setMockInitialValues({});
     });
 
-    testWidgets('Send text only feedback', (tester) async {
+    testWidgets('To submit and back until close - excluding screenshot',
+        (tester) async {
       final robot = await WiredashTestRobot.launchApp(tester);
       final mockApi = MockWiredashApi();
       robot.mockWiredashApi(mockApi);
