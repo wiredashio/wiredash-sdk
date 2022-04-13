@@ -273,6 +273,7 @@ class WiredashTestRobot {
   }
 
   Future<void> pressAndroidBackButton() async {
+    // ignore: invalid_use_of_protected_member
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
   }

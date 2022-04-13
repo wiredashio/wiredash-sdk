@@ -1,6 +1,7 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wiredash/src/core/widgets/larry_page_view.dart';
 
 WidgetSelector assertWidget(Type widget) {
   return WidgetSelector(widget);
