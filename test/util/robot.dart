@@ -230,8 +230,10 @@ class WiredashTestRobot {
     print('Take screeshot');
     // Click the screenshot button
     await tester.tap(screenshotBar.text('Capture').finder);
-    await tester.pumpAndSettle();
+    await tester.pumpHardAndSettle();
     await tester.pumpAndSettle(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    await tester.pumpHardAndSettle();
     await tester.pumpAndSettle();
 
     // Wait for edit screen
@@ -241,7 +243,6 @@ class WiredashTestRobot {
           matching: find.text('Save'),
         )
         .select;
-    await tester.pumpAndSettle(const Duration(seconds: 1));
 
     try {
       await tester.waitUntil(nextButton.finder, findsOneWidget);
