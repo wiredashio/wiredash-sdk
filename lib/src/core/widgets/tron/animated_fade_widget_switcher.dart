@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
@@ -43,7 +44,7 @@ class _AnimatedFadeWidgetSwitcherState
     extends State<AnimatedFadeWidgetSwitcher> {
   bool _firstBuild = true;
 
-  Widget? lastChild;
+  Widget? _lastChild;
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +66,10 @@ class _AnimatedFadeWidgetSwitcherState
     }
 
     if (child != null &&
-            lastChild != null &&
-            lastChild != child &&
-            !Widget.canUpdate(lastChild!, child) ||
-        child == null && lastChild != null) {
+            _lastChild != null &&
+            _lastChild != child &&
+            !Widget.canUpdate(_lastChild!, child) ||
+        child == null && _lastChild != null) {
       widget.onSwitch?.call();
     }
     return PageTransitionSwitcher(
@@ -88,7 +89,23 @@ class _AnimatedFadeWidgetSwitcherState
           child: child,
         );
       },
-      child: lastChild = child,
+      child: _lastChild = child,
+    );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty('child', widget.child));
+    properties.add(DiagnosticsProperty('lastChild', _lastChild));
+    properties.add(
+      FlagProperty(
+        'fadeInOnEnter',
+        value: widget.fadeInOnEnter,
+        defaultValue: true,
+        ifTrue: 'fade in on enter',
+        ifFalse: 'do not fade in on enter',
+      ),
     );
   }
 }
