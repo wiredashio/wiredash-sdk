@@ -235,11 +235,20 @@ class WiredashTestRobot {
     await tester.pumpAndSettle();
 
     // Wait for edit screen
-    final nextButton = find.descendant(
-      of: screenshotBar.childByType(TronButton).finder,
-      matching: find.text('Save'),
-    );
-    await tester.waitUntil(nextButton, findsOneWidget);
+    final nextButton = find
+        .descendant(
+          of: screenshotBar.childByType(TronButton).finder,
+          matching: find.text('Save'),
+        )
+        .select;
+    await tester.pumpAndSettle(const Duration(seconds: 1));
+
+    try {
+      await tester.waitUntil(nextButton.finder, findsOneWidget);
+    } catch (e) {
+      nextButton.existsOnce();
+      rethrow;
+    }
 
     expect(find.byType(ColorPalette), findsOneWidget);
   }
