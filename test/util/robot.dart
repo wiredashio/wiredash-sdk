@@ -232,7 +232,7 @@ class WiredashTestRobot {
     await tester.tap(screenshotBar.text('Capture').finder);
     await tester.pumpHardAndSettle();
     await tester.pumpAndSettle(const Duration(seconds: 1));
-    await tester.pumpAndSettle();
+    await tester.pumpHardAndSettle();
     await tester.pumpHardAndSettle();
     await tester.pumpAndSettle();
 
