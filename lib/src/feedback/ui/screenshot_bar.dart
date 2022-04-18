@@ -24,16 +24,19 @@ class ScreenshotBar extends StatelessWidget {
     }
 
     if (feedbackStatus == FeedbackFlowStatus.screenshotSaving ||
-        feedbackStatus == FeedbackFlowStatus.screenshotDrawing) {
+        feedbackStatus == FeedbackFlowStatus.screenshotDrawing ||
+        feedbackStatus == FeedbackFlowStatus.screenshotCapturing) {
       trailing = TronButton(
         key: const Key('save'),
         color: context.theme.primaryColor,
         leadingIcon: Wirecons.check,
         iconOffset: const Offset(-.15, 0),
         label: 'Save',
-        onTap: () {
-          context.feedbackModel.createMasterpiece();
-        },
+        onTap: feedbackStatus == FeedbackFlowStatus.screenshotDrawing
+            ? () {
+                context.feedbackModel.createMasterpiece();
+              }
+            : null,
       );
     }
 
