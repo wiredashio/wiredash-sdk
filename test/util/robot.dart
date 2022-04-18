@@ -231,8 +231,7 @@ class WiredashTestRobot {
     // Click the screenshot button
     await tester.tap(screenshotBar.text('Capture').finder);
     await tester.pumpHardAndSettle();
-    await tester.pumpAndSettle(const Duration(seconds: 1));
-    await tester.pumpHardAndSettle();
+    await tester.pumpHardAndSettle(const Duration(seconds: 1));
     await tester.pumpHardAndSettle();
     await tester.pumpAndSettle();
 
