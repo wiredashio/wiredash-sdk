@@ -128,7 +128,8 @@ This bug is limited to macOS and caused by major refactoring of Actions for
 desktop in the Flutter SDK. Mobile platforms aren't affected.
 For details check https://github.com/flutter/flutter/pull/90684
 
-If you're seeing this message, upgrade your Flutter SDK to "2.16.0-80.1.beta" or newer.
+If you're seeing this message, upgrade your Flutter SDK to 2.9.0-0.0.pre 
+(with Dart 2.16.0-80.1.beta) or newer.
 
 You can ignore this message when you use macOS for development only.
 ===========================================================
