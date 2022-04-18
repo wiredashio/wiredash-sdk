@@ -293,7 +293,6 @@ class FeedbackModel extends ChangeNotifier2 {
   /// Debugging happens often here, this is a good point to start logging
   /// because it triggers all status changes
   void _goToStep(FeedbackFlowStatus newStatus) {
-    print("_goToStep: $newStatus");
     _feedbackFlowStatus = newStatus;
     notifyListeners();
   }
