@@ -249,9 +249,7 @@ class FeedbackModel extends ChangeNotifier2 {
     // give Flutter a few ms for GC before starting the closing animation
     await Future.delayed(const Duration(milliseconds: 100));
 
-    print("trigger open anim");
     await _services.backdropController.animateToOpen();
-    print("opened!");
     _services.screenCaptureController.releaseScreen();
 
     _goToStep(FeedbackFlowStatus.screenshotsOverview);
