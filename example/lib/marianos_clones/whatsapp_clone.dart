@@ -683,22 +683,6 @@ class ChatsScreenState extends State<ChatsScreen> {
       } else {
         setState(() {
           _laptopActions.addAll([
-            Padding(
-              padding: const EdgeInsets.only(bottom: 1),
-              child: SizedBox(
-                height: 22,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Wiredash.of(context).show();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: WhatsappUtils.appBarMobile,
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                  ),
-                  child: Text("Send Feedback", style: TextStyle(fontSize: 12)),
-                ),
-              ),
-            ),
             WhatsappUtils.action(
               Icons.chat,
               () {
