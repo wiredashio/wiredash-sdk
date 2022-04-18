@@ -233,13 +233,11 @@ class FeedbackModel extends ChangeNotifier2 {
     _services.picassoController.isActive = false;
     notifyListeners();
 
-    print("Creating screenshot");
     final screenshot = await _services.picassoController.paintDrawingOntoImage(
       _services.screenCaptureController.screenshot!,
       _services.wiredashWidget.theme?.appBackgroundColor ??
           const Color(0xffcccccc),
     );
-    print("Created screenshot");
     _attachments.add(
       PersistedAttachment.screenshot(
         file: FileDataEventuallyOnDisk.inMemory(screenshot),
@@ -247,7 +245,6 @@ class FeedbackModel extends ChangeNotifier2 {
       ),
     );
     notifyListeners();
-    print("added to attachments");
 
     // give Flutter a few ms for GC before starting the closing animation
     await Future.delayed(const Duration(milliseconds: 100));
