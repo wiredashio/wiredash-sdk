@@ -230,13 +230,12 @@ class WiredashTestRobot {
     print('Take screeshot');
     // Click the screenshot button
     await tester.tap(screenshotBar.text('Capture').finder);
-    await tester.pumpHardAndSettle();
-    await tester.pumpAndSettle(const Duration(seconds: 1));
-    await tester.pumpHardAndSettle();
-    await tester.pumpHardAndSettle();
-    await tester.pumpAndSettle();
+    while (services.feedbackModel.feedbackFlowStatus !=
+        FeedbackFlowStatus.screenshotDrawing) {
+      await tester.pumpHardAndSettle();
+    }
 
-    // Wait for edit screen
+    // Wait for active "Save" button
     final nextButton = find
         .descendant(
           of: screenshotBar.childByType(TronButton).finder,
