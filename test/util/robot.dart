@@ -244,7 +244,11 @@ class WiredashTestRobot {
         .select;
 
     try {
-      await tester.waitUntil(nextButton.finder, findsOneWidget);
+      await tester.waitUntil(
+        nextButton.finder,
+        findsOneWidget,
+        timeout: const Duration(seconds: 10),
+      );
     } catch (e) {
       nextButton.existsOnce();
       rethrow;
