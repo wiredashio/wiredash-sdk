@@ -233,11 +233,13 @@ class FeedbackModel extends ChangeNotifier2 {
     _services.picassoController.isActive = false;
     notifyListeners();
 
+    print("Creating screenshot");
     final screenshot = await _services.picassoController.paintDrawingOntoImage(
       _services.screenCaptureController.screenshot!,
       _services.wiredashWidget.theme?.appBackgroundColor ??
           const Color(0xffcccccc),
     );
+    print("Created screenshot");
     _attachments.add(
       PersistedAttachment.screenshot(
         file: FileDataEventuallyOnDisk.inMemory(screenshot),
@@ -245,11 +247,14 @@ class FeedbackModel extends ChangeNotifier2 {
       ),
     );
     notifyListeners();
+    print("added to attachments");
 
     // give Flutter a few ms for GC before starting the closing animation
     await Future.delayed(const Duration(milliseconds: 100));
 
+    print("trigger open anim");
     await _services.backdropController.animateToOpen();
+    print("opened!");
     _services.screenCaptureController.releaseScreen();
 
     _goToStep(FeedbackFlowStatus.screenshotsOverview);
@@ -293,6 +298,7 @@ class FeedbackModel extends ChangeNotifier2 {
   /// Debugging happens often here, this is a good point to start logging
   /// because it triggers all status changes
   void _goToStep(FeedbackFlowStatus newStatus) {
+    print("_goToStep: $newStatus");
     _feedbackFlowStatus = newStatus;
     notifyListeners();
   }
