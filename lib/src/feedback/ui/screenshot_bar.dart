@@ -10,8 +10,6 @@ class ScreenshotBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final feedbackStatus = context.feedbackModel.feedbackFlowStatus;
-    // TODO remove before merge
-    debugPrint('ScreenshotBar.build: feedbackStatus=$feedbackStatus');
     Widget? trailing;
 
     if (feedbackStatus == FeedbackFlowStatus.screenshotNavigating) {
