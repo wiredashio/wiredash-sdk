@@ -77,7 +77,6 @@ class _ScreenCaptureState extends State<ScreenCapture>
   }
 
   Future<ui.Image?> captureScreen() async {
-    throw 'captureScreen failed test exception';
     final canvas = _repaintBoundaryGlobalKey.currentContext?.findRenderObject()
         as RenderRepaintBoundary?;
     if (canvas == null) return null;
