@@ -21,7 +21,7 @@ class NotAWidgetsApp extends StatefulWidget {
 }
 
 class _NotAWidgetsAppState extends State<NotAWidgetsApp> {
-  final GlobalKey _childKey = GlobalKey(debugLabel: 'child-child');
+  final GlobalKey _childKey = GlobalKey(debugLabel: 'WidgetsApp child');
 
   @override
   Widget build(BuildContext context) {

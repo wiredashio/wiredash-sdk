@@ -49,7 +49,7 @@ class WiredashThemeData {
         secondaryBackgroundColor:
             secondaryBackgroundColor ?? const Color(0xfff5f6f8),
         appBackgroundColor: appBackgroundColor ?? const Color(0xff3d3e3e),
-        errorColor: errorColor ?? const Color(0xffff5c6a),
+        errorColor: errorColor ?? const Color(0xffdb000a),
         fontFamily: fontFamily ?? _fontFamily,
         windowSize: windowSize ?? Size.zero,
       );

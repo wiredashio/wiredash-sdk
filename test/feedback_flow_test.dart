@@ -2,9 +2,11 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/core/widgets/larry_page_view.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/wiredash.dart';
 
+import 'util/assert_widget.dart';
 import 'util/mock_api.dart';
 import 'util/robot.dart';
 import 'util/wiredash_tester.dart';
@@ -32,6 +34,32 @@ void main() {
       final latestCall = mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
       expect(submittedFeedback!.message, 'test message');
+    });
+
+    testWidgets('No message shows error, entering one allows continue',
+        (tester) async {
+      final robot = await WiredashTestRobot.launchApp(tester);
+      final mockApi = MockWiredashApi();
+      robot.mockWiredashApi(mockApi);
+      await robot.openWiredash();
+
+      // Pressing next shows error
+      await robot.goToNextStep();
+      selectByType(LarryPageView)
+          .childByType(Step1FeedbackMessage)
+          .text('Please enter a feedback message')
+          .existsOnce();
+
+      // Entering a message allows continue
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+
+      selectByType(LarryPageView)
+          .childByType(Step1FeedbackMessage)
+          .doesNotExist();
+      selectByType(LarryPageView)
+          .childByType(Step3ScreenshotOverview)
+          .existsOnce();
     });
 
     testWidgets('Send feedback with screenshot', (tester) async {

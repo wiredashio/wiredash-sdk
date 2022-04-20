@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 
@@ -31,7 +32,10 @@ class ScreenshotBar extends StatelessWidget {
         color: context.theme.primaryColor,
         leadingIcon: Wirecons.check,
         iconOffset: const Offset(-.15, 0),
-        label: 'Save',
+        label:
+            context.wiredashModel.services.screenCaptureController.error == null
+                ? 'Save'
+                : 'OK',
         onTap: feedbackStatus == FeedbackFlowStatus.screenshotDrawing
             ? () {
                 context.feedbackModel.createMasterpiece();

@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
+import 'package:wiredash/src/feedback/ui/grey_scale_filter.dart';
 
 class ScreenCapture extends StatefulWidget {
   const ScreenCapture({
@@ -48,10 +50,28 @@ class _ScreenCaptureState extends State<ScreenCapture>
         curve: Curves.easeInOutCubicEmphasized,
       ),
     );
+    widget.controller.addListener(_repaint);
+  }
+
+  @override
+  void didUpdateWidget(covariant ScreenCapture oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      oldWidget.controller._state = null;
+      oldWidget.controller.removeListener(_repaint);
+      widget.controller._state = this;
+      widget.controller.addListener(_repaint);
+    }
+  }
+
+  void _repaint() {
+    setState(() {});
   }
 
   @override
   void dispose() {
+    widget.controller._state = null;
+    widget.controller.removeListener(_repaint);
     _controller.dispose();
     super.dispose();
   }
@@ -120,9 +140,12 @@ class _ScreenCaptureState extends State<ScreenCapture>
         Visibility(
           maintainState: true,
           visible: _screenshotMemoryImage == null,
-          child: RepaintBoundary(
-            key: _repaintBoundaryGlobalKey,
-            child: widget.child,
+          child: GreyScaleFilter(
+            greyScale: widget.controller._error != null ? 0.0 : 1.0,
+            child: RepaintBoundary(
+              key: _repaintBoundaryGlobalKey,
+              child: widget.child,
+            ),
           ),
         ),
         if (_screenshotMemoryImage != null) ...[
@@ -145,24 +168,63 @@ class _ScreenCaptureState extends State<ScreenCapture>
           ),
           _buildScreenshotFlash(),
         ],
+        AnimatedFadeWidgetSwitcher(
+          duration: const Duration(milliseconds: 1000),
+          child: () {
+            if (widget.controller._error != null) {
+              return Container(
+                color: const Color(0xa0000000),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.theme.horizontalPadding,
+                    vertical: context.theme.verticalPadding,
+                  ),
+                  child: Center(
+                    child: ErrorWidget(_screenshotTakenErrorMessage),
+                  ),
+                ),
+              );
+            }
+            return const SizedBox();
+          }(),
+        ),
       ],
     );
   }
 }
+
+const String _screenshotTakenErrorMessage = '''
+Error while taking screenshot
+
+Some UI elements in the app are not able to be rendered correctly. You might be able to take a screenshot on a different screen.
+
+This rendering error is usually caused by platform widgets, such as the PointerInterceptor, that include plain HTML elements in canvaskit. Developers might be able to work around this bug by using Wiredashs 'Confidential' Widget, hiding buggy widgets when taking screenshots.
+
+See github.com/flutter/flutter/issues/101720 for more information
+''';
 
 class ScreenCaptureController extends ChangeNotifier {
   late _ScreenCaptureState? _state;
 
   ui.Image? get screenshot => _screenshot;
   ui.Image? _screenshot;
+  FlutterErrorDetails? _error;
+  FlutterErrorDetails? get error => _error;
 
   Future<ui.Image?> captureScreen() async {
-    _screenshot = await _state!.captureScreen();
+    try {
+      _screenshot = await _state!.captureScreen();
+    } catch (e, stack) {
+      _error = reportWiredashError(e, stack, _screenshotTakenErrorMessage);
+    }
     notifyListeners();
     return _screenshot;
   }
 
   void releaseScreen() {
-    _state!.releaseScreen();
+    _error = null;
+    _screenshot = null;
+    _state?.releaseScreen();
+    notifyListeners();
   }
 }

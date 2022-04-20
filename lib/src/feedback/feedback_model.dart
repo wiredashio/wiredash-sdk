@@ -233,22 +233,22 @@ class FeedbackModel extends ChangeNotifier2 {
     _services.picassoController.isActive = false;
     notifyListeners();
 
-    final screenshot = await _services.picassoController.paintDrawingOntoImage(
-      _services.screenCaptureController.screenshot!,
-      _services.wiredashWidget.theme?.appBackgroundColor ??
-          const Color(0xffcccccc),
-    );
-    _attachments.add(
-      PersistedAttachment.screenshot(
+    final image = _services.screenCaptureController.screenshot;
+    if (image != null) {
+      final bg = _services.wiredashWidget.theme?.appBackgroundColor ??
+          const Color(0xffcccccc);
+      final screenshot =
+          await _services.picassoController.paintDrawingOntoImage(image, bg);
+      final attachment = PersistedAttachment.screenshot(
         file: FileDataEventuallyOnDisk.inMemory(screenshot),
         deviceInfo: _deviceInfo,
-      ),
-    );
-    notifyListeners();
+      );
+      _attachments.add(attachment);
+      notifyListeners();
 
-    // give Flutter a few ms for GC before starting the closing animation
-    await Future.delayed(const Duration(milliseconds: 100));
-
+      // give Flutter a few ms for GC before starting the closing animation
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
     await _services.backdropController.animateToOpen();
     _services.screenCaptureController.releaseScreen();
 
@@ -287,6 +287,7 @@ class FeedbackModel extends ChangeNotifier2 {
   Future<void> cancelScreenshotCapturingMode() async {
     _goToStep(FeedbackFlowStatus.screenshotsOverview);
 
+    _services.screenCaptureController.releaseScreen();
     await _services.backdropController.animateToOpen();
   }
 

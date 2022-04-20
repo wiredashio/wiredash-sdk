@@ -53,7 +53,13 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
         children: [
           // reduce size when it doesn't fit
           Flexible(
-            child: TextField(
+            child: TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a feedback message';
+                }
+                return null;
+              },
               controller: _controller,
               keyboardType: TextInputType.multiline,
               minLines: context.theme.windowSize.height > 400 ? 3 : 2,
@@ -73,7 +79,16 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: context.theme.primaryColor),
                 ),
-                errorBorder: InputBorder.none,
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: context.theme.errorColor,
+                  ),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: context.theme.errorColor.lighten(),
+                  ),
+                ),
                 focusColor: context.theme.primaryBackgroundColor,
                 hoverColor: context.theme.primaryBackgroundColor,
                 hintText:
@@ -84,6 +99,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
               ),
             ),
           ),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -96,7 +112,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                 label: 'Next',
                 trailingIcon: Wirecons.arrow_right,
                 onTap: context.feedbackModel.feedbackMessage == null
-                    ? null
+                    ? context.feedbackModel.validateForm
                     : context.feedbackModel.goToNextStep,
               ),
             ],
