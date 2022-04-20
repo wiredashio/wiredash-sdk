@@ -4,14 +4,12 @@ import 'package:flutter/foundation.dart';
 ///
 /// Set [debugOnly] to `true` for errors which should only be logged in debug
 /// builds. Defaults to `false`.
-void reportWiredashError(
+FlutterErrorDetails reportWiredashError(
   Object e,
   StackTrace /*?*/ stack,
   String message, {
   bool debugOnly = false,
 }) {
-  final reporter = FlutterError.onError;
-  if (reporter == null) return;
   final details = FlutterErrorDetails(
     exception: e,
     stack: stack,
@@ -21,5 +19,10 @@ void reportWiredashError(
       DiagnosticsNode.message(message),
     ],
   );
-  reporter.call(details);
+
+  final reporter = FlutterError.onError;
+  if (reporter != null) {
+    reporter.call(details);
+  }
+  return details;
 }

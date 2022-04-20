@@ -287,6 +287,7 @@ class FeedbackModel extends ChangeNotifier2 {
   Future<void> cancelScreenshotCapturingMode() async {
     _goToStep(FeedbackFlowStatus.screenshotsOverview);
 
+    _services.screenCaptureController.releaseScreen();
     await _services.backdropController.animateToOpen();
   }
 
