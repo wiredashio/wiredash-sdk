@@ -105,6 +105,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   /// when keyboard opens/closes
   double _maxKeyboardHeight = 0.0;
 
+  /// the key for the app
+  final GlobalKey _appKey = GlobalKey(debugLabel: 'WiredashBackdrop app');
+
   WiredashBackdropStatus get _backdropStatus =>
       widget.controller.backdropStatus;
 
@@ -247,7 +250,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
 
   @override
   Widget build(BuildContext context) {
-    final Widget child = widget.app;
+    // Prevent widgets from being recreated unnecessarily when app
+    // becomes interactive
+    final Widget child = KeyedSubtree(
+      key: _appKey,
+      child: widget.app,
+    );
 
     if (_backdropStatus == WiredashBackdropStatus.closed) {
       // Wiredash is closed, show the app without being wrapped in Transforms
