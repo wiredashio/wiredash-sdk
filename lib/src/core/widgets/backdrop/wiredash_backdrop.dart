@@ -715,8 +715,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                               child: SizedBox(
                                 // +1 to prevent flickering
                                 height:
-                                    _appHandleAnimation.value * _handleHeight +
-                                        1,
+                                    _appHandleAnimation.value * _handleHeight,
                                 child: FakeAppStatusBar(
                                   height: _handleHeight,
                                 ),
