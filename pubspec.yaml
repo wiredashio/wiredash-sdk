@@ -30,10 +30,7 @@ dev_dependencies:
 
 flutter:
   assets:
-    - packages/wiredash/assets/images/logo_footer.png
-    - packages/wiredash/assets/images/logo_grey.png
     - packages/wiredash/assets/images/logo_white.png
-    - packages/wiredash/assets/images/pen.png
 
   plugin:
     platforms:
