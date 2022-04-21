@@ -676,6 +676,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return AnimatedBuilder(
       animation: _backdropAnimationController,
       builder: (context, child) {
+        // rounds _handleHeight up to exactly match
+        final double upRoundedHandleHeight = () {
+          final appScale =
+              _appTransformAnimation!.value!.width / _rectAppFillsScreen.width;
+          final scaledHandleHeight = _handleHeight * appScale;
+          final reverseScale = 1.0 / appScale;
+          // this prevents flickering
+          final standardRoundedHandleHeight =
+              scaledHandleHeight.ceil().toDouble() * reverseScale;
+          return standardRoundedHandleHeight.ceil().toDouble();
+        }();
+
         final withDesktopHandle = _mediaQueryData.viewPadding.top == 0;
 
         return SizedBox(
@@ -705,23 +717,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                     color: context.theme.appBackgroundColor,
                     child: Stack(
                       children: [
-                        if (withDesktopHandle)
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            child: ColoredBox(
-                              color: context.theme.primaryColor,
-                              child: SizedBox(
-                                // +1 to prevent flickering
-                                height:
-                                    _appHandleAnimation.value * _handleHeight,
-                                child: FakeAppStatusBar(
-                                  height: _handleHeight,
-                                ),
-                              ),
-                            ),
-                          ),
                         Positioned(
                           top: withDesktopHandle
                               ? _appHandleAnimation.value * _handleHeight
@@ -733,6 +728,22 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                             child: child,
                           ),
                         ),
+                        if (withDesktopHandle)
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: ColoredBox(
+                              color: context.theme.primaryColor,
+                              child: SizedBox(
+                                height: _appHandleAnimation.value *
+                                    upRoundedHandleHeight,
+                                child: FakeAppStatusBar(
+                                  height: upRoundedHandleHeight,
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
