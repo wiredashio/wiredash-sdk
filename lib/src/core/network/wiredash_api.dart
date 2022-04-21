@@ -28,9 +28,8 @@ class WiredashApi {
   final String _secret;
   final Future<String> Function() _deviceIdProvider;
 
-  // static const String _host = 'https://api.wiredash.io/sdk';
-
-  static const String _host = 'https://api.wiredash.dev/sdk';
+  static const String _host = 'https://api.wiredash.io/sdk';
+  // static const String _host = 'https://api.wiredash.dev/sdk';
 
   /// Uploads a attachment to the Wiredash hosting service
   ///
