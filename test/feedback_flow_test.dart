@@ -45,7 +45,7 @@ void main() {
 
       // Pressing next shows error
       await robot.goToNextStep();
-      selectByType(LarryPageView)
+      larryPageView
           .childByType(Step1FeedbackMessage)
           .text('Please enter a feedback message')
           .existsOnce();
@@ -54,12 +54,8 @@ void main() {
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
 
-      selectByType(LarryPageView)
-          .childByType(Step1FeedbackMessage)
-          .doesNotExist();
-      selectByType(LarryPageView)
-          .childByType(Step3ScreenshotOverview)
-          .existsOnce();
+      larryPageView.childByType(Step1FeedbackMessage).doesNotExist();
+      larryPageView.childByType(Step3ScreenshotOverview).existsOnce();
     });
 
     testWidgets('Send feedback with screenshot', (tester) async {
@@ -218,5 +214,24 @@ void main() {
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
       expect(submittedFeedback!.message, 'test message');
     });
+
+    testWidgets('Restore flow state when reopening', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(tester);
+      final mockApi = MockWiredashApi();
+      robot.mockWiredashApi(mockApi);
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.skipScreenshot();
+      larryPageView.childByType(Step6Submit).existsOnce();
+
+      await robot.closeWiredash();
+      await robot.openWiredash();
+      larryPageView.childByType(Step6Submit).existsOnce();
+    });
   });
 }
+
+final larryPageView =
+    selectByType(WiredashFeedbackFlow).childByType(LarryPageView);

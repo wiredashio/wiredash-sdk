@@ -21,6 +21,13 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
   int _index = 0;
 
   @override
+  void initState() {
+    super.initState();
+    _index =
+        FeedbackModelProvider.of(context, listen: false).currentStepIndex ?? 0;
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_index >= context.feedbackModel.steps.length) {
