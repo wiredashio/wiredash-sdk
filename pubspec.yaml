@@ -54,11 +54,11 @@ flutter:
     - family: Inter
       fonts:
         - asset: lib/assets/fonts/Inter-Regular.ttf
-        - weight: 400
+          weight: 400
         - asset: lib/assets/fonts/Inter-SemiBold.ttf
-        - weight: 600
+          weight: 600
         - asset: lib/assets/fonts/Inter-Bold.ttf
-        - weight: 700
+          weight: 700
     - family: Wirecons
       fonts:
         - asset: lib/assets/fonts/Wirecons.ttf
