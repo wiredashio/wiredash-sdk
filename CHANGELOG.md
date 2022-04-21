@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.0-alpha.7 - Android back button support & resizing
+
+- [#195](https://github.com/wiredashio/wiredash-sdk/pull/195) Support for the Android back button
+- [#194](https://github.com/wiredashio/wiredash-sdk/pull/194) Resize Wiredashs content area to match the size of the content
+- [#201](https://github.com/wiredashio/wiredash-sdk/pull/201) Fix state restoration error when reopening Wiredash
+- [#194](https://github.com/wiredashio/wiredash-sdk/pull/194) Add a "Back to app" app header on desktop
+- [#198](https://github.com/wiredashio/wiredash-sdk/pull/198) Added a netflix and whatsapp clone example demonstrating Wiredashs automatic theming capabilities when using `Wiredash.of(context).show(inheritMaterialTheme: true)`
+- [#199](https://github.com/wiredashio/wiredash-sdk/pull/199) Show error when taking a screenshot fails. This may happen for some widgets on web (canvaskit)
+- [#202](https://github.com/wiredashio/wiredash-sdk/pull/202) Fix "Warning: Missing asset in fonts for Inter"
+- [#194](https://github.com/wiredashio/wiredash-sdk/pull/194) Small color adjustments
+
 ## 1.0.0-alpha.6
 
 - [#188](https://github.com/wiredashio/wiredash-sdk/pull/188) Fix upload of multiple screenshots for non-web platforms. May have caused double submission of feedback
