@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/common/utils/widget_binding_support.dart';
 
 const double _kMinFlingVelocity = 0.5;
 const int _kMaxDroppedSwipePageForwardAnimationTime = 1000;
@@ -221,13 +222,13 @@ class _DownGestureDetectorState<T> extends State<_DownGestureDetector<T>>
       ..onUpdate = _handleDragUpdate
       ..onEnd = _handleDragEnd
       ..onCancel = _handleDragCancel;
-    WidgetsBinding.instance!.addObserver(this);
+    widgetsBindingInstance.addObserver(this);
   }
 
   @override
   void dispose() {
     _recognizer.dispose();
-    WidgetsBinding.instance!.removeObserver(this);
+    widgetsBindingInstance.removeObserver(this);
     super.dispose();
   }
 
@@ -261,8 +262,8 @@ class _DownGestureDetectorState<T> extends State<_DownGestureDetector<T>>
     return Container(
       alignment: Alignment.bottomCenter,
       margin: EdgeInsets.only(
-          bottom: WidgetsBinding.instance!.window.viewInsets.bottom /
-              WidgetsBinding.instance!.window.devicePixelRatio),
+          bottom: widgetsBindingInstance.window.viewInsets.bottom /
+              widgetsBindingInstance.window.devicePixelRatio),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
         child: SingleChildScrollView(

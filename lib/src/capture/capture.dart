@@ -13,6 +13,7 @@ import 'package:wiredash/src/capture/sketcher/sketcher_controller.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/utils/diagonal_shape_painter.dart';
+import 'package:wiredash/src/common/utils/widget_binding_support.dart';
 import 'package:wiredash/src/common/widgets/corner_radius_transition.dart';
 import 'package:wiredash/src/common/widgets/navigation_buttons.dart';
 import 'package:wiredash/src/common/widgets/spotlight.dart';
@@ -96,11 +97,11 @@ class CaptureState extends State<Capture>
     _updateDimensions();
     _initAnimations();
 
-    WidgetsBinding.instance!.addObserver(this);
+    widgetsBindingInstance.addObserver(this);
   }
 
   void _updateDimensions() {
-    final window = WidgetsBinding.instance!.window;
+    final window = widgetsBindingInstance.window;
     _windowPadding = EdgeInsets.fromWindowPadding(
         window.viewPadding, window.devicePixelRatio);
     _screenSize = window.physicalSize / window.devicePixelRatio;
@@ -151,7 +152,7 @@ class CaptureState extends State<Capture>
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    widgetsBindingInstance.removeObserver(this);
     _animationControllerScreen.dispose();
     _animationControllerDrawer.dispose();
     _captureUiState.dispose();

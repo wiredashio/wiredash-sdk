@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/utils/email_validator.dart';
+import 'package:wiredash/src/common/utils/widget_binding_support.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/wiredash_provider.dart';
 
@@ -40,7 +41,7 @@ class _InputComponentState extends State<InputComponent> {
   void initState() {
     super.initState();
     _textEditingController = TextEditingController(text: widget.prefill);
-    SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
+    widgetsBindingInstance.addPostFrameCallback((timeStamp) {
       if (widget.autofocus) {
         widget.focusNode.requestFocus();
       }

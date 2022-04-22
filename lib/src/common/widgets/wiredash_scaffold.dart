@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/common/options/wiredash_options.dart';
 import 'package:wiredash/src/common/theme/wiredash_theme.dart';
+import 'package:wiredash/src/common/utils/widget_binding_support.dart';
 
 class WiredashScaffold extends StatefulWidget {
   const WiredashScaffold({
@@ -19,7 +20,7 @@ class _WiredashScaffoldState extends State<WiredashScaffold>
   @override
   Widget build(BuildContext context) {
     return MediaQuery(
-      data: MediaQueryData.fromWindow(WidgetsBinding.instance!.window),
+      data: MediaQueryData.fromWindow(widgetsBindingInstance.window),
       child: Directionality(
         textDirection: WiredashOptions.of(context)!.textDirection,
         child: Container(
@@ -33,7 +34,7 @@ class _WiredashScaffoldState extends State<WiredashScaffold>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addObserver(this);
+    widgetsBindingInstance.addObserver(this);
   }
 
   @override
@@ -45,7 +46,7 @@ class _WiredashScaffoldState extends State<WiredashScaffold>
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    widgetsBindingInstance.removeObserver(this);
     super.dispose();
   }
 }

@@ -16,6 +16,7 @@ import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/utils/build_info.dart';
 import 'package:wiredash/src/common/utils/project_credential_validator.dart';
+import 'package:wiredash/src/common/utils/widget_binding_support.dart';
 import 'package:wiredash/src/common/widgets/wiredash_scaffold.dart';
 import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
@@ -176,7 +177,7 @@ class WiredashState extends State<Wiredash> {
       feedbackSubmitter,
       DeviceInfoGenerator(
         buildInfoManager,
-        WidgetsBinding.instance!.window,
+        widgetsBindingInstance.window,
       ),
     );
   }
