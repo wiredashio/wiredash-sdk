@@ -50,10 +50,13 @@ class _NotAWidgetsAppState extends State<NotAWidgetsApp> {
       child: child,
     );
 
-    // Inject a MediaQuery with information from the app window
-    child = MediaQuery.fromWindow(
-      child: child,
-    );
+    final parentMq = MediaQuery.maybeOf(context);
+    if (parentMq == null) {
+      // Inject a MediaQuery with information from the app window
+      child = MediaQuery.fromWindow(
+        child: child,
+      );
+    }
 
     return child;
   }

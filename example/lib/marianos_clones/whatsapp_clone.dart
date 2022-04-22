@@ -11,6 +11,7 @@ class WhatsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      useInheritedMediaQuery: true,
       title: 'WhatsApp',
       home: HomeScreen(),
       debugShowCheckedModeBanner: false,
@@ -428,6 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _leftSection(BuildContext context, bool isMobile,
       ConversationCallback callback, RefreshCallback refresh) {
     return MaterialApp(
+      useInheritedMediaQuery: true,
       title: 'WhatsApp',
       initialRoute: '/',
       routes: {
