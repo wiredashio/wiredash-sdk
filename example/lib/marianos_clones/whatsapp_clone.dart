@@ -525,11 +525,23 @@ class ChatsScreenState extends State<ChatsScreen> {
           return ChatItem(
             conversation: item,
             isMobile: widget.isMobile,
-            callback: (item) {
-              if (item == feedbackChat) {
+            callback: (chat) {
+              if (chat == feedbackChat) {
                 Wiredash.of(context).show();
               } else {
-                widget.callback?.call(item);
+                if (widget.isMobile) {
+                  Navigator.of(context).push(
+                    AnimatedRoute(
+                      widget: ChatScreen(
+                        context: context,
+                        conversation: chat,
+                        refresh: widget.refresh,
+                      ),
+                      anim: PageAnimation.FADE_SCALE,
+                    ),
+                  );
+                }
+                widget.callback?.call(chat);
               }
             },
             refresh: widget.refresh,
@@ -880,21 +892,7 @@ class _ChatItemState extends State<ChatItem> {
     return Material(
       child: InkWell(
         onTap: () {
-          if (widget.isMobile) {
-            Navigator.of(context).push(
-              AnimatedRoute(
-                widget: ChatScreen(
-                  context: context,
-                  conversation: widget.conversation,
-                  refresh: widget.refresh,
-                ),
-                anim: PageAnimation.FADE_SCALE,
-              ),
-            );
-            widget.callback?.call(widget.conversation);
-          } else {
-            widget.callback?.call(widget.conversation);
-          }
+          widget.callback?.call(widget.conversation);
         },
         child: MouseRegion(
           onHover: (_) => setState(() => _isHover = true),
