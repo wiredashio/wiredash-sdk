@@ -78,8 +78,85 @@ class _CustomizePageState extends State<CustomizePage> {
   }
 }
 
+class DeviceFrame extends StatelessWidget {
+  const DeviceFrame({
+    Key? key,
+    required this.child,
+  }) : super(key: key);
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 400,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(26),
+        color: Colors.black,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: 22,
+          bottom: 16,
+          left: 10,
+          right: 10,
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            color: Colors.white,
+          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  size: Size(
+                    constraints.maxWidth,
+                    constraints.maxHeight,
+                  ),
+                ),
+                child: PrimaryScrollController(
+                  controller: ScrollController(),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Wiredash(
+                      projectId: "Project ID from console.wiredash.io",
+                      secret: "API Key from console.wiredash.io",
+                      theme: WiredashThemeData(
+                        brightness: context.watchThemeModel.brightness,
+                        primaryColor: context.watchThemeModel.primaryColor,
+                        secondaryColor: context.watchThemeModel.secondaryColor,
+                        primaryBackgroundColor:
+                            context.watchThemeModel.primaryBackgroundColor,
+                        secondaryBackgroundColor:
+                            context.watchThemeModel.secondaryBackgroundColor,
+                        appBackgroundColor:
+                            context.watchThemeModel.appBackgroundColor,
+                      ),
+                      child: child,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class ThemeModel extends ChangeNotifier {
-  Color _primaryColor = WiredashThemeData().primaryColor;
+  Brightness _brightness = Brightness.light;
+
+  Brightness get brightness => _brightness;
+
+  set brightness(Brightness brightness) {
+    _brightness = brightness;
+    notifyListeners();
+  }
+
+  Color _primaryColor = Color(0xFFFFFFFF);
 
   Color get primaryColor => _primaryColor;
 
@@ -88,7 +165,7 @@ class ThemeModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Color _secondaryColor = WiredashThemeData().secondaryColor;
+  Color _secondaryColor = Color(0xFFFFFFFF);
 
   Color get secondaryColor => _secondaryColor;
 
@@ -97,7 +174,7 @@ class ThemeModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Color _primaryBackgroundColor = WiredashThemeData().primaryBackgroundColor;
+  Color _primaryBackgroundColor = Color(0xFFFFFFFF);
 
   Color get primaryBackgroundColor => _primaryBackgroundColor;
 
@@ -116,6 +193,15 @@ class ThemeModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Color _appBackgroundColor = Color(0xFFFFFFFF);
+
+  Color get appBackgroundColor => _appBackgroundColor;
+
+  set appBackgroundColor(Color appBackgroundColor) {
+    _appBackgroundColor = appBackgroundColor;
+    notifyListeners();
+  }
+
   static ThemeModel of(BuildContext context, {bool listen = true}) {
     if (listen) {
       return context
@@ -126,6 +212,31 @@ class ThemeModel extends ChangeNotifier {
           .findAncestorWidgetOfExactType<ThemeModelProvider>()!
           .notifier!;
     }
+  }
+
+  void autoGenerate() {
+    final defaultData = WiredashThemeData.fromColor(
+      primaryColor: primaryColor,
+      secondaryColor: secondaryColor,
+      brightness: brightness,
+    );
+    primaryBackgroundColor = defaultData.primaryBackgroundColor;
+    secondaryBackgroundColor = defaultData.secondaryBackgroundColor;
+    appBackgroundColor = defaultData.appBackgroundColor;
+    notifyListeners();
+  }
+
+  void resetToDefaults() {
+    final defaultData = WiredashThemeData.fromColor(
+      primaryColor: primaryColor,
+      brightness: brightness,
+    );
+    primaryColor = defaultData.primaryColor;
+    secondaryColor = defaultData.secondaryColor;
+    primaryBackgroundColor = defaultData.primaryBackgroundColor;
+    secondaryBackgroundColor = defaultData.secondaryBackgroundColor;
+    appBackgroundColor = defaultData.appBackgroundColor;
+    notifyListeners();
   }
 }
 
@@ -168,7 +279,8 @@ class _ThemeControlsState extends State<ThemeControls> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SelectableText('Base Colors', style: TextStyle(fontSize: 20)),
+            SelectableText('Base Configuration',
+                style: TextStyle(fontSize: 20)),
             SizedBox(height: 20),
             Wrap(
               spacing: 20,
@@ -215,7 +327,44 @@ class _ThemeControlsState extends State<ThemeControls> {
                 ),
               ],
             ),
-            SizedBox(height: 40),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SelectableText(
+                  'darkMode',
+                  style: GoogleFonts.droidSansMono(),
+                ),
+                Switch(
+                  value: context.watchThemeModel.brightness == Brightness.dark,
+                  onChanged: (value) {
+                    context.watchThemeModel.brightness =
+                        value ? Brightness.dark : Brightness.light;
+                  },
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Wrap(
+              spacing: 20,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    context.readThemeModel.autoGenerate();
+                  },
+                  child: Text('Auto-generate'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    context.readThemeModel.resetToDefaults();
+                  },
+                  child: Text('Reset'),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Divider(),
+            SizedBox(height: 20),
             SelectableText('Background Colors', style: TextStyle(fontSize: 20)),
             SizedBox(height: 20),
             Wrap(
@@ -269,6 +418,25 @@ class _ThemeControlsState extends State<ThemeControls> {
               ],
             ),
             SizedBox(height: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SelectableText(
+                  'appBackgroundColor',
+                  style: GoogleFonts.droidSansMono(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: WiredashColorPicker(
+                    withAlpha: true,
+                    color: context.watchThemeModel.appBackgroundColor,
+                    onColorChanged: (color) {
+                      context.readThemeModel.appBackgroundColor = color;
+                    },
+                  ),
+                ),
+              ],
+            )
           ],
         ),
       ),
@@ -425,71 +593,6 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
       },
     );
     overlay.insert(entry);
-  }
-}
-
-class DeviceFrame extends StatelessWidget {
-  const DeviceFrame({
-    Key? key,
-    required this.child,
-  }) : super(key: key);
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 400,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26),
-        color: Colors.black,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(
-          top: 22,
-          bottom: 16,
-          left: 10,
-          right: 10,
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            color: Colors.white,
-          ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                  size: Size(
-                    constraints.maxWidth,
-                    constraints.maxHeight,
-                  ),
-                ),
-                child: PrimaryScrollController(
-                  controller: ScrollController(),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Wiredash(
-                      projectId: "Project ID from console.wiredash.io",
-                      secret: "API Key from console.wiredash.io",
-                      theme: WiredashThemeData(
-                        primaryColor: context.watchThemeModel.primaryColor,
-                        secondaryColor: context.watchThemeModel.secondaryColor,
-                        primaryBackgroundColor:
-                            context.watchThemeModel.primaryBackgroundColor,
-                        secondaryBackgroundColor:
-                            context.watchThemeModel.secondaryBackgroundColor,
-                      ),
-                      child: child,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
   }
 }
 
