@@ -468,6 +468,21 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
     super.initState();
     _textEditingController =
         TextEditingController(text: colorToHex(widget.color));
+
+    _textEditingController.addListener(() {
+      final color = colorFromHex(_textEditingController.text);
+      if (color != null) {
+        widget.onColorChanged(color);
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(WiredashColorPicker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.color != widget.color) {
+      _textEditingController.text = colorToHex(widget.color);
+    }
   }
 
   @override
