@@ -228,7 +228,7 @@ class ThemeModel extends ChangeNotifier {
 
   void resetToDefaults() {
     final defaultData = WiredashThemeData.fromColor(
-      primaryColor: primaryColor,
+      primaryColor: WiredashThemeData().primaryColor,
       brightness: brightness,
     );
     primaryColor = defaultData.primaryColor;
@@ -285,45 +285,41 @@ class _ThemeControlsState extends State<ThemeControls> {
             Wrap(
               spacing: 20,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SelectableText(
-                        'primaryColor',
-                        style: GoogleFonts.droidSansMono(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SelectableText(
+                      'primaryColor',
+                      style: GoogleFonts.droidSansMono(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: WiredashColorPicker(
+                        color: context.watchThemeModel.primaryColor,
+                        onColorChanged: (color) {
+                          context.readThemeModel.primaryColor = color;
+                        },
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: WiredashColorPicker(
-                          color: context.watchThemeModel.primaryColor,
-                          onColorChanged: (color) {
-                            context.readThemeModel.primaryColor = color;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SelectableText(
-                        'secondaryColor',
-                        style: GoogleFonts.droidSansMono(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SelectableText(
+                      'secondaryColor',
+                      style: GoogleFonts.droidSansMono(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: WiredashColorPicker(
+                        color: context.watchThemeModel.secondaryColor,
+                        onColorChanged: (color) {
+                          context.readThemeModel.secondaryColor = color;
+                        },
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: WiredashColorPicker(
-                          color: context.watchThemeModel.secondaryColor,
-                          onColorChanged: (color) {
-                            context.readThemeModel.secondaryColor = color;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -350,12 +346,6 @@ class _ThemeControlsState extends State<ThemeControls> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    context.readThemeModel.autoGenerate();
-                  },
-                  child: Text('Auto-generate'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
                     context.readThemeModel.resetToDefaults();
                   },
                   child: Text('Reset'),
@@ -367,53 +357,54 @@ class _ThemeControlsState extends State<ThemeControls> {
             SizedBox(height: 20),
             SelectableText('Background Colors', style: TextStyle(fontSize: 20)),
             SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                context.readThemeModel.autoGenerate();
+              },
+              child: Text('Auto-generate'),
+            ),
+            SizedBox(height: 20),
             Wrap(
               spacing: 20,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SelectableText(
-                        'primaryBackgroundColor',
-                        style: GoogleFonts.droidSansMono(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SelectableText(
+                      'primaryBackgroundColor',
+                      style: GoogleFonts.droidSansMono(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: WiredashColorPicker(
+                        withAlpha: true,
+                        color: context.watchThemeModel.primaryBackgroundColor,
+                        onColorChanged: (color) {
+                          context.readThemeModel.primaryBackgroundColor = color;
+                        },
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: WiredashColorPicker(
-                          withAlpha: true,
-                          color: context.watchThemeModel.primaryBackgroundColor,
-                          onColorChanged: (color) {
-                            context.readThemeModel.primaryBackgroundColor =
-                                color;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SelectableText(
-                        'secondaryBackgroundColor',
-                        style: GoogleFonts.droidSansMono(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SelectableText(
+                      'secondaryBackgroundColor',
+                      style: GoogleFonts.droidSansMono(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: WiredashColorPicker(
+                        withAlpha: true,
+                        color: context.watchThemeModel.secondaryBackgroundColor,
+                        onColorChanged: (color) {
+                          context.readThemeModel.secondaryBackgroundColor =
+                              color;
+                        },
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: WiredashColorPicker(
-                          withAlpha: true,
-                          color:
-                              context.watchThemeModel.secondaryBackgroundColor,
-                          onColorChanged: (color) {
-                            context.readThemeModel.secondaryBackgroundColor =
-                                color;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
