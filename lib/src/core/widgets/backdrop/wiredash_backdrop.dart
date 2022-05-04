@@ -657,16 +657,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     ];
   }
 
-  final _handleHeight = () {
+  double get _handleHeight {
     if (kIsWeb) {
       return 36.0;
     } else if (defaultTargetPlatform == TargetPlatform.macOS) {
       return 44.0;
     } else {
-      // TODO find a good value for windows/linux
-      return 36.0;
+      return math.min(_mediaQueryData.padding.top, 36.0);
     }
-  }();
+  }
 
   /// Clips and adds shadow to the app
   ///
@@ -733,14 +732,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                             top: 0,
                             left: 0,
                             right: 0,
-                            child: ColoredBox(
-                              color: context.theme.primaryColor,
-                              child: SizedBox(
+                            child: SizedBox(
+                              child: FakeAppStatusBar(
                                 height: _appHandleAnimation.value *
-                                    upRoundedHandleHeight,
-                                child: FakeAppStatusBar(
-                                  height: upRoundedHandleHeight,
-                                ),
+                                    scaledAndUpRoundedHandleHeight,
+                                color: context.theme.appHandleBackgroundColor,
+                                textColor: context.theme.primaryTextColor,
                               ),
                             ),
                           ),
@@ -748,20 +745,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                     ),
                   ),
                   if (!withDesktopHandle)
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: _mediaQueryData.viewPadding.top,
-                      child: FadeTransition(
-                        // TODO show some handle when in screencapture mode?
-                        opacity: _appHandleAnimation,
-                        child: ColoredBox(
-                          color: context.theme.primaryColor,
-                          child: FakeAppStatusBar(
-                            height: _mediaQueryData.viewPadding.top,
-                          ),
-                        ),
+                    FadeTransition(
+                      // TODO show some handle when in screencapture mode?
+                      opacity: _appHandleAnimation,
+                      child: FakeAppStatusBar(
+                        height: _appHandleAnimation.value *
+                            scaledAndUpRoundedHandleHeight,
+                        color: context.theme.appHandleBackgroundColor,
+                        textColor: context.theme.primaryTextColor,
                       ),
                     ),
                 ],

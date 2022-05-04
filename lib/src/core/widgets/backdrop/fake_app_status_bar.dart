@@ -8,9 +8,13 @@ class FakeAppStatusBar extends StatelessWidget {
   const FakeAppStatusBar({
     Key? key,
     required this.height,
+    required this.color,
+    required this.textColor,
   }) : super(key: key);
 
   final double height;
+  final Color color;
+  final Color textColor;
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +37,8 @@ class FakeAppStatusBar extends StatelessWidget {
       ),
       child: Container(
         height: height,
-        decoration: const BoxDecoration(
-          color: Colors.black12,
+        decoration: BoxDecoration(
+          color: color,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(

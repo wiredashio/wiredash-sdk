@@ -6,9 +6,11 @@ void main() {
   final app = Wiredash(
     projectId: "Project ID from console.wiredash.io",
     secret: "API Key from console.wiredash.io",
-    theme: WiredashThemeData(
+    theme: WiredashThemeData.fromColor(
       primaryColor: WhatsappUtils.appBarMobile,
-      secondaryColor: WhatsappUtils.softGreen,
+      brightness: Brightness.light,
+    ).copyWith(
+      secondaryColor: Color(0xFFD6F5ED),
       primaryBackgroundColor: WhatsappUtils.chatBackground,
       secondaryBackgroundColor: WhatsappUtils.chatBackground2,
     ),

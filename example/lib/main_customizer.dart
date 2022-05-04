@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:device_frame/device_frame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -17,17 +20,47 @@ class CustomizerApp extends StatefulWidget {
 }
 
 class _CustomizerAppState extends State<CustomizerApp> {
-  final _model = ThemeModel();
+  Brightness _brightness = Brightness.light;
+
+  Brightness get brightness => _brightness;
+
+  set brightness(Brightness brightness) {
+    setState(() {
+      _brightness = brightness;
+    });
+  }
+
+  final _lightModel = ThemeModel(brightness: Brightness.light);
+  final _darkModel = ThemeModel(brightness: Brightness.dark);
+
+  @override
+  void initState() {
+    super.initState();
+    _lightModel.addListener(_lightUpdate);
+  }
+
+  void _lightUpdate() {
+    _lightModel.autoGenerate();
+
+    // dark model
+    if (!_darkModel.primary.hasBeenManuallyAdjusted) {
+      _darkModel.primary.color = _lightModel.primary.color;
+    }
+  }
+
+  @override
+  void dispose() {
+    _lightModel.dispose();
+    _darkModel.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ThemeModelProvider(
-      themeModel: _model,
+    return ThemeModelProvider<ThemeModel>(
+      themeModel: _brightness == Brightness.light ? _lightModel : _darkModel,
       child: MaterialApp(
-        color: Colors.green,
-        theme: ThemeData.light().copyWith(
-          primaryColor: Colors.green,
-        ),
+        theme: ThemeData.light(),
         home: const CustomizePage(),
         debugShowCheckedModeBanner: false,
       ),
@@ -66,11 +99,47 @@ class _CustomizePageState extends State<CustomizePage> {
                   top: 8,
                   bottom: 8,
                 ),
-                child: DeviceFrame(
-                  child: WhatsApp(),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        size: Size(
+                          constraints.maxWidth,
+                          constraints.maxHeight,
+                        ),
+                        padding: EdgeInsets.zero,
+                        viewPadding: EdgeInsets.zero,
+                        viewInsets: EdgeInsets.zero,
+                      ),
+                      child: DeviceFrame(
+                        device: Devices.ios.iPhone12Mini,
+                        screen: Wiredash(
+                          projectId: "Project ID from console.wiredash.io",
+                          secret: "API Key from console.wiredash.io",
+                          theme: WiredashThemeData(
+                            brightness: context
+                                .findAncestorStateOfType<_CustomizerAppState>()!
+                                .brightness,
+                            primaryColor: context.watchThemeModel.primary.color,
+                            secondaryColor:
+                                context.watchThemeModel.secondary.color,
+                            primaryBackgroundColor:
+                                context.watchThemeModel.primaryBackground.color,
+                            secondaryBackgroundColor: context
+                                .watchThemeModel.secondaryBackground.color,
+                            appBackgroundColor:
+                                context.watchThemeModel.appBackground.color,
+                            appHandleBackgroundColor: context
+                                .watchThemeModel.appHandleBackground.color,
+                          ),
+                          child: WhatsApp(),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -78,129 +147,45 @@ class _CustomizePageState extends State<CustomizePage> {
   }
 }
 
-class DeviceFrame extends StatelessWidget {
-  const DeviceFrame({
-    Key? key,
-    required this.child,
-  }) : super(key: key);
+class ColorModel {
+  ColorModel({required this.notifyListeners, required this.autoColor});
 
-  final Widget child;
+  void Function() notifyListeners;
+  Color Function() autoColor;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 400,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26),
-        color: Colors.black,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(
-          top: 22,
-          bottom: 16,
-          left: 10,
-          right: 10,
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            color: Colors.white,
-          ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                  size: Size(
-                    constraints.maxWidth,
-                    constraints.maxHeight,
-                  ),
-                ),
-                child: PrimaryScrollController(
-                  controller: ScrollController(),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Wiredash(
-                      projectId: "Project ID from console.wiredash.io",
-                      secret: "API Key from console.wiredash.io",
-                      theme: WiredashThemeData(
-                        brightness: context.watchThemeModel.brightness,
-                        primaryColor: context.watchThemeModel.primaryColor,
-                        secondaryColor: context.watchThemeModel.secondaryColor,
-                        primaryBackgroundColor:
-                            context.watchThemeModel.primaryBackgroundColor,
-                        secondaryBackgroundColor:
-                            context.watchThemeModel.secondaryBackgroundColor,
-                        appBackgroundColor:
-                            context.watchThemeModel.appBackgroundColor,
-                      ),
-                      child: child,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
+  Color? _color;
+  Color get color => _color ?? Color(0xFFFFFFFF);
+  Color? get manuallyPickedColor => _hasBeenManuallyAdjusted ? _color : null;
+  set color(Color value) {
+    if (color == value) return;
+    _color = value;
+    notifyListeners();
+  }
+
+  bool _hasBeenManuallyAdjusted = false;
+
+  bool get hasBeenManuallyAdjusted => _hasBeenManuallyAdjusted;
+
+  bool get isDefault => _color == autoColor();
+
+  void markAsTouched() {
+    _hasBeenManuallyAdjusted = true;
+    notifyListeners();
+  }
+
+  void reset() {
+    _hasBeenManuallyAdjusted = false;
+    color = autoColor();
   }
 }
 
 class ThemeModel extends ChangeNotifier {
-  Brightness _brightness = Brightness.light;
-
-  Brightness get brightness => _brightness;
-
-  set brightness(Brightness brightness) {
-    _brightness = brightness;
-    notifyListeners();
-  }
-
-  Color _primaryColor = Color(0xFFFFFFFF);
-
-  Color get primaryColor => _primaryColor;
-
-  set primaryColor(Color primaryColor) {
-    _primaryColor = primaryColor;
-    notifyListeners();
-  }
-
-  Color _secondaryColor = Color(0xFFFFFFFF);
-
-  Color get secondaryColor => _secondaryColor;
-
-  set secondaryColor(Color secondaryColor) {
-    _secondaryColor = secondaryColor;
-    notifyListeners();
-  }
-
-  Color _primaryBackgroundColor = Color(0xFFFFFFFF);
-
-  Color get primaryBackgroundColor => _primaryBackgroundColor;
-
-  set primaryBackgroundColor(Color primaryBackgroundCColor) {
-    _primaryBackgroundColor = primaryBackgroundCColor;
-    notifyListeners();
-  }
-
-  Color _secondaryBackgroundColor =
-      WiredashThemeData().secondaryBackgroundColor;
-
-  Color get secondaryBackgroundColor => _secondaryBackgroundColor;
-
-  set secondaryBackgroundColor(Color secondaryBackgroundColor) {
-    _secondaryBackgroundColor = secondaryBackgroundColor;
-    notifyListeners();
-  }
-
-  Color _appBackgroundColor = Color(0xFFFFFFFF);
-
-  Color get appBackgroundColor => _appBackgroundColor;
-
-  set appBackgroundColor(Color appBackgroundColor) {
-    _appBackgroundColor = appBackgroundColor;
-    notifyListeners();
-  }
+  late final ColorModel primary;
+  late final ColorModel secondary;
+  late final ColorModel primaryBackground;
+  late final ColorModel secondaryBackground;
+  late final ColorModel appBackground;
+  late final ColorModel appHandleBackground;
 
   static ThemeModel of(BuildContext context, {bool listen = true}) {
     if (listen) {
@@ -214,36 +199,80 @@ class ThemeModel extends ChangeNotifier {
     }
   }
 
-  void autoGenerate() {
-    final defaultData = WiredashThemeData.fromColor(
-      primaryColor: primaryColor,
-      secondaryColor: secondaryColor,
-      brightness: brightness,
+  final Brightness brightness;
+
+  ThemeModel({required this.brightness}) {
+    primary = ColorModel(
+      notifyListeners: notifyListeners,
+      autoColor: () => defaultThemeData.primaryColor,
     );
-    primaryBackgroundColor = defaultData.primaryBackgroundColor;
-    secondaryBackgroundColor = defaultData.secondaryBackgroundColor;
-    appBackgroundColor = defaultData.appBackgroundColor;
-    notifyListeners();
+    secondary = ColorModel(
+      notifyListeners: notifyListeners,
+      autoColor: () => autoThemeData.secondaryColor,
+    );
+    primaryBackground = ColorModel(
+      notifyListeners: notifyListeners,
+      autoColor: () => autoThemeData.primaryBackgroundColor,
+    );
+    secondaryBackground = ColorModel(
+      notifyListeners: notifyListeners,
+      autoColor: () => autoThemeData.secondaryBackgroundColor,
+    );
+    appBackground = ColorModel(
+      notifyListeners: notifyListeners,
+      autoColor: () => autoThemeData.appBackgroundColor,
+    );
+    appHandleBackground = ColorModel(
+      notifyListeners: notifyListeners,
+      autoColor: () => autoThemeData.appHandleBackgroundColor,
+    );
+    resetToDefaults();
   }
 
+  void autoGenerate() {
+    final auto = autoThemeData;
+    if (!secondary.hasBeenManuallyAdjusted) {
+      secondary.color = auto.secondaryColor;
+    }
+    if (!primaryBackground.hasBeenManuallyAdjusted) {
+      primaryBackground.color = auto.primaryBackgroundColor;
+    }
+    if (!secondaryBackground.hasBeenManuallyAdjusted) {
+      secondaryBackground.color = auto.secondaryBackgroundColor;
+    }
+    if (!appBackground.hasBeenManuallyAdjusted) {
+      appBackground.color = auto.appBackgroundColor;
+    }
+    if (!appHandleBackground.hasBeenManuallyAdjusted) {
+      appHandleBackground.color = auto.appHandleBackgroundColor;
+    }
+  }
+
+  WiredashThemeData get autoThemeData => WiredashThemeData.fromColor(
+        primaryColor: primary.color,
+        secondaryColor: secondary.manuallyPickedColor,
+        brightness: brightness,
+      );
+
+  WiredashThemeData get defaultThemeData => WiredashThemeData.fromColor(
+        primaryColor: WiredashThemeData().primaryColor,
+        brightness: brightness,
+      );
+
   void resetToDefaults() {
-    final defaultData = WiredashThemeData.fromColor(
-      primaryColor: WiredashThemeData().primaryColor,
-      brightness: brightness,
-    );
-    primaryColor = defaultData.primaryColor;
-    secondaryColor = defaultData.secondaryColor;
-    primaryBackgroundColor = defaultData.primaryBackgroundColor;
-    secondaryBackgroundColor = defaultData.secondaryBackgroundColor;
-    appBackgroundColor = defaultData.appBackgroundColor;
-    notifyListeners();
+    primary.reset();
+    secondary.reset();
+    primaryBackground.reset();
+    secondaryBackground.reset();
+    appBackground.reset();
+    appHandleBackground.reset();
   }
 }
 
-class ThemeModelProvider extends InheritedNotifier<ThemeModel> {
+class ThemeModelProvider<T extends ThemeModel> extends InheritedNotifier<T> {
   const ThemeModelProvider({
     Key? key,
-    required ThemeModel themeModel,
+    required T themeModel,
     required Widget child,
   }) : super(key: key, notifier: themeModel, child: child);
 }
@@ -295,10 +324,31 @@ class _ThemeControlsState extends State<ThemeControls> {
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: WiredashColorPicker(
-                        color: context.watchThemeModel.primaryColor,
+                        color: context.watchThemeModel.primary.color,
                         onColorChanged: (color) {
-                          context.readThemeModel.primaryColor = color;
+                          final colorModel = context.readThemeModel.primary;
+                          if (colorModel.color != color) {
+                            colorModel
+                              ..markAsTouched()
+                              ..color = color;
+                          }
                         },
+                        isSynced: !context
+                            .watchThemeModel.primary.hasBeenManuallyAdjusted,
+                        onSync: context.watchThemeModel.brightness ==
+                                Brightness.light
+                            ? null
+                            : () {
+                                final darkModel = context.readThemeModel;
+                                final lightModel = context
+                                    .findAncestorStateOfType<
+                                        _CustomizerAppState>()!
+                                    ._lightModel;
+                                darkModel.primary.reset();
+                                darkModel.primary.color =
+                                    lightModel.primary.color;
+                                darkModel.autoGenerate();
+                              },
                       ),
                     ),
                   ],
@@ -312,11 +362,8 @@ class _ThemeControlsState extends State<ThemeControls> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: WiredashColorPicker(
-                        color: context.watchThemeModel.secondaryColor,
-                        onColorChanged: (color) {
-                          context.readThemeModel.secondaryColor = color;
-                        },
+                      child: WiredashColorPicker.bindColorModel(
+                        model: context.watchThemeModel.secondary,
                       ),
                     ),
                   ],
@@ -333,7 +380,9 @@ class _ThemeControlsState extends State<ThemeControls> {
                 Switch(
                   value: context.watchThemeModel.brightness == Brightness.dark,
                   onChanged: (value) {
-                    context.watchThemeModel.brightness =
+                    final state =
+                        context.findAncestorStateOfType<_CustomizerAppState>();
+                    state!.brightness =
                         value ? Brightness.dark : Brightness.light;
                   },
                 ),
@@ -376,12 +425,9 @@ class _ThemeControlsState extends State<ThemeControls> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: WiredashColorPicker(
+                      child: WiredashColorPicker.bindColorModel(
+                        model: context.watchThemeModel.primaryBackground,
                         withAlpha: true,
-                        color: context.watchThemeModel.primaryBackgroundColor,
-                        onColorChanged: (color) {
-                          context.readThemeModel.primaryBackgroundColor = color;
-                        },
                       ),
                     ),
                   ],
@@ -395,13 +441,9 @@ class _ThemeControlsState extends State<ThemeControls> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: WiredashColorPicker(
+                      child: WiredashColorPicker.bindColorModel(
+                        model: context.watchThemeModel.secondaryBackground,
                         withAlpha: true,
-                        color: context.watchThemeModel.secondaryBackgroundColor,
-                        onColorChanged: (color) {
-                          context.readThemeModel.secondaryBackgroundColor =
-                              color;
-                        },
                       ),
                     ),
                   ],
@@ -418,16 +460,31 @@ class _ThemeControlsState extends State<ThemeControls> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
-                  child: WiredashColorPicker(
+                  child: WiredashColorPicker.bindColorModel(
+                    model: context.watchThemeModel.appBackground,
                     withAlpha: true,
-                    color: context.watchThemeModel.appBackgroundColor,
-                    onColorChanged: (color) {
-                      context.readThemeModel.appBackgroundColor = color;
-                    },
                   ),
                 ),
               ],
-            )
+            ),
+            SizedBox(height: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SelectableText(
+                  'appHandleBackgroundColor',
+                  style: GoogleFonts.droidSansMono(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: WiredashColorPicker.bindColorModel(
+                    model: context.watchThemeModel.appHandleBackground,
+                    withAlpha: true,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 300),
           ],
         ),
       ),
@@ -440,12 +497,37 @@ class WiredashColorPicker extends StatefulWidget {
     Key? key,
     required this.color,
     required this.onColorChanged,
+    required this.isSynced,
     this.withAlpha = false,
+    this.onSync,
   }) : super(key: key);
+
+  factory WiredashColorPicker.bindColorModel({
+    required ColorModel model,
+    bool withAlpha = false,
+  }) {
+    return WiredashColorPicker(
+      withAlpha: withAlpha,
+      color: model.color,
+      onColorChanged: (color) {
+        if (model.color != color) {
+          model
+            ..markAsTouched()
+            ..color = color;
+        }
+      },
+      isSynced: !model.hasBeenManuallyAdjusted,
+      onSync: () {
+        model.reset();
+      },
+    );
+  }
 
   final Color color;
   final void Function(Color) onColorChanged;
   final bool withAlpha;
+  final bool? isSynced;
+  final void Function()? onSync;
 
   @override
   State<WiredashColorPicker> createState() => _WiredashColorPickerState();
@@ -472,7 +554,9 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
   void didUpdateWidget(WiredashColorPicker oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.color != widget.color) {
-      _textEditingController.text = colorToHex(widget.color);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _textEditingController.text = colorToHex(widget.color);
+      });
     }
   }
 
@@ -487,7 +571,7 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 200,
+      width: 240,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -498,7 +582,7 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
               children: [
                 SizedBox(
                   height: 32,
-                  width: 50,
+                  width: 60,
                   child: Material(
                     elevation: 5,
                     color: Colors.white,
@@ -548,6 +632,23 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
                     ],
                   ),
                 ),
+                Visibility(
+                  maintainSize: true,
+                  maintainAnimation: true,
+                  maintainState: true,
+                  visible: widget.onSync != null,
+                  child: IconButton(
+                    iconSize: 16,
+                    color: widget.isSynced == true ? Colors.black : Colors.grey,
+                    icon: Transform.rotate(
+                      angle: pi * -0.25,
+                      child: Icon(widget.isSynced == true
+                          ? Icons.link
+                          : Icons.link_off),
+                    ),
+                    onPressed: widget.onSync,
+                  ),
+                ),
               ],
             ),
           ),
@@ -570,7 +671,6 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
             color: Colors.black12,
             child: Align(
               child: CompositedTransformFollower(
-                followerAnchor: Alignment.topLeft,
                 targetAnchor: Alignment.bottomLeft,
                 link: _layerLink,
                 child: Card(
