@@ -36,11 +36,15 @@ class ScreenshotBar extends StatelessWidget {
             context.wiredashModel.services.screenCaptureController.error == null
                 ? 'Save'
                 : 'OK',
-        onTap: feedbackStatus == FeedbackFlowStatus.screenshotDrawing
-            ? () {
-                context.feedbackModel.createMasterpiece();
-              }
-            : null,
+        onTap: () {
+          if (feedbackStatus == FeedbackFlowStatus.screenshotDrawing) {
+            return () => context.feedbackModel.createMasterpiece();
+          }
+          if (feedbackStatus == FeedbackFlowStatus.screenshotSaving) {
+            return () {/* show enabled while closing */};
+          }
+          return null;
+        }(),
       );
     }
 
@@ -114,7 +118,7 @@ class ScreenshotBar extends StatelessWidget {
                   ).normalize(),
                   child: AnimatedFadeWidgetSwitcher(
                     fadeInOnEnter: false,
-                    zoomFactor: 0.5,
+                    zoomFactor: 0.8,
                     alignment: Alignment.centerRight,
                     child: trailing,
                   ),

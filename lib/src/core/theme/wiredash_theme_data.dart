@@ -96,9 +96,9 @@ class WiredashThemeData {
     if (brightness == Brightness.light) {
       final secondary = secondaryColor ??
           primaryHsv
-              .withSaturation((primaryHsv.saturation * 0.4).clamp(0.0, 0.2))
+              .withSaturation(0.17)
               .withHue((primaryHsl.hue - 10) % 360)
-              .withValue((primaryHsv.value + 0.3).clamp(0.1, 1.0))
+              .withValue((primaryHsv.value * 2).clamp(0.2, 0.8))
               .toColor();
       return theme.copyWith(
         secondaryColor: secondary,

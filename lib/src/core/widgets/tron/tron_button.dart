@@ -72,16 +72,16 @@ class _TronButtonState extends State<TronButton>
     final buttonColor = widget.color ?? context.theme.primaryColor;
 
     if (!_enabled) {
-      return buttonColor.lighten(0.3);
+      return buttonColor.lighten(0.03);
     }
 
     if (_pressed) {
       // ignore: avoid_redundant_argument_values
-      return buttonColor.darken(0.1);
+      return buttonColor.darken(0.02);
     }
 
     if (_hovered) {
-      return buttonColor.darken(0.05);
+      return buttonColor.lighten(0.02);
     }
 
     return buttonColor;
@@ -212,15 +212,15 @@ class _TronButtonState extends State<TronButton>
     widget.onTap!.call();
     setState(() {
       _pressed = false;
-      _controller.reverse();
     });
+    _controller.forward().then((value) => _controller.reverse());
   }
 
   void _handleTapCancel() {
     setState(() {
       _pressed = false;
-      _controller.reverse();
     });
+    _controller.forward().then((value) => _controller.reverse());
   }
 }
 
