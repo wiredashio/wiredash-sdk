@@ -36,16 +36,17 @@ class _CustomizerAppState extends State<CustomizerApp> {
   @override
   void initState() {
     super.initState();
-    _lightModel.addListener(_lightUpdate);
+    _lightModel.addListener(_colorUpdate);
+    _darkModel.addListener(_colorUpdate);
   }
 
-  void _lightUpdate() {
-    _lightModel.autoGenerate();
-
+  void _colorUpdate() {
     // dark model
     if (!_darkModel.primary.hasBeenManuallyAdjusted) {
       _darkModel.primary.color = _lightModel.primary.color;
     }
+    _lightModel.autoGenerate();
+    _darkModel.autoGenerate();
   }
 
   @override
