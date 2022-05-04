@@ -88,16 +88,17 @@ class WiredashThemeData {
       secondaryColor = null;
     }
     final primaryHsl = HSLColor.fromColor(primaryColor);
+    final primaryHsv = HSVColor.fromColor(primaryColor);
 
     final theme =
         WiredashThemeData(brightness: brightness, primaryColor: primaryColor);
 
     if (brightness == Brightness.light) {
       final secondary = secondaryColor ??
-          primaryHsl
+          primaryHsv
+              .withSaturation((primaryHsv.saturation * 0.4).clamp(0.0, 0.2))
               .withHue((primaryHsl.hue - 10) % 360)
-              .withSaturation((primaryHsl.saturation * 0.3).clamp(0.1, 1.0))
-              .withLightness((primaryHsl.lightness * 1.2).clamp(0.1, 1.0))
+              .withValue((primaryHsv.value + 0.3).clamp(0.1, 1.0))
               .toColor();
       return theme.copyWith(
         secondaryColor: secondary,
@@ -120,7 +121,11 @@ class WiredashThemeData {
             primaryHsl.withSaturation(0.04).withLightness(0.2).toColor(),
         secondaryBackgroundColor:
             primaryHsl.withSaturation(0.0).withLightness(0.1).toColor(),
-        appHandleBackgroundColor: primaryHsl.withLightness(0.3).toColor(),
+        appHandleBackgroundColor: primaryHsl
+            .withHue((primaryHsl.hue + 10) % 360)
+            .withLightness((primaryHsl.lightness * 0.5).clamp(0.2, 0.4))
+            .withSaturation((primaryHsl.saturation * 1.4).clamp(0.1, 1.0))
+            .toColor(),
       );
     }
   }
