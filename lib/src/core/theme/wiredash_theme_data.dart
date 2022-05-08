@@ -1,6 +1,7 @@
 import 'dart:ui' show Brightness;
 
 import 'package:flutter/rendering.dart';
+import 'package:material_color_utilities/material_color_utilities.dart';
 import 'package:wiredash/src/core/theme/color_ext.dart';
 import 'package:wiredash/src/core/theme/key_point_interpolator.dart';
 
@@ -10,73 +11,31 @@ class WiredashThemeData {
     DeviceClass deviceClass = DeviceClass.handsetLarge400,
     Color? primaryColor,
     Color? secondaryColor,
-    Color? textOnPrimary,
-    Color? textOnSecondary,
-    Color? primaryTextColor,
-    Color? secondaryTextColor,
     Color? primaryBackgroundColor,
     Color? secondaryBackgroundColor,
+    Color? primaryContainerColor,
+    Color? secondaryContainerColor,
     Color? appBackgroundColor,
     Color? appHandleBackgroundColor,
     Color? errorColor,
     String? fontFamily,
     Size? windowSize,
   }) {
-    final primary = primaryColor ?? const Color(0xff1A56DB);
-    final secondary = secondaryColor ?? const Color(0xffE8EEFB);
-
-    final textOnPrimaryColor = textOnPrimary ??
-        (primary.brightness == Brightness.dark
-            ? const Color(0xff030A1C)
-            : const Color(0xffe3e3e3));
-    final textOnSecondaryColor = textOnSecondary ??
-        (secondary.brightness == Brightness.dark
-            ? const Color(0xff8C93A2)
-            : const Color(0xb0a4a4a4));
-
-    if (brightness == Brightness.light) {
-      return WiredashThemeData._(
-        brightness: brightness,
-        deviceClass: deviceClass,
-        primaryColor: primary,
-        secondaryColor: secondary,
-        textOnPrimary: textOnPrimaryColor,
-        textOnSecondary: textOnSecondaryColor,
-        primaryTextColor: primaryTextColor ?? const Color(0xff030A1C),
-        secondaryTextColor: secondaryTextColor ?? const Color(0xff8C93A2),
-        primaryBackgroundColor:
-            primaryBackgroundColor ?? const Color(0xffffffff),
-        secondaryBackgroundColor:
-            secondaryBackgroundColor ?? const Color(0xfff5f6f8),
-        appBackgroundColor: appBackgroundColor ?? const Color(0xfff5f6f8),
-        appHandleBackgroundColor:
-            appHandleBackgroundColor ?? const Color(0xfff5f6f8),
-        errorColor: errorColor ?? const Color(0xffff5c6a),
-        fontFamily: fontFamily ?? _fontFamily,
-        windowSize: windowSize ?? Size.zero,
-      );
-    } else {
-      return WiredashThemeData._(
-        brightness: brightness,
-        deviceClass: deviceClass,
-        primaryColor: primary,
-        secondaryColor: secondary,
-        textOnPrimary: textOnPrimaryColor,
-        textOnSecondary: textOnSecondaryColor,
-        primaryTextColor: primaryTextColor ?? const Color(0xffe3e3e3),
-        secondaryTextColor: secondaryTextColor ?? const Color(0xb0a4a4a4),
-        primaryBackgroundColor:
-            primaryBackgroundColor ?? const Color(0xffffffff),
-        secondaryBackgroundColor:
-            secondaryBackgroundColor ?? const Color(0xfff5f6f8),
-        appBackgroundColor: appBackgroundColor ?? const Color(0xff3d3e3e),
-        appHandleBackgroundColor:
-            appHandleBackgroundColor ?? const Color(0xff3d3e3e),
-        errorColor: errorColor ?? const Color(0xffdb000a),
-        fontFamily: fontFamily ?? _fontFamily,
-        windowSize: windowSize ?? Size.zero,
-      );
-    }
+    return WiredashThemeData._(
+      primaryColor: primaryColor ?? const Color(0xff1A56DB),
+      secondaryColor: secondaryColor,
+      brightness: brightness,
+      deviceClass: deviceClass,
+      windowSize: windowSize ?? Size.zero,
+      primaryBackgroundColor: primaryBackgroundColor,
+      secondaryBackgroundColor: secondaryBackgroundColor,
+      primaryContainerColor: primaryContainerColor,
+      secondaryContainerColor: secondaryContainerColor,
+      appBackgroundColor: appBackgroundColor,
+      appHandleBackgroundColor: appHandleBackgroundColor,
+      errorColor: errorColor,
+      fontFamily: fontFamily,
+    );
   }
 
   factory WiredashThemeData.fromColor({
@@ -87,162 +46,258 @@ class WiredashThemeData {
     if (secondaryColor?.value == primaryColor.value) {
       secondaryColor = null;
     }
-    final primaryHsl = HSLColor.fromColor(primaryColor);
-    final primaryHsv = HSVColor.fromColor(primaryColor);
 
-    final theme =
-        WiredashThemeData(brightness: brightness, primaryColor: primaryColor);
+    final theme = WiredashThemeData(
+      brightness: brightness,
+      primaryColor: primaryColor,
+      secondaryColor: secondaryColor,
+    );
 
-    if (brightness == Brightness.light) {
-      final secondary = secondaryColor ??
-          primaryHsv
-              .withSaturation(0.17)
-              .withHue((primaryHsl.hue - 10) % 360)
-              .withValue((primaryHsv.value * 2).clamp(0.2, 0.8))
-              .toColor();
-      return theme.copyWith(
-        secondaryColor: secondary,
-        primaryBackgroundColor:
-            primaryHsl.withSaturation(1.0).withLightness(1.0).toColor(),
-        secondaryBackgroundColor:
-            primaryHsl.withSaturation(.8).withLightness(0.95).toColor(),
-        appHandleBackgroundColor: primaryHsl.withLightness(0.1).toColor(),
-      );
-    } else {
-      final secondary = secondaryColor ??
-          primaryHsl
-              .withHue((primaryHsl.hue - 10) % 360)
-              .withSaturation((primaryHsl.saturation * 0.2).clamp(0.1, 1.0))
-              .withLightness((primaryHsl.lightness * 0.5).clamp(0.1, 1.0))
-              .toColor();
-      return theme.copyWith(
-        secondaryColor: secondary,
-        primaryBackgroundColor:
-            primaryHsl.withSaturation(0.04).withLightness(0.2).toColor(),
-        secondaryBackgroundColor:
-            primaryHsl.withSaturation(0.0).withLightness(0.1).toColor(),
-        appHandleBackgroundColor: primaryHsl
-            .withHue((primaryHsl.hue + 10) % 360)
-            .withLightness((primaryHsl.lightness * 0.5).clamp(0.2, 0.4))
-            .withSaturation((primaryHsl.saturation * 1.4).clamp(0.1, 1.0))
-            .toColor(),
-      );
-    }
+    return theme;
   }
 
   WiredashThemeData._({
     required this.brightness,
     required this.primaryColor,
-    required this.secondaryColor,
-    required this.textOnPrimary,
-    required this.textOnSecondary,
-    required this.primaryTextColor,
-    required this.secondaryTextColor,
-    required this.primaryBackgroundColor,
-    required this.secondaryBackgroundColor,
-    required this.appBackgroundColor,
-    required this.appHandleBackgroundColor,
-    required this.errorColor,
+    Color? secondaryColor,
+    Color? textOnPrimary,
+    Color? textOnSecondary,
+    Color? primaryBackgroundColor,
+    Color? secondaryBackgroundColor,
+    Color? primaryContainerColor,
+    Color? secondaryContainerColor,
+    Color? appBackgroundColor,
+    Color? appHandleBackgroundColor,
+    Color? errorColor,
+    String? fontFamily,
     required this.deviceClass,
-    required this.fontFamily,
     required this.windowSize,
-  });
+  })  : _secondaryColor = secondaryColor,
+        _textOnPrimary = textOnPrimary,
+        _textOnSecondary = textOnSecondary,
+        _primaryBackgroundColor = primaryBackgroundColor,
+        _secondaryBackgroundColor = secondaryBackgroundColor,
+        _primaryContainerColor = primaryContainerColor,
+        _secondaryContainerColor = secondaryContainerColor,
+        _appBackgroundColor = appBackgroundColor,
+        _appHandleBackgroundColor = appHandleBackgroundColor,
+        _errorColor = errorColor,
+        _fontFamily = fontFamily;
 
   final Brightness brightness;
+  bool get isLight => brightness == Brightness.light;
 
   final Color primaryColor;
-  final Color secondaryColor;
+  MaterialColorTone? __primaryTone;
+  MaterialColorTone get _primaryTone {
+    return __primaryTone ??= MaterialColorTone(primaryColor, brightness);
+  }
 
-  final Color textOnPrimary;
-  final Color textOnSecondary;
+  final Color? _secondaryColor;
+  Color get secondaryColor => _secondaryColor ?? _secondaryTone.baseColor;
+  MaterialColorTone? __secondaryTone;
+  MaterialColorTone get _secondaryTone {
+    return __secondaryTone ??= MaterialColorTone(
+      _secondaryColor ??
+          () {
+            if (isLight) {
+              return primaryColor
+                  // .shiftHue(-10)
+                  // .withValue(0.98)
+                  .adjustValue((value) =>
+                      KeyPointInterpolator({0: 0.70, 1: 0.90})
+                          .interpolate(value))
+                  .adjustHsvSaturation((saturation) =>
+                      KeyPointInterpolator({0: 0.12, 1: 0.2})
+                          .interpolate(saturation));
+            } else {
+              return primaryColor
+                  .adjustValue((value) =>
+                      KeyPointInterpolator({0: 0.00, 1: 0.50})
+                          .interpolate(value))
+                  .adjustHsvSaturation((saturation) =>
+                      KeyPointInterpolator({0: 0.02, 1: 0.2})
+                          .interpolate(saturation));
+            }
+          }(),
+      brightness,
+    );
+  }
 
-  final Color primaryTextColor;
-  final Color secondaryTextColor;
+  final Color? _textOnPrimary;
+  Color get textOnPrimaryColor {
+    final tone = isLight ? 100 : 0;
+    return _textOnPrimary ?? _primaryTone.primaryTone(tone);
+  }
 
-  final Color primaryBackgroundColor;
-  final Color secondaryBackgroundColor;
-  final Color errorColor;
+  final Color? _textOnSecondary;
+  Color get textOnSecondaryColor {
+    final tone = isLight ? 99 : 1;
+    return _textOnSecondary ?? _secondaryTone.primaryTone(tone);
+  }
 
-  final Color appBackgroundColor;
+  final Color? _primaryContainerColor;
+  Color get primaryContainerColor {
+    return _primaryContainerColor ?? _primaryTone.primaryContainer;
+  }
+
+  Color get textOnPrimaryContainerColor {
+    return _primaryTone.onPrimaryContainer;
+  }
+
+  final Color? _secondaryContainerColor;
+  Color get secondaryContainerColor =>
+      _secondaryContainerColor ?? _secondaryTone.secondaryContainer;
+
+  Color get textOnSecondaryContainerColor {
+    return _secondaryTone.onSecondaryContainer;
+  }
+
+  final Color? _primaryBackgroundColor;
+  Color get primaryBackgroundColor {
+    if (brightness == Brightness.light) {
+      return _primaryBackgroundColor ?? _primaryTone.primaryTone(100);
+    } else {
+      return _primaryBackgroundColor ??
+          primaryColor.withHslSaturation(0.04).withLightness(0.2);
+    }
+  }
+
+  final Color? _secondaryBackgroundColor;
+  Color get secondaryBackgroundColor {
+    if (brightness == Brightness.light) {
+      return _secondaryBackgroundColor ?? _primaryTone.primaryTone(98);
+    } else {
+      return _secondaryBackgroundColor ??
+          secondaryColor.withHslSaturation(0.0).withLightness(0.1);
+    }
+  }
+
+  Color get surfaceColor {
+    return _primaryTone.surface;
+  }
+
+  Color get primaryTextOnSurfaceColor {
+    return _primaryTone.onSurface;
+  }
+
+  Color get secondaryTextOnSurfaceColor {
+    return _primaryTone.onSurface.withOpacity(0.8);
+  }
+
+  final Color? _errorColor;
+  Color get errorColor => _errorColor ?? _primaryTone.error;
+
+  final Color? _appBackgroundColor;
+  Color get appBackgroundColor {
+    return _appBackgroundColor ??
+        (brightness == Brightness.light
+            ? const Color(0xfff5f6f8)
+            : const Color(0xff3d3e3e));
+  }
+
+  Color get primaryTextOnBackgroundColor {
+    final merged =
+        Color.lerp(primaryBackgroundColor, secondaryBackgroundColor, 0.5)!;
+    final palette = CorePalette.of(merged.value);
+
+    final tone = isLight ? 10 : 100;
+    return Color(palette.neutralVariant.get(tone));
+  }
+
+  Color get secondaryTextOnBackgroundColor {
+    final merged =
+        Color.lerp(primaryBackgroundColor, secondaryBackgroundColor, 0.5)!;
+    final palette = CorePalette.of(merged.value);
+
+    final tone = isLight ? 40 : 70;
+    return Color(palette.neutralVariant.get(tone));
+  }
 
   /// The color of the app handle, the "Return to app" bar above the app
-  final Color appHandleBackgroundColor;
+  final Color? _appHandleBackgroundColor;
+  Color get appHandleBackgroundColor {
+    return _appHandleBackgroundColor ?? _primaryTone.primaryTone(20);
+  }
 
   final DeviceClass deviceClass;
   final Size windowSize;
 
-  final String fontFamily;
+  final String? _fontFamily;
+  String get fontFamily {
+    return _fontFamily ?? _defaultFontFamily;
+  }
 
-  static const _fontFamily = 'Inter';
-  static const _packageName = 'wiredash';
+  static const _defaultFontFamily = 'Inter';
 
-  String? get packageName => fontFamily == _fontFamily ? _packageName : null;
+  String? get _packageName =>
+      fontFamily == _defaultFontFamily ? 'wiredash' : null;
 
   TextStyle get headlineTextStyle => TextStyle(
-        package: packageName,
+        package: _packageName,
         fontFamily: fontFamily,
         fontSize: windowSize.shortestSide > 480 ? 32 : 24,
-        color: primaryTextColor,
+        color: primaryTextOnSurfaceColor,
         fontWeight: FontWeight.bold,
       );
 
   TextStyle get appbarTitle => TextStyle(
-        package: packageName,
+        package: _packageName,
         fontFamily: fontFamily,
         fontSize: 16,
-        color: primaryTextColor,
+        color: primaryTextOnSurfaceColor,
         fontWeight: FontWeight.bold,
       );
 
   TextStyle get titleTextStyle => TextStyle(
-        package: packageName,
+        package: _packageName,
         fontFamily: fontFamily,
         fontSize: 20,
-        color: primaryTextColor,
+        color: primaryTextOnSurfaceColor,
         fontWeight: FontWeight.bold,
       );
 
   TextStyle get tronButtonTextStyle => TextStyle(
-        package: packageName,
+        package: _packageName,
         fontFamily: fontFamily,
         fontSize: 14,
-        color: primaryTextColor,
+        color: primaryTextOnSurfaceColor,
         fontWeight: FontWeight.w600,
       );
 
   TextStyle get bodyTextStyle => TextStyle(
-        package: packageName,
+        package: _packageName,
         fontFamily: fontFamily,
         fontSize: windowSize.shortestSide > 480 ? 16 : 14,
-        color: primaryTextColor,
+        color: primaryTextOnSurfaceColor,
         fontWeight: FontWeight.normal,
       );
 
   TextStyle get body2TextStyle => TextStyle(
-        package: packageName,
+        package: _packageName,
         fontFamily: fontFamily,
         fontSize: windowSize.shortestSide > 480 ? 16 : 14,
-        color: secondaryTextColor,
+        color: secondaryTextOnSurfaceColor,
         fontWeight: FontWeight.normal,
       );
 
   TextStyle get captionTextStyle => TextStyle(
-        package: packageName,
+        package: _packageName,
         fontFamily: fontFamily,
         fontSize: 12,
-        color: secondaryTextColor,
+        color: secondaryTextOnSurfaceColor,
         fontWeight: FontWeight.normal,
       );
 
   TextStyle get inputTextStyle => TextStyle(
-        package: packageName,
+        package: _packageName,
         fontFamily: fontFamily,
         fontSize: 14,
-        color: primaryTextColor,
+        color: primaryTextOnSurfaceColor,
       );
 
   TextStyle get inputErrorTextStyle => TextStyle(
-        package: packageName,
+        package: _packageName,
         fontFamily: fontFamily,
         fontSize: 12,
         color: errorColor,
@@ -289,22 +344,6 @@ class WiredashThemeData {
     return keypoints.interpolate(height);
   }
 
-  Color get primaryContainerColor {
-    if (brightness == Brightness.dark) {
-      return primaryColor.desaturate(0.4).darken(0.2);
-    } else {
-      return primaryColor.desaturate(0.4).lighten(0.3);
-    }
-  }
-
-  Color get secondaryContainerColor {
-    if (brightness == Brightness.dark) {
-      return secondaryColor.desaturate(0.4).darken(0.2);
-    } else {
-      return secondaryColor.desaturate(0.4).darken(0.2);
-    }
-  }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -313,12 +352,12 @@ class WiredashThemeData {
           brightness == other.brightness &&
           primaryColor == other.primaryColor &&
           secondaryColor == other.secondaryColor &&
-          textOnPrimary == other.textOnPrimary &&
-          textOnSecondary == other.textOnSecondary &&
-          primaryTextColor == other.primaryTextColor &&
-          secondaryTextColor == other.secondaryTextColor &&
+          textOnPrimaryColor == other.textOnPrimaryColor &&
+          textOnSecondaryColor == other.textOnSecondaryColor &&
           primaryBackgroundColor == other.primaryBackgroundColor &&
           secondaryBackgroundColor == other.secondaryBackgroundColor &&
+          primaryContainerColor == other.primaryContainerColor &&
+          secondaryContainerColor == other.secondaryContainerColor &&
           appBackgroundColor == other.appBackgroundColor &&
           appHandleBackgroundColor == other.appHandleBackgroundColor &&
           errorColor == other.errorColor &&
@@ -331,12 +370,12 @@ class WiredashThemeData {
       brightness.hashCode ^
       primaryColor.hashCode ^
       secondaryColor.hashCode ^
-      textOnPrimary.hashCode ^
-      textOnSecondary.hashCode ^
-      primaryTextColor.hashCode ^
-      secondaryTextColor.hashCode ^
+      textOnPrimaryColor.hashCode ^
+      textOnSecondaryColor.hashCode ^
       primaryBackgroundColor.hashCode ^
       secondaryBackgroundColor.hashCode ^
+      primaryContainerColor.hashCode ^
+      secondaryContainerColor.hashCode ^
       appBackgroundColor.hashCode ^
       appHandleBackgroundColor.hashCode ^
       errorColor.hashCode ^
@@ -350,14 +389,14 @@ class WiredashThemeData {
         'brightness: $brightness, '
         'primaryColor: $primaryColor, '
         'secondaryColor: $secondaryColor, '
-        'textOnPrimary: $textOnPrimary, '
-        'textOnSecondary: $textOnSecondary, '
-        'primaryTextColor: $primaryTextColor, '
-        'secondaryTextColor: $secondaryTextColor, '
+        'textOnPrimaryColor: $textOnPrimaryColor, '
+        'textOnSecondaryColor: $textOnSecondaryColor, '
         'primaryBackgroundColor: $primaryBackgroundColor, '
         'secondaryBackgroundColor: $secondaryBackgroundColor, '
+        'primaryContainerColor: $primaryContainerColor, '
+        'secondaryContainerColor: $secondaryContainerColor, '
         'appBackgroundColor: $appBackgroundColor, '
-        'appBackgroundColor: $appHandleBackgroundColor, '
+        'appHandleBackgroundColor: $appHandleBackgroundColor, '
         'errorColor: $errorColor, '
         'deviceClass: $deviceClass, '
         'fontFamily: $fontFamily, '
@@ -369,12 +408,10 @@ class WiredashThemeData {
     Brightness? brightness,
     Color? primaryColor,
     Color? secondaryColor,
-    Color? textOnPrimary,
-    Color? textOnSecondary,
-    Color? primaryTextColor,
-    Color? secondaryTextColor,
     Color? primaryBackgroundColor,
     Color? secondaryBackgroundColor,
+    Color? primaryContainerColor,
+    Color? secondaryContainerColor,
     Color? appBackgroundColor,
     Color? appHandleBackgroundColor,
     Color? errorColor,
@@ -386,14 +423,14 @@ class WiredashThemeData {
       brightness: brightness ?? this.brightness,
       primaryColor: primaryColor ?? this.primaryColor,
       secondaryColor: secondaryColor ?? this.secondaryColor,
-      textOnPrimary: textOnPrimary ?? this.textOnPrimary,
-      textOnSecondary: textOnSecondary ?? this.textOnSecondary,
-      primaryTextColor: primaryTextColor ?? this.primaryTextColor,
-      secondaryTextColor: secondaryTextColor ?? this.secondaryTextColor,
       primaryBackgroundColor:
           primaryBackgroundColor ?? this.primaryBackgroundColor,
       secondaryBackgroundColor:
           secondaryBackgroundColor ?? this.secondaryBackgroundColor,
+      primaryContainerColor:
+          primaryContainerColor ?? this.primaryContainerColor,
+      secondaryContainerColor:
+          secondaryContainerColor ?? this.secondaryContainerColor,
       appBackgroundColor: appBackgroundColor ?? this.appBackgroundColor,
       appHandleBackgroundColor:
           appHandleBackgroundColor ?? this.appHandleBackgroundColor,
@@ -446,4 +483,48 @@ enum DeviceClass {
   /// MacBook Pro 16" 2019 (medium scale) width: 1536
   /// MacBook Pro 15" 2018 width: 1440
   desktopLarge1440
+}
+
+class MaterialColorTone {
+  MaterialColorTone(this.baseColor, this.brightness)
+      : palette = CorePalette.of(baseColor.value);
+  final Color baseColor;
+  final CorePalette palette;
+  final Brightness brightness;
+  bool get _isLight => brightness == Brightness.light;
+
+  Color primaryTone(int tone) => Color(palette.primary.get(tone));
+  Color get primary => primaryTone(_isLight ? 40 : 80);
+  Color get onPrimary => primaryTone(_isLight ? 100 : 20);
+  Color get primaryContainer => primaryTone(_isLight ? 90 : 30);
+  Color get onPrimaryContainer => primaryTone(_isLight ? 10 : 90);
+
+  Color secondaryTone(int tone) => Color(palette.secondary.get(tone));
+  Color get secondary => secondaryTone(_isLight ? 40 : 80);
+  Color get onSecondary => secondaryTone(_isLight ? 100 : 20);
+  Color get secondaryContainer => secondaryTone(_isLight ? 90 : 30);
+  Color get onSecondaryContainer => secondaryTone(_isLight ? 10 : 90);
+
+  Color tertiaryTone(int tone) => Color(palette.tertiary.get(tone));
+  Color get tertiary => tertiaryTone(_isLight ? 40 : 80);
+  Color get onTertiary => tertiaryTone(_isLight ? 100 : 20);
+  Color get tertiaryContainer => tertiaryTone(_isLight ? 90 : 30);
+  Color get onTertiaryContainer => tertiaryTone(_isLight ? 10 : 90);
+
+  Color errorTone(int tone) => Color(palette.error.get(tone));
+  Color get error => errorTone(_isLight ? 40 : 80);
+  Color get onError => errorTone(_isLight ? 100 : 20);
+  Color get errorContainer => errorTone(_isLight ? 90 : 30);
+  Color get onErrorContainer => errorTone(_isLight ? 10 : 90);
+
+  Color neutralTone(int tone) => Color(palette.neutral.get(tone));
+  Color get background => neutralTone(_isLight ? 10 : 90);
+  Color get onBackground => neutralTone(_isLight ? 10 : 90);
+  Color get surface => neutralTone(_isLight ? 99 : 10);
+  Color get onSurface => neutralTone(_isLight ? 10 : 90);
+
+  Color neutralVariantTone(int tone) => Color(palette.neutralVariant.get(tone));
+  Color get surfaceVariant => neutralVariantTone(_isLight ? 90 : 30);
+  Color get onSurfaceVaraiant => neutralVariantTone(_isLight ? 30 : 80);
+  Color get outline => neutralVariantTone(_isLight ? 50 : 60);
 }

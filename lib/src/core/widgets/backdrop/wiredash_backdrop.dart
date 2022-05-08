@@ -657,13 +657,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     ];
   }
 
+  static const double _minHandleHeight = 20;
   double get _handleHeight {
+    final topPadding = _mediaQueryData.padding.top;
+    if (topPadding > 0) {
+      return math.max(_minHandleHeight, topPadding);
+    }
     if (kIsWeb) {
       return 36.0;
     } else if (defaultTargetPlatform == TargetPlatform.macOS) {
       return 44.0;
     } else {
-      return math.min(_mediaQueryData.padding.top, 36.0);
+      return 36.0;
     }
   }
 
@@ -676,7 +681,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       animation: _backdropAnimationController,
       builder: (context, child) {
         // rounds _handleHeight up to exactly match
-        final double upRoundedHandleHeight = () {
+        final double scaledAndUpRoundedHandleHeight = () {
           final appScale =
               _appTransformAnimation!.value!.width / _rectAppFillsScreen.width;
           final scaledHandleHeight = _handleHeight * appScale;
@@ -688,6 +693,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         }();
 
         final withDesktopHandle = _mediaQueryData.viewPadding.top == 0;
+
+        final fakeAppStatusBar = FakeAppStatusBar(
+          height: _appHandleAnimation.value * scaledAndUpRoundedHandleHeight,
+          color: context.theme.appHandleBackgroundColor,
+        );
 
         return SizedBox(
           height: _mediaQueryData.size.height + _handleHeight,
@@ -728,32 +738,17 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                           ),
                         ),
                         if (withDesktopHandle)
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            child: SizedBox(
-                              child: FakeAppStatusBar(
-                                height: _appHandleAnimation.value *
-                                    scaledAndUpRoundedHandleHeight,
-                                color: context.theme.appHandleBackgroundColor,
-                                textColor: context.theme.primaryTextColor,
-                              ),
-                            ),
+                          Align(
+                            alignment: Alignment.topCenter,
+                            child: fakeAppStatusBar,
                           ),
                       ],
                     ),
                   ),
                   if (!withDesktopHandle)
                     FadeTransition(
-                      // TODO show some handle when in screencapture mode?
                       opacity: _appHandleAnimation,
-                      child: FakeAppStatusBar(
-                        height: _appHandleAnimation.value *
-                            scaledAndUpRoundedHandleHeight,
-                        color: context.theme.appHandleBackgroundColor,
-                        textColor: context.theme.primaryTextColor,
-                      ),
+                      child: fakeAppStatusBar,
                     ),
                 ],
               ),

@@ -144,12 +144,14 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                       SizedBox(
                         height: 16,
                         child: VerticalDivider(
-                          color: context.theme.captionTextStyle.color,
+                          color: context.theme.secondaryTextOnBackgroundColor,
                         ),
                       ),
                       Expanded(
                         child: DefaultTextStyle(
-                          style: context.theme.captionTextStyle,
+                          style: context.theme.captionTextStyle.copyWith(
+                            color: context.theme.secondaryTextOnBackgroundColor,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           child: widget.shortTitle!,
@@ -168,8 +170,8 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                           return TronIcon(
                             Wirecons.x,
                             color: Color.lerp(
-                              context.theme.secondaryTextColor,
-                              context.theme.primaryTextColor,
+                              context.theme.primaryTextOnBackgroundColor,
+                              context.theme.secondaryTextOnBackgroundColor,
                               anims.hoveredAnim.value,
                             ),
                           );
@@ -199,9 +201,14 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                           });
                         },
                         child: _reallyTimer == null
-                            ? widget.discardLabel!
+                            ? DefaultTextStyle(
+                                style: context.theme.captionTextStyle.copyWith(
+                                  color: context
+                                      .theme.secondaryTextOnBackgroundColor,
+                                ),
+                                child: widget.discardLabel!)
                             : DefaultTextStyle(
-                                style: TextStyle(
+                                style: context.theme.captionTextStyle.copyWith(
                                   color: context.theme.errorColor,
                                 ),
                                 child: widget.discardConfirmLabel ??
@@ -334,7 +341,9 @@ class StepIndicator extends StatelessWidget {
         const SizedBox(width: 12),
         Text(
           'Step $currentStep of $total',
-          style: context.theme.captionTextStyle,
+          style: context.theme.captionTextStyle.copyWith(
+            color: context.theme.secondaryTextOnBackgroundColor,
+          ),
         ),
       ],
     );

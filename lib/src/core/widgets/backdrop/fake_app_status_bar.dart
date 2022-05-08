@@ -9,18 +9,20 @@ class FakeAppStatusBar extends StatelessWidget {
     Key? key,
     required this.height,
     required this.color,
-    required this.textColor,
   }) : super(key: key);
 
   final double height;
   final Color color;
-  final Color textColor;
 
   @override
   Widget build(BuildContext context) {
     final isMobile = defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS;
     final double barContentHeight = math.min(isMobile ? 14 : 16, height);
+
+    final luminance = color.computeLuminance();
+    final blackOrWhite =
+        luminance < 0.4 ? const Color(0xffffffff) : const Color(0xff000000);
 
     return DefaultTextStyle(
       style: TextStyle(
@@ -31,8 +33,7 @@ class FakeAppStatusBar extends StatelessWidget {
             color: Color.fromARGB(30, 0, 0, 0),
           ),
         ],
-        // TODO make the fake systemChromeUi style customizable in WiredashTheme
-        color: Colors.white,
+        color: blackOrWhite,
         fontSize: barContentHeight,
       ),
       child: Container(
@@ -57,6 +58,7 @@ class FakeAppStatusBar extends StatelessWidget {
                         'assets/images/logo_white.png',
                         package: 'wiredash',
                         height: barContentHeight + 5,
+                        color: blackOrWhite,
                       ),
                       SizedBox(width: 0.5 * barContentHeight),
                       const Text('Wiredash'),

@@ -616,45 +616,48 @@ class ChatsScreenState extends State<ChatsScreen> {
       child: Material(
         color:
             isMobile ? WhatsappUtils.appBarMobile : WhatsappUtils.appBarLaptop,
-        child: Column(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  if (isMobile)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: Text(
-                        'WhatsApp',
-                        style: TextStyle(fontSize: 20, color: Colors.white),
-                      ),
-                    )
-                  else
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        AnimatedRoute(
-                          widget:
-                              ProfileScreen(user: WhatsappUtils.currentUser),
-                          anim: PageAnimation.FROM_LEFT,
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    if (isMobile)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: Text(
+                          'WhatsApp',
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        ),
+                      )
+                    else
+                      GestureDetector(
+                        onTap: () => Navigator.of(context).push(
+                          AnimatedRoute(
+                            widget:
+                                ProfileScreen(user: WhatsappUtils.currentUser),
+                            anim: PageAnimation.FROM_LEFT,
+                          ),
+                        ),
+                        child: _avatar(
+                          WhatsappUtils.rFlutterDev.avatar,
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 6),
                         ),
                       ),
-                      child: _avatar(
-                        WhatsappUtils.rFlutterDev.avatar,
-                        EdgeInsets.symmetric(horizontal: 15, vertical: 6),
-                      ),
-                    ),
-                  Expanded(child: SizedBox()),
-                  for (var action in isMobile ? _mobileActions : _laptopActions)
-                    action
-                ],
+                    Expanded(child: SizedBox()),
+                    for (var action
+                        in isMobile ? _mobileActions : _laptopActions)
+                      action
+                  ],
+                ),
               ),
-            ),
-            if (isMobile) _tabsSection() else _searchSection(),
-            if (isMobile)
-              SizedBox()
-            else
-              Container(height: 1, color: Colors.grey[300]),
-          ],
+              if (isMobile) _tabsSection() else _searchSection(),
+              if (isMobile)
+                SizedBox()
+              else
+                Container(height: 1, color: Colors.grey[300]),
+            ],
+          ),
         ),
       ),
     );

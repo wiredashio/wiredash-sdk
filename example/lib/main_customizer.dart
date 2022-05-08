@@ -117,6 +117,12 @@ class _CustomizePageState extends State<CustomizePage> {
                         screen: Wiredash(
                           projectId: "Project ID from console.wiredash.io",
                           secret: "API Key from console.wiredash.io",
+                          feedbackOptions: WiredashFeedbackOptions(
+                            labels: [
+                              Label(id: 'asdf', title: 'Bug'),
+                              Label(id: 'qwer', title: 'Feature Request'),
+                            ],
+                          ),
                           theme: WiredashThemeData(
                             brightness: context
                                 .findAncestorStateOfType<_CustomizerAppState>()!
@@ -187,6 +193,10 @@ class ThemeModel extends ChangeNotifier {
   late final ColorModel secondaryBackground;
   late final ColorModel appBackground;
   late final ColorModel appHandleBackground;
+  late final ColorModel primaryContainerColor;
+  late final ColorModel textOnPrimaryContainerColor;
+  late final ColorModel secondaryContainerColor;
+  late final ColorModel textOnSecondaryContainerColor;
 
   static ThemeModel of(BuildContext context, {bool listen = true}) {
     if (listen) {
@@ -227,6 +237,22 @@ class ThemeModel extends ChangeNotifier {
       notifyListeners: notifyListeners,
       autoColor: () => autoThemeData.appHandleBackgroundColor,
     );
+    primaryContainerColor = ColorModel(
+      notifyListeners: notifyListeners,
+      autoColor: () => autoThemeData.primaryContainerColor,
+    );
+    textOnPrimaryContainerColor = ColorModel(
+      notifyListeners: notifyListeners,
+      autoColor: () => autoThemeData.primaryTextOnBackgroundColor,
+    );
+    secondaryContainerColor = ColorModel(
+      notifyListeners: notifyListeners,
+      autoColor: () => autoThemeData.secondaryContainerColor,
+    );
+    textOnSecondaryContainerColor = ColorModel(
+      notifyListeners: notifyListeners,
+      autoColor: () => autoThemeData.textOnSecondaryContainerColor,
+    );
     resetToDefaults();
   }
 
@@ -246,6 +272,18 @@ class ThemeModel extends ChangeNotifier {
     }
     if (!appHandleBackground.hasBeenManuallyAdjusted) {
       appHandleBackground.color = auto.appHandleBackgroundColor;
+    }
+    if (!primaryContainerColor.hasBeenManuallyAdjusted) {
+      primaryContainerColor.color = auto.primaryContainerColor;
+    }
+    if (!textOnPrimaryContainerColor.hasBeenManuallyAdjusted) {
+      textOnPrimaryContainerColor.color = auto.primaryTextOnBackgroundColor;
+    }
+    if (!secondaryContainerColor.hasBeenManuallyAdjusted) {
+      secondaryContainerColor.color = auto.secondaryContainerColor;
+    }
+    if (!textOnSecondaryContainerColor.hasBeenManuallyAdjusted) {
+      textOnSecondaryContainerColor.color = auto.secondaryTextOnBackgroundColor;
     }
   }
 
@@ -267,6 +305,10 @@ class ThemeModel extends ChangeNotifier {
     secondaryBackground.reset();
     appBackground.reset();
     appHandleBackground.reset();
+    primaryContainerColor.reset();
+    textOnPrimaryContainerColor.reset();
+    secondaryContainerColor.reset();
+    textOnSecondaryContainerColor.reset();
   }
 }
 
@@ -480,6 +522,73 @@ class _ThemeControlsState extends State<ThemeControls> {
                   padding: const EdgeInsets.only(top: 8.0),
                   child: WiredashColorPicker.bindColorModel(
                     model: context.watchThemeModel.appHandleBackground,
+                    withAlpha: true,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SelectableText(
+                  'primaryContainerColor',
+                  style: GoogleFonts.droidSansMono(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: WiredashColorPicker.bindColorModel(
+                    model: context.watchThemeModel.primaryContainerColor,
+                    withAlpha: true,
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SelectableText(
+                  'textOnPrimaryContainerColor',
+                  style: GoogleFonts.droidSansMono(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: WiredashColorPicker.bindColorModel(
+                    model: context.watchThemeModel.textOnPrimaryContainerColor,
+                    withAlpha: true,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SelectableText(
+                  'secondaryContainerColor',
+                  style: GoogleFonts.droidSansMono(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: WiredashColorPicker.bindColorModel(
+                    model: context.watchThemeModel.secondaryContainerColor,
+                    withAlpha: true,
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SelectableText(
+                  'secondaryTextOnBackgroundColor',
+                  style: GoogleFonts.droidSansMono(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: WiredashColorPicker.bindColorModel(
+                    model:
+                        context.watchThemeModel.textOnSecondaryContainerColor,
                     withAlpha: true,
                   ),
                 ),

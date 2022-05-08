@@ -14,6 +14,7 @@ class TronButton extends StatefulWidget {
     this.child,
     this.onTap,
     this.color,
+    this.textColor,
     this.iconOffset = Offset.zero,
     Key? key,
   })  : assert(
@@ -23,6 +24,7 @@ class TronButton extends StatefulWidget {
         super(key: key);
 
   final Color? color;
+  final Color? textColor;
   final IconData? leadingIcon;
   final IconData? trailingIcon;
   final Offset iconOffset;
@@ -88,6 +90,13 @@ class _TronButtonState extends State<TronButton>
   }
 
   Color get _iconColor {
+    final textColor = widget.textColor;
+    if (textColor != null) {
+      if (!_enabled) {
+        return textColor.withOpacity(0.3);
+      }
+      return textColor;
+    }
     final buttonColor = _buttonColor;
     final luminance = buttonColor.computeLuminance();
     final hsl = HSLColor.fromColor(buttonColor);
@@ -98,7 +107,7 @@ class _TronButtonState extends State<TronButton>
       return blackOrWhite.withOpacity(0.3);
     }
 
-    return blackOrWhite.withOpacity(math.max(hsl.saturation, 0.8));
+    return blackOrWhite.withOpacity(math.max(hsl.saturation, 0.9));
   }
 
   @override

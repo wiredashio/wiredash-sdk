@@ -181,14 +181,14 @@ class AttachmentPreview extends StatelessWidget {
       children: [
         Elevation(
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: BorderRadius.circular(10),
             child: visual,
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(4),
           child: TronButton(
-            color: context.theme.secondaryBackgroundColor,
+            color: context.theme.primaryContainerColor,
             onTap: () {
               context.feedbackModel.deleteAttachment(attachment);
             },
@@ -196,7 +196,7 @@ class AttachmentPreview extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: TronIcon(
                 Wirecons.trash,
-                color: context.theme.primaryColor,
+                color: context.theme.textOnPrimaryContainerColor,
               ),
             ),
           ),
@@ -237,8 +237,8 @@ class _NewAttachment extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Color.lerp(
-                  context.theme.primaryBackgroundColor,
-                  context.theme.primaryContainerColor,
+                  context.theme.surfaceColor,
+                  context.theme.surfaceColor.darken(0.05),
                   (anims.pressedAnim.value + anims.hoveredAnim.value) * 0.1,
                 ),
               ),
@@ -246,16 +246,16 @@ class _NewAttachment extends StatelessWidget {
               child: AbsorbPointer(
                 child: TronButton(
                   color: state.pressed
-                      ? context.theme.secondaryBackgroundColor
+                      ? context.theme.primaryContainerColor
                           .let(hoverColorAdjustment)
-                      : context.theme.secondaryBackgroundColor
+                      : context.theme.primaryContainerColor
                           .let(hoverColorAdjustment),
                   onTap: () {
                     // nothing but style the button as if it is enabled.
                   },
                   child: TronIcon(
                     Wirecons.plus,
-                    color: context.theme.primaryColor,
+                    color: context.theme.textOnPrimaryContainerColor,
                   ),
                 ),
               ),

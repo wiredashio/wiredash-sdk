@@ -70,10 +70,15 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
               cursorColor: context.theme.primaryColor,
               decoration: InputDecoration(
                 filled: true,
-                fillColor: context.theme.primaryBackgroundColor,
+                // fillColor: context.theme.primaryContainerColor,
+                // focusColor: context.theme.primaryBackgroundColor,
+                // hoverColor: context.theme.primaryBackgroundColor,
+                fillColor: context.theme.surfaceColor,
+                // focusColor: Colors.white70,
+                hoverColor: Colors.transparent,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: context.theme.secondaryColor.withOpacity(0.5),
+                    color: context.theme.primaryContainerColor,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -89,8 +94,6 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                     color: context.theme.errorColor.lighten(),
                   ),
                 ),
-                focusColor: context.theme.primaryBackgroundColor,
-                hoverColor: context.theme.primaryBackgroundColor,
                 hintText:
                     'There’s an unknown error when I try to change my avatar...',
                 contentPadding:
