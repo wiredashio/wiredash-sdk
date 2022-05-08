@@ -14,7 +14,9 @@ class WiredashThemeData {
     Color? primaryBackgroundColor,
     Color? secondaryBackgroundColor,
     Color? primaryContainerColor,
+    Color? textOnPrimaryContainerColor,
     Color? secondaryContainerColor,
+    Color? textOnSecondaryContainerColor,
     Color? appBackgroundColor,
     Color? appHandleBackgroundColor,
     Color? errorColor,
@@ -30,7 +32,9 @@ class WiredashThemeData {
       primaryBackgroundColor: primaryBackgroundColor,
       secondaryBackgroundColor: secondaryBackgroundColor,
       primaryContainerColor: primaryContainerColor,
+      textOnPrimaryContainerColor: textOnPrimaryContainerColor,
       secondaryContainerColor: secondaryContainerColor,
+      textOnSecondaryContainerColor: textOnSecondaryContainerColor,
       appBackgroundColor: appBackgroundColor,
       appHandleBackgroundColor: appHandleBackgroundColor,
       errorColor: errorColor,
@@ -65,7 +69,9 @@ class WiredashThemeData {
     Color? primaryBackgroundColor,
     Color? secondaryBackgroundColor,
     Color? primaryContainerColor,
+    Color? textOnPrimaryContainerColor,
     Color? secondaryContainerColor,
+    Color? textOnSecondaryContainerColor,
     Color? appBackgroundColor,
     Color? appHandleBackgroundColor,
     Color? errorColor,
@@ -78,7 +84,9 @@ class WiredashThemeData {
         _primaryBackgroundColor = primaryBackgroundColor,
         _secondaryBackgroundColor = secondaryBackgroundColor,
         _primaryContainerColor = primaryContainerColor,
+        _textOnPrimaryContainerColor = textOnPrimaryContainerColor,
         _secondaryContainerColor = secondaryContainerColor,
+        _textOnSecondaryContainerColor = textOnSecondaryContainerColor,
         _appBackgroundColor = appBackgroundColor,
         _appHandleBackgroundColor = appHandleBackgroundColor,
         _errorColor = errorColor,
@@ -87,12 +95,20 @@ class WiredashThemeData {
   final Brightness brightness;
   bool get isLight => brightness == Brightness.light;
 
+  // --- Primary --- //
   final Color primaryColor;
   MaterialColorTone? __primaryTone;
   MaterialColorTone get _primaryTone {
     return __primaryTone ??= MaterialColorTone(primaryColor, brightness);
   }
 
+  final Color? _textOnPrimary;
+  Color get textOnPrimaryColor {
+    final tone = isLight ? 100 : 0;
+    return _textOnPrimary ?? _primaryTone.primaryTone(tone);
+  }
+
+  // --- Secondary --- //
   final Color? _secondaryColor;
   Color get secondaryColor => _secondaryColor ?? _secondaryTone.baseColor;
   MaterialColorTone? __secondaryTone;
@@ -104,30 +120,28 @@ class WiredashThemeData {
               return primaryColor
                   // .shiftHue(-10)
                   // .withValue(0.98)
-                  .adjustValue((value) =>
-                      KeyPointInterpolator({0: 0.70, 1: 0.90})
-                          .interpolate(value))
-                  .adjustHsvSaturation((saturation) =>
-                      KeyPointInterpolator({0: 0.12, 1: 0.2})
-                          .interpolate(saturation));
+                  .adjustValue(
+                    (value) => KeyPointInterpolator({0: 0.70, 1: 0.90})
+                        .interpolate(value),
+                  )
+                  .adjustHsvSaturation(
+                    (saturation) => KeyPointInterpolator({0: 0.12, 1: 0.2})
+                        .interpolate(saturation),
+                  );
             } else {
               return primaryColor
-                  .adjustValue((value) =>
-                      KeyPointInterpolator({0: 0.00, 1: 0.50})
-                          .interpolate(value))
-                  .adjustHsvSaturation((saturation) =>
-                      KeyPointInterpolator({0: 0.02, 1: 0.2})
-                          .interpolate(saturation));
+                  .adjustValue(
+                    (value) => KeyPointInterpolator({0: 0.00, 1: 0.50})
+                        .interpolate(value),
+                  )
+                  .adjustHsvSaturation(
+                    (saturation) => KeyPointInterpolator({0: 0.02, 1: 0.2})
+                        .interpolate(saturation),
+                  );
             }
           }(),
       brightness,
     );
-  }
-
-  final Color? _textOnPrimary;
-  Color get textOnPrimaryColor {
-    final tone = isLight ? 100 : 0;
-    return _textOnPrimary ?? _primaryTone.primaryTone(tone);
   }
 
   final Color? _textOnSecondary;
@@ -136,30 +150,35 @@ class WiredashThemeData {
     return _textOnSecondary ?? _secondaryTone.primaryTone(tone);
   }
 
+  // --- primaryContainer --- //
   final Color? _primaryContainerColor;
   Color get primaryContainerColor {
     return _primaryContainerColor ?? _primaryTone.primaryContainer;
   }
 
+  final Color? _textOnPrimaryContainerColor;
   Color get textOnPrimaryContainerColor {
-    return _primaryTone.onPrimaryContainer;
+    return _textOnPrimaryContainerColor ?? _primaryTone.onPrimaryContainer;
   }
 
+  // --- secondadryContainer --- //
   final Color? _secondaryContainerColor;
   Color get secondaryContainerColor =>
-      _secondaryContainerColor ?? _secondaryTone.secondaryContainer;
+      _secondaryContainerColor ?? _secondaryTone.primaryContainer;
 
+  final Color? _textOnSecondaryContainerColor;
   Color get textOnSecondaryContainerColor {
-    return _secondaryTone.onSecondaryContainer;
+    return _textOnSecondaryContainerColor ?? _secondaryTone.onPrimaryContainer;
   }
 
+  // --- Background --- //
   final Color? _primaryBackgroundColor;
   Color get primaryBackgroundColor {
     if (brightness == Brightness.light) {
       return _primaryBackgroundColor ?? _primaryTone.primaryTone(100);
     } else {
       return _primaryBackgroundColor ??
-          primaryColor.withHslSaturation(0.04).withLightness(0.2);
+          primaryColor.withHslSaturation(0.08).withLightness(0.2);
     }
   }
 
@@ -169,31 +188,8 @@ class WiredashThemeData {
       return _secondaryBackgroundColor ?? _primaryTone.primaryTone(98);
     } else {
       return _secondaryBackgroundColor ??
-          secondaryColor.withHslSaturation(0.0).withLightness(0.1);
+          secondaryColor.withHslSaturation(0.0).withLightness(0.05);
     }
-  }
-
-  Color get surfaceColor {
-    return _primaryTone.surface;
-  }
-
-  Color get primaryTextOnSurfaceColor {
-    return _primaryTone.onSurface;
-  }
-
-  Color get secondaryTextOnSurfaceColor {
-    return _primaryTone.onSurface.withOpacity(0.8);
-  }
-
-  final Color? _errorColor;
-  Color get errorColor => _errorColor ?? _primaryTone.error;
-
-  final Color? _appBackgroundColor;
-  Color get appBackgroundColor {
-    return _appBackgroundColor ??
-        (brightness == Brightness.light
-            ? const Color(0xfff5f6f8)
-            : const Color(0xff3d3e3e));
   }
 
   Color get primaryTextOnBackgroundColor {
@@ -214,11 +210,36 @@ class WiredashThemeData {
     return Color(palette.neutralVariant.get(tone));
   }
 
+  final Color? _appBackgroundColor;
+  Color get appBackgroundColor {
+    return _appBackgroundColor ??
+        (brightness == Brightness.light
+            ? const Color(0xfff5f6f8)
+            : const Color(0xff3d3e3e));
+  }
+
   /// The color of the app handle, the "Return to app" bar above the app
   final Color? _appHandleBackgroundColor;
   Color get appHandleBackgroundColor {
     return _appHandleBackgroundColor ?? _primaryTone.primaryTone(20);
   }
+
+  // --- Surface --- //
+  Color get surfaceColor {
+    return _primaryTone.surface;
+  }
+
+  Color get primaryTextOnSurfaceColor {
+    return _primaryTone.onSurface;
+  }
+
+  Color get secondaryTextOnSurfaceColor {
+    return _primaryTone.onSurface.withOpacity(0.8);
+  }
+
+  // --- Error --- //
+  final Color? _errorColor;
+  Color get errorColor => _errorColor ?? _primaryTone.error;
 
   final DeviceClass deviceClass;
   final Size windowSize;
@@ -355,7 +376,10 @@ class WiredashThemeData {
           textOnPrimaryColor == other.textOnPrimaryColor &&
           textOnSecondaryColor == other.textOnSecondaryColor &&
           primaryBackgroundColor == other.primaryBackgroundColor &&
+          textOnPrimaryContainerColor == other.textOnPrimaryContainerColor &&
           secondaryBackgroundColor == other.secondaryBackgroundColor &&
+          textOnSecondaryContainerColor ==
+              other.textOnSecondaryContainerColor &&
           primaryContainerColor == other.primaryContainerColor &&
           secondaryContainerColor == other.secondaryContainerColor &&
           appBackgroundColor == other.appBackgroundColor &&
@@ -375,7 +399,9 @@ class WiredashThemeData {
       primaryBackgroundColor.hashCode ^
       secondaryBackgroundColor.hashCode ^
       primaryContainerColor.hashCode ^
+      textOnPrimaryContainerColor.hashCode ^
       secondaryContainerColor.hashCode ^
+      textOnSecondaryContainerColor.hashCode ^
       appBackgroundColor.hashCode ^
       appHandleBackgroundColor.hashCode ^
       errorColor.hashCode ^
@@ -394,7 +420,9 @@ class WiredashThemeData {
         'primaryBackgroundColor: $primaryBackgroundColor, '
         'secondaryBackgroundColor: $secondaryBackgroundColor, '
         'primaryContainerColor: $primaryContainerColor, '
+        'textOnPrimaryContainerColor: $textOnPrimaryContainerColor, '
         'secondaryContainerColor: $secondaryContainerColor, '
+        'textOnSecondaryContainerColor: $textOnSecondaryContainerColor, '
         'appBackgroundColor: $appBackgroundColor, '
         'appHandleBackgroundColor: $appHandleBackgroundColor, '
         'errorColor: $errorColor, '
@@ -411,7 +439,9 @@ class WiredashThemeData {
     Color? primaryBackgroundColor,
     Color? secondaryBackgroundColor,
     Color? primaryContainerColor,
+    Color? textOnPrimaryContainerColor,
     Color? secondaryContainerColor,
+    Color? textOnSecondaryContainerColor,
     Color? appBackgroundColor,
     Color? appHandleBackgroundColor,
     Color? errorColor,
@@ -429,8 +459,12 @@ class WiredashThemeData {
           secondaryBackgroundColor ?? this.secondaryBackgroundColor,
       primaryContainerColor:
           primaryContainerColor ?? this.primaryContainerColor,
+      textOnPrimaryContainerColor:
+          textOnPrimaryContainerColor ?? this.textOnPrimaryContainerColor,
       secondaryContainerColor:
           secondaryContainerColor ?? this.secondaryContainerColor,
+      textOnSecondaryContainerColor:
+          textOnSecondaryContainerColor ?? this.textOnSecondaryContainerColor,
       appBackgroundColor: appBackgroundColor ?? this.appBackgroundColor,
       appHandleBackgroundColor:
           appHandleBackgroundColor ?? this.appHandleBackgroundColor,

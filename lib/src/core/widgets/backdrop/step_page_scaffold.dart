@@ -206,7 +206,8 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                                   color: context
                                       .theme.secondaryTextOnBackgroundColor,
                                 ),
-                                child: widget.discardLabel!)
+                                child: widget.discardLabel!,
+                              )
                             : DefaultTextStyle(
                                 style: context.theme.captionTextStyle.copyWith(
                                   color: context.theme.errorColor,

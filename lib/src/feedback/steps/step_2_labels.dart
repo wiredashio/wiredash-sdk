@@ -121,16 +121,21 @@ class _Label extends StatelessWidget {
       builder: (context, state, anims) {
         return Opacity(
           opacity: state.selected ? 1.0 : 0.5,
-          child: Container(
+          child: AnimatedContainer(
             constraints: const BoxConstraints(maxHeight: 41, minHeight: 41),
             decoration: BoxDecoration(
-                color: context.theme.primaryContainerColor,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  width: 2,
-                  // tint
-                  color:
-                      context.theme.textOnPrimaryContainerColor.withOpacity(() {
+              color: () {
+                if (state.selected) {
+                  return context.theme.primaryContainerColor;
+                }
+                return context.theme.secondaryContainerColor;
+              }(),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                width: 2,
+                // tint
+                color: context.theme.textOnPrimaryContainerColor.withOpacity(
+                  () {
                     if (state.pressed || state.selected) {
                       return 1.0;
                     }
@@ -139,9 +144,12 @@ class _Label extends StatelessWidget {
                     }
 
                     return 0.0;
-                  }()),
-                )),
+                  }(),
+                ),
+              ),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+            duration: const Duration(milliseconds: 225),
             child: Align(
               widthFactor: 1,
               child: AnimatedDefaultTextStyle(
@@ -149,9 +157,10 @@ class _Label extends StatelessWidget {
                 curve: Curves.ease,
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
+                  fontSize: 14,
                   color: Color.lerp(
+                    context.theme.textOnSecondaryContainerColor,
                     context.theme.textOnPrimaryContainerColor,
-                    context.theme.primaryTextOnSurfaceColor,
                     anims.selectedAnim.value,
                   ),
                 ),

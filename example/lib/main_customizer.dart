@@ -138,6 +138,16 @@ class _CustomizePageState extends State<CustomizePage> {
                                 context.watchThemeModel.appBackground.color,
                             appHandleBackgroundColor: context
                                 .watchThemeModel.appHandleBackground.color,
+                            primaryContainerColor: context
+                                .watchThemeModel.primaryContainerColor.color,
+                            textOnPrimaryContainerColor: context.watchThemeModel
+                                .textOnPrimaryContainerColor.color,
+                            secondaryContainerColor: context
+                                .watchThemeModel.secondaryContainerColor.color,
+                            textOnSecondaryContainerColor: context
+                                .watchThemeModel
+                                .textOnSecondaryContainerColor
+                                .color,
                           ),
                           child: WhatsApp(),
                         ),
@@ -447,14 +457,86 @@ class _ThemeControlsState extends State<ThemeControls> {
             SizedBox(height: 20),
             Divider(),
             SizedBox(height: 20),
-            SelectableText('Background Colors', style: TextStyle(fontSize: 20)),
+            SelectableText('Swatches', style: TextStyle(fontSize: 20)),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                context.readThemeModel.autoGenerate();
-              },
-              child: Text('Auto-generate'),
+            Wrap(
+              spacing: 20,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SelectableText(
+                      'primaryContainerColor',
+                      style: GoogleFonts.droidSansMono(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: WiredashColorPicker.bindColorModel(
+                        model: context.watchThemeModel.primaryContainerColor,
+                        withAlpha: true,
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SelectableText(
+                      'textOnPrimaryContainerColor',
+                      style: GoogleFonts.droidSansMono(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: WiredashColorPicker.bindColorModel(
+                        model:
+                            context.watchThemeModel.textOnPrimaryContainerColor,
+                        withAlpha: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
+            Wrap(
+              spacing: 20,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SelectableText(
+                      'secondaryContainerColor',
+                      style: GoogleFonts.droidSansMono(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: WiredashColorPicker.bindColorModel(
+                        model: context.watchThemeModel.secondaryContainerColor,
+                        withAlpha: true,
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SelectableText(
+                      'secondaryTextOnBackgroundColor',
+                      style: GoogleFonts.droidSansMono(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: WiredashColorPicker.bindColorModel(
+                        model: context
+                            .watchThemeModel.textOnSecondaryContainerColor,
+                        withAlpha: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            SelectableText('Background Colors', style: TextStyle(fontSize: 20)),
             SizedBox(height: 20),
             Wrap(
               spacing: 20,
@@ -528,72 +610,6 @@ class _ThemeControlsState extends State<ThemeControls> {
               ],
             ),
             SizedBox(height: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SelectableText(
-                  'primaryContainerColor',
-                  style: GoogleFonts.droidSansMono(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: WiredashColorPicker.bindColorModel(
-                    model: context.watchThemeModel.primaryContainerColor,
-                    withAlpha: true,
-                  ),
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SelectableText(
-                  'textOnPrimaryContainerColor',
-                  style: GoogleFonts.droidSansMono(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: WiredashColorPicker.bindColorModel(
-                    model: context.watchThemeModel.textOnPrimaryContainerColor,
-                    withAlpha: true,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SelectableText(
-                  'secondaryContainerColor',
-                  style: GoogleFonts.droidSansMono(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: WiredashColorPicker.bindColorModel(
-                    model: context.watchThemeModel.secondaryContainerColor,
-                    withAlpha: true,
-                  ),
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SelectableText(
-                  'secondaryTextOnBackgroundColor',
-                  style: GoogleFonts.droidSansMono(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: WiredashColorPicker.bindColorModel(
-                    model:
-                        context.watchThemeModel.textOnSecondaryContainerColor,
-                    withAlpha: true,
-                  ),
-                ),
-              ],
-            ),
             SizedBox(height: 300),
           ],
         ),
