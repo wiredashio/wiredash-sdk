@@ -93,7 +93,8 @@ class _TronProgressIndicatorState extends State<TronProgressIndicator>
             painter: _TronProgressPainter(
               context.theme.primaryColor,
               _currentProgress,
-              context.theme.primaryColor.withAlpha(64),
+              context.theme.primaryColor.darken(0.05),
+              context.theme.primaryContainerColor,
               _nextProgress,
             ),
           ),
@@ -107,6 +108,7 @@ class _TronProgressPainter extends CustomPainter {
   const _TronProgressPainter(
     this.colorCurrent,
     this.currentProgress,
+    this.circleColor,
     this.colorNext,
     this.nextProgress,
   );
@@ -115,6 +117,7 @@ class _TronProgressPainter extends CustomPainter {
 
   final Color colorCurrent;
   final Color colorNext;
+  final Color circleColor;
   final double currentProgress;
   final double nextProgress;
 
@@ -123,7 +126,7 @@ class _TronProgressPainter extends CustomPainter {
     final circlePaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = _borderWidth
-      ..color = colorCurrent;
+      ..color = circleColor;
 
     final fillPaint = Paint()
       ..style = PaintingStyle.fill

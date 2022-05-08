@@ -124,16 +124,13 @@ class _Label extends StatelessWidget {
           child: Container(
             constraints: const BoxConstraints(maxHeight: 41, minHeight: 41),
             decoration: BoxDecoration(
-                color: Color.lerp(
-                  context.theme.primaryContainerColor,
-                  context.theme.surfaceColor,
-                  anims.pressedAnim.value + anims.selectedAnim.value,
-                ),
+                color: context.theme.primaryContainerColor,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   width: 2,
                   // tint
-                  color: context.theme.primaryColor.withOpacity(() {
+                  color:
+                      context.theme.textOnPrimaryContainerColor.withOpacity(() {
                     if (state.pressed || state.selected) {
                       return 1.0;
                     }
@@ -154,7 +151,7 @@ class _Label extends StatelessWidget {
                   fontWeight: FontWeight.w800,
                   color: Color.lerp(
                     context.theme.textOnPrimaryContainerColor,
-                    context.theme.primaryColor,
+                    context.theme.primaryTextOnSurfaceColor,
                     anims.selectedAnim.value,
                   ),
                 ),
