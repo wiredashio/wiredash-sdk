@@ -17,6 +17,7 @@ class Netflix extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      useInheritedMediaQuery: true,
       debugShowCheckedModeBanner: false,
       home: InitScreen(),
       theme: ThemeData().copyWith(

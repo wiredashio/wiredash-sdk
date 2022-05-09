@@ -242,8 +242,8 @@ class _RatingCardState extends State<_RatingCard>
                       curve: Curves.easeInOut,
                       style: TextStyle(
                         color: widget.checked
-                            ? theme.primaryTextColor
-                            : theme.secondaryTextColor,
+                            ? theme.primaryTextOnBackgroundColor
+                            : theme.secondaryTextOnBackgroundColor,
                       ),
                       duration: _controller.duration!,
                       child: Text(widget.value.toString()),

@@ -79,7 +79,7 @@ class _Step6SubmitState extends State<Step6Submit> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: ListTileTheme(
-        textColor: context.theme.secondaryTextColor,
+        textColor: context.theme.secondaryTextOnBackgroundColor,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -119,43 +119,53 @@ class _Label extends StatelessWidget {
       onTap: toggleSelection,
       selected: selected,
       builder: (context, state, anims) {
-        return Container(
-          constraints: const BoxConstraints(maxHeight: 41, minHeight: 41),
-          decoration: BoxDecoration(
-            color: Color.lerp(
-              context.theme.secondaryBackgroundColor,
-              context.theme.secondaryColor,
-              anims.hoveredAnim.value +
-                  anims.pressedAnim.value +
-                  anims.selectedAnim.value,
-            ),
-            borderRadius: BorderRadius.circular(10),
-            border: selected
-                ? Border.all(
-                    width: 2,
-                    // tint
-                    color: context.theme.primaryColor,
-                  )
-                : Border.all(
-                    width: 2,
-                    color: Colors.transparent,
-                  ),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-          child: Align(
-            widthFactor: 1,
-            child: AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 225),
-              curve: Curves.ease,
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
-                color: Color.lerp(
-                  context.theme.primaryColor.withOpacity(0.8),
-                  context.theme.primaryColor,
-                  anims.selectedAnim.value,
+        return Opacity(
+          opacity: state.selected ? 1.0 : 0.5,
+          child: AnimatedContainer(
+            constraints: const BoxConstraints(maxHeight: 41, minHeight: 41),
+            decoration: BoxDecoration(
+              color: () {
+                if (state.selected) {
+                  return context.theme.primaryContainerColor;
+                }
+                return context.theme.secondaryContainerColor;
+              }(),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                width: 2,
+                // tint
+                color: context.theme.textOnPrimaryContainerColor.withOpacity(
+                  () {
+                    if (state.pressed || state.selected) {
+                      return 1.0;
+                    }
+                    if (state.hovered) {
+                      return 0.25;
+                    }
+
+                    return 0.0;
+                  }(),
                 ),
               ),
-              child: Text(label.title),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+            duration: const Duration(milliseconds: 225),
+            child: Align(
+              widthFactor: 1,
+              child: AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 225),
+                curve: Curves.ease,
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 14,
+                  color: Color.lerp(
+                    context.theme.textOnSecondaryContainerColor,
+                    context.theme.textOnPrimaryContainerColor,
+                    anims.selectedAnim.value,
+                  ),
+                ),
+                child: Text(label.title),
+              ),
             ),
           ),
         );

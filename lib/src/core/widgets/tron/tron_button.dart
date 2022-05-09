@@ -14,6 +14,7 @@ class TronButton extends StatefulWidget {
     this.child,
     this.onTap,
     this.color,
+    this.textColor,
     this.iconOffset = Offset.zero,
     Key? key,
   })  : assert(
@@ -23,6 +24,7 @@ class TronButton extends StatefulWidget {
         super(key: key);
 
   final Color? color;
+  final Color? textColor;
   final IconData? leadingIcon;
   final IconData? trailingIcon;
   final Offset iconOffset;
@@ -72,22 +74,29 @@ class _TronButtonState extends State<TronButton>
     final buttonColor = widget.color ?? context.theme.primaryColor;
 
     if (!_enabled) {
-      return buttonColor.lighten(0.3);
+      return buttonColor.lighten(0.03);
     }
 
     if (_pressed) {
       // ignore: avoid_redundant_argument_values
-      return buttonColor.darken(0.1);
+      return buttonColor.darken(0.02);
     }
 
     if (_hovered) {
-      return buttonColor.darken(0.05);
+      return buttonColor.lighten(0.02);
     }
 
     return buttonColor;
   }
 
   Color get _iconColor {
+    final textColor = widget.textColor;
+    if (textColor != null) {
+      if (!_enabled) {
+        return textColor.withOpacity(0.3);
+      }
+      return textColor;
+    }
     final buttonColor = _buttonColor;
     final luminance = buttonColor.computeLuminance();
     final hsl = HSLColor.fromColor(buttonColor);
@@ -98,7 +107,7 @@ class _TronButtonState extends State<TronButton>
       return blackOrWhite.withOpacity(0.3);
     }
 
-    return blackOrWhite.withOpacity(math.max(hsl.saturation, 0.8));
+    return blackOrWhite.withOpacity(math.max(hsl.saturation, 0.9));
   }
 
   @override
@@ -212,15 +221,15 @@ class _TronButtonState extends State<TronButton>
     widget.onTap!.call();
     setState(() {
       _pressed = false;
-      _controller.reverse();
     });
+    _controller.forward().then((value) => _controller.reverse());
   }
 
   void _handleTapCancel() {
     setState(() {
       _pressed = false;
-      _controller.reverse();
     });
+    _controller.forward().then((value) => _controller.reverse());
   }
 }
 

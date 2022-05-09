@@ -8,8 +8,11 @@ environment:
   flutter: ">=2.5.0 <4.0.0"
 
 dependencies:
+  device_frame: ^1.0.0
   flutter:
     sdk: flutter
+  flutter_colorpicker: ^1.0.3
+  google_fonts: ^2.0.0
 
   wiredash:
     path: ../

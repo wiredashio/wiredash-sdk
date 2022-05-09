@@ -11,6 +11,7 @@ class WhatsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      useInheritedMediaQuery: true,
       title: 'WhatsApp',
       home: HomeScreen(),
       debugShowCheckedModeBanner: false,
@@ -428,6 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _leftSection(BuildContext context, bool isMobile,
       ConversationCallback callback, RefreshCallback refresh) {
     return MaterialApp(
+      useInheritedMediaQuery: true,
       title: 'WhatsApp',
       initialRoute: '/',
       routes: {
@@ -523,11 +525,23 @@ class ChatsScreenState extends State<ChatsScreen> {
           return ChatItem(
             conversation: item,
             isMobile: widget.isMobile,
-            callback: (item) {
-              if (item == feedbackChat) {
+            callback: (chat) {
+              if (chat == feedbackChat) {
                 Wiredash.of(context).show();
               } else {
-                widget.callback?.call(item);
+                if (widget.isMobile) {
+                  Navigator.of(context).push(
+                    AnimatedRoute(
+                      widget: ChatScreen(
+                        context: context,
+                        conversation: chat,
+                        refresh: widget.refresh,
+                      ),
+                      anim: PageAnimation.FADE_SCALE,
+                    ),
+                  );
+                }
+                widget.callback?.call(chat);
               }
             },
             refresh: widget.refresh,
@@ -602,45 +616,48 @@ class ChatsScreenState extends State<ChatsScreen> {
       child: Material(
         color:
             isMobile ? WhatsappUtils.appBarMobile : WhatsappUtils.appBarLaptop,
-        child: Column(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  if (isMobile)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: Text(
-                        'WhatsApp',
-                        style: TextStyle(fontSize: 20, color: Colors.white),
-                      ),
-                    )
-                  else
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        AnimatedRoute(
-                          widget:
-                              ProfileScreen(user: WhatsappUtils.currentUser),
-                          anim: PageAnimation.FROM_LEFT,
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    if (isMobile)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: Text(
+                          'WhatsApp',
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        ),
+                      )
+                    else
+                      GestureDetector(
+                        onTap: () => Navigator.of(context).push(
+                          AnimatedRoute(
+                            widget:
+                                ProfileScreen(user: WhatsappUtils.currentUser),
+                            anim: PageAnimation.FROM_LEFT,
+                          ),
+                        ),
+                        child: _avatar(
+                          WhatsappUtils.rFlutterDev.avatar,
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 6),
                         ),
                       ),
-                      child: _avatar(
-                        WhatsappUtils.rFlutterDev.avatar,
-                        EdgeInsets.symmetric(horizontal: 15, vertical: 6),
-                      ),
-                    ),
-                  Expanded(child: SizedBox()),
-                  for (var action in isMobile ? _mobileActions : _laptopActions)
-                    action
-                ],
+                    Expanded(child: SizedBox()),
+                    for (var action
+                        in isMobile ? _mobileActions : _laptopActions)
+                      action
+                  ],
+                ),
               ),
-            ),
-            if (isMobile) _tabsSection() else _searchSection(),
-            if (isMobile)
-              SizedBox()
-            else
-              Container(height: 1, color: Colors.grey[300]),
-          ],
+              if (isMobile) _tabsSection() else _searchSection(),
+              if (isMobile)
+                SizedBox()
+              else
+                Container(height: 1, color: Colors.grey[300]),
+            ],
+          ),
         ),
       ),
     );
@@ -878,21 +895,7 @@ class _ChatItemState extends State<ChatItem> {
     return Material(
       child: InkWell(
         onTap: () {
-          if (widget.isMobile) {
-            Navigator.of(context).push(
-              AnimatedRoute(
-                widget: ChatScreen(
-                  context: context,
-                  conversation: widget.conversation,
-                  refresh: widget.refresh,
-                ),
-                anim: PageAnimation.FADE_SCALE,
-              ),
-            );
-            widget.callback?.call(widget.conversation);
-          } else {
-            widget.callback?.call(widget.conversation);
-          }
+          widget.callback?.call(widget.conversation);
         },
         child: MouseRegion(
           onHover: (_) => setState(() => _isHover = true),
@@ -1140,6 +1143,7 @@ class ChatScreenState extends State<ChatScreen> {
     final size = MediaQuery.of(context).size;
     _isMobile = size.width < 720;
     _smallDevice = size.width < 360;
+    print('mq: ${MediaQuery.of(context)}');
     return Scaffold(
       appBar: _conversation != null
           ? _appBar(_conversation!.user, size, _isMobile)
@@ -1534,82 +1538,88 @@ class ChatScreenState extends State<ChatScreen> {
   PreferredSize _appBar(User user, Size size, bool isMobile) {
     return PreferredSize(
       preferredSize: Size(size.width, 60),
-      child: SizedBox(
-        height: 60,
-        child: Material(
-          color: isMobile
-              ? WhatsappUtils.appBarMobile
-              : WhatsappUtils.appBarLaptop,
-          child: Row(
-            children: [
-              SizedBox(width: isMobile ? 10 : 20),
-              if (isMobile)
-                InkResponse(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: WhatsappUtils.appBarIconMobile,
-                      size: _smallDevice ? 15 : 25,
+      child: Material(
+        color:
+            isMobile ? WhatsappUtils.appBarMobile : WhatsappUtils.appBarLaptop,
+        child: SafeArea(
+          child: SizedBox(
+            height: 60,
+            child: Row(
+              children: [
+                SizedBox(width: isMobile ? 10 : 20),
+                if (isMobile)
+                  InkResponse(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: WhatsappUtils.appBarIconMobile,
+                        size: _smallDevice ? 15 : 25,
+                      ),
                     ),
                   ),
-                ),
-              _avatar(_smallDevice),
-              SizedBox(width: _smallDevice ? 10 : 20),
-              if (_conversation != null)
-                GestureDetector(
-                  onTap: () {
-                    if (widget.contact != null) {
-                      _visible = !_visible;
-                      widget.contact!.currentState!.setUser(user);
-                      widget.contact!.currentState!.setVisible(_visible);
-                    } else {
-                      Navigator.of(widget.context).push(
-                        AnimatedRoute(
-                          widget: ContactScreen(user: user, visible: true),
-                          anim: isMobile
-                              ? PageAnimation.FADE_SCALE
-                              : PageAnimation.FROM_RIGHT,
-                        ),
-                      );
-                    }
-                  },
-                  child: SizedBox(
-                    height: _smallDevice ? 36 : 40,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 2),
-                        Expanded(
-                          child: Text(
-                            _conversation!.user.name,
-                            style: TextStyle(
-                              fontSize: _smallDevice ? 14 : 16,
-                              color: isMobile ? Colors.white : Colors.black,
+                _avatar(_smallDevice),
+                SizedBox(width: _smallDevice ? 10 : 20),
+                if (_conversation != null)
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        if (widget.contact != null) {
+                          _visible = !_visible;
+                          widget.contact!.currentState!.setUser(user);
+                          widget.contact!.currentState!.setVisible(_visible);
+                        } else {
+                          Navigator.of(widget.context).push(
+                            AnimatedRoute(
+                              widget: ContactScreen(user: user, visible: true),
+                              anim: isMobile
+                                  ? PageAnimation.FADE_SCALE
+                                  : PageAnimation.FROM_RIGHT,
                             ),
-                          ),
+                          );
+                        }
+                      },
+                      child: SizedBox(
+                        height: _smallDevice ? 36 : 40,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 2),
+                            Expanded(
+                              child: Text(
+                                _conversation!.user.name,
+                                style: TextStyle(
+                                  fontSize: _smallDevice ? 14 : 16,
+                                  color: isMobile ? Colors.white : Colors.black,
+                                ),
+                                maxLines: 1,
+                              ),
+                            ),
+                            Text(
+                              _conversation!.user.online
+                                  ? 'online'
+                                  : 'last seen at ${_parseTime(_conversation!.user.lastConnection)}',
+                              style: TextStyle(
+                                color:
+                                    isMobile ? Colors.white : Colors.grey[700],
+                                fontSize: _smallDevice ? 12 : 13,
+                              ),
+                              maxLines: 1,
+                            ),
+                            SizedBox(height: 1),
+                          ],
                         ),
-                        Text(
-                          _conversation!.user.online
-                              ? 'online'
-                              : 'last seen at ${_parseTime(_conversation!.user.lastConnection)}',
-                          style: TextStyle(
-                            color: isMobile ? Colors.white : Colors.grey[700],
-                            fontSize: _smallDevice ? 12 : 13,
-                          ),
-                        ),
-                        SizedBox(height: 1),
-                      ],
+                      ),
                     ),
-                  ),
-                )
-              else
-                SizedBox(),
-              Expanded(child: SizedBox()),
-              for (var action in _isMobile ? _mobileActions : _laptopActions)
-                action
-            ],
+                  )
+                else
+                  SizedBox(),
+                // Expanded(child: SizedBox()),
+                for (var action in _isMobile ? _mobileActions : _laptopActions)
+                  action
+              ],
+            ),
           ),
         ),
       ),
@@ -1819,62 +1829,69 @@ class _ContactsScreenState extends State<ContactsScreen> {
       preferredSize: Size(size.width, widget.isMobile ? 60 : 110),
       child: widget.isMobile
           ? Container(
-              height: 60,
               color: WhatsappUtils.appBarMobile,
-              child: Row(
-                children: [
-                  SizedBox(width: smallDevice ? 15 : 25),
-                  InkResponse(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: smallDevice ? 15 : 25,
-                    ),
+              child: SafeArea(
+                child: SizedBox(
+                  height: 60,
+                  child: Row(
+                    children: [
+                      SizedBox(width: smallDevice ? 15 : 25),
+                      InkResponse(
+                        onTap: () => Navigator.of(context).pop(),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: smallDevice ? 15 : 25,
+                        ),
+                      ),
+                      SizedBox(width: smallDevice ? 15 : 25),
+                      Text(
+                        'Select contact',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: smallDevice ? 14 : 18,
+                        ),
+                      ),
+                      Expanded(child: SizedBox()),
+                      WhatsappUtils.action(
+                        Icons.search,
+                        () {},
+                        widget.isMobile,
+                        smallDevice: smallDevice,
+                      ),
+                      WhatsappUtils.action(
+                        Icons.more_vert,
+                        () {},
+                        widget.isMobile,
+                        smallDevice: smallDevice,
+                      )
+                    ],
                   ),
-                  SizedBox(width: smallDevice ? 15 : 25),
-                  Text(
-                    'Select contact',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: smallDevice ? 14 : 18,
-                    ),
-                  ),
-                  Expanded(child: SizedBox()),
-                  WhatsappUtils.action(
-                    Icons.search,
-                    () {},
-                    widget.isMobile,
-                    smallDevice: smallDevice,
-                  ),
-                  WhatsappUtils.action(
-                    Icons.more_vert,
-                    () {},
-                    widget.isMobile,
-                    smallDevice: smallDevice,
-                  )
-                ],
+                ),
               ),
             )
           : Container(
               height: 110,
               color: WhatsappUtils.softGreen,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    SizedBox(width: 25),
-                    InkResponse(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: Icon(Icons.arrow_back, color: Colors.white),
-                    ),
-                    SizedBox(width: 25),
-                    Text(
-                      'New chat',
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                  ],
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      SizedBox(width: 25),
+                      InkResponse(
+                        onTap: () => Navigator.of(context).pop(),
+                        child: Icon(Icons.arrow_back, color: Colors.white),
+                      ),
+                      SizedBox(width: 25),
+                      Text(
+                        'New chat',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -2156,27 +2173,30 @@ class ContactScreenState extends State<ContactScreen> {
                       ),
                       Material(
                         color: Colors.transparent,
-                        child: SizedBox(
-                          height: 60,
-                          width: size.width,
-                          child: Row(
-                            children: [
-                              SizedBox(width: 20),
-                              InkResponse(
-                                onTap: () => Navigator.of(context).pop(),
-                                child:
-                                    Icon(Icons.arrow_back, color: Colors.white),
-                              ),
-                              Expanded(child: Container()),
-                              InkResponse(
-                                onTap: () {},
-                                child: Icon(
-                                  Icons.more_vert,
-                                  color: Colors.white,
+                        child: SafeArea(
+                          bottom: false,
+                          child: SizedBox(
+                            height: 60,
+                            width: size.width,
+                            child: Row(
+                              children: [
+                                SizedBox(width: 20),
+                                InkResponse(
+                                  onTap: () => Navigator.of(context).pop(),
+                                  child: Icon(Icons.arrow_back,
+                                      color: Colors.white),
                                 ),
-                              ),
-                              SizedBox(width: 20),
-                            ],
+                                Expanded(child: Container()),
+                                InkResponse(
+                                  onTap: () {},
+                                  child: Icon(
+                                    Icons.more_vert,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(width: 20),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -2191,28 +2211,32 @@ class ContactScreenState extends State<ContactScreen> {
 
   PreferredSize _appBar(Size size) {
     final isTablet = size.width < 1100;
+    print("mq2: ${MediaQuery.of(context)}");
     return PreferredSize(
       preferredSize: Size(size.width, 60),
       child: Material(
         color: WhatsappUtils.appBarLaptop,
-        child: SizedBox(
-          height: 60,
-          child: Row(
-            children: [
-              SizedBox(width: 20),
-              InkResponse(
-                onTap: () => isTablet
-                    ? Navigator.of(context).pop()
-                    : setState(() => _isVisible = false),
-                child: Icon(Icons.close, color: WhatsappUtils.appBarIconLaptop),
-              ),
-              SizedBox(width: 20),
-              Text(
-                'Contact info',
-                style: TextStyle(fontSize: 16, color: Colors.black),
-              ),
-              Expanded(child: SizedBox()),
-            ],
+        child: SafeArea(
+          child: SizedBox(
+            height: 60,
+            child: Row(
+              children: [
+                SizedBox(width: 20),
+                InkResponse(
+                  onTap: () => isTablet
+                      ? Navigator.of(context).pop()
+                      : setState(() => _isVisible = false),
+                  child:
+                      Icon(Icons.close, color: WhatsappUtils.appBarIconLaptop),
+                ),
+                SizedBox(width: 20),
+                Text(
+                  'Contact info',
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                Expanded(child: SizedBox()),
+              ],
+            ),
           ),
         ),
       ),

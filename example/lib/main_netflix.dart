@@ -4,9 +4,6 @@ import 'package:wiredash/wiredash.dart';
 import 'package:wiredash_example/marianos_clones/netflix_clone.dart';
 
 void main() {
-  /// NOTE: This example only works with flutter web
-  assert(kIsWeb);
-
   final app = Wiredash(
     projectId: "Project ID from console.wiredash.io",
     secret: "API Key from console.wiredash.io",
