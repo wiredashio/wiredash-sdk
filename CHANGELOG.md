@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.0-beta.1
+
+- [#205](https://github.com/wiredashio/wiredash-sdk/pull/205) Improve theming capabilities. Better automatic colors, more customizations. New `WiredashThemeData` properties: 
+  - `primaryContainerColor`
+  - `textOnPrimaryContainerColor`
+  - `secondaryContainerColor`
+  - `textOnSecondaryContainerColor`
+  - `appBackgroundColor`
+  - `appHandleBackgroundColor`
+  - Removal of `primaryTextColor` and `secondaryTextColor`, those are not completely automatic
+
 ## 1.0.0-alpha.7
 
 Android back button support & resizing
