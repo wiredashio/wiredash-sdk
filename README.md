@@ -28,7 +28,7 @@ name: your_flutter_app
 dependencies:
   flutter:
     sdk: flutter
-  wiredash: ^1.0.0-alpha.6
+  wiredash: ^1.0.0-beta.1
 ```
 
 ### 3. Wrap your root widget with Wiredash

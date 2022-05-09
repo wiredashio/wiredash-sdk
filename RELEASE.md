@@ -8,7 +8,7 @@
 - Commit changes
 - Tag release `vX.Y.Z` and push it
 - Double check that there are no local changes, then run `git stash && flutter pub publish`
-- Update/Move the `stable`, `beta` and `dev` branches (Run `./tool/update_branches.sh `)
+- Update/Move the `stable`, `beta` and `dev` branches (Run `./tool/update_branches.sh`)
 - Copy paste release notes into github release
 - Update latest SDK version in `console`
 - Announce release on Twitter 🎉
