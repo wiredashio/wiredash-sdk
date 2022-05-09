@@ -519,6 +519,7 @@ enum DeviceClass {
   desktopLarge1440
 }
 
+/// Based on the theory in https://m3.material.io/styles/color/dynamic-color/user-generated-color
 class MaterialColorTone {
   MaterialColorTone(this.baseColor, this.brightness)
       : palette = CorePalette.of(baseColor.value);
