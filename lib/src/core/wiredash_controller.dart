@@ -92,6 +92,7 @@ class WiredashController {
     bool? inheritCupertinoTheme,
   }) {
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
+    _captureAppLocale();
     _model.show(flow: WiredashFlow.feedback);
   }
 
@@ -105,6 +106,16 @@ class WiredashController {
   ValueNotifier<bool> get visible {
     return _model.services.backdropController
         .asValueNotifier((c) => c.isAppInteractive);
+  }
+
+  /// Captures the current locale of the app when opening wiredash
+  void _captureAppLocale() {
+    final context = _model.services.wiredashWidget.showBuildContext;
+    assert(context != null);
+    if (context == null) return;
+
+    final locale = Localizations.maybeLocaleOf(context);
+    _model.appLocale = locale;
   }
 
   /// Search the user context for the app theme

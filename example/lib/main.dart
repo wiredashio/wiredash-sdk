@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
+import 'package:wiredash_example/custom_demo_translations.dart';
 
 void main() {
   runApp(WiredashExampleApp());
@@ -48,10 +49,7 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
         // praiseButton: false,
 
         /// Uncomment below to set custom translations work
-        // customTranslations: {
-        //    Locale.fromSubtags(languageCode: 'en'):
-        //        CustomDemoTranslations(),
-        // },
+        // localizationDelegate: CustomWiredashTranslationsDelegate(),
 
         /// Uncomment below to override the default device locale
         // and/or text direction

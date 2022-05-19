@@ -1,0 +1,14 @@
+{
+  "@@locale": "de",
+  "feedbackStep1MessageTitle": "Gib uns dein Feedback",
+  "feedbackStep1MessageDescription": "Beschreibe kurz was dir aufgefallen ist",
+  "feedbackStep1MessageHint": "Wenn ich mein Avatar ändern möchte bekomme ich einen Fehler angezeigt...",
+  "feedbackStep1MessageErrorMissingMessage": "Schreibe uns bitte dein Feedback",
+  "feedbackStep1MessageBreadcrumbTitle": "Nachricht verfassen",
+  "feedbackStepXOfY": "Schritt {x} von {y}",
+  "feedbackNextButton": "Weiter",
+  "feedbackDiscardButton": "Feedback verwerfen",
+  "feedbackDiscardConfirmButton": "Sicher? Löschen!",
+  "feedbackCloseButton": "Schießen",
+  "feedbackNextButton": "Weiter"
+}

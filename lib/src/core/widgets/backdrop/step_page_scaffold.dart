@@ -341,7 +341,7 @@ class StepIndicator extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Text(
-          'Step $currentStep of $total',
+          context.l10n.feedbackStepXOfY(currentStep, total),
           style: context.theme.captionTextStyle.copyWith(
             color: context.theme.secondaryTextOnBackgroundColor,
           ),

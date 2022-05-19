@@ -67,7 +67,8 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                 final valid = const EmailValidator().validate(email);
                 return valid
                     ? null
-                    : WiredashLocalizations.of(context)!.validationHintEmail;
+                    : WiredashLocalizations.of(context)
+                        .feedbackStep1MessageHint;
               },
               decoration: InputDecoration(
                 filled: true,

@@ -39,13 +39,11 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
       indicator: const FeedbackProgressIndicator(
         flowStatus: FeedbackFlowStatus.message,
       ),
-      title: const Text('Send us your feedback'),
-      shortTitle: const Text('Compose message'),
-      description: const Text(
-        'Add a short description of what you encountered',
-      ),
-      discardLabel: const Text('Discard Feedback'),
-      discardConfirmLabel: const Text('Really? Discard!'),
+      title: Text(context.l10n.feedbackStep1MessageTitle),
+      shortTitle: Text(context.l10n.feedbackStep1MessageBreadcrumbTitle),
+      description: Text(context.l10n.feedbackStep1MessageDescription),
+      discardLabel: Text(context.l10n.feedbackDiscardButton),
+      discardConfirmLabel: Text(context.l10n.feedbackDiscardConfirmButton),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -56,7 +54,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
             child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter a feedback message';
+                  return context.l10n.feedbackStep1MessageErrorMissingMessage;
                 }
                 return null;
               },
@@ -70,11 +68,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
               cursorColor: context.theme.primaryColor,
               decoration: InputDecoration(
                 filled: true,
-                // fillColor: context.theme.primaryContainerColor,
-                // focusColor: context.theme.primaryBackgroundColor,
-                // hoverColor: context.theme.primaryBackgroundColor,
                 fillColor: context.theme.surfaceColor,
-                // focusColor: Colors.white70,
                 hoverColor: Colors.transparent,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
@@ -94,8 +88,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                     color: context.theme.errorColor.lighten(),
                   ),
                 ),
-                hintText:
-                    'There’s an unknown error when I try to change my avatar...',
+                hintText: context.l10n.feedbackStep1MessageHint,
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 hintStyle: context.theme.body2TextStyle,
@@ -108,11 +101,11 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
             children: [
               TronButton(
                 color: context.theme.secondaryColor,
-                label: 'Close',
+                label: context.l10n.feedbackCloseButton,
                 onTap: context.wiredashModel.hide,
               ),
               TronButton(
-                label: 'Next',
+                label: context.l10n.feedbackNextButton,
                 trailingIcon: Wirecons.arrow_right,
                 onTap: context.feedbackModel.feedbackMessage == null
                     ? context.feedbackModel.validateForm

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -268,7 +269,14 @@ class WiredashState extends State<Wiredash> {
     final Widget backdrop = NotAWidgetsApp(
       textDirection: widget.options?.textDirection,
       child: _backButtonDispatcher.wrap(
-        child: WiredashLocalizations(
+        child: Localizations(
+          delegates: [
+            DefaultWidgetsLocalizations.delegate,
+            if (widget.options?.localizationDelegate != null)
+              widget.options!.localizationDelegate!,
+            WiredashLocalizations.delegate,
+          ],
+          locale: _currentLocale,
           child: WiredashTheme(
             data: theme,
             child: flow,
@@ -292,6 +300,31 @@ class WiredashState extends State<Wiredash> {
       ),
     );
   }
+
+  /// Current locale used by Wiredash widget
+  Locale get _currentLocale {
+    final optionsLocale = widget.options?.locale;
+    if (optionsLocale != null &&
+        WiredashLocalizations.supportedLocales.contains(optionsLocale)) {
+      // Use what users set in WiredashOptions when supported wiredash
+      return optionsLocale;
+    }
+    final appLocale = _services.wiredashModel.appLocale;
+    if (appLocale != null &&
+        WiredashLocalizations.supportedLocales.contains(appLocale)) {
+      // Use what users use for their app when supported by wiredash
+      return appLocale;
+    }
+    // Use what's set by the operating system
+    return _defaultLocale;
+  }
+}
+
+Locale get _defaultLocale {
+  // Flutter 1.26 (2.0.1) returns `Locale?`, 1.27 `Locale`
+  // ignore: unnecessary_nullable_for_final_variable_declarations
+  final Locale? locale = ui.window.locale;
+  return locale ?? const Locale('en', 'US');
 }
 
 @visibleForTesting

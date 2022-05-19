@@ -15,11 +15,9 @@ class MaterialSupportLayer extends StatefulWidget {
   const MaterialSupportLayer({
     Key? key,
     required this.child,
-    this.locale,
   }) : super(key: key);
 
   final Widget child;
-  final Locale? locale;
 
   @override
   State<MaterialSupportLayer> createState() => _MaterialSupportLayerState();
@@ -66,8 +64,9 @@ class _MaterialSupportLayerState extends State<MaterialSupportLayer> {
 
     // Localizations required for Flutter UI widgets.
     // I.e. copy/paste dialogs for TextFields
-    child = Localizations(
-      locale: widget.locale ?? window.locale,
+    child = Localizations.override(
+      context: context,
+      locale: Localizations.maybeLocaleOf(context) ?? window.locale,
       delegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

@@ -60,6 +60,16 @@ class WiredashModel with ChangeNotifier {
     notifyListeners();
   }
 
+  /// The locale of the application where `Wiredash.of(context)` got called
+  Locale? _appLocale;
+
+  Locale? get appLocale => _appLocale;
+
+  set appLocale(Locale? appLocale) {
+    _appLocale = appLocale;
+    notifyListeners();
+  }
+
   /// Deletes pending feedbacks
   ///
   /// Usually only relevant for debug builds
