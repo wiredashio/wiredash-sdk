@@ -21,7 +21,7 @@ class _Step2LabelsState extends State<Step2Labels>
         flowStatus: FeedbackFlowStatus.labels,
       ),
       title: Text(context.l10n.feedbackStep2LabelsTitle),
-      shortTitle: Text(context.l10n.feedbackStep2LabelsBreadcrumbTitle),
+      breadcrumbTitle: Text(context.l10n.feedbackStep2LabelsBreadcrumbTitle),
       description: Text(context.l10n.feedbackStep2LabelsDescription),
       discardLabel: Text(context.l10n.feedbackDiscardButton),
       discardConfirmLabel: Text(context.l10n.feedbackDiscardConfirmButton),

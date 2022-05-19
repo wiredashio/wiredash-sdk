@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 
@@ -61,7 +62,7 @@ class _Submitted extends StatelessWidget {
             height: 20,
           ),
           Text(
-            'Thanks for your feedback!',
+            context.l10n.feedbackStep7SubmissionSuccessMessage,
             textAlign: TextAlign.center,
             style: context.theme.titleTextStyle,
           ),
@@ -93,7 +94,7 @@ class _Submitting extends StatelessWidget {
             height: 20,
           ),
           Text(
-            'Submitting your feedback',
+            context.l10n.feedbackStep7SubmissionInFlightMessage,
             textAlign: TextAlign.center,
             style: context.theme.titleTextStyle,
           ),
@@ -125,7 +126,7 @@ class _Error extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Feedback submission failed',
+            context.l10n.feedbackStep7SubmissionErrorMessage,
             style: context.theme.titleTextStyle,
             textAlign: TextAlign.center,
           ),
@@ -136,7 +137,7 @@ class _Error extends StatelessWidget {
             ),
             child: ExpansionTile(
               title: Text(
-                'Click to open error details',
+                context.l10n.feedbackStep7SubmissionOpenErrorButton,
                 style: context.theme.bodyTextStyle,
               ),
               children: [
@@ -155,7 +156,7 @@ class _Error extends StatelessWidget {
               onTap: () {
                 context.feedbackModel.submitFeedback();
               },
-              child: const Text("Retry"),
+              child: Text(context.l10n.feedbackStep7SubmissionRetryButton),
             ),
           ),
         ],

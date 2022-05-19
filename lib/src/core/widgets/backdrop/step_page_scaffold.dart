@@ -13,7 +13,7 @@ class StepPageScaffold extends StatefulWidget {
     this.currentStep,
     this.totalSteps,
     this.title,
-    this.shortTitle,
+    this.breadcrumbTitle,
     this.description,
     required this.child,
     this.indicator,
@@ -30,7 +30,7 @@ class StepPageScaffold extends StatefulWidget {
 
   final Widget? indicator;
   final Widget? title;
-  final Widget? shortTitle;
+  final Widget? breadcrumbTitle;
   final Widget? description;
   final Widget? discardLabel;
   final Widget? discardConfirmLabel;
@@ -139,7 +139,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                 Row(
                   children: [
                     if (widget.indicator != null) widget.indicator!,
-                    if (widget.shortTitle != null &&
+                    if (widget.breadcrumbTitle != null &&
                         context.theme.windowSize.width > 400) ...[
                       SizedBox(
                         height: 16,
@@ -154,7 +154,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          child: widget.shortTitle!,
+                          child: widget.breadcrumbTitle!,
                         ),
                       )
                     ] else

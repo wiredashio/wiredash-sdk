@@ -145,6 +145,192 @@ abstract class WiredashLocalizations {
   /// **'Selecting the correct category helps forwarding your feedback to the best person to resolve your issue'**
   String get feedbackStep2LabelsDescription;
 
+  /// No description provided for @feedbackStep3ScreenshotOverviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Include a screenshot for more context?'**
+  String get feedbackStep3ScreenshotOverviewTitle;
+
+  /// No description provided for @feedbackStep3ScreenshotOverviewBreadcrumbTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshots'**
+  String get feedbackStep3ScreenshotOverviewBreadcrumbTitle;
+
+  /// No description provided for @feedbackStep3ScreenshotOverviewDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You’ll be able to navigate the app and choose when to take a screenshot'**
+  String get feedbackStep3ScreenshotOverviewDescription;
+
+  /// No description provided for @feedbackStep3ScreenshotOverviewSkipButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get feedbackStep3ScreenshotOverviewSkipButton;
+
+  /// No description provided for @feedbackStep3ScreenshotOverviewAddScreenshotButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add screenshot'**
+  String get feedbackStep3ScreenshotOverviewAddScreenshotButton;
+
+  /// No description provided for @feedbackStep3ScreenshotBarNavigateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a screenshot for more context'**
+  String get feedbackStep3ScreenshotBarNavigateTitle;
+
+  /// No description provided for @feedbackStep3ScreenshotBarDrawTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Draw to highlight what\'s important'**
+  String get feedbackStep3ScreenshotBarDrawTitle;
+
+  /// No description provided for @feedbackStep3ScreenshotBarDrawUndoButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get feedbackStep3ScreenshotBarDrawUndoButton;
+
+  /// No description provided for @feedbackStep3ScreenshotBarCaptureButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture'**
+  String get feedbackStep3ScreenshotBarCaptureButton;
+
+  /// No description provided for @feedbackStep3ScreenshotBarSaveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get feedbackStep3ScreenshotBarSaveButton;
+
+  /// No description provided for @feedbackStep3ScreenshotBarOkButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Ok'**
+  String get feedbackStep3ScreenshotBarOkButton;
+
+  /// No description provided for @feedbackStep3GalleryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attached screenshots'**
+  String get feedbackStep3GalleryTitle;
+
+  /// No description provided for @feedbackStep3GalleryBreadcrumbTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshots'**
+  String get feedbackStep3GalleryBreadcrumbTitle;
+
+  /// No description provided for @feedbackStep3GalleryDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Add more screenshots to help us understand your issue'**
+  String get feedbackStep3GalleryDescription;
+
+  /// No description provided for @feedbackStep4EmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Get email updates for your issue'**
+  String get feedbackStep4EmailTitle;
+
+  /// No description provided for @feedbackStep4EmailBreadcrumbTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get feedbackStep4EmailBreadcrumbTitle;
+
+  /// No description provided for @feedbackStep4EmailDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your email address below or leave empty'**
+  String get feedbackStep4EmailDescription;
+
+  /// No description provided for @feedbackStep4EmailInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'This doesn\'t look like a vlaid email. You can leave it empty'**
+  String get feedbackStep4EmailInvalidEmail;
+
+  /// No description provided for @feedbackStep4EmailInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'mail@example.com'**
+  String get feedbackStep4EmailInputHint;
+
+  /// No description provided for @feedbackStep6SubmitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit your feedback'**
+  String get feedbackStep6SubmitTitle;
+
+  /// No description provided for @feedbackStep6SubmitBreadcrumbTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get feedbackStep6SubmitBreadcrumbTitle;
+
+  /// No description provided for @feedbackStep6SubmitDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Please review your data before submission.\nYou can navigate back to adjust your feedback'**
+  String get feedbackStep6SubmitDescription;
+
+  /// No description provided for @feedbackStep6SubmitSubmitButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get feedbackStep6SubmitSubmitButton;
+
+  /// No description provided for @feedbackStep6SubmitSubmitShowDetailsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Show details'**
+  String get feedbackStep6SubmitSubmitShowDetailsButton;
+
+  /// No description provided for @feedbackStep6SubmitSubmitHideDetailsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide details'**
+  String get feedbackStep6SubmitSubmitHideDetailsButton;
+
+  /// No description provided for @feedbackStep6SubmitSubmitDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback Details'**
+  String get feedbackStep6SubmitSubmitDetailsTitle;
+
+  /// No description provided for @feedbackStep7SubmissionInFlightMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting your feedback'**
+  String get feedbackStep7SubmissionInFlightMessage;
+
+  /// No description provided for @feedbackStep7SubmissionSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for your feedback!'**
+  String get feedbackStep7SubmissionSuccessMessage;
+
+  /// No description provided for @feedbackStep7SubmissionErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback submission failed'**
+  String get feedbackStep7SubmissionErrorMessage;
+
+  /// No description provided for @feedbackStep7SubmissionOpenErrorButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Click to open error details'**
+  String get feedbackStep7SubmissionOpenErrorButton;
+
+  /// No description provided for @feedbackStep7SubmissionRetryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get feedbackStep7SubmissionRetryButton;
+
   /// No description provided for @feedbackStepXOfY.
   ///
   /// In en, this message translates to:

@@ -38,11 +38,11 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
     return StepPageScaffold(
       indicator:
           const FeedbackProgressIndicator(flowStatus: FeedbackFlowStatus.email),
-      title: const Text('Get email updates for your issue'),
-      shortTitle: const Text('Contact'),
-      description: const Text('Add your email address below or leave empty'),
-      discardLabel: const Text('Discard Feedback'),
-      discardConfirmLabel: const Text('Really? Discard!'),
+      title: Text(context.l10n.feedbackStep4EmailTitle),
+      breadcrumbTitle: Text(context.l10n.feedbackStep4EmailTitle),
+      description: Text(context.l10n.feedbackStep4EmailDescription),
+      discardLabel: Text(context.l10n.feedbackDiscardButton),
+      discardConfirmLabel: Text(context.l10n.feedbackDiscardConfirmButton),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -67,8 +67,7 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                 final valid = const EmailValidator().validate(email);
                 return valid
                     ? null
-                    : WiredashLocalizations.of(context)
-                        .feedbackStep1MessageHint;
+                    : context.l10n.feedbackStep4EmailInvalidEmail;
               },
               decoration: InputDecoration(
                 filled: true,
@@ -79,7 +78,7 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: context.theme.secondaryColor),
                 ),
-                hintText: 'mail@example.com',
+                hintText: context.l10n.feedbackStep4EmailInputHint,
                 hoverColor: context.theme.brightness == Brightness.light
                     ? context.theme.primaryBackgroundColor.darken(0.015)
                     : context.theme.primaryBackgroundColor.lighten(0.015),
@@ -96,11 +95,11 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
               TronButton(
                 color: context.theme.secondaryColor,
                 leadingIcon: Wirecons.arrow_left,
-                label: 'Back',
+                label: context.l10n.feedbackBackButton,
                 onTap: context.feedbackModel.goToPreviousStep,
               ),
               TronButton(
-                label: 'Next',
+                label: context.l10n.feedbackNextButton,
                 trailingIcon: Wirecons.arrow_right,
                 onTap: () {
                   try {

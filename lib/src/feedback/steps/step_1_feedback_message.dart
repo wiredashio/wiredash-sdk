@@ -40,7 +40,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
         flowStatus: FeedbackFlowStatus.message,
       ),
       title: Text(context.l10n.feedbackStep1MessageTitle),
-      shortTitle: Text(context.l10n.feedbackStep1MessageBreadcrumbTitle),
+      breadcrumbTitle: Text(context.l10n.feedbackStep1MessageBreadcrumbTitle),
       description: Text(context.l10n.feedbackStep1MessageDescription),
       discardLabel: Text(context.l10n.feedbackDiscardButton),
       discardConfirmLabel: Text(context.l10n.feedbackDiscardConfirmButton),
