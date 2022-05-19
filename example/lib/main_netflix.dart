@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:wiredash/wiredash.dart';
 import 'package:wiredash_example/marianos_clones/netflix_clone.dart';
 
