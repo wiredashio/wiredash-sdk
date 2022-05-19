@@ -103,6 +103,12 @@ abstract class WiredashLocalizations {
   /// **'Send us your feedback'**
   String get feedbackStep1MessageTitle;
 
+  /// No description provided for @feedbackStep1MessageBreadcrumbTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compose message'**
+  String get feedbackStep1MessageBreadcrumbTitle;
+
   /// No description provided for @feedbackStep1MessageDescription.
   ///
   /// In en, this message translates to:
@@ -121,17 +127,29 @@ abstract class WiredashLocalizations {
   /// **'Please enter a feedback message'**
   String get feedbackStep1MessageErrorMissingMessage;
 
-  /// No description provided for @feedbackStep1MessageBreadcrumbTitle.
+  /// No description provided for @feedbackStep2LabelsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Compose message'**
-  String get feedbackStep1MessageBreadcrumbTitle;
+  /// **'Which label represents your feedback?'**
+  String get feedbackStep2LabelsTitle;
+
+  /// No description provided for @feedbackStep2LabelsBreadcrumbTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Labels'**
+  String get feedbackStep2LabelsBreadcrumbTitle;
+
+  /// No description provided for @feedbackStep2LabelsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Selecting the correct category helps forwarding your feedback to the best person to resolve your issue'**
+  String get feedbackStep2LabelsDescription;
 
   /// No description provided for @feedbackStepXOfY.
   ///
   /// In en, this message translates to:
-  /// **'Step {x} of {y}'**
-  String feedbackStepXOfY(Object x, Object y);
+  /// **'Step {current} of {total}'**
+  String feedbackStepXOfY(int current, int total);
 
   /// No description provided for @feedbackDiscardButton.
   ///
@@ -145,17 +163,23 @@ abstract class WiredashLocalizations {
   /// **'Really? Discard!'**
   String get feedbackDiscardConfirmButton;
 
-  /// No description provided for @feedbackCloseButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Close'**
-  String get feedbackCloseButton;
-
   /// No description provided for @feedbackNextButton.
   ///
   /// In en, this message translates to:
   /// **'Next'**
   String get feedbackNextButton;
+
+  /// No description provided for @feedbackBackButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get feedbackBackButton;
+
+  /// No description provided for @feedbackCloseButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get feedbackCloseButton;
 }
 
 class _WiredashLocalizationsDelegate

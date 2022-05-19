@@ -1,19 +1,33 @@
 {
   "@@locale": "en",
   "feedbackStep1MessageTitle": "Send us your feedback",
+  "feedbackStep1MessageBreadcrumbTitle": "Compose message",
   "feedbackStep1MessageDescription": "Add a short description of what you encountered",
   "feedbackStep1MessageHint": "There's an unknown error when I try to change my avatar...",
   "feedbackStep1MessageErrorMissingMessage": "Please enter a feedback message",
-  "feedbackStep1MessageBreadcrumbTitle": "Compose message",
-  "feedbackStepXOfY": "Step {x} of {y}",
+
+  "feedbackStep2LabelsTitle": "Which label represents your feedback?",
+  "feedbackStep2LabelsBreadcrumbTitle": "Labels",
+  "feedbackStep2LabelsDescription": "Selecting the correct category helps forwarding your feedback to the best person to resolve your issue",
+
+  "feedbackStepXOfY": "Step {current} of {total}",
   "@feedbackStepXOfY": {
     "placeholders": {
-      "x": {},
-      "y": {}
+      "current": {
+        "description": "current step number 1-max",
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "description": "max number of steps",
+        "type": "int",
+        "example": "5"
+      }
     }
   },
   "feedbackDiscardButton": "Discard Feedback",
   "feedbackDiscardConfirmButton": "Really? Discard!",
-  "feedbackCloseButton": "Close",
-  "feedbackNextButton": "Next"
+  "feedbackNextButton": "Next",
+  "feedbackBackButton": "Back",
+  "feedbackCloseButton": "Close"
 }

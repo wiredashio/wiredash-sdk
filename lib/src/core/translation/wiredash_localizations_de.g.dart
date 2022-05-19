@@ -8,6 +8,9 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
   String get feedbackStep1MessageTitle => 'Gib uns dein Feedback';
 
   @override
+  String get feedbackStep1MessageBreadcrumbTitle => 'Nachricht verfassen';
+
+  @override
   String get feedbackStep1MessageDescription =>
       'Beschreibe kurz was dir aufgefallen ist';
 
@@ -20,11 +23,19 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
       'Schreibe uns bitte dein Feedback';
 
   @override
-  String get feedbackStep1MessageBreadcrumbTitle => 'Nachricht verfassen';
+  String get feedbackStep2LabelsTitle =>
+      'Kannst du dein feedback Labels zuordnen?';
 
   @override
-  String feedbackStepXOfY(Object x, Object y) {
-    return 'Schritt $x von $y';
+  String get feedbackStep2LabelsBreadcrumbTitle => 'Labels';
+
+  @override
+  String get feedbackStep2LabelsDescription =>
+      'Wenn dein Feedback richtig kategorisiert ist, wird es schnell an die richtige Person weitergleitet';
+
+  @override
+  String feedbackStepXOfY(int current, int total) {
+    return 'Schritt $current von $total';
   }
 
   @override
@@ -34,8 +45,11 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
   String get feedbackDiscardConfirmButton => 'Sicher? Löschen!';
 
   @override
-  String get feedbackCloseButton => 'Schießen';
+  String get feedbackNextButton => 'Weiter';
 
   @override
-  String get feedbackNextButton => 'Weiter';
+  String get feedbackBackButton => 'Zurück';
+
+  @override
+  String get feedbackCloseButton => 'Schließen';
 }
