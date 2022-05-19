@@ -196,7 +196,7 @@ class WiredashState extends State<Wiredash> {
       submitter.submitPendingFeedbackItems();
 
       if (kDebugMode) {
-        //submitter.deletePendingFeedbacks();
+        submitter.deletePendingFeedbacks();
       }
     }
   }
