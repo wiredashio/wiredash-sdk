@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
-import 'package:wiredash/src/utils/standard_kt.dart';
 
 class Step3ScreenshotOverview extends StatefulWidget {
   const Step3ScreenshotOverview({Key? key}) : super(key: key);

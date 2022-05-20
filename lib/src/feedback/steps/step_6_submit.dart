@@ -54,11 +54,13 @@ class _Step6SubmitState extends State<Step6Submit> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TronLabeledButton(
-                    child: Text(showDetails
-                        ? context
-                            .l10n.feedbackStep6SubmitSubmitHideDetailsButton
-                        : context
-                            .l10n.feedbackStep6SubmitSubmitShowDetailsButton),
+                    child: Text(
+                      showDetails
+                          ? context
+                              .l10n.feedbackStep6SubmitSubmitHideDetailsButton
+                          : context
+                              .l10n.feedbackStep6SubmitSubmitShowDetailsButton,
+                    ),
                     onTap: () {
                       StepPageScaffold.of(context)?.animateNextSizeChange();
                       setState(() {

@@ -1,7 +1,6 @@
 // ignore_for_file: join_return_with_assignment
 
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +65,6 @@ class _MaterialSupportLayerState extends State<MaterialSupportLayer> {
     // I.e. copy/paste dialogs for TextFields
     child = Localizations.override(
       context: context,
-      locale: Localizations.maybeLocaleOf(context) ?? window.locale,
       delegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

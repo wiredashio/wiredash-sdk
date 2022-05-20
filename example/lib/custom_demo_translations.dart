@@ -21,5 +21,12 @@ class CustomWiredashTranslationsDelegate
 /// This makes is robost to changes when new terms are added.
 class _CustomTranslationsEn extends WiredashLocalizationsEn {
   @override
-  String get feedbackStep1MessageTitle => 'feedback_step1_message_title';
+  String get feedbackStep1MessageTitle => 'feedbackStep1MessageTitle';
+
+  @override
+  String get feedbackStep1MessageDescription =>
+      'feedbackStep1MessageDescription';
+
+  @override
+  String get feedbackStep1MessageHint => 'feedbackStep1MessageHint';
 }

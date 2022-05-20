@@ -4,9 +4,8 @@ import 'package:wiredash/wiredash.dart';
 class WiredashOptionsData {
   const WiredashOptionsData({
     this.locale,
-    TextDirection? textDirection,
     this.localizationDelegate,
-  })  : textDirection = textDirection ?? TextDirection.ltr;
+  });
 
   /// The locale to be used for wiredash
   ///
@@ -33,7 +32,4 @@ class WiredashOptionsData {
   /// See [https://github.com/wiredashio/wiredash-sdk/blob/stable/example/lib/custom_demo_translations.dart]
   /// for an example of how to use this.
   final LocalizationsDelegate<WiredashLocalizations>? localizationDelegate;
-
-  /// Current [TextDirection] used by Wiredash widget
-  final TextDirection textDirection;
 }
