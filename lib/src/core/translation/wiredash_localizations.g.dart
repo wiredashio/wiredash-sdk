@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
-import 'wiredash_localizations_de.g.dart' deferred as wiredash_localizations_de;
-import 'wiredash_localizations_en.g.dart' deferred as wiredash_localizations_en;
+import 'wiredash_localizations_de.g.dart';
+import 'wiredash_localizations_en.g.dart';
 
 /// Callers can lookup localized strings with an instance of WiredashLocalizations returned
 /// by `WiredashLocalizations.of(context)`.
@@ -379,7 +380,8 @@ class _WiredashLocalizationsDelegate
 
   @override
   Future<WiredashLocalizations> load(Locale locale) {
-    return lookupWiredashLocalizations(locale);
+    return SynchronousFuture<WiredashLocalizations>(
+        lookupWiredashLocalizations(locale));
   }
 
   @override
@@ -390,15 +392,13 @@ class _WiredashLocalizationsDelegate
   bool shouldReload(_WiredashLocalizationsDelegate old) => false;
 }
 
-Future<WiredashLocalizations> lookupWiredashLocalizations(Locale locale) {
+WiredashLocalizations lookupWiredashLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'de':
-      return wiredash_localizations_de.loadLibrary().then(
-          (dynamic _) => wiredash_localizations_de.WiredashLocalizationsDe());
+      return WiredashLocalizationsDe();
     case 'en':
-      return wiredash_localizations_en.loadLibrary().then(
-          (dynamic _) => wiredash_localizations_en.WiredashLocalizationsEn());
+      return WiredashLocalizationsEn();
   }
 
   throw FlutterError(

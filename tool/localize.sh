@@ -7,7 +7,6 @@ flutter gen-l10n \
   --no-synthetic-package \
   --output-dir="$translationPath" \
   --template-arb-file="wiredash_en.arb" \
-  --use-deferred-loading \
   --no-nullable-getter \
   --output-class="WiredashLocalizations" \
   --output-localization-file="wiredash_localizations.g.dart"
