@@ -93,7 +93,7 @@ class WiredashLocalizationsEn extends WiredashLocalizations {
 
   @override
   String get feedbackStep4EmailInvalidEmail =>
-      'This doesn\'t look like a vlaid email. You can leave it empty';
+      'This doesn\'t look like a valid email. You can leave it empty';
 
   @override
   String get feedbackStep4EmailInputHint => 'mail@example.com';
@@ -158,4 +158,7 @@ class WiredashLocalizationsEn extends WiredashLocalizations {
 
   @override
   String get feedbackCloseButton => 'Close';
+
+  @override
+  String get backdropReturnToApp => 'Return to App';
 }

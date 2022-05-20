@@ -10,11 +10,50 @@
   "feedbackStep2LabelsBreadcrumbTitle": "Labels",
   "feedbackStep2LabelsDescription": "Wenn dein Feedback richtig kategorisiert ist, wird es schnell an die richtige Person weitergleitet",
 
+  "feedbackStep3ScreenshotOverviewTitle": "Screenshot anhängen",
+  "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "Screenshots",
+  "feedbackStep3ScreenshotOverviewDescription": "Du kannst dabei die App weiter bedienen bevor du den Screenshot erstellst",
+  "feedbackStep3ScreenshotOverviewSkipButton": "Überspringen",
+  "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Screenshot",
+
+  "feedbackStep3ScreenshotBarNavigateTitle": "Erstelle einene Screenshot für weiteren Kontext",
+  "feedbackStep3ScreenshotBarDrawTitle": "Zeichne auf den Screenshot",
+  "feedbackStep3ScreenshotBarDrawUndoButton": "Rückgängig",
+  "feedbackStep3ScreenshotBarCaptureButton": "Aufnehmen",
+  "feedbackStep3ScreenshotBarSaveButton": "Speichern",
+  "feedbackStep3ScreenshotBarOkButton": "Ok",
+
+  "feedbackStep3GalleryTitle": "Angehängte Screenshots",
+  "feedbackStep3GalleryBreadcrumbTitle": "Screenshots",
+  "feedbackStep3GalleryDescription": "Füge weitere Screenshots hinzu um dein Problem besser zu beschreiben",
+
+  "feedbackStep4EmailTitle": "Werde bei Rückfragen per Email benachrichtigt",
+  "feedbackStep4EmailBreadcrumbTitle": "Kontakt",
+  "feedbackStep4EmailDescription": "Füge deine Email adresse hinzu oder lasse das Feld leer.",
+  "feedbackStep4EmailInvalidEmail": "Invalide email adresse. Du kannst das Feld auch leer lassen",
+  "feedbackStep4EmailInputHint": "mail@example.com",
+
+  "feedbackStep6SubmitTitle": "Feedback absenden",
+  "feedbackStep6SubmitBreadcrumbTitle": "Absenden",
+  "feedbackStep6SubmitDescription": "Bitte kontrolliere dein Feedback vor dem absenden.\nDu kannst auch noch einmal zurück gehen um dein Feedback anzupassen",
+  "feedbackStep6SubmitSubmitButton": "Absenden",
+  "feedbackStep6SubmitSubmitShowDetailsButton": "Details anzeigen",
+  "feedbackStep6SubmitSubmitHideDetailsButton": "Details ausblenden",
+  "feedbackStep6SubmitSubmitDetailsTitle": "Feedback Details",
+
+  "feedbackStep7SubmissionInFlightMessage": "Feddback wird gesendet",
+  "feedbackStep7SubmissionSuccessMessage": "Danke für dein Feedback!",
+  "feedbackStep7SubmissionErrorMessage": "Absenden fehlgeschlagen",
+  "feedbackStep7SubmissionOpenErrorButton": "Klicke um weitere Error Details zu sehen",
+  "feedbackStep7SubmissionRetryButton": "Wiederholen",
+
 
   "feedbackStepXOfY": "Schritt {current} von {total}",
   "feedbackDiscardButton": "Feedback verwerfen",
   "feedbackDiscardConfirmButton": "Sicher? Löschen!",
   "feedbackNextButton": "Weiter",
   "feedbackBackButton": "Zurück",
-  "feedbackCloseButton": "Schließen"
+  "feedbackCloseButton": "Schließen",
+
+  "backdropReturnToApp": "Zurück zur App"
 }

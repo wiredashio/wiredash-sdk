@@ -250,7 +250,7 @@ abstract class WiredashLocalizations {
   /// No description provided for @feedbackStep4EmailInvalidEmail.
   ///
   /// In en, this message translates to:
-  /// **'This doesn\'t look like a vlaid email. You can leave it empty'**
+  /// **'This doesn\'t look like a valid email. You can leave it empty'**
   String get feedbackStep4EmailInvalidEmail;
 
   /// No description provided for @feedbackStep4EmailInputHint.
@@ -366,6 +366,12 @@ abstract class WiredashLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get feedbackCloseButton;
+
+  /// No description provided for @backdropReturnToApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to App'**
+  String get backdropReturnToApp;
 }
 
 class _WiredashLocalizationsDelegate

@@ -34,110 +34,107 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
       'Wenn dein Feedback richtig kategorisiert ist, wird es schnell an die richtige Person weitergleitet';
 
   @override
-  String get feedbackStep3ScreenshotOverviewTitle =>
-      'Include a screenshot for more context?';
+  String get feedbackStep3ScreenshotOverviewTitle => 'Screenshot anhängen';
 
   @override
   String get feedbackStep3ScreenshotOverviewBreadcrumbTitle => 'Screenshots';
 
   @override
   String get feedbackStep3ScreenshotOverviewDescription =>
-      'You’ll be able to navigate the app and choose when to take a screenshot';
+      'Du kannst dabei die App weiter bedienen bevor du den Screenshot erstellst';
 
   @override
-  String get feedbackStep3ScreenshotOverviewSkipButton => 'Skip';
+  String get feedbackStep3ScreenshotOverviewSkipButton => 'Überspringen';
 
   @override
-  String get feedbackStep3ScreenshotOverviewAddScreenshotButton =>
-      'Add screenshot';
+  String get feedbackStep3ScreenshotOverviewAddScreenshotButton => 'Screenshot';
 
   @override
   String get feedbackStep3ScreenshotBarNavigateTitle =>
-      'Take a screenshot for more context';
+      'Erstelle einene Screenshot für weiteren Kontext';
 
   @override
   String get feedbackStep3ScreenshotBarDrawTitle =>
-      'Draw to highlight what\'s important';
+      'Zeichne auf den Screenshot';
 
   @override
-  String get feedbackStep3ScreenshotBarDrawUndoButton => 'Undo';
+  String get feedbackStep3ScreenshotBarDrawUndoButton => 'Rückgängig';
 
   @override
-  String get feedbackStep3ScreenshotBarCaptureButton => 'Capture';
+  String get feedbackStep3ScreenshotBarCaptureButton => 'Aufnehmen';
 
   @override
-  String get feedbackStep3ScreenshotBarSaveButton => 'Save';
+  String get feedbackStep3ScreenshotBarSaveButton => 'Speichern';
 
   @override
   String get feedbackStep3ScreenshotBarOkButton => 'Ok';
 
   @override
-  String get feedbackStep3GalleryTitle => 'Attached screenshots';
+  String get feedbackStep3GalleryTitle => 'Angehängte Screenshots';
 
   @override
   String get feedbackStep3GalleryBreadcrumbTitle => 'Screenshots';
 
   @override
   String get feedbackStep3GalleryDescription =>
-      'Add more screenshots to help us understand your issue';
+      'Füge weitere Screenshots hinzu um dein Problem besser zu beschreiben';
 
   @override
-  String get feedbackStep4EmailTitle => 'Get email updates for your issue';
+  String get feedbackStep4EmailTitle =>
+      'Werde bei Rückfragen per Email benachrichtigt';
 
   @override
-  String get feedbackStep4EmailBreadcrumbTitle => 'Contact';
+  String get feedbackStep4EmailBreadcrumbTitle => 'Kontakt';
 
   @override
   String get feedbackStep4EmailDescription =>
-      'Add your email address below or leave empty';
+      'Füge deine Email adresse hinzu oder lasse das Feld leer.';
 
   @override
   String get feedbackStep4EmailInvalidEmail =>
-      'This doesn\'t look like a vlaid email. You can leave it empty';
+      'Invalide email adresse. Du kannst das Feld auch leer lassen';
 
   @override
   String get feedbackStep4EmailInputHint => 'mail@example.com';
 
   @override
-  String get feedbackStep6SubmitTitle => 'Submit your feedback';
+  String get feedbackStep6SubmitTitle => 'Feedback absenden';
 
   @override
-  String get feedbackStep6SubmitBreadcrumbTitle => 'Submit';
+  String get feedbackStep6SubmitBreadcrumbTitle => 'Absenden';
 
   @override
   String get feedbackStep6SubmitDescription =>
-      'Please review your data before submission.\nYou can navigate back to adjust your feedback';
+      'Bitte kontrolliere dein Feedback vor dem absenden.\nDu kannst auch noch einmal zurück gehen um dein Feedback anzupassen';
 
   @override
-  String get feedbackStep6SubmitSubmitButton => 'Submit';
+  String get feedbackStep6SubmitSubmitButton => 'Absenden';
 
   @override
-  String get feedbackStep6SubmitSubmitShowDetailsButton => 'Show details';
+  String get feedbackStep6SubmitSubmitShowDetailsButton => 'Details anzeigen';
 
   @override
-  String get feedbackStep6SubmitSubmitHideDetailsButton => 'Hide details';
+  String get feedbackStep6SubmitSubmitHideDetailsButton => 'Details ausblenden';
 
   @override
   String get feedbackStep6SubmitSubmitDetailsTitle => 'Feedback Details';
 
   @override
-  String get feedbackStep7SubmissionInFlightMessage =>
-      'Submitting your feedback';
+  String get feedbackStep7SubmissionInFlightMessage => 'Feddback wird gesendet';
 
   @override
   String get feedbackStep7SubmissionSuccessMessage =>
-      'Thanks for your feedback!';
+      'Danke für dein Feedback!';
 
   @override
-  String get feedbackStep7SubmissionErrorMessage =>
-      'Feedback submission failed';
+  String get feedbackStep7SubmissionErrorMessage => 'Absenden fehlgeschlagen';
 
   @override
   String get feedbackStep7SubmissionOpenErrorButton =>
-      'Click to open error details';
+      'Klicke um weitere Error Details zu sehen';
 
   @override
-  String get feedbackStep7SubmissionRetryButton => 'Retry';
+  String get feedbackStep7SubmissionRetryButton => 'Wiederholen';
 
   @override
   String feedbackStepXOfY(int current, int total) {
@@ -158,4 +155,7 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
 
   @override
   String get feedbackCloseButton => 'Schließen';
+
+  @override
+  String get backdropReturnToApp => 'Zurück zur App';
 }

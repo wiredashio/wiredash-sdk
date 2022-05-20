@@ -64,6 +64,7 @@ class Step3NotAttachments extends StatelessWidget {
                   label: context.l10n.feedbackBackButton,
                   onTap: context.feedbackModel.goToPreviousStep,
                 ),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Wrap(
                     spacing: 20,
@@ -83,6 +84,7 @@ class Step3NotAttachments extends StatelessWidget {
                         label: context.l10n
                             .feedbackStep3ScreenshotOverviewAddScreenshotButton,
                         trailingIcon: Wirecons.arrow_right,
+                        maxWidth: 250,
                         onTap: () => context.feedbackModel
                             .enterScreenshotCapturingMode(),
                       ),

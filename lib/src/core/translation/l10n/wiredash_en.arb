@@ -31,7 +31,7 @@
   "feedbackStep4EmailTitle": "Get email updates for your issue",
   "feedbackStep4EmailBreadcrumbTitle": "Contact",
   "feedbackStep4EmailDescription": "Add your email address below or leave empty",
-  "feedbackStep4EmailInvalidEmail": "This doesn't look like a vlaid email. You can leave it empty",
+  "feedbackStep4EmailInvalidEmail": "This doesn't look like a valid email. You can leave it empty",
   "feedbackStep4EmailInputHint": "mail@example.com",
 
   "feedbackStep6SubmitTitle": "Submit your feedback",
@@ -67,5 +67,7 @@
   "feedbackDiscardConfirmButton": "Really? Discard!",
   "feedbackNextButton": "Next",
   "feedbackBackButton": "Back",
-  "feedbackCloseButton": "Close"
+  "feedbackCloseButton": "Close",
+
+  "backdropReturnToApp": "Return to App"
 }
