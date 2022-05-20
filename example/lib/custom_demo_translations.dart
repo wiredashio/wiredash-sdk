@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/wiredash.dart';
@@ -11,7 +12,7 @@ class CustomWiredashTranslationsDelegate
 
   @override
   Future<WiredashLocalizations> load(Locale locale) =>
-      Future.sync(() => _CustomTranslationsEn());
+      SynchronousFuture(_CustomTranslationsEn());
 
   @override
   bool shouldReload(CustomWiredashTranslationsDelegate old) => false;
