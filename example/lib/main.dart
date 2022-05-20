@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
+import 'package:wiredash_example/custom_demo_translations.dart';
 
 void main() {
   runApp(WiredashExampleApp());
@@ -39,24 +40,8 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
         /// Change the locale of the Wiredash UI
         locale: Locale('en'),
 
-        /// Uncomment below to disable the screenshot step
-        // screenshotStep: false,
-
-        /// Uncomment below to disable different buttons
-        // bugReportButton: false,
-        // featureRequestButton: false,
-        // praiseButton: false,
-
         /// Uncomment below to set custom translations work
-        // customTranslations: {
-        //    Locale.fromSubtags(languageCode: 'en'):
-        //        CustomDemoTranslations(),
-        // },
-
-        /// Uncomment below to override the default device locale
-        // and/or text direction
-        // locale:  Locale('de'),
-        // textDirection: TextDirection.rtl,
+        // localizationDelegate: CustomWiredashTranslationsDelegate(),
       ),
       feedbackOptions: WiredashFeedbackOptions(
         collectMetaData: (metaData) => metaData
@@ -82,6 +67,9 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
             title: 'Payment',
           ),
         ],
+
+        /// Uncomment below to disable the screenshot step
+        // screenshotStep: false,
       ),
       // theme: WiredashThemeData(
       /// Uncomment below to explore the various theme options:

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 
 /// Fakes the system statusbar when the app is floating in [WiredashBackdrop]
 class FakeAppStatusBar extends StatelessWidget {
@@ -66,8 +67,8 @@ class FakeAppStatusBar extends StatelessWidget {
                   ),
                 ),
               ),
-              const Center(
-                child: Text('Return to App'),
+              Center(
+                child: Text(context.l10n.backdropReturnToApp),
               ),
             ],
           ),

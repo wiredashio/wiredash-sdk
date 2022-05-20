@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
-import 'package:wiredash/src/utils/standard_kt.dart';
 
 class Step3ScreenshotOverview extends StatefulWidget {
   const Step3ScreenshotOverview({Key? key}) : super(key: key);
@@ -42,11 +42,11 @@ class Step3NotAttachments extends StatelessWidget {
       indicator: const FeedbackProgressIndicator(
         flowStatus: FeedbackFlowStatus.screenshotsOverview,
       ),
-      title: const Text('Include a screenshot for more context?'),
-      shortTitle: const Text('Screenshots'),
-      description: const Text(
-        'You’ll be able to navigate the app and choose when to take a screenshot',
-      ),
+      title: Text(context.l10n.feedbackStep3ScreenshotOverviewTitle),
+      breadcrumbTitle:
+          Text(context.l10n.feedbackStep3ScreenshotOverviewBreadcrumbTitle),
+      description:
+          Text(context.l10n.feedbackStep3ScreenshotOverviewDescription),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -60,9 +60,10 @@ class Step3NotAttachments extends StatelessWidget {
                 TronButton(
                   color: context.theme.secondaryColor,
                   leadingIcon: Wirecons.arrow_left,
-                  label: 'Back',
+                  label: context.l10n.feedbackBackButton,
                   onTap: context.feedbackModel.goToPreviousStep,
                 ),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Wrap(
                     spacing: 20,
@@ -73,14 +74,16 @@ class Step3NotAttachments extends StatelessWidget {
                     children: [
                       TronButton(
                         color: context.theme.secondaryColor,
-                        label: 'Skip',
+                        label: context
+                            .l10n.feedbackStep3ScreenshotOverviewSkipButton,
                         trailingIcon: Wirecons.chevron_double_right,
                         onTap: context.feedbackModel.goToNextStep,
                       ),
-                      // const SizedBox(width: 12),
                       TronButton(
-                        label: 'Add screenshot',
+                        label: context.l10n
+                            .feedbackStep3ScreenshotOverviewAddScreenshotButton,
                         trailingIcon: Wirecons.arrow_right,
+                        maxWidth: 250,
                         onTap: () => context.feedbackModel
                             .enterScreenshotCapturingMode(),
                       ),
@@ -109,11 +112,11 @@ class Step3WithGallery extends StatelessWidget {
       ),
       currentStep: 2,
       totalSteps: 3,
-      title: const Text('Attached screenshots'),
-      shortTitle: const Text('Screenshots'),
-      description: const Text('Add, edit or remove images'),
-      discardLabel: const Text('Discard Feedback'),
-      discardConfirmLabel: const Text('Really? Discard!'),
+      title: Text(context.l10n.feedbackStep3GalleryTitle),
+      breadcrumbTitle: Text(context.l10n.feedbackStep3GalleryBreadcrumbTitle),
+      description: Text(context.l10n.feedbackStep3GalleryDescription),
+      discardLabel: Text(context.l10n.feedbackDiscardButton),
+      discardConfirmLabel: Text(context.l10n.feedbackDiscardConfirmButton),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -141,11 +144,11 @@ class Step3WithGallery extends StatelessWidget {
               TronButton(
                 color: context.theme.secondaryColor,
                 leadingIcon: Wirecons.arrow_left,
-                label: 'Back',
+                label: context.l10n.feedbackBackButton,
                 onTap: context.feedbackModel.goToPreviousStep,
               ),
               TronButton(
-                label: 'Next',
+                label: context.l10n.feedbackNextButton,
                 trailingIcon: Wirecons.arrow_right,
                 onTap: context.feedbackModel.goToNextStep,
               ),

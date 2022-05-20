@@ -361,8 +361,10 @@ class _ThemeControlsState extends State<ThemeControls> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SelectableText('Base Configuration',
-                style: TextStyle(fontSize: 20)),
+            SelectableText(
+              'Base Configuration',
+              style: TextStyle(fontSize: 20),
+            ),
             SizedBox(height: 20),
             Wrap(
               spacing: 20,
@@ -744,7 +746,9 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
                       prefixIconConstraints:
                           BoxConstraints.tightFor(width: 30, height: 20),
                       border: OutlineInputBorder(
-                          borderSide: BorderSide(), gapPadding: 0),
+                        borderSide: BorderSide(),
+                        gapPadding: 0,
+                      ),
                       contentPadding: EdgeInsets.symmetric(vertical: 12),
                       isDense: true,
                       counterText: '',
@@ -754,7 +758,8 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
                     inputFormatters: [
                       UpperCaseTextFormatter(),
                       FilteringTextInputFormatter.allow(
-                          RegExp(kValidHexPattern)),
+                        RegExp(kValidHexPattern),
+                      ),
                     ],
                   ),
                 ),
@@ -768,9 +773,9 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
                     color: widget.isSynced == true ? Colors.black : Colors.grey,
                     icon: Transform.rotate(
                       angle: pi * -0.25,
-                      child: Icon(widget.isSynced == true
-                          ? Icons.link
-                          : Icons.link_off),
+                      child: Icon(
+                        widget.isSynced == true ? Icons.link : Icons.link_off,
+                      ),
                     ),
                     onPressed: widget.onSync,
                   ),
@@ -877,7 +882,6 @@ class _MinSizeState extends State<MinSize> {
           thumbVisibility: shouldScrollVertical,
           child: SingleChildScrollView(
             controller: _verticalController,
-            scrollDirection: Axis.vertical,
             physics: verticalPhysics,
             child: Scrollbar(
               interactive: true,

@@ -19,7 +19,7 @@ class ScreenshotBar extends StatelessWidget {
         color: context.theme.primaryColor,
         leadingIcon: Wirecons.camera,
         iconOffset: const Offset(-.15, 0),
-        label: 'Capture',
+        label: context.l10n.feedbackStep3ScreenshotBarCaptureButton,
         onTap: () => context.feedbackModel.captureScreenshot(),
       );
     }
@@ -34,8 +34,8 @@ class ScreenshotBar extends StatelessWidget {
         iconOffset: const Offset(-.15, 0),
         label:
             context.wiredashModel.services.screenCaptureController.error == null
-                ? 'Save'
-                : 'OK',
+                ? context.l10n.feedbackStep3ScreenshotBarSaveButton
+                : context.l10n.feedbackStep3ScreenshotBarOkButton,
         onTap: () {
           if (feedbackStatus == FeedbackFlowStatus.screenshotDrawing) {
             return () => context.feedbackModel.createMasterpiece();
@@ -57,7 +57,7 @@ class ScreenshotBar extends StatelessWidget {
             return Row(
               children: [
                 TronButton(
-                  label: 'Back',
+                  label: context.l10n.feedbackBackButton,
                   leadingIcon: Wirecons.arrow_left,
                   color: context.theme.secondaryColor,
                   onTap: () {
@@ -93,12 +93,14 @@ class ScreenshotBar extends StatelessWidget {
                           child: () {
                             switch (feedbackStatus) {
                               case FeedbackFlowStatus.screenshotDrawing:
-                                return const Text(
-                                  "Draw to highlight what's important",
+                                return Text(
+                                  context
+                                      .l10n.feedbackStep3ScreenshotBarDrawTitle,
                                 );
                               case FeedbackFlowStatus.screenshotNavigating:
-                                return const Text(
-                                  'Include a screenshot for more context',
+                                return Text(
+                                  context.l10n
+                                      .feedbackStep3ScreenshotBarNavigateTitle,
                                 );
                               default:
                                 return const SizedBox();

@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -36,6 +38,10 @@ class WiredashTestRobot {
         projectId: 'test',
         secret: 'test',
         feedbackOptions: feedbackOptions,
+        options: WiredashOptionsData(
+          locale: const Locale('test'),
+          localizationDelegate: WiredashTestLocalizationDelegate(),
+        ),
         theme: WiredashThemeData(
           primaryBackgroundColor: Colors.grey,
           secondaryBackgroundColor: Colors.brown,
@@ -91,7 +97,14 @@ class WiredashTestRobot {
         .childByType(FloatingActionButton)
         .existsOnce();
     await tester.tap(fab.finder);
-    await tester.pumpAndSettle();
+
+    // process the event, wait for backdrop to appear in the widget tree
+    await tester.pumpN(4);
+    // wait for animation finish
+    await tester.pump(const Duration(milliseconds: 500));
+    // When the pump pattern on top fails, use this instead
+    // await tester.pumpAndSettle();
+
     _backdrop.childByType(WiredashFeedbackFlow).existsOnce();
     print('opened Wiredash');
   }
@@ -110,7 +123,9 @@ class WiredashTestRobot {
     await tester.enterText(find.byType(TextField), message);
     await tester.pumpAndSettle();
     await tester.waitUntil(
-      tester.getSemantics(find.widgetWithText(TronButton, 'Next')),
+      tester.getSemantics(
+        find.widgetWithText(TronButton, 'l10n.feedbackNextButton'),
+      ),
       matchesSemantics(
         isEnabled: true,
         isButton: true,
@@ -118,8 +133,8 @@ class WiredashTestRobot {
         hasEnabledState: true,
       ),
     );
-    expect(find.text('Next'), findsOneWidget);
-    expect(find.text('Close'), findsOneWidget);
+    expect(find.text('l10n.feedbackNextButton'), findsOneWidget);
+    expect(find.text('l10n.feedbackCloseButton'), findsOneWidget);
     print('entered feedback message: $message');
   }
 
@@ -132,7 +147,9 @@ class WiredashTestRobot {
 
   Future<void> skipScreenshot() async {
     final step = _pageView.childByType(Step3ScreenshotOverview).existsOnce();
-    await tester.tap(step.text('Skip').finder);
+    await tester.tap(
+      step.text('l10n.feedbackStep3ScreenshotOverviewSkipButton').finder,
+    );
     await tester.pumpAndSettle();
     await tester.pumpAndSettle();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
@@ -150,7 +167,7 @@ class WiredashTestRobot {
     await tester.tap(
       find.descendant(
         of: step.childByType(TronButton).finder,
-        matching: find.text('Submit'),
+        matching: find.text('l10n.feedbackStep6SubmitSubmitButton'),
       ),
     );
     print('submit feedback');
@@ -159,7 +176,7 @@ class WiredashTestRobot {
 
   Future<void> skipEmail() async {
     final step = _pageView.childByType(Step5Email).existsOnce();
-    await tester.tap(step.text('Next').finder);
+    await tester.tap(step.text('l10n.feedbackNextButton').finder);
     await tester.pumpAndSettle();
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;
@@ -168,7 +185,7 @@ class WiredashTestRobot {
 
   Future<void> submitEmailViaButton() async {
     final step = _pageView.childByType(Step5Email).existsOnce();
-    await tester.tap(step.text('Next').finder);
+    await tester.tap(step.text('l10n.feedbackNextButton').finder);
     await tester.pumpAndSettle();
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;
@@ -185,7 +202,7 @@ class WiredashTestRobot {
 
   Future<void> goToNextStep() async {
     final oldStatus = services.feedbackModel.feedbackFlowStatus;
-    await tester.tap(find.text('Next'));
+    await tester.tap(find.text('l10n.feedbackNextButton'));
     await tester.pumpAndSettle();
     await tester.pumpAndSettle();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
@@ -194,7 +211,7 @@ class WiredashTestRobot {
 
   Future<void> goToPrevStep() async {
     final oldStatus = services.feedbackModel.feedbackFlowStatus;
-    await tester.tap(find.text('Back'));
+    await tester.tap(find.text('l10n.feedbackBackButton'));
     await tester.pumpAndSettle();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Jumped from $oldStatus to prev $newStatus');
@@ -206,7 +223,9 @@ class WiredashTestRobot {
         step.childByType(Step3NotAttachments).finder.evaluate().toList();
     if (noAttachemntsResult.isNotEmpty) {
       step.childByType(Step3NotAttachments).existsOnce();
-      await tester.tap(find.text('Add screenshot'));
+      await tester.tap(
+        find.text('l10n.feedbackStep3ScreenshotOverviewAddScreenshotButton'),
+      );
     } else {
       final gallery = step.childByType(Step3WithGallery).existsOnce();
       final addAttachmentItem =
@@ -216,7 +235,10 @@ class WiredashTestRobot {
 
     await tester.waitUntil(find.byType(ScreenshotBar), findsOneWidget);
     await tester.waitUntil(find.byIcon(Wirecons.camera), findsOneWidget);
-    expect(find.text('Capture'), findsOneWidget);
+    expect(
+      find.text('l10n.feedbackStep3ScreenshotBarCaptureButton'),
+      findsOneWidget,
+    );
     print('Entered screenshot mode');
   }
 
@@ -229,7 +251,9 @@ class WiredashTestRobot {
 
     print('Take screeshot');
     // Click the screenshot button
-    await tester.tap(screenshotBar.text('Capture').finder);
+    await tester.tap(
+      screenshotBar.text('l10n.feedbackStep3ScreenshotBarCaptureButton').finder,
+    );
     while (services.feedbackModel.feedbackFlowStatus !=
         FeedbackFlowStatus.screenshotDrawing) {
       await tester.pumpHardAndSettle();
@@ -239,7 +263,7 @@ class WiredashTestRobot {
     final nextButton = find
         .descendant(
           of: screenshotBar.childByType(TronButton).finder,
-          matching: find.text('Save'),
+          matching: find.text('l10n.feedbackStep3ScreenshotBarSaveButton'),
         )
         .select;
 
@@ -259,11 +283,16 @@ class WiredashTestRobot {
       FeedbackFlowStatus.screenshotDrawing,
     );
     final screenshotBar = _backdrop.childByType(ScreenshotBar).existsOnce();
-    await tester.tap(screenshotBar.text('Save').finder);
+    await tester.tap(
+      screenshotBar.text('l10n.feedbackStep3ScreenshotBarSaveButton').finder,
+    );
     await tester.pumpHardAndSettle(const Duration(milliseconds: 100));
 
     // wait until the animation is closed
-    await tester.waitUntil(screenshotBar.text('Save').finder, findsNothing);
+    await tester.waitUntil(
+      screenshotBar.text('l10n.feedbackStep3ScreenshotBarSaveButton').finder,
+      findsNothing,
+    );
 
     await tester.waitUntil(
       services.feedbackModel.feedbackFlowStatus,
@@ -290,5 +319,91 @@ class WiredashTestRobot {
     // ignore: invalid_use_of_protected_member
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
+  }
+}
+
+class WiredashTestLocalizationDelegate
+    extends LocalizationsDelegate<WiredashLocalizations> {
+  @override
+  bool isSupported(_) => true;
+
+  @override
+  Future<WiredashLocalizations> load(Locale locale) {
+    return SynchronousFuture(ReturnKeysWiredashLocalizetions());
+  }
+
+  @override
+  bool shouldReload(_) => false;
+}
+
+class MaterialTestLocalizationDelegate
+    extends LocalizationsDelegate<MaterialLocalizations> {
+  @override
+  bool isSupported(_) => true;
+
+  @override
+  Future<MaterialLocalizations> load(Locale locale) {
+    return SynchronousFuture(ReturnKeysMaterialLocalizetions());
+  }
+
+  @override
+  bool shouldReload(_) => false;
+}
+
+class CupertinoTestLocalizationDelegate
+    extends LocalizationsDelegate<CupertinoLocalizations> {
+  @override
+  bool isSupported(_) => true;
+
+  @override
+  Future<CupertinoLocalizations> load(Locale locale) {
+    return SynchronousFuture(ReturnKeysCupertinoLocalizetions());
+  }
+
+  @override
+  bool shouldReload(_) => false;
+}
+
+class ReturnKeysWiredashLocalizetions extends WiredashLocalizations
+    with ReturnTranslationsKeysMixin {
+  ReturnKeysWiredashLocalizetions() : super('test');
+}
+
+class ReturnKeysCupertinoLocalizetions extends CupertinoLocalizations
+    with ReturnTranslationsKeysMixin {
+  ReturnKeysCupertinoLocalizetions();
+}
+
+class ReturnKeysMaterialLocalizetions extends MaterialLocalizations
+    with ReturnTranslationsKeysMixin {
+  @override
+  ScriptCategory get scriptCategory => ScriptCategory.englishLike;
+
+  ReturnKeysMaterialLocalizetions();
+}
+
+mixin ReturnTranslationsKeysMixin {
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    const prefix = 'l10n.';
+    if (invocation.isGetter) {
+      return "$prefix${invocation.memberName.symbolName}";
+    }
+    if (invocation.isMethod) {
+      if (invocation.positionalArguments.isNotEmpty) {
+        final args = invocation.positionalArguments.join(",");
+        return "$prefix${invocation.memberName.symbolName}_($args)";
+      }
+    }
+  }
+}
+
+extension on Symbol {
+  String get symbolName {
+    return toString()
+        .characters
+        .skip("Symbol('".length)
+        .skipLast("')".length)
+        .toString();
   }
 }

@@ -8,6 +8,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 extension WiredashTester on WidgetTester {
+  /// Pumps [n] times
+  Future<void> pumpN(int n) async {
+    for (int i = 0; i < n; i++) {
+      await pump();
+    }
+  }
+
   /// Pumps and also drains the event queue, then pumps again and settles
   Future<void> pumpHardAndSettle([
     Duration duration = const Duration(milliseconds: 1),

@@ -1143,7 +1143,6 @@ class ChatScreenState extends State<ChatScreen> {
     final size = MediaQuery.of(context).size;
     _isMobile = size.width < 720;
     _smallDevice = size.width < 360;
-    print('mq: ${MediaQuery.of(context)}');
     return Scaffold(
       appBar: _conversation != null
           ? _appBar(_conversation!.user, size, _isMobile)
@@ -2211,7 +2210,6 @@ class ContactScreenState extends State<ContactScreen> {
 
   PreferredSize _appBar(Size size) {
     final isTablet = size.width < 1100;
-    print("mq2: ${MediaQuery.of(context)}");
     return PreferredSize(
       preferredSize: Size(size.width, 60),
       child: Material(

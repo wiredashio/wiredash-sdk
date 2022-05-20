@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 
 import 'package:wiredash/src/core/support/material_support_layer.dart';
@@ -53,8 +52,6 @@ class _NpsFlowState extends State<NpsFlow> {
     );
 
     return MaterialSupportLayer(
-      locale:
-          context.wiredashModel.services.wiredashWidget.options?.currentLocale,
       child: lpv,
     );
   }

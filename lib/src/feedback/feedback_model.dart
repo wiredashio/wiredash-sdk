@@ -119,7 +119,8 @@ class FeedbackModel extends ChangeNotifier2 {
 
     if (labels.isNotEmpty) stack.add(FeedbackFlowStatus.labels);
     final renderer = getRenderer();
-    if (renderer != Renderer.html) {
+    if (_services.wiredashWidget.feedbackOptions?.screenshotStep != false &&
+        renderer != Renderer.html) {
       // Don't show the screenshot option with html renderer, because it
       // doesn't support rendering to canvas
       stack.add(FeedbackFlowStatus.screenshotsOverview);
@@ -369,7 +370,8 @@ class FeedbackModel extends ChangeNotifier2 {
 
     return PersistedFeedbackItem(
       appInfo: AppInfo(
-        appLocale: _services.wiredashOptions.currentLocale.toLanguageTag(),
+        appLocale:
+            _services.wiredashModel.appLocale?.toLanguageTag() ?? 'unknown',
       ),
       attachments: _attachments,
       buildInfo: buildInfo.copyWith(

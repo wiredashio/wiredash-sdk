@@ -16,6 +16,7 @@ class TronButton extends StatefulWidget {
     this.color,
     this.textColor,
     this.iconOffset = Offset.zero,
+    this.maxWidth,
     Key? key,
   })  : assert(
           label != null || child != null,
@@ -31,6 +32,7 @@ class TronButton extends StatefulWidget {
   final String? label;
   final Widget? child;
   final VoidCallback? onTap;
+  final double? maxWidth;
 
   @override
   State<TronButton> createState() => _TronButtonState();
@@ -125,9 +127,9 @@ class _TronButtonState extends State<TronButton>
           enabled: _enabled,
           label: semanticsLabel,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
+            constraints: BoxConstraints(
               minWidth: 48,
-              maxWidth: 200,
+              maxWidth: widget.maxWidth ?? 200,
               minHeight: 38,
               maxHeight: 48,
             ),

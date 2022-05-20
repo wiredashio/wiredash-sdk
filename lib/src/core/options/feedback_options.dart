@@ -19,7 +19,15 @@ class WiredashFeedbackOptions {
   /// When `true` a step asking the user for their email address is shown
   ///
   /// Defaults to false, does not show the email address step.
-  final bool askForUserEmail;
+  final bool? askForUserEmail;
+
+  /// Whether to display the screenshot and drawing step or not.
+  ///
+  /// Defaults to true, allows the user to add screenshots
+  ///
+  /// The Flutter Web beta does not currently support screenshots. Therefore,
+  /// the screenshot and drawing step is never shown and this option is ignored.
+  final bool? screenshotStep;
 
   /// Enrich the user feedback with custom metadata
   ///
@@ -41,8 +49,9 @@ class WiredashFeedbackOptions {
 
   const WiredashFeedbackOptions({
     this.labels,
-    this.askForUserEmail = false,
+    this.askForUserEmail,
     this.collectMetaData,
+    this.screenshotStep,
   });
 
   @override
@@ -50,6 +59,7 @@ class WiredashFeedbackOptions {
     return 'WiredashFeedbackOptions{'
         'labels: $labels, '
         'askForUserEmail: $askForUserEmail'
+        'screenshotStep: $screenshotStep'
         '}';
   }
 }

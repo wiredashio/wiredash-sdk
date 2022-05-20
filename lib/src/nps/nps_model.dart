@@ -48,7 +48,7 @@ class NpsModel extends ChangeNotifier2 {
         deviceId: deviceId,
         userId: metaData.userId,
         userEmail: metaData.userEmail,
-        appLocale: _services.wiredashOptions.currentLocale.toLanguageTag(),
+        appLocale: _services.wiredashModel.appLocale?.toLanguageTag(),
         platformLocale: deviceInfo.platformLocale,
         platformOS: deviceInfo.platformOS,
         platformUserAgent: deviceInfo.userAgent,

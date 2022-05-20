@@ -28,7 +28,7 @@ void main() {
       await robot.skipScreenshot();
       await robot.submitFeedback();
       await tester.waitUntil(
-        find.text('Thanks for your feedback!'),
+        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
         findsOneWidget,
       );
       final latestCall = mockApi.sendFeedbackInvocations.latest;
@@ -47,7 +47,7 @@ void main() {
       await robot.goToNextStep();
       larryPageView
           .childByType(Step1FeedbackMessage)
-          .text('Please enter a feedback message')
+          .text('l10n.feedbackStep1MessageErrorMissingMessage')
           .existsOnce();
 
       // Entering a message allows continue
@@ -72,7 +72,7 @@ void main() {
       await robot.goToNextStep();
       await robot.submitFeedback();
       await tester.waitUntil(
-        find.text('Thanks for your feedback!'),
+        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
         findsOneWidget,
       );
       final latestCall = mockApi.sendFeedbackInvocations.latest;
@@ -100,7 +100,7 @@ void main() {
       await robot.goToNextStep();
       await robot.submitFeedback();
       await tester.waitUntil(
-        find.text('Thanks for your feedback!'),
+        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
         findsOneWidget,
       );
       final latestCall = mockApi.sendFeedbackInvocations.latest;
@@ -136,7 +136,7 @@ void main() {
       await robot.skipScreenshot();
       await robot.submitFeedback();
       await tester.waitUntil(
-        find.text('Thanks for your feedback!'),
+        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
         findsOneWidget,
       );
       final latestCall = mockApi.sendFeedbackInvocations.latest;
@@ -164,7 +164,7 @@ void main() {
       await robot.goToNextStep();
       await robot.submitFeedback();
       await tester.waitUntil(
-        find.text('Thanks for your feedback!'),
+        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
         findsOneWidget,
       );
       final latestCall = mockApi.sendFeedbackInvocations.latest;
@@ -207,7 +207,7 @@ void main() {
       await robot.submitFeedback();
 
       await tester.waitUntil(
-        find.text('Thanks for your feedback!'),
+        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
         findsOneWidget,
       );
       final latestCall = mockApi.sendFeedbackInvocations.latest;

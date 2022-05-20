@@ -1,8 +1,8 @@
 // ignore_for_file: join_return_with_assignment
 
 import 'dart:io';
-import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -15,11 +15,9 @@ class MaterialSupportLayer extends StatefulWidget {
   const MaterialSupportLayer({
     Key? key,
     required this.child,
-    this.locale,
   }) : super(key: key);
 
   final Widget child;
-  final Locale? locale;
 
   @override
   State<MaterialSupportLayer> createState() => _MaterialSupportLayerState();
@@ -66,12 +64,14 @@ class _MaterialSupportLayerState extends State<MaterialSupportLayer> {
 
     // Localizations required for Flutter UI widgets.
     // I.e. copy/paste dialogs for TextFields
-    child = Localizations(
-      locale: widget.locale ?? window.locale,
-      delegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+    child = Localizations.override(
+      context: context,
+      delegates: [
+        ...GlobalMaterialLocalizations.delegates,
+        // fallback to english for unsupported locales
+        _EnglishFallbackMatieralLocalizationsDelegate(),
+        _EnglishFallbackCupertinoLocalizationsDelegate(),
+        _EnglishFallbackWidgetLocalizationsDelegate(),
       ],
       child: child,
     );
@@ -134,3 +134,61 @@ If you're seeing this message, upgrade your Flutter SDK to 2.9.0-0.0.pre
 You can ignore this message when you use macOS for development only.
 ===========================================================
 ''';
+
+/// For unsupported locales, it returns english
+class _EnglishFallbackMatieralLocalizationsDelegate
+    extends LocalizationsDelegate<MaterialLocalizations> {
+  @override
+  bool isSupported(Locale locale) => true;
+
+  @override
+  Future<MaterialLocalizations> load(Locale locale) {
+    return GlobalMaterialLocalizations.delegate.load(const Locale('en'));
+  }
+
+  @override
+  bool shouldReload(_) => false;
+
+  @override
+  String toString() {
+    return '_EnglishFallbackMatieralLocalizationsDelegate{}';
+  }
+}
+
+class _EnglishFallbackCupertinoLocalizationsDelegate
+    extends LocalizationsDelegate<CupertinoLocalizations> {
+  @override
+  bool isSupported(Locale locale) => true;
+
+  @override
+  Future<CupertinoLocalizations> load(Locale locale) {
+    return GlobalCupertinoLocalizations.delegate.load(const Locale('en'));
+  }
+
+  @override
+  bool shouldReload(_) => false;
+
+  @override
+  String toString() {
+    return '_EnglishFallbackCupertinoLocalizationsDelegate{}';
+  }
+}
+
+class _EnglishFallbackWidgetLocalizationsDelegate
+    extends LocalizationsDelegate<WidgetsLocalizations> {
+  @override
+  bool isSupported(Locale locale) => true;
+
+  @override
+  Future<WidgetsLocalizations> load(Locale locale) {
+    return GlobalWidgetsLocalizations.delegate.load(const Locale('en'));
+  }
+
+  @override
+  bool shouldReload(_) => false;
+
+  @override
+  String toString() {
+    return '_EnglishFallbackWidgetLocalizationsDelegate{}';
+  }
+}

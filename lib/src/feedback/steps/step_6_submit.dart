@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 
@@ -19,14 +20,11 @@ class _Step6SubmitState extends State<Step6Submit> {
       indicator: const FeedbackProgressIndicator(
         flowStatus: FeedbackFlowStatus.submit,
       ),
-      title: const Text('Submit your feedback'),
-      shortTitle: const Text('Submit'),
-      description: const Text(
-        'Please review your data before submission. '
-        'You can navigate back to adjust your feedback',
-      ),
-      discardLabel: const Text('Discard Feedback'),
-      discardConfirmLabel: const Text('Really? Discard!'),
+      title: Text(context.l10n.feedbackStep6SubmitTitle),
+      breadcrumbTitle: Text(context.l10n.feedbackStep6SubmitBreadcrumbTitle),
+      description: Text(context.l10n.feedbackStep6SubmitDescription),
+      discardLabel: Text(context.l10n.feedbackDiscardButton),
+      discardConfirmLabel: Text(context.l10n.feedbackDiscardConfirmButton),
       child: Builder(
         builder: (context) {
           return Column(
@@ -39,11 +37,11 @@ class _Step6SubmitState extends State<Step6Submit> {
                   TronButton(
                     color: context.theme.secondaryColor,
                     leadingIcon: Wirecons.arrow_left,
-                    label: 'Back',
+                    label: context.l10n.feedbackBackButton,
                     onTap: context.feedbackModel.goToPreviousStep,
                   ),
                   TronButton(
-                    label: 'Submit',
+                    label: context.l10n.feedbackStep6SubmitSubmitButton,
                     leadingIcon: Wirecons.check,
                     onTap: () {
                       context.feedbackModel.submitFeedback();
@@ -56,7 +54,13 @@ class _Step6SubmitState extends State<Step6Submit> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TronLabeledButton(
-                    child: Text(showDetails ? 'Hide Details' : 'Show Details'),
+                    child: Text(
+                      showDetails
+                          ? context
+                              .l10n.feedbackStep6SubmitSubmitHideDetailsButton
+                          : context
+                              .l10n.feedbackStep6SubmitSubmitShowDetailsButton,
+                    ),
                     onTap: () {
                       StepPageScaffold.of(context)?.animateNextSizeChange();
                       setState(() {
@@ -86,7 +90,7 @@ class _Step6SubmitState extends State<Step6Submit> {
           children: [
             const SizedBox(height: 16),
             Text(
-              'Feedback Details',
+              context.l10n.feedbackStep6SubmitSubmitDetailsTitle,
               style: context.theme.bodyTextStyle.copyWith(
                 fontWeight: FontWeight.bold,
               ),

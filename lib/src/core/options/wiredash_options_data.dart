@@ -1,63 +1,35 @@
-import 'dart:ui';
-
-import 'package:wiredash/src/core/translation/wiredash_localizations.dart';
-import 'package:wiredash/src/core/translation/wiredash_translations.dart';
+import 'package:flutter/widgets.dart';
+import 'package:wiredash/wiredash.dart';
 
 class WiredashOptionsData {
   const WiredashOptionsData({
-    Locale? locale,
-    TextDirection? textDirection,
-    this.bugReportButton = true,
-    this.praiseButton = true,
-    this.featureRequestButton = true,
-    this.screenshotStep = true,
-    this.customTranslations,
-  })  : textDirection = textDirection ?? TextDirection.ltr,
-        _currentLocale = locale,
-        assert(
-          bugReportButton || praiseButton || featureRequestButton,
-          'WiredashOptionsData Configuration Error: Show at least one button',
-        );
+    this.locale,
+    this.localizationDelegate,
+  });
 
-  /// Replace desired texts in Wiredash and localize it for you audience
+  /// The locale to be used for wiredash
   ///
-  /// You can also use Wiredash delegate in your MaterialApp
-  /// if default translations are sufficient for you
-  final Map<Locale, WiredashTranslations>? customTranslations;
-
-  /// Whether to display the screenshot and drawing step or not.
+  /// By default, wiredash will pick the locale of the phone or fallback to
+  /// en-US. This locale always overrides it.
   ///
-  /// The Flutter Web beta does not currently support screenshots. Therefore,
-  /// the screenshot and drawing step is never shown and this option is ignored.
-  final bool screenshotStep;
+  /// When your app only support a limited number of locales, you might want to
+  /// inject it here to match the locale and fallback for your app.
+  ///
+  /// For custom localtions and new locales see [localizationDelegate]
+  final Locale? locale;
 
-  /// Whether to display the Bug Report button or not.
-  final bool bugReportButton;
-
-  /// Whether to display the Send Praise button or not.
-  final bool praiseButton;
-
-  /// Whether to display the Feature Request button or not.
-  final bool featureRequestButton;
-
-  /// Current [TextDirection] used by Wiredash widget
-  final TextDirection textDirection;
-
-  final Locale? _currentLocale;
-
-  /// Current locale used by Wiredash widget
-  Locale get currentLocale {
-    final locale = _currentLocale;
-    if (locale != null && WiredashLocalizations.isSupported(locale)) {
-      return locale;
-    }
-    return _defaultLocale;
-  }
-}
-
-Locale get _defaultLocale {
-  // Flutter 1.26 (2.0.1) returns `Locale?`, 1.27 `Locale`
-  // ignore: unnecessary_nullable_for_final_variable_declarations
-  final Locale? locale = window.locale;
-  return locale ?? const Locale('en', 'US');
+  /// This [LocalizationsDelegate] overrides wiredash's default. Your delegate
+  /// can provide as many localizations as you want.
+  ///
+  /// Use this to provide your own texts that match the style of your app.
+  ///
+  /// When you provide a localization it fully replaces the one provided by
+  /// wiredash. But all other languages are still provided by wiredash.
+  ///
+  /// If you add support for a complete new language, please consider
+  /// contributing it to the project. Thanks in advance!
+  ///
+  /// See [https://github.com/wiredashio/wiredash-sdk/blob/stable/example/lib/custom_demo_translations.dart]
+  /// for an example of how to use this.
+  final LocalizationsDelegate<WiredashLocalizations>? localizationDelegate;
 }

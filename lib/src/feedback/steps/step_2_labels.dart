@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 
@@ -19,15 +20,11 @@ class _Step2LabelsState extends State<Step2Labels>
       indicator: const FeedbackProgressIndicator(
         flowStatus: FeedbackFlowStatus.labels,
       ),
-      title: const Text(
-        'Which label represents your feedback?',
-      ),
-      shortTitle: const Text('Labels'),
-      description: const Text(
-        'Selecting the correct category helps forwarding your feedback to the best person to resolve your issue',
-      ),
-      discardLabel: const Text('Discard Feedback'),
-      discardConfirmLabel: const Text('Really? Discard!'),
+      title: Text(context.l10n.feedbackStep2LabelsTitle),
+      breadcrumbTitle: Text(context.l10n.feedbackStep2LabelsBreadcrumbTitle),
+      description: Text(context.l10n.feedbackStep2LabelsDescription),
+      discardLabel: Text(context.l10n.feedbackDiscardButton),
+      discardConfirmLabel: Text(context.l10n.feedbackDiscardConfirmButton),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,11 +51,11 @@ class _Step2LabelsState extends State<Step2Labels>
               TronButton(
                 color: context.theme.secondaryColor,
                 leadingIcon: Wirecons.arrow_left,
-                label: 'Back',
+                label: context.l10n.feedbackBackButton,
                 onTap: context.feedbackModel.goToPreviousStep,
               ),
               TronButton(
-                label: 'Next',
+                label: context.l10n.feedbackNextButton,
                 trailingIcon: Wirecons.arrow_right,
                 onTap: context.feedbackModel.goToNextStep,
               ),

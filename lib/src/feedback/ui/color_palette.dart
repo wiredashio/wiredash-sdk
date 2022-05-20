@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/feedback/ui/slider/stroke_width_slider_widget.dart';
 
@@ -86,7 +87,8 @@ class _ColorPaletteState extends State<ColorPalette>
                   children: [
                     TronButton(
                       leadingIcon: Wirecons.rewind,
-                      label: 'Undo',
+                      label:
+                          context.l10n.feedbackStep3ScreenshotBarDrawUndoButton,
                       color: context.theme.secondaryColor,
                       onTap: () => widget.onUndo?.call(),
                     ),
