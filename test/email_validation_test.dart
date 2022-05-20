@@ -31,7 +31,7 @@ void main() {
       await robot.enterEmail('invalid');
       await robot.submitEmailViaButton();
       await tester.waitUntil(
-        find.text('Please enter a valid email or leave this field blank.'),
+        find.text('l10n.feedbackStep4EmailInvalidEmail'),
         findsOneWidget,
       );
     });
@@ -42,7 +42,7 @@ void main() {
       await robot.enterEmail('invalid');
       await robot.submitEmailViaKeyboard();
       await tester.waitUntil(
-        find.text('Please enter a valid email or leave this field blank.'),
+        find.text('l10n.feedbackStep4EmailInvalidEmail'),
         findsOneWidget,
       );
     });
