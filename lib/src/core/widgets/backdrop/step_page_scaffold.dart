@@ -138,7 +138,13 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
               children: [
                 Row(
                   children: [
-                    if (widget.indicator != null) widget.indicator!,
+                    if (widget.indicator != null)
+                      ClipRect(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 150),
+                          child: widget.indicator,
+                        ),
+                      ),
                     if (widget.breadcrumbTitle != null &&
                         context.theme.windowSize.width > 400) ...[
                       SizedBox(
@@ -178,43 +184,48 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                         },
                       )
                     else if (widget.discardLabel != null)
-                      TronLabeledButton(
-                        onTap: () {
-                          setState(() {
-                            if (_reallyTimer == null) {
-                              setState(() {
-                                _reallyTimer =
-                                    Timer(const Duration(seconds: 3), () {
-                                  if (mounted) {
-                                    setState(() {
+                      Flexible(
+                        child: TronLabeledButton(
+                          onTap: () {
+                            setState(() {
+                              if (_reallyTimer == null) {
+                                setState(() {
+                                  _reallyTimer =
+                                      Timer(const Duration(seconds: 3), () {
+                                    if (mounted) {
+                                      setState(() {
+                                        _reallyTimer = null;
+                                      });
+                                    } else {
                                       _reallyTimer = null;
-                                    });
-                                  } else {
-                                    _reallyTimer = null;
-                                  }
+                                    }
+                                  });
                                 });
-                              });
-                            } else {
-                              context.wiredashModel.hide(discardFeedback: true);
-                              _reallyTimer = null;
-                            }
-                          });
-                        },
-                        child: _reallyTimer == null
-                            ? DefaultTextStyle(
-                                style: context.theme.captionTextStyle.copyWith(
-                                  color: context
-                                      .theme.secondaryTextOnBackgroundColor,
+                              } else {
+                                context.wiredashModel
+                                    .hide(discardFeedback: true);
+                                _reallyTimer = null;
+                              }
+                            });
+                          },
+                          child: _reallyTimer == null
+                              ? DefaultTextStyle(
+                                  style:
+                                      context.theme.captionTextStyle.copyWith(
+                                    color: context
+                                        .theme.secondaryTextOnBackgroundColor,
+                                  ),
+                                  child: widget.discardLabel!,
+                                )
+                              : DefaultTextStyle(
+                                  style:
+                                      context.theme.captionTextStyle.copyWith(
+                                    color: context.theme.errorColor,
+                                  ),
+                                  child: widget.discardConfirmLabel ??
+                                      const Text('Really?'),
                                 ),
-                                child: widget.discardLabel!,
-                              )
-                            : DefaultTextStyle(
-                                style: context.theme.captionTextStyle.copyWith(
-                                  color: context.theme.errorColor,
-                                ),
-                                child: widget.discardConfirmLabel ??
-                                    const Text('Really?'),
-                              ),
+                        ),
                       ),
                   ],
                 ),
@@ -340,10 +351,12 @@ class StepIndicator extends StatelessWidget {
           totalSteps: total,
         ),
         const SizedBox(width: 12),
-        Text(
-          context.l10n.feedbackStepXOfY(currentStep, total),
-          style: context.theme.captionTextStyle.copyWith(
-            color: context.theme.secondaryTextOnBackgroundColor,
+        Flexible(
+          child: Text(
+            context.l10n.feedbackStepXOfY(currentStep, total),
+            style: context.theme.captionTextStyle.copyWith(
+              color: context.theme.secondaryTextOnBackgroundColor,
+            ),
           ),
         ),
       ],

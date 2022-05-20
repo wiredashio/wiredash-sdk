@@ -99,17 +99,21 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TronButton(
-                color: context.theme.secondaryColor,
-                label: context.l10n.feedbackCloseButton,
-                onTap: context.wiredashModel.hide,
+              Flexible(
+                child: TronButton(
+                  color: context.theme.secondaryColor,
+                  label: context.l10n.feedbackCloseButton,
+                  onTap: context.wiredashModel.hide,
+                ),
               ),
-              TronButton(
-                label: context.l10n.feedbackNextButton,
-                trailingIcon: Wirecons.arrow_right,
-                onTap: context.feedbackModel.feedbackMessage == null
-                    ? context.feedbackModel.validateForm
-                    : context.feedbackModel.goToNextStep,
+              Flexible(
+                child: TronButton(
+                  label: context.l10n.feedbackNextButton,
+                  trailingIcon: Wirecons.arrow_right,
+                  onTap: context.feedbackModel.feedbackMessage == null
+                      ? context.feedbackModel.validateForm
+                      : context.feedbackModel.goToNextStep,
+                ),
               ),
             ],
           )
