@@ -97,7 +97,14 @@ class WiredashTestRobot {
         .childByType(FloatingActionButton)
         .existsOnce();
     await tester.tap(fab.finder);
-    await tester.pumpAndSettle();
+
+    // process the event, wait for backdrop to appear in the widget tree
+    await tester.pumpN(4);
+    // wait for animation finish
+    await tester.pump(const Duration(milliseconds: 500));
+    // When the pump pattern on top fails, use this instead
+    // await tester.pumpAndSettle();
+
     _backdrop.childByType(WiredashFeedbackFlow).existsOnce();
     print('opened Wiredash');
   }
