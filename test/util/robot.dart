@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -321,7 +322,7 @@ class WiredashTestLocalizationDelegate
 
   @override
   Future<WiredashLocalizations> load(Locale locale) {
-    return Future.sync(() => ReturnKeysWiredashLocalizetions());
+    return SynchronousFuture(ReturnKeysWiredashLocalizetions());
   }
 
   @override
@@ -335,7 +336,7 @@ class MaterialTestLocalizationDelegate
 
   @override
   Future<MaterialLocalizations> load(Locale locale) {
-    return Future.sync(() => ReturnKeysMaterialLocalizetions());
+    return SynchronousFuture(ReturnKeysMaterialLocalizetions());
   }
 
   @override
@@ -349,7 +350,7 @@ class CupertinoTestLocalizationDelegate
 
   @override
   Future<CupertinoLocalizations> load(Locale locale) {
-    return Future.sync(() => ReturnKeysCupertinoLocalizetions());
+    return SynchronousFuture(ReturnKeysCupertinoLocalizetions());
   }
 
   @override
