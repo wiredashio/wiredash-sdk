@@ -12,7 +12,7 @@ jobs:
     container:
       image: cirrusci/flutter:2.8.0
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
         with:
           ref: stable
       - name: Flutter version
@@ -29,7 +29,7 @@ jobs:
     container:
       image: cirrusci/flutter:stable
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
         with:
           ref: stable
       - name: Flutter version
@@ -46,7 +46,7 @@ jobs:
     container:
       image: cirrusci/flutter:beta
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
         with:
           ref: beta
       - name: Flutter version
@@ -63,7 +63,7 @@ jobs:
     container:
       image: cirrusci/flutter:latest
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
         with:
           ref: beta
       - name: Flutter version
