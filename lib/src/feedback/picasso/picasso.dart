@@ -131,7 +131,7 @@ class _PicassoState extends State<Picasso> {
   }
 
   void _onPanEnd(DragEndDetails details) {
-    _strokes = List.unmodifiable([..._strokes, _currentStroke!]);
+    _strokes = List.unmodifiable([..._strokes, _currentStroke]);
     _strokesStreamController.add(_strokes);
   }
 
