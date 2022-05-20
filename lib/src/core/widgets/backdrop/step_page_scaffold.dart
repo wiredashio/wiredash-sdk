@@ -137,97 +137,115 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
               }(),
               children: [
                 Row(
-                  children: [
-                    if (widget.indicator != null)
-                      ClipRect(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 150),
-                          child: widget.indicator,
-                        ),
-                      ),
-                    if (widget.breadcrumbTitle != null &&
-                        context.theme.windowSize.width > 400) ...[
-                      SizedBox(
-                        height: 16,
-                        child: VerticalDivider(
-                          color: context.theme.secondaryTextOnBackgroundColor,
-                        ),
-                      ),
-                      Expanded(
-                        child: DefaultTextStyle(
-                          style: context.theme.captionTextStyle.copyWith(
-                            color: context.theme.secondaryTextOnBackgroundColor,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          child: widget.breadcrumbTitle!,
-                        ),
-                      )
-                    ] else
-                      const Spacer(),
-                    if (widget.onClose != null)
-                      AnimatedClickTarget(
-                        onTap: widget.onClose,
-                        builder: (
-                          BuildContext context,
-                          TargetState state,
-                          TargetStateAnimations anims,
-                        ) {
-                          return TronIcon(
-                            Wirecons.x,
-                            color: Color.lerp(
-                              context.theme.primaryTextOnBackgroundColor,
-                              context.theme.secondaryTextOnBackgroundColor,
-                              anims.hoveredAnim.value,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: () {
+                    final leftPart = Row(
+                      children: [
+                        if (widget.indicator != null)
+                          ClipRect(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 150),
+                              child: widget.indicator,
                             ),
-                          );
-                        },
-                      )
-                    else if (widget.discardLabel != null)
-                      Flexible(
-                        child: TronLabeledButton(
-                          onTap: () {
-                            setState(() {
-                              if (_reallyTimer == null) {
-                                setState(() {
-                                  _reallyTimer =
-                                      Timer(const Duration(seconds: 3), () {
-                                    if (mounted) {
-                                      setState(() {
-                                        _reallyTimer = null;
-                                      });
-                                    } else {
-                                      _reallyTimer = null;
-                                    }
-                                  });
-                                });
-                              } else {
-                                context.wiredashModel
-                                    .hide(discardFeedback: true);
-                                _reallyTimer = null;
-                              }
-                            });
-                          },
-                          child: _reallyTimer == null
-                              ? DefaultTextStyle(
-                                  style:
-                                      context.theme.captionTextStyle.copyWith(
-                                    color: context
-                                        .theme.secondaryTextOnBackgroundColor,
-                                  ),
-                                  child: widget.discardLabel!,
-                                )
-                              : DefaultTextStyle(
-                                  style:
-                                      context.theme.captionTextStyle.copyWith(
-                                    color: context.theme.errorColor,
-                                  ),
-                                  child: widget.discardConfirmLabel ??
-                                      const Text('Really?'),
+                          ),
+                        if (widget.breadcrumbTitle != null &&
+                            context.theme.windowSize.width > 400) ...[
+                          SizedBox(
+                            height: 16,
+                            child: VerticalDivider(
+                              color:
+                                  context.theme.secondaryTextOnBackgroundColor,
+                            ),
+                          ),
+                          Expanded(
+                            child: DefaultTextStyle(
+                              style: context.theme.captionTextStyle.copyWith(
+                                color: context
+                                    .theme.secondaryTextOnBackgroundColor,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              child: widget.breadcrumbTitle!,
+                            ),
+                          )
+                        ]
+                      ],
+                    );
+
+                    final rightPart = Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        if (widget.onClose != null)
+                          AnimatedClickTarget(
+                            onTap: widget.onClose,
+                            builder: (
+                              BuildContext context,
+                              TargetState state,
+                              TargetStateAnimations anims,
+                            ) {
+                              return TronIcon(
+                                Wirecons.x,
+                                color: Color.lerp(
+                                  context.theme.primaryTextOnBackgroundColor,
+                                  context.theme.secondaryTextOnBackgroundColor,
+                                  anims.hoveredAnim.value,
                                 ),
-                        ),
-                      ),
-                  ],
+                              );
+                            },
+                          )
+                        else if (widget.discardLabel != null) ...[
+                          TronLabeledButton(
+                            onTap: () {
+                              setState(() {
+                                if (_reallyTimer == null) {
+                                  setState(() {
+                                    _reallyTimer =
+                                        Timer(const Duration(seconds: 3), () {
+                                      if (mounted) {
+                                        setState(() {
+                                          _reallyTimer = null;
+                                        });
+                                      } else {
+                                        _reallyTimer = null;
+                                      }
+                                    });
+                                  });
+                                } else {
+                                  context.wiredashModel
+                                      .hide(discardFeedback: true);
+                                  _reallyTimer = null;
+                                }
+                              });
+                            },
+                            child: _reallyTimer == null
+                                ? DefaultTextStyle(
+                                    style:
+                                        context.theme.captionTextStyle.copyWith(
+                                      color: context
+                                          .theme.secondaryTextOnBackgroundColor,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    child: widget.discardLabel!,
+                                  )
+                                : DefaultTextStyle(
+                                    style:
+                                        context.theme.captionTextStyle.copyWith(
+                                      color: context.theme.errorColor,
+                                    ),
+                                    child: widget.discardConfirmLabel ??
+                                        const Text('Really?'),
+                                  ),
+                          ),
+                        ]
+                      ],
+                    );
+                    return [
+                      Expanded(child: leftPart),
+                      rightPart,
+                    ];
+                  }(),
                 ),
                 const SizedBox(height: 24),
                 _buildTitle(context),
