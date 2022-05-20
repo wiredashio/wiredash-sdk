@@ -47,7 +47,6 @@
   "feedbackStep7SubmissionOpenErrorButton": "Klicke um weitere Error Details zu sehen",
   "feedbackStep7SubmissionRetryButton": "Wiederholen",
 
-
   "feedbackStepXOfY": "Schritt {current} von {total}",
   "feedbackDiscardButton": "Feedback verwerfen",
   "feedbackDiscardConfirmButton": "Sicher? Löschen!",

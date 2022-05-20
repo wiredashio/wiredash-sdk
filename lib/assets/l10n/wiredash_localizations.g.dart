@@ -16,7 +16,7 @@ import 'wiredash_localizations_en.g.dart';
 /// supportedLocales list. For example:
 ///
 /// ```
-/// import 'translation/wiredash_localizations.g.dart';
+/// import 'l10n/wiredash_localizations.g.dart';
 ///
 /// return MaterialApp(
 ///   localizationsDelegates: WiredashLocalizations.localizationsDelegates,

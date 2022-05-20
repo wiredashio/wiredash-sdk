@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
-translationPath="lib/src/core/translation"
+l10nPath="lib/assets/l10n"
+
+rm "$l10nPath"/*.g.dart | true
 
 flutter gen-l10n \
-  --arb-dir="$translationPath/l10n" \
+  --arb-dir="$l10nPath/" \
   --no-synthetic-package \
-  --output-dir="$translationPath" \
+  --output-dir="$l10nPath" \
   --template-arb-file="wiredash_en.arb" \
   --no-nullable-getter \
   --output-class="WiredashLocalizations" \
   --output-localization-file="wiredash_localizations.g.dart"
 
-dart format "$translationPath"
+dart format "$l10nPath"
