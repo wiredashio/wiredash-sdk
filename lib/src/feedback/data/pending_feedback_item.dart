@@ -252,7 +252,7 @@ extension _SerializePersistedAttachment on PersistedAttachment {
       throw 'Can not serialize in memory files';
     }
     if (file.isOnDisk) {
-      values.addAll({'path': file.pathToFile!});
+      values.addAll({'path': file.pathToFile});
     }
     if (file.isUploaded) {
       values.addAll({'id': file.attachmentId!.value});
