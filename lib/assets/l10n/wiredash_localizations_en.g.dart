@@ -19,30 +19,29 @@ class WiredashLocalizationsEn extends WiredashLocalizations {
       'There\'s an unknown error when I try to change my avatar...';
 
   @override
-  String get feedbackStep1MessageErrorMissingMessage =>
-      'Please enter a feedback message';
+  String get feedbackStep1MessageErrorMissingMessage => 'Please add a message';
 
   @override
   String get feedbackStep2LabelsTitle =>
-      'Which label represents your feedback?';
+      'Which label best represents your feedback?';
 
   @override
   String get feedbackStep2LabelsBreadcrumbTitle => 'Labels';
 
   @override
   String get feedbackStep2LabelsDescription =>
-      'Selecting the correct category helps forwarding your feedback to the best person to resolve your issue';
+      'Selecting the right category helps us identify the issue and route your feedback to the correct stakeholder';
 
   @override
   String get feedbackStep3ScreenshotOverviewTitle =>
-      'Include a screenshot for more context?';
+      'Add screenshots for better context?';
 
   @override
   String get feedbackStep3ScreenshotOverviewBreadcrumbTitle => 'Screenshots';
 
   @override
   String get feedbackStep3ScreenshotOverviewDescription =>
-      'You’ll be able to navigate the app and choose when to take a screenshot';
+      'You\'ll be able to navigate the app and choose when to take a screenshot';
 
   @override
   String get feedbackStep3ScreenshotOverviewSkipButton => 'Skip';
@@ -52,12 +51,11 @@ class WiredashLocalizationsEn extends WiredashLocalizations {
       'Add screenshot';
 
   @override
-  String get feedbackStep3ScreenshotBarNavigateTitle =>
-      'Take a screenshot for more context';
+  String get feedbackStep3ScreenshotBarNavigateTitle => 'Take a screenshot';
 
   @override
   String get feedbackStep3ScreenshotBarDrawTitle =>
-      'Draw to highlight what\'s important';
+      'Draw on screen to add highlights';
 
   @override
   String get feedbackStep3ScreenshotBarDrawUndoButton => 'Undo';
@@ -79,10 +77,10 @@ class WiredashLocalizationsEn extends WiredashLocalizations {
 
   @override
   String get feedbackStep3GalleryDescription =>
-      'Add more screenshots to help us understand your issue';
+      'You can add more screenshots to help us understand your issue even better.';
 
   @override
-  String get feedbackStep4EmailTitle => 'Get email updates for your issue';
+  String get feedbackStep4EmailTitle => 'Get email updates on your issue';
 
   @override
   String get feedbackStep4EmailBreadcrumbTitle => 'Contact';
@@ -93,20 +91,20 @@ class WiredashLocalizationsEn extends WiredashLocalizations {
 
   @override
   String get feedbackStep4EmailInvalidEmail =>
-      'This doesn\'t look like a valid email. You can leave it empty';
+      'This doesn\'t look like a valid email address. You can leave it empty.';
 
   @override
   String get feedbackStep4EmailInputHint => 'mail@example.com';
 
   @override
-  String get feedbackStep6SubmitTitle => 'Submit your feedback';
+  String get feedbackStep6SubmitTitle => 'Submit feedback';
 
   @override
   String get feedbackStep6SubmitBreadcrumbTitle => 'Submit';
 
   @override
   String get feedbackStep6SubmitDescription =>
-      'Please review your data before submission.\nYou can navigate back to adjust your feedback';
+      'Please review all info before submission.\nYou can navigate back to adjust your feedback any time.';
 
   @override
   String get feedbackStep6SubmitSubmitButton => 'Submit';
@@ -118,7 +116,7 @@ class WiredashLocalizationsEn extends WiredashLocalizations {
   String get feedbackStep6SubmitSubmitHideDetailsButton => 'Hide details';
 
   @override
-  String get feedbackStep6SubmitSubmitDetailsTitle => 'Feedback Details';
+  String get feedbackStep6SubmitSubmitDetailsTitle => 'Feedback details';
 
   @override
   String get feedbackStep7SubmissionInFlightMessage =>
@@ -134,7 +132,7 @@ class WiredashLocalizationsEn extends WiredashLocalizations {
 
   @override
   String get feedbackStep7SubmissionOpenErrorButton =>
-      'Click to open error details';
+      'Click to see error details';
 
   @override
   String get feedbackStep7SubmissionRetryButton => 'Retry';
@@ -145,7 +143,7 @@ class WiredashLocalizationsEn extends WiredashLocalizations {
   }
 
   @override
-  String get feedbackDiscardButton => 'Discard Feedback';
+  String get feedbackDiscardButton => 'Discard feedback';
 
   @override
   String get feedbackDiscardConfirmButton => 'Really? Discard!';
@@ -160,5 +158,5 @@ class WiredashLocalizationsEn extends WiredashLocalizations {
   String get feedbackCloseButton => 'Close';
 
   @override
-  String get backdropReturnToApp => 'Return to App';
+  String get backdropReturnToApp => 'Return to app';
 }

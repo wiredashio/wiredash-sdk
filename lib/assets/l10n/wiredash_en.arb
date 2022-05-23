@@ -4,20 +4,21 @@
   "feedbackStep1MessageBreadcrumbTitle": "Compose message",
   "feedbackStep1MessageDescription": "Add a short description of what you encountered",
   "feedbackStep1MessageHint": "There's an unknown error when I try to change my avatar...",
-  "feedbackStep1MessageErrorMissingMessage": "Please enter a feedback message",
+  "feedbackStep1MessageErrorMissingMessage": "Please add a message",
 
-  "feedbackStep2LabelsTitle": "Which label represents your feedback?",
+  "feedbackStep2LabelsTitle": "Which label best represents your feedback?",
   "feedbackStep2LabelsBreadcrumbTitle": "Labels",
-  "feedbackStep2LabelsDescription": "Selecting the correct category helps forwarding your feedback to the best person to resolve your issue",
+  "feedbackStep2LabelsDescription": "Selecting the right category helps us identify the issue and route your feedback to the correct stakeholder",
 
-  "feedbackStep3ScreenshotOverviewTitle": "Include a screenshot for more context?",
+
+  "feedbackStep3ScreenshotOverviewTitle": "Add screenshots for better context?",
   "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "Screenshots",
-  "feedbackStep3ScreenshotOverviewDescription": "You’ll be able to navigate the app and choose when to take a screenshot",
+  "feedbackStep3ScreenshotOverviewDescription": "You'll be able to navigate the app and choose when to take a screenshot",
   "feedbackStep3ScreenshotOverviewSkipButton": "Skip",
   "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Add screenshot",
 
-  "feedbackStep3ScreenshotBarNavigateTitle": "Take a screenshot for more context",
-  "feedbackStep3ScreenshotBarDrawTitle": "Draw to highlight what's important",
+  "feedbackStep3ScreenshotBarNavigateTitle": "Take a screenshot",
+  "feedbackStep3ScreenshotBarDrawTitle": "Draw on screen to add highlights",
   "feedbackStep3ScreenshotBarDrawUndoButton": "Undo",
   "feedbackStep3ScreenshotBarCaptureButton": "Capture",
   "feedbackStep3ScreenshotBarSaveButton": "Save",
@@ -25,26 +26,26 @@
 
   "feedbackStep3GalleryTitle": "Attached screenshots",
   "feedbackStep3GalleryBreadcrumbTitle": "Screenshots",
-  "feedbackStep3GalleryDescription": "Add more screenshots to help us understand your issue",
+  "feedbackStep3GalleryDescription": "You can add more screenshots to help us understand your issue even better.",
 
-  "feedbackStep4EmailTitle": "Get email updates for your issue",
+  "feedbackStep4EmailTitle": "Get email updates on your issue",
   "feedbackStep4EmailBreadcrumbTitle": "Contact",
   "feedbackStep4EmailDescription": "Add your email address below or leave empty",
-  "feedbackStep4EmailInvalidEmail": "This doesn't look like a valid email. You can leave it empty",
+  "feedbackStep4EmailInvalidEmail": "This doesn't look like a valid email address. You can leave it empty.",
   "feedbackStep4EmailInputHint": "mail@example.com",
 
-  "feedbackStep6SubmitTitle": "Submit your feedback",
+  "feedbackStep6SubmitTitle": "Submit feedback",
   "feedbackStep6SubmitBreadcrumbTitle": "Submit",
-  "feedbackStep6SubmitDescription": "Please review your data before submission.\nYou can navigate back to adjust your feedback",
+  "feedbackStep6SubmitDescription": "Please review all info before submission.\nYou can navigate back to adjust your feedback any time.",
   "feedbackStep6SubmitSubmitButton": "Submit",
   "feedbackStep6SubmitSubmitShowDetailsButton": "Show details",
   "feedbackStep6SubmitSubmitHideDetailsButton": "Hide details",
-  "feedbackStep6SubmitSubmitDetailsTitle": "Feedback Details",
+  "feedbackStep6SubmitSubmitDetailsTitle": "Feedback details",
 
   "feedbackStep7SubmissionInFlightMessage": "Submitting your feedback",
   "feedbackStep7SubmissionSuccessMessage": "Thanks for your feedback!",
   "feedbackStep7SubmissionErrorMessage": "Feedback submission failed",
-  "feedbackStep7SubmissionOpenErrorButton": "Click to open error details",
+  "feedbackStep7SubmissionOpenErrorButton": "Click to see error details",
   "feedbackStep7SubmissionRetryButton": "Retry",
 
   "feedbackStepXOfY": "Step {current} of {total}",
@@ -62,11 +63,11 @@
       }
     }
   },
-  "feedbackDiscardButton": "Discard Feedback",
+  "feedbackDiscardButton": "Discard feedback",
   "feedbackDiscardConfirmButton": "Really? Discard!",
   "feedbackNextButton": "Next",
   "feedbackBackButton": "Back",
   "feedbackCloseButton": "Close",
 
-  "backdropReturnToApp": "Return to App"
+  "backdropReturnToApp": "Return to app"
 }

@@ -5,33 +5,33 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
   WiredashLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get feedbackStep1MessageTitle => 'Gib uns dein Feedback';
+  String get feedbackStep1MessageTitle => 'Schick uns dein Feedback';
 
   @override
   String get feedbackStep1MessageBreadcrumbTitle => 'Nachricht verfassen';
 
   @override
   String get feedbackStep1MessageDescription =>
-      'Beschreibe kurz was dir aufgefallen ist';
+      'Kurze Beschreibung des Fehlers bzw. Änderungswunsches';
 
   @override
   String get feedbackStep1MessageHint =>
-      'Wenn ich mein Avatar ändern möchte bekomme ich einen Fehler angezeigt...';
+      'Wenn ich mein Avatar ändern möchte, wird ein unbekannter Fehler angezeigt...';
 
   @override
   String get feedbackStep1MessageErrorMissingMessage =>
-      'Schreibe uns bitte dein Feedback';
+      'Bitte füge eine Nachricht hinzu';
 
   @override
   String get feedbackStep2LabelsTitle =>
-      'Kannst du dein feedback Labels zuordnen?';
+      'Kannst du deinem Feedback Labels zuordnen?';
 
   @override
   String get feedbackStep2LabelsBreadcrumbTitle => 'Labels';
 
   @override
   String get feedbackStep2LabelsDescription =>
-      'Wenn dein Feedback richtig kategorisiert ist, wird es schnell an die richtige Person weitergleitet';
+      'Korrekt kategorisiertes Feedback kann einfacher zugeordnet und an den passenden Empfänger weitergeleitet werden';
 
   @override
   String get feedbackStep3ScreenshotOverviewTitle => 'Screenshot anhängen';
@@ -41,7 +41,7 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
 
   @override
   String get feedbackStep3ScreenshotOverviewDescription =>
-      'Du kannst dabei die App weiter bedienen bevor du den Screenshot erstellst';
+      'Du kannst die App normal bedienen, bevor du einen Screenshot erstellst';
 
   @override
   String get feedbackStep3ScreenshotOverviewSkipButton => 'Überspringen';
@@ -50,12 +50,11 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
   String get feedbackStep3ScreenshotOverviewAddScreenshotButton => 'Screenshot';
 
   @override
-  String get feedbackStep3ScreenshotBarNavigateTitle =>
-      'Erstelle einene Screenshot für weiteren Kontext';
+  String get feedbackStep3ScreenshotBarNavigateTitle => 'Screenshot erstellen';
 
   @override
   String get feedbackStep3ScreenshotBarDrawTitle =>
-      'Zeichne auf den Screenshot';
+      'Füge Markierungen mit dem Zeichnen-Tool hinzu';
 
   @override
   String get feedbackStep3ScreenshotBarDrawUndoButton => 'Rückgängig';
@@ -77,22 +76,22 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
 
   @override
   String get feedbackStep3GalleryDescription =>
-      'Füge weitere Screenshots hinzu um dein Problem besser zu beschreiben';
+      'Du kannst weitere Screenshots hinzufügen, um dein Problem noch besser zu beschreiben.';
 
   @override
   String get feedbackStep4EmailTitle =>
-      'Werde bei Rückfragen per Email benachrichtigt';
+      'Werde bei Rückfragen via E-Mail benachrichtigt';
 
   @override
   String get feedbackStep4EmailBreadcrumbTitle => 'Kontakt';
 
   @override
   String get feedbackStep4EmailDescription =>
-      'Füge deine Email adresse hinzu oder lasse das Feld leer.';
+      'Füge deine E-Mail-Adresse hinzu oder lasse das Feld leer.';
 
   @override
   String get feedbackStep4EmailInvalidEmail =>
-      'Invalide email adresse. Du kannst das Feld auch leer lassen';
+      'Kein korrektes E-Mail-Format. Du kannst dieses Feld auch leer lassen.';
 
   @override
   String get feedbackStep4EmailInputHint => 'mail@example.com';
@@ -105,7 +104,7 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
 
   @override
   String get feedbackStep6SubmitDescription =>
-      'Bitte kontrolliere dein Feedback vor dem absenden.\nDu kannst auch noch einmal zurück gehen um dein Feedback anzupassen';
+      'Bitte kontrolliere dein Feedback vor dem Absenden.\nDu kannst jederzeit zurückgehen, um dein Feedback noch einmal anzupassen.';
 
   @override
   String get feedbackStep6SubmitSubmitButton => 'Absenden';
@@ -131,7 +130,7 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
 
   @override
   String get feedbackStep7SubmissionOpenErrorButton =>
-      'Klicke um weitere Error Details zu sehen';
+      'Klicke hier, um weitere Fehler-Details einzusehen.';
 
   @override
   String get feedbackStep7SubmissionRetryButton => 'Wiederholen';

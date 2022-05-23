@@ -8,14 +8,14 @@ import 'package:intl/intl.dart' as intl;
 import 'wiredash_localizations_de.g.dart';
 import 'wiredash_localizations_en.g.dart';
 
-/// Callers can lookup localized strings with an instance of WiredashLocalizations returned
-/// by `WiredashLocalizations.of(context)`.
+/// Callers can lookup localized strings with an instance of WiredashLocalizations
+/// returned by `WiredashLocalizations.of(context)`.
 ///
 /// Applications need to include `WiredashLocalizations.delegate()` in their app's
-/// localizationDelegates list, and the locales they support in the app's
-/// supportedLocales list. For example:
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
 ///
-/// ```
+/// ```dart
 /// import 'l10n/wiredash_localizations.g.dart';
 ///
 /// return MaterialApp(
@@ -30,14 +30,14 @@ import 'wiredash_localizations_en.g.dart';
 /// Please make sure to update your pubspec.yaml to include the following
 /// packages:
 ///
-/// ```
+/// ```yaml
 /// dependencies:
 ///   # Internationalization support.
 ///   flutter_localizations:
 ///     sdk: flutter
 ///   intl: any # Use the pinned version from flutter_localizations
 ///
-///   # rest of dependencies
+///   # Rest of dependencies
 /// ```
 ///
 /// ## iOS Applications
@@ -124,13 +124,13 @@ abstract class WiredashLocalizations {
   /// No description provided for @feedbackStep1MessageErrorMissingMessage.
   ///
   /// In en, this message translates to:
-  /// **'Please enter a feedback message'**
+  /// **'Please add a message'**
   String get feedbackStep1MessageErrorMissingMessage;
 
   /// No description provided for @feedbackStep2LabelsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Which label represents your feedback?'**
+  /// **'Which label best represents your feedback?'**
   String get feedbackStep2LabelsTitle;
 
   /// No description provided for @feedbackStep2LabelsBreadcrumbTitle.
@@ -142,13 +142,13 @@ abstract class WiredashLocalizations {
   /// No description provided for @feedbackStep2LabelsDescription.
   ///
   /// In en, this message translates to:
-  /// **'Selecting the correct category helps forwarding your feedback to the best person to resolve your issue'**
+  /// **'Selecting the right category helps us identify the issue and route your feedback to the correct stakeholder'**
   String get feedbackStep2LabelsDescription;
 
   /// No description provided for @feedbackStep3ScreenshotOverviewTitle.
   ///
   /// In en, this message translates to:
-  /// **'Include a screenshot for more context?'**
+  /// **'Add screenshots for better context?'**
   String get feedbackStep3ScreenshotOverviewTitle;
 
   /// No description provided for @feedbackStep3ScreenshotOverviewBreadcrumbTitle.
@@ -160,7 +160,7 @@ abstract class WiredashLocalizations {
   /// No description provided for @feedbackStep3ScreenshotOverviewDescription.
   ///
   /// In en, this message translates to:
-  /// **'You’ll be able to navigate the app and choose when to take a screenshot'**
+  /// **'You\'ll be able to navigate the app and choose when to take a screenshot'**
   String get feedbackStep3ScreenshotOverviewDescription;
 
   /// No description provided for @feedbackStep3ScreenshotOverviewSkipButton.
@@ -178,13 +178,13 @@ abstract class WiredashLocalizations {
   /// No description provided for @feedbackStep3ScreenshotBarNavigateTitle.
   ///
   /// In en, this message translates to:
-  /// **'Take a screenshot for more context'**
+  /// **'Take a screenshot'**
   String get feedbackStep3ScreenshotBarNavigateTitle;
 
   /// No description provided for @feedbackStep3ScreenshotBarDrawTitle.
   ///
   /// In en, this message translates to:
-  /// **'Draw to highlight what\'s important'**
+  /// **'Draw on screen to add highlights'**
   String get feedbackStep3ScreenshotBarDrawTitle;
 
   /// No description provided for @feedbackStep3ScreenshotBarDrawUndoButton.
@@ -226,13 +226,13 @@ abstract class WiredashLocalizations {
   /// No description provided for @feedbackStep3GalleryDescription.
   ///
   /// In en, this message translates to:
-  /// **'Add more screenshots to help us understand your issue'**
+  /// **'You can add more screenshots to help us understand your issue even better.'**
   String get feedbackStep3GalleryDescription;
 
   /// No description provided for @feedbackStep4EmailTitle.
   ///
   /// In en, this message translates to:
-  /// **'Get email updates for your issue'**
+  /// **'Get email updates on your issue'**
   String get feedbackStep4EmailTitle;
 
   /// No description provided for @feedbackStep4EmailBreadcrumbTitle.
@@ -250,7 +250,7 @@ abstract class WiredashLocalizations {
   /// No description provided for @feedbackStep4EmailInvalidEmail.
   ///
   /// In en, this message translates to:
-  /// **'This doesn\'t look like a valid email. You can leave it empty'**
+  /// **'This doesn\'t look like a valid email address. You can leave it empty.'**
   String get feedbackStep4EmailInvalidEmail;
 
   /// No description provided for @feedbackStep4EmailInputHint.
@@ -262,7 +262,7 @@ abstract class WiredashLocalizations {
   /// No description provided for @feedbackStep6SubmitTitle.
   ///
   /// In en, this message translates to:
-  /// **'Submit your feedback'**
+  /// **'Submit feedback'**
   String get feedbackStep6SubmitTitle;
 
   /// No description provided for @feedbackStep6SubmitBreadcrumbTitle.
@@ -274,7 +274,7 @@ abstract class WiredashLocalizations {
   /// No description provided for @feedbackStep6SubmitDescription.
   ///
   /// In en, this message translates to:
-  /// **'Please review your data before submission.\nYou can navigate back to adjust your feedback'**
+  /// **'Please review all info before submission.\nYou can navigate back to adjust your feedback any time.'**
   String get feedbackStep6SubmitDescription;
 
   /// No description provided for @feedbackStep6SubmitSubmitButton.
@@ -298,7 +298,7 @@ abstract class WiredashLocalizations {
   /// No description provided for @feedbackStep6SubmitSubmitDetailsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Feedback Details'**
+  /// **'Feedback details'**
   String get feedbackStep6SubmitSubmitDetailsTitle;
 
   /// No description provided for @feedbackStep7SubmissionInFlightMessage.
@@ -322,7 +322,7 @@ abstract class WiredashLocalizations {
   /// No description provided for @feedbackStep7SubmissionOpenErrorButton.
   ///
   /// In en, this message translates to:
-  /// **'Click to open error details'**
+  /// **'Click to see error details'**
   String get feedbackStep7SubmissionOpenErrorButton;
 
   /// No description provided for @feedbackStep7SubmissionRetryButton.
@@ -340,7 +340,7 @@ abstract class WiredashLocalizations {
   /// No description provided for @feedbackDiscardButton.
   ///
   /// In en, this message translates to:
-  /// **'Discard Feedback'**
+  /// **'Discard feedback'**
   String get feedbackDiscardButton;
 
   /// No description provided for @feedbackDiscardConfirmButton.
@@ -370,7 +370,7 @@ abstract class WiredashLocalizations {
   /// No description provided for @backdropReturnToApp.
   ///
   /// In en, this message translates to:
-  /// **'Return to App'**
+  /// **'Return to app'**
   String get backdropReturnToApp;
 }
 
