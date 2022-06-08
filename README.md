@@ -39,8 +39,8 @@ dependencies:
 
 ### 3. Wrap your root widget with Wiredash
 
-Wrap the root widget of your existing app with Wiredash ans make sure to fill in the `projectId` and SDK `secret`
-from [Wiredash Console](https://console.wiredash.io) > Your project >
+Wrap the root widget of your existing app with Wiredash and make sure to fill in the `projectId` and SDK `secret`
+from the [Wiredash Console](https://console.wiredash.io) > Your project >
 Settings > General Settings.
 
 ```dart
@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
 
 ### 4. Launch the feedback flow
 
-From anywhere in your app, call the `Wiredash.show()` method to launch Wiredash.
+From anywhere in your app, call the `Wiredash.show()` method to launch Wiredash:
 
 ```dart
 Wiredash.of(context).show(inheritMaterialTheme: true);
