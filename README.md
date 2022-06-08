@@ -21,11 +21,12 @@ to [wiredash.io](https://wiredash.io).
 > Visit [docs.wiredash.io](https://docs.wiredash.io/guide/#integrating-wiredash-in-your-app) for the in-depth
 > guide and additional info.
 
-### 1. Create a free account in the [Wiredash Console](https://console.wiredash.io)
+### 1. Create an account
 
-Sign in with a valid Google or GitHub account and create a new Wiredash project. _It's free!_
+Go to the [Wiredash Console](https://console.wiredash.io) and sign in with a valid Google or GitHub account. _It's
+free!_<br />Click on `Create new project` and enter your app's name.
 
-### 2. Add wiredash to your pubspec.yaml.
+### 2. Add wiredash to your pubspec.yaml
 
 ```yaml
 name: your_flutter_app
@@ -72,7 +73,7 @@ Wiredash.of(context).show(inheritMaterialTheme: true);
 
 That's already it. Yes, it's *really that easy*. Also works on all platforms.
 
-![bottom sheet](https://deploy-preview-4--wiredash-docs.netlify.app/assets/img/wiredash-sample-app-side-by-side-start.09e3b5f2.png)
+![Wiredash demo](https://raw.githubusercontent.com/wiredashio/wiredash-sdk/stable/.github/wiredash-demo.gif)
 
 ## Customization & More
 
