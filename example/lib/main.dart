@@ -22,10 +22,6 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
     ///
     /// `Wiredash` requires the `Project ID` and the `API Key` obtained from the
     /// "Settings" tab of the console.
-    /// The navigator key is also required to be able to show the overlay.
-    /// `_navigatorKey` is assigned to both `Wiredash` and `MaterialApp`.
-    /// Note: you are not required to use `MaterialApp`,
-    /// Wiredash will work just as well with `CupertinoApp` and `WidgetsApp`.
     ///
     /// Wiredash also allows you to set custom themes using `WiredashThemeData`.
     /// The behaviour as well as the locale and translations can be customized
@@ -36,20 +32,22 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
     return Wiredash(
       projectId: "Project ID from console.wiredash.io",
       secret: "API Key from console.wiredash.io",
-      options: WiredashOptionsData(
-        /// Change the locale of the Wiredash UI
-        locale: Locale('en'),
-
-        /// Uncomment below to set custom translations work
-        // localizationDelegate: CustomWiredashTranslationsDelegate(),
-      ),
       feedbackOptions: WiredashFeedbackOptions(
+        /// Uncomment below to ask users for their email
+        askForUserEmail: true,
+
+        /// Uncomment below to disable the screenshot step
+        // screenshotStep: false,
+
+        /// Attach cusotm metada to a feedback
         collectMetaData: (metaData) => metaData
           ..userEmail = 'dash@wiredash.io'
           ..custom['isPremium'] = false
           ..custom['nested'] = {'wire': 'dash'},
-        askForUserEmail: true,
+
         labels: [
+          // Take the label ids from your project console
+          // https://console.wiredash.io/ -> Settings -> Labels
           Label(
             id: 'lbl-r65egsdf',
             title: 'Bug',
@@ -67,34 +65,55 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
             title: 'Payment',
           ),
         ],
-
-        /// Uncomment below to disable the screenshot step
-        // screenshotStep: false,
       ),
-      // theme: WiredashThemeData(
-      /// Uncomment below to explore the various theme options:
 
-      /// Customize the Font Family
-      // fontFamily: 'Monospace',
+      options: WiredashOptionsData(
+        /// Change the locale of the Wiredash UI
+        locale: Locale('en'),
 
-      /// Customize the Bottom Sheet Border Radius
-      // sheetBorderRadius: BorderRadius.zero,
+        /// Uncomment below to set custom translations work
+        // localizationDelegate: CustomWiredashTranslationsDelegate(),
+      ),
 
-      /// Customize Brightness and Colors
-      // brightness: Brightness.light,
-      // primaryColor: Colors.red,
-      // secondaryColor: Colors.blue,
+      /// You can adjust the colors of Wiredash to your liking.
+      /// But first check if the automatic theming with
+      /// `Wiredash.of(context).show(inheritMaterialTheme: true)` works for you
+      theme: WiredashThemeData.fromColor(
+        // Customize Brightness and Colors
+        // Primary button color, step indicator, focused input border
+        primaryColor: Colors.cyanAccent,
+        // Secondary button color
+        secondaryColor: Colors.cyan,
+        brightness: Brightness.light,
+      ).copyWith(
+        // Customize the Font Family
+        fontFamily: 'Monospace',
 
-      /// Customize the Pen Colors
-      /// Note: If you change the Pen Colors, please consider providing
-      /// custom translations to the WiredashOptions to ensure the app is
-      /// accessible to all. The default translations describe the default
-      /// pen colors.
-      // firstPenColor: Colors.orange,
-      // secondPenColor: Colors.green,
-      // thirdPenColor: Colors.yellow,
-      // fourthPenColor: Colors.deepPurpleAccent,
-      // ),
+        // i.e. selected labels, buttons on cards, input border
+        primaryContainerColor: Colors.green,
+        textOnPrimaryContainerColor: Colors.black,
+
+        // i.e. labels when not selected
+        secondaryContainerColor: Colors.greenAccent,
+        textOnSecondaryContainerColor: Colors.white,
+
+        // the color behind the application, only visible when your app is
+        // translucent
+        appBackgroundColor: Colors.white,
+        // The color of the "Return to app" bar
+        appHandleBackgroundColor: Colors.blue[700],
+
+        // The background gradient, top to bottom
+        primaryBackgroundColor: Colors.white,
+        secondaryBackgroundColor: Color(0xFFF4FFF4),
+
+        errorColor: Colors.deepOrange,
+
+        // firstPenColor: Colors.orange,
+        // secondPenColor: Colors.green,
+        // thirdPenColor: Colors.yellow,
+        // fourthPenColor: Colors.deepPurpleAccent,
+      ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: _HomePage(),
@@ -127,6 +146,10 @@ class _HomePage extends StatelessWidget {
         /// Since the `Wiredash` widget is at the root of the widget tree this
         /// method can be accessed from anywhere in the code.
         onPressed: () {
+          // When using the Wiredash theme
+          // Wiredash.of(context).show();
+
+          // Automatically generate a theme
           Wiredash.of(context).show(inheritMaterialTheme: true);
         },
         child: Icon(Icons.feedback_outlined),
