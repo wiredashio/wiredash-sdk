@@ -116,6 +116,10 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
       ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          brightness: Brightness.dark,
+        ),
         home: _HomePage(),
       ),
     );
@@ -181,6 +185,19 @@ class _DetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Details Page #$index'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Wiredash.of(context).show(inheritMaterialTheme: true);
+            },
+            child: Text(
+              "Send feedback",
+              style: TextStyle(
+                color: Theme.of(context).primaryIconTheme.color,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: Padding(
