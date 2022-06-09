@@ -1,5 +1,5 @@
 <p align="center">  
-<img src="https://raw.githubusercontent.com/wiredashio/wiredash-sdk/master/.github/logo.svg?sanitize=true" width="512px" alt="Wiredash Logo">
+<img src="https://raw.githubusercontent.com/wiredashio/wiredash-sdk/stable/.github/wiredash-text-logo.svg?sanitize=true" width="512px" alt="Wiredash Logo">
 </p>
 
 # Wiredash SDK for Flutter
@@ -7,33 +7,41 @@
 [![Pub](https://img.shields.io/pub/v/wiredash.svg)](https://pub.dartlang.org/packages/wiredash)
 [![Build](https://img.shields.io/github/workflow/status/wiredashio/wiredash-sdk/Static%20Analysis)](https://github.com/wiredashio/wiredash-sdk/actions)
 [![Website](https://img.shields.io/badge/website-wiredash.io-blue.svg)](https://wiredash.io/)
-[![likes](https://badges.bar/wiredash/likes)](https://pub.dev/packages/wiredash/score)
-[![popularity](https://badges.bar/wiredash/popularity)](https://pub.dev/packages/wiredash/score)
-[![pub points](https://badges.bar/wiredash/pub%20points)](https://pub.dev/packages/wiredash/score) 
-  
-Wiredash is probably the easiest, and most convenient way to capture in-app user feedback, wishes, ratings and much more. The SDK is completely written in Dart and runs on Android, iOS, Desktop and the Web. For more info, head over to [wiredash.io](https://wiredash.io). 
-  
-## 🚀 Getting Started
+[![Likes](https://badges.bar/wiredash/likes)](https://pub.dev/packages/wiredash/score)
+[![Popularity](https://badges.bar/wiredash/popularity)](https://pub.dev/packages/wiredash/score)
+[![Pub points](https://badges.bar/wiredash/pub%20points)](https://pub.dev/packages/wiredash/score)
 
-> **TIP**  Visit [docs.wiredash.io](https://docs.wiredash.io/guide/#integrating-wiredash-in-your-app) for the in-depth guide and additional info.
+Wiredash is probably the easiest, and most convenient way to capture in-app user feedback, wishes, ratings and much
+more. The SDK is completely written in Dart and runs on Android, iOS, Desktop and the Web. For more info, head over
+to [wiredash.io](https://wiredash.io).
 
-### 1. Create a free account on [wiredash.io](https://console.wiredash.io)
+## 3-Minute Quick Start
 
-Sign in with a valid Google or GitHub account.
+> It takes less than 180 seconds to integrate Wiredash in your existing app 🚀 <br />
+> Visit [docs.wiredash.io](https://docs.wiredash.io/guide/#integrating-wiredash-in-your-app) for the in-depth
+> guide and additional info.
 
-### 2. Add wiredash to your pubspec.yaml.
+### 1. Create an account
+
+Go to the [Wiredash Console](https://console.wiredash.io) and sign in with a valid Google or GitHub account. _It's
+free!_<br />Click on `Create new project` and enter your app's name.
+
+### 2. Add wiredash to your pubspec.yaml
 
 ```yaml
 name: your_flutter_app
 dependencies:
   flutter:
     sdk: flutter
-  wiredash: ^1.0.0-beta.1
+  ...
+  wiredash: ^1.0.0
 ```
 
 ### 3. Wrap your root widget with Wiredash
 
-Fill in the `projectId` and `secret` from [Wiredash console](https://console.wiredash.io) > Project > Settings
+Wrap the root widget of your existing app with Wiredash and make sure to fill in the `projectId` and SDK `secret`
+from the [Wiredash Console](https://console.wiredash.io) > Your project >
+Settings > General Settings.
 
 ```dart
 import 'package:flutter/material.dart';
@@ -47,9 +55,8 @@ class MyApp extends StatelessWidget {
       projectId: 'YOUR-PROJECT-ID',
       secret: 'YOUR-SECRET',
       child: MaterialApp(
-        navigatorKey: _navigatorKey,
-        title: 'Flutter Demo',
-        home: YourSuperDuperAwesomeApp(),
+        // Your Flutter app is basically Wiredash's direct child.
+        // This can be a MaterialApp, WidgetsApp or whatever widget you like.
       ),
     );
   }
@@ -58,24 +65,25 @@ class MyApp extends StatelessWidget {
 
 ### 4. Launch the feedback flow
 
-From anywhere in your app
+From anywhere in your app, call the `Wiredash.show()` method to launch Wiredash:
 
 ```dart
-ElevatedButton(
-  // launch wiredash where appropriate in your App 
-  onPressed: () => Wiredash.of(context).show(),
-  child: Text('Give Feedback'),
-),
+Wiredash.of(context).show(inheritMaterialTheme: true);
 ```
 
-![bottom sheet](https://deploy-preview-4--wiredash-docs.netlify.app/assets/img/wiredash-sample-app-side-by-side-start.09e3b5f2.png)
+That's already it. Yes, it's *really that easy*. Also works on all platforms.
 
-## 🎨 Customization
+![Wiredash demo](https://raw.githubusercontent.com/wiredashio/wiredash-sdk/stable/.github/wiredash-demo.gif)
 
-The Wiredash SDK is completely customizable and offers many configuration options!
+## Customization & More
 
-For all the details, check out the full documentation at [docs.wiredash.io/configuration](https://docs.wiredash.io/configuration/).
+The Wiredash SDK is completely customizable and offers many configuration options (e.g. custom feedback categories a.k.a
+labels, custom metadata, custom theming, custom translations and much, much more!) 🤯
 
-## 📃 License  
-  
-The Wiredash SDK is released under the [Attribution Assurance License](https://opensource.org/licenses/AAL). See [LICENSE](https://github.com/wiredashio/wiredash-sdk/blob/master/LICENSE) for details.
+For all the details, make sure to check out the full documentation
+at [docs.wiredash.io](https://docs.wiredash.io/configuration/).
+
+## License
+
+The Wiredash SDK is released under the [Attribution Assurance License](https://opensource.org/licenses/AAL).
+See [LICENSE](https://github.com/wiredashio/wiredash-sdk/blob/stable/LICENSE) for details.
