@@ -28,13 +28,16 @@ free!_<br />Click on `Create new project` and enter your app's name.
 
 ### 2. Add wiredash to your pubspec.yaml
 
+```bash
+$ flutter pub add wiredash:^1.0.0-beta 
+```
+
 ```yaml
-name: your_flutter_app
 dependencies:
   flutter:
     sdk: flutter
   ...
-  wiredash: ^1.0.0
+  wiredash: ^1.0.0-beta
 ```
 
 ### 3. Wrap your root widget with Wiredash
@@ -82,6 +85,8 @@ labels, custom metadata, custom theming, custom translations and much, much more
 
 For all the details, make sure to check out the full documentation
 at [docs.wiredash.io](https://docs.wiredash.io/configuration/).
+
+Also checkout the [example](https://github.com/wiredashio/wiredash-sdk/blob/stable/example/lib/main.dart) code
 
 ## License
 
