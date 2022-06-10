@@ -119,7 +119,7 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
   String get feedbackStep6SubmitSubmitDetailsTitle => 'Feedback Details';
 
   @override
-  String get feedbackStep7SubmissionInFlightMessage => 'Feddback wird gesendet';
+  String get feedbackStep7SubmissionInFlightMessage => 'Feedback wird gesendet';
 
   @override
   String get feedbackStep7SubmissionSuccessMessage =>
