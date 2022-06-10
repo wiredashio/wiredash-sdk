@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0-beta.2
+- [#207](https://github.com/wiredashio/wiredash-sdk/pull/207) Multi language support. Currently, Wiredash support English 🇬🇧 and German 🇩🇪. We'd happily accept any other languages!
+- [e8de7b5](https://github.com/wiredashio/wiredash-sdk/commit/e8de7b53c98edeb949a2d4117cf8c82cfdcb0c08) Fix `Confidential` widget hiding content when Wiredash was closed.
+- Updated `README.md` for upcoming 1.0.0 release.
+
+Is this release stable? Yes. And once the documentation is update we feel ready to call it `1.0.0`
+
 ## 1.0.0-beta.1
 
 - [#205](https://github.com/wiredashio/wiredash-sdk/pull/205) Improve theming capabilities. Better automatic colors, more customizations. New `WiredashThemeData` properties: 
