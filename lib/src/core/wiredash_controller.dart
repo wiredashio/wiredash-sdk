@@ -104,8 +104,13 @@ class WiredashController {
   /// The [Confidential] widget can automatically hide sensitive widgets from
   /// being recorded in a feedback screenshot.
   ValueNotifier<bool> get visible {
+    const openStates = [
+      WiredashBackdropStatus.centered,
+      WiredashBackdropStatus.openingCentered,
+      WiredashBackdropStatus.closingCentered,
+    ];
     return _model.services.backdropController
-        .asValueNotifier((c) => c.isAppInteractive);
+        .asValueNotifier((c) => openStates.contains(c.backdropStatus));
   }
 
   /// Captures the current locale of the app when opening wiredash

@@ -209,8 +209,27 @@ class _DetailsPage extends StatelessWidget {
                 'Details page #$index',
                 style: Theme.of(context).textTheme.headline6,
               ),
-              SizedBox(height: 8),
-              Text('Try navigating here in feedback mode.')
+              SizedBox(height: 32),
+              Text('Try navigating here in feedback mode.'),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 400),
+                child: TextField(
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    hintText: 'You can even write text in capture mode',
+                  ),
+                ),
+              ),
+              SizedBox(height: 32),
+              Text('Secret data can be hidden with the Confidential Widget'),
+              SizedBox(height: 16),
+              Confidential(
+                // mode: ConfidentialMode.invisible,
+                child: Text(
+                  'Secret: "wiredash rocks!"',
+                  style: TextStyle(fontWeight: FontWeight.w200, fontSize: 20),
+                ),
+              ),
             ],
           ),
         ),
