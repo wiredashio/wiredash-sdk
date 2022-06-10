@@ -1,10 +1,31 @@
 # Contribution guide
 
-## Localizations
-
 ### Contribute your translations 🎉
 
-If you want to contribute your own translations you can join our [public POEditor project here](https://poeditor.com/join/project/yq6ereCbKZ).
+## Add a new language to wiredash
+
+Add a new language file into `lib/assets/l10n/` and then run the generate command
+
+Don't forget to export the new language file in `lib/wiredash.dart` allowing devs to extend them.
+
+## Add new localizations to existing languages
+
+Update the `.arb` files to your liking in `lib/assets/l10n/`.
+**Do not edit any .g.dart file manually**
+
+Checkout the `wiredash_en.arb` file (template) for all possible keys.
+
+Then generate the new translations with the generate command
+
+## Generate new translations
+
+To convert `.arb` files to dart code, run
+
+```bash
+./tool/localize.sh
+```
+
+## Contributors
 
 Thank you so much to following people who helped translate Wiredash! 🙌
 
@@ -14,14 +35,4 @@ Thank you so much to following people who helped translate Wiredash! 🙌
 - [mohanadshaban](https://github.com/mohanadshaban) [ar]
 - [AtaTrkgl](https://github.com/AtaTrkgl), [salihgueler](https://github.com/salihgueler) 🇹🇷
 - [Caio Pedroso](https://github.com/KyleKun) 🇵🇹
-
-
-### Update translations
-
-Downloading the translations from POEditor is automated using the `tool/poeditor-import.sh`.
-
-1. Get your API key [here](https://poeditor.com/account/api)
-2. On macOS run `brew install jq`
-3. `export $POEDITOR_API_TOKEN=abcdefg1234`
-4. Do the final import `./tool/poeditor-import.sh`
 
