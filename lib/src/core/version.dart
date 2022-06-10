@@ -22,4 +22,5 @@
 /// 106 -> 1.0.0-alpha.6
 /// 107 -> 1.0.0-alpha.7
 /// 110 -> 1.0.0-beta.1
-const wiredashSdkVersion = 110;
+/// 111 -> 1.0.0-beta.2
+const wiredashSdkVersion = 111;
