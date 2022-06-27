@@ -338,10 +338,13 @@ class InMemorySharedPreferences extends Fake implements SharedPreferences {
 
   final MethodInvocationCatcher setStringListInvocations =
       MethodInvocationCatcher('setStringList');
-
   @override
   Future<bool> setStringList(String key, List<String> value) async {
-    await setStringListInvocations.addMethodCall(args: [key, value]);
+    final mockedReturnValue =
+        setStringListInvocations.addAsyncMethodCall<bool>(args: [key, value]);
+    if (mockedReturnValue != null) {
+      return mockedReturnValue.future;
+    }
     _store[key] = value;
     return true;
   }
@@ -351,11 +354,61 @@ class InMemorySharedPreferences extends Fake implements SharedPreferences {
 
   @override
   List<String>? getStringList(String key) {
-    final result = getStringListInvocations.addMethodCall(args: [key]);
-    if (result != null) {
-      return result as List<String>?;
+    final mockedReturnValue =
+        getStringListInvocations.addMethodCall<List<String>?>(args: [key]);
+    if (mockedReturnValue != null) {
+      return mockedReturnValue.value;
     }
     return _store[key] as List<String>?;
+  }
+
+  final MethodInvocationCatcher setIntInvocations =
+      MethodInvocationCatcher('setInt');
+  @override
+  Future<bool> setInt(String key, int value) async {
+    final mockedReturnValue =
+        setIntInvocations.addAsyncMethodCall<bool>(args: [key, value]);
+    if (mockedReturnValue != null) {
+      return mockedReturnValue.future;
+    }
+    _store[key] = value;
+    return true;
+  }
+
+  final MethodInvocationCatcher getIntInvocations =
+      MethodInvocationCatcher('getInt');
+  @override
+  int? getInt(String key) {
+    final mockedReturnValue =
+        getIntInvocations.addMethodCall<int?>(args: [key]);
+    if (mockedReturnValue != null) {
+      return mockedReturnValue.value;
+    }
+    return _store[key] as int?;
+  }
+
+  final MethodInvocationCatcher setStringInvocations =
+      MethodInvocationCatcher('setString');
+  @override
+  Future<bool> setString(String key, String value) async {
+    final mockedReturnValue =
+        setStringInvocations.addAsyncMethodCall<bool>(args: [key, value]);
+    if (mockedReturnValue != null) {
+      return mockedReturnValue.future;
+    }
+    _store[key] = value;
+    return true;
+  }
+
+  final MethodInvocationCatcher getStringInvocations =
+      MethodInvocationCatcher('getString');
+  @override
+  String? getString(String key) {
+    final mockedReturnValue = getStringInvocations.addMethodCall(args: [key]);
+    if (mockedReturnValue != null) {
+      return mockedReturnValue.value as String?;
+    }
+    return _store[key] as String?;
   }
 }
 

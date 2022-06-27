@@ -76,8 +76,12 @@ class _MockProjectCredentialValidator extends Fake
     required String projectId,
     required String secret,
   }) async {
-    validateInvocations
-        .addMethodCall(namedArgs: {'projectId': projectId, 'secret': secret});
+    return validateInvocations.addAsyncMethodCall(
+      namedArgs: {
+        'projectId': projectId,
+        'secret': secret,
+      },
+    )?.future;
   }
 }
 

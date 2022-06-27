@@ -128,6 +128,11 @@ class WiredashApi {
     );
   }
 
+  Future<PingResponse> ping() async {
+    throw "TODO implement";
+    // TODO throw KillSwitchException();
+  }
+
   /// Sends a [BaseRequest] after attaching HTTP headers
   Future<Response> _send(BaseRequest request) async {
     request.headers['project'] = _projectId;
@@ -526,5 +531,33 @@ class NpsRequestBody {
     }
 
     return body;
+  }
+}
+
+class PingResponse {
+  /// The id of the last message from dev or user
+  ///
+  /// Used to detect if there are new messages
+  ///
+  /// can be `null` when user never gave any feedback
+  // TODO double check with backend
+  final String? latestMessageId;
+
+  PingResponse({
+    required this.latestMessageId,
+  });
+}
+
+/// Backend returns an error which silences the SDK (preventing automatic pings)
+/// until [silentUntil]
+class KillSwitchException extends WiredashApiException {
+  KillSwitchException(this.silentUntil, {Response? response})
+      : super(response: response);
+
+  final DateTime silentUntil;
+
+  @override
+  String toString() {
+    return 'KillSwitchException{${response?.statusCode}, silentUntil: $silentUntil, body: ${response?.body}}';
   }
 }
