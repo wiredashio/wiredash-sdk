@@ -38,39 +38,39 @@ class WiredashServices extends ChangeNotifier {
 
   final Locator _locator = Locator();
 
-  WiredashModel get wiredashModel => _locator.get();
+  WiredashModel get wiredashModel => _locator.watch();
 
-  FeedbackModel get feedbackModel => _locator.get();
+  FeedbackModel get feedbackModel => _locator.watch();
 
-  NpsModel get npsModel => _locator.get();
+  NpsModel get npsModel => _locator.watch();
 
-  BackdropController get backdropController => _locator.get();
+  BackdropController get backdropController => _locator.watch();
 
-  DeviceInfoGenerator get deviceInfoGenerator => _locator.get();
+  DeviceInfoGenerator get deviceInfoGenerator => _locator.watch();
 
-  PicassoController get picassoController => _locator.get();
+  PicassoController get picassoController => _locator.watch();
 
-  ScreenCaptureController get screenCaptureController => _locator.get();
+  ScreenCaptureController get screenCaptureController => _locator.watch();
 
-  BuildInfoManager get buildInfoManager => _locator.get();
+  BuildInfoManager get buildInfoManager => _locator.watch();
 
-  FeedbackSubmitter get feedbackSubmitter => _locator.get();
+  FeedbackSubmitter get feedbackSubmitter => _locator.watch();
 
-  DeviceIdGenerator get deviceIdGenerator => _locator.get();
+  DeviceIdGenerator get deviceIdGenerator => _locator.watch();
 
-  Wiredash get wiredashWidget => _locator.get();
+  Wiredash get wiredashWidget => _locator.watch();
 
-  WiredashOptionsData get wiredashOptions => _locator.get();
+  WiredashOptionsData get wiredashOptions => _locator.watch();
 
-  WiredashApi get api => _locator.get();
+  WiredashApi get api => _locator.watch();
 
-  SyncEngine get syncEngine => _locator.get();
+  SyncEngine get syncEngine => _locator.watch();
 
-  DiscardFeedbackUseCase get discardFeedback => _locator.get();
+  DiscardFeedbackUseCase get discardFeedback => _locator.watch();
 
-  DiscardNpsUseCase get discardNps => _locator.get();
+  DiscardNpsUseCase get discardNps => _locator.watch();
 
-  ProjectCredentialValidator get projectCredentialValidator => _locator.get();
+  ProjectCredentialValidator get projectCredentialValidator => _locator.watch();
 
   void updateWidget(Wiredash wiredashWidget) {
     inject<Wiredash>((_) => wiredashWidget);
@@ -83,15 +83,11 @@ class WiredashServices extends ChangeNotifier {
   }
 
   InstanceFactory<T> inject<T>(
-    T Function(WiredashServices) create, {
-    T Function(WiredashServices, T oldInstance)? update,
+    T Function(Locator) create, {
     Function(T)? dispose,
   }) {
     final factory = _locator.injectProvider(
-      (locator) => create(this),
-      update: update == null
-          ? null
-          : (_, T oldInstance) => update(this, oldInstance),
+      (locator) => create(_locator),
       dispose: dispose,
     );
     notifyListeners();
@@ -124,7 +120,7 @@ void _setupServices(WiredashServices sl) {
   );
   sl.inject<DeviceInfoGenerator>((_) => DeviceInfoGenerator(window));
   sl.inject<WiredashOptionsData>(
-    (locator) => locator.wiredashWidget.options ?? const WiredashOptionsData(),
+    (_) => sl.wiredashWidget.options ?? const WiredashOptionsData(),
   );
   sl.inject<ScreenCaptureController>(
     (locator) => ScreenCaptureController(),
@@ -150,9 +146,9 @@ void _setupServices(WiredashServices sl) {
     (locator) {
       return WiredashApi(
         httpClient: Client(),
-        projectId: locator.wiredashWidget.projectId,
-        secret: locator.wiredashWidget.secret,
-        deviceIdProvider: locator.deviceIdGenerator.deviceId,
+        projectId: sl.wiredashWidget.projectId,
+        secret: sl.wiredashWidget.secret,
+        deviceIdProvider: sl.deviceIdGenerator.deviceId,
       );
     },
   );
@@ -160,7 +156,7 @@ void _setupServices(WiredashServices sl) {
   sl.inject<FeedbackSubmitter>(
     (locator) {
       if (kIsWeb) {
-        return DirectFeedbackSubmitter(locator.api);
+        return DirectFeedbackSubmitter(sl.api);
       }
 
       const fileSystem = LocalFileSystem();
@@ -172,7 +168,7 @@ void _setupServices(WiredashServices sl) {
         uuidV4Generator: const UuidV4Generator(),
       );
       final retryingFeedbackSubmitter =
-          RetryingFeedbackSubmitter(fileSystem, storage, locator.api);
+          RetryingFeedbackSubmitter(fileSystem, storage, sl.api);
       return retryingFeedbackSubmitter;
     },
   );
@@ -184,14 +180,14 @@ void _setupServices(WiredashServices sl) {
       engine.addJob(
         'ping',
         PingJob(
-          api: locator.api,
+          apiProvider: locator.get,
           sharedPreferencesProvider: SharedPreferences.getInstance,
         ),
       );
       engine.addJob(
         'feedback',
         UploadPendingFeedbackJob(
-          feedbackSubmitter: locator.feedbackSubmitter,
+          feedbackSubmitterProvider: locator.get,
         ),
       );
 

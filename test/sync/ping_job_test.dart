@@ -20,7 +20,7 @@ void main() {
     Future<SharedPreferences> prefsProvider() async => prefs;
 
     PingJob createPingJob() => PingJob(
-          api: api,
+          apiProvider: () => api,
           sharedPreferencesProvider: prefsProvider,
         );
 
@@ -92,8 +92,10 @@ void main() {
         api.pingInvocations.interceptor = (invocation) {
           throw const KillSwitchException();
         };
-        final pingJob =
-            PingJob(api: api, sharedPreferencesProvider: prefsProvider);
+        final pingJob = PingJob(
+          apiProvider: () => api,
+          sharedPreferencesProvider: prefsProvider,
+        );
         pingJob.execute();
         async.flushTimers();
         expect(api.pingInvocations.count, 1);
@@ -110,8 +112,10 @@ void main() {
         api.pingInvocations.interceptor = (invocation) {
           throw const SocketException('message');
         };
-        final pingJob =
-            PingJob(api: api, sharedPreferencesProvider: prefsProvider);
+        final pingJob = PingJob(
+          apiProvider: () => api,
+          sharedPreferencesProvider: prefsProvider,
+        );
         pingJob.execute();
         async.flushTimers();
         expect(api.pingInvocations.count, 1);

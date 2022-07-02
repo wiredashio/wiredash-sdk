@@ -71,7 +71,7 @@ class WiredashTestRobot {
 
     // replace submitter, because for testing we always want to submit directly
     robot.services.inject<FeedbackSubmitter>(
-      (locator) => DirectFeedbackSubmitter(locator.api),
+      (locator) => DirectFeedbackSubmitter(robot.services.api),
     );
 
     return robot;
@@ -328,7 +328,7 @@ class WiredashTestRobot {
 
 WiredashServices createMockServices() {
   final services = WiredashServices();
-  services.inject<WiredashApi>((locator) => MockWiredashApi());
+  services.inject<WiredashApi>((_) => MockWiredashApi());
   return services;
 }
 

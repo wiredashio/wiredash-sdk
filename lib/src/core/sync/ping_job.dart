@@ -4,11 +4,11 @@ import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 
 class PingJob extends Job {
-  final WiredashApi api;
+  final WiredashApi Function() apiProvider;
   final Future<SharedPreferences> Function() sharedPreferencesProvider;
 
   PingJob({
-    required this.api,
+    required this.apiProvider,
     required this.sharedPreferencesProvider,
   });
 
@@ -45,7 +45,7 @@ class PingJob extends Job {
     }
 
     try {
-      await api.ping();
+      await apiProvider().ping();
       await _saveLastSuccessfulPing(now);
       syncDebugPrint('ping');
     } on KillSwitchException catch (_) {

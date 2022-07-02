@@ -31,6 +31,39 @@ void main() {
       expect(find.byType(Wiredash), findsOneWidget);
     });
 
+    testWidgets('ping is send when the Widget gets updated', (tester) async {
+      await tester.pumpWidget(
+        const Wiredash(
+          projectId: 'test',
+          secret: 'invalid-secret',
+          // this widget never settles, allowing us to jump in the future
+          child: CircularProgressIndicator(),
+        ),
+      );
+      final api1 = findWireadshServices.api as MockWiredashApi;
+      await tester.pump();
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump();
+      await tester.pump();
+
+      expect(api1.pingInvocations.count, 0);
+      await tester.pumpWidget(
+        const Wiredash(
+          projectId: 'test',
+          secret: 'correct-secret',
+          child: CircularProgressIndicator(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      expect(api1.pingInvocations.count, 0);
+      print("wait 5s");
+      await tester.pump(const Duration(seconds: 5));
+      expect(api1.pingInvocations.count, 1);
+    });
+
     testWidgets('readding Wiredash simply works and sends pings again',
         (tester) async {
       await tester.pumpWidget(
@@ -57,7 +90,8 @@ void main() {
       await tester.pumpWidget(
         const Wiredash(
           projectId: 'test',
-          secret: 'test',
+          // new secret makes the api, thus the SyncEngine rebuild
+          secret: 'new secret',
           child: SizedBox(),
         ),
       );
@@ -76,7 +110,7 @@ void main() {
             _MockProjectCredentialValidator();
 
         debugServicesCreator = () => createMockServices()
-          ..inject<ProjectCredentialValidator>((p0) => validator);
+          ..inject<ProjectCredentialValidator>((_) => validator);
         addTearDown(() => debugServicesCreator = null);
 
         await tester.pumpWidget(
