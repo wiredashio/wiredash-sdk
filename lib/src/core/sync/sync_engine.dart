@@ -10,10 +10,19 @@ void syncDebugPrint(Object? message) {
   }
 }
 
+/// Events that are triggered by the user that can be used to trigger registered
+/// [Job]s.
 enum SdkEvent {
+  /// User launched the app that is wrapped in Wiredash
   appStart,
+
+  /// User opened the Wiredash UI
   openedWiredash,
+
+  /// User submitted feedback. It might not yet be delivered to the backend but the task is completed by the user
   submittedFeedback,
+
+  /// User submitted the NPS
   submittedNps,
 }
 
