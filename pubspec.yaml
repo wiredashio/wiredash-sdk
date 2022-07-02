@@ -9,6 +9,7 @@ environment:
   flutter: ">=2.8.0"
 
 dependencies:
+  clock: ^1.1.0
   collection: ">=1.15.0 <2.0.0"
   file: ">=6.0.0-0 <7.0.0"
   flutter:

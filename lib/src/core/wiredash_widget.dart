@@ -2,13 +2,11 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/context_cache.dart';
 import 'package:wiredash/src/core/options/wiredash_options.dart';
-import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/not_a_widgets_app.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
@@ -153,7 +151,7 @@ class Wiredash extends StatefulWidget {
 class WiredashState extends State<Wiredash> {
   final GlobalKey _appKey = GlobalKey(debugLabel: 'app');
 
-  final WiredashServices _services = WiredashServices();
+  final WiredashServices _services = _createServices();
 
   late final WiredashBackButtonDispatcher _backButtonDispatcher;
 
@@ -176,7 +174,7 @@ class WiredashState extends State<Wiredash> {
   @override
   void initState() {
     super.initState();
-    debugProjectCredentialValidator.validate(
+    _services.projectCredentialValidator.validate(
       projectId: widget.projectId,
       secret: widget.secret,
     );
@@ -185,22 +183,10 @@ class WiredashState extends State<Wiredash> {
     _services.wiredashModel.addListener(_markNeedsBuild);
     _services.backdropController.addListener(_markNeedsBuild);
 
-    _submitTimer =
-        Timer(const Duration(seconds: 5), scheduleFeedbackSubmission);
+    // start the sync engine
+    unawaited(_services.syncEngine.onWiredashInit());
+
     _backButtonDispatcher = WiredashBackButtonDispatcher()..initialize();
-  }
-
-  /// Submits pending feedbacks on app start (slightly delayed)
-  void scheduleFeedbackSubmission() {
-    _submitTimer = null;
-    final submitter = _services.feedbackSubmitter;
-    if (submitter is RetryingFeedbackSubmitter) {
-      submitter.submitPendingFeedbackItems();
-
-      if (kDebugMode) {
-        submitter.deletePendingFeedbacks();
-      }
-    }
   }
 
   void _markNeedsBuild() {
@@ -220,7 +206,7 @@ class WiredashState extends State<Wiredash> {
   @override
   void didUpdateWidget(Wiredash oldWidget) {
     super.didUpdateWidget(oldWidget);
-    debugProjectCredentialValidator.validate(
+    _services.projectCredentialValidator.validate(
       projectId: widget.projectId,
       secret: widget.secret,
     );
@@ -341,6 +327,18 @@ Locale get _defaultLocale {
   return locale ?? const Locale('en', 'US');
 }
 
+/// Can be used to inject mock services for testing
 @visibleForTesting
-ProjectCredentialValidator debugProjectCredentialValidator =
-    const ProjectCredentialValidator();
+WiredashServices Function()? debugServicesCreator;
+
+WiredashServices _createServices() {
+  WiredashServices? services;
+  assert(
+    () {
+      services = debugServicesCreator?.call();
+      return true;
+    }(),
+  );
+
+  return services ?? WiredashServices();
+}

@@ -95,6 +95,8 @@ class WiredashModel with ChangeNotifier {
         .map((element) => services.backdropController.hasState)
         .firstWhere((element) => element);
 
+    unawaited(services.syncEngine.onUserOpenedWiredash());
+
     await services.backdropController.animateToOpen();
   }
 

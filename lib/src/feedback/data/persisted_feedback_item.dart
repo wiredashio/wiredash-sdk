@@ -63,6 +63,7 @@ class PersistedFeedbackItem {
 
   @override
   int get hashCode =>
+      // ignore: deprecated_member_use
       hashList(attachments) ^
       buildInfo.hashCode ^
       deviceId.hashCode ^
@@ -71,6 +72,7 @@ class PersistedFeedbackItem {
       userId.hashCode ^
       sdkVersion.hashCode ^
       deviceInfo.hashCode ^
+      // ignore: deprecated_member_use
       hashList(labels) ^
       appInfo.hashCode ^
       const DeepCollectionEquality.unordered().hash(customMetaData);

@@ -64,19 +64,11 @@ class WiredashApi {
 
     final response = await _send(req);
 
-    if (response.statusCode == 401) {
-      throw UnauthenticatedWiredashApiException(response, _projectId, _secret);
+    if (response.statusCode == 200) {
+      final map = jsonDecode(response.body) as Map<String, dynamic>;
+      return AttachmentId(map['id'] as String);
     }
-
-    if (response.statusCode != 200) {
-      throw WiredashApiException(
-        message: '$type upload failed',
-        response: response,
-      );
-    }
-
-    final map = jsonDecode(response.body) as Map<String, dynamic>;
-    return AttachmentId(map['id'] as String);
+    _parseResponseForErrors(response);
   }
 
   /// Reports a feedback
@@ -97,13 +89,7 @@ class WiredashApi {
       // success 🎉
       return;
     }
-    if (response.statusCode == 401) {
-      throw UnauthenticatedWiredashApiException(response, _projectId, _secret);
-    }
-    throw WiredashApiException(
-      message: 'submitting feedback failed',
-      response: response,
-    );
+    _parseResponseForErrors(response);
   }
 
   Future<void> sendNps(NpsRequestBody body) async {
@@ -119,13 +105,17 @@ class WiredashApi {
       // success 🎉
       return;
     }
-    if (response.statusCode == 401) {
-      throw UnauthenticatedWiredashApiException(response, _projectId, _secret);
+    _parseResponseForErrors(response);
+  }
+
+  Future<PingResponse> ping() async {
+    final uri = Uri.parse('$_host/ping');
+    final Request request = Request('POST', uri);
+    final response = await _send(request);
+    if (response.statusCode == 200) {
+      return PingResponse();
     }
-    throw WiredashApiException(
-      message: 'submitting nps failed',
-      response: response,
-    );
+    _parseResponseForErrors(response);
   }
 
   /// Sends a [BaseRequest] after attaching HTTP headers
@@ -137,6 +127,16 @@ class WiredashApi {
 
     final streamedResponse = await _httpClient.send(request);
     return Response.fromStream(streamedResponse);
+  }
+
+  Never _parseResponseForErrors(Response response) {
+    if (response.statusCode == 401) {
+      throw UnauthenticatedWiredashApiException(response, _projectId, _secret);
+    }
+    if (response.statusCode == 403) {
+      throw KillSwitchException(response: response);
+    }
+    throw WiredashApiException(response: response);
   }
 }
 
@@ -156,7 +156,7 @@ extension UploadScreenshotApi on WiredashApi {
 
 /// Generic error from the Wiredash API
 class WiredashApiException implements Exception {
-  WiredashApiException({this.message, this.response});
+  const WiredashApiException({this.message, this.response});
 
   String? get messageFromServer {
     try {
@@ -189,6 +189,7 @@ class WiredashApiException implements Exception {
   String toString() {
     return 'WiredashApiException{'
         '"$message", '
+        'endpoint: ${response?.request?.url.path}, '
         'code: ${response?.statusCode}, '
         'resp: $messageFromServer'
         '}';
@@ -526,5 +527,19 @@ class NpsRequestBody {
     }
 
     return body;
+  }
+}
+
+class PingResponse {
+  // Nothing in here just yet but that will change in the future
+  PingResponse();
+}
+
+/// Backend returns an error which silences the SDK for one week
+class KillSwitchException extends WiredashApiException {
+  const KillSwitchException({Response? response}) : super(response: response);
+  @override
+  String toString() {
+    return 'KillSwitchException{${response?.statusCode}, body: ${response?.body}}';
   }
 }

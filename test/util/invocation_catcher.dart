@@ -22,7 +22,7 @@ class MethodInvocationCatcher {
 
   int get count => _invocations.length;
 
-  dynamic addMethodCall({
+  MockedReturnValue<R>? addMethodCall<R>({
     Map<String, Object?>? namedArgs,
     List<Object?>? args,
   }) {
@@ -33,11 +33,34 @@ class MethodInvocationCatcher {
     );
     _invocations.add(AssertableInvocation(iv));
     if (interceptor != null) {
-      return interceptor!.call(iv);
+      return MockedReturnValue(interceptor!.call(iv) as R);
     }
     return null;
   }
 
+  AsyncMockedReturnValue<R>? addAsyncMethodCall<R>({
+    Map<String, Object?>? namedArgs,
+    List<Object?>? args,
+  }) {
+    final iv = Invocation.method(
+      Symbol(methodName),
+      args,
+      namedArgs?.map((key, value) => MapEntry(Symbol(key), value)),
+    );
+    _invocations.add(AssertableInvocation(iv));
+    if (interceptor != null) {
+      final mocked = interceptor!.call(iv);
+      if (mocked is Future<R>) {
+        return AsyncMockedReturnValue(mocked);
+      } else {
+        final result = mocked as R;
+        return AsyncMockedReturnValue(Future.sync(() => result));
+      }
+    }
+    return null;
+  }
+
+  /// Add an interceptor to get a callback when a method is called or return mock data to the caller
   dynamic Function(Invocation invocation)? interceptor;
 
   void verifyInvocationCount(int n) {
@@ -57,6 +80,17 @@ class MethodInvocationCatcher {
   }
 }
 
+class MockedReturnValue<T> {
+  MockedReturnValue(this.value);
+  final T value;
+}
+
+class AsyncMockedReturnValue<T> {
+  AsyncMockedReturnValue(this.future);
+  final Future<T> future;
+}
+
+/// A invocation which can be used to assert specific values
 class AssertableInvocation {
   AssertableInvocation(this.original);
 
@@ -91,5 +125,3 @@ class AssertableInvocation {
         ')';
   }
 }
-
-class WithArgument {}

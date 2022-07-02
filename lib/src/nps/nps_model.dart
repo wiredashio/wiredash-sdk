@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
@@ -54,6 +56,7 @@ class NpsModel extends ChangeNotifier2 {
         platformUserAgent: deviceInfo.userAgent,
       );
       await _services.api.sendNps(body);
+      unawaited(_services.syncEngine.onSubmitNPS());
       _closeDelay?.dispose();
       _closeDelay = Delay(const Duration(seconds: 1));
       await _closeDelay!.future;

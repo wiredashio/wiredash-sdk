@@ -25,7 +25,7 @@ class MockWiredashApi implements WiredashApi {
 
   @override
   Future<void> sendFeedback(PersistedFeedbackItem feedback) async {
-    return await sendFeedbackInvocations.addMethodCall(args: [feedback]);
+    return await sendFeedbackInvocations.addMethodCall(args: [feedback])?.value;
   }
 
   final MethodInvocationCatcher uploadAttachmentInvocations =
@@ -38,7 +38,8 @@ class MockWiredashApi implements WiredashApi {
     String? filename,
     MediaType? contentType,
   }) async {
-    final response = await uploadAttachmentInvocations.addMethodCall(
+    final mockedReturnValue =
+        uploadAttachmentInvocations.addAsyncMethodCall<AttachmentId>(
       namedArgs: {
         'screenshot': screenshot,
         'type': type,
@@ -46,8 +47,8 @@ class MockWiredashApi implements WiredashApi {
         'contentType': contentType,
       },
     );
-    if (response != null) {
-      return response as AttachmentId;
+    if (mockedReturnValue != null) {
+      return mockedReturnValue.future;
     }
     throw 'Not mocked';
   }
@@ -57,6 +58,19 @@ class MockWiredashApi implements WiredashApi {
 
   @override
   Future<void> sendNps(NpsRequestBody body) async {
-    return await sendNpsInvocations.addMethodCall(args: [body]);
+    return await sendNpsInvocations.addAsyncMethodCall(args: [body])?.future;
+  }
+
+  final MethodInvocationCatcher pingInvocations =
+      MethodInvocationCatcher('ping');
+
+  @override
+  Future<PingResponse> ping() async {
+    final mockedReturnValue =
+        pingInvocations.addAsyncMethodCall<PingResponse>();
+    if (mockedReturnValue != null) {
+      return mockedReturnValue.future;
+    }
+    throw 'Not mocked';
   }
 }

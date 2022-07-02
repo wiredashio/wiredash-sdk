@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
@@ -330,6 +332,7 @@ class FeedbackModel extends ChangeNotifier2 {
           if (submission == SubmissionState.pending) {
             if (kDebugMode) print("Feedback is pending");
           }
+          unawaited(_services.syncEngine.onSubmitFeedback());
           _feedbackProcessed = true;
           notifyListeners();
         } catch (e, stack) {
