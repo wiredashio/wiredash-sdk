@@ -32,6 +32,31 @@ void main() {
         expect(lastExecution, isNotNull);
       });
     });
+
+    test('Removing a job does not execute it anymore', () async {
+      final syncEngine = SyncEngine();
+      addTearDown(() => syncEngine.onWiredashDispose());
+
+      DateTime? lastExecution;
+      final testJob = TestJob(
+        trigger: [SdkEvent.appStart],
+        block: () {
+          lastExecution = clock.now();
+        },
+      );
+      syncEngine.addJob('test', testJob);
+
+      await syncEngine.onWiredashInit();
+      expect(lastExecution, isNull);
+      final firstRun = lastExecution;
+
+      final removed = syncEngine.removeJob('test');
+      expect(removed, testJob);
+
+      await syncEngine.onWiredashInit();
+      // did not update, was not executed again
+      expect(lastExecution, firstRun);
+    });
   });
 }
 
