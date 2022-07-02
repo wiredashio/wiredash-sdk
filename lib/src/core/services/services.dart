@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/options/wiredash_options_data.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
+import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/wiredash_model.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
@@ -59,6 +60,8 @@ class WiredashServices extends ChangeNotifier {
   WiredashOptionsData get wiredashOptions => _locator.get();
 
   WiredashApi get api => _locator.get();
+
+  SyncEngine get syncEngine => _locator.get();
 
   DiscardFeedbackUseCase get discardFeedback => _locator.get();
 
@@ -164,6 +167,11 @@ void _setupServices(WiredashServices sl) {
           RetryingFeedbackSubmitter(fileSystem, storage, locator.api);
       return retryingFeedbackSubmitter;
     },
+  );
+
+  sl.inject<SyncEngine>(
+    (locator) => SyncEngine(),
+    dispose: (engine) => engine.onWiredashDispose(),
   );
 
   sl.inject<DiscardFeedbackUseCase>((_) => DiscardFeedbackUseCase(sl));

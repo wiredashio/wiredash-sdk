@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/context_cache.dart';
@@ -11,6 +12,8 @@ import 'package:wiredash/src/core/options/wiredash_options.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/not_a_widgets_app.dart';
+import 'package:wiredash/src/core/sync/ping_job.dart';
+import 'package:wiredash/src/core/sync/sync_feedback_job.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/feedback/feedback_backdrop.dart';
 import 'package:wiredash/src/nps/nps_backdrop.dart';
@@ -185,8 +188,19 @@ class WiredashState extends State<Wiredash> {
     _services.wiredashModel.addListener(_markNeedsBuild);
     _services.backdropController.addListener(_markNeedsBuild);
 
-    _submitTimer =
-        Timer(const Duration(seconds: 5), scheduleFeedbackSubmission);
+    _services.syncEngine.addJob(
+      'ping',
+      PingJob(
+          api: _services.api,
+          sharedPreferencesProvider: SharedPreferences.getInstance),
+    );
+    _services.syncEngine.addJob(
+      'feedback',
+      UploadPendingFeedbackJob(feedbackSubmitter: _services.feedbackSubmitter),
+    );
+
+    _services.syncEngine.onWiredashInit();
+
     _backButtonDispatcher = WiredashBackButtonDispatcher()..initialize();
   }
 
@@ -214,6 +228,7 @@ class WiredashState extends State<Wiredash> {
     _submitTimer = null;
     _services.dispose();
     _backButtonDispatcher.dispose();
+    _services.syncEngine.onWiredashDispose();
     super.dispose();
   }
 

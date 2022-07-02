@@ -1,25 +1,25 @@
 import 'dart:async';
 
-import 'package:clock/clock.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
 
-const _debugPrint = false;
+const _kSyncDebugPrint = true;
 
-class SyncEngine {
-  final WiredashApi _api;
-  final Future<SharedPreferences> Function() _sharedPreferences;
-
-  SyncEngine(
-    WiredashApi api,
-    Future<SharedPreferences> Function() sharedPreferences,
-  )   : _api = api,
-        _sharedPreferences = sharedPreferences;
-
-  void dispose() {
-    _initTimer?.cancel();
+void syncDebugPrint(Object? message) {
+  if (_kSyncDebugPrint) {
+    debugPrint(message?.toString());
   }
+}
+
+enum SdkEvent {
+  appStart,
+  openedWiredash,
+  submittedFeedback,
+  submittedNps,
+}
+
+/// Executes sync jobs with the network at certain times
+class SyncEngine {
+  SyncEngine();
 
   Timer? _initTimer;
 
@@ -31,10 +31,27 @@ class SyncEngine {
   static const silenceUntilKey = 'io.wiredash.silence_until';
   static const latestMessageIdKey = 'io.wiredash.latest_message_id';
 
+  final Map<String, Job> _jobs = {};
+
+  bool get _mounted => _initTimer != null;
+
+  /// Adds a job to be executed at the right time
+  void addJob(
+    String name,
+    Job job,
+  ) {
+    if (job._name != null) {
+      throw 'Job already has a name (${job._name}), cannot add it ($name) twice';
+    }
+    job._name = name;
+    _jobs[name] = job;
+    syncDebugPrint('Added job $name (${job.runtimeType})');
+  }
+
   /// Called when the SDK is initialized (by wrapping the app)
   ///
-  /// This eventually syncs with the backend
-  Future<void> onWiredashInitialized() async {
+  /// Triggers [SdkEvent.appStart] after the app settled down.
+  Future<void> onWiredashInit() async {
     assert(() {
       if (_initTimer != null) {
         debugPrint("Warning: called onWiredashInitialized multiple times");
@@ -42,106 +59,60 @@ class SyncEngine {
       return true;
     }());
 
-    final now = clock.now();
-    final preferences = await _sharedPreferences();
-    final lastPingInt = preferences.getInt(lastSuccessfulPingKey);
-    final lastPing = lastPingInt != null
-        ? DateTime.fromMillisecondsSinceEpoch(lastPingInt)
-        : null;
-
-    if (lastPing == null) {
-      // never opened wiredash, don't ping automatically on appstart
-      if (_debugPrint) debugPrint('Never opened wiredash, preventing ping');
-      return;
-    }
-
-    if (now.difference(lastPing) <= minSyncGap) {
-      if (_debugPrint) {
-        debugPrint('Not syncing because within minSyncGapWindow\n'
-            'now: $now lastPing:$lastPing\n'
-            'diff (${now.difference(lastPing)}) <= minSyncGap ($minSyncGap)');
-      }
-      // don't ping too often on appstart, only once every minSyncGap
-      return;
-    }
-
-    if (await _isSilenced()) {
-      if (_debugPrint) debugPrint('Sdk silenced, preventing ping');
-      // Received kill switch message, don't automatically ping
-      return;
-    }
-
+    // Delay app start a bit, so that Wiredash doesn't slow down the app start
     _initTimer?.cancel();
-    _initTimer = Timer(const Duration(seconds: 2), _ping);
+    _initTimer = Timer(const Duration(seconds: 5), () {
+      _triggerEvent(SdkEvent.appStart);
+    });
+  }
+
+  /// Shuts down the sync engine because wiredash is not part of the widget tree
+  /// anymore
+  void onWiredashDispose() {
+    _initTimer?.cancel();
+    _initTimer = null;
   }
 
   /// Called when the user manually opened Wiredash
   ///
   /// This 100% calls the backend, forcing a sync
   Future<void> onUserOpenedWiredash() async {
-    // always ping on manual open, ignore silencing
-    await _ping();
+    await _triggerEvent(SdkEvent.appStart);
   }
 
-  /// Pings the backend with a very cheep call checking if anything should be synced
-  Future<void> _ping() async {
-    try {
-      final response = await _api.ping();
-      final preferences = await _sharedPreferences();
-      final latestMessageId = response.latestMessageId;
-      if (latestMessageId != null) {
-        final currentLatestId = preferences.getString(latestMessageIdKey);
-        if (currentLatestId != latestMessageId) {
-          await preferences.setString(latestMessageIdKey, latestMessageId);
-          // TODO call onNewMessage() callback
-        }
+  Future<void> onSubmitFeedback() async {
+    await _triggerEvent(SdkEvent.submittedFeedback);
+  }
+
+  Future<void> onSubmitNPS() async {
+    await _triggerEvent(SdkEvent.submittedNps);
+  }
+
+  /// Executes all jobs that are listening to the given event
+  Future<void> _triggerEvent(SdkEvent event) async {
+    for (final job in _jobs.values) {
+      if (!_mounted) {
+        // stop sync operation, Wiredash was removed from the widget tree
+        syncDebugPrint('cancelling job execution for event $event');
+        break;
       }
-
-      final now = clock.now();
-      await preferences.setInt(
-        lastSuccessfulPingKey,
-        now.millisecondsSinceEpoch,
-      );
-    } on KillSwitchException catch (e) {
-      // sdk receives too much load, prevents further automatic pings
-      await _silenceUntil(e.silentUntil);
-    } catch (e, stack) {
-      // TODO track number of consecutive errors to prevent pings at all
-      debugPrint(e.toString());
-      debugPrint(stack.toString());
+      try {
+        if (job.shouldExecute(event)) {
+          syncDebugPrint('Executing job ${job._name}');
+          await job.execute();
+        }
+      } catch (e, stack) {
+        debugPrint('Error executing job ${job._name}:\n$e\n$stack');
+      }
     }
   }
+}
 
-  /// Silences the sdk, prevents automatic pings on app startup until the time is over
-  Future<void> _silenceUntil(DateTime dateTime) async {
-    final preferences = await _sharedPreferences();
-    preferences.setInt(silenceUntilKey, dateTime.millisecondsSinceEpoch);
-    debugPrint('Silenced Wiredash until $dateTime');
-  }
+abstract class Job {
+  String get name => _name ?? 'unnamed';
+  String? _name;
 
-  /// `true` when automatic pings should be prevented
-  Future<bool> _isSilenced() async {
-    final now = clock.now();
-    final preferences = await _sharedPreferences();
+  bool shouldExecute(SdkEvent event);
 
-    final int? millis = preferences.getInt(silenceUntilKey);
-    if (millis == null) {
-      return false;
-    }
-    final silencedUntil = DateTime.fromMillisecondsSinceEpoch(millis);
-    final silenced = silencedUntil.isAfter(now);
-    if (_debugPrint && silenced) {
-      debugPrint("Sdk is silenced until $silencedUntil (now $now)");
-    }
-    return silenced;
-  }
-
-  /// Remembers the time (now) when the last feedback was submitted
-  ///
-  /// This information is used to trigger [_ping] on app start within [minSyncGap] periode
-  Future<void> rememberFeedbackSubmission() async {
-    final now = clock.now();
-    final preferences = await _sharedPreferences();
-    await preferences.setInt(lastFeedbackSubmissionKey, now.millisecond);
-  }
+  Future<void> execute();
 }
