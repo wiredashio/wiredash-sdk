@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-beta.3
+
+- [#209](https://github.com/wiredashio/wiredash-sdk/pull/209) Sync state between sdk and console via `ping`
+
 ## 1.0.0-beta.2
 - [#207](https://github.com/wiredashio/wiredash-sdk/pull/207) Multi language support. Currently, Wiredash support English 🇬🇧 and German 🇩🇪. We'd happily accept any other languages!
 - [e8de7b5](https://github.com/wiredashio/wiredash-sdk/commit/e8de7b53c98edeb949a2d4117cf8c82cfdcb0c08) Fix `Confidential` widget hiding content when Wiredash was closed.
