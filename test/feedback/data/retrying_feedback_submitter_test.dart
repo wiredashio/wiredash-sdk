@@ -199,7 +199,9 @@ void main() {
       mockApi.sendFeedbackInvocations.interceptor = (iv) {
         if (!firstFileSubmitted) {
           firstFileSubmitted = true;
-          throw WiredashApiException(message: "Something unexpected happened");
+          throw const WiredashApiException(
+            message: "Something unexpected happened",
+          );
         }
         return null /*void*/;
       };

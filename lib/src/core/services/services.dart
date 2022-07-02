@@ -112,7 +112,8 @@ void _setupServices(WiredashServices sl) {
   sl.inject<DeviceIdGenerator>((_) => DeviceIdGenerator());
   sl.inject<BuildInfoManager>((_) => BuildInfoManager());
   sl.inject<ProjectCredentialValidator>(
-      (_) => const ProjectCredentialValidator());
+    (_) => const ProjectCredentialValidator(),
+  );
   sl.inject<BackdropController>(
     (_) => BackdropController(),
     dispose: (model) => model.dispose(),
