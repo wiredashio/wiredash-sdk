@@ -184,6 +184,7 @@ class FlutterDeviceInfo {
   @override
   int get hashCode =>
       platformLocale.hashCode ^
+      // ignore: deprecated_member_use
       hashList(platformSupportedLocales) ^
       padding.hashCode ^
       physicalSize.hashCode ^

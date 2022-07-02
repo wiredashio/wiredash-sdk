@@ -333,10 +333,12 @@ WiredashServices Function()? debugServicesCreator;
 
 WiredashServices _createServices() {
   WiredashServices? services;
-  assert(() {
-    services = debugServicesCreator?.call();
-    return true;
-  }());
+  assert(
+    () {
+      services = debugServicesCreator?.call();
+      return true;
+    }(),
+  );
 
   return services ?? WiredashServices();
 }

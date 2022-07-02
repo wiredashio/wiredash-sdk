@@ -35,9 +35,11 @@ class PingJob extends Job {
 
     final lastPing = await _getLastSuccessfulPing();
     if (lastPing != null && now.difference(lastPing) <= minPingGap) {
-      syncDebugPrint('Not syncing because within minSyncGapWindow\n'
-          'now: $now lastPing:$lastPing\n'
-          'diff (${now.difference(lastPing)}) <= minSyncGap ($minPingGap)');
+      syncDebugPrint(
+        'Not syncing because within minSyncGapWindow\n'
+        'now: $now lastPing:$lastPing\n'
+        'diff (${now.difference(lastPing)}) <= minSyncGap ($minPingGap)',
+      );
       // don't ping too often on app start, only once every minPingGap
       return;
     }

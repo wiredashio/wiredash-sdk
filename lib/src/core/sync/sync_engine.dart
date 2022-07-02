@@ -68,12 +68,14 @@ class SyncEngine {
   ///
   /// Triggers [SdkEvent.appStart] after the app settled down.
   Future<void> onWiredashInit() async {
-    assert(() {
-      if (_initTimer != null) {
-        debugPrint("Warning: called onWiredashInitialized multiple times");
-      }
-      return true;
-    }());
+    assert(
+      () {
+        if (_initTimer != null) {
+          debugPrint("Warning: called onWiredashInitialized multiple times");
+        }
+        return true;
+      }(),
+    );
 
     // _triggerEvent(SdkEvent.appStart);
     // Delay app start a bit, so that Wiredash doesn't slow down the app start
