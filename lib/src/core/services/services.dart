@@ -9,8 +9,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/options/wiredash_options_data.dart';
+import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
+import 'package:wiredash/src/core/sync/ping_job.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
+import 'package:wiredash/src/core/sync/sync_feedback_job.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/wiredash_model.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
@@ -67,6 +70,8 @@ class WiredashServices extends ChangeNotifier {
 
   DiscardNpsUseCase get discardNps => _locator.get();
 
+  ProjectCredentialValidator get projectCredentialValidator => _locator.get();
+
   void updateWidget(Wiredash wiredashWidget) {
     inject<Wiredash>((_) => wiredashWidget);
   }
@@ -106,6 +111,8 @@ void _setupServices(WiredashServices sl) {
   );
   sl.inject<DeviceIdGenerator>((_) => DeviceIdGenerator());
   sl.inject<BuildInfoManager>((_) => BuildInfoManager());
+  sl.inject<ProjectCredentialValidator>(
+      (_) => const ProjectCredentialValidator());
   sl.inject<BackdropController>(
     (_) => BackdropController(),
     dispose: (model) => model.dispose(),
@@ -170,7 +177,25 @@ void _setupServices(WiredashServices sl) {
   );
 
   sl.inject<SyncEngine>(
-    (locator) => SyncEngine(),
+    (locator) {
+      final engine = SyncEngine();
+
+      engine.addJob(
+        'ping',
+        PingJob(
+          api: locator.api,
+          sharedPreferencesProvider: SharedPreferences.getInstance,
+        ),
+      );
+      engine.addJob(
+        'feedback',
+        UploadPendingFeedbackJob(
+          feedbackSubmitter: locator.feedbackSubmitter,
+        ),
+      );
+
+      return engine;
+    },
     dispose: (engine) => engine.onWiredashDispose(),
   );
 

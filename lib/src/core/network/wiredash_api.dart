@@ -156,7 +156,7 @@ extension UploadScreenshotApi on WiredashApi {
 
 /// Generic error from the Wiredash API
 class WiredashApiException implements Exception {
-  WiredashApiException({this.message, this.response});
+  const WiredashApiException({this.message, this.response});
 
   String? get messageFromServer {
     try {
@@ -537,7 +537,7 @@ class PingResponse {
 
 /// Backend returns an error which silences the SDK for one week
 class KillSwitchException extends WiredashApiException {
-  KillSwitchException({Response? response}) : super(response: response);
+  const KillSwitchException({Response? response}) : super(response: response);
   @override
   String toString() {
     return 'KillSwitchException{${response?.statusCode}, body: ${response?.body}}';

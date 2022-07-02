@@ -1,229 +1,56 @@
+import 'dart:async';
+
 import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
-import 'package:test/fake.dart';
 import 'package:test/test.dart';
-import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 
-import '../feedback/data/pending_feedback_item_storage_test.dart';
-import '../util/invocation_catcher.dart';
-
 void main() {
-  group('Triggering ping', () {
-    late _MockWiredashApi api;
-    late InMemorySharedPreferences prefs;
+  group('sync engine', () {
+    test('onWiredashInit triggers SdkEvent.sppStart 5s after ', () {
+      fakeAsync((async) {
+        final syncEngine = SyncEngine();
+        addTearDown(() => syncEngine.onWiredashDispose());
 
-    setUp(() {
-      api = _MockWiredashApi();
-      prefs = InMemorySharedPreferences();
+        DateTime? lastExecution;
+        final testJob = TestJob(
+          trigger: [SdkEvent.appStart],
+          block: () {
+            lastExecution = clock.now();
+          },
+        );
+        syncEngine.addJob('test', testJob);
+
+        // After init
+        syncEngine.onWiredashInit();
+        // Jobs listening to appStart are not triggered directly
+        async.elapse(const Duration(seconds: 4));
+        expect(lastExecution, isNull);
+
+        // but after 5s
+        async.elapse(const Duration(seconds: 1));
+        expect(lastExecution, isNotNull);
+      });
     });
-    //
-    // // TODO not relevant anymore, we always want to ping
-    // test('Never opened Wiredash does not trigger ping', () {
-    //   fakeAsync((async) {
-    //     final syncEngine = SyncEngine(api, () async => prefs);
-    //     addTearDown(() => syncEngine.dispose());
-    //     syncEngine.onWiredashInit();
-    //     async.elapse(const Duration(seconds: 10));
-    //     expect(api.pingInvocations.count, 0);
-    //   });
-    // });
-    //
-    // test(
-    //     'appstart pings when the user submitted feedback/sent message '
-    //     'in the last 30 days (delayed by 2 seconds)', () {
-    //   fakeAsync((async) {
-    //     final syncEngine = SyncEngine(api, () async => prefs);
-    //     addTearDown(() => syncEngine.dispose());
-    //
-    //     // Given last feedback 29 days ago
-    //     syncEngine.onSubmitFeedback();
-    //     async.elapse(const Duration(days: 29));
-    //
-    //     // Given last sync 6 hours ago
-    //     prefs.setInt(
-    //       SyncEngine.lastSuccessfulPingKey,
-    //       clock.now().millisecondsSinceEpoch,
-    //     );
-    //     async.elapse(const Duration(hours: 6));
-    //
-    //     syncEngine.onWiredashInit();
-    //     async.elapse(const Duration(milliseconds: 1990));
-    //     expect(api.pingInvocations.count, 0);
-    //     async.elapse(const Duration(milliseconds: 100));
-    //     expect(api.pingInvocations.count, 1);
-    //   });
-    // });
-    //
-    // test('opening wiredash triggers ping immediately', () {
-    //   fakeAsync((async) {
-    //     expect(api.pingInvocations.count, 0);
-    //     final syncEngine = SyncEngine(api, () async => prefs);
-    //     addTearDown(() => syncEngine.dispose());
-    //     syncEngine.onUserOpenedWiredash();
-    //     async.flushTimers();
-    //     expect(api.pingInvocations.count, 1);
-    //   });
-    // });
-    //
-    // test('opening the app twice within 3h gap does nothing', () {
-    //   fakeAsync((async) {
-    //     // Given last ping was almost 3h ago
-    //     prefs.setInt(
-    //       SyncEngine.lastSuccessfulPingKey,
-    //       clock.now().millisecondsSinceEpoch,
-    //     );
-    //     async.elapse(const Duration(hours: 2, minutes: 59));
-    //     expect(api.pingInvocations.count, 0);
-    //
-    //     final syncEngine = SyncEngine(api, () async => prefs);
-    //     addTearDown(() => syncEngine.dispose());
-    //     syncEngine.onWiredashInit();
-    //     async.flushTimers();
-    //     expect(api.pingInvocations.count, 0);
-    //   });
-    // });
-    //
-    // test('opening wiredash within 3h gap triggers ping', () {
-    //   fakeAsync((async) {
-    //     // Given last ping was almost 3h ago
-    //     prefs.setInt(
-    //       SyncEngine.lastSuccessfulPingKey,
-    //       clock.now().millisecondsSinceEpoch,
-    //     );
-    //     async.elapse(const Duration(hours: 2, minutes: 59));
-    //     expect(api.pingInvocations.count, 0);
-    //
-    //     final syncEngine = SyncEngine(api, () async => prefs);
-    //     addTearDown(() => syncEngine.dispose());
-    //     syncEngine.onUserOpenedWiredash();
-    //     async.flushTimers();
-    //     expect(api.pingInvocations.count, 1);
-    //   });
-    // });
-    //
-    // test('last successful ping date is saved', () async {
-    //   // Silence SDK for two days
-    //   api.pingInvocations.interceptor = (_) async {
-    //     return PingResponse(latestMessageId: 'asdf');
-    //   };
-    //
-    //   expect(prefs.getInt(SyncEngine.lastSuccessfulPingKey), isNull);
-    //   final syncEngine = SyncEngine(api, () async => prefs);
-    //   addTearDown(() => syncEngine.dispose());
-    //   await syncEngine.onUserOpenedWiredash();
-    //   expect(prefs.getInt(SyncEngine.lastSuccessfulPingKey), isNotNull);
-    // });
-    //
-    // test('latest message id is saved', () async {
-    //   // Silence SDK for two days
-    //   api.pingInvocations.interceptor = (_) async {
-    //     return PingResponse(latestMessageId: 'asdf');
-    //   };
-    //
-    //   expect(prefs.getString(SyncEngine.latestMessageIdKey), isNull);
-    //   final syncEngine = SyncEngine(api, () async => prefs);
-    //   addTearDown(() => syncEngine.dispose());
-    //   await syncEngine.onUserOpenedWiredash();
-    //   expect(prefs.getString(SyncEngine.latestMessageIdKey), 'asdf');
-    // });
-    //
-    // group('Kill Switch', () {
-    //   test('will silence ping on wiredash initialize', () {
-    //     // We really, really, really don't want million of wiredash users
-    //     // to kill our backend when something hits the fan
-    //     fakeAsync((async) {
-    //       // user opened app before
-    //       prefs.setInt(
-    //         SyncEngine.lastSuccessfulPingKey,
-    //         clock.now().millisecondsSinceEpoch,
-    //       );
-    //       async.elapse(const Duration(days: 1));
-    //
-    //       // Silence SDK for two days
-    //       api.pingInvocations.interceptor = (_) async {
-    //         throw KillSwitchException(clock.now().add(const Duration(days: 2)));
-    //       };
-    //
-    //       var syncEngine = SyncEngine(api, () async => prefs);
-    //       addTearDown(() => syncEngine.dispose());
-    //
-    //       // When SDK receives `silentUntil`, the sdk stops pinging automatically
-    //       syncEngine.onWiredashInit();
-    //       async.flushTimers();
-    //       expect(api.pingInvocations.count, 1);
-    //
-    //       // doesn't ping within 2 day periode
-    //       async.elapse(const Duration(days: 1));
-    //       syncEngine.dispose();
-    //       syncEngine = SyncEngine(api, () async => prefs);
-    //       addTearDown(() => syncEngine.dispose());
-    //       syncEngine.onWiredashInit();
-    //       async.flushTimers();
-    //       expect(api.pingInvocations.count, 1);
-    //
-    //       // When the silent duration is over (day 3)
-    //       // the sdk pings again on appstart
-    //       async.elapse(const Duration(days: 2));
-    //       syncEngine.dispose();
-    //       syncEngine = SyncEngine(api, () async => prefs);
-    //       addTearDown(() => syncEngine.dispose());
-    //       syncEngine.onWiredashInit();
-    //       async.flushTimers();
-    //       expect(api.pingInvocations.count, 2);
-    //     });
-    //   });
-    //
-    //   test('Not silent when manually open wiredash', () {
-    //     fakeAsync((async) {
-    //       // user opened app before
-    //       prefs.setInt(
-    //         SyncEngine.lastSuccessfulPingKey,
-    //         clock.now().millisecondsSinceEpoch,
-    //       );
-    //       async.elapse(const Duration(days: 1));
-    //
-    //       // Silence SDK for two days
-    //       api.pingInvocations.interceptor = (_) async {
-    //         throw KillSwitchException(clock.now().add(const Duration(days: 2)));
-    //       };
-    //
-    //       // When SDK receives `silentUntil`, the sdk stops pinging
-    //       var syncEngine = SyncEngine(api, () async => prefs);
-    //       addTearDown(() => syncEngine.dispose());
-    //       syncEngine.onWiredashInit();
-    //       async.flushTimers();
-    //       expect(api.pingInvocations.count, 1);
-    //
-    //       // app start, silenced, no ping
-    //       syncEngine = SyncEngine(api, () async => prefs);
-    //       addTearDown(() => syncEngine.dispose());
-    //       syncEngine.onWiredashInit();
-    //       async.flushTimers();
-    //       expect(api.pingInvocations.count, 1);
-    //
-    //       // manual open, pings
-    //       syncEngine = SyncEngine(api, () async => prefs);
-    //       addTearDown(() => syncEngine.dispose());
-    //       syncEngine.onUserOpenedWiredash();
-    //       expect(api.pingInvocations.count, 2);
-    //     });
-    //   });
-    // });
   });
 }
 
-class _MockWiredashApi extends Fake implements WiredashApi {
-  final MethodInvocationCatcher pingInvocations =
-      MethodInvocationCatcher('ping');
+class TestJob extends Job {
+  final List<SdkEvent> trigger;
+  final FutureOr<void> Function() block;
+
+  TestJob({
+    required this.trigger,
+    required this.block,
+  });
 
   @override
-  Future<PingResponse> ping() async {
-    final mockedReturnValue =
-        pingInvocations.addAsyncMethodCall<PingResponse>();
-    if (mockedReturnValue != null) {
-      return mockedReturnValue.future;
-    }
-    throw "Not implemented";
+  Future<void> execute() async {
+    await block();
+  }
+
+  @override
+  bool shouldExecute(SdkEvent event) {
+    return trigger.contains(event);
   }
 }

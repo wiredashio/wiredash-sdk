@@ -4,15 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
+import 'package:wiredash/src/core/services/services.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 import 'util/invocation_catcher.dart';
+import 'util/mock_api.dart';
 import 'util/robot.dart';
 
 void main() {
   group('Wiredash', () {
     setUp(() {
       SharedPreferences.setMockInitialValues({});
+      debugServicesCreator = createMockServices;
+      addTearDown(() => debugServicesCreator = null);
     });
 
     testWidgets('widget can be created', (tester) async {
@@ -27,15 +31,53 @@ void main() {
       expect(find.byType(Wiredash), findsOneWidget);
     });
 
+    testWidgets('readding Wiredash simply works and sends pings again',
+        (tester) async {
+      await tester.pumpWidget(
+        const Wiredash(
+          projectId: 'test',
+          secret: 'test',
+          // this widget never settles, allowing us to jump in the future
+          child: CircularProgressIndicator(),
+        ),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      final api1 = findWireadshServices.api as MockWiredashApi;
+      expect(api1.pingInvocations.count, 0);
+      await tester.pump(const Duration(seconds: 5));
+      expect(api1.pingInvocations.count, 1);
+
+      // remove wiredash
+      expect(find.byType(Wiredash), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+
+      // add it a second time
+      await tester.pumpWidget(
+        const Wiredash(
+          projectId: 'test',
+          secret: 'test',
+          child: SizedBox(),
+        ),
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      final api2 = findWireadshServices.api as MockWiredashApi;
+      expect(api2.pingInvocations.count, 0);
+      await tester.pump(const Duration(seconds: 5));
+      expect(api2.pingInvocations.count, 1);
+    });
+
     testWidgets(
       'calls ProjectCredentialValidator.validate() initially',
       (tester) async {
         final _MockProjectCredentialValidator validator =
             _MockProjectCredentialValidator();
-        debugProjectCredentialValidator = validator;
-        addTearDown(() {
-          debugProjectCredentialValidator = const ProjectCredentialValidator();
-        });
+
+        debugServicesCreator = () => createMockServices()
+          ..inject<ProjectCredentialValidator>((p0) => validator);
+        addTearDown(() => debugServicesCreator = null);
 
         await tester.pumpWidget(
           const Wiredash(
@@ -83,6 +125,12 @@ class _MockProjectCredentialValidator extends Fake
       },
     )?.future;
   }
+}
+
+WiredashServices get findWireadshServices {
+  final found = find.byType(Wiredash).evaluate().first as StatefulElement;
+  final wiredashState = found.state as WiredashState;
+  return wiredashState.debugServices;
 }
 
 class _FakeApp extends StatefulWidget {

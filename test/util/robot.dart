@@ -33,6 +33,10 @@ class WiredashTestRobot {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       return '.';
     });
+
+    debugServicesCreator = () => createMockServices();
+    addTearDown(() => debugServicesCreator = null);
+
     await tester.pumpWidget(
       Wiredash(
         projectId: 'test',
@@ -320,6 +324,12 @@ class WiredashTestRobot {
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
   }
+}
+
+WiredashServices createMockServices() {
+  final services = WiredashServices();
+  services.inject<WiredashApi>((locator) => MockWiredashApi());
+  return services;
 }
 
 class WiredashTestLocalizationDelegate

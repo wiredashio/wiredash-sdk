@@ -5,14 +5,20 @@
 class Locator {
   final Map<Type, InstanceFactory> _registry = {};
 
+  bool _disposed = false;
+
   void dispose() {
     for (final item in _registry.values) {
       item.dispose?.call();
     }
+    _disposed = true;
   }
 
   /// Retrieve a instance of type [T]
   T get<T>() {
+    if (_disposed) {
+      throw Exception('Locator is disposed');
+    }
     final provider = _registry[T];
     return provider!.instance as T;
   }
@@ -22,6 +28,9 @@ class Locator {
     T Function(Locator, T oldInstance)? update,
     void Function(T)? dispose,
   }) {
+    if (_disposed) {
+      throw Exception('Locator is disposed');
+    }
     late InstanceFactory<T> provider;
     provider = InstanceFactory(this, create, update, () {
       final instance = provider._instance;

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 
-const _kSyncDebugPrint = true;
+const _kSyncDebugPrint = false;
 
 void syncDebugPrint(Object? message) {
   if (_kSyncDebugPrint) {
@@ -18,24 +18,21 @@ enum SdkEvent {
 }
 
 /// Executes sync jobs with the network at certain times
+///
+/// Add a new job with [addJob] and it will execute when your
+/// [Job.shouldExecute] returns `true`.
 class SyncEngine {
   SyncEngine();
 
   Timer? _initTimer;
 
-  static const minSyncGap = Duration(hours: 3);
-
-  static const lastSuccessfulPingKey = 'io.wiredash.last_successful_ping';
-  static const lastFeedbackSubmissionKey =
-      'io.wiredash.last_feedback_submission';
-  static const silenceUntilKey = 'io.wiredash.silence_until';
-  static const latestMessageIdKey = 'io.wiredash.latest_message_id';
-
   final Map<String, Job> _jobs = {};
 
   bool get _mounted => _initTimer != null;
 
-  /// Adds a job to be executed at the right time
+  /// Adds a job to be executed for certain [SdkEvent] events.
+  ///
+  /// See [removeJob] to remove the job.
   void addJob(
     String name,
     Job job,
@@ -46,6 +43,16 @@ class SyncEngine {
     job._name = name;
     _jobs[name] = job;
     syncDebugPrint('Added job $name (${job.runtimeType})');
+  }
+
+  /// Removes a jobs that was previously registered with [addJob].
+  Job? removeJob(String name) {
+    final job = _jobs.remove(name);
+    if (job == null) {
+      return null;
+    }
+    job._name = null;
+    return job;
   }
 
   /// Called when the SDK is initialized (by wrapping the app)
@@ -59,6 +66,7 @@ class SyncEngine {
       return true;
     }());
 
+    // _triggerEvent(SdkEvent.appStart);
     // Delay app start a bit, so that Wiredash doesn't slow down the app start
     _initTimer?.cancel();
     _initTimer = Timer(const Duration(seconds: 5), () {
@@ -73,9 +81,6 @@ class SyncEngine {
     _initTimer = null;
   }
 
-  /// Called when the user manually opened Wiredash
-  ///
-  /// This 100% calls the backend, forcing a sync
   Future<void> onUserOpenedWiredash() async {
     await _triggerEvent(SdkEvent.appStart);
   }
@@ -108,6 +113,8 @@ class SyncEngine {
   }
 }
 
+/// A job that will be executed by [SyncEngine] when [shouldExecute] matches a
+/// triggered [SdkEvent]
 abstract class Job {
   String get name => _name ?? 'unnamed';
   String? _name;

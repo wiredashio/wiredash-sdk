@@ -156,7 +156,7 @@ class Wiredash extends StatefulWidget {
 class WiredashState extends State<Wiredash> {
   final GlobalKey _appKey = GlobalKey(debugLabel: 'app');
 
-  final WiredashServices _services = WiredashServices();
+  final WiredashServices _services = _createServices();
 
   late final WiredashBackButtonDispatcher _backButtonDispatcher;
 
@@ -179,7 +179,7 @@ class WiredashState extends State<Wiredash> {
   @override
   void initState() {
     super.initState();
-    debugProjectCredentialValidator.validate(
+    _services.projectCredentialValidator.validate(
       projectId: widget.projectId,
       secret: widget.secret,
     );
@@ -188,33 +188,10 @@ class WiredashState extends State<Wiredash> {
     _services.wiredashModel.addListener(_markNeedsBuild);
     _services.backdropController.addListener(_markNeedsBuild);
 
-    _services.syncEngine.addJob(
-      'ping',
-      PingJob(
-          api: _services.api,
-          sharedPreferencesProvider: SharedPreferences.getInstance),
-    );
-    _services.syncEngine.addJob(
-      'feedback',
-      UploadPendingFeedbackJob(feedbackSubmitter: _services.feedbackSubmitter),
-    );
-
-    _services.syncEngine.onWiredashInit();
+    // start the sync engine
+    unawaited(_services.syncEngine.onWiredashInit());
 
     _backButtonDispatcher = WiredashBackButtonDispatcher()..initialize();
-  }
-
-  /// Submits pending feedbacks on app start (slightly delayed)
-  void scheduleFeedbackSubmission() {
-    _submitTimer = null;
-    final submitter = _services.feedbackSubmitter;
-    if (submitter is RetryingFeedbackSubmitter) {
-      submitter.submitPendingFeedbackItems();
-
-      if (kDebugMode) {
-        submitter.deletePendingFeedbacks();
-      }
-    }
   }
 
   void _markNeedsBuild() {
@@ -228,14 +205,13 @@ class WiredashState extends State<Wiredash> {
     _submitTimer = null;
     _services.dispose();
     _backButtonDispatcher.dispose();
-    _services.syncEngine.onWiredashDispose();
     super.dispose();
   }
 
   @override
   void didUpdateWidget(Wiredash oldWidget) {
     super.didUpdateWidget(oldWidget);
-    debugProjectCredentialValidator.validate(
+    _services.projectCredentialValidator.validate(
       projectId: widget.projectId,
       secret: widget.secret,
     );
@@ -356,6 +332,16 @@ Locale get _defaultLocale {
   return locale ?? const Locale('en', 'US');
 }
 
+/// Can be used to inject mock services for testing
 @visibleForTesting
-ProjectCredentialValidator debugProjectCredentialValidator =
-    const ProjectCredentialValidator();
+WiredashServices Function()? debugServicesCreator;
+
+WiredashServices _createServices() {
+  WiredashServices? services;
+  assert(() {
+    services = debugServicesCreator?.call();
+    return true;
+  }());
+
+  return services ?? WiredashServices();
+}

@@ -17,7 +17,6 @@ class PingJob extends Job {
 
   static const minPingGap = Duration(hours: 3);
   static const killSwitchSilenceDuration = Duration(days: 7);
-  static const pingErrorSilenceDuration = Duration(minutes: 15);
 
   @override
   bool shouldExecute(SdkEvent event) {
