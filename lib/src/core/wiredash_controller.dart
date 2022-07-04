@@ -59,14 +59,7 @@ class WiredashController {
   /// The metaData will be completely overridden with the values from the
   /// returned object.
   ///
-  /// ### Discussion
-  ///
-  /// *Why is there no simple `metaData` getter/setter?*
-  ///
-  /// Wiredash wants to provide a mutable [CustomizableWiredashMetaData] Object
-  /// that can easily build upon and continuously filled with new data. But
-  /// Wiredash also need to know when you actually changed the metadata.
-  /// This callback, that is executed immediately (like setState) solves both.
+  /// ## Scope
   ///
   /// Please do not keep a reference to the incoming `metaData` parameter. The
   /// reference might not be outdated and not be used. The `metaData` object is
@@ -78,20 +71,29 @@ class WiredashController {
     _model.metaData = mutation(_model.metaData);
   }
 
+  /// Reads the currently set `metaData` (immutable)
+  ///
+  /// Use [modifyMetaData] to update the metaData
+  ///
+  /// ### Discussion
+  ///
+  /// *Why is there no simple `metaData` setter?*
+  ///
+  /// Wiredash wants to provide a mutable [CustomizableWiredashMetaData] Object
+  /// that can easily build upon and continuously filled with new data. But
+  /// Wiredash also need to know when you actually changed the metadata.
+  /// [modifyMetaData] is executed immediately (like setState) which solves both.
+  WiredashMetaData get metaData => _model.metaData;
+
   /// Use this method to provide custom [userId] and [userEmail] to the feedback.
   ///
   /// The [userEmail] parameter can be used to prefill the email input field
   /// but it's up to the user to decide if he want's to include his email with
   /// the feedback.
-  void setUserProperties({
+  void Function({
     String? userId,
     String? userEmail,
-  }) {
-    _setUserProperties(
-      userId: userId,
-      userEmail: userEmail,
-    );
-  }
+  }) get setUserProperties => _setUserProperties;
 
   void _setUserProperties({
     Object? userId = defaultArgument,
@@ -115,17 +117,11 @@ class WiredashController {
   ///
   /// If these values are also provided through dart-define during compile time
   /// then they will be overwritten by this method;
-  void setBuildProperties({
+  void Function({
     String? buildVersion,
     String? buildNumber,
     String? buildCommit,
-  }) {
-    _setBuildProperties(
-      buildVersion: buildVersion,
-      buildNumber: buildNumber,
-      buildCommit: buildCommit,
-    );
-  }
+  }) get setBuildProperties => _setBuildProperties;
 
   void _setBuildProperties({
     Object? buildVersion = defaultArgument,

@@ -65,11 +65,13 @@ class WiredashFeedbackOptions {
   }
 }
 
-/// MetaData that will be sent along the user feedback to the Wiredash console
+/// Mutable version of [WiredashMetaData] that will be sent along the user
+/// feedback to the Wiredash console
 ///
 /// This object is intended to be mutable, making it trivial to change
 /// properties.
-class CustomizableWiredashMetaData {
+class CustomizableWiredashMetaData implements WiredashMetaData {
+  /// This constructor returns a 100% clean version with no prefilled data
   CustomizableWiredashMetaData();
 
   /// Returns a new [CustomizableWiredashMetaData] with prefilled [buildVersion],
@@ -83,41 +85,73 @@ class CustomizableWiredashMetaData {
     return metaData;
   }
 
+  @override
+  String? userId;
+
+  @override
+  String? userEmail;
+
+  @override
+  String? buildVersion;
+
+  @override
+  String? buildNumber;
+
+  @override
+  String? buildCommit;
+
+  @override
+  Map<String, Object?> custom = {};
+
+  @override
+  String toString() {
+    return 'CustomizableWiredashMetaData{'
+        'userId: $userId, '
+        'userEmail: $userEmail, '
+        'buildVersion: $buildVersion, '
+        'buildNumber: $buildNumber, '
+        'custom: $custom'
+        '}';
+  }
+}
+
+/// MetaData that will be sent along the user feedback to the Wiredash console
+abstract class WiredashMetaData {
   /// The id of the user, allowing you to match the feedback with the userIds
   /// of you application
   ///
   /// Might be a nickname, a uuid, or an email-address
-  String? userId;
+  String? get userId;
 
   /// The email address auto-fills the email address step
   ///
   /// This is the best way to contact the user and can be different from
   /// [userId]
-  String? userEmail;
+  String? get userEmail;
 
   /// The "name" of the version, i.e. a semantic version 1.5.10-debug
   ///
   /// This field is prefilled with the environment variable `BUILD_VERSION`
-  String? buildVersion;
+  String? get buildVersion;
 
   /// The build number of this version, usually an int
   ///
   /// This field is prefilled with the environment variable `BUILD_NUMBER`
-  String? buildNumber;
+  String? get buildNumber;
 
   /// The commit that was used to build this app
   ///
   /// This field is prefilled with the environment variable `BUILD_COMMIT`
-  String? buildCommit;
+  String? get buildCommit;
 
   /// Supported data types are String, int, double, bool, List, Map.
   ///
   /// Values that can't be encoded using `jsonEncode` will be omitted.
-  Map<String, Object?> custom = {};
+  Map<String, Object?> get custom;
 
   @override
   String toString() {
-    return 'FeedbackMetaData{'
+    return 'WiredashMetaData{'
         'userId: $userId, '
         'userEmail: $userEmail, '
         'buildVersion: $buildVersion, '

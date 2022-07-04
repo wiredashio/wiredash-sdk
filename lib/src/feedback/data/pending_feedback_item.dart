@@ -208,11 +208,13 @@ extension _SerializePersistedFeedbackItem on PersistedFeedbackItem {
         'appLocale': appInfo.appLocale,
       }),
       'buildInfo': SplayTreeMap.from({
-        'compilationMode': buildInfo.compilationMode.jsonEncode(),
-        if (buildInfo.buildVersion != null)
-          'buildVersion': buildInfo.buildVersion,
-        if (buildInfo.buildNumber != null) 'buildNumber': buildInfo.buildNumber,
-        if (buildInfo.buildCommit != null) 'buildCommit': buildInfo.buildCommit,
+        'compilationMode': this.buildInfo.compilationMode.jsonEncode(),
+        if (this.buildInfo.buildVersion != null)
+          'buildVersion': this.buildInfo.buildVersion,
+        if (this.buildInfo.buildNumber != null)
+          'buildNumber': this.buildInfo.buildNumber,
+        if (this.buildInfo.buildCommit != null)
+          'buildCommit': this.buildInfo.buildCommit,
       }),
       'deviceId': deviceId,
       if (email != null) 'email': email,

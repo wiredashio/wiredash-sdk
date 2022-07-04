@@ -239,23 +239,23 @@ extension FeedbackBody on PersistedFeedbackItem {
       values.addAll({'attachments': items});
     }
 
-    final buildCommit = buildInfo.buildCommit;
+    final buildCommit = this.buildInfo.buildCommit;
     if (buildCommit != null) {
       values.addAll({'buildCommit': buildCommit});
     }
 
-    final buildNumber = buildInfo.buildNumber;
+    final buildNumber = this.buildInfo.buildNumber;
     if (buildNumber != null) {
       values.addAll({'buildNumber': buildNumber});
     }
 
-    final buildVersion = buildInfo.buildVersion;
+    final buildVersion = this.buildInfo.buildVersion;
     if (buildVersion != null) {
       values.addAll({'buildVersion': buildVersion});
     }
 
     values.addAll({
-      'compilationMode': nonNull(buildInfo.compilationMode).jsonEncode(),
+      'compilationMode': nonNull(this.buildInfo.compilationMode).jsonEncode(),
     });
 
     final _customMetaData = customMetaData?.map((key, value) {
