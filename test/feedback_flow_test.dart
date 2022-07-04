@@ -7,9 +7,7 @@ import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'util/assert_widget.dart';
-import 'util/mock_api.dart';
 import 'util/robot.dart';
-import 'util/wiredash_tester.dart';
 
 void main() {
   group('Wiredash', () {
@@ -19,19 +17,15 @@ void main() {
 
     testWidgets('Send text only feedback', (tester) async {
       final robot = await WiredashTestRobot.launchApp(tester);
-      final mockApi = MockWiredashApi();
-      robot.mockWiredashApi(mockApi);
 
       await robot.openWiredash();
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
       await robot.skipScreenshot();
       await robot.submitFeedback();
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
-      final latestCall = mockApi.sendFeedbackInvocations.latest;
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
       expect(submittedFeedback!.message, 'test message');
     });
@@ -39,8 +33,6 @@ void main() {
     testWidgets('No message shows error, entering one allows continue',
         (tester) async {
       final robot = await WiredashTestRobot.launchApp(tester);
-      final mockApi = MockWiredashApi();
-      robot.mockWiredashApi(mockApi);
       await robot.openWiredash();
 
       // Pressing next shows error
@@ -60,8 +52,6 @@ void main() {
 
     testWidgets('Send feedback with screenshot', (tester) async {
       final robot = await WiredashTestRobot.launchApp(tester);
-      final mockApi = MockWiredashApi.fake();
-      robot.mockWiredashApi(mockApi);
 
       await robot.openWiredash();
       await robot.enterFeedbackMessage('test message');
@@ -71,11 +61,9 @@ void main() {
       await robot.confirmDrawing();
       await robot.goToNextStep();
       await robot.submitFeedback();
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
-      final latestCall = mockApi.sendFeedbackInvocations.latest;
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.message, 'test message');
@@ -84,8 +72,6 @@ void main() {
 
     testWidgets('Send feedback with multiple screenshots', (tester) async {
       final robot = await WiredashTestRobot.launchApp(tester);
-      final mockApi = MockWiredashApi.fake();
-      robot.mockWiredashApi(mockApi);
 
       await robot.openWiredash();
       await robot.enterFeedbackMessage('test message');
@@ -99,11 +85,9 @@ void main() {
       expect(find.byType(AttachmentPreview), findsNWidgets(2));
       await robot.goToNextStep();
       await robot.submitFeedback();
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
-      final latestCall = mockApi.sendFeedbackInvocations.latest;
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.message, 'test message');
@@ -120,8 +104,6 @@ void main() {
           ],
         ),
       );
-      final mockApi = MockWiredashApi.fake();
-      robot.mockWiredashApi(mockApi);
 
       await robot.openWiredash();
       await robot.enterFeedbackMessage('feedback with labels');
@@ -135,11 +117,9 @@ void main() {
 
       await robot.skipScreenshot();
       await robot.submitFeedback();
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
-      final latestCall = mockApi.sendFeedbackInvocations.latest;
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.labels, ['lbl-2']);
@@ -153,8 +133,6 @@ void main() {
           askForUserEmail: true,
         ),
       );
-      final mockApi = MockWiredashApi.fake();
-      robot.mockWiredashApi(mockApi);
 
       await robot.openWiredash();
       await robot.enterFeedbackMessage('test message');
@@ -163,11 +141,9 @@ void main() {
       await robot.enterEmail('dash@flutter.io');
       await robot.goToNextStep();
       await robot.submitFeedback();
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
-      final latestCall = mockApi.sendFeedbackInvocations.latest;
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.message, 'test message');
@@ -186,9 +162,6 @@ void main() {
           ],
         ),
       );
-      final mockApi = MockWiredashApi.fake();
-      robot.mockWiredashApi(mockApi);
-
       await robot.openWiredash();
 
       await robot.enterFeedbackMessage('test message');
@@ -205,20 +178,15 @@ void main() {
       await robot.enterEmail('dash@flutter.io');
       await robot.goToNextStep();
       await robot.submitFeedback();
-
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
-      final latestCall = mockApi.sendFeedbackInvocations.latest;
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
       expect(submittedFeedback!.message, 'test message');
     });
 
     testWidgets('Restore flow state when reopening', (tester) async {
       final robot = await WiredashTestRobot.launchApp(tester);
-      final mockApi = MockWiredashApi();
-      robot.mockWiredashApi(mockApi);
 
       await robot.openWiredash();
       await robot.enterFeedbackMessage('test message');

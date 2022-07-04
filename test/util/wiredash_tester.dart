@@ -25,7 +25,7 @@ extension WiredashTester on WidgetTester {
   }
 
   Future<void> waitUntil(
-    dynamic actual,
+    final dynamic actual,
     Matcher matcher, {
     Duration timeout = const Duration(seconds: 5),
   }) async {
@@ -34,17 +34,21 @@ extension WiredashTester on WidgetTester {
     var attempt = 0;
     while (true) {
       attempt++;
-      if (matcher.matches(actual, {})) {
+      dynamic actualValue = actual;
+      if (actual is Function()) {
+        actualValue = actual.call();
+      }
+      if (matcher.matches(actualValue, {})) {
         break;
       }
 
       final now = DateTime.now();
       final executingTime = start.difference(now).abs();
-      if (actual.runtimeType.toString().contains('_TextFinder') &&
+      if (actualValue.runtimeType.toString().contains('_TextFinder') &&
           attempt > 1) {
         print(
           'Text on screen (@ $executingTime) should '
-          'match $actual but got "${matcher.describe(StringDescription()).toString()}":',
+          'match $actualValue but got "${matcher.describe(StringDescription()).toString()}":',
         );
         print(
           "Text on screen: ${allWidgets.whereType<Text>().map((e) => e.data).toList()}",
@@ -54,11 +58,11 @@ extension WiredashTester on WidgetTester {
       if (now.isAfter(start.add(timeout))) {
         // Exit with error
         print(stack);
-        if (actual.runtimeType.toString().contains('_TextFinder')) {
+        if (actualValue.runtimeType.toString().contains('_TextFinder')) {
           print('Text on screen:');
           print(allWidgets.whereType<Text>().map((e) => e.data).toList());
         }
-        throw 'Did not find $actual after $timeout (attempt: $attempt)';
+        throw 'Did not find $actualValue after $timeout (attempt: $attempt)';
       }
 
       final duration =
@@ -68,7 +72,7 @@ extension WiredashTester on WidgetTester {
         // show continuous updates
         print(
           'Waiting for match (attempt: $attempt, @ $executingTime)\n'
-          '\tFinder: $actual to match\n'
+          '\tFinder: $actualValue to match\n'
           '\tMatcher: ${matcher.describe(StringDescription()).toString()}',
         );
       }

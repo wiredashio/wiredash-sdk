@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
-import 'package:wiredash/src/core/services/services.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 import 'util/invocation_catcher.dart';
-import 'util/mock_api.dart';
 import 'util/robot.dart';
 
 void main() {
@@ -40,7 +38,8 @@ void main() {
           child: CircularProgressIndicator(),
         ),
       );
-      final api1 = findWireadshServices.api as MockWiredashApi;
+      final robot = WiredashTestRobot(tester);
+      final api1 = robot.mockServices.mockApi;
       await tester.pump();
       await tester.pump();
       await tester.pump(const Duration(seconds: 1));
@@ -76,10 +75,15 @@ void main() {
       );
       await tester.pump(const Duration(seconds: 1));
 
-      final api1 = findWireadshServices.api as MockWiredashApi;
+      final robot = WiredashTestRobot(tester);
+      final api1 = robot.mockServices.mockApi;
       expect(api1.pingInvocations.count, 0);
       await tester.pump(const Duration(seconds: 5));
       expect(api1.pingInvocations.count, 1);
+
+      // wait a bit, so we don't run in cases where the ping is not sent because
+      // it was triggered too recently
+      await tester.pump(const Duration(days: 1));
 
       // remove wiredash
       expect(find.byType(Wiredash), findsOneWidget);
@@ -97,7 +101,7 @@ void main() {
       );
       await tester.pump(const Duration(seconds: 1));
 
-      final api2 = findWireadshServices.api as MockWiredashApi;
+      final api2 = robot.mockServices.mockApi;
       expect(api2.pingInvocations.count, 0);
       await tester.pump(const Duration(seconds: 5));
       expect(api2.pingInvocations.count, 1);
@@ -159,12 +163,6 @@ class _MockProjectCredentialValidator extends Fake
       },
     )?.future;
   }
-}
-
-WiredashServices get findWireadshServices {
-  final found = find.byType(Wiredash).evaluate().first as StatefulElement;
-  final wiredashState = found.state as WiredashState;
-  return wiredashState.debugServices;
 }
 
 class _FakeApp extends StatefulWidget {

@@ -11,11 +11,16 @@ import 'invocation_catcher.dart';
 class MockWiredashApi implements WiredashApi {
   MockWiredashApi();
 
+  /// Returns "success" responses
   factory MockWiredashApi.fake() {
     final api = MockWiredashApi();
     api.uploadAttachmentInvocations.interceptor = (iv) {
       final randomFloat = Random().nextDouble().toString();
       return AttachmentId(randomFloat.replaceFirst('0.', ''));
+    };
+
+    api.pingInvocations.interceptor = (iv) {
+      return PingResponse();
     };
     return api;
   }
