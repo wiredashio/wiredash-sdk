@@ -75,8 +75,6 @@ void main() {
         beforeOpen: (robot) {
           robot.wiredashController
               .setUserProperties(userEmail: 'dash@flutter.io');
-          robot.wiredashController
-              .modifyMetaData((metaData) => CustomizableWiredashMetaData());
         },
       );
 

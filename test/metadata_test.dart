@@ -48,4 +48,21 @@ void main() {
     controller.setBuildProperties(buildNumber: null);
     expect(controller.metaData.buildNumber, isNull);
   });
+
+  test('custom metadata can not be mutable via metaData getter', () async {
+    final WiredashModel model = WiredashModel(createMockServices());
+    final controller = WiredashController(model);
+    final map = controller.metaData.custom;
+    expect(() => map['foo'] = 'bar', throws);
+  });
+
+  test('custom metadata can be mutated in modifyMetaData', () async {
+    final WiredashModel model = WiredashModel(createMockServices());
+    final controller = WiredashController(model);
+    final map = controller.metaData.custom;
+    controller.modifyMetaData((metaData) => metaData..custom['foo'] = 'bar');
+    expect(controller.metaData.custom['foo'], 'bar');
+    // getter copy did not change
+    expect(map['foo'], isNull);
+  });
 }

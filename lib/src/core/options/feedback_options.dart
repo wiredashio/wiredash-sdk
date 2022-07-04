@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:wiredash/src/feedback/data/label.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
+import 'package:wiredash/src/utils/object_util.dart';
 
 /// Options that adjust the flow a user has to take when giving feedback
 class WiredashFeedbackOptions {
@@ -112,6 +113,45 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
         'buildNumber: $buildNumber, '
         'custom: $custom'
         '}';
+  }
+
+  CustomizableWiredashMetaData Function({
+    String? userId,
+    String? userEmail,
+    String? buildVersion,
+    String? buildNumber,
+    String? buildCommit,
+    Map<String, Object?>? custom,
+  }) get copyWith => _copyWith;
+
+  CustomizableWiredashMetaData _copyWith({
+    Object? userId = defaultArgument,
+    Object? userEmail = defaultArgument,
+    Object? buildVersion = defaultArgument,
+    Object? buildNumber = defaultArgument,
+    Object? buildCommit = defaultArgument,
+    Object? custom = defaultArgument,
+  }) {
+    final metaData = CustomizableWiredashMetaData();
+    metaData.userId =
+        userId != defaultArgument ? userId as String? : this.userId;
+    metaData.userEmail =
+        userEmail != defaultArgument ? userEmail as String? : this.userEmail;
+    metaData.buildVersion = buildVersion != defaultArgument
+        ? buildVersion as String?
+        : this.buildVersion;
+    metaData.buildNumber = buildNumber != defaultArgument
+        ? buildNumber as String?
+        : this.buildNumber;
+    metaData.buildCommit = buildCommit != defaultArgument
+        ? buildCommit as String?
+        : this.buildCommit;
+    if (custom != defaultArgument && custom != null) {
+      metaData.custom = custom as Map<String, Object?>;
+    } else {
+      metaData.custom = this.custom;
+    }
+    return metaData;
   }
 }
 
