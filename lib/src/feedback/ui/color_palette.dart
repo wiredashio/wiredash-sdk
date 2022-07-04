@@ -202,24 +202,20 @@ class HorizontalColorPicker extends StatelessWidget {
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Scrollbar(
-          thumbVisibility: false,
-          thickness: 0,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ...colors.map((color) {
-                return Padding(
-                  padding: const EdgeInsets.only(left: 2),
-                  child: AnimatedColorDot(
-                    color: color,
-                    isSelected: color == selectedColor,
-                    onTap: () => onNewColorSelected?.call(color),
-                  ),
-                );
-              }),
-            ],
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ...colors.map((color) {
+              return Padding(
+                padding: const EdgeInsets.only(left: 2),
+                child: AnimatedColorDot(
+                  color: color,
+                  isSelected: color == selectedColor,
+                  onTap: () => onNewColorSelected?.call(color),
+                ),
+              );
+            }),
+          ],
         ),
       ),
     );
