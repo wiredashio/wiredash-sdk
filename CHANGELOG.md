@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.0-beta.5
+- Capture feedback metadata even when no screenshot was made
+
 ## 1.0.0-beta.4
 
 - [#211](https://github.com/wiredashio/wiredash-sdk/pull/211) Fix `SyncEngine` not triggering initial 'appStart' event
