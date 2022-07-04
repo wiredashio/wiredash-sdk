@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0-beta.4
+
+- [#211](https://github.com/wiredashio/wiredash-sdk/pull/211) Fix `SyncEngine` not triggering initial 'appStart' event
+- [#212](https://github.com/wiredashio/wiredash-sdk/pull/212) Remove Wiredash branding from appHandle
+- [#214](https://github.com/wiredashio/wiredash-sdk/pull/214) Repect user choice when removing their email address
+- [#216](https://github.com/wiredashio/wiredash-sdk/pull/216) Undeprecate `Wiredash.of(context).setUserProperties()` and `Wiredash.of(context).setBuildProperties()` as alternative to `modifyMetaData`. The new `Wiredash.of(context).metaData` getter might also be handy for you
+- [#217](https://github.com/wiredashio/wiredash-sdk/pull/217) You can now adjust the pen colors in `WiredashThemeData`
+
 ## 1.0.0-beta.3
 
 - [#209](https://github.com/wiredashio/wiredash-sdk/pull/209) Sync state between sdk and console via `ping`
