@@ -44,7 +44,7 @@ class FeedbackModel extends ChangeNotifier2 {
   String? get userEmail => _userEmail;
   String? _userEmail;
 
-  bool _collectedMetadata = false;
+  bool _collectedMetadataForScreenshot = false;
 
   List<Label> get selectedLabels => List.unmodifiable(_selectedLabels);
   List<Label> _selectedLabels = [];
@@ -283,7 +283,7 @@ class FeedbackModel extends ChangeNotifier2 {
     await _services.wiredashWidget.feedbackOptions?.collectMetaData
         ?.call(metaData);
     _services.wiredashModel.metaData = metaData;
-    _collectedMetadata = true;
+    _collectedMetadataForScreenshot = true;
     notifyListeners();
 
     _services.picassoController.isActive = true;
@@ -366,7 +366,7 @@ class FeedbackModel extends ChangeNotifier2 {
     _deviceInfo = _services.deviceInfoGenerator.generate();
 
     CustomizableWiredashMetaData metaData = _services.wiredashModel.metaData;
-    if (_collectedMetadata) {
+    if (!_collectedMetadataForScreenshot) {
       // Allow devs to collect additional information
       final updated = await _services
           .wiredashWidget.feedbackOptions?.collectMetaData
