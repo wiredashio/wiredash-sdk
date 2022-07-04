@@ -73,9 +73,10 @@ void main() {
         (tester) async {
       final robot = await tester.goToEmailStep(
         beforeOpen: (robot) {
-          robot.wiredashController.modifyMetaData(
-            (metaData) => metaData..userEmail = 'dash@flutter.io',
-          );
+          robot.wiredashController
+              .setUserProperties(userEmail: 'dash@flutter.io');
+          robot.wiredashController
+              .modifyMetaData((metaData) => CustomizableWiredashMetaData());
         },
       );
 
@@ -98,9 +99,8 @@ void main() {
     testWidgets('Submit prefilled email address', (tester) async {
       final robot = await tester.goToEmailStep(
         beforeOpen: (robot) {
-          robot.wiredashController.modifyMetaData(
-            (metaData) => metaData..userEmail = 'dash@flutter.io',
-          );
+          robot.wiredashController
+              .setUserProperties(userEmail: 'dash@flutter.io');
         },
       );
 

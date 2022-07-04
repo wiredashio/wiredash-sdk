@@ -93,6 +93,17 @@ class BuildInfo {
   }
 }
 
+late final buildInfo = BuildInfo(
+  compilationMode: () {
+    if (kDebugMode) return CompilationMode.debug;
+    if (kProfileMode) return CompilationMode.profile;
+    return CompilationMode.release;
+  }(),
+  buildVersion: EnvBuildInfo.buildVersion,
+  buildNumber: EnvBuildInfo.buildNumber,
+  buildCommit: EnvBuildInfo.buildCommit,
+);
+
 /// The compile mode the Flutter app was built with
 enum CompilationMode {
   /// [kReleaseMode]

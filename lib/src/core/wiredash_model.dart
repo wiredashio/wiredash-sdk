@@ -18,15 +18,7 @@ class WiredashModel with ChangeNotifier {
   WiredashFlow? _activeFlow;
 
   CustomizableWiredashMetaData get metaData {
-    if (_metaData == null) {
-      _metaData = CustomizableWiredashMetaData();
-
-      // prepopulate
-      final buildInfo = services.buildInfoManager.buildInfo;
-      _metaData!.buildVersion = buildInfo.buildVersion;
-      _metaData!.buildNumber = buildInfo.buildNumber;
-      _metaData!.buildCommit = buildInfo.buildCommit;
-    }
+    _metaData ??= CustomizableWiredashMetaData.populated();
     return _metaData!;
   }
 

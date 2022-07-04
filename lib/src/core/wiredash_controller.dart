@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/context_cache.dart';
+import 'package:wiredash/src/utils/object_util.dart';
 import 'package:wiredash/wiredash.dart';
 
 /// Use this controller to interact with [Wiredash]
@@ -45,6 +46,31 @@ class WiredashController {
   ///     ..custom['isPremium'] = false,
   /// );
   /// ```
+  ///
+  /// ### Reset
+  ///
+  /// To reset all metadata (i.e. when the user signs out) use:
+  ///
+  /// ```dart
+  /// Wiredash.of(context)
+  ///     .modifyMetaData((_) => CustomizableWiredashMetaData.populated());
+  /// ```
+  ///
+  /// The metaData will be completely overridden with the values from the
+  /// returned object.
+  ///
+  /// ### Discussion
+  ///
+  /// *Why is there no simple `metaData` getter/setter?*
+  ///
+  /// Wiredash wants to provide a mutable [CustomizableWiredashMetaData] Object
+  /// that can easily build upon and continuously filled with new data. But
+  /// Wiredash also need to know when you actually changed the metadata.
+  /// This callback, that is executed immediately (like setState) solves both.
+  ///
+  /// Please do not keep a reference to the incoming `metaData` parameter. The
+  /// reference might not be outdated and not be used. The `metaData` object is
+  /// only guaranteed to be up-to-date within the `modifyMetaData` method.
   void modifyMetaData(
     CustomizableWiredashMetaData Function(CustomizableWiredashMetaData metaData)
         mutation,
@@ -52,30 +78,72 @@ class WiredashController {
     _model.metaData = mutation(_model.metaData);
   }
 
-  /// Use this method to provide custom [userId]
-  /// to the feedback. The [userEmail] parameter can be used to prefill the
-  /// email input field but it's up to the user to decide if he want's to
-  /// include his email with the feedback.
-  @Deprecated('use modifyMetaData((metaData) => metaData)')
-  void setUserProperties({String? userId, String? userEmail}) {
-    modifyMetaData(
-      (metaData) => metaData
-        ..userId = userId ?? metaData.userId
-        ..userEmail = userEmail ?? metaData.userEmail,
+  /// Use this method to provide custom [userId] and [userEmail] to the feedback.
+  ///
+  /// The [userEmail] parameter can be used to prefill the email input field
+  /// but it's up to the user to decide if he want's to include his email with
+  /// the feedback.
+  void setUserProperties({
+    String? userId,
+    String? userEmail,
+  }) {
+    _setUserProperties(
+      userId: userId,
+      userEmail: userEmail,
     );
   }
 
-  /// Use this method to attach custom [buildVersion] and [buildNumber]
+  void _setUserProperties({
+    Object? userId = defaultArgument,
+    Object? userEmail = defaultArgument,
+  }) {
+    modifyMetaData(
+      (metaData) {
+        if (userId != defaultArgument) {
+          metaData.userId = userId as String?;
+        }
+        if (userEmail != defaultArgument) {
+          metaData.userEmail = userEmail as String?;
+        }
+        return metaData;
+      },
+    );
+  }
+
+  /// Use this method to attach custom [buildVersion], [buildNumber] and
+  /// [buildCommit] to the feedback.
   ///
   /// If these values are also provided through dart-define during compile time
-  /// then they will be overwritten by this method
-  @Deprecated('use modifyMetaData((metaData) => metaData)')
-  void setBuildProperties({String? buildVersion, String? buildNumber}) {
-    modifyMetaData(
-      (metaData) => metaData
-        ..buildVersion = buildVersion ?? metaData.buildVersion
-        ..buildNumber = buildNumber ?? metaData.buildNumber,
+  /// then they will be overwritten by this method;
+  void setBuildProperties({
+    String? buildVersion,
+    String? buildNumber,
+    String? buildCommit,
+  }) {
+    _setBuildProperties(
+      buildVersion: buildVersion,
+      buildNumber: buildNumber,
+      buildCommit: buildCommit,
     );
+  }
+
+  void _setBuildProperties({
+    Object? buildVersion = defaultArgument,
+    Object? buildNumber = defaultArgument,
+    Object? buildCommit = defaultArgument,
+  }) {
+    modifyMetaData((metaData) {
+      if (buildVersion != defaultArgument) {
+        metaData.buildVersion = buildVersion as String?;
+      }
+      if (buildNumber != defaultArgument) {
+        metaData.buildNumber = buildNumber as String?;
+      }
+      if (buildCommit != defaultArgument) {
+        metaData.buildCommit = buildCommit as String?;
+      }
+      return metaData;
+    });
   }
 
   /// This will open the Wiredash feedback sheet and start the feedback process.

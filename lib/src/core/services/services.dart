@@ -24,7 +24,6 @@ import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/ui/screencapture.dart';
-import 'package:wiredash/src/metadata/build_info/build_info_manager.dart';
 import 'package:wiredash/src/metadata/build_info/device_id_generator.dart';
 import 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
 import 'package:wiredash/src/nps/nps_model.dart';
@@ -51,8 +50,6 @@ class WiredashServices extends ChangeNotifier {
   PicassoController get picassoController => _locator.watch();
 
   ScreenCaptureController get screenCaptureController => _locator.watch();
-
-  BuildInfoManager get buildInfoManager => _locator.watch();
 
   FeedbackSubmitter get feedbackSubmitter => _locator.watch();
 
@@ -106,7 +103,6 @@ void _setupServices(WiredashServices sl) {
     ),
   );
   sl.inject<DeviceIdGenerator>((_) => DeviceIdGenerator());
-  sl.inject<BuildInfoManager>((_) => BuildInfoManager());
   sl.inject<ProjectCredentialValidator>(
     (_) => const ProjectCredentialValidator(),
   );

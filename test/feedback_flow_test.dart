@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
@@ -8,7 +6,6 @@ import 'package:wiredash/wiredash.dart';
 
 import 'util/assert_widget.dart';
 import 'util/robot.dart';
-import 'util/wiredash_tester.dart';
 
 void main() {
   group('Wiredash', () {

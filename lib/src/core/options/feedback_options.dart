@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:wiredash/src/feedback/data/label.dart';
+import 'package:wiredash/src/metadata/build_info/build_info.dart';
 
 /// Options that adjust the flow a user has to take when giving feedback
 class WiredashFeedbackOptions {
@@ -69,6 +70,19 @@ class WiredashFeedbackOptions {
 /// This object is intended to be mutable, making it trivial to change
 /// properties.
 class CustomizableWiredashMetaData {
+  CustomizableWiredashMetaData();
+
+  /// Returns a new [CustomizableWiredashMetaData] with prefilled [buildVersion],
+  /// [buildNumber], [buildCommit] from dart-define. See [EnvBuildInfo] for more
+  /// info
+  factory CustomizableWiredashMetaData.populated() {
+    final metaData = CustomizableWiredashMetaData();
+    metaData.buildVersion = buildInfo.buildVersion;
+    metaData.buildNumber = buildInfo.buildNumber;
+    metaData.buildCommit = buildInfo.buildCommit;
+    return metaData;
+  }
+
   /// The id of the user, allowing you to match the feedback with the userIds
   /// of you application
   ///
