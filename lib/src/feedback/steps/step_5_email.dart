@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/utils/email_validator.dart';
 
@@ -18,13 +19,19 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller = TextEditingController(
-      text: FeedbackModelProvider.of(context, listen: false).userEmail,
+      // read, not watch, because initState
+      text: WiredashModelProvider.of(context, listen: false).metaData.userEmail,
     )..addListener(() {
         final text = _controller.text;
         if (context.feedbackModel.userEmail != text) {
           context.feedbackModel.userEmail = text;
         }
       });
+    widgetsBindingInstance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      FeedbackModelProvider.of(context, listen: false).userEmail =
+          _controller.text;
+    });
   }
 
   @override

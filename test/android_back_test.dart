@@ -2,6 +2,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
@@ -20,7 +21,7 @@ void main() {
         (tester) async {
       final robot = await WiredashTestRobot.launchApp(tester);
       final mockApi = MockWiredashApi();
-      robot.mockWiredashApi(mockApi);
+      robot.services.inject<WiredashApi>((_) => mockApi);
 
       await robot.openWiredash();
       await robot.enterFeedbackMessage('test message');

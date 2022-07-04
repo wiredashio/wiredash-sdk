@@ -40,8 +40,10 @@ class FeedbackModel extends ChangeNotifier2 {
 
   final List<PersistedAttachment> _attachments = [];
 
-  String? get userEmail => _userEmail ?? _metaData?.userEmail;
+  String? get userEmail => _userEmail;
   String? _userEmail;
+
+  bool _collectedMetadata = false;
 
   List<Label> get selectedLabels => List.unmodifiable(_selectedLabels);
   List<Label> _selectedLabels = [];
@@ -74,7 +76,6 @@ class FeedbackModel extends ChangeNotifier2 {
   Delay? _fakeSubmitDelay;
   Delay? _closeDelay;
 
-  CustomizableWiredashMetaData? _metaData;
   late FlutterDeviceInfo _deviceInfo;
 
   /// The error when submitting the feedback
@@ -280,7 +281,8 @@ class FeedbackModel extends ChangeNotifier2 {
     // Allow devs to collect additional information
     await _services.wiredashWidget.feedbackOptions?.collectMetaData
         ?.call(metaData);
-    _metaData = metaData;
+    _services.wiredashModel.metaData = metaData;
+    _collectedMetadata = true;
     notifyListeners();
 
     _services.picassoController.isActive = true;
@@ -363,12 +365,17 @@ class FeedbackModel extends ChangeNotifier2 {
     final buildInfo = _services.buildInfoManager.buildInfo;
     _deviceInfo = _services.deviceInfoGenerator.generate();
 
-    if (_metaData == null) {
-      final metaData = _services.wiredashModel.metaData;
+    CustomizableWiredashMetaData metaData = _services.wiredashModel.metaData;
+    if (_collectedMetadata) {
       // Allow devs to collect additional information
-      await _services.wiredashWidget.feedbackOptions?.collectMetaData
+      final updated = await _services
+          .wiredashWidget.feedbackOptions?.collectMetaData
           ?.call(metaData);
-      _metaData = metaData;
+      if (updated != null) {
+        metaData = updated;
+        _services.wiredashModel.metaData = metaData;
+        notifyListeners();
+      }
     }
 
     return PersistedFeedbackItem(
@@ -378,17 +385,24 @@ class FeedbackModel extends ChangeNotifier2 {
       ),
       attachments: _attachments,
       buildInfo: buildInfo.copyWith(
-        buildCommit: _metaData?.buildCommit,
-        buildNumber: _metaData?.buildNumber,
-        buildVersion: _metaData?.buildVersion,
+        buildCommit: metaData.buildCommit,
+        buildNumber: metaData.buildNumber,
+        buildVersion: metaData.buildVersion,
       ),
-      customMetaData: _metaData?.custom,
+      customMetaData: metaData.custom,
       deviceId: deviceId,
       deviceInfo: _deviceInfo,
-      email: userEmail,
+      email: () {
+        if (_services.wiredashWidget.feedbackOptions?.askForUserEmail == true &&
+            userEmail == null) {
+          // user has explicitly deleted their email address
+          return null;
+        }
+        return userEmail;
+      }(),
       message: _feedbackMessage!,
       labels: _selectedLabels.map((it) => it.id).toList(),
-      userId: _metaData?.userId,
+      userId: metaData.userId,
     );
   }
 

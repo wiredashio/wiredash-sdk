@@ -67,7 +67,7 @@ class WiredashTestRobot {
     final robot = WiredashTestRobot(tester);
 
     // Don't do actual http calls
-    robot.services.inject<WiredashApi>((_) => MockWiredashApi());
+    robot.services.inject<WiredashApi>((_) => MockWiredashApi.fake());
 
     // replace submitter, because for testing we always want to submit directly
     robot.services.inject<FeedbackSubmitter>(
@@ -92,8 +92,13 @@ class WiredashTestRobot {
     return (element.state as WiredashState).debugServices;
   }
 
-  void mockWiredashApi(WiredashApi api) {
-    services.inject<WiredashApi>((_) => api);
+  /// Equivalent to `Wiredash.of(context)`
+  WiredashController get wiredashController {
+    return WiredashController(services.wiredashModel);
+  }
+
+  WiredashMockServices get mockServices {
+    return WiredashMockServices(services);
   }
 
   Future<void> openWiredash() async {
@@ -326,9 +331,17 @@ class WiredashTestRobot {
   }
 }
 
+class WiredashMockServices {
+  final WiredashServices services;
+
+  WiredashMockServices(this.services);
+
+  MockWiredashApi get mockApi => services.api as MockWiredashApi;
+}
+
 WiredashServices createMockServices() {
   final services = WiredashServices();
-  services.inject<WiredashApi>((_) => MockWiredashApi());
+  services.inject<WiredashApi>((_) => MockWiredashApi.fake());
   return services;
 }
 
