@@ -20,19 +20,38 @@ class Locator {
       throw Exception('Locator is disposed');
     }
     final provider = _registry[T];
-    return provider!.instance as T;
+    return provider!.get as T;
+  }
+
+  /// Retrieve a instance of type [T]
+  T watch<T>() {
+    if (_disposed) {
+      throw Exception('Locator is disposed');
+    }
+    final provider = _registry[T];
+    return provider!.watch as T;
+  }
+
+  /// Listen to change of type [T]
+  void listen<T>(void Function(T) callback) {
+    final factory = _registry[T]!;
+
+    factory.listeners.add(() {
+      final currentFactory = _registry[T]!;
+      callback(currentFactory.get as T);
+    });
+    callback(factory.get as T);
   }
 
   InstanceFactory<T> injectProvider<T>(
     T Function(Locator) create, {
-    T Function(Locator, T oldInstance)? update,
     void Function(T)? dispose,
   }) {
     if (_disposed) {
       throw Exception('Locator is disposed');
     }
     late InstanceFactory<T> provider;
-    provider = InstanceFactory(this, create, update, () {
+    provider = InstanceFactory(this, create, () {
       final instance = provider._instance;
       if (instance != null && dispose != null) {
         dispose(instance);
@@ -41,12 +60,20 @@ class Locator {
     final existing = _registry[T];
     _registry[T] = provider;
     if (existing != null) {
+      final consumers = existing.consumers.toList();
       final listeners = existing.listeners.toList();
-      existing.listeners = [];
+      existing.consumers = [];
       existing.dependencies = [];
+      existing.listeners = [];
       existing.dispose?.call();
+      for (final consumer in consumers) {
+        // rebuilding automatically registers dependencies and listeners again
+        consumer.rebuild();
+      }
+
+      provider.listeners.addAll(listeners);
       for (final listener in listeners) {
-        listener.rebuild();
+        listener.call();
       }
     }
     return provider;
@@ -59,64 +86,68 @@ class InstanceFactory<T> {
   InstanceFactory(
     this.locator,
     this.create,
-    this.update,
     this.dispose,
   );
 
   final T Function(Locator) create;
-  final T Function(Locator, T oldInstance)? update;
   final Locator locator;
 
   final int id = _id++;
   T? _instance;
-  T? _oldInstance;
 
-  List<InstanceFactory> listeners = [];
+  /// Those factories that use the instance and rebuild when it changes
+  List<InstanceFactory> consumers = [];
+
+  /// Receive notifications about instance changes
+  List<void Function()> listeners = [];
+
+  /// When those change, instance gets recreated
   List<InstanceFactory> dependencies = [];
 
   final Function()? dispose;
 
   late final DependencyTracker _tracker = DependencyTracker(this);
 
-  T get instance {
+  /// Rebuilds the calling [InstanceFactory] when [_instance] changes.
+  T get watch {
     if (_instance == null) {
       _tracker.create();
       late final T i;
-      if (_oldInstance != null && update != null) {
-        // ignore: null_check_on_nullable_type_parameter
-        i = update!.call(locator, _oldInstance!);
-      } else {
-        i = create(locator);
-      }
+      i = create(locator);
       _tracker.created();
-      // print("$T\n"
-      //     "\t-depends on: ${dependencies.map((e) => e.runtimeType)}\n"
-      //     "\t-Listeners: ${listeners.map((e) => e.runtimeType)}\n");
       _instance = i;
     } else {
       _tracker.create();
       _tracker.created();
     }
-    return _instance!;
+    return _instance as T;
   }
 
+  /// Reads the current [_instance], doesn't subscribe the calling [InstanceFactory] to changes.
+  T get get {
+    if (_instance == null) {
+      final T i = create(locator);
+      _instance = i;
+    }
+    return _instance as T;
+  }
+
+  /// Discards the current [_instance] and rebuilds it with updated dependencies.
+  ///
+  /// Tracks dependencies to other providers during rebuild
   void rebuild() {
     dispose?.call();
-    final listeners = this.listeners.toList();
+    final consumers = this.consumers.toList();
     dependencies = [];
-    this.listeners = [];
-    _oldInstance = _instance;
+    this.consumers = [];
     _instance = null;
 
     // invalidate existing dependency instances
-    for (final provider in listeners) {
+    for (final provider in consumers) {
       _tracker.create();
       provider.rebuild();
       _tracker.created();
     }
-
-    // create instance
-    // instance;
   }
 
   @override
@@ -144,7 +175,7 @@ class DependencyTracker {
     if (_prevActive != null) {
       final listener = locator._registry.values
           .firstWhere((element) => element.id == _prevActive);
-      provider.listeners.add(listener);
+      provider.consumers.add(listener);
       listener.dependencies.add(provider);
     }
   }

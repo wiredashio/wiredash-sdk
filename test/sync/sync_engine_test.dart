@@ -2,8 +2,15 @@ import 'dart:async';
 
 import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
+import 'package:flutter/widgets.dart';
 import 'package:test/test.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/core/services/services.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
+import 'package:wiredash/src/feedback/_feedback.dart';
+import 'package:wiredash/wiredash.dart';
+
+import '../util/mock_api.dart';
 
 void main() {
   group('sync engine', () {
@@ -56,6 +63,26 @@ void main() {
       await syncEngine.onWiredashInit();
       // did not update, was not executed again
       expect(lastExecution, firstRun);
+    });
+
+    test('rebuilding SyncEngine keeps the instance', () async {
+      final services = WiredashServices();
+      final firstSyncEngine = services.syncEngine;
+      // SyncEngine uses the api and submitter. Changing any of those does not
+      // create a new instance.
+      services.inject<Wiredash>(
+        (_) => const Wiredash(
+          projectId: 'newId',
+          secret: 'newSecret',
+          child: SizedBox(),
+        ),
+      );
+      services.inject<WiredashApi>((_) => MockWiredashApi());
+      services.inject<FeedbackSubmitter>(
+        (sl) => DirectFeedbackSubmitter(sl.watch()),
+      );
+      final secondSyncEngine = services.syncEngine;
+      expect(firstSyncEngine, same(secondSyncEngine));
     });
   });
 }

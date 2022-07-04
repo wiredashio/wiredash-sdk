@@ -3,10 +3,10 @@ import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 
 class UploadPendingFeedbackJob extends Job {
-  final FeedbackSubmitter feedbackSubmitter;
+  final FeedbackSubmitter Function() feedbackSubmitterProvider;
 
   UploadPendingFeedbackJob({
-    required this.feedbackSubmitter,
+    required this.feedbackSubmitterProvider,
   });
 
   @override
@@ -16,11 +16,11 @@ class UploadPendingFeedbackJob extends Job {
 
   @override
   Future<void> execute() async {
-    if (feedbackSubmitter is! RetryingFeedbackSubmitter) {
+    final submitter = feedbackSubmitterProvider();
+    if (submitter is! RetryingFeedbackSubmitter) {
       return;
     }
 
-    final submitter = feedbackSubmitter as RetryingFeedbackSubmitter;
     await submitter.submitPendingFeedbackItems();
 
     if (kDebugMode) {
