@@ -86,11 +86,7 @@ void main() {
 
       await robot.goToNextStep();
       await robot.submitFeedback();
-
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
+      await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
@@ -112,11 +108,7 @@ void main() {
       expect(find.text('dash@flutter.io'), findsOneWidget);
       await robot.goToNextStep();
       await robot.submitFeedback();
-
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
+      await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;

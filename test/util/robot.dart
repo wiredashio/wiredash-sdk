@@ -171,6 +171,7 @@ class WiredashTestRobot {
     print('Skipped label selection');
   }
 
+  /// Actually calling [FeedbackModel.submitFeedback]
   Future<void> submitFeedback() async {
     final step = _pageView.childByType(Step6Submit).existsOnce();
     await tester.tap(
@@ -328,6 +329,13 @@ class WiredashTestRobot {
     // ignore: invalid_use_of_protected_member
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
+  }
+
+  Future<void> waitUntilWiredashIsClosed() async {
+    await tester.waitUntil(
+      () => services.wiredashModel.isWiredashActive,
+      isFalse,
+    );
   }
 }
 

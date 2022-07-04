@@ -24,10 +24,7 @@ void main() {
       await robot.goToNextStep();
       await robot.skipScreenshot();
       await robot.submitFeedback();
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
+      await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
@@ -65,10 +62,7 @@ void main() {
       await robot.confirmDrawing();
       await robot.goToNextStep();
       await robot.submitFeedback();
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
+      await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
@@ -92,10 +86,7 @@ void main() {
       expect(find.byType(AttachmentPreview), findsNWidgets(2));
       await robot.goToNextStep();
       await robot.submitFeedback();
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
+      await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
@@ -127,10 +118,7 @@ void main() {
 
       await robot.skipScreenshot();
       await robot.submitFeedback();
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
+      await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
@@ -154,10 +142,7 @@ void main() {
       await robot.enterEmail('dash@flutter.io');
       await robot.goToNextStep();
       await robot.submitFeedback();
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
+      await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
@@ -194,11 +179,7 @@ void main() {
       await robot.enterEmail('dash@flutter.io');
       await robot.goToNextStep();
       await robot.submitFeedback();
-
-      await tester.waitUntil(
-        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
-        findsOneWidget,
-      );
+      await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
