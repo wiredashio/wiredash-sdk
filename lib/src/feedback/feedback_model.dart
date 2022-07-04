@@ -6,6 +6,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/feedback/data/delay.dart';
 import 'package:wiredash/src/metadata/build_info/app_info.dart';
+import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/metadata/device_info/device_info.dart';
 import 'package:wiredash/src/metadata/renderer/renderer.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
@@ -362,7 +363,6 @@ class FeedbackModel extends ChangeNotifier2 {
 
   Future<PersistedFeedbackItem> createFeedback() async {
     final deviceId = await _services.deviceIdGenerator.deviceId();
-    final buildInfo = _services.buildInfoManager.buildInfo;
     _deviceInfo = _services.deviceInfoGenerator.generate();
 
     CustomizableWiredashMetaData metaData = _services.wiredashModel.metaData;

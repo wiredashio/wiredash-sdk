@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
