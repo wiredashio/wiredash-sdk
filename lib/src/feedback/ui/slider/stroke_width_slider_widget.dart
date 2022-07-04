@@ -10,13 +10,15 @@ class StrokeWidthSlider extends StatefulWidget {
     required this.maxWidth,
     required this.currentWidth,
     this.onNewWidthSelected,
+    this.onInteract,
   }) : super(key: key);
 
   final Color color;
   final double minWidth;
   final double maxWidth;
   final double currentWidth;
-  final Function(double)? onNewWidthSelected;
+  final void Function(double)? onNewWidthSelected;
+  final void Function()? onInteract;
 
   @override
   State<StrokeWidthSlider> createState() => _StrokeWidthSliderState();
@@ -41,6 +43,7 @@ class _StrokeWidthSliderState extends State<StrokeWidthSlider> {
     } else {
       _dragPosition = position;
     }
+    widget.onInteract?.call();
 
     setState(() {});
   }

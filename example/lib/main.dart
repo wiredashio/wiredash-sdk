@@ -81,20 +81,20 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
       theme: WiredashThemeData.fromColor(
         // Customize Brightness and Colors
         // Primary button color, step indicator, focused input border
-        primaryColor: Colors.cyanAccent,
+        primaryColor: Colors.indigo,
         // Secondary button color
-        secondaryColor: Colors.cyan,
+        secondaryColor: Colors.purple,
         brightness: Brightness.light,
       ).copyWith(
         // Customize the Font Family
         fontFamily: 'Monospace',
 
         // i.e. selected labels, buttons on cards, input border
-        primaryContainerColor: Colors.green,
+        primaryContainerColor: Colors.cyan,
         textOnPrimaryContainerColor: Colors.black,
 
         // i.e. labels when not selected
-        secondaryContainerColor: Colors.greenAccent,
+        secondaryContainerColor: Colors.blue,
         textOnSecondaryContainerColor: Colors.white,
 
         // the color behind the application, only visible when your app is
@@ -105,14 +105,14 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
 
         // The background gradient, top to bottom
         primaryBackgroundColor: Colors.white,
-        secondaryBackgroundColor: Color(0xFFF4FFF4),
+        secondaryBackgroundColor: Color(0xFFEDD9F6),
 
         errorColor: Colors.deepOrange,
 
-        // firstPenColor: Colors.orange,
-        // secondPenColor: Colors.green,
-        // thirdPenColor: Colors.yellow,
-        // fourthPenColor: Colors.deepPurpleAccent,
+        firstPenColor: Colors.yellow,
+        secondPenColor: Colors.white,
+        thirdPenColor: Color(0xffffebeb),
+        fourthPenColor: Color(0xffced9e3),
       ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

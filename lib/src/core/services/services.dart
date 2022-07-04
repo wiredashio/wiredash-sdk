@@ -8,7 +8,6 @@ import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
-import 'package:wiredash/src/core/options/wiredash_options_data.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
@@ -16,7 +15,6 @@ import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/sync/sync_feedback_job.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/wiredash_model.dart';
-import 'package:wiredash/src/core/wiredash_widget.dart';
 import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
@@ -28,6 +26,7 @@ import 'package:wiredash/src/metadata/build_info/device_id_generator.dart';
 import 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
 import 'package:wiredash/src/nps/nps_model.dart';
 import 'package:wiredash/src/utils/uuid.dart';
+import 'package:wiredash/wiredash.dart';
 
 /// Internal service locator
 class WiredashServices extends ChangeNotifier {
@@ -111,7 +110,14 @@ void _setupServices(WiredashServices sl) {
     dispose: (model) => model.dispose(),
   );
   sl.inject<PicassoController>(
-    (_) => PicassoController(),
+    (locator) {
+      final controller = PicassoController();
+      locator.listen<Wiredash>((wiredashWidget) {
+        controller.color ??= wiredashWidget.theme?.firstPenColor;
+      });
+
+      return controller;
+    },
     dispose: (model) => model.dispose(),
   );
   sl.inject<DeviceInfoGenerator>((_) => DeviceInfoGenerator(window));

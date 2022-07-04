@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
@@ -114,14 +114,23 @@ Widget? _buildForegroundLayer(
               ? 0
               : 1,
         ),
-        child: ColorPalette(
-          initialColor: services.picassoController.color,
-          initialStrokeWidth: services.picassoController.strokeWidth,
-          onNewColorSelected: (color) =>
-              services.picassoController.color = color,
-          onNewStrokeWidthSelected: (width) =>
-              services.picassoController.strokeWidth = width,
-          onUndo: services.picassoController.undo,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8, right: 8),
+          child: ColorPalette(
+            colors: [
+              context.theme.firstPenColor,
+              context.theme.secondPenColor,
+              context.theme.thirdPenColor,
+              context.theme.fourthPenColor,
+            ],
+            initialSelection: services.picassoController.color ?? Colors.black,
+            initialStrokeWidth: services.picassoController.strokeWidth,
+            onNewColorSelected: (color) =>
+                services.picassoController.color = color,
+            onNewStrokeWidthSelected: (width) =>
+                services.picassoController.strokeWidth = width,
+            onUndo: services.picassoController.undo,
+          ),
         ),
       ),
     );
