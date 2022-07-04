@@ -20,6 +20,10 @@ class WiredashThemeData {
     Color? appBackgroundColor,
     Color? appHandleBackgroundColor,
     Color? errorColor,
+    Color? firstPenColor,
+    Color? secondPenColor,
+    Color? thirdPenColor,
+    Color? fourthPenColor,
     String? fontFamily,
     Size? windowSize,
   }) {
@@ -38,6 +42,10 @@ class WiredashThemeData {
       appBackgroundColor: appBackgroundColor,
       appHandleBackgroundColor: appHandleBackgroundColor,
       errorColor: errorColor,
+      firstPenColor: firstPenColor,
+      secondPenColor: secondPenColor,
+      thirdPenColor: thirdPenColor,
+      fourthPenColor: fourthPenColor,
       fontFamily: fontFamily,
     );
   }
@@ -75,6 +83,10 @@ class WiredashThemeData {
     Color? appBackgroundColor,
     Color? appHandleBackgroundColor,
     Color? errorColor,
+    Color? firstPenColor,
+    Color? secondPenColor,
+    Color? thirdPenColor,
+    Color? fourthPenColor,
     String? fontFamily,
     required this.deviceClass,
     required this.windowSize,
@@ -90,6 +102,10 @@ class WiredashThemeData {
         _appBackgroundColor = appBackgroundColor,
         _appHandleBackgroundColor = appHandleBackgroundColor,
         _errorColor = errorColor,
+        _firstPenColor = firstPenColor,
+        _secondPenColor = secondPenColor,
+        _thirdPenColor = thirdPenColor,
+        _fourthPenColor = fourthPenColor,
         _fontFamily = fontFamily;
 
   final Brightness brightness;
@@ -236,6 +252,18 @@ class WiredashThemeData {
   Color get secondaryTextOnSurfaceColor {
     return _primaryTone.onSurface.withOpacity(0.8);
   }
+
+  final Color? _firstPenColor;
+  Color get firstPenColor => _firstPenColor ?? const Color(0xffff0c67);
+
+  final Color? _secondPenColor;
+  Color get secondPenColor => _secondPenColor ?? const Color(0xff00081e);
+
+  final Color? _thirdPenColor;
+  Color get thirdPenColor => _thirdPenColor ?? const Color(0xff9cdcdc);
+
+  final Color? _fourthPenColor;
+  Color get fourthPenColor => _fourthPenColor ?? const Color(0xffe96115);
 
   // --- Error --- //
   final Color? _errorColor;
@@ -385,6 +413,10 @@ class WiredashThemeData {
           appBackgroundColor == other.appBackgroundColor &&
           appHandleBackgroundColor == other.appHandleBackgroundColor &&
           errorColor == other.errorColor &&
+          firstPenColor == other.firstPenColor &&
+          secondPenColor == other.secondPenColor &&
+          thirdPenColor == other.thirdPenColor &&
+          fourthPenColor == other.fourthPenColor &&
           deviceClass == other.deviceClass &&
           windowSize == other.windowSize &&
           fontFamily == other.fontFamily;
@@ -405,6 +437,10 @@ class WiredashThemeData {
       appBackgroundColor.hashCode ^
       appHandleBackgroundColor.hashCode ^
       errorColor.hashCode ^
+      firstPenColor.hashCode ^
+      secondPenColor.hashCode ^
+      thirdPenColor.hashCode ^
+      fourthPenColor.hashCode ^
       deviceClass.hashCode ^
       windowSize.hashCode ^
       fontFamily.hashCode;
@@ -426,6 +462,10 @@ class WiredashThemeData {
         'appBackgroundColor: $appBackgroundColor, '
         'appHandleBackgroundColor: $appHandleBackgroundColor, '
         'errorColor: $errorColor, '
+        'firstPenColor: $firstPenColor'
+        'secondPenColor: $secondPenColor'
+        'thirdPenColor: $thirdPenColor'
+        'fourthPenColor: $fourthPenColor'
         'deviceClass: $deviceClass, '
         'fontFamily: $fontFamily, '
         'windowSize: $windowSize, '
@@ -445,6 +485,10 @@ class WiredashThemeData {
     Color? appBackgroundColor,
     Color? appHandleBackgroundColor,
     Color? errorColor,
+    Color? firstPenColor,
+    Color? secondPenColor,
+    Color? thirdPenColor,
+    Color? fourthPenColor,
     DeviceClass? deviceClass,
     String? fontFamily,
     Size? windowSize,
@@ -469,6 +513,10 @@ class WiredashThemeData {
       appHandleBackgroundColor:
           appHandleBackgroundColor ?? this.appHandleBackgroundColor,
       errorColor: errorColor ?? this.errorColor,
+      firstPenColor: firstPenColor ?? this.firstPenColor,
+      secondPenColor: secondPenColor ?? this.secondPenColor,
+      thirdPenColor: thirdPenColor ?? this.thirdPenColor,
+      fourthPenColor: fourthPenColor ?? this.fourthPenColor,
       deviceClass: deviceClass ?? this.deviceClass,
       fontFamily: fontFamily ?? this.fontFamily,
       windowSize: windowSize ?? this.windowSize,

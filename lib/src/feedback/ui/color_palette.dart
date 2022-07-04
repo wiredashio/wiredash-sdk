@@ -1,5 +1,7 @@
+import 'dart:async';
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/feedback/ui/slider/stroke_width_slider_widget.dart';
@@ -7,12 +9,8 @@ import 'package:wiredash/src/feedback/ui/slider/stroke_width_slider_widget.dart'
 class ColorPalette extends StatefulWidget {
   const ColorPalette({
     Key? key,
-    this.colors = const [
-      Color(0xff6B46C1),
-      Color(0xffC53030),
-      Color(0xff2C7A7B),
-    ],
-    this.initialColor = const Color(0xff6B46C1),
+    required this.colors,
+    this.initialSelection = const Color(0xff6B46C1),
     this.initialStrokeWidth = 8.0,
     this.onNewColorSelected,
     this.onNewStrokeWidthSelected,
@@ -22,7 +20,7 @@ class ColorPalette extends StatefulWidget {
   static const _borderRadius = 20.0;
 
   final List<Color> colors;
-  final Color initialColor;
+  final Color initialSelection;
   final double initialStrokeWidth;
   final Function()? onUndo;
   final Function(Color)? onNewColorSelected;
@@ -42,10 +40,12 @@ class _ColorPaletteState extends State<ColorPalette>
   late Tween<Offset> firstPaneTween;
   late Tween<Offset> secondPaneTween;
 
+  Timer? _autoCloseTimer;
+
   @override
   void initState() {
     super.initState();
-    selectedColor = widget.initialColor;
+    selectedColor = widget.initialSelection;
     selectedWidth = widget.initialStrokeWidth;
 
     _controller = AnimationController(
@@ -93,17 +93,24 @@ class _ColorPaletteState extends State<ColorPalette>
                       onTap: () => widget.onUndo?.call(),
                     ),
                     const SizedBox(width: 8),
-                    HorizontalColorPicker(
-                      colors: widget.colors,
-                      selectedColor: selectedColor,
-                      onNewColorSelected: (newColor) {
-                        setState(() => selectedColor = newColor);
-                        widget.onNewColorSelected?.call(selectedColor);
-                      },
+                    Flexible(
+                      child: HorizontalColorPicker(
+                        colors: widget.colors,
+                        selectedColor: selectedColor,
+                        onNewColorSelected: (newColor) {
+                          setState(() => selectedColor = newColor);
+                          widget.onNewColorSelected?.call(selectedColor);
+                        },
+                      ),
                     ),
                     const SizedBox(width: 8),
                     StrokeWidthDot(
-                      onTap: () => _controller.forward(),
+                      onTap: () {
+                        _controller.forward();
+                        _autoCloseTimer = Timer(const Duration(seconds: 3), () {
+                          _controller.reverse();
+                        });
+                      },
                     ),
                     const SizedBox(width: 8),
                   ],
@@ -129,6 +136,9 @@ class _ColorPaletteState extends State<ColorPalette>
                       const SizedBox(width: 16),
                       Expanded(
                         child: StrokeWidthSlider(
+                          onInteract: () {
+                            _autoCloseTimer?.cancel();
+                          },
                           currentWidth: selectedWidth,
                           color: selectedColor,
                           minWidth: 5,
@@ -161,6 +171,12 @@ class _ColorPaletteState extends State<ColorPalette>
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _autoCloseTimer?.cancel();
+    super.dispose();
+  }
 }
 
 class HorizontalColorPicker extends StatelessWidget {
@@ -177,20 +193,35 @@ class HorizontalColorPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ...colors.map(
-          (color) => Padding(
-            padding: const EdgeInsets.only(left: 2),
-            child: AnimatedColorDot(
-              color: color,
-              isSelected: color == selectedColor,
-              onTap: () => onNewColorSelected?.call(color),
-            ),
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        },
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Scrollbar(
+          thumbVisibility: false,
+          thickness: 0,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ...colors.map((color) {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 2),
+                  child: AnimatedColorDot(
+                    color: color,
+                    isSelected: color == selectedColor,
+                    onTap: () => onNewColorSelected?.call(color),
+                  ),
+                );
+              }),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -331,19 +362,6 @@ class _AnimatedColorDotState extends State<AnimatedColorDot>
     super.dispose();
   }
 
-  Color _getBackgroundColor() {
-    double opacity;
-    if (widget.isSelected) {
-      opacity = 1.0;
-    } else if (_hovered) {
-      opacity = 0.8;
-    } else {
-      opacity = 0.5;
-    }
-
-    return widget.color.withOpacity(opacity);
-  }
-
   void _updateHoveredState(bool isHovered) {
     setState(() {
       _hovered = isHovered;
@@ -352,6 +370,25 @@ class _AnimatedColorDotState extends State<AnimatedColorDot>
 
   @override
   Widget build(BuildContext context) {
+    final luminance = widget.color.computeLuminance();
+    final colorBrightness =
+        luminance > 0.5 ? Brightness.light : Brightness.dark;
+
+    final Color color;
+    if (widget.isSelected) {
+      color = widget.color;
+    } else if (_hovered) {
+      color = Color.alphaBlend(widget.color.withOpacity(0.85), Colors.white);
+    } else {
+      color = Color.alphaBlend(widget.color.withOpacity(0.7), Colors.white);
+    }
+
+    Color outerCircleColor = color;
+    // for light color add a darker circle
+    if (luminance > 0.7) {
+      outerCircleColor = widget.color.darken(0.16);
+    }
+
     return ScaleTransition(
       scale: _scaleTween.animate(
         CurvedAnimation(
@@ -369,19 +406,32 @@ class _AnimatedColorDotState extends State<AnimatedColorDot>
               : SystemMouseCursors.click,
           onEnter: (_) => _updateHoveredState(true),
           onExit: (_) => _updateHoveredState(false),
+          // outer ring
           child: AnimatedShape(
-            color: _getBackgroundColor(),
+            color: widget.isSelected
+                ? outerCircleColor.withOpacity(0.5)
+                : outerCircleColor,
             shape: const StadiumBorder(),
-            child: SizedBox(
-              width: 36,
-              height: 36,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 150),
-                opacity: widget.isSelected ? 1 : 0,
-                child: Icon(
-                  Wirecons.check,
-                  size: 20,
-                  color: context.theme.primaryBackgroundColor,
+            child: Padding(
+              padding: const EdgeInsets.all(1),
+              // inner ring
+              child: AnimatedShape(
+                color: color,
+                shape: const StadiumBorder(),
+                child: SizedBox(
+                  width: 34,
+                  height: 34,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 150),
+                    opacity: widget.isSelected ? 1 : 0,
+                    child: Icon(
+                      Wirecons.check,
+                      size: 20,
+                      color: colorBrightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                  ),
                 ),
               ),
             ),

@@ -27,6 +27,7 @@ class _AnimatedShapeState extends AnimatedWidgetBaseState<AnimatedShape> {
   @override
   Widget build(BuildContext context) {
     return PhysicalShape(
+      shadowColor: _colorTween!.evaluate(animation)!,
       color: _colorTween!.evaluate(animation)!,
       clipper: ShapeBorderClipper(
         shape: _borderTween!.evaluate(animation)!,

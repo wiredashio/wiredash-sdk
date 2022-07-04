@@ -111,7 +111,7 @@ class _PicassoState extends State<Picasso> {
     _currentStroke = Stroke(
       StrokeType.dot,
       [point],
-      widget.controller.color,
+      widget.controller.color ?? Colors.black,
       widget.controller.strokeWidth,
     );
   }
@@ -124,7 +124,7 @@ class _PicassoState extends State<Picasso> {
     _currentStroke = Stroke(
       StrokeType.line,
       path,
-      widget.controller.color,
+      widget.controller.color ?? Colors.black,
       widget.controller.strokeWidth,
     );
     _currentStrokeStreamController.add(_currentStroke);
@@ -206,7 +206,6 @@ class PicassoController extends ChangeNotifier {
   _PicassoState? _state;
 
   bool _isActive = false;
-  Color _color = const Color(0xff6B46C1);
   double _strokeWidth = 8.0;
 
   bool get isActive => _isActive;
@@ -216,9 +215,9 @@ class PicassoController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Color get color => _color;
-
-  set color(Color value) {
+  Color? _color;
+  Color? get color => _color;
+  set color(Color? value) {
     _color = value;
     notifyListeners();
   }
