@@ -8,7 +8,6 @@ import 'package:wiredash/wiredash.dart';
 
 import 'util/assert_widget.dart';
 import 'util/robot.dart';
-import 'util/wiredash_tester.dart';
 
 void main() {
   group('Wiredash', () {
