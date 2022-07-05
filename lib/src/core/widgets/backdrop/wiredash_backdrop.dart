@@ -814,10 +814,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 curve: Curves.easeOutExpo,
                 duration: const Duration(milliseconds: 600),
               );
+              final wiredashModel = context.wiredashModel;
               widget.controller._isAppInteractive = true;
               await Future.wait([a1, a2]);
               _backdropStatus = WiredashBackdropStatus.closed;
-              await context.wiredashModel.hide();
+              await wiredashModel.hide();
             },
             startReopenSimulation: (velocity) async {
               _pulling = false;
