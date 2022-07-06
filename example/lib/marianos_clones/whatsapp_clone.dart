@@ -763,16 +763,26 @@ class ChatsScreenState extends State<ChatsScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 16, right: 35),
-              child: Icon(Icons.search,
-                  size: 18, color: WhatsappUtils.appBarIconLaptop),
+              child: Icon(
+                Icons.search,
+                size: 18,
+                color: WhatsappUtils.appBarIconLaptop,
+              ),
             ),
             Expanded(
-              child: TextField(
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: 'Search or start a new chat',
-                  hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 15),
+              child: Transform.translate(
+                offset: Offset(0, -4),
+                child: TextField(
+                  minLines: 1,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Search or start a new chat',
+                    hintStyle: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 14,
+                      height: 1.0,
+                    ),
+                  ),
                 ),
               ),
             ),
