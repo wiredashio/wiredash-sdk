@@ -1393,13 +1393,14 @@ class ChatScreenState extends State<ChatScreen> {
               InkResponse(
                 onTap: () {
                   setState(() {
-                    if (_textController.text.isNotEmpty) {
+                    final text = _textController.text;
+                    if (text.isNotEmpty) {
                       _textController.clear();
                       _conversation!.chats.insert(
                         0,
                         Chat(
                           WhatsappUtils.currentUser,
-                          _textController.text,
+                          text,
                           DateTime.now().millisecondsSinceEpoch,
                           _firstInSection(_conversation!),
                         ),
@@ -1495,13 +1496,14 @@ class ChatScreenState extends State<ChatScreen> {
                   InkResponse(
                     onTap: () {
                       setState(() {
-                        if (_textController.text.isNotEmpty) {
+                        final text = _textController.text;
+                        if (text.isNotEmpty) {
                           _textController.clear();
                           _conversation!.chats.insert(
                             0,
                             Chat(
                               WhatsappUtils.currentUser,
-                              _textController.text,
+                              text,
                               DateTime.now().millisecondsSinceEpoch,
                               _firstInSection(_conversation!),
                             ),
