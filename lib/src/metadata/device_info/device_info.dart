@@ -1,5 +1,3 @@
-import 'dart:ui' show Brightness;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';

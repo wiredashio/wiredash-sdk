@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:collection/collection.dart';
 import 'package:file/file.dart';
 import 'package:flutter/cupertino.dart';
