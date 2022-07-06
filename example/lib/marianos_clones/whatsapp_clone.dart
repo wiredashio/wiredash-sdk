@@ -102,7 +102,7 @@ class WhatsappUtils {
 
   static User flutter = User(
     'Flutter Dev',
-    'https://pbs.twimg.com/profile_images/971176720169660416/Rjaq-ruU_400x400.jpg',
+    'https://pbs.twimg.com/profile_images/1187814172307800064/MhnwJbxw_400x400.jpg',
     '444-444-4444',
     'Flutter Web is amazing!',
     1587688823261,
@@ -111,7 +111,7 @@ class WhatsappUtils {
 
   static User frederik = User(
     'Frederik Schweiger',
-    'https://pbs.twimg.com/profile_images/1311203568406405121/oivkdjVe_400x400.jpg',
+    'https://pbs.twimg.com/profile_images/1522874616271810560/iswpbxq7_400x400.jpg',
     '999-999-9999',
     "Tech founder who has a thing for animations and nice UX ✨ Currently building @phntmxyz, @wiredashio and co-host of the @flutter_school 🎒 Let's create tomorrow!",
     1587688914210,
