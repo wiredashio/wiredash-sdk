@@ -507,32 +507,102 @@ class ChatsScreenState extends State<ChatsScreen> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: _appBar(size, widget.isMobile),
-      body: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        itemBuilder: (context, index) {
-          final item = _conversations[index];
-          return ChatItem(
-            conversation: item,
-            isMobile: widget.isMobile,
-            callback: (chat) {
-              if (widget.isMobile) {
-                Navigator.of(context).push(
-                  AnimatedRoute(
-                    widget: ChatScreen(
-                      context: context,
-                      conversation: chat,
-                      refresh: widget.refresh,
+      body: Column(
+        children: [
+          SizedBox(
+            height: 92,
+            child: Material(
+              color: Color(0xFFa9dffc),
+              child: InkWell(
+                onTap: () {
+                  Wiredash.of(context).show();
+                },
+                child: ConstrainedBox(
+                  constraints: BoxConstraints.expand(),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 26,
+                          foregroundColor: Color(0xFFa9dffc),
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.chat_outlined),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Send us your feedback',
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      'Or report bugs with Wiredash',
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black54,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Transform.translate(
+                                    offset: Offset(0, 2),
+                                    child: Icon(
+                                      Icons.chevron_right_outlined,
+                                      color: Colors.black54,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    anim: PageAnimation.FADE_SCALE,
                   ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              itemBuilder: (context, index) {
+                final item = _conversations[index];
+                return ChatItem(
+                  conversation: item,
+                  isMobile: widget.isMobile,
+                  callback: (chat) {
+                    if (widget.isMobile) {
+                      Navigator.of(context).push(
+                        AnimatedRoute(
+                          widget: ChatScreen(
+                            context: context,
+                            conversation: chat,
+                            refresh: widget.refresh,
+                          ),
+                          anim: PageAnimation.FADE_SCALE,
+                        ),
+                      );
+                    }
+                    widget.callback?.call(chat);
+                  },
+                  refresh: widget.refresh,
                 );
-              }
-              widget.callback?.call(chat);
-            },
-            refresh: widget.refresh,
-          );
-        },
-        itemCount: _conversations.length,
+              },
+              itemCount: _conversations.length,
+            ),
+          ),
+        ],
       ),
       floatingActionButton: widget.isMobile
           ? FloatingActionButton(
