@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +27,8 @@ class WiredashTestRobot {
     WidgetTester tester, {
     WiredashFeedbackOptions? feedbackOptions,
     Widget Function(BuildContext)? builder,
+    FutureOr<void> Function()? afterPump,
+    List<LocalizationsDelegate> appLocalizationsDelegates = const [],
   }) async {
     SharedPreferences.setMockInitialValues({});
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +55,11 @@ class WiredashTestRobot {
           secondaryBackgroundColor: Colors.brown,
         ),
         child: MaterialApp(
+          locale: const Locale('test'),
+          localizationsDelegates: [
+            ...appLocalizationsDelegates,
+            DefaultWidgetsLocalizations.delegate,
+          ],
           home: Builder(
             builder: builder ??
                 (context) {
@@ -65,6 +74,9 @@ class WiredashTestRobot {
       ),
     );
     final robot = WiredashTestRobot(tester);
+    if (afterPump != null) {
+      await afterPump();
+    }
 
     // Don't do actual http calls
     robot.services.inject<WiredashApi>((_) => MockWiredashApi.fake());
@@ -360,7 +372,7 @@ class WiredashTestLocalizationDelegate
 
   @override
   Future<WiredashLocalizations> load(Locale locale) {
-    return SynchronousFuture(ReturnKeysWiredashLocalizetions());
+    return SynchronousFuture(ReturnKeysWiredashLocalizations());
   }
 
   @override
@@ -374,7 +386,7 @@ class MaterialTestLocalizationDelegate
 
   @override
   Future<MaterialLocalizations> load(Locale locale) {
-    return SynchronousFuture(ReturnKeysMaterialLocalizetions());
+    return SynchronousFuture(ReturnKeysMaterialLocalizations());
   }
 
   @override
@@ -388,29 +400,29 @@ class CupertinoTestLocalizationDelegate
 
   @override
   Future<CupertinoLocalizations> load(Locale locale) {
-    return SynchronousFuture(ReturnKeysCupertinoLocalizetions());
+    return SynchronousFuture(ReturnKeysCupertinoLocalizations());
   }
 
   @override
   bool shouldReload(_) => false;
 }
 
-class ReturnKeysWiredashLocalizetions extends WiredashLocalizations
+class ReturnKeysWiredashLocalizations extends WiredashLocalizations
     with ReturnTranslationsKeysMixin {
-  ReturnKeysWiredashLocalizetions() : super('test');
+  ReturnKeysWiredashLocalizations() : super('test');
 }
 
-class ReturnKeysCupertinoLocalizetions extends CupertinoLocalizations
+class ReturnKeysCupertinoLocalizations extends CupertinoLocalizations
     with ReturnTranslationsKeysMixin {
-  ReturnKeysCupertinoLocalizetions();
+  ReturnKeysCupertinoLocalizations();
 }
 
-class ReturnKeysMaterialLocalizetions extends MaterialLocalizations
+class ReturnKeysMaterialLocalizations extends MaterialLocalizations
     with ReturnTranslationsKeysMixin {
   @override
   ScriptCategory get scriptCategory => ScriptCategory.englishLike;
 
-  ReturnKeysMaterialLocalizetions();
+  ReturnKeysMaterialLocalizations();
 }
 
 mixin ReturnTranslationsKeysMixin {

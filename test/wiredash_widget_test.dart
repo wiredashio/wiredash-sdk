@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/core/options/wiredash_options_data.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
@@ -143,6 +144,89 @@ void main() {
       await robot.closeWiredash();
       expect(_FakeApp.initCount, 1);
     });
+
+    group('localization', () {
+      testWidgets(
+          'Wiredash on top of MaterialApp does not override existing Localizations',
+          (tester) async {
+        final robot = await WiredashTestRobot.launchApp(
+          tester,
+          appLocalizationsDelegates: const [
+            _AppLocalizations.delegate,
+            DefaultWidgetsLocalizations.delegate,
+          ],
+          builder: (context) {
+            final _AppLocalizations l10n =
+                Localizations.of(context, _AppLocalizations)!;
+
+            return Scaffold(
+              body: Text(l10n.customAppString),
+              floatingActionButton: FloatingActionButton(
+                onPressed: Wiredash.of(context).show,
+              ),
+            );
+          },
+          afterPump: () async {
+            // The Localizations widget shows an empty Container while the
+            // localizations are loaded (which is async)
+            await tester.pumpAndSettle();
+          },
+        );
+
+        expect(find.text('custom app string'), findsOneWidget);
+
+        await robot.openWiredash();
+
+        expect(find.text('custom app string'), findsOneWidget);
+      });
+
+      testWidgets(
+          'Wiredash below MaterialApp does not override existing Localizations',
+          (tester) async {
+        final robot = await WiredashTestRobot.launchApp(
+          tester,
+          appLocalizationsDelegates: const [
+            _AppLocalizations.delegate,
+            DefaultWidgetsLocalizations.delegate,
+          ],
+          builder: (context) {
+            // Wrap screen with Wiredash, because that should work too
+            return Wiredash(
+              projectId: 'test',
+              secret: 'test',
+              options: WiredashOptionsData(
+                locale: const Locale('test'),
+                localizationDelegate: WiredashTestLocalizationDelegate(),
+              ),
+              child: Builder(
+                builder: (context) {
+                  // Access localization with context below
+                  final _AppLocalizations l10n =
+                      Localizations.of(context, _AppLocalizations)!;
+                  return Scaffold(
+                    body: Text(l10n.customAppString),
+                    floatingActionButton: FloatingActionButton(
+                      onPressed: Wiredash.of(context).show,
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+          afterPump: () async {
+            // The Localizations widget shows an empty Container while the
+            // localizations are loaded (which is async)
+            await tester.pumpAndSettle();
+          },
+        );
+
+        expect(find.text('custom app string'), findsOneWidget);
+
+        await robot.openWiredash();
+
+        expect(find.text('custom app string'), findsOneWidget);
+      });
+    });
   });
 }
 
@@ -189,4 +273,30 @@ class _FakeAppState extends State<_FakeApp> {
       ),
     );
   }
+}
+
+class _AppLocalizations {
+  final Locale locale;
+  const _AppLocalizations({required this.locale});
+
+  String get customAppString => 'custom app string';
+
+  static const LocalizationsDelegate<_AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
+}
+
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<_AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) => true;
+
+  @override
+  Future<_AppLocalizations> load(Locale locale) async {
+    return _AppLocalizations(locale: locale);
+  }
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
