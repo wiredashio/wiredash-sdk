@@ -100,9 +100,18 @@ class WhatsappUtils {
     true,
   );
 
+  static User wiredash = User(
+    'Wiredash',
+    'https://pbs.twimg.com/profile_images/1369648679020269568/_GZe4ji3_400x400.jpg',
+    '123123-123123',
+    'Available',
+    1587688803579,
+    true,
+  );
+
   static User flutter = User(
     'Flutter Dev',
-    'https://pbs.twimg.com/profile_images/971176720169660416/Rjaq-ruU_400x400.jpg',
+    'https://pbs.twimg.com/profile_images/1187814172307800064/MhnwJbxw_400x400.jpg',
     '444-444-4444',
     'Flutter Web is amazing!',
     1587688823261,
@@ -111,7 +120,7 @@ class WhatsappUtils {
 
   static User frederik = User(
     'Frederik Schweiger',
-    'https://pbs.twimg.com/profile_images/1311203568406405121/oivkdjVe_400x400.jpg',
+    'https://pbs.twimg.com/profile_images/1522874616271810560/iswpbxq7_400x400.jpg',
     '999-999-9999',
     "Tech founder who has a thing for animations and nice UX ✨ Currently building @phntmxyz, @wiredashio and co-host of the @flutter_school 🎒 Let's create tomorrow!",
     1587688914210,
@@ -127,15 +136,6 @@ class WhatsappUtils {
     false,
   );
 
-  static User codePen = User(
-    'CodePen.IO',
-    'https://webdesignledger.com/wp-content/uploads/2015/09/codepen-logo.jpg',
-    '333-333-3333',
-    'Build, test, and discover front-end code',
-    1587842552935,
-    true,
-  );
-
   static User tim = User(
     'Tim Sneath',
     'https://pbs.twimg.com/profile_images/1425115522706776065/Gm719oBc_400x400.jpg',
@@ -145,33 +145,32 @@ class WhatsappUtils {
     false,
   );
 
-  static User rFlutterDev = User(
-    'r/FlutterDev',
-    'https://pbs.twimg.com/profile_images/971176720169660416/Rjaq-ruU_400x400.jpg',
-    '555-555-5555',
-    "r/FlutterDev, a subreddit for Google's portable UI framework. Operated by @jacoplane. Discord chat server: "
-        'http://discord.gg/uMya6wQ',
-    DateTime.now().millisecondsSinceEpoch,
-    true,
-  );
-
-  static User flutterFlakes = User(
-    'FlutterFlakes',
-    'https://pbs.twimg.com/profile_images/1002020474136576000/gyhuTipX_400x400.jpg',
-    '888-888-8888',
-    'Everything is Widget.\nfounder:@dhuma1981\nhttp://github.com/FlutterFlakes',
+  static User simon = User(
+    'Simon Lightfoot',
+    'https://pbs.twimg.com/profile_images/1017532253394624513/LgFqlJ4U_400x400.jpg',
+    '111-111-1111',
+    '💙 Flutter Community Lead •💙 Flutter Study Group •👨‍💻 Coding for 20+ years •🏢 CTO DevAngels, London •👍🏻 #Flutter #Android #GoLang • he/him • 🏳️‍🌈 🇬🇧',
     DateTime.now().millisecondsSinceEpoch,
     false,
   );
 
-  static User flutterNYC = User(
-    'Flutter NYC 🦄💙',
-    'https://pbs.twimg.com/profile_images/1160149586813554688/9Abnl3kw_400x400.jpg',
-    '999-999-9999',
-    'New York Flutter Developer Meetup #FlutterNYC',
-    DateTime.now().millisecondsSinceEpoch,
-    false,
-  );
+  static Conversation wiredashChat =
+      Conversation(wiredash, 1587688793579, 1587690706518, [
+    Chat(
+      flutter,
+      "Wow! I can't believe how amazing Wiredash integrates into our apps!",
+      1587688792579,
+      true,
+    ),
+    Chat(mariano, 'Right?! Widget power!', 1587688793579, true),
+    Chat(flutter, '😎', 1587689152490, true),
+    Chat(
+      flutter,
+      "Truly amazing! Can't wait to announce it at Google I/O!",
+      1657113617000,
+      false,
+    ),
+  ]);
 
   static Conversation flutterChat =
       Conversation(flutter, 1587688793579, 1587690706518, [
@@ -191,9 +190,9 @@ class WhatsappUtils {
     ),
   ]);
 
-  static Conversation martinChat =
-      Conversation(frederik, 1587688793050, 1587688793050, [
-    Chat(frederik, "Yo! What's new? More stuffs?", 1587688793000, true),
+  static Conversation simonChat =
+      Conversation(simon, 1587688793050, 1587688793050, [
+    Chat(simon, "Yo! What's new? More stuffs?", 1587688793000, true),
     Chat(
       mariano,
       "That's right! This one is really good and took me a long time.",
@@ -220,14 +219,9 @@ class WhatsappUtils {
     Chat(
       mariano,
       'Love it 💙',
-      1587794105841,
+      1587689152490,
       false,
     ),
-  ]);
-
-  static Conversation codePenChat =
-      Conversation(codePen, 1687824105841, 1587794105841, [
-    Chat(codePen, 'Are you making a new examples? 💙', 1587842690825, true),
   ]);
 
   static User get currentUser => mariano;
@@ -491,15 +485,10 @@ class ChatsScreenState extends State<ChatsScreen> {
       'online',
       1,
       true);
-  static final feedbackChat =
-      Conversation(wiredashUser, 999999999999999, 999999999999999, [
-    Chat(wiredashUser, 'Send us your feedback', 197283374, true),
-  ]);
+
   final List<Conversation> _conversations = [
-    feedbackChat,
-    WhatsappUtils.flutterChat,
-    WhatsappUtils.codePenChat,
-    WhatsappUtils.martinChat,
+    WhatsappUtils.wiredashChat,
+    WhatsappUtils.simonChat,
     WhatsappUtils.pascalChat,
   ];
 
@@ -518,36 +507,102 @@ class ChatsScreenState extends State<ChatsScreen> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: _appBar(size, widget.isMobile),
-      body: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        itemBuilder: (context, index) {
-          final item = _conversations[index];
-          return ChatItem(
-            conversation: item,
-            isMobile: widget.isMobile,
-            callback: (chat) {
-              if (chat == feedbackChat) {
-                Wiredash.of(context).show();
-              } else {
-                if (widget.isMobile) {
-                  Navigator.of(context).push(
-                    AnimatedRoute(
-                      widget: ChatScreen(
-                        context: context,
-                        conversation: chat,
-                        refresh: widget.refresh,
-                      ),
-                      anim: PageAnimation.FADE_SCALE,
+      body: Column(
+        children: [
+          SizedBox(
+            height: 92,
+            child: Material(
+              color: Color(0xFFa9dffc),
+              child: InkWell(
+                onTap: () {
+                  Wiredash.of(context).show();
+                },
+                child: ConstrainedBox(
+                  constraints: BoxConstraints.expand(),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 26,
+                          foregroundColor: Color(0xFFa9dffc),
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.chat_outlined),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Send us your feedback',
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      'Or report bugs with Wiredash',
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black54,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Transform.translate(
+                                    offset: Offset(0, 2),
+                                    child: Icon(
+                                      Icons.chevron_right_outlined,
+                                      color: Colors.black54,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                }
-                widget.callback?.call(chat);
-              }
-            },
-            refresh: widget.refresh,
-          );
-        },
-        itemCount: _conversations.length,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              itemBuilder: (context, index) {
+                final item = _conversations[index];
+                return ChatItem(
+                  conversation: item,
+                  isMobile: widget.isMobile,
+                  callback: (chat) {
+                    if (widget.isMobile) {
+                      Navigator.of(context).push(
+                        AnimatedRoute(
+                          widget: ChatScreen(
+                            context: context,
+                            conversation: chat,
+                            refresh: widget.refresh,
+                          ),
+                          anim: PageAnimation.FADE_SCALE,
+                        ),
+                      );
+                    }
+                    widget.callback?.call(chat);
+                  },
+                  refresh: widget.refresh,
+                );
+              },
+              itemCount: _conversations.length,
+            ),
+          ),
+        ],
       ),
       floatingActionButton: widget.isMobile
           ? FloatingActionButton(
@@ -640,7 +695,7 @@ class ChatsScreenState extends State<ChatsScreen> {
                           ),
                         ),
                         child: _avatar(
-                          WhatsappUtils.rFlutterDev.avatar,
+                          WhatsappUtils.wiredash.avatar,
                           EdgeInsets.symmetric(horizontal: 15, vertical: 6),
                         ),
                       ),
@@ -763,16 +818,26 @@ class ChatsScreenState extends State<ChatsScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 16, right: 35),
-              child: Icon(Icons.search,
-                  size: 18, color: WhatsappUtils.appBarIconLaptop),
+              child: Icon(
+                Icons.search,
+                size: 18,
+                color: WhatsappUtils.appBarIconLaptop,
+              ),
             ),
             Expanded(
-              child: TextField(
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: 'Search or start a new chat',
-                  hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 15),
+              child: Transform.translate(
+                offset: Offset(0, -4),
+                child: TextField(
+                  minLines: 1,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Search or start a new chat',
+                    hintStyle: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 14,
+                      height: 1.0,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1383,13 +1448,14 @@ class ChatScreenState extends State<ChatScreen> {
               InkResponse(
                 onTap: () {
                   setState(() {
-                    if (_textController.text.isNotEmpty) {
+                    final text = _textController.text;
+                    if (text.isNotEmpty) {
                       _textController.clear();
                       _conversation!.chats.insert(
                         0,
                         Chat(
                           WhatsappUtils.currentUser,
-                          _textController.text,
+                          text,
                           DateTime.now().millisecondsSinceEpoch,
                           _firstInSection(_conversation!),
                         ),
@@ -1485,13 +1551,14 @@ class ChatScreenState extends State<ChatScreen> {
                   InkResponse(
                     onTap: () {
                       setState(() {
-                        if (_textController.text.isNotEmpty) {
+                        final text = _textController.text;
+                        if (text.isNotEmpty) {
                           _textController.clear();
                           _conversation!.chats.insert(
                             0,
                             Chat(
                               WhatsappUtils.currentUser,
-                              _textController.text,
+                              text,
                               DateTime.now().millisecondsSinceEpoch,
                               _firstInSection(_conversation!),
                             ),
@@ -1788,14 +1855,12 @@ class ContactsScreen extends StatefulWidget {
 
 class _ContactsScreenState extends State<ContactsScreen> {
   final List<User> _contacts = [
-    WhatsappUtils.codePen,
+    WhatsappUtils.wiredash,
     WhatsappUtils.flutter,
-    WhatsappUtils.flutterFlakes,
-    WhatsappUtils.flutterNYC,
     WhatsappUtils.frederik,
     WhatsappUtils.pascal,
-    WhatsappUtils.rFlutterDev,
     WhatsappUtils.tim,
+    WhatsappUtils.simon,
   ];
 
   @override
