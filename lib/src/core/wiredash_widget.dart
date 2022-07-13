@@ -253,20 +253,52 @@ class WiredashState extends State<Wiredash> {
       }
     }();
 
+    final child = WiredashTheme(
+      data: theme,
+      child: flow,
+    );
+
     final Widget backdrop = NotAWidgetsApp(
       child: _backButtonDispatcher.wrap(
-        child: Localizations(
-          delegates: [
-            DefaultWidgetsLocalizations.delegate,
-            if (widget.options?.localizationDelegate != null)
-              widget.options!.localizationDelegate!,
-            WiredashLocalizations.delegate,
-          ],
-          locale: _currentLocale,
-          child: WiredashTheme(
-            data: theme,
-            child: flow,
-          ),
+        child: Builder(
+          builder: (context) {
+            // Check if we have a Localizations widget as parent. This works because
+            // WidgetsLocalizations is a required for construction
+            final parentLocalization =
+                Localizations.of(context, WidgetsLocalizations);
+
+            final wiredashL10nDelegate = widget.options?.localizationDelegate;
+            final delegates = [
+              // whatever is provided in the WiredashOptions
+              // Order matters here. Localizations will pick the first in the list
+              if (wiredashL10nDelegate != null) wiredashL10nDelegate,
+              // The wiredash localizations, used unless overridden by ☝️
+              WiredashLocalizations.delegate,
+
+              // WidgetsLocalizations is required. Unless we know it already
+              // exists, add it here
+              if (parentLocalization == null)
+                DefaultWidgetsLocalizations.delegate,
+            ];
+
+            if (parentLocalization == null) {
+              // no Localizations widget as parent, we can't override, just provide
+              return Localizations(
+                delegates: delegates,
+                locale: _currentLocale,
+                child: child,
+              );
+            } else {
+              // There might be some Localizations from the parent widget that
+              // might be interesting for children. Pass them along.
+              return Localizations.override(
+                context: context,
+                delegates: delegates,
+                locale: _currentLocale,
+                child: child,
+              );
+            }
+          },
         ),
       ),
     );
