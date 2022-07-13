@@ -1,11 +1,7 @@
-import 'dart:ui' show Brightness;
-
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:material_color_utilities/material_color_utilities.dart';
 import 'package:wiredash/src/core/theme/color_ext.dart';
 import 'package:wiredash/src/core/theme/key_point_interpolator.dart';
-import 'package:wiredash/wiredash.dart';
 
 class WiredashThemeData {
   factory WiredashThemeData({
@@ -212,8 +208,8 @@ class WiredashThemeData {
     return WiredashTextThemeWithDefaults(this, merged);
   }
 
-  TextThemeForSurface get text {
-    return TextThemeForSurface(this);
+  SurfaceBasedTextStyle get text {
+    return SurfaceBasedTextStyle(this);
   }
 
   // --- Background --- //
@@ -637,26 +633,37 @@ class WiredashTextThemeWithDefaults extends WiredashTextTheme {
 
   @override
   TextStyle get headlineMediumTextStyle => textTheme.headlineMediumTextStyle!;
+
   @override
   TextStyle get headlineSmallTextStyle => textTheme.headlineSmallTextStyle!;
+
   @override
   TextStyle get appbarTitle => textTheme.appbarTitle!;
+
   @override
   TextStyle get titleTextStyle => textTheme.titleTextStyle!;
+
   @override
   TextStyle get tronButtonTextStyle => textTheme.tronButtonTextStyle!;
+
   @override
   TextStyle get bodyMediumTextStyle => textTheme.bodyMediumTextStyle!;
+
   @override
   TextStyle get bodySmallTextStyle => textTheme.bodySmallTextStyle!;
+
   @override
   TextStyle get body2MediumTextStyle => textTheme.body2MediumTextStyle!;
+
   @override
   TextStyle get body2SmallTextStyle => textTheme.body2SmallTextStyle!;
+
   @override
   TextStyle get captionTextStyle => textTheme.captionTextStyle!;
+
   @override
   TextStyle get inputTextStyle => textTheme.inputTextStyle!;
+
   @override
   TextStyle get inputErrorTextStyle => textTheme.inputErrorTextStyle!;
 
@@ -691,32 +698,126 @@ class WiredashTextThemeWithDefaults extends WiredashTextTheme {
   }
 }
 
-class TextThemeForSurface {
-  TextThemeForSurface(this.theme);
-  WiredashThemeData theme;
+class SurfaceSelector {
+  final WiredashThemeData theme;
+  final TextStyle textStyle;
+  final Color Function(Color)? colorMutation;
 
-  WiredashTextThemeWithDefaults get onPrimary {
-    return theme.textTheme.apply(color: theme.textOnPrimaryColor);
+  SurfaceSelector(this.theme, this.textStyle, {this.colorMutation});
+
+  Color _mutateColor(Color color) {
+    if (colorMutation != null) {
+      return colorMutation!(color);
+    }
+    return color;
   }
 
-  WiredashTextThemeWithDefaults get onSecondary {
-    return theme.textTheme.apply(color: theme.textOnSecondaryColor);
+  TextStyle get onBackground {
+    return textStyle.copyWith(
+      color: _mutateColor(theme.primaryTextOnBackgroundColor),
+    );
   }
 
-  WiredashTextThemeWithDefaults get onPrimaryContainer {
-    return theme.textTheme.apply(color: theme.textOnPrimaryContainerColor);
+  TextStyle get onSurface {
+    return textStyle.copyWith(
+      color: _mutateColor(theme.primaryTextOnSurfaceColor),
+    );
   }
 
-  WiredashTextThemeWithDefaults get onSecondaryContainer {
-    return theme.textTheme.apply(color: theme.textOnSecondaryContainerColor);
+  TextStyle get onPrimary {
+    return textStyle.copyWith(
+      color: _mutateColor(theme.textOnPrimaryColor),
+    );
   }
 
-  WiredashTextThemeWithDefaults get onBackground {
-    return theme.textTheme.apply(color: theme.primaryTextOnBackgroundColor);
+  TextStyle get onSecondary {
+    return textStyle.copyWith(
+      color: _mutateColor(theme.textOnSecondaryColor),
+    );
   }
 
-  WiredashTextThemeWithDefaults get onSurface {
-    return theme.textTheme.apply(color: theme.primaryTextOnSurfaceColor);
+  TextStyle get onPrimaryContainer {
+    return textStyle.copyWith(
+      color: _mutateColor(theme.textOnPrimaryContainerColor),
+    );
+  }
+
+  TextStyle get onSecondaryContainer {
+    return textStyle.copyWith(
+      color: _mutateColor(theme.textOnSecondaryContainerColor),
+    );
+  }
+}
+
+class SurfaceBasedTextStyle {
+  final WiredashThemeData theme;
+
+  SurfaceBasedTextStyle(this.theme);
+
+  late final SurfaceSelector headlineMedium =
+      SurfaceSelector(theme, theme.textTheme.headlineMediumTextStyle);
+
+  late final SurfaceSelector headlineSmall =
+      SurfaceSelector(theme, theme.textTheme.headlineSmallTextStyle);
+
+  late final SurfaceSelector appbarTitle =
+      SurfaceSelector(theme, theme.textTheme.appbarTitle);
+
+  late final SurfaceSelector title =
+      SurfaceSelector(theme, theme.textTheme.titleTextStyle);
+
+  late final SurfaceSelector tronButton =
+      SurfaceSelector(theme, theme.textTheme.tronButtonTextStyle);
+
+  late final SurfaceSelector bodyMedium =
+      SurfaceSelector(theme, theme.textTheme.bodyMediumTextStyle);
+
+  late final SurfaceSelector bodySmall =
+      SurfaceSelector(theme, theme.textTheme.bodySmallTextStyle);
+
+  late final SurfaceSelector body2Medium = SurfaceSelector(
+    theme,
+    theme.textTheme.body2MediumTextStyle,
+    colorMutation: (color) => color.withOpacity(0.6),
+  );
+
+  late final SurfaceSelector body2Small = SurfaceSelector(
+    theme,
+    theme.textTheme.body2SmallTextStyle,
+    colorMutation: (color) => color.withOpacity(0.6),
+  );
+
+  late final SurfaceSelector caption =
+      SurfaceSelector(theme, theme.textTheme.captionTextStyle);
+
+  late final SurfaceSelector input =
+      SurfaceSelector(theme, theme.textTheme.inputTextStyle);
+
+  late final SurfaceSelector inputError =
+      SurfaceSelector(theme, theme.textTheme.inputErrorTextStyle);
+
+  SurfaceSelector get adaptiveBody {
+    if (theme.windowSize.shortestSide > 480) {
+      return bodyMedium;
+    } else {
+      return bodySmall;
+    }
+  }
+
+  SurfaceSelector get adaptiveBody2 {
+    if (theme.windowSize.shortestSide > 480) {
+      return body2Medium;
+    } else {
+      return body2Small;
+    }
+  }
+
+  SurfaceSelector get adaptiveHeadline {
+    if (theme.windowSize.shortestSide > 480) {
+      return headlineMedium;
+    } else {
+      return headlineSmall;
+    }
   }
 }
 

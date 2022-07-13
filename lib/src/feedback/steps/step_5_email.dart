@@ -59,7 +59,7 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
               controller: _controller,
               keyboardType: TextInputType.emailAddress,
               cursorColor: context.theme.primaryColor,
-              style: context.theme.bodyTextStyle,
+              style: context.text.adaptiveBody.onBackground,
               onFieldSubmitted: (_) {
                 if (context.feedbackModel.validateForm()) {
                   context.feedbackModel.goToNextStep();
@@ -91,7 +91,7 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                     : context.theme.primaryBackgroundColor.lighten(0.015),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                hintStyle: context.theme.body2TextStyle,
+                hintStyle: context.text.adaptiveBody2.onSurface,
               ),
             ),
           ),

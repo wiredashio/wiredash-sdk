@@ -64,7 +64,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
               maxLines: 10,
               maxLength: 2048,
               buildCounter: _getCounterText,
-              style: context.text.onSurface.bodyMediumTextStyle,
+              style: context.text.adaptiveBody.onSurface,
               cursorColor: context.theme.primaryColor,
               decoration: InputDecoration(
                 filled: true,
@@ -91,7 +91,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                 hintText: context.l10n.feedbackStep1MessageHint,
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                hintStyle: context.text.onSurface.adaptiveBody2TextStyle,
+                hintStyle: context.text.adaptiveBody2.onSurface,
               ),
             ),
           ),
@@ -151,8 +151,6 @@ Widget? _getCounterText(
 
   return Text(
     remaining > 150 ? '' : remaining.toString(),
-    style: WiredashTheme.of(context)!
-        .inputErrorTextStyle
-        .copyWith(color: _getCounterColor()),
+    style: context.text.input.textStyle.copyWith(color: _getCounterColor()),
   );
 }

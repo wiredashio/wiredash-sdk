@@ -85,7 +85,7 @@ class ScreenshotBar extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       // TODO animate text changes
                       child: DefaultTextStyle(
-                        style: context.theme.appbarTitle,
+                        style: context.text.appbarTitle.onBackground,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         child: AnimatedFadeWidgetSwitcher(

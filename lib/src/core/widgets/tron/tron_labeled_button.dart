@@ -84,8 +84,7 @@ class _LabeledButtonState extends AnimatedWidgetBaseState<TronLabeledButton> {
                   child: ScaleTransition(
                     scale: _buttonScaleTween!.animate(animation),
                     child: DefaultTextStyle(
-                      // TODO compute color
-                      style: context.theme.textTheme.captionTextStyle,
+                      style: context.text.caption.onBackground,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       child: Center(

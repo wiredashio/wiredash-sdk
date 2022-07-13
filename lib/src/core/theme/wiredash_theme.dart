@@ -72,5 +72,5 @@ extension WiredashThemeExtension on BuildContext {
 }
 
 extension WiredashTextThemeExtension on BuildContext {
-  TextThemeForSurface get text => theme.text;
+  SurfaceBasedTextStyle get text => theme.text;
 }

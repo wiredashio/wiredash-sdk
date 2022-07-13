@@ -70,7 +70,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
       children: [
         if (widget.title != null)
           DefaultTextStyle(
-            style: context.text.onBackground.headlineMediumTextStyle,
+            style: context.text.headlineMedium.onBackground,
             child: widget.title!,
           ),
         if (widget.description != null)
@@ -79,7 +79,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
           ),
         if (widget.description != null)
           DefaultTextStyle(
-            style: context.text.onBackground.bodyMediumTextStyle,
+            style: context.text.adaptiveBody.onBackground,
             child: widget.description!,
           )
       ],
@@ -159,11 +159,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                           ),
                           Expanded(
                             child: DefaultTextStyle(
-                              style: context.text.onBackground.captionTextStyle
-                                  .copyWith(
-                                color: context
-                                    .theme.secondaryTextOnBackgroundColor,
-                              ),
+                              style: context.text.caption.onBackground,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               child: widget.breadcrumbTitle!,
@@ -221,22 +217,13 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                             },
                             child: _reallyTimer == null
                                 ? DefaultTextStyle(
-                                    style: context
-                                        .text.onBackground.captionTextStyle
-                                        .copyWith(
-                                      color: context
-                                          .theme.secondaryTextOnBackgroundColor,
-                                    ),
+                                    style: context.text.caption.onBackground,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     child: widget.discardLabel!,
                                   )
                                 : DefaultTextStyle(
-                                    style: context
-                                        .text.onBackground.captionTextStyle
-                                        .copyWith(
-                                      color: context.theme.errorColor,
-                                    ),
+                                    style: context.text.caption.onBackground,
                                     child: widget.discardConfirmLabel ??
                                         const Text('Really?'),
                                   ),
@@ -375,9 +362,7 @@ class StepIndicator extends StatelessWidget {
         Flexible(
           child: Text(
             context.l10n.feedbackStepXOfY(currentStep, total),
-            style: context.text.onBackground.captionTextStyle.copyWith(
-              color: context.theme.secondaryTextOnBackgroundColor,
-            ),
+            style: context.text.caption.onBackground,
           ),
         ),
       ],
