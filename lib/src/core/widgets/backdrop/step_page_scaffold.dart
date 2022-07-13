@@ -70,7 +70,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
       children: [
         if (widget.title != null)
           DefaultTextStyle(
-            style: context.theme.headlineTextStyle,
+            style: context.text.onBackground.headlineMediumTextStyle,
             child: widget.title!,
           ),
         if (widget.description != null)
@@ -79,7 +79,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
           ),
         if (widget.description != null)
           DefaultTextStyle(
-            style: context.theme.bodyTextStyle,
+            style: context.text.onBackground.bodyMediumTextStyle,
             child: widget.description!,
           )
       ],
@@ -159,7 +159,8 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                           ),
                           Expanded(
                             child: DefaultTextStyle(
-                              style: context.theme.captionTextStyle.copyWith(
+                              style: context.text.onBackground.captionTextStyle
+                                  .copyWith(
                                 color: context
                                     .theme.secondaryTextOnBackgroundColor,
                               ),
@@ -220,8 +221,9 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                             },
                             child: _reallyTimer == null
                                 ? DefaultTextStyle(
-                                    style:
-                                        context.theme.captionTextStyle.copyWith(
+                                    style: context
+                                        .text.onBackground.captionTextStyle
+                                        .copyWith(
                                       color: context
                                           .theme.secondaryTextOnBackgroundColor,
                                     ),
@@ -230,8 +232,9 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                                     child: widget.discardLabel!,
                                   )
                                 : DefaultTextStyle(
-                                    style:
-                                        context.theme.captionTextStyle.copyWith(
+                                    style: context
+                                        .text.onBackground.captionTextStyle
+                                        .copyWith(
                                       color: context.theme.errorColor,
                                     ),
                                     child: widget.discardConfirmLabel ??
@@ -372,7 +375,7 @@ class StepIndicator extends StatelessWidget {
         Flexible(
           child: Text(
             context.l10n.feedbackStepXOfY(currentStep, total),
-            style: context.theme.captionTextStyle.copyWith(
+            style: context.text.onBackground.captionTextStyle.copyWith(
               color: context.theme.secondaryTextOnBackgroundColor,
             ),
           ),

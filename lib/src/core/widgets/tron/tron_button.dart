@@ -164,7 +164,7 @@ class _TronButtonState extends State<TronButton>
                             child: DefaultTextStyle(
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: context.theme.tronButtonTextStyle
+                              style: context.theme.textTheme.tronButtonTextStyle
                                   .copyWith(color: _iconColor),
                               child: widget.child ?? Text(widget.label!),
                             ),

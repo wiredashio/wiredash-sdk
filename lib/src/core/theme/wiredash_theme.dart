@@ -70,3 +70,7 @@ class _InheritedWiredashTheme extends InheritedWidget {
 extension WiredashThemeExtension on BuildContext {
   WiredashThemeData get theme => WiredashTheme.of(this)!;
 }
+
+extension WiredashTextThemeExtension on BuildContext {
+  TextThemeForSurface get text => theme.text;
+}

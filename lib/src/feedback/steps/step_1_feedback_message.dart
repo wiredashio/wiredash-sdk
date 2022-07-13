@@ -64,7 +64,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
               maxLines: 10,
               maxLength: 2048,
               buildCounter: _getCounterText,
-              style: context.theme.bodyTextStyle,
+              style: context.text.onSurface.bodyMediumTextStyle,
               cursorColor: context.theme.primaryColor,
               decoration: InputDecoration(
                 filled: true,
@@ -91,7 +91,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                 hintText: context.l10n.feedbackStep1MessageHint,
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                hintStyle: context.theme.body2TextStyle,
+                hintStyle: context.text.onSurface.adaptiveBody2TextStyle,
               ),
             ),
           ),
