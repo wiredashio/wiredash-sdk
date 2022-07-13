@@ -9,3 +9,6 @@ export 'package:wiredash/src/core/wiredash_controller.dart';
 export 'package:wiredash/src/core/wiredash_model.dart';
 export 'package:wiredash/src/core/wiredash_model_provider.dart';
 export 'package:wiredash/src/utils/standard_kt.dart';
+
+/// `true` when Wiredash is in development mode, enables enhanced logging
+const bool kDevMode = false;

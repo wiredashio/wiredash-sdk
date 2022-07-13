@@ -252,6 +252,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
     final items = await _pendingFeedbackItemStorage.retrieveAllPendingItems();
     if (items.isEmpty) {
       debugPrint('No pending feedbacks');
+      return;
     }
     for (final item in items) {
       await _pendingFeedbackItemStorage.clearPendingItem(item.id);

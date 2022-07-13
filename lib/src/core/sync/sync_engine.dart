@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 
-const _kSyncDebugPrint = false;
+const _kSyncDebugPrint = kDevMode;
 
 void syncDebugPrint(Object? message) {
   if (_kSyncDebugPrint) {

@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 
@@ -23,7 +23,7 @@ class UploadPendingFeedbackJob extends Job {
 
     await submitter.submitPendingFeedbackItems();
 
-    if (kDebugMode) {
+    if (kDevMode) {
       await submitter.deletePendingFeedbacks();
     }
   }
