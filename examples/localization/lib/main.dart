@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
-import 'package:wiredash_localization/custom_demo_translations.dart';
 
 void main() {
   runApp(WiredashExampleApp());
@@ -72,7 +72,7 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
         locale: Locale('en'),
 
         /// Uncomment below to set custom translations work
-        // localizationDelegate: CustomWiredashTranslationsDelegate(),
+        localizationDelegate: CustomWiredashTranslationsDelegate(),
       ),
 
       /// You can adjust the colors of Wiredash to your liking.
@@ -237,4 +237,33 @@ class _DetailsPage extends StatelessWidget {
       ),
     );
   }
+}
+
+class CustomWiredashTranslationsDelegate
+    extends LocalizationsDelegate<WiredashLocalizations> {
+  const CustomWiredashTranslationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) => locale.languageCode == 'en';
+
+  @override
+  Future<WiredashLocalizations> load(Locale locale) =>
+      SynchronousFuture(_CustomTranslationsEn());
+
+  @override
+  bool shouldReload(CustomWiredashTranslationsDelegate old) => false;
+}
+
+/// This english translation extends the default english Wiredash translations.
+/// This makes is robost to changes when new terms are added.
+class _CustomTranslationsEn extends WiredashLocalizationsEn {
+  @override
+  String get feedbackStep1MessageTitle => 'feedbackStep1MessageTitle';
+
+  @override
+  String get feedbackStep1MessageDescription =>
+      'feedbackStep1MessageDescription';
+
+  @override
+  String get feedbackStep1MessageHint => 'feedbackStep1MessageHint';
 }

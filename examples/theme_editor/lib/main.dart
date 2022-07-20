@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wiredash/wiredash.dart';
-import 'package:wiredash_example/marianos_clones/whatsapp_clone.dart';
+import 'package:wiredash_theme_editor/marianos_clones/whatsapp_clone.dart';
 
 void main() {
   runApp(const CustomizerApp());

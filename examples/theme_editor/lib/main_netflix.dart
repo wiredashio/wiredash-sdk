@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:wiredash/wiredash.dart';
-import 'package:wiredash_example/marianos_clones/netflix_clone.dart';
+import 'package:wiredash_theme_editor/marianos_clones/netflix_clone.dart';
 
 void main() {
   final app = Wiredash(
