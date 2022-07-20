@@ -1,17 +1,35 @@
-# Wiredash Example  
-  
-This project uses the default Flutter sample project and adds the Wiredash widget to enable interactive user feedback - luckily that's easy as 1-2-3 🎉
+### Wrap your root widget with Wiredash
 
-## What are the differences from the official Flutter sample?
+Wrap the root widget of your existing app with Wiredash and make sure to fill in the `projectId` and SDK `secret`
+from the [Wiredash Console](https://console.wiredash.io) > Your project >
+Settings > General Settings.
 
-Inside `main.dart` the default `MaterialApp` is now a child of `Wiredash`. It's important that Wiredash sits at the root of your application for it to function properly.
+```dart
+import 'package:flutter/material.dart';
+import 'package:wiredash/wiredash.dart';
 
-We also added an `IconButton` as the only action to the `AppBar` which serves as the trigger for the feedback routine. In its callback it calls `Wiredash.of(context).startFeedback()` to launch Wiredash.
+class MyApp extends StatelessWidget {
 
-## Running the Sample
+  @override
+  Widget build(BuildContext context) {
+    return Wiredash(
+      projectId: 'YOUR-PROJECT-ID',
+      secret: 'YOUR-SECRET',
+      child: MaterialApp(
+        // Your Flutter app is basically Wiredash's direct child.
+        // This can be a MaterialApp, WidgetsApp or whatever widget you like.
+      ),
+    );
+  }
+}
+```
 
-1. Create a new Wiredash project on [wiredash.io](https://wiredash.io).
-2. Make sure to add your own API credentials to the `Wiredash` widget inside `main.dart`.
-3. Run the sample by typing `flutter run` into a console window inside the `example` folder.
-4. Inside the sample app, tap the `?` button on the top right to launch Wiredash.
-5. Get creative and write / draw your first feedback 🖌
+### Launch the feedback flow
+
+From anywhere in your app, call the `Wiredash.show()` method to launch Wiredash:
+
+```dart
+Wiredash.of(context).show(inheritMaterialTheme: true);
+```
+
+That's already it. Yes, it's *really that easy*. Also works on all platforms.
