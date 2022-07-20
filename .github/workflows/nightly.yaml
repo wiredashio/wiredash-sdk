@@ -22,7 +22,7 @@ jobs:
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
-        run: cd example && sudo --preserve-env=PATH env flutter build web
+        run: cd examples/theming && sudo --preserve-env=PATH env flutter build web
 
   stable:
     runs-on: ubuntu-latest
@@ -39,7 +39,7 @@ jobs:
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
-        run: cd example && sudo --preserve-env=PATH env flutter build web
+        run: cd examples/theming && sudo --preserve-env=PATH env flutter build web
 
   beta:
     runs-on: ubuntu-latest
@@ -56,7 +56,7 @@ jobs:
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
-        run: cd example && sudo --preserve-env=PATH env flutter build web
+        run: cd examples/theming && sudo --preserve-env=PATH env flutter build web
 
   master:
     runs-on: ubuntu-latest
@@ -73,4 +73,4 @@ jobs:
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
-        run: cd example && sudo --preserve-env=PATH env flutter build web
+        run: cd examples/theming && sudo --preserve-env=PATH env flutter build web
