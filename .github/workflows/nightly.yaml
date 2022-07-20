@@ -19,6 +19,7 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
+          | cd examples/theming && sudo --preserve-env=PATH env flutter packages get
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
@@ -36,6 +37,7 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
+          | cd examples/theming && sudo --preserve-env=PATH env flutter packages get
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
@@ -53,6 +55,7 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
+          | cd examples/theming && sudo --preserve-env=PATH env flutter packages get
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
@@ -70,6 +73,7 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: sudo --preserve-env=PATH env flutter packages get
+          | cd examples/theming && sudo --preserve-env=PATH env flutter packages get
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
