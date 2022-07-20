@@ -18,8 +18,9 @@ jobs:
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
-        run: sudo --preserve-env=PATH env flutter packages get
-          | cd examples/theming && sudo --preserve-env=PATH env flutter packages get
+        run: |
+          sudo --preserve-env=PATH env flutter packages get
+          cd examples/theming && sudo --preserve-env=PATH env flutter packages get
       - name: Analyze
         run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings .
       - name: Check formatting
@@ -34,8 +35,9 @@ jobs:
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
-        run: sudo --preserve-env=PATH env flutter packages get
-          | cd examples/theming && sudo --preserve-env=PATH env flutter packages get
+        run: |
+          sudo --preserve-env=PATH env flutter packages get
+          cd examples/theming && sudo --preserve-env=PATH env flutter packages get
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
@@ -51,8 +53,9 @@ jobs:
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
-        run: sudo --preserve-env=PATH env flutter packages get
-          | cd examples/theming && sudo --preserve-env=PATH env flutter packages get
+        run: |
+          sudo --preserve-env=PATH env flutter packages get
+          cd examples/theming && sudo --preserve-env=PATH env flutter packages get
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
@@ -68,8 +71,9 @@ jobs:
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
-        run: sudo --preserve-env=PATH env flutter packages get
-          | cd examples/theming && sudo --preserve-env=PATH env flutter packages get
+        run: |
+          sudo --preserve-env=PATH env flutter packages get
+          cd examples/theming && sudo --preserve-env=PATH env flutter packages get
       - name: Test
         run: sudo --preserve-env=PATH env flutter test
       - name: Build
