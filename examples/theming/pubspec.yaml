@@ -1,0 +1,21 @@
+name: wiredash_theming
+description: Wiredash sample project demonstrating theming
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.14.0 <3.0.0"
+  flutter: ">=2.5.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  wiredash:
+    path: ../../
+
+dev_dependencies:
+  lint: ^1.0.0
+
+flutter:
+  uses-material-design: true
