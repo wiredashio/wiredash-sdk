@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:wiredash/wiredash.dart';
+import 'package:wiredash_localization/l10n/app_localizations.dart';
 
 void main() {
   runApp(LocalizationExample());
@@ -157,10 +158,17 @@ class CustomWiredashTranslationsDelegate
   Future<WiredashLocalizations> load(Locale locale) {
     switch (locale.languageCode) {
       case 'en':
+        // Replace some text to better address your users
         return SynchronousFuture(_EnOverrides());
       case 'de':
-        return SynchronousFuture(_DeOverrides());
+        // Reuse existing copy text from AppLocalizations
+        return Future(() async {
+          final result = await AppLocalizations.delegate.load(locale);
+          return _DeOverrides(result);
+        });
       case 'pl':
+        // pl is not officially supported by Wiredash, but you can add support
+        // for it on your own
         return SynchronousFuture(_WiredashLocalizationsPl());
       default:
         throw "Unsupported locale $locale";
@@ -171,9 +179,12 @@ class CustomWiredashTranslationsDelegate
   bool shouldReload(CustomWiredashTranslationsDelegate old) => false;
 }
 
-/// This is an override of the Wiredash EN translations.
+/// This is an override of the Wiredash en translations.
 ///
-/// Use extends instead of implements to make it robost to changes when new terms are added.
+/// Use it when you want to change some in Wiredash to better address your users.
+///
+/// Use `extends` instead of `implements` to make it robost to changes when new
+/// terms are added.
 class _EnOverrides extends WiredashLocalizationsEn {
   @override
   String get feedbackStep1MessageTitle => 'Do you have a problem?';
@@ -186,17 +197,21 @@ class _EnOverrides extends WiredashLocalizationsEn {
   String get feedbackStep1MessageHint => '...';
 }
 
+/// Injects copy text from [AppLocalizations] into Wiredash
+///
+/// Run `flutter gen-l10n --no-synthetic-package` to generate [AppLocalizations]
 class _DeOverrides extends WiredashLocalizationsDe {
+  final AppLocalizations localizations;
+
+  _DeOverrides(this.localizations);
+
   @override
-  String get feedbackStep1MessageTitle => 'Kunden Feedback Formular';
+  String get feedbackStep1MessageTitle =>
+      localizations.wiredashFeedbackStep1MessageTitle;
 
   @override
   String get feedbackStep1MessageDescription =>
-      "Verehrter Nutzer,\nbitte senden Sie uns Ihre Erfahrungen mit diesem Produkt. Gut oder schlecht, wir versuchen aufgrund Ihres Feedbacks unser Produkt ständig wetierzuentwickeln und zu verbessern.\n\nHochachtungsvoll,\nIhr Produkt Team";
-
-  @override
-  String get feedbackStep1MessageHint =>
-      'Ich kann die Fax Nummer für die Online-Registrierung nicht finden.';
+      localizations.wiredashFeedbackStep1MessageDescription;
 }
 
 /// In case Wiredash doesn't support your locale, you can add it on your own.
