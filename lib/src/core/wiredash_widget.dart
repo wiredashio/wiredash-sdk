@@ -321,12 +321,22 @@ class WiredashState extends State<Wiredash> {
 
   /// Returns `true` if a WiredashLocalizations for the [locale] exists
   bool _isLocaleSupported(Locale locale) {
-    if (WiredashLocalizations.supportedLocales.contains(locale)) {
+    final match = WiredashLocalizations.supportedLocales.firstWhereOrNull((it) {
+      if (it == locale) {
+        // exact match, perfect
+        return true;
+      }
+
+      // just the language code is close enough
+      return it.languageCode == locale.languageCode;
+    });
+    if (match != null) {
       return true;
     }
 
     final delegate = widget.options?.localizationDelegate;
     if (delegate != null && delegate.isSupported(locale)) {
+      // A custom localization supports this locale
       return true;
     }
     return false;
@@ -335,7 +345,7 @@ class WiredashState extends State<Wiredash> {
   /// Current locale used by Wiredash widget
   Locale get _currentLocale {
     final localesInOrder = [
-      // Use what users set in WiredashOptions has the highes priority
+      // Use what users set in WiredashOptions has the highest priority
       widget.options?.locale,
       // Use what users see in the app
       _services.wiredashModel.appLocale
