@@ -33,24 +33,6 @@ class _LocalizationExampleState extends State<LocalizationExample> {
         // The same way you can add additional languages
         localizationDelegate: const CustomWiredashTranslationsDelegate(),
       ),
-      feedbackOptions: WiredashFeedbackOptions(
-        email: EmailPrompt.optional,
-        screenshot: ScreenshotPrompt.optional,
-        labels: [
-          Label(
-            id: 'lbl-r65egsdf',
-            title: 'Bug',
-          ),
-          Label(
-            id: 'lbl-6543df23s',
-            title: 'Improvement',
-          ),
-          Label(
-            id: 'lbl-de3w2fds',
-            title: 'UX/UI',
-          ),
-        ],
-      ),
       child: MaterialApp(
         locale: _selectedLocale,
         debugShowCheckedModeBanner: false,
@@ -69,9 +51,6 @@ class _LocalizationExampleState extends State<LocalizationExample> {
         home: Builder(
           builder: _buildPage,
         ),
-        // builder: (context, child) {
-        //   return Wiredash(projectId: 'projectId', secret: 'sd', child: child!);
-        // },
       ),
     );
   }
@@ -85,22 +64,22 @@ class _LocalizationExampleState extends State<LocalizationExample> {
         onPressed: () {
           Wiredash.of(context).show(
             inheritMaterialTheme: true,
-            // feedbackOptions: WiredashFeedbackOptions(
-            //   email: EmailPrompt.optional,
-            //   screenshot: ScreenshotPrompt.optional,
-            //   labels: [
-            //     Label(
-            //       id: 'label-a',
-            //       title: AppLocalizations.of(context)?.labelA ??
-            //           "Fallback for Label A",
-            //     ),
-            //     Label(
-            //       id: 'label-b',
-            //       title: AppLocalizations.of(context)?.labelB ??
-            //           "Fallback for Label B",
-            //     ),
-            //   ],
-            // ),
+            feedbackOptions: WiredashFeedbackOptions(
+              email: EmailPrompt.optional,
+              screenshot: ScreenshotPrompt.optional,
+              labels: [
+                Label(
+                  id: 'label-a',
+                  title: AppLocalizations.of(context)?.labelA ??
+                      "Fallback for Label A",
+                ),
+                Label(
+                  id: 'label-b',
+                  title: AppLocalizations.of(context)?.labelB ??
+                      "Fallback for Label B",
+                ),
+              ],
+            ),
           );
         },
         child: Icon(Icons.chat),
