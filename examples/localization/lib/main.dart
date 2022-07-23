@@ -226,10 +226,6 @@ class _DeOverrides extends WiredashLocalizationsDe {
   @override
   String get feedbackStep1MessageDescription =>
       localizations.wiredashFeedbackStep1MessageDescription;
-
-  Map<String, String> get labels => {
-        'label-asdf': 'Label A',
-      };
 }
 
 /// In case Wiredash doesn't support your locale, you can add it on your own.
