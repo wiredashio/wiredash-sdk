@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/wiredash.dart';
@@ -231,6 +232,38 @@ void main() {
       expect(submittedFeedback, isNotNull);
       // 'lbl-3' is submitted but was not selected by user
       expect(submittedFeedback!.labels, ['lbl-2', 'lbl-3']);
+      expect(submittedFeedback.message, 'feedback with labels');
+    });
+
+    testWidgets('Hidden labels only skip label step', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(
+        tester,
+        feedbackOptions: const WiredashFeedbackOptions(
+          labels: [
+            Label(id: 'lbl-1', title: 'One', hidden: true),
+            Label(id: 'lbl-2', title: 'Two', hidden: true),
+          ],
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('feedback with labels');
+      await robot.goToNextStep();
+
+      selectByType(Wiredash)
+          .childByType(WiredashBackdrop)
+          .childByType(LarryPageView)
+          .childByType(Step2Labels)
+          .doesNotExist();
+
+      await robot.skipScreenshot();
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      expect(submittedFeedback, isNotNull);
+      expect(submittedFeedback!.labels, ['lbl-1', 'lbl-2']);
       expect(submittedFeedback.message, 'feedback with labels');
     });
   });
