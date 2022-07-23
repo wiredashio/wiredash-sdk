@@ -129,7 +129,7 @@ void main() {
       final robot = await WiredashTestRobot.launchApp(
         tester,
         feedbackOptions: const WiredashFeedbackOptions(
-          askForUserEmail: true,
+          email: EmailPrompt.optional,
         ),
       );
 
@@ -154,7 +154,7 @@ void main() {
       final robot = await WiredashTestRobot.launchApp(
         tester,
         feedbackOptions: const WiredashFeedbackOptions(
-          askForUserEmail: true,
+          email: EmailPrompt.optional,
           labels: [
             Label(id: 'lbl-1', title: 'One'),
             Label(id: 'lbl-2', title: 'Two'),

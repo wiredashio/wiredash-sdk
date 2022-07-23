@@ -33,7 +33,7 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
       secret: "API Key from console.wiredash.io",
       feedbackOptions: WiredashFeedbackOptions(
         /// Uncomment below to ask users for their email
-        askForUserEmail: true,
+        email: EmailPrompt.optional,
 
         /// Uncomment below to disable the screenshot step
         // screenshotStep: false,

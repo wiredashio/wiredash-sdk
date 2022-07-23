@@ -213,7 +213,7 @@ class FeedbackModel extends ChangeNotifier2 {
     final index = currentStepIndex;
     if (index == null) {
       if (!steps.contains(feedbackFlowStatus)) {
-        debugPrint('Warning: ${feedbackFlowStatus} is not in steps');
+        debugPrint('Warning: $feedbackFlowStatus is not in steps');
       }
       throw StateError('Unknown step index');
     }
