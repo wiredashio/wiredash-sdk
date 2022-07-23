@@ -1,6 +1,3 @@
-
-
-
 import 'app_localizations.dart';
 
 /// The translations for German (`de`).
@@ -11,7 +8,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wiredashFeedbackStep1MessageTitle => 'Benutzerdefinierter Titel';
 
   @override
-  String get wiredashFeedbackStep1MessageDescription => 'Benutzerdefinierte Bescheibung';
+  String get wiredashFeedbackStep1MessageDescription =>
+      'Benutzerdefinierte Bescheibung';
 
   @override
   String get labelA => 'Kennzeichen A';
