@@ -24,6 +24,8 @@ class Label {
 
   /// A hidden label is not visible to the user. It will be sent directly to the
   /// console
+  ///
+  /// Defaults to `false`
   final bool? hidden;
 
   @override

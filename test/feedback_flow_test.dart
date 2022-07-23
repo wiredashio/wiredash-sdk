@@ -196,6 +196,43 @@ void main() {
       await robot.openWiredash();
       larryPageView.childByType(Step6Submit).existsOnce();
     });
+
+    testWidgets('Dont show hidden labels but send them regardless',
+        (tester) async {
+      final robot = await WiredashTestRobot.launchApp(
+        tester,
+        feedbackOptions: const WiredashFeedbackOptions(
+          labels: [
+            Label(id: 'lbl-1', title: 'One'),
+            Label(id: 'lbl-2', title: 'Two'),
+            Label(id: 'lbl-3', title: 'Hidden', hidden: true),
+          ],
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('feedback with labels');
+      await robot.goToNextStep();
+
+      // labels
+      expect(find.text('One'), findsOneWidget);
+      expect(find.text('Two'), findsOneWidget);
+      // hidden label is not shown
+      expect(find.text('Hidden'), findsNothing);
+      await robot.selectLabel('Two');
+      await robot.goToNextStep();
+
+      await robot.skipScreenshot();
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      expect(submittedFeedback, isNotNull);
+      // 'lbl-3' is submitted but was not selected by user
+      expect(submittedFeedback!.labels, ['lbl-2', 'lbl-3']);
+      expect(submittedFeedback.message, 'feedback with labels');
+    });
   });
 }
 

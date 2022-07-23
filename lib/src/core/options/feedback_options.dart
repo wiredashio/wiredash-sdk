@@ -62,11 +62,15 @@ class WiredashFeedbackOptions {
   })  : screenshot = screenshot ??
             (screenshotStep == true
                 ? ScreenshotPrompt.optional
-                : ScreenshotPrompt.hidden),
+                : screenshotStep == false
+                    ? ScreenshotPrompt.hidden
+                    : null),
         email = email ??
             (askForUserEmail == true
                 ? EmailPrompt.optional
-                : EmailPrompt.hidden);
+                : askForUserEmail == false
+                    ? EmailPrompt.hidden
+                    : null);
 
   @override
   String toString() {

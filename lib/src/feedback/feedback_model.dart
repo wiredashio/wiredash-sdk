@@ -121,16 +121,20 @@ class FeedbackModel extends ChangeNotifier2 {
     // message is always there
     stack.add(FeedbackFlowStatus.message);
 
-    if (labels.isNotEmpty) stack.add(FeedbackFlowStatus.labels);
+    if (labels.where((it) => it.hidden != true).isNotEmpty) {
+      stack.add(FeedbackFlowStatus.labels);
+    }
     final renderer = getRenderer();
-    if (_services.wiredashModel.feedbackOptions?.screenshot ==
-            ScreenshotPrompt.optional &&
-        renderer != Renderer.html) {
+    if (_services.wiredashModel.feedbackOptions?.screenshot == null ||
+        _services.wiredashModel.feedbackOptions?.screenshot ==
+                ScreenshotPrompt.optional &&
+            renderer != Renderer.html) {
       // Don't show the screenshot option with html renderer, because it
       // doesn't support rendering to canvas
       stack.add(FeedbackFlowStatus.screenshotsOverview);
     }
-    if (_services.wiredashModel.feedbackOptions?.email != EmailPrompt.hidden) {
+    if (_services.wiredashModel.feedbackOptions?.email ==
+        EmailPrompt.optional) {
       stack.add(FeedbackFlowStatus.email);
     }
     stack.add(FeedbackFlowStatus.submit);
@@ -410,7 +414,9 @@ class FeedbackModel extends ChangeNotifier2 {
         return userEmail;
       }(),
       message: _feedbackMessage!,
-      labels: _selectedLabels.map((it) => it.id).toList(),
+      labels: [..._selectedLabels, ...labels.where((it) => it.hidden == true)]
+          .map((it) => it.id)
+          .toList(),
       userId: metaData.userId,
     );
   }
