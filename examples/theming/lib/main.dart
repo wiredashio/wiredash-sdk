@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:wiredash/wiredash.dart';
 
 void main() {
@@ -32,18 +33,8 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
       projectId: "Project ID from console.wiredash.io",
       secret: "API Key from console.wiredash.io",
       feedbackOptions: WiredashFeedbackOptions(
-        /// Uncomment below to ask users for their email
         email: EmailPrompt.optional,
-
-        /// Uncomment below to disable the screenshot step
-        // screenshotStep: false,
-
-        /// Attach cusotm metada to a feedback
-        collectMetaData: (metaData) => metaData
-          ..userEmail = 'dash@wiredash.io'
-          ..custom['isPremium'] = false
-          ..custom['nested'] = {'wire': 'dash'},
-
+        screenshot: ScreenshotPrompt.optional,
         labels: [
           // Take the label ids from your project console
           // https://console.wiredash.io/ -> Settings -> Labels
@@ -83,35 +74,40 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
         primaryColor: Colors.indigo,
         // Secondary button color
         secondaryColor: Colors.purple,
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
       ).copyWith(
-        // Customize the Font Family
-        fontFamily: 'Monospace',
-
-        // i.e. selected labels, buttons on cards, input border
-        primaryContainerColor: Colors.cyan,
-        textOnPrimaryContainerColor: Colors.black,
-
-        // i.e. labels when not selected
-        secondaryContainerColor: Colors.blue,
-        textOnSecondaryContainerColor: Colors.white,
-
-        // the color behind the application, only visible when your app is
-        // translucent
-        appBackgroundColor: Colors.white,
-        // The color of the "Return to app" bar
-        appHandleBackgroundColor: Colors.blue[700],
-
-        // The background gradient, top to bottom
-        primaryBackgroundColor: Colors.white,
-        secondaryBackgroundColor: Color(0xFFEDD9F6),
-
-        errorColor: Colors.deepOrange,
-
-        firstPenColor: Colors.yellow,
-        secondPenColor: Colors.white,
-        thirdPenColor: Color(0xffffebeb),
-        fourthPenColor: Color(0xffced9e3),
+        // // Customize the Font Family
+        // fontFamily: 'Monospace',
+        textTheme: WiredashTextTheme(
+          headlineMediumTextStyle: GoogleFonts.jetBrainsMono(
+            fontSize: 32,
+            color: Colors.pink,
+          ),
+        ),
+        // // i.e. selected labels, buttons on cards, input border
+        // primaryContainerColor: Colors.cyan,
+        // textOnPrimaryContainerColor: Colors.black,
+        //
+        // // i.e. labels when not selected
+        // secondaryContainerColor: Colors.blue,
+        // textOnSecondaryContainerColor: Colors.white,
+        //
+        // // the color behind the application, only visible when your app is
+        // // translucent
+        // appBackgroundColor: Colors.white,
+        // // The color of the "Return to app" bar
+        // appHandleBackgroundColor: Colors.blue[700],
+        //
+        // // The background gradient, top to bottom
+        // primaryBackgroundColor: Colors.white,
+        // secondaryBackgroundColor: Color(0xFFEDD9F6),
+        //
+        // errorColor: Colors.deepOrange,
+        //
+        // firstPenColor: Colors.yellow,
+        // secondPenColor: Colors.white,
+        // thirdPenColor: Color(0xffffebeb),
+        // fourthPenColor: Color(0xffced9e3),
       ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

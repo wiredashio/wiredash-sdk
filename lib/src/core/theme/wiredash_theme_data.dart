@@ -187,7 +187,7 @@ class WiredashThemeData {
     return _textOnPrimaryContainerColor ?? _primaryTone.onPrimaryContainer;
   }
 
-  // --- secondadryContainer --- //
+  // --- secondaryContainer --- //
   final Color? _secondaryContainerColor;
 
   Color get secondaryContainerColor =>
@@ -447,6 +447,7 @@ class WiredashThemeData {
     Color? fourthPenColor,
     DeviceClass? deviceClass,
     String? fontFamily,
+    WiredashTextTheme? textTheme,
     Size? windowSize,
   }) {
     return WiredashThemeData(
@@ -475,6 +476,7 @@ class WiredashThemeData {
       fourthPenColor: fourthPenColor ?? this.fourthPenColor,
       deviceClass: deviceClass ?? this.deviceClass,
       fontFamily: fontFamily ?? _fontFamily,
+      textTheme: textTheme ?? this.textTheme,
       windowSize: windowSize ?? this.windowSize,
     );
   }
@@ -582,26 +584,80 @@ class WiredashTextTheme {
     if (other == null) {
       return this;
     }
+
+    TextStyle? mergeTextStyles(TextStyle? base, TextStyle? addition) {
+      final baseFontFamily = base?.fontFamily;
+      final additionFontFamily = addition?.fontFamily;
+
+      final result = base?.merge(addition);
+
+      // Removing package if addition changes the fontFamily
+      // Bugfix for https://github.com/flutter/flutter/issues/108230
+      final basePackage = baseFontFamily?.startsWith('packages/') == true
+          ? baseFontFamily?.split('/').first
+          : null;
+      final additionPackage =
+          additionFontFamily?.startsWith('packages/') == true
+              ? baseFontFamily?.split('/').first
+              : null;
+
+      return TextStyle(
+        color: result?.color,
+        backgroundColor: result?.backgroundColor,
+        fontSize: result?.fontSize,
+        fontWeight: result?.fontWeight,
+        fontStyle: result?.fontStyle,
+        letterSpacing: result?.letterSpacing,
+        wordSpacing: result?.wordSpacing,
+        textBaseline: result?.textBaseline,
+        height: result?.height,
+        leadingDistribution: result?.leadingDistribution,
+        locale: result?.locale,
+        foreground: result?.foreground,
+        background: result?.background,
+        shadows: result?.shadows,
+        fontFeatures: result?.fontFeatures,
+        decoration: result?.decoration,
+        decorationColor: result?.decorationColor,
+        decorationStyle: result?.decorationStyle,
+        decorationThickness: result?.decorationThickness,
+        debugLabel: result?.debugLabel,
+        fontFamilyFallback: result?.fontFamilyFallback,
+
+        // Here starts the custom part of the TextStyle copyWith method
+        fontFamily: additionFontFamily ?? baseFontFamily,
+        package: () {
+          if (additionFontFamily != null || additionPackage != null) {
+            // Set addition.package when addition defines a fontFamily
+            return additionPackage;
+          }
+          return basePackage;
+        }(),
+      );
+    }
+
     return copyWith(
-      headlineMediumTextStyle:
-          headlineMediumTextStyle?.merge(other.headlineMediumTextStyle),
+      headlineMediumTextStyle: mergeTextStyles(
+          headlineMediumTextStyle, other.headlineMediumTextStyle),
       headlineSmallTextStyle:
-          headlineSmallTextStyle?.merge(other.headlineSmallTextStyle),
-      appbarTitle: appbarTitle?.merge(other.appbarTitle),
-      titleTextStyle: titleTextStyle?.merge(other.titleTextStyle),
+          mergeTextStyles(headlineSmallTextStyle, other.headlineSmallTextStyle),
+      appbarTitle: mergeTextStyles(appbarTitle, other.appbarTitle),
+      titleTextStyle: mergeTextStyles(titleTextStyle, other.titleTextStyle),
       tronButtonTextStyle:
-          tronButtonTextStyle?.merge(other.tronButtonTextStyle),
+          mergeTextStyles(tronButtonTextStyle, other.tronButtonTextStyle),
       bodyMediumTextStyle:
-          bodyMediumTextStyle?.merge(other.bodyMediumTextStyle),
-      bodySmallTextStyle: bodySmallTextStyle?.merge(other.bodySmallTextStyle),
+          mergeTextStyles(bodyMediumTextStyle, other.bodyMediumTextStyle),
+      bodySmallTextStyle:
+          mergeTextStyles(bodySmallTextStyle, other.bodySmallTextStyle),
       body2MediumTextStyle:
-          body2MediumTextStyle?.merge(other.body2MediumTextStyle),
+          mergeTextStyles(body2MediumTextStyle, other.body2MediumTextStyle),
       body2SmallTextStyle:
-          body2SmallTextStyle?.merge(other.body2SmallTextStyle),
-      captionTextStyle: captionTextStyle?.merge(other.captionTextStyle),
-      inputTextStyle: inputTextStyle?.merge(other.inputTextStyle),
+          mergeTextStyles(body2SmallTextStyle, other.body2SmallTextStyle),
+      captionTextStyle:
+          mergeTextStyles(captionTextStyle, other.captionTextStyle),
+      inputTextStyle: mergeTextStyles(inputTextStyle, other.inputTextStyle),
       inputErrorTextStyle:
-          inputErrorTextStyle?.merge(other.inputErrorTextStyle),
+          mergeTextStyles(inputErrorTextStyle, other.inputErrorTextStyle),
     );
   }
 
