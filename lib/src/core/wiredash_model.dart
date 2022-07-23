@@ -53,14 +53,28 @@ class WiredashModel with ChangeNotifier {
   }
 
   /// The locale of the application where `Wiredash.of(context)` got called
-  Locale? _appLocale;
+  Locale? _appLocaleFromContext;
 
-  Locale? get appLocale => _appLocale;
+  Locale? get appLocaleFromContext => _appLocaleFromContext;
 
-  set appLocale(Locale? appLocale) {
-    _appLocale = appLocale;
+  set appLocaleFromContext(Locale? appLocale) {
+    _appLocaleFromContext = appLocale;
     notifyListeners();
   }
+
+  /// The feedback options passed into `Wiredash.of(context).show()` call
+  WiredashFeedbackOptions? _feedbackOptionsOverride;
+
+  WiredashFeedbackOptions? get feedbackOptionsOverride =>
+      _feedbackOptionsOverride;
+
+  set feedbackOptionsOverride(WiredashFeedbackOptions? feedbackOptions) {
+    _feedbackOptionsOverride = feedbackOptions;
+    notifyListeners();
+  }
+
+  WiredashFeedbackOptions? get feedbackOptions =>
+      _feedbackOptionsOverride ?? services.wiredashWidget.feedbackOptions;
 
   /// Deletes pending feedbacks
   ///
@@ -99,6 +113,12 @@ class WiredashModel with ChangeNotifier {
   }) async {
     await services.backdropController.animateToClosed();
     isWiredashActive = false;
+
+    // reset options from show() call
+    themeFromContext = null;
+    appLocaleFromContext = null;
+    feedbackOptionsOverride = null;
+
     if (discardFeedback) {
       services.discardFeedback();
     }

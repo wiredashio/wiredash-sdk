@@ -12,4 +12,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get wiredashFeedbackStep1MessageDescription => 'Benutzerdefinierte Bescheibung';
+
+  @override
+  String get labelA => 'Kennzeichen A';
+
+  @override
+  String get labelB => 'Kennzeichen B';
 }

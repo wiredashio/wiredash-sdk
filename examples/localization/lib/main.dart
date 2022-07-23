@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:wiredash/wiredash.dart';
 import 'package:wiredash_localization/l10n/app_localizations.dart';
 
@@ -34,6 +33,24 @@ class _LocalizationExampleState extends State<LocalizationExample> {
         // The same way you can add additional languages
         localizationDelegate: const CustomWiredashTranslationsDelegate(),
       ),
+      feedbackOptions: WiredashFeedbackOptions(
+        email: EmailPrompt.optional,
+        screenshot: ScreenshotPrompt.optional,
+        labels: [
+          Label(
+            id: 'lbl-r65egsdf',
+            title: 'Bug',
+          ),
+          Label(
+            id: 'lbl-6543df23s',
+            title: 'Improvement',
+          ),
+          Label(
+            id: 'lbl-de3w2fds',
+            title: 'UX/UI',
+          ),
+        ],
+      ),
       child: MaterialApp(
         locale: _selectedLocale,
         debugShowCheckedModeBanner: false,
@@ -44,17 +61,17 @@ class _LocalizationExampleState extends State<LocalizationExample> {
           Locale('ko'),
         ],
         localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
+          ...AppLocalizations.localizationsDelegates,
         ],
         theme: ThemeData(
-          primarySwatch: Colors.blue,
-          brightness: Brightness.light,
+          primarySwatch: Colors.green,
         ),
         home: Builder(
           builder: _buildPage,
         ),
+        // builder: (context, child) {
+        //   return Wiredash(projectId: 'projectId', secret: 'sd', child: child!);
+        // },
       ),
     );
   }
@@ -66,7 +83,25 @@ class _LocalizationExampleState extends State<LocalizationExample> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Wiredash.of(context).show();
+          Wiredash.of(context).show(
+            inheritMaterialTheme: true,
+            // feedbackOptions: WiredashFeedbackOptions(
+            //   email: EmailPrompt.optional,
+            //   screenshot: ScreenshotPrompt.optional,
+            //   labels: [
+            //     Label(
+            //       id: 'label-a',
+            //       title: AppLocalizations.of(context)?.labelA ??
+            //           "Fallback for Label A",
+            //     ),
+            //     Label(
+            //       id: 'label-b',
+            //       title: AppLocalizations.of(context)?.labelB ??
+            //           "Fallback for Label B",
+            //     ),
+            //   ],
+            // ),
+          );
         },
         child: Icon(Icons.chat),
       ),
@@ -199,7 +234,7 @@ class _EnOverrides extends WiredashLocalizationsEn {
 
 /// Injects copy text from [AppLocalizations] into Wiredash
 ///
-/// Run `flutter gen-l10n --no-synthetic-package` to generate [AppLocalizations]
+/// Run `flutter gen-l10n --no-synthetic-package --nullable-getter` to generate [AppLocalizations]
 class _DeOverrides extends WiredashLocalizationsDe {
   final AppLocalizations localizations;
 
@@ -212,6 +247,10 @@ class _DeOverrides extends WiredashLocalizationsDe {
   @override
   String get feedbackStep1MessageDescription =>
       localizations.wiredashFeedbackStep1MessageDescription;
+
+  Map<String, String> get labels => {
+        'label-asdf': 'Label A',
+      };
 }
 
 /// In case Wiredash doesn't support your locale, you can add it on your own.

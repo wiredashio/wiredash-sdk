@@ -65,8 +65,8 @@ abstract class AppLocalizations {
 
   final String localeName;
 
-  static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+  static AppLocalizations? of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
   static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
@@ -105,6 +105,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Custom description'**
   String get wiredashFeedbackStep1MessageDescription;
+
+  /// No description provided for @labelA.
+  ///
+  /// In en, this message translates to:
+  /// **'Label A'**
+  String get labelA;
+
+  /// No description provided for @labelB.
+  ///
+  /// In en, this message translates to:
+  /// **'Label B'**
+  String get labelB;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

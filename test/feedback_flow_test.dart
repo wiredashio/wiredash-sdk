@@ -97,8 +97,8 @@ void main() {
         tester,
         feedbackOptions: const WiredashFeedbackOptions(
           labels: [
-            Label(id: 'lbl-1', title: 'One', description: 'First'),
-            Label(id: 'lbl-2', title: 'Two', description: 'Second'),
+            Label(id: 'lbl-1', title: 'One'),
+            Label(id: 'lbl-2', title: 'Two'),
           ],
         ),
       );
@@ -155,8 +155,8 @@ void main() {
         feedbackOptions: const WiredashFeedbackOptions(
           askForUserEmail: true,
           labels: [
-            Label(id: 'lbl-1', title: 'One', description: 'First'),
-            Label(id: 'lbl-2', title: 'Two', description: 'Second'),
+            Label(id: 'lbl-1', title: 'One'),
+            Label(id: 'lbl-2', title: 'Two'),
           ],
         ),
       );

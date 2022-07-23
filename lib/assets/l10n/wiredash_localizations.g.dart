@@ -8,14 +8,14 @@ import 'package:intl/intl.dart' as intl;
 import 'wiredash_localizations_de.g.dart';
 import 'wiredash_localizations_en.g.dart';
 
-/// Callers can lookup localized strings with an instance of WiredashLocalizations
-/// returned by `WiredashLocalizations.of(context)`.
+/// Callers can lookup localized strings with an instance of WiredashLocalizations returned
+/// by `WiredashLocalizations.of(context)`.
 ///
 /// Applications need to include `WiredashLocalizations.delegate()` in their app's
-/// `localizationDelegates` list, and the locales they support in the app's
-/// `supportedLocales` list. For example:
+/// localizationDelegates list, and the locales they support in the app's
+/// supportedLocales list. For example:
 ///
-/// ```dart
+/// ```
 /// import 'l10n/wiredash_localizations.g.dart';
 ///
 /// return MaterialApp(
@@ -30,14 +30,14 @@ import 'wiredash_localizations_en.g.dart';
 /// Please make sure to update your pubspec.yaml to include the following
 /// packages:
 ///
-/// ```yaml
+/// ```
 /// dependencies:
 ///   # Internationalization support.
 ///   flutter_localizations:
 ///     sdk: flutter
 ///   intl: any # Use the pinned version from flutter_localizations
 ///
-///   # Rest of dependencies
+///   # rest of dependencies
 /// ```
 ///
 /// ## iOS Applications

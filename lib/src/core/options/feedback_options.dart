@@ -18,18 +18,21 @@ class WiredashFeedbackOptions {
   /// labels yourself, you know best if and how they should be translated.
   final List<Label>? labels;
 
-  /// When `true` a step asking the user for their email address is shown
+  /// Define if and how users get asked for their email address.
   ///
-  /// Defaults to false, does not show the email address step.
-  final bool? askForUserEmail;
+  /// Defaults to [EmailPrompt.optional]
+  final EmailPrompt? email;
 
-  /// Whether to display the screenshot and drawing step or not.
+  /// Define whether users can attach screenshots
   ///
-  /// Defaults to true, allows the user to add screenshots
+  /// Defaults to [ScreenshotPrompt.optional]
   ///
-  /// The Flutter Web beta does not currently support screenshots. Therefore,
-  /// the screenshot and drawing step is never shown and this option is ignored.
-  final bool? screenshotStep;
+  /// Screenshots are not supported on Flutter Web when using the html renderer.
+  /// The screenshot step will therefore not be shown on Flutter Web when using
+  /// the html renderer.
+  /// https://github.com/flutter/flutter/issues/59072
+  /// https://github.com/flutter/flutter/issues/49857
+  final ScreenshotPrompt? screenshot;
 
   /// Enrich the user feedback with custom metadata
   ///
@@ -51,19 +54,48 @@ class WiredashFeedbackOptions {
 
   const WiredashFeedbackOptions({
     this.labels,
-    this.askForUserEmail,
+    @Deprecated('Use `email` instead') bool? askForUserEmail,
+    EmailPrompt? email,
     this.collectMetaData,
-    this.screenshotStep,
-  });
+    @Deprecated('Use `screenshot` instead') bool? screenshotStep,
+    ScreenshotPrompt? screenshot,
+  })  : screenshot = screenshot ??
+            (screenshotStep == true
+                ? ScreenshotPrompt.optional
+                : ScreenshotPrompt.hidden),
+        email = email ??
+            (askForUserEmail == true
+                ? EmailPrompt.optional
+                : EmailPrompt.hidden);
 
   @override
   String toString() {
     return 'WiredashFeedbackOptions{'
         'labels: $labels, '
-        'askForUserEmail: $askForUserEmail'
-        'screenshotStep: $screenshotStep'
+        'email: $email'
+        'screenshot: $screenshot'
         '}';
   }
+}
+
+enum EmailPrompt {
+  /// Email step is not shown
+  hidden,
+
+  /// User is optionally asked for their email address
+  optional,
+
+  /// The email address is mandatory
+  // TODO implement
+  //mandatory,
+}
+
+enum ScreenshotPrompt {
+  /// Screenshot step is not shown
+  hidden,
+
+  /// User is asked to optionally attach screenshots
+  optional,
 }
 
 /// Mutable version of [WiredashMetaData] that will be sent along the user
