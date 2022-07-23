@@ -11,6 +11,7 @@ class NpsModel extends ChangeNotifier2 {
 
   final WiredashServices _services;
   Delay? _closeDelay;
+
   NpsScore? get score => _score;
   NpsScore? _score;
 
@@ -39,8 +40,10 @@ class NpsModel extends ChangeNotifier2 {
       final deviceInfo = _services.deviceInfoGenerator.generate();
       final metaData = _services.wiredashModel.metaData;
       // Allow devs to collect additional information
-      await _services.wiredashWidget.feedbackOptions?.collectMetaData
-          ?.call(metaData);
+      final collector =
+          _services.wiredashWidget.feedbackOptions?.collectMetaData ??
+              _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
+      await collector?.call(metaData);
 
       final body = NpsRequestBody(
         score: score!,
@@ -50,7 +53,8 @@ class NpsModel extends ChangeNotifier2 {
         deviceId: deviceId,
         userId: metaData.userId,
         userEmail: metaData.userEmail,
-        appLocale: _services.wiredashModel.appLocale?.toLanguageTag(),
+        appLocale:
+            _services.wiredashModel.appLocaleFromContext?.toLanguageTag(),
         platformLocale: deviceInfo.platformLocale,
         platformOS: deviceInfo.platformOS,
         platformUserAgent: deviceInfo.userAgent,

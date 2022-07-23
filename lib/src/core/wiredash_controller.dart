@@ -158,9 +158,11 @@ class WiredashController {
   void show({
     bool? inheritMaterialTheme,
     bool? inheritCupertinoTheme,
+    WiredashFeedbackOptions? feedbackOptions,
   }) {
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
     _captureAppLocale();
+    _model.feedbackOptionsOverride = feedbackOptions;
     _model.show(flow: WiredashFlow.feedback);
   }
 
@@ -188,7 +190,7 @@ class WiredashController {
     if (context == null) return;
 
     final locale = Localizations.maybeLocaleOf(context);
-    _model.appLocale = locale;
+    _model.appLocaleFromContext = locale;
   }
 
   /// Search the user context for the app theme

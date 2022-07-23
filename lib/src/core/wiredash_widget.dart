@@ -348,7 +348,7 @@ class WiredashState extends State<Wiredash> {
       // Use what users set in WiredashOptions has the highest priority
       widget.options?.locale,
       // Use what users see in the app
-      _services.wiredashModel.appLocale
+      _services.wiredashModel.appLocaleFromContext
     ].whereNotNull();
 
     for (final locale in localesInOrder) {

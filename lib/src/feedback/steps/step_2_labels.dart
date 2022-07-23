@@ -30,7 +30,9 @@ class _Step2LabelsState extends State<Step2Labels>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _LabelRecommendations(
-            labels: feedbackModel.labels,
+            labels: feedbackModel.labels
+                .where((label) => label.hidden != true)
+                .toList(),
             isLabelSelected: selectedLabels.contains,
             toggleSelection: (label) {
               setState(() {

@@ -50,7 +50,7 @@ class FeedbackModel extends ChangeNotifier2 {
   List<Label> _selectedLabels = [];
 
   List<Label> get labels =>
-      _services.wiredashWidget.feedbackOptions?.labels ?? [];
+      _services.wiredashModel.feedbackOptions?.labels ?? [];
 
   List<PersistedAttachment> get attachments =>
       _attachments.toList(growable: false);
@@ -88,10 +88,10 @@ class FeedbackModel extends ChangeNotifier2 {
     // screenshot
     var steps = 2;
 
-    if (_services.wiredashWidget.feedbackOptions?.askForUserEmail == true) {
+    if (_services.wiredashModel.feedbackOptions?.email != EmailPrompt.hidden) {
       steps++;
     }
-    if (_services.wiredashWidget.feedbackOptions?.labels?.isNotEmpty == true) {
+    if (_services.wiredashModel.feedbackOptions?.labels?.isNotEmpty == true) {
       steps++;
     }
 
@@ -121,15 +121,20 @@ class FeedbackModel extends ChangeNotifier2 {
     // message is always there
     stack.add(FeedbackFlowStatus.message);
 
-    if (labels.isNotEmpty) stack.add(FeedbackFlowStatus.labels);
+    if (labels.where((it) => it.hidden != true).isNotEmpty) {
+      stack.add(FeedbackFlowStatus.labels);
+    }
     final renderer = getRenderer();
-    if (_services.wiredashWidget.feedbackOptions?.screenshotStep != false &&
-        renderer != Renderer.html) {
+    if (_services.wiredashModel.feedbackOptions?.screenshot == null ||
+        _services.wiredashModel.feedbackOptions?.screenshot ==
+                ScreenshotPrompt.optional &&
+            renderer != Renderer.html) {
       // Don't show the screenshot option with html renderer, because it
       // doesn't support rendering to canvas
       stack.add(FeedbackFlowStatus.screenshotsOverview);
     }
-    if (_services.wiredashWidget.feedbackOptions?.askForUserEmail == true) {
+    if (_services.wiredashModel.feedbackOptions?.email ==
+        EmailPrompt.optional) {
       stack.add(FeedbackFlowStatus.email);
     }
     stack.add(FeedbackFlowStatus.submit);
@@ -207,6 +212,9 @@ class FeedbackModel extends ChangeNotifier2 {
   void goToPreviousStep() {
     final index = currentStepIndex;
     if (index == null) {
+      if (!steps.contains(feedbackFlowStatus)) {
+        debugPrint('Warning: $feedbackFlowStatus is not in steps');
+      }
       throw StateError('Unknown step index');
     }
     final prevStepIndex = index - 1;
@@ -280,8 +288,10 @@ class FeedbackModel extends ChangeNotifier2 {
     _deviceInfo = _services.deviceInfoGenerator.generate();
     final metaData = _services.wiredashModel.metaData;
     // Allow devs to collect additional information
-    await _services.wiredashWidget.feedbackOptions?.collectMetaData
-        ?.call(metaData);
+    final collector =
+        _services.wiredashWidget.feedbackOptions?.collectMetaData ??
+            _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
+    await collector?.call(metaData);
     _services.wiredashModel.metaData = metaData;
     _collectedMetadataForScreenshot = true;
     notifyListeners();
@@ -368,9 +378,10 @@ class FeedbackModel extends ChangeNotifier2 {
     CustomizableWiredashMetaData metaData = _services.wiredashModel.metaData;
     if (!_collectedMetadataForScreenshot) {
       // Allow devs to collect additional information
-      final updated = await _services
-          .wiredashWidget.feedbackOptions?.collectMetaData
-          ?.call(metaData);
+      final collector =
+          _services.wiredashWidget.feedbackOptions?.collectMetaData ??
+              _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
+      final updated = await collector?.call(metaData);
       if (updated != null) {
         metaData = updated;
         _services.wiredashModel.metaData = metaData;
@@ -381,7 +392,8 @@ class FeedbackModel extends ChangeNotifier2 {
     return PersistedFeedbackItem(
       appInfo: AppInfo(
         appLocale:
-            _services.wiredashModel.appLocale?.toLanguageTag() ?? 'unknown',
+            _services.wiredashModel.appLocaleFromContext?.toLanguageTag() ??
+                'unknown',
       ),
       attachments: _attachments,
       buildInfo: buildInfo.copyWith(
@@ -393,7 +405,8 @@ class FeedbackModel extends ChangeNotifier2 {
       deviceId: deviceId,
       deviceInfo: _deviceInfo,
       email: () {
-        if (_services.wiredashWidget.feedbackOptions?.askForUserEmail == true &&
+        if (_services.wiredashModel.feedbackOptions?.email ==
+                EmailPrompt.optional &&
             userEmail == null) {
           // user has explicitly deleted their email address
           return null;
@@ -401,7 +414,9 @@ class FeedbackModel extends ChangeNotifier2 {
         return userEmail;
       }(),
       message: _feedbackMessage!,
-      labels: _selectedLabels.map((it) => it.id).toList(),
+      labels: [..._selectedLabels, ...labels.where((it) => it.hidden == true)]
+          .map((it) => it.id)
+          .toList(),
       userId: metaData.userId,
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/wiredash.dart';
@@ -97,8 +98,8 @@ void main() {
         tester,
         feedbackOptions: const WiredashFeedbackOptions(
           labels: [
-            Label(id: 'lbl-1', title: 'One', description: 'First'),
-            Label(id: 'lbl-2', title: 'Two', description: 'Second'),
+            Label(id: 'lbl-1', title: 'One'),
+            Label(id: 'lbl-2', title: 'Two'),
           ],
         ),
       );
@@ -128,7 +129,7 @@ void main() {
       final robot = await WiredashTestRobot.launchApp(
         tester,
         feedbackOptions: const WiredashFeedbackOptions(
-          askForUserEmail: true,
+          email: EmailPrompt.optional,
         ),
       );
 
@@ -153,10 +154,10 @@ void main() {
       final robot = await WiredashTestRobot.launchApp(
         tester,
         feedbackOptions: const WiredashFeedbackOptions(
-          askForUserEmail: true,
+          email: EmailPrompt.optional,
           labels: [
-            Label(id: 'lbl-1', title: 'One', description: 'First'),
-            Label(id: 'lbl-2', title: 'Two', description: 'Second'),
+            Label(id: 'lbl-1', title: 'One'),
+            Label(id: 'lbl-2', title: 'Two'),
           ],
         ),
       );
@@ -195,6 +196,75 @@ void main() {
       await robot.closeWiredash();
       await robot.openWiredash();
       larryPageView.childByType(Step6Submit).existsOnce();
+    });
+
+    testWidgets('Dont show hidden labels but send them regardless',
+        (tester) async {
+      final robot = await WiredashTestRobot.launchApp(
+        tester,
+        feedbackOptions: const WiredashFeedbackOptions(
+          labels: [
+            Label(id: 'lbl-1', title: 'One'),
+            Label(id: 'lbl-2', title: 'Two'),
+            Label(id: 'lbl-3', title: 'Hidden', hidden: true),
+          ],
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('feedback with labels');
+      await robot.goToNextStep();
+
+      // labels
+      expect(find.text('One'), findsOneWidget);
+      expect(find.text('Two'), findsOneWidget);
+      // hidden label is not shown
+      expect(find.text('Hidden'), findsNothing);
+      await robot.selectLabel('Two');
+      await robot.goToNextStep();
+
+      await robot.skipScreenshot();
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      expect(submittedFeedback, isNotNull);
+      // 'lbl-3' is submitted but was not selected by user
+      expect(submittedFeedback!.labels, ['lbl-2', 'lbl-3']);
+      expect(submittedFeedback.message, 'feedback with labels');
+    });
+
+    testWidgets('Hidden labels only skip label step', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(
+        tester,
+        feedbackOptions: const WiredashFeedbackOptions(
+          labels: [
+            Label(id: 'lbl-1', title: 'One', hidden: true),
+            Label(id: 'lbl-2', title: 'Two', hidden: true),
+          ],
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('feedback with labels');
+      await robot.goToNextStep();
+
+      selectByType(Wiredash)
+          .childByType(WiredashBackdrop)
+          .childByType(LarryPageView)
+          .childByType(Step2Labels)
+          .doesNotExist();
+
+      await robot.skipScreenshot();
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      expect(submittedFeedback, isNotNull);
+      expect(submittedFeedback!.labels, ['lbl-1', 'lbl-2']);
+      expect(submittedFeedback.message, 'feedback with labels');
     });
   });
 }

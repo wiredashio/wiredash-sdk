@@ -122,7 +122,7 @@ extension on WidgetTester {
     final robot = await WiredashTestRobot.launchApp(
       this,
       feedbackOptions: const WiredashFeedbackOptions(
-        askForUserEmail: true,
+        email: EmailPrompt.optional,
       ),
     );
 
