@@ -143,8 +143,6 @@ class _HomePage extends StatelessWidget {
         /// method can be accessed from anywhere in the code.
         onPressed: () {
           // When using the Wiredash theme
-          Wiredash.of(context)
-              .setUserProperties(userEmail: 'pascal@wiredash.io');
           Wiredash.of(context).show();
         },
         child: Icon(Icons.feedback_outlined),
