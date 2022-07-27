@@ -232,6 +232,8 @@ class _DeOverrides extends WiredashLocalizationsDe {
 ///
 /// Consider contributing back to wiredash!
 class _WiredashLocalizationsPl extends WiredashLocalizationsEn {
+  _WiredashLocalizationsPl() : super('pl');
+
   @override
   String get feedbackStep1MessageTitle => 'Czołem';
 
