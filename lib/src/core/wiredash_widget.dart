@@ -21,25 +21,12 @@ import 'package:wiredash/wiredash.dart';
 /// Wrap you Application in [Wiredash] and pass in the apps [Navigator]
 ///
 /// ```dart
-/// class MyApp extends StatefulWidget {
-///   @override
-///   _MyAppState createState() => _MyAppState();
-/// }
-///
-/// class _MyAppState extends State<MyApp> {
-///   /// Share the app [Navigator] with Wiredash
-///   final GlobalKey<NavigatorState> _navigatorKey =
-///                                           GlobalKey<NavigatorState>();
-///
 ///   @override
 ///   Widget build(BuildContext context) {
 ///     return Wiredash(
 ///       projectId: "YOUR-PROJECT-ID",
 ///       secret: "YOUR-SECRET",
-///       theme: WiredashThemeData(),
-///       navigatorKey: _navigatorKey,
 ///       child: MaterialApp(
-///         navigatorKey: _navigatorKey,
 ///         title: 'Wiredash Demo',
 ///         home: DemoHomePage(),
 ///       ),
@@ -60,7 +47,7 @@ class Wiredash extends StatefulWidget {
     Key? key,
     required this.projectId,
     required this.secret,
-    @Deprecated('Since 1.0 the navigatorKey is not required anymore')
+    @Deprecated('Since 1.0.0 the navigatorKey is not required anymore')
         this.navigatorKey,
     this.options,
     this.theme,
@@ -70,7 +57,7 @@ class Wiredash extends StatefulWidget {
   }) : super(key: key);
 
   /// Reference to the app [Navigator] to show the Wiredash bottom sheet
-  @Deprecated('Since 1.0 the navigatorKey is not required anymore')
+  @Deprecated('Since 1.0.0 the navigatorKey is not required anymore')
   final GlobalKey<NavigatorState>? navigatorKey;
 
   /// Your Wiredash projectId
@@ -82,6 +69,7 @@ class Wiredash extends StatefulWidget {
   /// Customize Wiredash's behaviour and language
   final WiredashOptionsData? options;
 
+  /// Customize the feedback flow
   final WiredashFeedbackOptions? feedbackOptions;
 
   /// Default visual properties, like colors and fonts for the Wiredash bottom
@@ -91,9 +79,14 @@ class Wiredash extends StatefulWidget {
   ///
   /// ```dart
   /// return Wiredash(
-  ///   theme: WiredashThemeData(brightness: Brightness.dark),
   ///   projectId: "...",
   ///   secret: "...",
+  ///   theme: WiredashThemeData.fromColor(
+  ///     primaryColor: Colors.indigo,
+  ///     brightness: Brightness.dark,
+  ///   ).copyWith(
+  ///     // further customizations
+  ///   ),
   ///   child: MyApp(),
   /// );
   /// ```
