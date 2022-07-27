@@ -23,7 +23,7 @@ class WiredashThemeData {
     Color? secondPenColor,
     Color? thirdPenColor,
     Color? fourthPenColor,
-    String? fontFamily,
+    @Deprecated('Use textTheme instead') String? fontFamily,
     Size? windowSize,
     WiredashTextTheme? textTheme,
   }) {
@@ -46,7 +46,6 @@ class WiredashThemeData {
       secondPenColor: secondPenColor,
       thirdPenColor: thirdPenColor,
       fourthPenColor: fourthPenColor,
-      fontFamily: fontFamily,
       textTheme: textTheme,
     );
   }
@@ -88,7 +87,6 @@ class WiredashThemeData {
     Color? secondPenColor,
     Color? thirdPenColor,
     Color? fourthPenColor,
-    String? fontFamily,
     WiredashTextTheme? textTheme,
     required this.deviceClass,
     required this.windowSize,
