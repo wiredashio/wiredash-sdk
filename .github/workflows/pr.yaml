@@ -20,12 +20,12 @@ jobs:
       - name: Download dependencies
         run: |
           sudo --preserve-env=PATH env flutter packages get
-          cd examples/localization && sudo --preserve-env=PATH env flutter pub get && cd ../..
-          cd examples/theme_editor && sudo --preserve-env=PATH env flutter pub get && cd ../..
-          cd examples/theming && sudo --preserve-env=PATH env flutter pub get && cd ../..
+          cd examples/localization && sudo --preserve-env=PATH env flutter pub get -v && cd ../..
+          cd examples/theme_editor && sudo --preserve-env=PATH env flutter pub get -v && cd ../..
+          cd examples/theming && sudo --preserve-env=PATH env flutter pub get -v && cd ../..
 
       - name: Analyze
-        run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings .
+        run: sudo --preserve-env=PATH env flutter analyze -v --fatal-infos --fatal-warnings .
       - name: Check formatting
         run: sudo --preserve-env=PATH env flutter format --fix --set-exit-if-changed .
 
