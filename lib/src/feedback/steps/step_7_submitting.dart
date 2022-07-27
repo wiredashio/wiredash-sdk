@@ -131,30 +131,22 @@ class _Error extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
-          Theme(
-            data: ThemeData(
-              dividerColor: Colors.transparent,
-              expansionTileTheme: ExpansionTileTheme.of(context).copyWith(
-                iconColor: context.theme.secondaryTextOnBackgroundColor,
-                collapsedIconColor:
-                    context.theme.secondaryTextOnBackgroundColor,
-              ),
+          ExpansionTile(
+            iconColor: context.theme.secondaryTextOnBackgroundColor,
+            collapsedIconColor: context.theme.primaryTextOnBackgroundColor,
+            title: Text(
+              context.l10n.feedbackStep7SubmissionOpenErrorButton,
+              style: context.text.adaptiveBody.onBackground,
             ),
-            child: ExpansionTile(
-              title: Text(
-                context.l10n.feedbackStep7SubmissionOpenErrorButton,
-                style: context.text.adaptiveBody.onBackground,
-              ),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    error.toString(),
-                    style: context.text.adaptiveBody2.onBackground,
-                  ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  error.toString(),
+                  style: context.text.adaptiveBody2.onBackground,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           Align(
