@@ -730,7 +730,7 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
                                 painter: CheckerPainter(),
                               ),
                             ),
-                            Container(color: widget.color),
+                            ColoredBox(color: widget.color),
                           ],
                         ),
                       ),

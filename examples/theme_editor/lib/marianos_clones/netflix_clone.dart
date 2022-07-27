@@ -183,7 +183,7 @@ class _InitScreenState extends State<InitScreen> {
               fit: BoxFit.cover,
             ),
           ),
-          Container(
+          DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [

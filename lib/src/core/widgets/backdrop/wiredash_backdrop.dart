@@ -550,7 +550,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     return [
       Positioned.fromRect(
         rect: _rectContentArea,
-        child: Container(
+        child: DecoratedBox(
           decoration: BoxDecoration(
             border: Border.all(
               width: 4,
@@ -561,7 +561,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       ),
       Positioned.fromRect(
         rect: _rectAppOutOfFocus,
-        child: Container(
+        child: DecoratedBox(
           decoration: BoxDecoration(
             border: Border.all(
               width: 3,
@@ -576,7 +576,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         top: 0,
         // status bar
         bottom: _mediaQueryData.size.height - _mediaQueryData.padding.top,
-        child: Container(
+        child: DecoratedBox(
           decoration: BoxDecoration(
             color: Colors.orange.withOpacity(0.1),
             border: Border.all(
@@ -591,7 +591,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         top: 0,
         // padding top
         height: widget.padding?.top ?? 0,
-        child: Container(
+        child: DecoratedBox(
           decoration: BoxDecoration(
             color: Colors.pink.withOpacity(0.1),
             border: Border.all(
@@ -605,7 +605,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         right: 0,
         // min size
         top: _mediaQueryData.padding.top + context.theme.minContentHeight,
-        child: Container(
+        child: DecoratedBox(
           decoration: BoxDecoration(
             color: Colors.greenAccent.withOpacity(0.1),
             border: Border.all(
@@ -620,7 +620,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         bottom: 0,
         // nav buttons
         top: _mediaQueryData.size.height - _mediaQueryData.padding.bottom,
-        child: Container(
+        child: DecoratedBox(
           decoration: BoxDecoration(
             color: Colors.orange.withOpacity(0.1),
             border: Border.all(
@@ -631,7 +631,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       ),
       Positioned.fromRect(
         rect: _rectAppCentered,
-        child: Container(
+        child: DecoratedBox(
           decoration: BoxDecoration(
             border: Border.all(
               color: Colors.red.withOpacity(0.5),
@@ -645,7 +645,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         // keyboard
         top: _mediaQueryData.size.height - _mediaQueryData.viewInsets.bottom,
         bottom: 0,
-        child: Container(
+        child: DecoratedBox(
           decoration: BoxDecoration(
             color: Colors.orange.withOpacity(0.1),
             border: Border.all(

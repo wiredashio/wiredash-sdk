@@ -758,14 +758,18 @@ class SurfaceSelector {
   }
 
   void _debugCheckNoColor({required String instead}) {
-    assert(() {
-      if (textStyle.color != null && textStyle.color is! InvalidColor) {
-        debugPrint("TextStyle WiredashTextTheme.$debugName defines color "
+    assert(
+      () {
+        if (textStyle.color != null && textStyle.color is! InvalidColor) {
+          debugPrint(
+            "TextStyle WiredashTextTheme.$debugName defines color "
             "but it won't be used (color: ${textStyle.color}). "
-            "Remove it and set $instead instead.");
-      }
-      return true;
-    }());
+            "Remove it and set $instead instead.",
+          );
+        }
+        return true;
+      }(),
+    );
   }
 
   TextStyle get onBackground {
