@@ -13,7 +13,7 @@ A whole new SDK!
 Upgrading from the 1.0.0-beta? Cool features await you!
 
 - [#228](https://github.com/wiredashio/wiredash-sdk/pull/228) Labels can now be `hidden` and will be sent directly to the console
-- [#228](https://github.com/wiredashio/wiredash-sdk/pull/228) `Wiredash.of(context).show()` now accepts `feedbackOptions`. That makes localizing easier. See the [docs](https://docs.wiredash.dev/sdk/localization/#localize-labels) for more information
+- [#228](https://github.com/wiredashio/wiredash-sdk/pull/228) `Wiredash.of(context).show()` now accepts `feedbackOptions`. That makes localizing easier. See the [docs](https://docs.wiredash.io/sdk/localization/#localize-labels) for more information
 - [#229](https://github.com/wiredashio/wiredash-sdk/pull/229) `WiredashThemeData` now supports a `textTheme` parameter that allows setting `fontFamily` (`WiredashThemeData.fontFamily` is now deprecated)
 - [#227](https://github.com/wiredashio/wiredash-sdk/pull/227) Locale `de_DE` does now match `de` localization
 - [#224](https://github.com/wiredashio/wiredash-sdk/pull/224) Wiredash now extend and not override incoming `Localizations` via widget tree
