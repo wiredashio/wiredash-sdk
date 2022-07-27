@@ -18,19 +18,22 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    final feedbackModel = FeedbackModelProvider.of(context, listen: false);
     _controller = TextEditingController(
       // read, not watch, because initState
-      text: WiredashModelProvider.of(context, listen: false).metaData.userEmail,
+      text: feedbackModel.hasEmailBeenEdited
+          ? feedbackModel.userEmail
+          : WiredashModelProvider.of(context, listen: false).metaData.userEmail,
     )..addListener(() {
         final text = _controller.text;
+        print('Update userEmail $text');
         if (context.feedbackModel.userEmail != text) {
           context.feedbackModel.userEmail = text;
         }
       });
     widgetsBindingInstance.addPostFrameCallback((_) {
       if (!mounted) return;
-      FeedbackModelProvider.of(context, listen: false).userEmail =
-          _controller.text;
+      feedbackModel.userEmail = _controller.text;
     });
   }
 
