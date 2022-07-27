@@ -229,7 +229,7 @@ class _ZoomedFadeIn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TweenSequence<double> _scaleIn = TweenSequence<double>(
+    final TweenSequence<double> scaleIn = TweenSequence<double>(
       <TweenSequenceItem<double>>[
         TweenSequenceItem<double>(
           tween: ConstantTween<double>(zoomFactor ?? 1.0),
@@ -245,7 +245,7 @@ class _ZoomedFadeIn extends StatelessWidget {
     return FadeTransition(
       opacity: _fadeInOpacity.animate(animation),
       child: ScaleTransition(
-        scale: _scaleIn.animate(animation),
+        scale: scaleIn.animate(animation),
         child: child,
       ),
     );

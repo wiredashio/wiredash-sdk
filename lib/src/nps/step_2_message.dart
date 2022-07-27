@@ -127,7 +127,7 @@ Widget? _getCounterText(
   final max = maxLength ?? 2048;
   final remaining = max - currentLength;
 
-  Color _getCounterColor() {
+  Color getCounterColor() {
     if (remaining >= 150) {
       return Colors.green.shade400.withOpacity(0.8);
     } else if (remaining >= 50) {
@@ -138,7 +138,6 @@ Widget? _getCounterText(
 
   return Text(
     remaining > 150 ? '' : remaining.toString(),
-    style:
-        context.text.inputError.textStyle.copyWith(color: _getCounterColor()),
+    style: context.text.inputError.textStyle.copyWith(color: getCounterColor()),
   );
 }

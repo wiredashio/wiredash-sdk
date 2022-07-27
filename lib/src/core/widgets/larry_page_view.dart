@@ -130,11 +130,11 @@ class LarryPageViewState extends State<LarryPageView>
           );
 
           final widgetHeight = constraints.maxHeight;
-          final _minItemHeight = widgetHeight;
+          final minItemHeight = widgetHeight;
 
           // constrain content area to a fixed size
           child = SizedBox(
-            height: _minItemHeight,
+            height: minItemHeight,
             child: child,
           );
 

@@ -85,7 +85,7 @@ class _CustomizePageState extends State<CustomizePage> {
         child: Row(
           children: [
             Expanded(
-              child: Container(
+              child: ColoredBox(
                 color: Colors.white,
                 child: ThemeControls(),
               ),
@@ -798,7 +798,7 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
           onTap: () {
             entry.remove();
           },
-          child: Container(
+          child: ColoredBox(
             color: Colors.black12,
             child: Align(
               child: CompositedTransformFollower(

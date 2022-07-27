@@ -81,13 +81,13 @@ class _ScreenCaptureState extends State<ScreenCapture>
         as RenderRepaintBoundary?;
     if (canvas == null) return null;
 
-    final _screenshot = await canvas.toImage(pixelRatio: _screenshotPixelRatio);
+    final screenshot = await canvas.toImage(pixelRatio: _screenshotPixelRatio);
 
-    await precacheScreenshot(_screenshot).catchError((e, stack) {
+    await precacheScreenshot(screenshot).catchError((e, stack) {
       debugPrint(e?.toString());
       debugPrint(stack?.toString());
     });
-    return _screenshot;
+    return screenshot;
   }
 
   Future<void> precacheScreenshot(ui.Image screenshot) async {
@@ -172,7 +172,7 @@ class _ScreenCaptureState extends State<ScreenCapture>
           duration: const Duration(milliseconds: 1000),
           child: () {
             if (widget.controller._error != null) {
-              return Container(
+              return ColoredBox(
                 color: const Color(0xa0000000),
                 child: Padding(
                   padding: EdgeInsets.symmetric(

@@ -9,7 +9,7 @@ import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/metadata/device_info/device_info.dart';
 
 void main() {
-  final _full = PendingFeedbackItem(
+  final full = PendingFeedbackItem(
     id: 'abc123',
     feedbackItem: PersistedFeedbackItem(
       appInfo: AppInfo(
@@ -77,7 +77,7 @@ void main() {
     ),
   );
 
-  const _minimal = PendingFeedbackItem(
+  const minimal = PendingFeedbackItem(
     id: 'abc123',
     feedbackItem: PersistedFeedbackItem(
       appInfo: AppInfo(
@@ -175,7 +175,7 @@ void main() {
             'sdkVersion': 1
           },
         }),
-        _full,
+        full,
       );
     });
 
@@ -209,13 +209,13 @@ void main() {
             }
           },
         }),
-        _minimal,
+        minimal,
       );
     });
 
     test('Full toJson()', () {
       expect(
-        _full.toJson(),
+        full.toJson(),
         {
           'id': 'abc123',
           'version': 2,
@@ -283,7 +283,7 @@ void main() {
     });
 
     test('Minimal toJson()', () {
-      expect(_minimal.toJson(), {
+      expect(minimal.toJson(), {
         'id': 'abc123',
         'version': 2,
         'feedbackItem': {
@@ -314,14 +314,14 @@ void main() {
   });
 
   test('back and forth - minimal', () {
-    final copy = PendingFeedbackItemParserV2.fromJson(_minimal.toJson());
-    expect(copy, _minimal);
-    expect(copy.hashCode, _minimal.hashCode);
+    final copy = PendingFeedbackItemParserV2.fromJson(minimal.toJson());
+    expect(copy, minimal);
+    expect(copy.hashCode, minimal.hashCode);
   });
 
   test('back and forth - full', () {
-    final copy = PendingFeedbackItemParserV2.fromJson(_full.toJson());
-    expect(copy, _full);
-    expect(copy.hashCode, _full.hashCode);
+    final copy = PendingFeedbackItemParserV2.fromJson(full.toJson());
+    expect(copy, full);
+    expect(copy.hashCode, full.hashCode);
   });
 }

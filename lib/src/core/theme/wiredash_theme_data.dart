@@ -201,9 +201,9 @@ class WiredashThemeData {
 
   final WiredashTextTheme? _textTheme;
 
-  _WiredashTextThemeWithDefaults get textTheme {
+  WiredashTextThemeWithDefaults get textTheme {
     final merged = _defaultWiredashTextTheme.merge(_textTheme);
-    return _WiredashTextThemeWithDefaults(this, merged);
+    return WiredashTextThemeWithDefaults(this, merged);
   }
 
   SurfaceBasedTextStyle get text {
@@ -370,7 +370,7 @@ class WiredashThemeData {
           thirdPenColor == other.thirdPenColor &&
           fourthPenColor == other.fourthPenColor &&
           deviceClass == other.deviceClass &&
-          textTheme == other.textTheme &&
+          _textTheme == other._textTheme &&
           windowSize == other.windowSize;
 
   @override
@@ -394,7 +394,7 @@ class WiredashThemeData {
       thirdPenColor.hashCode ^
       fourthPenColor.hashCode ^
       deviceClass.hashCode ^
-      textTheme.hashCode ^
+      _textTheme.hashCode ^
       windowSize.hashCode;
 
   @override
@@ -419,7 +419,7 @@ class WiredashThemeData {
         'thirdPenColor: $thirdPenColor'
         'fourthPenColor: $fourthPenColor'
         'deviceClass: $deviceClass, '
-        'textTheme: $textTheme, '
+        'textTheme: $_textTheme, '
         'windowSize: $windowSize, '
         '}';
   }
@@ -470,7 +470,7 @@ class WiredashThemeData {
       thirdPenColor: thirdPenColor ?? this.thirdPenColor,
       fourthPenColor: fourthPenColor ?? this.fourthPenColor,
       deviceClass: deviceClass ?? this.deviceClass,
-      textTheme: textTheme ?? this.textTheme,
+      textTheme: textTheme ?? _textTheme,
       windowSize: windowSize ?? this.windowSize,
     );
   }
@@ -669,12 +669,12 @@ class WiredashTextTheme {
 }
 
 /// Convenience class for accessing the text styles when we know everything is provided
-class _WiredashTextThemeWithDefaults extends WiredashTextTheme {
+class WiredashTextThemeWithDefaults extends WiredashTextTheme {
   final WiredashThemeData theme;
 
   final WiredashTextTheme textTheme;
 
-  _WiredashTextThemeWithDefaults(this.theme, this.textTheme);
+  WiredashTextThemeWithDefaults(this.theme, this.textTheme);
 
   @override
   TextStyle get headlineMedium => textTheme.headlineMedium!;

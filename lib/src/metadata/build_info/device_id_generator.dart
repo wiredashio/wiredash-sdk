@@ -51,17 +51,17 @@ class DeviceIdGenerator {
     }
 
     // first time generation or fallback in case of sharedPrefs error
-    final _deviceId = const UuidV4Generator().generate();
+    final deviceId = const UuidV4Generator().generate();
     try {
       final prefs =
           await SharedPreferences.getInstance().timeout(_sharedPrefsTimeout);
       await prefs
-          .setString(_prefsDeviceID, _deviceId)
+          .setString(_prefsDeviceID, deviceId)
           .timeout(_sharedPrefsTimeout);
     } catch (e, stack) {
       print(e);
       print(stack);
     }
-    return _deviceId;
+    return deviceId;
   }
 }

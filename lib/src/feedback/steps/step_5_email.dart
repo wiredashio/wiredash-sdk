@@ -26,7 +26,6 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
           : WiredashModelProvider.of(context, listen: false).metaData.userEmail,
     )..addListener(() {
         final text = _controller.text;
-        print('Update userEmail $text');
         if (context.feedbackModel.userEmail != text) {
           context.feedbackModel.userEmail = text;
         }

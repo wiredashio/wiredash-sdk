@@ -56,7 +56,7 @@ class _ScreenshotDecorationPainter extends BoxPainter {
       ..color = _color
       ..style = PaintingStyle.fill;
 
-    final double _cornerRadius = _borderRadius.topLeft.x;
+    final double cornerRadius = _borderRadius.topLeft.x;
 
     // Create one of the corner arcs, it will be redrawn for all 4 corners
     final cornerArc = _createCornerArcPath();
@@ -85,31 +85,31 @@ class _ScreenshotDecorationPainter extends BoxPainter {
 
     // Add the edges
     final topEdge = Rect.fromLTRB(
-      bounds.left + _cornerRadius + _cornerExtensionLength,
+      bounds.left + cornerRadius + _cornerExtensionLength,
       bounds.top - _edgeThickness / 2,
-      bounds.right - _cornerRadius - _cornerExtensionLength,
+      bounds.right - cornerRadius - _cornerExtensionLength,
       bounds.top + _edgeThickness / 2,
     );
 
     final bottomEdge = Rect.fromLTRB(
-      bounds.left + _cornerRadius + _cornerExtensionLength,
+      bounds.left + cornerRadius + _cornerExtensionLength,
       bounds.bottom + _edgeThickness / 2,
-      bounds.right - _cornerRadius - _cornerExtensionLength,
+      bounds.right - cornerRadius - _cornerExtensionLength,
       bounds.bottom - _edgeThickness / 2,
     );
 
     final leftEdge = Rect.fromLTRB(
       bounds.left - _edgeThickness / 2,
-      bounds.top + _cornerRadius + _cornerExtensionLength,
+      bounds.top + cornerRadius + _cornerExtensionLength,
       bounds.left + _edgeThickness / 2,
-      bounds.bottom - _cornerRadius - _cornerExtensionLength,
+      bounds.bottom - cornerRadius - _cornerExtensionLength,
     );
 
     final rightEdge = Rect.fromLTRB(
       bounds.right - _edgeThickness / 2,
-      bounds.top + _cornerRadius + _cornerExtensionLength,
+      bounds.top + cornerRadius + _cornerExtensionLength,
       bounds.right + _edgeThickness / 2,
-      bounds.bottom - _cornerRadius - _cornerExtensionLength,
+      bounds.bottom - cornerRadius - _cornerExtensionLength,
     );
 
     // Add each edge twice to fix intersection issues
@@ -127,39 +127,39 @@ class _ScreenshotDecorationPainter extends BoxPainter {
 
   Path _createCornerArcPath() {
     final halfArcWidth = _borderThickness / 2;
-    final double _cornerRadius = _borderRadius.topLeft.x;
+    final double cornerRadius = _borderRadius.topLeft.x;
 
     final path = Path();
     path.moveTo(
       -halfArcWidth,
-      _cornerRadius + _cornerExtensionLength,
+      cornerRadius + _cornerExtensionLength,
     );
     path.lineTo(
       -halfArcWidth,
-      _cornerRadius,
+      cornerRadius,
     );
     path.arcTo(
       Rect.fromLTWH(
         -halfArcWidth,
         -halfArcWidth,
-        (_cornerRadius + halfArcWidth) * 2,
-        (_cornerRadius + halfArcWidth) * 2,
+        (cornerRadius + halfArcWidth) * 2,
+        (cornerRadius + halfArcWidth) * 2,
       ),
       math.pi,
       math.pi / 2,
       false,
     );
     path.lineTo(
-      _cornerRadius,
+      cornerRadius,
       -halfArcWidth,
     );
     path.lineTo(
-      _cornerRadius + _cornerExtensionLength,
+      cornerRadius + _cornerExtensionLength,
       -halfArcWidth,
     );
     path.arcTo(
       Rect.fromLTWH(
-        _cornerRadius + _cornerExtensionLength - _borderThickness / 2,
+        cornerRadius + _cornerExtensionLength - _borderThickness / 2,
         -halfArcWidth,
         _borderThickness,
         _borderThickness,
@@ -169,19 +169,19 @@ class _ScreenshotDecorationPainter extends BoxPainter {
       false,
     );
     path.lineTo(
-      _cornerRadius + _cornerExtensionLength,
+      cornerRadius + _cornerExtensionLength,
       halfArcWidth,
     );
     path.lineTo(
-      _cornerRadius,
+      cornerRadius,
       halfArcWidth,
     );
     path.arcTo(
       Rect.fromLTWH(
         halfArcWidth,
         halfArcWidth,
-        (_cornerRadius - halfArcWidth) * 2,
-        (_cornerRadius - halfArcWidth) * 2,
+        (cornerRadius - halfArcWidth) * 2,
+        (cornerRadius - halfArcWidth) * 2,
       ),
       math.pi * 1.5,
       -math.pi / 2,
@@ -189,16 +189,16 @@ class _ScreenshotDecorationPainter extends BoxPainter {
     );
     path.lineTo(
       halfArcWidth,
-      _cornerRadius,
+      cornerRadius,
     );
     path.lineTo(
       halfArcWidth,
-      _cornerRadius + _cornerExtensionLength,
+      cornerRadius + _cornerExtensionLength,
     );
     path.arcTo(
       Rect.fromLTWH(
         -_borderThickness / 2,
-        _cornerExtensionLength + _cornerRadius - halfArcWidth,
+        _cornerExtensionLength + cornerRadius - halfArcWidth,
         _borderThickness,
         _borderThickness,
       ),

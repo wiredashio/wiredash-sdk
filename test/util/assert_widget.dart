@@ -25,9 +25,9 @@ class WidgetSelector {
   final WidgetSelector? parent;
 
   Finder get finder {
-    final _parent = parent;
-    if (_parent != null) {
-      return find.descendant(of: _parent.finder, matching: standaloneFinder);
+    final parent = this.parent;
+    if (parent != null) {
+      return find.descendant(of: parent.finder, matching: standaloneFinder);
     }
     return standaloneFinder;
   }
@@ -85,25 +85,25 @@ class WidgetSelector {
 
 extension WidgetSelectorMatcher on WidgetSelector {
   WidgetSelector existsOnce() {
-    final _parent = parent;
-    if (_parent != null) {
-      _parent.existsAtLeastOnce();
+    final parent = this.parent;
+    if (parent != null) {
+      parent.existsAtLeastOnce();
     }
     final elements = finder.evaluate();
     if (elements.isEmpty) {
-      if (_parent == null) {
+      if (parent == null) {
         print('Could not find $this in widget tree');
         debugDumpApp();
         fail('Could not find $this in widget tree');
       } else {
-        final possibleParents = _parent.finder.evaluate();
+        final possibleParents = parent.finder.evaluate();
         print(
-          'Could not find $this as child of ${_parent.toStringBreadcrumb()}',
+          'Could not find $this as child of ${parent.toStringBreadcrumb()}',
         );
         print(
           'There are ${possibleParents.length} possible parents for '
-          '$this matching ${_parent.toStringBreadcrumb()}. But non matched. '
-          'The widget trees starting at ${_parent.finder.description} are:',
+          '$this matching ${parent.toStringBreadcrumb()}. But non matched. '
+          'The widget trees starting at ${parent.finder.description} are:',
         );
         int index = 0;
         for (final possibleParent in possibleParents) {
@@ -112,13 +112,13 @@ extension WidgetSelectorMatcher on WidgetSelector {
           index++;
         }
         fail(
-          'Could not find $this as child of ${_parent.toStringBreadcrumb()}',
+          'Could not find $this as child of ${parent.toStringBreadcrumb()}',
         );
       }
     }
 
     if (elements.length > 1) {
-      if (_parent == null) {
+      if (parent == null) {
         print(
           'Found ${elements.length} elements matching $this in widget tree, '
           'expected only one',
@@ -130,7 +130,7 @@ extension WidgetSelectorMatcher on WidgetSelector {
         );
       } else {
         print(
-          'Found ${elements.length} elements matching $this as child of ${_parent.toStringBreadcrumb()}, '
+          'Found ${elements.length} elements matching $this as child of ${parent.toStringBreadcrumb()}, '
           'exepcting only one',
         );
         int index = 0;
@@ -141,7 +141,7 @@ extension WidgetSelectorMatcher on WidgetSelector {
           index++;
         }
         fail(
-          'Found more than one $this as child of ${_parent.toStringBreadcrumb()}',
+          'Found more than one $this as child of ${parent.toStringBreadcrumb()}',
         );
       }
     }
@@ -152,24 +152,24 @@ extension WidgetSelectorMatcher on WidgetSelector {
   }
 
   WidgetSelector existsAtLeastOnce() {
-    final _parent = parent;
-    if (_parent != null) {
-      _parent.existsAtLeastOnce();
+    final parent = this.parent;
+    if (parent != null) {
+      parent.existsAtLeastOnce();
     }
     final elements = finder.evaluate();
     if (elements.isEmpty) {
-      if (_parent == null) {
+      if (parent == null) {
         print('Could not find $this in widget tree');
         debugDumpApp();
         fail('Could not find $this in widget tree');
       } else {
         print(
-          'Could not find $this as child of ${_parent.toStringBreadcrumb()}',
+          'Could not find $this as child of ${parent.toStringBreadcrumb()}',
         );
-        print('Children of $_parent:');
-        print(_parent.finder.evaluate().first.toStringDeep());
+        print('Children of $parent:');
+        print(parent.finder.evaluate().first.toStringDeep());
         fail(
-          'Could not find $this as child of ${_parent.toStringBreadcrumb()}',
+          'Could not find $this as child of ${parent.toStringBreadcrumb()}',
         );
       }
     }

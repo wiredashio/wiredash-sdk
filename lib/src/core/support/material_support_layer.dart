@@ -116,7 +116,7 @@ Version? _parseFlutterVersion(String versionString) {
 
 /// Dart 2.16.0-80.1.beta matches Flutter 2.9.0-0.1.pre where keyboard actions
 /// are working without the removed DefaultTextEditingShortcuts widget
-late final _removalOfDefaultTextEditingShortcuts =
+final _removalOfDefaultTextEditingShortcuts =
     Version(2, 16, 0, preRelease: ['80', '1', 'beta']);
 
 /// Error when using Flutter below [_removalOfDefaultTextEditingShortcuts]
