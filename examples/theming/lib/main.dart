@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:wiredash/wiredash.dart';
 
 void main() {
@@ -74,13 +73,13 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
         primaryColor: Colors.red,
         // Secondary button color is optional
         // secondaryColor: Colors.purple,
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
       ).copyWith(
         // // Customize the Font Family
         // fontFamily: 'Monospace',
         textTheme: WiredashTextTheme(
-          headlineMedium: GoogleFonts.jetBrainsMono(fontSize: 24),
-          headlineSmall: GoogleFonts.jetBrainsMono(fontSize: 18),
+          headlineMedium: TextStyle(fontSize: 36, fontWeight: FontWeight.w100),
+          headlineSmall: TextStyle(fontSize: 24, fontWeight: FontWeight.w100),
         ),
         // i.e. selected labels, buttons on cards, input border
         primaryContainerColor: Colors.red[800],
@@ -97,8 +96,8 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
         appHandleBackgroundColor: Colors.red[1000],
 
         // The background gradient, top to bottom
-        primaryBackgroundColor: Colors.white,
-        secondaryBackgroundColor: Color(0xFFEDD9F6),
+        primaryBackgroundColor: Colors.black,
+        secondaryBackgroundColor: Colors.black,
 
         errorColor: Colors.orange,
 
