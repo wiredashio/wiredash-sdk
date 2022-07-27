@@ -67,7 +67,7 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
               maxLines: 10,
               maxLength: 2048,
               buildCounter: _getCounterText,
-              style: context.text.adaptiveBody.onBackground,
+              style: context.text.input.onBackground,
               cursorColor: context.theme.primaryColor,
               decoration: InputDecoration(
                 filled: true,
@@ -85,7 +85,7 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
                 hintText: 'It would be great if you could improve...',
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                hintStyle: context.text.adaptiveBody2.onBackground,
+                hintStyle: context.text.input.onBackground,
               ),
             ),
           ),

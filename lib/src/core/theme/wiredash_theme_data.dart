@@ -495,7 +495,7 @@ class WiredashTextTheme {
     this.headlineSmall,
     this.appbarTitle,
     this.title,
-    this.tronButton,
+    this.button,
     this.bodyMedium,
     this.bodySmall,
     this.body2Medium,
@@ -505,17 +505,40 @@ class WiredashTextTheme {
     this.inputError,
   });
 
+  /// Headline on big devices
   final TextStyle? headlineMedium;
+
+  /// Headline on small devices
   final TextStyle? headlineSmall;
+
+  /// Top/bottom bar when taking a screenshot
   final TextStyle? appbarTitle;
+
+  /// Title text, i.e. on success/error screens
   final TextStyle? title;
-  final TextStyle? tronButton;
+
+  /// Text style of buttons
+  final TextStyle? button;
+
+  /// Normal body text on big devices
   final TextStyle? bodyMedium;
+
+  /// Body text on small devices
   final TextStyle? bodySmall;
+
+  /// Secondary body text
   final TextStyle? body2Medium;
+
+  /// Secondary body text on small devices
   final TextStyle? body2Small;
+
+  /// Small text like the step count or "discard feedback"
   final TextStyle? caption;
+
+  /// Style for text inputs
   final TextStyle? input;
+
+  /// Error text style
   final TextStyle? inputError;
 
   WiredashTextTheme copyWith({
@@ -523,7 +546,7 @@ class WiredashTextTheme {
     TextStyle? headlineSmall,
     TextStyle? appbarTitle,
     TextStyle? title,
-    TextStyle? tronButton,
+    TextStyle? button,
     TextStyle? bodyMedium,
     TextStyle? bodySmall,
     TextStyle? body2Medium,
@@ -537,7 +560,7 @@ class WiredashTextTheme {
       headlineSmall: headlineSmall ?? this.headlineSmall,
       appbarTitle: appbarTitle ?? this.appbarTitle,
       title: title ?? this.title,
-      tronButton: tronButton ?? this.tronButton,
+      button: button ?? this.button,
       bodyMedium: bodyMedium ?? this.bodyMedium,
       bodySmall: bodySmall ?? this.bodySmall,
       body2Medium: body2Medium ?? this.body2Medium,
@@ -557,7 +580,7 @@ class WiredashTextTheme {
           headlineSmall == other.headlineSmall &&
           appbarTitle == other.appbarTitle &&
           title == other.title &&
-          tronButton == other.tronButton &&
+          button == other.button &&
           bodyMedium == other.bodyMedium &&
           bodySmall == other.bodySmall &&
           body2Medium == other.body2Medium &&
@@ -572,7 +595,7 @@ class WiredashTextTheme {
         headlineSmall.hashCode ^
         appbarTitle.hashCode ^
         title.hashCode ^
-        tronButton.hashCode ^
+        button.hashCode ^
         bodyMedium.hashCode ^
         bodySmall.hashCode ^
         body2Medium.hashCode ^
@@ -643,7 +666,7 @@ class WiredashTextTheme {
       headlineSmall: mergeTextStyles(headlineSmall, other.headlineSmall),
       appbarTitle: mergeTextStyles(appbarTitle, other.appbarTitle),
       title: mergeTextStyles(title, other.title),
-      tronButton: mergeTextStyles(tronButton, other.tronButton),
+      button: mergeTextStyles(button, other.button),
       bodyMedium: mergeTextStyles(bodyMedium, other.bodyMedium),
       bodySmall: mergeTextStyles(bodySmall, other.bodySmall),
       body2Medium: mergeTextStyles(body2Medium, other.body2Medium),
@@ -676,7 +699,7 @@ class _WiredashTextThemeWithDefaults extends WiredashTextTheme {
   TextStyle get title => textTheme.title!;
 
   @override
-  TextStyle get tronButton => textTheme.tronButton!;
+  TextStyle get button => textTheme.button!;
 
   @override
   TextStyle get bodyMedium => textTheme.bodyMedium!;
@@ -815,8 +838,8 @@ class SurfaceBasedTextStyle {
   late final SurfaceSelector title =
       SurfaceSelector(theme, theme.textTheme.title, 'title');
 
-  late final SurfaceSelector tronButton =
-      SurfaceSelector(theme, theme.textTheme.tronButton, 'tronButton');
+  late final SurfaceSelector button =
+      SurfaceSelector(theme, theme.textTheme.button, 'button');
 
   late final SurfaceSelector bodyMedium =
       SurfaceSelector(theme, theme.textTheme.bodyMedium, 'bodyMedium');
@@ -893,7 +916,7 @@ final _defaultWiredashTextTheme = WiredashTextTheme(
     fontWeight: FontWeight.bold,
     color: InvalidColor(),
   ).copyWithInter(),
-  tronButton: const TextStyle(
+  button: const TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     color: InvalidColor(),

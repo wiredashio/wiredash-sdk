@@ -94,6 +94,9 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                 hintStyle: context.text.input.onSurface.copyWith(
                   color: context.text.input.onSurface.color?.withOpacity(0.6),
                 ),
+                errorStyle: context.text.inputError.textStyle.copyWith(
+                  color: context.theme.errorColor,
+                ),
                 errorMaxLines: 3,
               ),
             ),
