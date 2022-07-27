@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_color_utilities/material_color_utilities.dart';
+import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/theme/color_ext.dart';
 import 'package:wiredash/src/core/theme/key_point_interpolator.dart';
 
@@ -203,9 +204,9 @@ class WiredashThemeData {
 
   final WiredashTextTheme? _textTheme;
 
-  WiredashTextThemeWithDefaults get textTheme {
+  _WiredashTextThemeWithDefaults get textTheme {
     final merged = _defaultWiredashTextTheme.merge(_textTheme);
-    return WiredashTextThemeWithDefaults(this, merged);
+    return _WiredashTextThemeWithDefaults(this, merged);
   }
 
   SurfaceBasedTextStyle get text {
@@ -374,6 +375,7 @@ class WiredashThemeData {
           thirdPenColor == other.thirdPenColor &&
           fourthPenColor == other.fourthPenColor &&
           deviceClass == other.deviceClass &&
+          textTheme == other.textTheme &&
           windowSize == other.windowSize &&
           _fontFamily == other._fontFamily;
 
@@ -398,6 +400,7 @@ class WiredashThemeData {
       thirdPenColor.hashCode ^
       fourthPenColor.hashCode ^
       deviceClass.hashCode ^
+      textTheme.hashCode ^
       windowSize.hashCode ^
       _fontFamily.hashCode;
 
@@ -424,6 +427,7 @@ class WiredashThemeData {
         'fourthPenColor: $fourthPenColor'
         'deviceClass: $deviceClass, '
         'fontFamily: $_fontFamily, '
+        'textTheme: $textTheme, '
         'windowSize: $windowSize, '
         '}';
   }
@@ -487,62 +491,60 @@ class WiredashThemeData {
 /// This textTheme is responsible for size, weight, spacing and font family. Explicitly **NOT** color
 class WiredashTextTheme {
   const WiredashTextTheme({
-    this.headlineMediumTextStyle,
-    this.headlineSmallTextStyle,
+    this.headlineMedium,
+    this.headlineSmall,
     this.appbarTitle,
-    this.titleTextStyle,
-    this.tronButtonTextStyle,
-    this.bodyMediumTextStyle,
-    this.bodySmallTextStyle,
-    this.body2MediumTextStyle,
-    this.body2SmallTextStyle,
-    this.captionTextStyle,
-    this.inputTextStyle,
-    this.inputErrorTextStyle,
+    this.title,
+    this.tronButton,
+    this.bodyMedium,
+    this.bodySmall,
+    this.body2Medium,
+    this.body2Small,
+    this.caption,
+    this.input,
+    this.inputError,
   });
 
-  final TextStyle? headlineMediumTextStyle;
-  final TextStyle? headlineSmallTextStyle;
+  final TextStyle? headlineMedium;
+  final TextStyle? headlineSmall;
   final TextStyle? appbarTitle;
-  final TextStyle? titleTextStyle;
-  final TextStyle? tronButtonTextStyle;
-  final TextStyle? bodyMediumTextStyle;
-  final TextStyle? bodySmallTextStyle;
-  final TextStyle? body2MediumTextStyle;
-  final TextStyle? body2SmallTextStyle;
-  final TextStyle? captionTextStyle;
-  final TextStyle? inputTextStyle;
-  final TextStyle? inputErrorTextStyle;
+  final TextStyle? title;
+  final TextStyle? tronButton;
+  final TextStyle? bodyMedium;
+  final TextStyle? bodySmall;
+  final TextStyle? body2Medium;
+  final TextStyle? body2Small;
+  final TextStyle? caption;
+  final TextStyle? input;
+  final TextStyle? inputError;
 
   WiredashTextTheme copyWith({
-    TextStyle? headlineMediumTextStyle,
-    TextStyle? headlineSmallTextStyle,
+    TextStyle? headlineMedium,
+    TextStyle? headlineSmall,
     TextStyle? appbarTitle,
-    TextStyle? titleTextStyle,
-    TextStyle? tronButtonTextStyle,
-    TextStyle? bodyMediumTextStyle,
-    TextStyle? bodySmallTextStyle,
-    TextStyle? body2MediumTextStyle,
-    TextStyle? body2SmallTextStyle,
-    TextStyle? captionTextStyle,
-    TextStyle? inputTextStyle,
-    TextStyle? inputErrorTextStyle,
+    TextStyle? title,
+    TextStyle? tronButton,
+    TextStyle? bodyMedium,
+    TextStyle? bodySmall,
+    TextStyle? body2Medium,
+    TextStyle? body2Small,
+    TextStyle? caption,
+    TextStyle? input,
+    TextStyle? inputError,
   }) {
     return WiredashTextTheme(
-      headlineMediumTextStyle:
-          headlineMediumTextStyle ?? this.headlineMediumTextStyle,
-      headlineSmallTextStyle:
-          headlineSmallTextStyle ?? this.headlineSmallTextStyle,
+      headlineMedium: headlineMedium ?? this.headlineMedium,
+      headlineSmall: headlineSmall ?? this.headlineSmall,
       appbarTitle: appbarTitle ?? this.appbarTitle,
-      titleTextStyle: titleTextStyle ?? this.titleTextStyle,
-      tronButtonTextStyle: tronButtonTextStyle ?? this.tronButtonTextStyle,
-      bodyMediumTextStyle: bodyMediumTextStyle ?? this.bodyMediumTextStyle,
-      bodySmallTextStyle: bodySmallTextStyle ?? this.bodySmallTextStyle,
-      body2MediumTextStyle: body2MediumTextStyle ?? this.body2MediumTextStyle,
-      body2SmallTextStyle: body2SmallTextStyle ?? this.body2SmallTextStyle,
-      captionTextStyle: captionTextStyle ?? this.captionTextStyle,
-      inputTextStyle: inputTextStyle ?? this.inputTextStyle,
-      inputErrorTextStyle: inputErrorTextStyle ?? this.inputErrorTextStyle,
+      title: title ?? this.title,
+      tronButton: tronButton ?? this.tronButton,
+      bodyMedium: bodyMedium ?? this.bodyMedium,
+      bodySmall: bodySmall ?? this.bodySmall,
+      body2Medium: body2Medium ?? this.body2Medium,
+      body2Small: body2Small ?? this.body2Small,
+      caption: caption ?? this.caption,
+      input: input ?? this.input,
+      inputError: inputError ?? this.inputError,
     );
   }
 
@@ -551,33 +553,33 @@ class WiredashTextTheme {
       identical(this, other) ||
       other is WiredashTextTheme &&
           runtimeType == other.runtimeType &&
-          headlineMediumTextStyle == other.headlineMediumTextStyle &&
-          headlineSmallTextStyle == other.headlineSmallTextStyle &&
+          headlineMedium == other.headlineMedium &&
+          headlineSmall == other.headlineSmall &&
           appbarTitle == other.appbarTitle &&
-          titleTextStyle == other.titleTextStyle &&
-          tronButtonTextStyle == other.tronButtonTextStyle &&
-          bodyMediumTextStyle == other.bodyMediumTextStyle &&
-          bodySmallTextStyle == other.bodySmallTextStyle &&
-          body2MediumTextStyle == other.body2MediumTextStyle &&
-          body2SmallTextStyle == other.body2SmallTextStyle &&
-          captionTextStyle == other.captionTextStyle &&
-          inputTextStyle == other.inputTextStyle &&
-          inputErrorTextStyle == other.inputErrorTextStyle;
+          title == other.title &&
+          tronButton == other.tronButton &&
+          bodyMedium == other.bodyMedium &&
+          bodySmall == other.bodySmall &&
+          body2Medium == other.body2Medium &&
+          body2Small == other.body2Small &&
+          caption == other.caption &&
+          input == other.input &&
+          inputError == other.inputError;
 
   @override
   int get hashCode {
-    return headlineMediumTextStyle.hashCode ^
-        headlineSmallTextStyle.hashCode ^
+    return headlineMedium.hashCode ^
+        headlineSmall.hashCode ^
         appbarTitle.hashCode ^
-        titleTextStyle.hashCode ^
-        tronButtonTextStyle.hashCode ^
-        bodyMediumTextStyle.hashCode ^
-        bodySmallTextStyle.hashCode ^
-        body2MediumTextStyle.hashCode ^
-        body2SmallTextStyle.hashCode ^
-        captionTextStyle.hashCode ^
-        inputTextStyle.hashCode ^
-        inputErrorTextStyle.hashCode;
+        title.hashCode ^
+        tronButton.hashCode ^
+        bodyMedium.hashCode ^
+        bodySmall.hashCode ^
+        body2Medium.hashCode ^
+        body2Small.hashCode ^
+        caption.hashCode ^
+        input.hashCode ^
+        inputError.hashCode;
   }
 
   WiredashTextTheme merge(WiredashTextTheme? other) {
@@ -637,120 +639,88 @@ class WiredashTextTheme {
     }
 
     return copyWith(
-      headlineMediumTextStyle: mergeTextStyles(
-          headlineMediumTextStyle, other.headlineMediumTextStyle),
-      headlineSmallTextStyle:
-          mergeTextStyles(headlineSmallTextStyle, other.headlineSmallTextStyle),
+      headlineMedium: mergeTextStyles(headlineMedium, other.headlineMedium),
+      headlineSmall: mergeTextStyles(headlineSmall, other.headlineSmall),
       appbarTitle: mergeTextStyles(appbarTitle, other.appbarTitle),
-      titleTextStyle: mergeTextStyles(titleTextStyle, other.titleTextStyle),
-      tronButtonTextStyle:
-          mergeTextStyles(tronButtonTextStyle, other.tronButtonTextStyle),
-      bodyMediumTextStyle:
-          mergeTextStyles(bodyMediumTextStyle, other.bodyMediumTextStyle),
-      bodySmallTextStyle:
-          mergeTextStyles(bodySmallTextStyle, other.bodySmallTextStyle),
-      body2MediumTextStyle:
-          mergeTextStyles(body2MediumTextStyle, other.body2MediumTextStyle),
-      body2SmallTextStyle:
-          mergeTextStyles(body2SmallTextStyle, other.body2SmallTextStyle),
-      captionTextStyle:
-          mergeTextStyles(captionTextStyle, other.captionTextStyle),
-      inputTextStyle: mergeTextStyles(inputTextStyle, other.inputTextStyle),
-      inputErrorTextStyle:
-          mergeTextStyles(inputErrorTextStyle, other.inputErrorTextStyle),
-    );
-  }
-
-  WiredashTextTheme apply({Color? color}) {
-    return copyWith(
-      headlineMediumTextStyle: headlineMediumTextStyle?.apply(color: color),
-      headlineSmallTextStyle: headlineSmallTextStyle?.apply(color: color),
-      appbarTitle: appbarTitle?.apply(color: color),
-      titleTextStyle: titleTextStyle?.apply(color: color),
-      tronButtonTextStyle: tronButtonTextStyle?.apply(color: color),
-      bodyMediumTextStyle: bodyMediumTextStyle?.apply(color: color),
-      bodySmallTextStyle: bodySmallTextStyle?.apply(color: color),
-      body2MediumTextStyle: body2MediumTextStyle?.apply(color: color),
-      body2SmallTextStyle: body2SmallTextStyle?.apply(color: color),
-      captionTextStyle: captionTextStyle?.apply(color: color),
-      inputTextStyle: inputTextStyle?.apply(color: color),
-      inputErrorTextStyle: inputErrorTextStyle?.apply(color: color),
+      title: mergeTextStyles(title, other.title),
+      tronButton: mergeTextStyles(tronButton, other.tronButton),
+      bodyMedium: mergeTextStyles(bodyMedium, other.bodyMedium),
+      bodySmall: mergeTextStyles(bodySmall, other.bodySmall),
+      body2Medium: mergeTextStyles(body2Medium, other.body2Medium),
+      body2Small: mergeTextStyles(body2Small, other.body2Small),
+      caption: mergeTextStyles(caption, other.caption),
+      input: mergeTextStyles(input, other.input),
+      inputError: mergeTextStyles(inputError, other.inputError),
     );
   }
 }
 
 /// Convenience class for accessing the text styles when we know everything is provided
-class WiredashTextThemeWithDefaults extends WiredashTextTheme {
+class _WiredashTextThemeWithDefaults extends WiredashTextTheme {
   final WiredashThemeData theme;
 
   final WiredashTextTheme textTheme;
 
-  WiredashTextThemeWithDefaults(this.theme, this.textTheme);
+  _WiredashTextThemeWithDefaults(this.theme, this.textTheme);
 
   @override
-  TextStyle get headlineMediumTextStyle => textTheme.headlineMediumTextStyle!;
+  TextStyle get headlineMedium => textTheme.headlineMedium!;
 
   @override
-  TextStyle get headlineSmallTextStyle => textTheme.headlineSmallTextStyle!;
+  TextStyle get headlineSmall => textTheme.headlineSmall!;
 
   @override
   TextStyle get appbarTitle => textTheme.appbarTitle!;
 
   @override
-  TextStyle get titleTextStyle => textTheme.titleTextStyle!;
+  TextStyle get title => textTheme.title!;
 
   @override
-  TextStyle get tronButtonTextStyle => textTheme.tronButtonTextStyle!;
+  TextStyle get tronButton => textTheme.tronButton!;
 
   @override
-  TextStyle get bodyMediumTextStyle => textTheme.bodyMediumTextStyle!;
+  TextStyle get bodyMedium => textTheme.bodyMedium!;
 
   @override
-  TextStyle get bodySmallTextStyle => textTheme.bodySmallTextStyle!;
+  TextStyle get bodySmall => textTheme.bodySmall!;
 
   @override
-  TextStyle get body2MediumTextStyle => textTheme.body2MediumTextStyle!;
+  TextStyle get body2Medium => textTheme.body2Medium!;
 
   @override
-  TextStyle get body2SmallTextStyle => textTheme.body2SmallTextStyle!;
+  TextStyle get body2Small => textTheme.body2Small!;
 
   @override
-  TextStyle get captionTextStyle => textTheme.captionTextStyle!;
+  TextStyle get caption => textTheme.caption!;
 
   @override
-  TextStyle get inputTextStyle => textTheme.inputTextStyle!;
+  TextStyle get input => textTheme.input!;
 
   @override
-  TextStyle get inputErrorTextStyle => textTheme.inputErrorTextStyle!;
+  TextStyle get inputError => textTheme.inputError!;
 
   TextStyle get adaptiveBodyTextStyle {
     if (theme.windowSize.shortestSide > 480) {
-      return bodyMediumTextStyle;
+      return bodyMedium;
     } else {
-      return bodySmallTextStyle;
+      return bodySmall;
     }
   }
 
   TextStyle get adaptiveBody2TextStyle {
     if (theme.windowSize.shortestSide > 480) {
-      return body2MediumTextStyle;
+      return body2Medium;
     } else {
-      return body2SmallTextStyle;
+      return body2Small;
     }
   }
 
   TextStyle get adaptiveHeadlineTextStyle {
     if (theme.windowSize.shortestSide > 480) {
-      return headlineMediumTextStyle;
+      return headlineMedium;
     } else {
-      return headlineSmallTextStyle;
+      return headlineSmall;
     }
-  }
-
-  @override
-  WiredashTextThemeWithDefaults apply({Color? color}) {
-    final copy = super.apply(color: color);
-    return WiredashTextThemeWithDefaults(theme, copy);
   }
 }
 
@@ -758,8 +728,14 @@ class SurfaceSelector {
   final WiredashThemeData theme;
   final TextStyle textStyle;
   final Color Function(Color)? colorMutation;
+  final String debugName;
 
-  SurfaceSelector(this.theme, this.textStyle, {this.colorMutation});
+  SurfaceSelector(
+    this.theme,
+    this.textStyle,
+    this.debugName, {
+    this.colorMutation,
+  });
 
   Color _mutateColor(Color color) {
     if (colorMutation != null) {
@@ -768,37 +744,54 @@ class SurfaceSelector {
     return color;
   }
 
+  void _debugCheckNoColor({required String instead}) {
+    assert(() {
+      if (textStyle.color != null && textStyle.color is! InvalidColor) {
+        debugPrint("TextStyle WiredashTextTheme.$debugName defines color "
+            "but it won't be used (color: ${textStyle.color}). "
+            "Remove it and set $instead instead.");
+      }
+      return true;
+    }());
+  }
+
   TextStyle get onBackground {
+    _debugCheckNoColor(instead: "primaryTextOnBackgroundColor");
     return textStyle.copyWith(
       color: _mutateColor(theme.primaryTextOnBackgroundColor),
     );
   }
 
   TextStyle get onSurface {
+    _debugCheckNoColor(instead: "primaryTextOnSurfaceColor");
     return textStyle.copyWith(
       color: _mutateColor(theme.primaryTextOnSurfaceColor),
     );
   }
 
   TextStyle get onPrimary {
+    _debugCheckNoColor(instead: "textOnPrimaryColor");
     return textStyle.copyWith(
       color: _mutateColor(theme.textOnPrimaryColor),
     );
   }
 
   TextStyle get onSecondary {
+    _debugCheckNoColor(instead: "textOnSecondaryColor");
     return textStyle.copyWith(
       color: _mutateColor(theme.textOnSecondaryColor),
     );
   }
 
   TextStyle get onPrimaryContainer {
+    _debugCheckNoColor(instead: "textOnPrimaryContainerColor");
     return textStyle.copyWith(
       color: _mutateColor(theme.textOnPrimaryContainerColor),
     );
   }
 
   TextStyle get onSecondaryContainer {
+    _debugCheckNoColor(instead: "textOnSecondaryContainerColor");
     return textStyle.copyWith(
       color: _mutateColor(theme.textOnSecondaryContainerColor),
     );
@@ -811,46 +804,48 @@ class SurfaceBasedTextStyle {
   SurfaceBasedTextStyle(this.theme);
 
   late final SurfaceSelector headlineMedium =
-      SurfaceSelector(theme, theme.textTheme.headlineMediumTextStyle);
+      SurfaceSelector(theme, theme.textTheme.headlineMedium, 'headlineMedium');
 
   late final SurfaceSelector headlineSmall =
-      SurfaceSelector(theme, theme.textTheme.headlineSmallTextStyle);
+      SurfaceSelector(theme, theme.textTheme.headlineSmall, 'headlineSmall');
 
   late final SurfaceSelector appbarTitle =
-      SurfaceSelector(theme, theme.textTheme.appbarTitle);
+      SurfaceSelector(theme, theme.textTheme.appbarTitle, 'appbarTitle');
 
   late final SurfaceSelector title =
-      SurfaceSelector(theme, theme.textTheme.titleTextStyle);
+      SurfaceSelector(theme, theme.textTheme.title, 'title');
 
   late final SurfaceSelector tronButton =
-      SurfaceSelector(theme, theme.textTheme.tronButtonTextStyle);
+      SurfaceSelector(theme, theme.textTheme.tronButton, 'tronButton');
 
   late final SurfaceSelector bodyMedium =
-      SurfaceSelector(theme, theme.textTheme.bodyMediumTextStyle);
+      SurfaceSelector(theme, theme.textTheme.bodyMedium, 'bodyMedium');
 
   late final SurfaceSelector bodySmall =
-      SurfaceSelector(theme, theme.textTheme.bodySmallTextStyle);
+      SurfaceSelector(theme, theme.textTheme.bodySmall, 'bodySmall');
 
   late final SurfaceSelector body2Medium = SurfaceSelector(
     theme,
-    theme.textTheme.body2MediumTextStyle,
-    colorMutation: (color) => color.withOpacity(0.6),
+    theme.textTheme.body2Medium,
+    'body2Medium',
+    colorMutation: (color) => color.withOpacity(0.7),
   );
 
   late final SurfaceSelector body2Small = SurfaceSelector(
     theme,
-    theme.textTheme.body2SmallTextStyle,
-    colorMutation: (color) => color.withOpacity(0.6),
+    theme.textTheme.body2Small,
+    'body2Small',
+    colorMutation: (color) => color.withOpacity(0.7),
   );
 
   late final SurfaceSelector caption =
-      SurfaceSelector(theme, theme.textTheme.captionTextStyle);
+      SurfaceSelector(theme, theme.textTheme.caption, 'caption');
 
   late final SurfaceSelector input =
-      SurfaceSelector(theme, theme.textTheme.inputTextStyle);
+      SurfaceSelector(theme, theme.textTheme.input, 'input');
 
   late final SurfaceSelector inputError =
-      SurfaceSelector(theme, theme.textTheme.inputErrorTextStyle);
+      SurfaceSelector(theme, theme.textTheme.inputError, 'inputError');
 
   SurfaceSelector get adaptiveBody {
     if (theme.windowSize.shortestSide > 480) {
@@ -878,12 +873,12 @@ class SurfaceBasedTextStyle {
 }
 
 final _defaultWiredashTextTheme = WiredashTextTheme(
-  headlineMediumTextStyle: const TextStyle(
+  headlineMedium: const TextStyle(
     fontSize: 32,
     fontWeight: FontWeight.bold,
     color: InvalidColor(),
   ).copyWithInter(),
-  headlineSmallTextStyle: const TextStyle(
+  headlineSmall: const TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.bold,
     color: InvalidColor(),
@@ -893,46 +888,50 @@ final _defaultWiredashTextTheme = WiredashTextTheme(
     fontWeight: FontWeight.bold,
     color: InvalidColor(),
   ).copyWithInter(),
-  titleTextStyle: const TextStyle(
+  title: const TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.bold,
     color: InvalidColor(),
   ).copyWithInter(),
-  tronButtonTextStyle: const TextStyle(
+  tronButton: const TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     color: InvalidColor(),
   ).copyWithInter(),
-  bodyMediumTextStyle: const TextStyle(
+  bodyMedium: const TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.normal,
+    height: 1.5,
     color: InvalidColor(),
   ).copyWithInter(),
-  bodySmallTextStyle: const TextStyle(
+  bodySmall: const TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.normal,
+    height: 1.5,
     color: InvalidColor(),
   ).copyWithInter(),
-  body2MediumTextStyle: const TextStyle(
+  body2Medium: const TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.normal,
+    height: 1.5,
     color: InvalidColor(),
   ).copyWithInter(),
-  body2SmallTextStyle: const TextStyle(
+  body2Small: const TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.normal,
+    height: 1.5,
     color: InvalidColor(),
   ).copyWithInter(),
-  captionTextStyle: const TextStyle(
+  caption: const TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.normal,
     color: InvalidColor(),
   ).copyWithInter(),
-  inputTextStyle: const TextStyle(
+  input: const TextStyle(
     fontSize: 14,
     color: InvalidColor(),
   ).copyWithInter(),
-  inputErrorTextStyle: const TextStyle(
+  inputError: const TextStyle(
     fontSize: 12,
     color: InvalidColor(),
   ).copyWithInter(),

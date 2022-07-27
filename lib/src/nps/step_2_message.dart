@@ -138,6 +138,7 @@ Widget? _getCounterText(
 
   return Text(
     remaining > 150 ? '' : remaining.toString(),
-    style: context.text.input.textStyle.copyWith(color: _getCounterColor()),
+    style:
+        context.text.inputError.textStyle.copyWith(color: _getCounterColor()),
   );
 }

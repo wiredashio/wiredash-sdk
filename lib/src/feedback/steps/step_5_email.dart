@@ -43,6 +43,15 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  bool _isValidEmail(String? data) {
+    final email = data ?? '';
+    if (email.isEmpty) {
+      // leaving this field empty is ok
+      return true;
+    }
+    return const EmailValidator().validate(email);
+  }
+
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
@@ -62,26 +71,22 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
               controller: _controller,
               keyboardType: TextInputType.emailAddress,
               cursorColor: context.theme.primaryColor,
-              style: context.text.adaptiveBody.onBackground,
+              style: context.text.input.onSurface,
               onFieldSubmitted: (_) {
                 if (context.feedbackModel.validateForm()) {
                   context.feedbackModel.goToNextStep();
                 }
               },
               validator: (data) {
-                final email = data ?? '';
-                if (email.isEmpty) {
-                  // leaving this field empty is ok
-                  return null;
+                if (!_isValidEmail(data)) {
+                  return context.l10n.feedbackStep4EmailInvalidEmail;
                 }
-                final valid = const EmailValidator().validate(email);
-                return valid
-                    ? null
-                    : context.l10n.feedbackStep4EmailInvalidEmail;
+                return null;
               },
               decoration: InputDecoration(
                 filled: true,
-                fillColor: context.theme.primaryBackgroundColor,
+                fillColor: context.theme.surfaceColor,
+                hoverColor: Colors.transparent,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: context.theme.secondaryColor),
                 ),
@@ -89,12 +94,12 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                   borderSide: BorderSide(color: context.theme.secondaryColor),
                 ),
                 hintText: context.l10n.feedbackStep4EmailInputHint,
-                hoverColor: context.theme.brightness == Brightness.light
-                    ? context.theme.primaryBackgroundColor.darken(0.015)
-                    : context.theme.primaryBackgroundColor.lighten(0.015),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                hintStyle: context.text.adaptiveBody2.onSurface,
+                hintStyle: context.text.input.onSurface.copyWith(
+                  color: context.text.input.onSurface.color?.withOpacity(0.6),
+                ),
+                errorMaxLines: 3,
               ),
             ),
           ),

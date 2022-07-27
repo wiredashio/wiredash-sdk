@@ -70,7 +70,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
       children: [
         if (widget.title != null)
           DefaultTextStyle(
-            style: context.text.headlineMedium.onBackground,
+            style: context.text.adaptiveHeadline.onBackground,
             child: widget.title!,
           ),
         if (widget.description != null)
