@@ -1892,7 +1892,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     return PreferredSize(
       preferredSize: Size(size.width, widget.isMobile ? 60 : 110),
       child: widget.isMobile
-          ? Container(
+          ? ColoredBox(
               color: WhatsappUtils.appBarMobile,
               child: SafeArea(
                 child: SizedBox(

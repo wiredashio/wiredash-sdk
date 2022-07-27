@@ -69,7 +69,7 @@ class _StrokeWidthSliderState extends State<StrokeWidthSlider> {
 
         return MouseRegion(
           cursor: SystemMouseCursors.click,
-          child: Container(
+          child: ColoredBox(
             color: context.theme.primaryBackgroundColor,
             child: GestureDetector(
               onPanDown: (value) => _capDragPosition(value.localPosition),

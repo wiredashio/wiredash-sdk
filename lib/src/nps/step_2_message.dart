@@ -67,7 +67,7 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
               maxLines: 10,
               maxLength: 2048,
               buildCounter: _getCounterText,
-              style: context.theme.bodyTextStyle,
+              style: context.text.input.onBackground,
               cursorColor: context.theme.primaryColor,
               decoration: InputDecoration(
                 filled: true,
@@ -85,7 +85,7 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
                 hintText: 'It would be great if you could improve...',
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                hintStyle: context.theme.body2TextStyle,
+                hintStyle: context.text.input.onBackground,
               ),
             ),
           ),
@@ -127,7 +127,7 @@ Widget? _getCounterText(
   final max = maxLength ?? 2048;
   final remaining = max - currentLength;
 
-  Color _getCounterColor() {
+  Color getCounterColor() {
     if (remaining >= 150) {
       return Colors.green.shade400.withOpacity(0.8);
     } else if (remaining >= 50) {
@@ -138,8 +138,6 @@ Widget? _getCounterText(
 
   return Text(
     remaining > 150 ? '' : remaining.toString(),
-    style: WiredashTheme.of(context)!
-        .inputErrorTextStyle
-        .copyWith(color: _getCounterColor()),
+    style: context.text.inputError.textStyle.copyWith(color: getCounterColor()),
   );
 }

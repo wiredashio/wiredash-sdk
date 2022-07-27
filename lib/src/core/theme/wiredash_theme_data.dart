@@ -1,7 +1,6 @@
-import 'dart:ui' show Brightness;
-
-import 'package:flutter/rendering.dart';
+import 'package:flutter/material.dart';
 import 'package:material_color_utilities/material_color_utilities.dart';
+import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/theme/color_ext.dart';
 import 'package:wiredash/src/core/theme/key_point_interpolator.dart';
 
@@ -24,8 +23,9 @@ class WiredashThemeData {
     Color? secondPenColor,
     Color? thirdPenColor,
     Color? fourthPenColor,
-    String? fontFamily,
+    @Deprecated('Use textTheme instead') String? fontFamily,
     Size? windowSize,
+    WiredashTextTheme? textTheme,
   }) {
     return WiredashThemeData._(
       primaryColor: primaryColor ?? const Color(0xff1A56DB),
@@ -46,7 +46,7 @@ class WiredashThemeData {
       secondPenColor: secondPenColor,
       thirdPenColor: thirdPenColor,
       fourthPenColor: fourthPenColor,
-      fontFamily: fontFamily,
+      textTheme: textTheme,
     );
   }
 
@@ -87,7 +87,7 @@ class WiredashThemeData {
     Color? secondPenColor,
     Color? thirdPenColor,
     Color? fourthPenColor,
-    String? fontFamily,
+    WiredashTextTheme? textTheme,
     required this.deviceClass,
     required this.windowSize,
   })  : _secondaryColor = secondaryColor,
@@ -106,19 +106,22 @@ class WiredashThemeData {
         _secondPenColor = secondPenColor,
         _thirdPenColor = thirdPenColor,
         _fourthPenColor = fourthPenColor,
-        _fontFamily = fontFamily;
+        _textTheme = textTheme;
 
   final Brightness brightness;
+
   bool get isLight => brightness == Brightness.light;
 
   // --- Primary --- //
   final Color primaryColor;
   MaterialColorTone? __primaryTone;
+
   MaterialColorTone get _primaryTone {
     return __primaryTone ??= MaterialColorTone(primaryColor, brightness);
   }
 
   final Color? _textOnPrimary;
+
   Color get textOnPrimaryColor {
     final tone = isLight ? 100 : 0;
     return _textOnPrimary ?? _primaryTone.primaryTone(tone);
@@ -126,8 +129,10 @@ class WiredashThemeData {
 
   // --- Secondary --- //
   final Color? _secondaryColor;
+
   Color get secondaryColor => _secondaryColor ?? _secondaryTone.baseColor;
   MaterialColorTone? __secondaryTone;
+
   MaterialColorTone get _secondaryTone {
     return __secondaryTone ??= MaterialColorTone(
       _secondaryColor ??
@@ -161,6 +166,7 @@ class WiredashThemeData {
   }
 
   final Color? _textOnSecondary;
+
   Color get textOnSecondaryColor {
     final tone = isLight ? 99 : 1;
     return _textOnSecondary ?? _secondaryTone.primaryTone(tone);
@@ -168,27 +174,45 @@ class WiredashThemeData {
 
   // --- primaryContainer --- //
   final Color? _primaryContainerColor;
+
   Color get primaryContainerColor {
     return _primaryContainerColor ?? _primaryTone.primaryContainer;
   }
 
   final Color? _textOnPrimaryContainerColor;
+
   Color get textOnPrimaryContainerColor {
     return _textOnPrimaryContainerColor ?? _primaryTone.onPrimaryContainer;
   }
 
-  // --- secondadryContainer --- //
+  // --- secondaryContainer --- //
   final Color? _secondaryContainerColor;
+
   Color get secondaryContainerColor =>
       _secondaryContainerColor ?? _secondaryTone.primaryContainer;
 
   final Color? _textOnSecondaryContainerColor;
+
   Color get textOnSecondaryContainerColor {
     return _textOnSecondaryContainerColor ?? _secondaryTone.onPrimaryContainer;
   }
 
+  // --- Text Theme --- //
+
+  final WiredashTextTheme? _textTheme;
+
+  WiredashTextThemeWithDefaults get textTheme {
+    final merged = _defaultWiredashTextTheme.merge(_textTheme);
+    return WiredashTextThemeWithDefaults(this, merged);
+  }
+
+  SurfaceBasedTextStyle get text {
+    return SurfaceBasedTextStyle(this);
+  }
+
   // --- Background --- //
   final Color? _primaryBackgroundColor;
+
   Color get primaryBackgroundColor {
     if (brightness == Brightness.light) {
       return _primaryBackgroundColor ?? _primaryTone.primaryTone(100);
@@ -199,6 +223,7 @@ class WiredashThemeData {
   }
 
   final Color? _secondaryBackgroundColor;
+
   Color get secondaryBackgroundColor {
     if (brightness == Brightness.light) {
       return _secondaryBackgroundColor ?? _primaryTone.primaryTone(98);
@@ -227,6 +252,7 @@ class WiredashThemeData {
   }
 
   final Color? _appBackgroundColor;
+
   Color get appBackgroundColor {
     return _appBackgroundColor ??
         (brightness == Brightness.light
@@ -236,6 +262,7 @@ class WiredashThemeData {
 
   /// The color of the app handle, the "Return to app" bar above the app
   final Color? _appHandleBackgroundColor;
+
   Color get appHandleBackgroundColor {
     return _appHandleBackgroundColor ?? _primaryTone.primaryTone(20);
   }
@@ -254,103 +281,28 @@ class WiredashThemeData {
   }
 
   final Color? _firstPenColor;
+
   Color get firstPenColor => _firstPenColor ?? const Color(0xffff0c67);
 
   final Color? _secondPenColor;
+
   Color get secondPenColor => _secondPenColor ?? const Color(0xff00081e);
 
   final Color? _thirdPenColor;
+
   Color get thirdPenColor => _thirdPenColor ?? const Color(0xff9cdcdc);
 
   final Color? _fourthPenColor;
+
   Color get fourthPenColor => _fourthPenColor ?? const Color(0xffe96115);
 
   // --- Error --- //
   final Color? _errorColor;
+
   Color get errorColor => _errorColor ?? _primaryTone.error;
 
   final DeviceClass deviceClass;
   final Size windowSize;
-
-  final String? _fontFamily;
-  String get fontFamily {
-    return _fontFamily ?? _defaultFontFamily;
-  }
-
-  static const _defaultFontFamily = 'Inter';
-
-  String? get _packageName =>
-      fontFamily == _defaultFontFamily ? 'wiredash' : null;
-
-  TextStyle get headlineTextStyle => TextStyle(
-        package: _packageName,
-        fontFamily: fontFamily,
-        fontSize: windowSize.shortestSide > 480 ? 32 : 24,
-        color: primaryTextOnSurfaceColor,
-        fontWeight: FontWeight.bold,
-      );
-
-  TextStyle get appbarTitle => TextStyle(
-        package: _packageName,
-        fontFamily: fontFamily,
-        fontSize: 16,
-        color: primaryTextOnSurfaceColor,
-        fontWeight: FontWeight.bold,
-      );
-
-  TextStyle get titleTextStyle => TextStyle(
-        package: _packageName,
-        fontFamily: fontFamily,
-        fontSize: 20,
-        color: primaryTextOnSurfaceColor,
-        fontWeight: FontWeight.bold,
-      );
-
-  TextStyle get tronButtonTextStyle => TextStyle(
-        package: _packageName,
-        fontFamily: fontFamily,
-        fontSize: 14,
-        color: primaryTextOnSurfaceColor,
-        fontWeight: FontWeight.w600,
-      );
-
-  TextStyle get bodyTextStyle => TextStyle(
-        package: _packageName,
-        fontFamily: fontFamily,
-        fontSize: windowSize.shortestSide > 480 ? 16 : 14,
-        color: primaryTextOnSurfaceColor,
-        fontWeight: FontWeight.normal,
-      );
-
-  TextStyle get body2TextStyle => TextStyle(
-        package: _packageName,
-        fontFamily: fontFamily,
-        fontSize: windowSize.shortestSide > 480 ? 16 : 14,
-        color: secondaryTextOnSurfaceColor,
-        fontWeight: FontWeight.normal,
-      );
-
-  TextStyle get captionTextStyle => TextStyle(
-        package: _packageName,
-        fontFamily: fontFamily,
-        fontSize: 12,
-        color: secondaryTextOnSurfaceColor,
-        fontWeight: FontWeight.normal,
-      );
-
-  TextStyle get inputTextStyle => TextStyle(
-        package: _packageName,
-        fontFamily: fontFamily,
-        fontSize: 14,
-        color: primaryTextOnSurfaceColor,
-      );
-
-  TextStyle get inputErrorTextStyle => TextStyle(
-        package: _packageName,
-        fontFamily: fontFamily,
-        fontSize: 12,
-        color: errorColor,
-      );
 
   double get horizontalPadding {
     final keypoints = KeyPointInterpolator({
@@ -418,8 +370,8 @@ class WiredashThemeData {
           thirdPenColor == other.thirdPenColor &&
           fourthPenColor == other.fourthPenColor &&
           deviceClass == other.deviceClass &&
-          windowSize == other.windowSize &&
-          fontFamily == other.fontFamily;
+          _textTheme == other._textTheme &&
+          windowSize == other.windowSize;
 
   @override
   int get hashCode =>
@@ -442,8 +394,8 @@ class WiredashThemeData {
       thirdPenColor.hashCode ^
       fourthPenColor.hashCode ^
       deviceClass.hashCode ^
-      windowSize.hashCode ^
-      fontFamily.hashCode;
+      _textTheme.hashCode ^
+      windowSize.hashCode;
 
   @override
   String toString() {
@@ -467,7 +419,7 @@ class WiredashThemeData {
         'thirdPenColor: $thirdPenColor'
         'fourthPenColor: $fourthPenColor'
         'deviceClass: $deviceClass, '
-        'fontFamily: $fontFamily, '
+        'textTheme: $_textTheme, '
         'windowSize: $windowSize, '
         '}';
   }
@@ -490,7 +442,7 @@ class WiredashThemeData {
     Color? thirdPenColor,
     Color? fourthPenColor,
     DeviceClass? deviceClass,
-    String? fontFamily,
+    WiredashTextTheme? textTheme,
     Size? windowSize,
   }) {
     return WiredashThemeData(
@@ -518,10 +470,507 @@ class WiredashThemeData {
       thirdPenColor: thirdPenColor ?? this.thirdPenColor,
       fourthPenColor: fourthPenColor ?? this.fourthPenColor,
       deviceClass: deviceClass ?? this.deviceClass,
-      fontFamily: fontFamily ?? this.fontFamily,
+      textTheme: textTheme ?? _textTheme,
       windowSize: windowSize ?? this.windowSize,
     );
   }
+}
+
+/// Definition of all text styles used in the app
+///
+/// This textTheme is responsible for size, weight, spacing and font family. Explicitly **NOT** color
+class WiredashTextTheme {
+  const WiredashTextTheme({
+    this.headlineMedium,
+    this.headlineSmall,
+    this.appbarTitle,
+    this.title,
+    this.button,
+    this.bodyMedium,
+    this.bodySmall,
+    this.body2Medium,
+    this.body2Small,
+    this.caption,
+    this.input,
+    this.inputError,
+  });
+
+  /// Headline on big devices
+  final TextStyle? headlineMedium;
+
+  /// Headline on small devices
+  final TextStyle? headlineSmall;
+
+  /// Top/bottom bar when taking a screenshot
+  final TextStyle? appbarTitle;
+
+  /// Title text, i.e. on success/error screens
+  final TextStyle? title;
+
+  /// Text style of buttons
+  final TextStyle? button;
+
+  /// Normal body text on big devices
+  final TextStyle? bodyMedium;
+
+  /// Body text on small devices
+  final TextStyle? bodySmall;
+
+  /// Secondary body text
+  final TextStyle? body2Medium;
+
+  /// Secondary body text on small devices
+  final TextStyle? body2Small;
+
+  /// Small text like the step count or "discard feedback"
+  final TextStyle? caption;
+
+  /// Style for text inputs
+  final TextStyle? input;
+
+  /// Error text style
+  final TextStyle? inputError;
+
+  WiredashTextTheme copyWith({
+    TextStyle? headlineMedium,
+    TextStyle? headlineSmall,
+    TextStyle? appbarTitle,
+    TextStyle? title,
+    TextStyle? button,
+    TextStyle? bodyMedium,
+    TextStyle? bodySmall,
+    TextStyle? body2Medium,
+    TextStyle? body2Small,
+    TextStyle? caption,
+    TextStyle? input,
+    TextStyle? inputError,
+  }) {
+    return WiredashTextTheme(
+      headlineMedium: headlineMedium ?? this.headlineMedium,
+      headlineSmall: headlineSmall ?? this.headlineSmall,
+      appbarTitle: appbarTitle ?? this.appbarTitle,
+      title: title ?? this.title,
+      button: button ?? this.button,
+      bodyMedium: bodyMedium ?? this.bodyMedium,
+      bodySmall: bodySmall ?? this.bodySmall,
+      body2Medium: body2Medium ?? this.body2Medium,
+      body2Small: body2Small ?? this.body2Small,
+      caption: caption ?? this.caption,
+      input: input ?? this.input,
+      inputError: inputError ?? this.inputError,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WiredashTextTheme &&
+          runtimeType == other.runtimeType &&
+          headlineMedium == other.headlineMedium &&
+          headlineSmall == other.headlineSmall &&
+          appbarTitle == other.appbarTitle &&
+          title == other.title &&
+          button == other.button &&
+          bodyMedium == other.bodyMedium &&
+          bodySmall == other.bodySmall &&
+          body2Medium == other.body2Medium &&
+          body2Small == other.body2Small &&
+          caption == other.caption &&
+          input == other.input &&
+          inputError == other.inputError;
+
+  @override
+  int get hashCode {
+    return headlineMedium.hashCode ^
+        headlineSmall.hashCode ^
+        appbarTitle.hashCode ^
+        title.hashCode ^
+        button.hashCode ^
+        bodyMedium.hashCode ^
+        bodySmall.hashCode ^
+        body2Medium.hashCode ^
+        body2Small.hashCode ^
+        caption.hashCode ^
+        input.hashCode ^
+        inputError.hashCode;
+  }
+
+  WiredashTextTheme merge(WiredashTextTheme? other) {
+    if (other == null) {
+      return this;
+    }
+
+    TextStyle? mergeTextStyles(TextStyle? base, TextStyle? addition) {
+      final baseFontFamily = base?.fontFamily;
+      final additionFontFamily = addition?.fontFamily;
+
+      final result = base?.merge(addition);
+
+      // Removing package if addition changes the fontFamily
+      // Bugfix for https://github.com/flutter/flutter/issues/108230
+      final basePackage = baseFontFamily?.startsWith('packages/') == true
+          ? baseFontFamily?.split('/').first
+          : null;
+      final additionPackage =
+          additionFontFamily?.startsWith('packages/') == true
+              ? baseFontFamily?.split('/').first
+              : null;
+
+      return TextStyle(
+        color: result?.color,
+        backgroundColor: result?.backgroundColor,
+        fontSize: result?.fontSize,
+        fontWeight: result?.fontWeight,
+        fontStyle: result?.fontStyle,
+        letterSpacing: result?.letterSpacing,
+        wordSpacing: result?.wordSpacing,
+        textBaseline: result?.textBaseline,
+        height: result?.height,
+        leadingDistribution: result?.leadingDistribution,
+        locale: result?.locale,
+        foreground: result?.foreground,
+        background: result?.background,
+        shadows: result?.shadows,
+        fontFeatures: result?.fontFeatures,
+        decoration: result?.decoration,
+        decorationColor: result?.decorationColor,
+        decorationStyle: result?.decorationStyle,
+        decorationThickness: result?.decorationThickness,
+        debugLabel: result?.debugLabel,
+        fontFamilyFallback: result?.fontFamilyFallback,
+
+        // Here starts the custom part of the TextStyle copyWith method
+        fontFamily: additionFontFamily ?? baseFontFamily,
+        package: () {
+          if (additionFontFamily != null || additionPackage != null) {
+            // Set addition.package when addition defines a fontFamily
+            return additionPackage;
+          }
+          return basePackage;
+        }(),
+      );
+    }
+
+    return copyWith(
+      headlineMedium: mergeTextStyles(headlineMedium, other.headlineMedium),
+      headlineSmall: mergeTextStyles(headlineSmall, other.headlineSmall),
+      appbarTitle: mergeTextStyles(appbarTitle, other.appbarTitle),
+      title: mergeTextStyles(title, other.title),
+      button: mergeTextStyles(button, other.button),
+      bodyMedium: mergeTextStyles(bodyMedium, other.bodyMedium),
+      bodySmall: mergeTextStyles(bodySmall, other.bodySmall),
+      body2Medium: mergeTextStyles(body2Medium, other.body2Medium),
+      body2Small: mergeTextStyles(body2Small, other.body2Small),
+      caption: mergeTextStyles(caption, other.caption),
+      input: mergeTextStyles(input, other.input),
+      inputError: mergeTextStyles(inputError, other.inputError),
+    );
+  }
+}
+
+/// Convenience class for accessing the text styles when we know everything is provided
+class WiredashTextThemeWithDefaults extends WiredashTextTheme {
+  final WiredashThemeData theme;
+
+  final WiredashTextTheme textTheme;
+
+  WiredashTextThemeWithDefaults(this.theme, this.textTheme);
+
+  @override
+  TextStyle get headlineMedium => textTheme.headlineMedium!;
+
+  @override
+  TextStyle get headlineSmall => textTheme.headlineSmall!;
+
+  @override
+  TextStyle get appbarTitle => textTheme.appbarTitle!;
+
+  @override
+  TextStyle get title => textTheme.title!;
+
+  @override
+  TextStyle get button => textTheme.button!;
+
+  @override
+  TextStyle get bodyMedium => textTheme.bodyMedium!;
+
+  @override
+  TextStyle get bodySmall => textTheme.bodySmall!;
+
+  @override
+  TextStyle get body2Medium => textTheme.body2Medium!;
+
+  @override
+  TextStyle get body2Small => textTheme.body2Small!;
+
+  @override
+  TextStyle get caption => textTheme.caption!;
+
+  @override
+  TextStyle get input => textTheme.input!;
+
+  @override
+  TextStyle get inputError => textTheme.inputError!;
+
+  TextStyle get adaptiveBodyTextStyle {
+    if (theme.windowSize.shortestSide > 480) {
+      return bodyMedium;
+    } else {
+      return bodySmall;
+    }
+  }
+
+  TextStyle get adaptiveBody2TextStyle {
+    if (theme.windowSize.shortestSide > 480) {
+      return body2Medium;
+    } else {
+      return body2Small;
+    }
+  }
+
+  TextStyle get adaptiveHeadlineTextStyle {
+    if (theme.windowSize.shortestSide > 480) {
+      return headlineMedium;
+    } else {
+      return headlineSmall;
+    }
+  }
+}
+
+class SurfaceSelector {
+  final WiredashThemeData theme;
+  final TextStyle textStyle;
+  final Color Function(Color)? colorMutation;
+  final String debugName;
+
+  SurfaceSelector(
+    this.theme,
+    this.textStyle,
+    this.debugName, {
+    this.colorMutation,
+  });
+
+  Color _mutateColor(Color color) {
+    if (colorMutation != null) {
+      return colorMutation!(color);
+    }
+    return color;
+  }
+
+  void _debugCheckNoColor({required String instead}) {
+    assert(
+      () {
+        if (textStyle.color != null && textStyle.color is! InvalidColor) {
+          debugPrint(
+            "TextStyle WiredashTextTheme.$debugName defines color "
+            "but it won't be used (color: ${textStyle.color}). "
+            "Remove it and set $instead instead.",
+          );
+        }
+        return true;
+      }(),
+    );
+  }
+
+  TextStyle get onBackground {
+    _debugCheckNoColor(instead: "primaryTextOnBackgroundColor");
+    return textStyle.copyWith(
+      color: _mutateColor(theme.primaryTextOnBackgroundColor),
+    );
+  }
+
+  TextStyle get onSurface {
+    _debugCheckNoColor(instead: "primaryTextOnSurfaceColor");
+    return textStyle.copyWith(
+      color: _mutateColor(theme.primaryTextOnSurfaceColor),
+    );
+  }
+
+  TextStyle get onPrimary {
+    _debugCheckNoColor(instead: "textOnPrimaryColor");
+    return textStyle.copyWith(
+      color: _mutateColor(theme.textOnPrimaryColor),
+    );
+  }
+
+  TextStyle get onSecondary {
+    _debugCheckNoColor(instead: "textOnSecondaryColor");
+    return textStyle.copyWith(
+      color: _mutateColor(theme.textOnSecondaryColor),
+    );
+  }
+
+  TextStyle get onPrimaryContainer {
+    _debugCheckNoColor(instead: "textOnPrimaryContainerColor");
+    return textStyle.copyWith(
+      color: _mutateColor(theme.textOnPrimaryContainerColor),
+    );
+  }
+
+  TextStyle get onSecondaryContainer {
+    _debugCheckNoColor(instead: "textOnSecondaryContainerColor");
+    return textStyle.copyWith(
+      color: _mutateColor(theme.textOnSecondaryContainerColor),
+    );
+  }
+}
+
+class SurfaceBasedTextStyle {
+  final WiredashThemeData theme;
+
+  SurfaceBasedTextStyle(this.theme);
+
+  late final SurfaceSelector headlineMedium =
+      SurfaceSelector(theme, theme.textTheme.headlineMedium, 'headlineMedium');
+
+  late final SurfaceSelector headlineSmall =
+      SurfaceSelector(theme, theme.textTheme.headlineSmall, 'headlineSmall');
+
+  late final SurfaceSelector appbarTitle =
+      SurfaceSelector(theme, theme.textTheme.appbarTitle, 'appbarTitle');
+
+  late final SurfaceSelector title =
+      SurfaceSelector(theme, theme.textTheme.title, 'title');
+
+  late final SurfaceSelector button =
+      SurfaceSelector(theme, theme.textTheme.button, 'button');
+
+  late final SurfaceSelector bodyMedium =
+      SurfaceSelector(theme, theme.textTheme.bodyMedium, 'bodyMedium');
+
+  late final SurfaceSelector bodySmall =
+      SurfaceSelector(theme, theme.textTheme.bodySmall, 'bodySmall');
+
+  late final SurfaceSelector body2Medium = SurfaceSelector(
+    theme,
+    theme.textTheme.body2Medium,
+    'body2Medium',
+    colorMutation: (color) => color.withOpacity(0.7),
+  );
+
+  late final SurfaceSelector body2Small = SurfaceSelector(
+    theme,
+    theme.textTheme.body2Small,
+    'body2Small',
+    colorMutation: (color) => color.withOpacity(0.7),
+  );
+
+  late final SurfaceSelector caption =
+      SurfaceSelector(theme, theme.textTheme.caption, 'caption');
+
+  late final SurfaceSelector input =
+      SurfaceSelector(theme, theme.textTheme.input, 'input');
+
+  late final SurfaceSelector inputError =
+      SurfaceSelector(theme, theme.textTheme.inputError, 'inputError');
+
+  SurfaceSelector get adaptiveBody {
+    if (theme.windowSize.shortestSide > 480) {
+      return bodyMedium;
+    } else {
+      return bodySmall;
+    }
+  }
+
+  SurfaceSelector get adaptiveBody2 {
+    if (theme.windowSize.shortestSide > 480) {
+      return body2Medium;
+    } else {
+      return body2Small;
+    }
+  }
+
+  SurfaceSelector get adaptiveHeadline {
+    if (theme.windowSize.shortestSide > 480) {
+      return headlineMedium;
+    } else {
+      return headlineSmall;
+    }
+  }
+}
+
+final _defaultWiredashTextTheme = WiredashTextTheme(
+  headlineMedium: const TextStyle(
+    fontSize: 32,
+    fontWeight: FontWeight.bold,
+    color: InvalidColor(),
+  ).copyWithInter(),
+  headlineSmall: const TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+    color: InvalidColor(),
+  ).copyWithInter(),
+  appbarTitle: const TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+    color: InvalidColor(),
+  ).copyWithInter(),
+  title: const TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+    color: InvalidColor(),
+  ).copyWithInter(),
+  button: const TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: InvalidColor(),
+  ).copyWithInter(),
+  bodyMedium: const TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.normal,
+    height: 1.5,
+    color: InvalidColor(),
+  ).copyWithInter(),
+  bodySmall: const TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.normal,
+    height: 1.5,
+    color: InvalidColor(),
+  ).copyWithInter(),
+  body2Medium: const TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.normal,
+    height: 1.5,
+    color: InvalidColor(),
+  ).copyWithInter(),
+  body2Small: const TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.normal,
+    height: 1.5,
+    color: InvalidColor(),
+  ).copyWithInter(),
+  caption: const TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.normal,
+    color: InvalidColor(),
+  ).copyWithInter(),
+  input: const TextStyle(
+    fontSize: 14,
+    color: InvalidColor(),
+  ).copyWithInter(),
+  inputError: const TextStyle(
+    fontSize: 12,
+    color: InvalidColor(),
+  ).copyWithInter(),
+);
+
+extension on TextStyle {
+  /// Applies the Inter font to the textTheme
+  TextStyle copyWithInter() {
+    return copyWith(
+      package: 'wiredash',
+      fontFamily: 'Inter',
+    );
+  }
+}
+
+/// A color that throws when it is used. The intention is that is will be
+/// overridden and definitely not be used
+class InvalidColor extends Color {
+  const InvalidColor() : super(0);
+
+  @override
+  int get value => throw "No color defined, please set a valid Color";
 }
 
 enum DeviceClass {
@@ -574,40 +1023,64 @@ class MaterialColorTone {
   final Color baseColor;
   final CorePalette palette;
   final Brightness brightness;
+
   bool get _isLight => brightness == Brightness.light;
 
   Color primaryTone(int tone) => Color(palette.primary.get(tone));
+
   Color get primary => primaryTone(_isLight ? 40 : 80);
+
   Color get onPrimary => primaryTone(_isLight ? 100 : 20);
+
   Color get primaryContainer => primaryTone(_isLight ? 90 : 30);
+
   Color get onPrimaryContainer => primaryTone(_isLight ? 10 : 90);
 
   Color secondaryTone(int tone) => Color(palette.secondary.get(tone));
+
   Color get secondary => secondaryTone(_isLight ? 40 : 80);
+
   Color get onSecondary => secondaryTone(_isLight ? 100 : 20);
+
   Color get secondaryContainer => secondaryTone(_isLight ? 90 : 30);
+
   Color get onSecondaryContainer => secondaryTone(_isLight ? 10 : 90);
 
   Color tertiaryTone(int tone) => Color(palette.tertiary.get(tone));
+
   Color get tertiary => tertiaryTone(_isLight ? 40 : 80);
+
   Color get onTertiary => tertiaryTone(_isLight ? 100 : 20);
+
   Color get tertiaryContainer => tertiaryTone(_isLight ? 90 : 30);
+
   Color get onTertiaryContainer => tertiaryTone(_isLight ? 10 : 90);
 
   Color errorTone(int tone) => Color(palette.error.get(tone));
+
   Color get error => errorTone(_isLight ? 40 : 80);
+
   Color get onError => errorTone(_isLight ? 100 : 20);
+
   Color get errorContainer => errorTone(_isLight ? 90 : 30);
+
   Color get onErrorContainer => errorTone(_isLight ? 10 : 90);
 
   Color neutralTone(int tone) => Color(palette.neutral.get(tone));
+
   Color get background => neutralTone(_isLight ? 10 : 90);
+
   Color get onBackground => neutralTone(_isLight ? 10 : 90);
+
   Color get surface => neutralTone(_isLight ? 99 : 10);
+
   Color get onSurface => neutralTone(_isLight ? 10 : 90);
 
   Color neutralVariantTone(int tone) => Color(palette.neutralVariant.get(tone));
+
   Color get surfaceVariant => neutralVariantTone(_isLight ? 90 : 30);
+
   Color get onSurfaceVaraiant => neutralVariantTone(_isLight ? 30 : 80);
+
   Color get outline => neutralVariantTone(_isLight ? 50 : 60);
 }

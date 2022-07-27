@@ -98,7 +98,7 @@ enum ScreenshotPrompt {
   /// Screenshot step is not shown
   hidden,
 
-  /// User is asked to optionally attach screenshots
+  /// User is asked to optionally to attach screenshots
   optional,
 }
 

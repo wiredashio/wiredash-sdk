@@ -64,7 +64,7 @@ class _Submitted extends StatelessWidget {
           Text(
             context.l10n.feedbackStep7SubmissionSuccessMessage,
             textAlign: TextAlign.center,
-            style: context.theme.titleTextStyle,
+            style: context.text.title.onBackground,
           ),
         ],
       ),
@@ -96,7 +96,7 @@ class _Submitting extends StatelessWidget {
           Text(
             context.l10n.feedbackStep7SubmissionInFlightMessage,
             textAlign: TextAlign.center,
-            style: context.theme.titleTextStyle,
+            style: context.text.title.onBackground,
           ),
         ],
       ),
@@ -127,26 +127,26 @@ class _Error extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             context.l10n.feedbackStep7SubmissionErrorMessage,
-            style: context.theme.titleTextStyle,
+            style: context.text.title.onBackground,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
-          Theme(
-            data: ThemeData(
-              dividerColor: Colors.transparent,
+          ExpansionTile(
+            iconColor: context.theme.secondaryTextOnBackgroundColor,
+            collapsedIconColor: context.theme.primaryTextOnBackgroundColor,
+            title: Text(
+              context.l10n.feedbackStep7SubmissionOpenErrorButton,
+              style: context.text.adaptiveBody.onBackground,
             ),
-            child: ExpansionTile(
-              title: Text(
-                context.l10n.feedbackStep7SubmissionOpenErrorButton,
-                style: context.theme.bodyTextStyle,
-              ),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(error.toString()),
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  error.toString(),
+                  style: context.text.adaptiveBody2.onBackground,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           Align(

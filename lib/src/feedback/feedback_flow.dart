@@ -61,16 +61,16 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       onPageChanged: (index) {
         setState(() {
           _index = index;
-          final _stackIndex = feedbackModel.currentStepIndex;
-          if (_stackIndex == null) {
+          final stackIndex = feedbackModel.currentStepIndex;
+          if (stackIndex == null) {
             return;
           }
 
-          if (_stackIndex < _index) {
+          if (stackIndex < _index) {
             feedbackModel.goToNextStep();
           }
 
-          if (_stackIndex > _index) {
+          if (stackIndex > _index) {
             feedbackModel.goToPreviousStep();
           }
         });

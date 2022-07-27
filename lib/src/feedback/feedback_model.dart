@@ -44,6 +44,10 @@ class FeedbackModel extends ChangeNotifier2 {
   String? get userEmail => _userEmail;
   String? _userEmail;
 
+  bool _hasEmailBeenEdited = false;
+
+  bool get hasEmailBeenEdited => _hasEmailBeenEdited;
+
   bool _collectedMetadataForScreenshot = false;
 
   List<Label> get selectedLabels => List.unmodifiable(_selectedLabels);
@@ -179,6 +183,7 @@ class FeedbackModel extends ChangeNotifier2 {
     } else {
       _userEmail = trimmed;
     }
+    _hasEmailBeenEdited = true;
     notifyListeners();
   }
 

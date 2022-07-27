@@ -188,7 +188,7 @@ Widget? _buildBackgroundLayer(
                 child: Center(
                   child: Text(
                     'Include a screenshot for more context',
-                    style: context.theme.appbarTitle,
+                    style: context.text.appbarTitle.onBackground,
                     textAlign: TextAlign.center,
                   ),
                 ),

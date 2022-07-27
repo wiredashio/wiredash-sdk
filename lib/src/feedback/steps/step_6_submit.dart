@@ -91,7 +91,7 @@ class _Step6SubmitState extends State<Step6Submit> {
             const SizedBox(height: 16),
             Text(
               context.l10n.feedbackStep6SubmitSubmitDetailsTitle,
-              style: context.theme.bodyTextStyle.copyWith(
+              style: context.text.adaptiveBody2.onBackground.copyWith(
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.left,

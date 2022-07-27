@@ -25,6 +25,7 @@ extension WiredashTester on WidgetTester {
   }
 
   Future<void> waitUntil(
+    // ignore: avoid_final_parameters
     final dynamic actual,
     Matcher matcher, {
     Duration timeout = const Duration(seconds: 5),

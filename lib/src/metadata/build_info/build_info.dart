@@ -93,7 +93,7 @@ class BuildInfo {
   }
 }
 
-late final buildInfo = BuildInfo(
+final buildInfo = BuildInfo(
   compilationMode: () {
     if (kDebugMode) return CompilationMode.debug;
     if (kProfileMode) return CompilationMode.profile;
