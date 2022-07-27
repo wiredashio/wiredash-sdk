@@ -108,8 +108,7 @@ class WiredashThemeData {
         _secondPenColor = secondPenColor,
         _thirdPenColor = thirdPenColor,
         _fourthPenColor = fourthPenColor,
-        _textTheme = textTheme,
-        _fontFamily = fontFamily;
+        _textTheme = textTheme;
 
   final Brightness brightness;
 
@@ -307,8 +306,6 @@ class WiredashThemeData {
   final DeviceClass deviceClass;
   final Size windowSize;
 
-  final String? _fontFamily;
-
   double get horizontalPadding {
     final keypoints = KeyPointInterpolator({
       320: 8,
@@ -376,8 +373,7 @@ class WiredashThemeData {
           fourthPenColor == other.fourthPenColor &&
           deviceClass == other.deviceClass &&
           textTheme == other.textTheme &&
-          windowSize == other.windowSize &&
-          _fontFamily == other._fontFamily;
+          windowSize == other.windowSize;
 
   @override
   int get hashCode =>
@@ -401,8 +397,7 @@ class WiredashThemeData {
       fourthPenColor.hashCode ^
       deviceClass.hashCode ^
       textTheme.hashCode ^
-      windowSize.hashCode ^
-      _fontFamily.hashCode;
+      windowSize.hashCode;
 
   @override
   String toString() {
@@ -426,7 +421,6 @@ class WiredashThemeData {
         'thirdPenColor: $thirdPenColor'
         'fourthPenColor: $fourthPenColor'
         'deviceClass: $deviceClass, '
-        'fontFamily: $_fontFamily, '
         'textTheme: $textTheme, '
         'windowSize: $windowSize, '
         '}';
@@ -450,7 +444,6 @@ class WiredashThemeData {
     Color? thirdPenColor,
     Color? fourthPenColor,
     DeviceClass? deviceClass,
-    String? fontFamily,
     WiredashTextTheme? textTheme,
     Size? windowSize,
   }) {
@@ -479,7 +472,6 @@ class WiredashThemeData {
       thirdPenColor: thirdPenColor ?? this.thirdPenColor,
       fourthPenColor: fourthPenColor ?? this.fourthPenColor,
       deviceClass: deviceClass ?? this.deviceClass,
-      fontFamily: fontFamily ?? _fontFamily,
       textTheme: textTheme ?? this.textTheme,
       windowSize: windowSize ?? this.windowSize,
     );
