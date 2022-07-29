@@ -56,7 +56,11 @@ class _TronButtonState extends State<TronButton>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: _duration);
+    _controller = AnimationController(
+      vsync: this,
+      duration: _duration,
+      debugLabel: 'TronButton',
+    );
 
     _buttonScaleAnimation = Tween(begin: 1.0, end: 0.9).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),

@@ -73,6 +73,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 500),
+    debugLabel: 'backdropAnimationController',
   );
 
   /// Used for re-positioning the app on the screen

@@ -165,6 +165,7 @@ class _RatingCardState extends State<_RatingCard>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),
+      debugLabel: 'RatingCard',
     )..addListener(() {
         setState(() {});
       });

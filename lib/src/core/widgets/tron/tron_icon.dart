@@ -32,6 +32,7 @@ class _TronIconState extends State<TronIcon>
       vsync: this,
       duration: widget.duration * 0.5,
       reverseDuration: widget.duration,
+      debugLabel: 'TronIcon',
     );
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {

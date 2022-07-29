@@ -183,16 +183,31 @@ class _AnimatedClickTargetState extends State<AnimatedClickTarget>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _focusedController =
-        AnimationController(vsync: this, duration: widget.duration);
-    _pressedController =
-        AnimationController(vsync: this, duration: widget.duration);
-    _hoveredController =
-        AnimationController(vsync: this, duration: widget.duration);
-    _enabledController =
-        AnimationController(vsync: this, duration: widget.duration);
-    _selectedController =
-        AnimationController(vsync: this, duration: widget.duration);
+    _focusedController = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      debugLabel: 'AnimatedClickTarget._focusedController',
+    );
+    _pressedController = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      debugLabel: 'AnimatedClickTarget._pressedController',
+    );
+    _hoveredController = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      debugLabel: 'AnimatedClickTarget._hoveredController',
+    );
+    _enabledController = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      debugLabel: 'AnimatedClickTarget._enabledController',
+    );
+    _selectedController = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      debugLabel: 'AnimatedClickTarget._selectedController',
+    );
   }
 
   @override
