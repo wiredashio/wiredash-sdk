@@ -334,13 +334,15 @@ class _PageTransitionSwitcherState extends State<PageTransitionSwitcher>
       return;
     }
     final AnimationController primaryController = AnimationController(
-        duration: widget.duration,
-        vsync: this,
-        debugLabel: 'PageTransitionSwitcher.primaryController');
+      duration: widget.duration,
+      vsync: this,
+      debugLabel: 'PageTransitionSwitcher.primaryController',
+    );
     final AnimationController secondaryController = AnimationController(
-        duration: widget.duration,
-        vsync: this,
-        debugLabel: 'PageTransitionSwitcher.secondaryController');
+      duration: widget.duration,
+      vsync: this,
+      debugLabel: 'PageTransitionSwitcher.secondaryController',
+    );
     if (shouldAnimate) {
       if (widget.reverse) {
         primaryController.value = 1.0;
