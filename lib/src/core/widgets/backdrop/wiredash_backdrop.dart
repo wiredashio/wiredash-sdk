@@ -80,7 +80,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   Animation<Rect?>? _appTransformAnimation;
 
   /// Used for animating the corner radius of the app
-  late Animation<BorderRadius?> _cornerRadiusAnimation;
+  Animation<BorderRadius?> _cornerRadiusAnimation =
+      AlwaysStoppedAnimation(_appBorderRadiusClosed);
 
   /// How much the app handle is visible
   late Animation<double> _appHandleAnimation;
@@ -166,8 +167,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     }
   }
 
-  final BorderRadius _appBorderRadiusClosed = BorderRadius.zero;
-  final BorderRadius _appBorderRadiusOpen = BorderRadius.circular(20);
+  static const BorderRadius _appBorderRadiusClosed = BorderRadius.zero;
+  static const BorderRadius _appBorderRadiusOpen =
+      BorderRadius.all(Radius.circular(20));
 
   @override
   void didChangeDependencies() {
@@ -226,7 +228,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       if (_backdropStatus == WiredashBackdropStatus.closed) {
         _appHandleAnimation = const AlwaysStoppedAnimation(0.0);
       }
-      _cornerRadiusAnimation = AlwaysStoppedAnimation(_appBorderRadiusOpen);
       _backdropAnimationController.forward(
         from: animateSizeChange == true ? 0 : 1,
       );
@@ -985,9 +986,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             RectTween(begin: oldRectAppFillsScreen, end: _rectAppOutOfFocus)
                 .animate(_driverAnimation);
         _cornerRadiusAnimation = BorderRadiusTween(
-          begin: _appBorderRadiusClosed,
+          begin: _cornerRadiusAnimation.value,
           end: _appBorderRadiusOpen,
-        ).animate(_driverAnimation);
+        ).animate(
+          CurvedAnimation(
+            parent: _driverAnimation,
+            curve: const Interval(0.3, 0.7),
+          ),
+        );
         _appHandleAnimation = Tween(begin: 0.0, end: 1.0).animate(
           CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
         );
@@ -999,9 +1005,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 .animate(_driverAnimation);
         _backdropAnimationController.value = 0.0;
         _cornerRadiusAnimation = BorderRadiusTween(
-          begin: _appBorderRadiusOpen,
+          begin: _cornerRadiusAnimation.value,
           end: _appBorderRadiusClosed,
-        ).animate(_driverAnimation);
+        ).animate(
+          CurvedAnimation(
+            parent: _driverAnimation,
+            curve: const Interval(0.3, 0.7),
+          ),
+        );
         _appHandleAnimation = Tween(begin: 1.0, end: 0.0).animate(
           CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
         );
@@ -1056,6 +1067,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _backdropStatus = WiredashBackdropStatus.closed;
       });
     }
+    _swapAnimation();
   }
 
   void _markAsDirty() {
