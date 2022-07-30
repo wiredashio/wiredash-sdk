@@ -150,6 +150,30 @@ void main() {
       expect(submittedFeedback.attachments, hasLength(0));
     });
 
+    testWidgets('Default steps are message, screenshot, email', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(
+        tester,
+        // empty feedback options
+        feedbackOptions: const WiredashFeedbackOptions(),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.skipScreenshot();
+      await robot.enterEmail('dash@flutter.io');
+      await robot.goToNextStep();
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      expect(submittedFeedback, isNotNull);
+      expect(submittedFeedback!.message, 'test message');
+      expect(submittedFeedback.email, 'dash@flutter.io');
+      expect(submittedFeedback.attachments, hasLength(0));
+    });
+
     testWidgets('Send feedback with everything', (tester) async {
       final robot = await WiredashTestRobot.launchApp(
         tester,
