@@ -201,9 +201,12 @@ class WiredashThemeData {
 
   final WiredashTextTheme? _textTheme;
 
+  /// Caching is possible because [_defaultWiredashTextTheme] and [_textTheme] are immutable
+  WiredashTextTheme? _mergedTextTheme;
+
   WiredashTextThemeWithDefaults get textTheme {
-    final merged = _defaultWiredashTextTheme.merge(_textTheme);
-    return WiredashTextThemeWithDefaults(this, merged);
+    _mergedTextTheme ??= _defaultWiredashTextTheme.merge(_textTheme);
+    return WiredashTextThemeWithDefaults(this, _mergedTextTheme!);
   }
 
   SurfaceBasedTextStyle get text {
@@ -889,7 +892,7 @@ class SurfaceBasedTextStyle {
   }
 }
 
-final _defaultWiredashTextTheme = WiredashTextTheme(
+final WiredashTextTheme _defaultWiredashTextTheme = WiredashTextTheme(
   headlineMedium: const TextStyle(
     fontSize: 32,
     fontWeight: FontWeight.bold,
