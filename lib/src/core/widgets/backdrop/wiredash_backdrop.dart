@@ -128,13 +128,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     });
     _backdropAnimationController
         .addStatusListener(_animControllerStatusListener);
-    _backdropAnimationController.addListener(_markAsDirty);
     _pullAppYController = AnimationController(
       vsync: this,
       lowerBound: double.negativeInfinity,
       upperBound: double.infinity,
       value: 0,
-    )..addListener(_markAsDirty);
+    );
 
     widget.controller.addListener(_markAsDirty);
     _animCurves();
@@ -683,7 +682,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       animation: _backdropAnimationController,
       builder: (context, child) {
         // rounds _handleHeight up to exactly match
-        final double scaledAndUpRoundedHandleHeight = () {
+        double scaledAndUpRoundedHandleHeight() {
           final appScale =
               _appTransformAnimation!.value!.width / _rectAppFillsScreen.width;
           final scaledHandleHeight = _handleHeight * appScale;
@@ -692,12 +691,12 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           final standardRoundedHandleHeight =
               scaledHandleHeight.ceil().toDouble() * reverseScale;
           return standardRoundedHandleHeight.ceil().toDouble();
-        }();
+        }
 
         final withDesktopHandle = _mediaQueryData.viewPadding.top == 0;
 
         final fakeAppStatusBar = FakeAppStatusBar(
-          height: _appHandleAnimation.value * scaledAndUpRoundedHandleHeight,
+          height: _appHandleAnimation.value * scaledAndUpRoundedHandleHeight(),
           color: context.theme.appHandleBackgroundColor,
         );
 
@@ -775,7 +774,8 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   /// Animates the app from fullscreen to inline in the list
   Widget _buildAppPositioningAnimation({required Widget child}) {
     return AnimatedBuilder(
-      animation: _backdropAnimationController,
+      animation:
+          Listenable.merge([_backdropAnimationController, _pullAppYController]),
       builder: (context, app) {
         final outOfFocusPosition = _rectAppOutOfFocus.top;
 
@@ -862,12 +862,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         final appScale =
             _appTransformAnimation!.value!.width / _rectAppFillsScreen.width;
 
+        // center in padding
+        final horizontalOffset =
+            ((widget.padding?.left ?? 0) - (widget.padding?.right ?? 0)) / 2;
+
         // ignore: join_return_with_assignment
         app = Transform.translate(
-          offset: Offset(
-            ((widget.padding?.left ?? 0) - (widget.padding?.right ?? 0)) / 2,
-            yTranslation,
-          ),
+          offset: Offset(horizontalOffset, yTranslation),
           child: Transform.scale(
             scale: appScale,
             alignment: Alignment.topCenter,
