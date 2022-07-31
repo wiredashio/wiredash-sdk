@@ -82,11 +82,13 @@ class MethodInvocationCatcher {
 
 class MockedReturnValue<T> {
   MockedReturnValue(this.value);
+
   final T value;
 }
 
 class AsyncMockedReturnValue<T> {
   AsyncMockedReturnValue(this.future);
+
   final Future<T> future;
 }
 

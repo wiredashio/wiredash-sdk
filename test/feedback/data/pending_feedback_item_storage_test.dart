@@ -338,6 +338,7 @@ class InMemorySharedPreferences extends Fake implements SharedPreferences {
 
   final MethodInvocationCatcher setStringListInvocations =
       MethodInvocationCatcher('setStringList');
+
   @override
   Future<bool> setStringList(String key, List<String> value) async {
     final mockedReturnValue =
@@ -364,6 +365,7 @@ class InMemorySharedPreferences extends Fake implements SharedPreferences {
 
   final MethodInvocationCatcher setIntInvocations =
       MethodInvocationCatcher('setInt');
+
   @override
   Future<bool> setInt(String key, int value) async {
     final mockedReturnValue =
@@ -377,6 +379,7 @@ class InMemorySharedPreferences extends Fake implements SharedPreferences {
 
   final MethodInvocationCatcher getIntInvocations =
       MethodInvocationCatcher('getInt');
+
   @override
   int? getInt(String key) {
     final mockedReturnValue =
@@ -389,6 +392,7 @@ class InMemorySharedPreferences extends Fake implements SharedPreferences {
 
   final MethodInvocationCatcher setStringInvocations =
       MethodInvocationCatcher('setString');
+
   @override
   Future<bool> setString(String key, String value) async {
     final mockedReturnValue =
@@ -402,6 +406,7 @@ class InMemorySharedPreferences extends Fake implements SharedPreferences {
 
   final MethodInvocationCatcher getStringInvocations =
       MethodInvocationCatcher('getString');
+
   @override
   String? getString(String key) {
     final mockedReturnValue = getStringInvocations.addMethodCall(args: [key]);

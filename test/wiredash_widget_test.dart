@@ -277,6 +277,7 @@ class _FakeAppState extends State<_FakeApp> {
 
 class _AppLocalizations {
   final Locale locale;
+
   const _AppLocalizations({required this.locale});
 
   String get customAppString => 'custom app string';
