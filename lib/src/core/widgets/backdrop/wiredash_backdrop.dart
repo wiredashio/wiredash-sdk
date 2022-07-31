@@ -311,10 +311,40 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         ),
       ),
       content: content,
-      foreground: widget.foregroundLayerBuilder
-          ?.call(context, _appTransformAnimation!.value!, _mediaQueryData),
-      background: widget.backgroundLayerBuilder
-          ?.call(context, _appTransformAnimation!.value!, _mediaQueryData),
+      foreground: () {
+        final builder = widget.foregroundLayerBuilder;
+        if (builder == null) {
+          return null;
+        }
+        return AnimatedBuilder(
+          animation: _appTransformAnimation!,
+          builder: (context, child) {
+            final widget = builder(
+              context,
+              _appTransformAnimation!.value!,
+              _mediaQueryData,
+            );
+            return widget ?? const SizedBox();
+          },
+        );
+      }(),
+      background: () {
+        final builder = widget.backgroundLayerBuilder;
+        if (builder == null) {
+          return null;
+        }
+        return AnimatedBuilder(
+          animation: _appTransformAnimation!,
+          builder: (context, child) {
+            final widget = builder(
+              context,
+              _appTransformAnimation!.value!,
+              _mediaQueryData,
+            );
+            return widget ?? const SizedBox();
+          },
+        );
+      }(),
     );
 
     return GestureDetector(
