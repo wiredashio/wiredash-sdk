@@ -27,7 +27,14 @@ void main() {
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
       await robot.skipScreenshot();
+      await robot.skipEmail();
       selectByType(LarryPageView).childByType(Step6Submit).existsOnce();
+
+      await robot.pressAndroidBackButton();
+      selectByType(WiredashBackdrop)
+          .childByType(LarryPageView)
+          .childByType(Step5Email)
+          .existsOnce();
 
       await robot.pressAndroidBackButton();
       selectByType(WiredashBackdrop)

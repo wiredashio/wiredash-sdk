@@ -48,23 +48,6 @@ void main() {
         findsOneWidget,
       );
     });
-
-    testWidgets('Do not ask for email', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
-
-      await robot.openWiredash();
-      await robot.enterFeedbackMessage('test message');
-      await robot.goToNextStep();
-      await robot.skipScreenshot();
-      expect(
-        robot.services.feedbackModel.feedbackFlowStatus,
-        isNot(FeedbackFlowStatus.email),
-      );
-      expect(
-        robot.services.feedbackModel.feedbackFlowStatus,
-        FeedbackFlowStatus.submit,
-      );
-    });
   });
 
   group('email input', () {

@@ -92,7 +92,8 @@ class FeedbackModel extends ChangeNotifier2 {
     // screenshot
     var steps = 2;
 
-    if (_services.wiredashModel.feedbackOptions?.email != EmailPrompt.hidden) {
+    final emailPrompt = _services.wiredashModel.feedbackOptions?.email;
+    if (emailPrompt == null || emailPrompt == EmailPrompt.optional) {
       steps++;
     }
     if (_services.wiredashModel.feedbackOptions?.labels?.isNotEmpty == true) {
@@ -137,8 +138,8 @@ class FeedbackModel extends ChangeNotifier2 {
       // doesn't support rendering to canvas
       stack.add(FeedbackFlowStatus.screenshotsOverview);
     }
-    if (_services.wiredashModel.feedbackOptions?.email ==
-        EmailPrompt.optional) {
+    final emailPrompt = _services.wiredashModel.feedbackOptions?.email;
+    if (emailPrompt == null || emailPrompt == EmailPrompt.optional) {
       stack.add(FeedbackFlowStatus.email);
     }
     stack.add(FeedbackFlowStatus.submit);

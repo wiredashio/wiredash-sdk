@@ -200,6 +200,7 @@ class WiredashTestRobot {
     final step = _pageView.childByType(Step5Email).existsOnce();
     await tester.tap(step.text('l10n.feedbackNextButton').finder);
     await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Skipped email, next $newStatus');

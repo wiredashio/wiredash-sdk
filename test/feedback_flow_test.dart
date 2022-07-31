@@ -9,6 +9,7 @@ import 'util/assert_widget.dart';
 import 'util/robot.dart';
 
 void main() {
+  autoUpdateGoldenFiles = true;
   group('Wiredash', () {
     setUp(() {
       SharedPreferences.setMockInitialValues({});
@@ -21,6 +22,7 @@ void main() {
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
       await robot.skipScreenshot();
+      await robot.skipEmail();
       await robot.submitFeedback();
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
@@ -59,6 +61,7 @@ void main() {
       await robot.takeScreenshot();
       await robot.confirmDrawing();
       await robot.goToNextStep();
+      await robot.skipEmail();
       await robot.submitFeedback();
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
@@ -83,6 +86,7 @@ void main() {
       await robot.confirmDrawing();
       expect(find.byType(AttachmentPreview), findsNWidgets(2));
       await robot.goToNextStep();
+      await robot.skipEmail();
       await robot.submitFeedback();
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
@@ -115,6 +119,7 @@ void main() {
       await robot.goToNextStep();
 
       await robot.skipScreenshot();
+      await robot.skipEmail();
       await robot.submitFeedback();
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
@@ -148,6 +153,52 @@ void main() {
       expect(submittedFeedback!.message, 'test message');
       expect(submittedFeedback.email, 'dash@flutter.io');
       expect(submittedFeedback.attachments, hasLength(0));
+    });
+
+    testWidgets('Default steps are message, screenshot, email', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(
+        tester,
+        // empty feedback options
+        feedbackOptions: const WiredashFeedbackOptions(),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.skipScreenshot();
+      await robot.enterEmail('dash@flutter.io');
+      await robot.goToNextStep();
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      expect(submittedFeedback, isNotNull);
+      expect(submittedFeedback!.message, 'test message');
+      expect(submittedFeedback.email, 'dash@flutter.io');
+      expect(submittedFeedback.attachments, hasLength(0));
+    });
+
+    testWidgets('Do not ask for email', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(
+        tester,
+        feedbackOptions: const WiredashFeedbackOptions(
+          email: EmailPrompt.hidden,
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.skipScreenshot();
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        isNot(FeedbackFlowStatus.email),
+      );
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.submit,
+      );
     });
 
     testWidgets('Send feedback with everything', (tester) async {
@@ -191,6 +242,7 @@ void main() {
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
       await robot.skipScreenshot();
+      await robot.skipEmail();
       larryPageView.childByType(Step6Submit).existsOnce();
 
       await robot.closeWiredash();
@@ -224,6 +276,7 @@ void main() {
       await robot.goToNextStep();
 
       await robot.skipScreenshot();
+      await robot.skipEmail();
       await robot.submitFeedback();
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
@@ -257,6 +310,7 @@ void main() {
           .doesNotExist();
 
       await robot.skipScreenshot();
+      await robot.skipEmail();
       await robot.submitFeedback();
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
