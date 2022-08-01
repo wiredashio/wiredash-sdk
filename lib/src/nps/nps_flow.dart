@@ -6,6 +6,7 @@ import 'package:wiredash/src/core/support/material_support_layer.dart';
 import 'package:wiredash/src/nps/nps_model_provider.dart';
 import 'package:wiredash/src/nps/step_1_nps_rating.dart';
 import 'package:wiredash/src/nps/step_2_message.dart';
+import 'package:wiredash/src/nps/step_3_thanks.dart';
 
 class NpsFlow extends StatefulWidget {
   const NpsFlow({Key? key}) : super(key: key);
@@ -15,37 +16,39 @@ class NpsFlow extends StatefulWidget {
 }
 
 class _NpsFlowState extends State<NpsFlow> {
-  int _index = 0;
-
   final GlobalKey<LarryPageViewState> _lpvKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
+    final npsModel = context.npsModel;
     final lpv = LarryPageView(
       key: _lpvKey,
-      stepCount: context.npsModel.score == null ? 1 : 2,
-      pageIndex: _index,
+      stepCount: () {
+        if (npsModel.score == null) {
+          return 1;
+        }
+        if (npsModel.submitting) {
+          return 1;
+        }
+        return 2;
+      }(),
+      pageIndex: npsModel.index,
       onPageChanged: (index) {
         setState(() {
-          _index = index;
+          npsModel.index = index;
         });
       },
       builder: (context) {
-        if (_index == 0) {
-          return NpsStep1(
-            onNext: () {
-              _lpvKey.currentState!.moveToNextPage();
-            },
-          );
-        } else {
-          return NpsStep2Message(
-            onSubmit: () {
-              // TODO submit
-            },
-            onBack: () {
-              _lpvKey.currentState!.moveToPreviousPage();
-            },
-          );
+        if (npsModel.submitting) {
+          return const NpsStep3Thanks();
+        }
+        switch (npsModel.index) {
+          case 0:
+            return const NpsStep1();
+          case 1:
+            return const NpsStep2Message();
+          default:
+            throw "Unexpected index: ${npsModel.index}";
         }
       },
     );

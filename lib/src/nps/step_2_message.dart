@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/nps/nps_model.dart';
 import 'package:wiredash/src/nps/nps_model_provider.dart';
@@ -6,12 +7,7 @@ import 'package:wiredash/src/nps/nps_model_provider.dart';
 class NpsStep2Message extends StatefulWidget {
   const NpsStep2Message({
     Key? key,
-    required this.onSubmit,
-    required this.onBack,
   }) : super(key: key);
-
-  final void Function() onSubmit;
-  final void Function() onBack;
 
   @override
   State<NpsStep2Message> createState() => _NpsStep2MessageState();
@@ -49,9 +45,10 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
         completed: false,
       ),
       // title: const Text('What is the most important reason for your score?'),
-      title: const Text('What could we do to improve?'),
+      title: Text(context.l10n.npsStep2MessageTitle),
       description: Text(
-        'Tell us a bit more about why you chose ${context.npsModel.score?.intValue}',
+        context.l10n
+            .npsStep2MessageDescription(context.npsModel.score!.intValue),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,10 +79,15 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
                 hoverColor: context.theme.brightness == Brightness.light
                     ? context.theme.primaryBackgroundColor.darken(0.015)
                     : context.theme.primaryBackgroundColor.lighten(0.015),
-                hintText: 'It would be great if you could improve...',
+                hintText: context.l10n.npsStep2MessageHint,
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                hintStyle: context.text.input.onBackground,
+                hintStyle: context.text.input.onSurface.copyWith(
+                  color: context.text.input.onSurface.color?.withOpacity(0.6),
+                ),
+                errorStyle: context.text.inputError.textStyle.copyWith(
+                  color: context.theme.errorColor,
+                ),
               ),
             ),
           ),
@@ -94,13 +96,19 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
             children: [
               TronButton(
                 color: context.theme.secondaryColor,
-                label: 'Back',
-                onTap: widget.onBack,
+                label: context.l10n.npsNextButton,
+                onTap: () {
+                  context
+                      .findAncestorStateOfType<LarryPageViewState>()!
+                      .moveToPreviousPage();
+                },
               ),
               TronButton(
-                label: 'Done',
+                label: context.l10n.npsDoneButton,
                 trailingIcon: Wirecons.check,
-                onTap: context.npsModel.submit,
+                onTap: () {
+                  context.npsModel.submit();
+                },
               ),
             ],
           )

@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/core/wiredash_model_provider.dart';
-import 'package:wiredash/src/feedback/data/delay.dart';
+import 'package:wiredash/src/utils/delay.dart';
 import 'package:wiredash/src/nps/nps_model.dart';
 import 'package:wiredash/src/nps/nps_model_provider.dart';
+import 'package:wiredash/src/utils/standard_kt.dart';
 
 class NpsStep1 extends StatelessWidget {
   const NpsStep1({
     Key? key,
-    required this.onNext,
   }) : super(key: key);
-
-  final void Function() onNext;
 
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
-      title: const Text('How likely are you to recommend us?'),
-      // title: const Text('How likely are you to recommend us to your friends and colleagues?'),
+      title: Text(context.l10n.npsStep1Question),
       onClose: () {
         context.wiredashModel.hide(discardNps: true);
       },
@@ -30,17 +29,36 @@ class NpsStep1 extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('0 = Not likely, 10 = most likely'),
+          Text(context.l10n.npsStep1Description),
           const SizedBox(height: 32),
-          _NpsRater(onSelected: onNext),
+          _NpsRater(
+            score: context.npsModel.score?.intValue,
+            onSelected: (score) {
+              final rating = score?.let((it) => createNpsRating(it));
+              context.npsModel.score = rating;
+              if (rating != null) {
+                widgetsBindingInstance.addPostFrameCallback((_) {
+                  context
+                      .findAncestorStateOfType<LarryPageViewState>()!
+                      .moveToNextPage();
+                });
+              }
+            },
+          ),
           const SizedBox(height: 32),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TronButton(
-                label: 'Next',
+                label: context.l10n.npsNextButton,
                 trailingIcon: Wirecons.arrow_right,
-                onTap: context.npsModel.score != null ? onNext : null,
+                onTap: context.npsModel.score != null
+                    ? () {
+                        context
+                            .findAncestorStateOfType<LarryPageViewState>()!
+                            .moveToNextPage();
+                      }
+                    : null,
               ),
             ],
           )
@@ -53,10 +71,12 @@ class NpsStep1 extends StatelessWidget {
 class _NpsRater extends StatefulWidget {
   const _NpsRater({
     Key? key,
-    this.onSelected,
+    required this.score,
+    required this.onSelected,
   }) : super(key: key);
 
-  final void Function()? onSelected;
+  final void Function(int? score) onSelected;
+  final int? score;
 
   @override
   State<_NpsRater> createState() => _NpsRaterState();
@@ -65,22 +85,27 @@ class _NpsRater extends StatefulWidget {
 class _NpsRaterState extends State<_NpsRater> {
   Delay? _selectionDelay;
 
+  // score between pressed and submitted to callback
+  int? _inflightScore;
+
   void _onTap(int score) {
-    final model = context.npsModel;
-    _selectionDelay?.dispose();
-    if (model.score?.intValue == score) {
-      model.score = null;
-    } else {
-      model.score = createNpsRating(score);
-      _fire();
-    }
+    setState(() {
+      if ((_inflightScore ?? widget.score) == score) {
+        _inflightScore = null;
+      } else {
+        _inflightScore = score;
+      }
+    });
+    _fire();
   }
 
   Future<void> _fire() async {
-    _selectionDelay = Delay(const Duration(seconds: 1));
+    _selectionDelay?.dispose();
+    _selectionDelay = Delay(const Duration(milliseconds: 400));
     await _selectionDelay!.future;
     if (!mounted) return;
-    widget.onSelected?.call();
+    widget.onSelected.call(_inflightScore);
+    _inflightScore = null;
   }
 
   @override
@@ -91,7 +116,6 @@ class _NpsRaterState extends State<_NpsRater> {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.npsModel;
     return Align(
       alignment: context.theme.windowSize.width > 800
           ? Alignment.centerLeft
@@ -99,6 +123,7 @@ class _NpsRaterState extends State<_NpsRater> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final maxItemWidth = constraints.maxWidth / 6;
+          final selectedScore = _inflightScore ?? widget.score;
           return Wrap(
             alignment: WrapAlignment.center,
             children: [
@@ -110,7 +135,7 @@ class _NpsRaterState extends State<_NpsRater> {
                       constraints: BoxConstraints(maxWidth: maxItemWidth),
                       child: _RatingCard(
                         value: i,
-                        checked: i == model.score?.intValue,
+                        checked: i == selectedScore,
                         onTap: () => _onTap(i),
                       ),
                     ),
@@ -124,7 +149,7 @@ class _NpsRaterState extends State<_NpsRater> {
                       constraints: BoxConstraints(maxWidth: maxItemWidth),
                       child: _RatingCard(
                         value: i,
-                        checked: i == model.score?.intValue,
+                        checked: i == selectedScore,
                         onTap: () => _onTap(i),
                       ),
                     ),

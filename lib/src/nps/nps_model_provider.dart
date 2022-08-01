@@ -21,6 +21,6 @@ class NpsModelProvider extends InheritedNotifier<NpsModel> {
   }
 }
 
-extension FeedbackModelExtension on BuildContext {
+extension NpsModelExtension on BuildContext {
   NpsModel get npsModel => NpsModelProvider.of(this);
 }

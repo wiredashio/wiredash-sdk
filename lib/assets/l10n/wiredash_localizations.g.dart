@@ -8,14 +8,14 @@ import 'package:intl/intl.dart' as intl;
 import 'wiredash_localizations_de.g.dart';
 import 'wiredash_localizations_en.g.dart';
 
-/// Callers can lookup localized strings with an instance of WiredashLocalizations returned
-/// by `WiredashLocalizations.of(context)`.
+/// Callers can lookup localized strings with an instance of WiredashLocalizations
+/// returned by `WiredashLocalizations.of(context)`.
 ///
 /// Applications need to include `WiredashLocalizations.delegate()` in their app's
-/// localizationDelegates list, and the locales they support in the app's
-/// supportedLocales list. For example:
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
 ///
-/// ```
+/// ```dart
 /// import 'l10n/wiredash_localizations.g.dart';
 ///
 /// return MaterialApp(
@@ -30,14 +30,14 @@ import 'wiredash_localizations_en.g.dart';
 /// Please make sure to update your pubspec.yaml to include the following
 /// packages:
 ///
-/// ```
+/// ```yaml
 /// dependencies:
 ///   # Internationalization support.
 ///   flutter_localizations:
 ///     sdk: flutter
 ///   intl: any # Use the pinned version from flutter_localizations
 ///
-///   # rest of dependencies
+///   # Rest of dependencies
 /// ```
 ///
 /// ## iOS Applications
@@ -366,6 +366,72 @@ abstract class WiredashLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get feedbackCloseButton;
+
+  /// No description provided for @npsStep1Question.
+  ///
+  /// In en, this message translates to:
+  /// **'How likely are you to recommend us?'**
+  String get npsStep1Question;
+
+  /// No description provided for @npsStep1Description.
+  ///
+  /// In en, this message translates to:
+  /// **'0 = Not likely, 10 = most likely'**
+  String get npsStep1Description;
+
+  /// No description provided for @npsStep2MessageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How likely are you to recommend us to your friends and family?'**
+  String get npsStep2MessageTitle;
+
+  /// No description provided for @npsStep2MessageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us a bit more about why you chose {rating}'**
+  String npsStep2MessageDescription(int rating);
+
+  /// No description provided for @npsStep2MessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'It would be great if you could improve...'**
+  String get npsStep2MessageHint;
+
+  /// No description provided for @npsStep3ThanksMessagePromoters.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for your rating!'**
+  String get npsStep3ThanksMessagePromoters;
+
+  /// No description provided for @npsStep3ThanksMessagePassives.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for your rating!'**
+  String get npsStep3ThanksMessagePassives;
+
+  /// No description provided for @npsStep3ThanksMessageDetractors.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for your rating!'**
+  String get npsStep3ThanksMessageDetractors;
+
+  /// No description provided for @npsNextButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get npsNextButton;
+
+  /// No description provided for @npsBackButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get npsBackButton;
+
+  /// No description provided for @npsDoneButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get npsDoneButton;
 
   /// No description provided for @backdropReturnToApp.
   ///

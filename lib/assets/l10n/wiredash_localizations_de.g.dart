@@ -156,5 +156,41 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
   String get feedbackCloseButton => 'Schließen';
 
   @override
+  String get npsStep1Question => 'How likely are you to recommend us?';
+
+  @override
+  String get npsStep1Description => '0 = Not likely, 10 = most likely';
+
+  @override
+  String get npsStep2MessageTitle =>
+      'How likely are you to recommend us to your friends and family?';
+
+  @override
+  String npsStep2MessageDescription(int rating) {
+    return 'Tell us a bit more about why you chose $rating';
+  }
+
+  @override
+  String get npsStep2MessageHint => 'It would be great if you could improve...';
+
+  @override
+  String get npsStep3ThanksMessagePromoters => 'Thanks for your rating!';
+
+  @override
+  String get npsStep3ThanksMessagePassives => 'Thanks for your rating!';
+
+  @override
+  String get npsStep3ThanksMessageDetractors => 'Thanks for your rating!';
+
+  @override
+  String get npsNextButton => 'Next';
+
+  @override
+  String get npsBackButton => 'Back';
+
+  @override
+  String get npsDoneButton => 'Done';
+
+  @override
   String get backdropReturnToApp => 'Zurück zur App';
 }

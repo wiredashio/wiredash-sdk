@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
-import 'package:wiredash/src/feedback/data/delay.dart';
+import 'package:wiredash/src/utils/delay.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
 
 class NpsModel extends ChangeNotifier2 {
@@ -20,6 +20,15 @@ class NpsModel extends ChangeNotifier2 {
     notifyListeners();
   }
 
+  int _index = 0;
+
+  int get index => _index;
+
+  set index(int index) {
+    _index = index;
+    notifyListeners();
+  }
+
   String? get message => _message;
   String? _message;
 
@@ -31,6 +40,10 @@ class NpsModel extends ChangeNotifier2 {
   bool get submitting => _submitting;
   bool _submitting = false;
 
+  /// The error when submitting the nps rating
+  Object? get submissionError => _submissionError;
+  Object? _submissionError;
+
   Future<void> submit() async {
     _submitting = true;
     notifyListeners();
@@ -40,6 +53,7 @@ class NpsModel extends ChangeNotifier2 {
       final deviceInfo = _services.deviceInfoGenerator.generate();
       final metaData = _services.wiredashModel.metaData;
       // Allow devs to collect additional information
+      // TODO use nps collectMetaData
       final collector =
           _services.wiredashWidget.feedbackOptions?.collectMetaData ??
               _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
@@ -60,14 +74,15 @@ class NpsModel extends ChangeNotifier2 {
         platformUserAgent: deviceInfo.userAgent,
       );
       await _services.api.sendNps(body);
+      // ignore: avoid_print
+      print("NPS Submitted ($score)");
       unawaited(_services.syncEngine.onSubmitNPS());
       _closeDelay?.dispose();
-      _closeDelay = Delay(const Duration(seconds: 1));
+      _closeDelay = Delay(const Duration(seconds: 2));
       await _closeDelay!.future;
-      _submitting = false;
-      notifyListeners();
       await returnToAppPostSubmit();
     } catch (e, stack) {
+      _submissionError = e;
       reportWiredashError(e, stack, 'NPS submission failed');
       _submitting = false;
       notifyListeners();

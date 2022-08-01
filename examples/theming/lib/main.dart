@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
+import 'package:wiredash/wiredash_preview.dart';
 
 void main() {
   runApp(WiredashExampleApp());
@@ -143,6 +144,7 @@ class _HomePage extends StatelessWidget {
         /// method can be accessed from anywhere in the code.
         onPressed: () {
           // When using the Wiredash theme
+          // Wiredash.of(context).showNps();
           Wiredash.of(context).show();
         },
         child: Icon(Icons.feedback_outlined),
