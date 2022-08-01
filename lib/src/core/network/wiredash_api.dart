@@ -494,11 +494,8 @@ class NpsRequestBody {
     body['deviceId'] = deviceId;
 
     if (message != null && message!.isNotEmpty) {
-      // TODO make nullable in backend
       body['message'] = message!;
     }
-
-    body['question'] = question;
 
     if (platformLocale != null) {
       body['platformLocale'] = platformLocale!;
@@ -508,13 +505,14 @@ class NpsRequestBody {
       body['platformOS'] = platformOS!;
     }
     if (platformOSVersion != null) {
-      // TODO add to backend
-      // body['platformOSVersion'] = platformOSVersion!;
+      body['platformOSVersion'] = platformOSVersion!;
     }
 
     if (platformUserAgent != null) {
       body['platformUserAgent'] = platformUserAgent!;
     }
+
+    body['question'] = question;
 
     body['score'] = score.intValue;
 
