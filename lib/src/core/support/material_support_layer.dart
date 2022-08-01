@@ -87,6 +87,7 @@ class _MaterialSupportLayerState extends State<MaterialSupportLayer> {
 
     // Make Wiredash a Material widget to support TextFields, etc.
     child = Material(
+      textStyle: DefaultTextStyle.of(context).style,
       color: Colors.transparent,
       child: child,
     );

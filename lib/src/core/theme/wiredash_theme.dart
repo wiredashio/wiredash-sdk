@@ -20,9 +20,12 @@ class WiredashTheme extends StatelessWidget {
           deviceClass: deviceClass,
           windowSize: constraints.biggest,
         );
-        return _InheritedWiredashTheme(
-          themeData: themeData,
-          child: child,
+        return DefaultTextStyle(
+          style: themeData.text.adaptiveBody.onBackground,
+          child: _InheritedWiredashTheme(
+            themeData: themeData,
+            child: child,
+          ),
         );
       },
     );
