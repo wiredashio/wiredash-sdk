@@ -1182,6 +1182,9 @@ class BackdropController extends ChangeNotifier {
   }
 
   Future<void> animateToClosed() async {
+    if (_backdropStatus == WiredashBackdropStatus.closed) {
+      return;
+    }
     await _state!._animateToClosed();
 
     _isAppInteractive = true;

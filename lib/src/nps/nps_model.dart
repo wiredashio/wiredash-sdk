@@ -73,6 +73,7 @@ class NpsModel extends ChangeNotifier2 {
         platformOS: deviceInfo.platformOS,
         platformUserAgent: deviceInfo.userAgent,
       );
+      // TODO don't await this, fail silently
       await _services.api.sendNps(body);
       // ignore: avoid_print
       print("NPS Submitted ($score)");

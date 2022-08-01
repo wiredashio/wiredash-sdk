@@ -165,8 +165,10 @@ class AnimatedClickTarget extends StatefulWidget {
     this.onTap,
     required this.builder,
     this.duration = const Duration(milliseconds: 200),
-    this.hoverDuration = const Duration(milliseconds: 150),
+    this.hoverDuration = const Duration(milliseconds: 100),
     this.selected,
+    this.curve = Curves.easeInOutCubic,
+    this.reverseCurve,
   }) : super(key: key);
 
   final FocusNode? focusNode;
@@ -180,17 +182,20 @@ class AnimatedClickTarget extends StatefulWidget {
   final Duration hoverDuration;
   final bool? selected;
 
+  final Curve curve;
+  final Curve? reverseCurve;
+
   @override
   State<AnimatedClickTarget> createState() => _AnimatedClickTargetState();
 }
 
 class _AnimatedClickTargetState extends State<AnimatedClickTarget>
     with TickerProviderStateMixin {
-  late AnimationController _focusedController;
-  late AnimationController _pressedController;
-  late AnimationController _hoveredController;
-  late AnimationController _enabledController;
-  late AnimationController _selectedController;
+  AnimationController? _focusedController;
+  AnimationController? _pressedController;
+  AnimationController? _hoveredController;
+  AnimationController? _enabledController;
+  AnimationController? _selectedController;
 
   @override
   void initState() {
@@ -204,15 +209,19 @@ class _AnimatedClickTargetState extends State<AnimatedClickTarget>
     if (oldWidget.selected != widget.selected) {
       if (widget.selected == true) {
         print('detected selected');
-        _selectedController.forward();
+        _selectedController!.forward();
       }
       if (widget.selected == false) {
         print('detected unselected');
-        _selectedController.reverse();
+        _selectedController!.reverse();
       }
     }
     if (oldWidget.duration != widget.duration) {
-      _createControllers();
+      _focusedController!.duration = widget.duration;
+      _pressedController!.duration = widget.duration;
+      _hoveredController!.duration = widget.duration;
+      _enabledController!.duration = widget.duration;
+      _selectedController!.duration = widget.duration;
     }
   }
 
@@ -221,52 +230,68 @@ class _AnimatedClickTargetState extends State<AnimatedClickTarget>
       vsync: this,
       duration: widget.duration,
       debugLabel: 'AnimatedClickTarget._focusedController',
-      value: _focusedController.value,
     );
     _pressedController = AnimationController(
       vsync: this,
       duration: widget.duration,
       debugLabel: 'AnimatedClickTarget._pressedController',
-      value: _pressedController.value,
     );
     _hoveredController = AnimationController(
       vsync: this,
       duration: widget.hoverDuration,
       debugLabel: 'AnimatedClickTarget._hoveredController',
-      value: _hoveredController.value,
     );
     _enabledController = AnimationController(
       vsync: this,
       duration: widget.duration,
       debugLabel: 'AnimatedClickTarget._enabledController',
-      value: _enabledController.value,
     );
     _selectedController = AnimationController(
       vsync: this,
       duration: widget.duration,
       debugLabel: 'AnimatedClickTarget._selectedController',
-      value: _selectedController.value,
+      value: widget.selected == true ? 1.0 : 0.0,
     );
   }
 
   @override
   void dispose() {
-    _focusedController.dispose();
-    _pressedController.dispose();
-    _hoveredController.dispose();
-    _enabledController.dispose();
-    _selectedController.dispose();
+    _focusedController!.dispose();
+    _pressedController!.dispose();
+    _hoveredController!.dispose();
+    _enabledController!.dispose();
+    _selectedController!.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final anims = TargetStateAnimations(
-      focusedAnim: _focusedController,
-      pressedAnim: _pressedController,
-      hoveredAnim: _hoveredController,
-      enabledAnim: _enabledController,
-      selectedAnim: _selectedController,
+      focusedAnim: CurvedAnimation(
+        curve: widget.curve,
+        reverseCurve: widget.reverseCurve ?? widget.curve,
+        parent: _focusedController!,
+      ),
+      pressedAnim: CurvedAnimation(
+        curve: widget.curve,
+        reverseCurve: widget.reverseCurve ?? widget.curve,
+        parent: _pressedController!,
+      ),
+      hoveredAnim: CurvedAnimation(
+        curve: widget.curve,
+        reverseCurve: widget.reverseCurve ?? widget.curve,
+        parent: _hoveredController!,
+      ),
+      enabledAnim: CurvedAnimation(
+        curve: widget.curve,
+        reverseCurve: widget.reverseCurve ?? widget.curve,
+        parent: _enabledController!,
+      ),
+      selectedAnim: CurvedAnimation(
+        curve: widget.curve,
+        reverseCurve: widget.reverseCurve ?? widget.curve,
+        parent: _selectedController!,
+      ),
     );
 
     return BaseClickTarget(
@@ -274,31 +299,31 @@ class _AnimatedClickTargetState extends State<AnimatedClickTarget>
       selected: widget.selected,
       onStateChanged: (state) {
         if (state.focused) {
-          _focusedController.forward();
+          _focusedController!.forward();
         }
         if (!state.focused) {
-          _focusedController.reverse();
+          _focusedController!.reverse();
         }
 
         if (state.pressed) {
-          _pressedController.forward();
+          _pressedController!.forward();
         }
         if (!state.pressed) {
-          _pressedController.reverse();
+          _pressedController!.reverse();
         }
 
         if (state.hovered) {
-          _hoveredController.forward();
+          _hoveredController!.forward();
         }
         if (!state.hovered) {
-          _hoveredController.reverse();
+          _hoveredController!.reverse();
         }
 
         if (state.enabled) {
-          _enabledController.forward();
+          _enabledController!.forward();
         }
         if (!state.enabled) {
-          _enabledController.reverse();
+          _enabledController!.reverse();
         }
       },
       builder: (context, state, child) {

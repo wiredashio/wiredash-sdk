@@ -1,20 +1,23 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
-import 'package:wiredash/src/core/wiredash_model_provider.dart';
-import 'package:wiredash/src/utils/delay.dart';
 import 'package:wiredash/src/nps/nps_model.dart';
 import 'package:wiredash/src/nps/nps_model_provider.dart';
-import 'package:wiredash/src/utils/standard_kt.dart';
+import 'package:wiredash/src/utils/delay.dart';
 
-class NpsStep1 extends StatelessWidget {
+class NpsStep1 extends StatefulWidget {
   const NpsStep1({
     Key? key,
   }) : super(key: key);
 
+  @override
+  State<NpsStep1> createState() => _NpsStep1State();
+}
+
+class _NpsStep1State extends State<NpsStep1> {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
@@ -35,15 +38,16 @@ class NpsStep1 extends StatelessWidget {
           const SizedBox(height: 32),
           _NpsRater(
             score: context.npsModel.score?.intValue,
-            onSelected: (score) {
+            onSelected: (score) async {
               final rating = score?.let((it) => createNpsRating(it));
               context.npsModel.score = rating;
+
               if (rating != null) {
-                widgetsBindingInstance.addPostFrameCallback((_) {
-                  context
-                      .findAncestorStateOfType<LarryPageViewState>()!
-                      .moveToNextPage();
-                });
+                final lpv =
+                    context.findAncestorStateOfType<LarryPageViewState>();
+                await Future.delayed(const Duration(milliseconds: 250));
+                if (!mounted) return;
+                lpv!.moveToNextPage();
               }
             },
           ),
@@ -185,50 +189,42 @@ class _RatingCardState extends State<_RatingCard>
     with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    if (widget.value == 3) {
-      print(
-          'build _RatingCardState{value: ${widget.value}, checked: ${widget.checked}}');
-    }
-    const animDuration = Duration(milliseconds: 250);
+    const animDuration = Duration(milliseconds: 200);
 
-    final borderTween = BorderTween(
-      begin: Border.fromBorderSide(
-        BorderSide(
-          color: context.theme.primaryColor.withOpacity(0.25),
-          width: 2,
-        ),
-      ),
-      end: Border.fromBorderSide(
-        BorderSide(
-          color: context.theme.primaryColor.withOpacity(1.0),
-          width: 2,
-        ),
-      ),
+    final colorTween = ColorTween(
+      begin: context.theme.primaryColor.withOpacity(0.25),
+      end: context.theme.primaryColor.withOpacity(1.0),
     );
+
     return AnimatedClickTarget(
       onTap: widget.onTap,
       selected: widget.checked,
       duration: animDuration,
+      hoverDuration: animDuration,
       builder: (context, state, anims) {
         final theme = context.theme;
-        return Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: () {
-              final hover = anims.hoveredAnim.value * 0.5;
-              final selected = anims.selectedAnim.value * 0.8;
-              double combined = 0.0;
-              if (anims.hoveredAnim.value > 0 && anims.selectedAnim.value > 0) {
-                combined = anims.hoveredAnim.value * 0.5 +
-                    anims.selectedAnim.value * 0.5;
-              }
+        final color = () {
+          final hover = anims.hoveredAnim.value * 0.5;
+          final selected = anims.selectedAnim.value * 0.8;
+          double combined = 0.0;
+          if (anims.hoveredAnim.value > 0 && anims.selectedAnim.value > 0) {
+            combined =
+                anims.hoveredAnim.value * 0.5 + anims.selectedAnim.value * 0.5;
+          }
 
-              final t = max(combined, max(hover, selected));
-              return borderTween.transform(t)!.top;
-            }(),
+          final t = max(combined, max(hover, selected));
+          return colorTween.transform(t)!;
+        }();
+        return Container(
+          margin: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: theme.primaryBackgroundColor,
+            border: Border.all(
+              color: color,
+              width: 2,
+            ),
           ),
-          color: theme.primaryBackgroundColor,
           child: SizedBox(
             width: 48,
             height: 60,
@@ -255,8 +251,7 @@ class _RatingCardState extends State<_RatingCard>
                     child: Icon(
                       widget.checked ? Wirecons.check_circle : Wirecons.circle,
                       key: ValueKey(widget.checked),
-                      color: theme.primaryColor
-                          .withOpacity(widget.checked ? 1.0 : 0.5),
+                      color: color,
                       size: 18,
                     ),
                   ),

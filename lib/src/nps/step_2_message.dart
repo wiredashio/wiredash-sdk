@@ -94,7 +94,7 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
             children: [
               TronButton(
                 color: context.theme.secondaryColor,
-                label: context.l10n.npsNextButton,
+                label: context.l10n.npsBackButton,
                 onTap: () {
                   context
                       .findAncestorStateOfType<LarryPageViewState>()!
