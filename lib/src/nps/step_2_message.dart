@@ -69,6 +69,7 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
               decoration: InputDecoration(
                 filled: true,
                 fillColor: context.theme.primaryBackgroundColor,
+                hoverColor: Colors.transparent,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: context.theme.secondaryColor),
                 ),
@@ -76,9 +77,6 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
                   borderSide: BorderSide(color: context.theme.secondaryColor),
                 ),
                 errorBorder: InputBorder.none,
-                hoverColor: context.theme.brightness == Brightness.light
-                    ? context.theme.primaryBackgroundColor.darken(0.015)
-                    : context.theme.primaryBackgroundColor.lighten(0.015),
                 hintText: context.l10n.npsStep2MessageHint,
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
