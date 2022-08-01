@@ -24,7 +24,6 @@ class _NpsFlowState extends State<NpsFlow> {
     final lpv = LarryPageView(
       key: _lpvKey,
       stepCount: context.npsModel.score == null ? 1 : 2,
-      initialPage: _index,
       pageIndex: _index,
       onPageChanged: (index) {
         setState(() {

@@ -56,7 +56,6 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     final larryPageView = LarryPageView(
       key: _lpvKey,
       stepCount: feedbackModel.steps.length,
-      initialPage: _index,
       pageIndex: _index,
       onPageChanged: (index) {
         setState(() {
