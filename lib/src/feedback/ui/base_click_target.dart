@@ -10,9 +10,11 @@ class BaseClickTarget extends StatefulWidget {
     required this.builder,
     this.child,
     this.selected,
+    this.onStateChanged,
   }) : super(key: key);
 
   final void Function()? onTap;
+  final void Function(TargetState state)? onStateChanged;
   final Widget Function(BuildContext context, TargetState state, Widget? child)
       builder;
   final Widget? child;
@@ -41,41 +43,49 @@ class _BaseClickTargetState extends State<BaseClickTarget> {
     );
   }
 
+  void notifyState(void Function() block) {
+    setState(block);
+    widget.onStateChanged?.call(state);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
       cursor: _enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
       onEnter: (event) {
-        setState(() {
+        notifyState(() {
           _hovered = true;
         });
       },
       onExit: (event) {
-        setState(() {
+        notifyState(() {
           _hovered = false;
         });
       },
       child: Focus(
         onFocusChange: (focused) {
-          setState(() {
+          notifyState(() {
             _focused = focused;
           });
         },
         child: GestureDetector(
-          onTap: widget.onTap,
+          onTap: () {
+            print("tap");
+            widget.onTap?.call();
+          },
           onTapDown: (_) {
             if (!_enabled) return;
-            setState(() {
+            notifyState(() {
               _pressed = true;
             });
           },
           onTapUp: (_) {
-            setState(() {
+            notifyState(() {
               _pressed = false;
             });
           },
           onTapCancel: () {
-            setState(() {
+            notifyState(() {
               _pressed = false;
             });
           },
@@ -155,6 +165,7 @@ class AnimatedClickTarget extends StatefulWidget {
     this.onTap,
     required this.builder,
     this.duration = const Duration(milliseconds: 200),
+    this.hoverDuration = const Duration(milliseconds: 150),
     this.selected,
   }) : super(key: key);
 
@@ -166,6 +177,7 @@ class AnimatedClickTarget extends StatefulWidget {
     TargetStateAnimations anims,
   ) builder;
   final Duration duration;
+  final Duration hoverDuration;
   final bool? selected;
 
   @override
@@ -181,42 +193,60 @@ class _AnimatedClickTargetState extends State<AnimatedClickTarget>
   late AnimationController _selectedController;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _focusedController = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-      debugLabel: 'AnimatedClickTarget._focusedController',
-    );
-    _pressedController = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-      debugLabel: 'AnimatedClickTarget._pressedController',
-    );
-    _hoveredController = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-      debugLabel: 'AnimatedClickTarget._hoveredController',
-    );
-    _enabledController = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-      debugLabel: 'AnimatedClickTarget._enabledController',
-    );
-    _selectedController = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-      debugLabel: 'AnimatedClickTarget._selectedController',
-    );
+  void initState() {
+    super.initState();
+    _createControllers();
   }
 
   @override
   void didUpdateWidget(covariant AnimatedClickTarget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.selected != widget.selected) {
-      if (widget.selected == true) _selectedController.forward();
-      if (widget.selected == false) _selectedController.reverse();
+      if (widget.selected == true) {
+        print('detected selected');
+        _selectedController.forward();
+      }
+      if (widget.selected == false) {
+        print('detected unselected');
+        _selectedController.reverse();
+      }
     }
+    if (oldWidget.duration != widget.duration) {
+      _createControllers();
+    }
+  }
+
+  void _createControllers() {
+    _focusedController = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      debugLabel: 'AnimatedClickTarget._focusedController',
+      value: _focusedController.value,
+    );
+    _pressedController = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      debugLabel: 'AnimatedClickTarget._pressedController',
+      value: _pressedController.value,
+    );
+    _hoveredController = AnimationController(
+      vsync: this,
+      duration: widget.hoverDuration,
+      debugLabel: 'AnimatedClickTarget._hoveredController',
+      value: _hoveredController.value,
+    );
+    _enabledController = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      debugLabel: 'AnimatedClickTarget._enabledController',
+      value: _enabledController.value,
+    );
+    _selectedController = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      debugLabel: 'AnimatedClickTarget._selectedController',
+      value: _selectedController.value,
+    );
   }
 
   @override
@@ -242,7 +272,7 @@ class _AnimatedClickTargetState extends State<AnimatedClickTarget>
     return BaseClickTarget(
       onTap: widget.onTap,
       selected: widget.selected,
-      builder: (context, state, child) {
+      onStateChanged: (state) {
         if (state.focused) {
           _focusedController.forward();
         }
@@ -270,6 +300,8 @@ class _AnimatedClickTargetState extends State<AnimatedClickTarget>
         if (!state.enabled) {
           _enabledController.reverse();
         }
+      },
+      builder: (context, state, child) {
         return AnimatedBuilder(
           animation: Listenable.merge([
             _focusedController,
