@@ -4,12 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
-import 'package:wiredash/src/utils/delay.dart';
 import 'package:wiredash/src/metadata/build_info/app_info.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/metadata/device_info/device_info.dart';
 import 'package:wiredash/src/metadata/renderer/renderer.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
+import 'package:wiredash/src/utils/delay.dart';
 import 'package:wiredash/wiredash.dart';
 
 enum FeedbackFlowStatus {

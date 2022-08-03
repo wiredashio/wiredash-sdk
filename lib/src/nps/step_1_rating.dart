@@ -3,21 +3,20 @@ import 'dart:math';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
-import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/nps/nps_model.dart';
 import 'package:wiredash/src/nps/nps_model_provider.dart';
 import 'package:wiredash/src/utils/delay.dart';
 
-class NpsStep1 extends StatefulWidget {
-  const NpsStep1({
+class NpsStep1Rating extends StatefulWidget {
+  const NpsStep1Rating({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<NpsStep1> createState() => _NpsStep1State();
+  State<NpsStep1Rating> createState() => _NpsStep1RatingState();
 }
 
-class _NpsStep1State extends State<NpsStep1> {
+class _NpsStep1RatingState extends State<NpsStep1Rating> {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
@@ -189,7 +188,7 @@ class _RatingCardState extends State<_RatingCard>
     with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    const animDuration = Duration(milliseconds: 200);
+    const animDuration = Duration(milliseconds: 210);
 
     final colorTween = ColorTween(
       begin: context.theme.primaryColor.withOpacity(0.25),

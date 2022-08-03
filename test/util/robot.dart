@@ -12,6 +12,9 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 import 'package:wiredash/src/feedback/_feedback.dart';
+import 'package:wiredash/src/nps/nps_flow.dart';
+import 'package:wiredash/src/nps/step_1_rating.dart';
+import 'package:wiredash/src/nps/step_2_message.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'assert_widget.dart';
@@ -64,8 +67,21 @@ class WiredashTestRobot {
             builder: builder ??
                 (context) {
                   return Scaffold(
-                    floatingActionButton: FloatingActionButton(
-                      onPressed: Wiredash.of(context).show,
+                    body: Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Wiredash.of(context).show();
+                          },
+                          child: const Text('Feedback'),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Wiredash.of(context).showNps();
+                          },
+                          child: const Text('NPS'),
+                        ),
+                      ],
                     ),
                   );
                 },
@@ -114,10 +130,9 @@ class WiredashTestRobot {
   }
 
   Future<void> openWiredash() async {
-    final fab = selectByType(MaterialApp)
-        .childByType(FloatingActionButton)
-        .existsOnce();
-    await tester.tap(fab.finder);
+    final feedbackText =
+        selectByType(MaterialApp).text('Feedback').existsOnce();
+    await tester.tap(feedbackText.finder);
 
     // process the event, wait for backdrop to appear in the widget tree
     await tester.pumpN(4);
@@ -128,6 +143,21 @@ class WiredashTestRobot {
 
     _backdrop.childByType(WiredashFeedbackFlow).existsOnce();
     print('opened Wiredash');
+  }
+
+  Future<void> openNps() async {
+    final npsText = selectByType(MaterialApp).text('NPS').existsOnce();
+    await tester.tap(npsText.finder);
+
+    // process the event, wait for backdrop to appear in the widget tree
+    await tester.pumpN(4);
+    // wait for animation finish
+    await tester.pump(const Duration(milliseconds: 500));
+    // When the pump pattern on top fails, use this instead
+    // await tester.pumpAndSettle();
+
+    _backdrop.childByType(NpsFlow).existsOnce();
+    print('opened NPS');
   }
 
   Future<void> closeWiredash() async {
@@ -156,6 +186,24 @@ class WiredashTestRobot {
     );
     expect(find.text('l10n.feedbackNextButton'), findsOneWidget);
     expect(find.text('l10n.feedbackCloseButton'), findsOneWidget);
+    print('entered feedback message: $message');
+  }
+
+  Future<void> enterNpsMessage(String message) async {
+    final step = _pageView.childByType(NpsStep2Message).existsOnce();
+    final done = step.text('l10n.npsDoneButton').existsOnce();
+    step.text('l10n.npsBackButton').existsOnce();
+    await tester.enterText(find.byType(TextField), message);
+    await tester.pumpAndSettle();
+    await tester.waitUntil(
+      tester.getSemantics(done.finder),
+      matchesSemantics(
+        isEnabled: true,
+        isButton: true,
+        isFocusable: true,
+        hasEnabledState: true,
+      ),
+    );
     print('entered feedback message: $message');
   }
 
@@ -345,10 +393,29 @@ class WiredashTestRobot {
   }
 
   Future<void> waitUntilWiredashIsClosed() async {
+    await tester.pump(const Duration(seconds: 1));
     await tester.waitUntil(
       () => services.wiredashModel.isWiredashActive,
       isFalse,
     );
+  }
+
+  Future<void> rateNps(int rating) async {
+    assert(rating >= 0 && rating <= 10);
+    final step = _pageView.childByType(NpsStep1Rating).existsOnce();
+    await tester.tap(step.text(rating.toString()).finder);
+    await tester.pumpAndSettle();
+
+    /// automatically goes to next step
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> submitNps() async {
+    final step = _pageView.childByType(NpsStep2Message).existsOnce();
+    await tester.tap(step.text('l10n.npsDoneButton').finder);
+    await tester.pumpAndSettle();
+    print('submit NPS');
   }
 }
 

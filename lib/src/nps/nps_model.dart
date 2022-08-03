@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
-import 'package:wiredash/src/utils/delay.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
+import 'package:wiredash/src/utils/delay.dart';
 
 class NpsModel extends ChangeNotifier2 {
   NpsModel(WiredashServices services) : _services = services;

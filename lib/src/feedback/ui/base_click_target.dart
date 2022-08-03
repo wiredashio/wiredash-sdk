@@ -70,7 +70,6 @@ class _BaseClickTargetState extends State<BaseClickTarget> {
         },
         child: GestureDetector(
           onTap: () {
-            print("tap");
             widget.onTap?.call();
           },
           onTapDown: (_) {
@@ -208,11 +207,9 @@ class _AnimatedClickTargetState extends State<AnimatedClickTarget>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.selected != widget.selected) {
       if (widget.selected == true) {
-        print('detected selected');
         _selectedController!.forward();
       }
       if (widget.selected == false) {
-        print('detected unselected');
         _selectedController!.reverse();
       }
     }

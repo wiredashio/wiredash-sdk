@@ -4,7 +4,7 @@ import 'package:wiredash/src/_wiredash_ui.dart';
 
 import 'package:wiredash/src/core/support/material_support_layer.dart';
 import 'package:wiredash/src/nps/nps_model_provider.dart';
-import 'package:wiredash/src/nps/step_1_nps_rating.dart';
+import 'package:wiredash/src/nps/step_1_rating.dart';
 import 'package:wiredash/src/nps/step_2_message.dart';
 import 'package:wiredash/src/nps/step_3_thanks.dart';
 
@@ -44,7 +44,7 @@ class _NpsFlowState extends State<NpsFlow> {
         }
         switch (npsModel.index) {
           case 0:
-            return const NpsStep1();
+            return const NpsStep1Rating();
           case 1:
             return const NpsStep2Message();
           default:

@@ -10,7 +10,7 @@ import 'util/robot.dart';
 
 void main() {
   autoUpdateGoldenFiles = true;
-  group('Wiredash', () {
+  group('Feedback', () {
     setUp(() {
       SharedPreferences.setMockInitialValues({});
     });
@@ -38,7 +38,7 @@ void main() {
 
       // Pressing next shows error
       await robot.goToNextStep();
-      larryPageView
+      _larryPageView
           .childByType(Step1FeedbackMessage)
           .text('l10n.feedbackStep1MessageErrorMissingMessage')
           .existsOnce();
@@ -47,8 +47,8 @@ void main() {
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
 
-      larryPageView.childByType(Step1FeedbackMessage).doesNotExist();
-      larryPageView.childByType(Step3ScreenshotOverview).existsOnce();
+      _larryPageView.childByType(Step1FeedbackMessage).doesNotExist();
+      _larryPageView.childByType(Step3ScreenshotOverview).existsOnce();
     });
 
     testWidgets('Send feedback with screenshot', (tester) async {
@@ -243,11 +243,11 @@ void main() {
       await robot.goToNextStep();
       await robot.skipScreenshot();
       await robot.skipEmail();
-      larryPageView.childByType(Step6Submit).existsOnce();
+      _larryPageView.childByType(Step6Submit).existsOnce();
 
       await robot.closeWiredash();
       await robot.openWiredash();
-      larryPageView.childByType(Step6Submit).existsOnce();
+      _larryPageView.childByType(Step6Submit).existsOnce();
     });
 
     testWidgets('Dont show hidden labels but send them regardless',
@@ -323,5 +323,5 @@ void main() {
   });
 }
 
-final larryPageView =
+final _larryPageView =
     selectByType(WiredashFeedbackFlow).childByType(LarryPageView);
