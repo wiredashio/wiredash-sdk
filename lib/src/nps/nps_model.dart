@@ -78,17 +78,14 @@ class NpsModel extends ChangeNotifier2 {
       // ignore: avoid_print
       print("NPS Submitted ($score)");
       unawaited(_services.syncEngine.onSubmitNPS());
+    } catch (e, stack) {
+      _submissionError = e;
+      reportWiredashError(e, stack, 'NPS submission failed');
+    } finally {
       _closeDelay?.dispose();
       _closeDelay = Delay(const Duration(seconds: 2));
       await _closeDelay!.future;
       await returnToAppPostSubmit();
-    } catch (e, stack) {
-      _submissionError = e;
-      reportWiredashError(e, stack, 'NPS submission failed');
-      _submitting = false;
-      notifyListeners();
-      await returnToAppPostSubmit();
-      rethrow;
     }
   }
 
