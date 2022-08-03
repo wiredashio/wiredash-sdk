@@ -25,12 +25,13 @@ void main() {
         ),
       ),
     );
-    selectByType(Padding).childByType(SizedBox).text('Hello').existsOnce();
-    selectByType(Padding)
+    spot.byType(Padding).childByType(SizedBox).text('Hello').existsOnce();
+    spot
+        .byType(Padding)
         .childByType(SizedBox)
         .text('Hello')
         .existsAtLeastOnce();
-    selectByType(GestureDetector).text('World').doesNotExist();
+    spot.byType(GestureDetector).text('World').doesNotExist();
   });
 
   testWidgets('narrow results by checking parents', (tester) async {
@@ -53,29 +54,31 @@ void main() {
         ),
       ),
     );
-    multipleParents([selectByType(Wrap), selectByType(GestureDetector)])
+    multipleParents([spot.byType(Wrap), spot.byType(GestureDetector)])
         .text('Hello')
         .existsOnce();
 
     multipleParents([
-      selectByType(SizedBox).childByType(GestureDetector),
-      selectByType(Center)
+      spot.byType(SizedBox).childByType(GestureDetector),
+      spot.byType(Center)
     ]).text('Hello').existsOnce();
 
     multipleParents([
-      selectByType(GestureDetector),
-      selectByType(_UnknownWidget),
+      spot.byType(GestureDetector),
+      spot.byType(_UnknownWidget),
     ]).text('Hello').doesNotExist();
 
     // TODO unclear. Does .withParents() add parents to
     //  - `text('Hello')` or
     //  - `selectByType(SizedBox).text('Hello;)`?
-    selectByType(SizedBox)
+    spot
+        .byType(SizedBox)
         .text('Hello')
-        .withParents([selectByType(Center).childByType(Wrap)]).existsOnce();
+        .withParents([spot.byType(Center).childByType(Wrap)]).existsOnce();
 
-    selectByType(SizedBox)
-        .withParents([selectByType(Center).childByType(Wrap)])
+    spot
+        .byType(SizedBox)
+        .withParents([spot.byType(Center).childByType(Wrap)])
         .text('Hello')
         .existsOnce();
   });

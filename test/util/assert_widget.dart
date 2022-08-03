@@ -4,15 +4,27 @@ import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-WidgetSelector selectByType(Type widget) {
-  return WidgetSelector._(find.byType(widget));
+final Spot spot = Spot();
+
+class Spot {
+  WidgetSelector byType(Type type) {
+    return WidgetSelector._(find.byType(type));
+  }
 }
 
+extension SpotFinder on Finder {
+  WidgetSelector get spot {
+    return WidgetSelector._(this);
+  }
+}
+
+@Deprecated('Use Finder.spot')
 WidgetSelector select(Finder finder) {
   return WidgetSelector._(finder);
 }
 
 extension Select on Finder {
+  @Deprecated('Use Finder.spot')
   WidgetSelector get select => WidgetSelector._(this);
 }
 

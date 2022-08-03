@@ -17,14 +17,14 @@ void main() {
       final WiredashTestRobot robot = await tester.goToEmailStep();
       await robot.enterEmail('dash@flutter.io');
       await robot.submitEmailViaButton();
-      selectByType(LarryPageView).childByType(Step6Submit).existsOnce();
+      spot.byType(LarryPageView).childByType(Step6Submit).existsOnce();
     });
 
     testWidgets('Submit works without email', (tester) async {
       final WiredashTestRobot robot = await tester.goToEmailStep();
       await robot.enterEmail('');
       await robot.submitEmailViaButton();
-      selectByType(LarryPageView).childByType(Step6Submit).existsOnce();
+      spot.byType(LarryPageView).childByType(Step6Submit).existsOnce();
     });
 
     testWidgets('Submit via button - Shows error for invalid email',
