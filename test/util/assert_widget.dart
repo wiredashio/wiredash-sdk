@@ -6,9 +6,94 @@ import 'package:flutter_test/flutter_test.dart';
 
 final Spot spot = Spot();
 
-class Spot {
-  WidgetSelector byType(Type type) {
-    return WidgetSelector._(find.byType(type));
+class Spot with CommonSpots {
+  @override
+  WidgetSelector? get _self => null;
+}
+
+mixin CommonSpots {
+  WidgetSelector? get _self;
+
+  WidgetSelector byType(Type type, {List<WidgetSelector> parents = const []}) {
+    return WidgetSelector._(find.byType(type), parents);
+  }
+
+  WidgetSelector childByType(
+    Type type, {
+    List<WidgetSelector> parents = const [],
+  }) {
+    return WidgetSelector._(find.byType(type), [
+      if (_self != null) _self!,
+      ...parents,
+    ]);
+  }
+
+  WidgetSelector childByWidgetPredicate(
+    WidgetPredicate predicate, {
+    List<WidgetSelector> parents = const [],
+  }) {
+    return WidgetSelector._(
+      find.byWidgetPredicate(predicate),
+      [if (_self != null) _self!, ...parents],
+    );
+  }
+
+  WidgetSelector childByElementType(
+    Type type, {
+    List<WidgetSelector> parents = const [],
+  }) {
+    return WidgetSelector._(find.byElementType(type), [
+      if (_self != null) _self!,
+      ...parents,
+    ]);
+  }
+
+  WidgetSelector text(
+    String text, {
+    bool findRichText = false,
+    bool skipOffstage = true,
+    List<WidgetSelector> parents = const [],
+  }) {
+    final finder = find.text(
+      text,
+      findRichText: findRichText,
+      skipOffstage: skipOffstage,
+    );
+    return WidgetSelector._(finder, [if (_self != null) _self!, ...parents]);
+  }
+
+  /// Caution: this is a very expensive operation.
+  WidgetSelector childWidgetWithText(
+    Type widgetType,
+    String text, {
+    bool skipOffstage = true,
+    List<WidgetSelector> parents = const [],
+  }) {
+    final finder = find.widgetWithText(
+      widgetType,
+      text,
+      skipOffstage: skipOffstage,
+    );
+    return WidgetSelector._(finder, [if (_self != null) _self!, ...parents]);
+  }
+
+  WidgetSelector textContaining(
+    Pattern pattern, {
+    bool skipOffstage = true,
+    List<WidgetSelector> parents = const [],
+  }) {
+    final finder = find.textContaining(
+      pattern,
+      skipOffstage: skipOffstage,
+    );
+    return WidgetSelector._(finder, [if (_self != null) _self!, ...parents]);
+  }
+
+  WidgetSelector child(
+    Finder finder, {
+    List<WidgetSelector> parents = const [],
+  }) {
+    return WidgetSelector._(finder, [if (_self != null) _self!, ...parents]);
   }
 }
 
@@ -18,26 +103,14 @@ extension SpotFinder on Finder {
   }
 }
 
-@Deprecated('Use Finder.spot')
-WidgetSelector select(Finder finder) {
-  return WidgetSelector._(finder);
-}
-
-extension Select on Finder {
-  @Deprecated('Use Finder.spot')
-  WidgetSelector get select => WidgetSelector._(this);
-}
-
-WidgetSelector multipleParents(List<WidgetSelector> parents) {
-  final anyWidget = find.byWidgetPredicate((widget) => true);
-  return WidgetSelector._(anyWidget, parents);
-}
-
 /// Represents a chain of widgets in the widget tree that can be asserted
 ///
 /// Compared to normal [Finder], this gives great error messages along the chain
-class WidgetSelector {
-  WidgetSelector._(this.standaloneFinder, [this.parents = const []]);
+class WidgetSelector with CommonSpots {
+  WidgetSelector._(
+    this.standaloneFinder, [
+    List<WidgetSelector>? parents,
+  ]) : parents = parents ?? [];
 
   final Finder standaloneFinder;
   final List<WidgetSelector> parents;
@@ -59,57 +132,6 @@ class WidgetSelector {
     );
   }
 
-  WidgetSelector childByType(Type type) {
-    return WidgetSelector._(find.byType(type), [this]);
-  }
-
-  WidgetSelector childByWidgetPredicate(WidgetPredicate predicate) {
-    return WidgetSelector._(find.byWidgetPredicate(predicate), [this]);
-  }
-
-  WidgetSelector childByElementType(Type type) {
-    return WidgetSelector._(find.byElementType(type), [this]);
-  }
-
-  WidgetSelector text(
-    String text, {
-    bool findRichText = false,
-    bool skipOffstage = true,
-  }) {
-    final finder = find.text(
-      text,
-      findRichText: findRichText,
-      skipOffstage: skipOffstage,
-    );
-    return WidgetSelector._(finder, [this]);
-  }
-
-  /// Caution: this is a very expensive operation.
-  WidgetSelector childWidgetWithText(
-    Type widgetType,
-    String text, {
-    bool skipOffstage = true,
-  }) {
-    final finder = find.widgetWithText(
-      widgetType,
-      text,
-      skipOffstage: skipOffstage,
-    );
-    return WidgetSelector._(finder, [this]);
-  }
-
-  WidgetSelector textContaining(Pattern pattern, {bool skipOffstage = true}) {
-    final finder = find.textContaining(
-      pattern,
-      skipOffstage: skipOffstage,
-    );
-    return WidgetSelector._(finder, [this]);
-  }
-
-  WidgetSelector child(Finder finder) {
-    return WidgetSelector._(finder, [this]);
-  }
-
   @override
   String toString() {
     return "'${standaloneFinder.description}'";
@@ -128,6 +150,9 @@ class WidgetSelector {
       return '[${parentBreadcrumbs.join(' && ')}] > ${toString()}';
     }
   }
+
+  @override
+  WidgetSelector get _self => this;
 }
 
 extension WidgetSelectorMatcher on WidgetSelector {
@@ -272,13 +297,6 @@ extension WidgetSelectorMatcher on WidgetSelector {
     // all fine, found at least 1 element
     assert(elements.isNotEmpty);
     return this;
-  }
-
-  WidgetSelector withParents(List<WidgetSelector> selectors) {
-    return WidgetSelector._(
-      finder,
-      [...parents, ...selectors],
-    );
   }
 
   WidgetSelector doesNotExist() {

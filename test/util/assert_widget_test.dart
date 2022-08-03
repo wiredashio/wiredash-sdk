@@ -54,31 +54,34 @@ void main() {
         ),
       ),
     );
-    multipleParents([spot.byType(Wrap), spot.byType(GestureDetector)])
-        .text('Hello')
-        .existsOnce();
+    spot.text(
+      'Hello',
+      parents: [spot.byType(Wrap), spot.byType(GestureDetector)],
+    ).existsOnce();
 
-    multipleParents([
-      spot.byType(SizedBox).childByType(GestureDetector),
-      spot.byType(Center)
-    ]).text('Hello').existsOnce();
+    spot.text(
+      'Hello',
+      parents: [
+        spot.byType(SizedBox).childByType(GestureDetector),
+        spot.byType(Center)
+      ],
+    ).existsOnce();
 
-    multipleParents([
-      spot.byType(GestureDetector),
-      spot.byType(_UnknownWidget),
-    ]).text('Hello').doesNotExist();
+    spot.text(
+      'Hello',
+      parents: [
+        spot.byType(GestureDetector),
+        spot.byType(_UnknownWidget),
+      ],
+    ).doesNotExist();
 
-    // TODO unclear. Does .withParents() add parents to
-    //  - `text('Hello')` or
-    //  - `selectByType(SizedBox).text('Hello;)`?
+    spot.byType(SizedBox).text(
+      'Hello',
+      parents: [spot.byType(Center).childByType(Wrap)],
+    ).existsOnce();
+
     spot
-        .byType(SizedBox)
-        .text('Hello')
-        .withParents([spot.byType(Center).childByType(Wrap)]).existsOnce();
-
-    spot
-        .byType(SizedBox)
-        .withParents([spot.byType(Center).childByType(Wrap)])
+        .byType(SizedBox, parents: [spot.byType(Center).childByType(Wrap)])
         .text('Hello')
         .existsOnce();
   });
