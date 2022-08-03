@@ -388,7 +388,7 @@ abstract class WiredashLocalizations {
   /// No description provided for @npsStep2MessageDescription.
   ///
   /// In en, this message translates to:
-  /// **'Tell us a bit more about why you chose {rating}'**
+  /// **'Could you tell us a bit more about why you chose {rating}. This step is optional.'**
   String npsStep2MessageDescription(int rating);
 
   /// No description provided for @npsStep2MessageHint.
@@ -427,11 +427,11 @@ abstract class WiredashLocalizations {
   /// **'Back'**
   String get npsBackButton;
 
-  /// No description provided for @npsDoneButton.
+  /// No description provided for @npsSubmitButton.
   ///
   /// In en, this message translates to:
-  /// **'Done'**
-  String get npsDoneButton;
+  /// **'Submit'**
+  String get npsSubmitButton;
 
   /// No description provided for @backdropReturnToApp.
   ///

@@ -169,7 +169,7 @@ class WiredashLocalizationsEn extends WiredashLocalizations {
 
   @override
   String npsStep2MessageDescription(int rating) {
-    return 'Tell us a bit more about why you chose $rating';
+    return 'Could you tell us a bit more about why you chose $rating. This step is optional.';
   }
 
   @override
@@ -191,7 +191,7 @@ class WiredashLocalizationsEn extends WiredashLocalizations {
   String get npsBackButton => 'Back';
 
   @override
-  String get npsDoneButton => 'Done';
+  String get npsSubmitButton => 'Submit';
 
   @override
   String get backdropReturnToApp => 'Return to app';

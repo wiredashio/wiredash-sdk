@@ -102,7 +102,7 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
                 },
               ),
               TronButton(
-                label: context.l10n.npsDoneButton,
+                label: context.l10n.npsSubmitButton,
                 trailingIcon: Wirecons.check,
                 onTap: () {
                   context.npsModel.submit();
