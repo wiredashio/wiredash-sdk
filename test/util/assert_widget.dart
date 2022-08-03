@@ -21,6 +21,7 @@ mixin CommonSpots {
   WidgetSelector childByType(
     Type type, {
     List<WidgetSelector> parents = const [],
+    List<WidgetSelector> children = const [],
   }) {
     return WidgetSelector._(find.byType(type), [
       if (_self != null) _self!,
@@ -110,25 +111,32 @@ class WidgetSelector with CommonSpots {
   WidgetSelector._(
     this.standaloneFinder, [
     List<WidgetSelector>? parents,
-  ]) : parents = parents ?? [];
+    List<WidgetSelector>? children,
+  ])  : parents = parents ?? [],
+        children = children ?? [];
 
   final Finder standaloneFinder;
   final List<WidgetSelector> parents;
+  final List<WidgetSelector> children;
 
   Finder get finder {
     final parents = this.parents;
-    if (parents.isEmpty) {
-      return standaloneFinder;
-    }
-    if (parents.length == 1) {
-      return find.descendant(
-        of: parents.first.finder,
-        matching: standaloneFinder,
-      );
-    }
+    final children = this.children;
+    // if (parents.isEmpty) {
+    //   return standaloneFinder;
+    // }
+    // if (parents.length == 1) {
+    //   return find.descendant(
+    //     of: parents.first.finder,
+    //     matching: standaloneFinder,
+    //   );
+    // }
     return _MultiDescendantFinder(
       parents.map((e) => e.finder).toList(),
-      standaloneFinder,
+      _MultiAncestorFinder(
+        children.map((e) => e.finder).toList(),
+        standaloneFinder,
+      ),
     );
   }
 
@@ -361,6 +369,10 @@ class _MultiDescendantFinder extends Finder {
 
   @override
   Iterable<Element> get allCandidates sync* {
+    if (ancestors.isEmpty) {
+      yield* super.allCandidates;
+    }
+
     final List<Iterable<Element>> ancestorElements = ancestors.map((ancestor) {
       return ancestor.evaluate().expand((element) {
         return collectAllElementsFrom(element, skipOffstage: skipOffstage);
@@ -382,5 +394,38 @@ class _MultiDescendantFinder extends Finder {
         yield element;
       }
     }
+  }
+}
+
+class _MultiAncestorFinder extends Finder {
+  _MultiAncestorFinder(this.descendants, this.ancestor)
+      : super(skipOffstage: false);
+
+  final Finder ancestor;
+  final List<Finder> descendants;
+
+  @override
+  String get description {
+    return '${ancestor.description} which is an ancestor of  [${descendants.map((e) => e.description).join(' && ')}]';
+  }
+
+  @override
+  Iterable<Element> apply(Iterable<Element> candidates) {
+    return candidates
+        .where((Element element) => ancestor.evaluate().contains(element));
+  }
+
+  @override
+  Iterable<Element> get allCandidates {
+    final List<Element> candidates = <Element>[];
+    for (final Element root in descendants.expand((it) => it.evaluate())) {
+      final List<Element> ancestors = <Element>[];
+      root.visitAncestorElements((Element element) {
+        ancestors.add(element);
+        return true;
+      });
+      candidates.addAll(ancestors);
+    }
+    return candidates;
   }
 }

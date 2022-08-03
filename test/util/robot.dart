@@ -330,13 +330,16 @@ class WiredashTestRobot {
     }
 
     // Wait for active "Save" button
-    // TODO replace with spot
-    final nextButton = find
-        .descendant(
-          of: screenshotBar.childByType(TronButton).finder,
-          matching: find.text('l10n.feedbackStep3ScreenshotBarSaveButton'),
-        )
-        .spot;
+    final nextButton = screenshotBar.childByType(
+      TronButton,
+      children: [spot.text('l10n.feedbackStep3ScreenshotBarSaveButton')],
+    );
+    // final nextButton = find
+    //     .descendant(
+    //       of: screenshotBar.childByType(TronButton).finder,
+    //       matching: find.text('l10n.feedbackStep3ScreenshotBarSaveButton'),
+    //     )
+    //     .spot;
 
     try {
       await tester.waitUntil(nextButton.finder, findsOneWidget);
