@@ -84,6 +84,34 @@ void main() {
         .byType(SizedBox, parents: [spot.byType(Center).childByType(Wrap)])
         .text('Hello')
         .existsOnce();
+
+    // TODO what if we want multiple results to be returned?
+  });
+
+  testWidgets('narrow results by checking children', (tester) async {
+    await tester.pumpWidget(
+      NotAWidgetsApp(
+        child: Wrap(
+          children: [
+            SizedBox(
+              child: GestureDetector(
+                child: const Text('a', maxLines: 2),
+              ),
+            ),
+            GestureDetector(
+              child: const Text('b', maxLines: 1),
+            ),
+            GestureDetector(
+              child: const Text('c', maxLines: 1),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    spot.byType(GestureDetector, children: [spot.text('a')]).existsOnce();
+
+    // TODO what if we want multiple results to be returned?
   });
 }
 

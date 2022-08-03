@@ -14,8 +14,12 @@ class Spot with CommonSpots {
 mixin CommonSpots {
   WidgetSelector? get _self;
 
-  WidgetSelector byType(Type type, {List<WidgetSelector> parents = const []}) {
-    return WidgetSelector._(find.byType(type), parents);
+  WidgetSelector byType(
+    Type type, {
+    List<WidgetSelector> parents = const [],
+    List<WidgetSelector> children = const [],
+  }) {
+    return WidgetSelector._(find.byType(type), parents, children);
   }
 
   WidgetSelector childByType(
@@ -23,30 +27,41 @@ mixin CommonSpots {
     List<WidgetSelector> parents = const [],
     List<WidgetSelector> children = const [],
   }) {
-    return WidgetSelector._(find.byType(type), [
-      if (_self != null) _self!,
-      ...parents,
-    ]);
+    return WidgetSelector._(
+      find.byType(type),
+      [
+        if (_self != null) _self!,
+        ...parents,
+      ],
+      children,
+    );
   }
 
   WidgetSelector childByWidgetPredicate(
     WidgetPredicate predicate, {
     List<WidgetSelector> parents = const [],
+    List<WidgetSelector> children = const [],
   }) {
     return WidgetSelector._(
       find.byWidgetPredicate(predicate),
       [if (_self != null) _self!, ...parents],
+      children,
     );
   }
 
   WidgetSelector childByElementType(
     Type type, {
     List<WidgetSelector> parents = const [],
+    List<WidgetSelector> children = const [],
   }) {
-    return WidgetSelector._(find.byElementType(type), [
-      if (_self != null) _self!,
-      ...parents,
-    ]);
+    return WidgetSelector._(
+      find.byElementType(type),
+      [
+        if (_self != null) _self!,
+        ...parents,
+      ],
+      children,
+    );
   }
 
   WidgetSelector text(
@@ -54,13 +69,18 @@ mixin CommonSpots {
     bool findRichText = false,
     bool skipOffstage = true,
     List<WidgetSelector> parents = const [],
+    List<WidgetSelector> children = const [],
   }) {
     final finder = find.text(
       text,
       findRichText: findRichText,
       skipOffstage: skipOffstage,
     );
-    return WidgetSelector._(finder, [if (_self != null) _self!, ...parents]);
+    return WidgetSelector._(
+      finder,
+      [if (_self != null) _self!, ...parents],
+      children,
+    );
   }
 
   /// Caution: this is a very expensive operation.
@@ -69,32 +89,47 @@ mixin CommonSpots {
     String text, {
     bool skipOffstage = true,
     List<WidgetSelector> parents = const [],
+    List<WidgetSelector> children = const [],
   }) {
     final finder = find.widgetWithText(
       widgetType,
       text,
       skipOffstage: skipOffstage,
     );
-    return WidgetSelector._(finder, [if (_self != null) _self!, ...parents]);
+    return WidgetSelector._(
+      finder,
+      [if (_self != null) _self!, ...parents],
+      children,
+    );
   }
 
   WidgetSelector textContaining(
     Pattern pattern, {
     bool skipOffstage = true,
     List<WidgetSelector> parents = const [],
+    List<WidgetSelector> children = const [],
   }) {
     final finder = find.textContaining(
       pattern,
       skipOffstage: skipOffstage,
     );
-    return WidgetSelector._(finder, [if (_self != null) _self!, ...parents]);
+    return WidgetSelector._(
+      finder,
+      [if (_self != null) _self!, ...parents],
+      children,
+    );
   }
 
   WidgetSelector child(
     Finder finder, {
     List<WidgetSelector> parents = const [],
+    List<WidgetSelector> children = const [],
   }) {
-    return WidgetSelector._(finder, [if (_self != null) _self!, ...parents]);
+    return WidgetSelector._(
+      finder,
+      [if (_self != null) _self!, ...parents],
+      children,
+    );
   }
 }
 
@@ -120,21 +155,43 @@ class WidgetSelector with CommonSpots {
   final List<WidgetSelector> children;
 
   Finder get finder {
-    final parents = this.parents;
-    final children = this.children;
-    // if (parents.isEmpty) {
-    //   return standaloneFinder;
-    // }
-    // if (parents.length == 1) {
-    //   return find.descendant(
-    //     of: parents.first.finder,
-    //     matching: standaloneFinder,
-    //   );
-    // }
-    return _MultiDescendantFinder(
-      parents.map((e) => e.finder).toList(),
-      _MultiAncestorFinder(
-        children.map((e) => e.finder).toList(),
+    final ancestors = parents;
+    final descendants = children;
+    if (descendants.isEmpty && ancestors.isEmpty) {
+      return standaloneFinder;
+    }
+
+    if (descendants.isEmpty) {
+      if (ancestors.length == 1) {
+        return find.descendant(
+          of: ancestors.first.finder,
+          matching: standaloneFinder,
+        );
+      }
+      return _MultiAncestorDescendantFinder(
+        ancestors.map((e) => e.finder).toList(),
+        standaloneFinder,
+      );
+    }
+
+    if (ancestors.isEmpty) {
+      if (descendants.length == 1) {
+        return find.ancestor(
+          of: descendants.first.finder,
+          matching: standaloneFinder,
+        );
+      }
+      return _MultiDescendantsAncestorFinder(
+        descendants.map((e) => e.finder).toList(),
+        standaloneFinder,
+      );
+    }
+
+    // this always works but produces unnecessary nesting and harder to read error messages
+    return _MultiAncestorDescendantFinder(
+      ancestors.map((e) => e.finder).toList(),
+      _MultiDescendantsAncestorFinder(
+        descendants.map((e) => e.finder).toList(),
         standaloneFinder,
       ),
     );
@@ -346,24 +403,24 @@ extension on List<WidgetSelector> {
   }
 }
 
-class _MultiDescendantFinder extends Finder {
-  _MultiDescendantFinder(
+class _MultiAncestorDescendantFinder extends Finder {
+  _MultiAncestorDescendantFinder(
     this.ancestors,
-    this.descendant, {
+    this.finder, {
     bool skipOffstage = true,
   }) : super(skipOffstage: skipOffstage);
 
   final List<Finder> ancestors;
-  final Finder descendant;
+  final Finder finder;
 
   @override
   String get description {
-    return '${descendant.description} that has ancestors with [${ancestors.map((e) => e.description).join(' && ')}]';
+    return '${finder.description} that has ancestors with [${ancestors.map((e) => e.description).join(' && ')}]';
   }
 
   @override
   Iterable<Element> apply(Iterable<Element> candidates) {
-    final evaluate = descendant.evaluate().toSet();
+    final evaluate = finder.evaluate().toSet();
     return candidates.where((Element element) => evaluate.contains(element));
   }
 
@@ -371,9 +428,9 @@ class _MultiDescendantFinder extends Finder {
   Iterable<Element> get allCandidates sync* {
     if (ancestors.isEmpty) {
       yield* super.allCandidates;
+      return;
     }
-
-    final List<Iterable<Element>> ancestorElements = ancestors.map((ancestor) {
+    final List<Set<Element>> ancestorElements = ancestors.map((ancestor) {
       return ancestor.evaluate().expand((element) {
         return collectAllElementsFrom(element, skipOffstage: skipOffstage);
       }).toSet();
@@ -397,35 +454,35 @@ class _MultiDescendantFinder extends Finder {
   }
 }
 
-class _MultiAncestorFinder extends Finder {
-  _MultiAncestorFinder(this.descendants, this.ancestor)
+class _MultiDescendantsAncestorFinder extends Finder {
+  _MultiDescendantsAncestorFinder(this.descendants, this.finder)
       : super(skipOffstage: false);
 
-  final Finder ancestor;
+  final Finder finder;
   final List<Finder> descendants;
 
   @override
   String get description {
-    return '${ancestor.description} which is an ancestor of  [${descendants.map((e) => e.description).join(' && ')}]';
+    return '${finder.description} which is an ancestor of  [${descendants.map((e) => e.description).join(' && ')}]';
   }
 
   @override
   Iterable<Element> apply(Iterable<Element> candidates) {
-    return candidates
-        .where((Element element) => ancestor.evaluate().contains(element));
+    final allPossible = finder.evaluate().toSet();
+    return candidates.where((Element element) => allPossible.contains(element));
   }
 
   @override
   Iterable<Element> get allCandidates {
-    final List<Element> candidates = <Element>[];
-    for (final Element root in descendants.expand((it) => it.evaluate())) {
-      final List<Element> ancestors = <Element>[];
-      root.visitAncestorElements((Element element) {
-        ancestors.add(element);
-        return true;
-      });
-      candidates.addAll(ancestors);
+    if (descendants.isEmpty) {
+      return super.allCandidates;
     }
-    return candidates;
+    final Iterable<Element> possibleParents = descendants.expand((ancestor) {
+      return ancestor.evaluate().expand((element) {
+        return element.parents.toList();
+      });
+    });
+
+    return possibleParents;
   }
 }
