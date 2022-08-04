@@ -1,0 +1,59 @@
+{
+  "@@locale": "tr",
+  "feedbackStep1MessageTitle": "Bize geri bildirim gönder",
+  "feedbackStep1MessageBreadcrumbTitle": "Mesaj oluştur",
+  "feedbackStep1MessageDescription": "Karşılaştığın olayın kısa bir açıklamasını ekle",
+  "feedbackStep1MessageHint": "Avatarımı değiştirmeye çalıştığımda bilinmeyen bir hata alıyorum...",
+  "feedbackStep1MessageErrorMissingMessage": "Lütfen mesaj ekleyin",
+
+  "feedbackStep2LabelsTitle": "Hangi etiket geri bildiriminizi en iyi şekilde açıklıyor?",
+  "feedbackStep2LabelsBreadcrumbTitle": "Etiketler",
+  "feedbackStep2LabelsDescription": "Doğru kategoriyi seçmeniz, hatayı tespit etmemize ve sorumlu kişiye iletmemize yardımcı oluyor.",
+
+
+  "feedbackStep3ScreenshotOverviewTitle": "Daha iyi anlaşılmak için ekran görüntüsü ekle?",
+  "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "Ekran görüntüleri",
+  "feedbackStep3ScreenshotOverviewDescription": "Uygulamada dolanabilecek ve ne zaman ekran görüntüsü alacağınızı seçebileceksiniz",
+  "feedbackStep3ScreenshotOverviewSkipButton": "Geç",
+  "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Ekran görüntüsü ekle",
+
+  "feedbackStep3ScreenshotBarNavigateTitle": "Ekran görüntüsü al",
+  "feedbackStep3ScreenshotBarDrawTitle": "Bir şeyler göstermek için ekranın üzerine çiz",
+  "feedbackStep3ScreenshotBarDrawUndoButton": "Geri al",
+  "feedbackStep3ScreenshotBarCaptureButton": "Çek",
+  "feedbackStep3ScreenshotBarSaveButton": "Kaydet",
+  "feedbackStep3ScreenshotBarOkButton": "Tamam",
+
+  "feedbackStep3GalleryTitle": "Eklenen ekran görüntüleri",
+  "feedbackStep3GalleryBreadcrumbTitle": "Ekran görüntüleri",
+  "feedbackStep3GalleryDescription": "Hatayı daha iyi anlamamız için daha fazla ekran görüntüsü ekleyebilirsin.",
+
+  "feedbackStep4EmailTitle": "Hatanız hakkında e-mail ile haberdar edilin",
+  "feedbackStep4EmailBreadcrumbTitle": "İletişim",
+  "feedbackStep4EmailDescription": "Aşağıya e-mail adresinizi girin ya da boş bırakın",
+  "feedbackStep4EmailInvalidEmail": "Bu geçerli bir e-mail adresine benzemiyor, isterseniz boş da bırakabilirsiniz.",
+  "feedbackStep4EmailInputHint": "mail@ornek.com",
+
+  "feedbackStep6SubmitTitle": "Geri bildirimi yolla",
+  "feedbackStep6SubmitBreadcrumbTitle": "Onayla",
+  "feedbackStep6SubmitDescription": "Lütfen onaylamadan önce tüm bilgileri gözden geçirin.\nİstediğinizde geriye dönüp geri bildiriminizi değiştirebilirsiniz.",
+  "feedbackStep6SubmitSubmitButton": "Onayla",
+  "feedbackStep6SubmitSubmitShowDetailsButton": "Detayları göster",
+  "feedbackStep6SubmitSubmitHideDetailsButton": "Detayları sakla",
+  "feedbackStep6SubmitSubmitDetailsTitle": "Geri bildirim detayları",
+
+  "feedbackStep7SubmissionInFlightMessage": "Geri bildiriminiz yollanıyor",
+  "feedbackStep7SubmissionSuccessMessage": "Geri bildiriminiz için teşekkürler!",
+  "feedbackStep7SubmissionErrorMessage": "Geri bildirim yollanması başarısız",
+  "feedbackStep7SubmissionOpenErrorButton": "Hatanın detaylarını görmek için tıklayın",
+  "feedbackStep7SubmissionRetryButton": "Yeniden dene",
+
+  "feedbackStepXOfY": "{total} adımın {current}. adımı",
+  "feedbackDiscardButton": "Geri bildirimi iptal et",
+  "feedbackDiscardConfirmButton": "Ciddi misin? İptal mi!",
+  "feedbackNextButton": "İleri",
+  "feedbackBackButton": "Geri",
+  "feedbackCloseButton": "Kapat",
+
+  "backdropReturnToApp": "Uygulamaya dön"
+}
