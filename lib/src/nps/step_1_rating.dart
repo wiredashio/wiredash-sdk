@@ -1,10 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/_nps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
-import 'package:wiredash/src/nps/nps_model.dart';
-import 'package:wiredash/src/nps/nps_model_provider.dart';
 import 'package:wiredash/src/utils/delay.dart';
 
 class NpsStep1Rating extends StatefulWidget {
@@ -91,7 +90,6 @@ class _NpsRater extends StatefulWidget {
 }
 
 class _NpsRaterState extends State<_NpsRater> {
-  static const double _twoLineBreakpoint = 600;
   static const double _minItemWidth = 44;
 
   Delay? _selectionDelay;

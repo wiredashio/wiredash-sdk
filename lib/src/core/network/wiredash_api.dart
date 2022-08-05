@@ -485,6 +485,7 @@ class NpsRequestBody {
     required this.sdkVersion,
     this.userEmail,
     this.userId,
+    required this.buildInfo,
   });
 
   final String? appLocale;
@@ -499,12 +500,28 @@ class NpsRequestBody {
   final int sdkVersion;
   final String? userEmail;
   final String? userId;
+  final BuildInfo buildInfo;
 
   Map<String, Object> toJson() {
     final Map<String, Object> body = {};
 
     if (appLocale != null) {
       body['appLocale'] = appLocale!;
+    }
+
+    final buildCommit = buildInfo.buildCommit;
+    if (buildCommit != null) {
+      body.addAll({'buildCommit': buildCommit});
+    }
+
+    final buildNumber = buildInfo.buildNumber;
+    if (buildNumber != null) {
+      body.addAll({'buildNumber': buildNumber});
+    }
+
+    final buildVersion = buildInfo.buildVersion;
+    if (buildVersion != null) {
+      body.addAll({'buildVersion': buildVersion});
     }
 
     body['deviceId'] = deviceId;
@@ -558,6 +575,7 @@ class NpsStartRequestBody {
     required this.sdkVersion,
     this.userEmail,
     this.userId,
+    required this.buildInfo,
   });
 
   final String? appLocale;
@@ -570,12 +588,28 @@ class NpsStartRequestBody {
   final int sdkVersion;
   final String? userEmail;
   final String? userId;
+  final BuildInfo buildInfo;
 
   Map<String, Object> toJson() {
     final Map<String, Object> body = {};
 
     if (appLocale != null) {
       body['appLocale'] = appLocale!;
+    }
+
+    final buildCommit = buildInfo.buildCommit;
+    if (buildCommit != null) {
+      body.addAll({'buildCommit': buildCommit});
+    }
+
+    final buildNumber = buildInfo.buildNumber;
+    if (buildNumber != null) {
+      body.addAll({'buildNumber': buildNumber});
+    }
+
+    final buildVersion = buildInfo.buildVersion;
+    if (buildVersion != null) {
+      body.addAll({'buildVersion': buildVersion});
     }
 
     body['deviceId'] = deviceId;

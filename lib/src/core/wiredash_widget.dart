@@ -3,16 +3,15 @@ import 'dart:ui' as ui;
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_feedback.dart';
+import 'package:wiredash/src/_nps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/context_cache.dart';
 import 'package:wiredash/src/core/options/wiredash_options.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/not_a_widgets_app.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/feedback/feedback_backdrop.dart';
-import 'package:wiredash/src/nps/nps_backdrop.dart';
-import 'package:wiredash/src/nps/nps_model_provider.dart';
 import 'package:wiredash/wiredash.dart';
 
 /// Capture in-app user feedback, wishes, ratings and much more
@@ -52,6 +51,7 @@ class Wiredash extends StatefulWidget {
     this.options,
     this.theme,
     this.feedbackOptions,
+    this.npsOptions,
     this.padding,
     required this.child,
   }) : super(key: key);
@@ -71,6 +71,9 @@ class Wiredash extends StatefulWidget {
 
   /// Customize the feedback flow
   final WiredashFeedbackOptions? feedbackOptions;
+
+  /// Customize when to show the (Net promoter score) NPS flow
+  final NpsOptions? npsOptions;
 
   /// Default visual properties, like colors and fonts for the Wiredash bottom
   /// sheet and the screenshot capture UI.

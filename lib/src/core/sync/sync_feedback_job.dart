@@ -1,6 +1,6 @@
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 
 class UploadPendingFeedbackJob extends Job {
   final FeedbackSubmitter Function() feedbackSubmitterProvider;

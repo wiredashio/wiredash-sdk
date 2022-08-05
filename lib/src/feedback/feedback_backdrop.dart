@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 
 /// The backdrop for [WiredashFlow.feedback]
 class FeedbackBackdrop extends StatelessWidget {

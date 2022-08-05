@@ -3,9 +3,8 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wiredash/src/core/options/feedback_options.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 
 import 'util/assert_widget.dart';
 import 'util/robot.dart';

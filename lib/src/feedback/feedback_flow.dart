@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/material_support_layer.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/feedback/ui/grey_scale_filter.dart';
 
 class WiredashFeedbackFlow extends StatefulWidget {

@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/_nps.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
-
 import 'package:wiredash/src/core/support/material_support_layer.dart';
-import 'package:wiredash/src/nps/nps_model_provider.dart';
-import 'package:wiredash/src/nps/step_1_rating.dart';
-import 'package:wiredash/src/nps/step_2_message.dart';
-import 'package:wiredash/src/nps/step_3_thanks.dart';
 
 class NpsFlow extends StatefulWidget {
   const NpsFlow({Key? key}) : super(key: key);

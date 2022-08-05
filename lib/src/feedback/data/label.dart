@@ -1,4 +1,4 @@
-import 'package:wiredash/src/feedback/_feedback.dart';
+import 'package:wiredash/src/_feedback.dart';
 
 /// A label/tag can be assigned to a [PersistedFeedbackItem].
 ///

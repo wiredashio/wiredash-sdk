@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_nps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
-import 'package:wiredash/src/nps/nps_model.dart';
-import 'package:wiredash/src/nps/nps_model_provider.dart';
 
 class NpsStep2Message extends StatefulWidget {
   const NpsStep2Message({

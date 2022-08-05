@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 
 class ScreenshotBar extends StatelessWidget {
   const ScreenshotBar({

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
+import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
 import 'package:wiredash/src/utils/delay.dart';
 
@@ -64,10 +65,7 @@ class NpsModel extends ChangeNotifier2 {
     final deviceInfo = _services.deviceInfoGenerator.generate();
     final metaData = _services.wiredashModel.metaData;
     // Allow devs to collect additional information
-    // TODO use nps collectMetaData
-    final collector =
-        _services.wiredashWidget.feedbackOptions?.collectMetaData ??
-            _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
+    final collector = _services.wiredashWidget.npsOptions?.collectMetaData;
     await collector?.call(metaData);
 
     final body = NpsStartRequestBody(
@@ -80,8 +78,17 @@ class NpsModel extends ChangeNotifier2 {
       platformLocale: deviceInfo.platformLocale,
       platformOS: deviceInfo.platformOS,
       platformUserAgent: deviceInfo.userAgent,
+      buildInfo: buildInfo,
     );
-    await _services.api.sendNpsStart(body);
+    try {
+      await _services.api.sendNpsStart(body);
+    } catch (e, stack) {
+      if (kDevMode) {
+        reportWiredashError(e, stack, 'NPS start request failed');
+      } else {
+        // fail silently
+      }
+    }
   }
 
   Future<void> submit() async {
@@ -93,10 +100,7 @@ class NpsModel extends ChangeNotifier2 {
       final deviceInfo = _services.deviceInfoGenerator.generate();
       final metaData = _services.wiredashModel.metaData;
       // Allow devs to collect additional information
-      // TODO use nps collectMetaData
-      final collector =
-          _services.wiredashWidget.feedbackOptions?.collectMetaData ??
-              _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
+      final collector = _services.wiredashWidget.npsOptions?.collectMetaData;
       await collector?.call(metaData);
 
       final body = NpsRequestBody(
@@ -112,6 +116,7 @@ class NpsModel extends ChangeNotifier2 {
         platformLocale: deviceInfo.platformLocale,
         platformOS: deviceInfo.platformOS,
         platformUserAgent: deviceInfo.userAgent,
+        buildInfo: buildInfo,
       );
       await _services.api.sendNps(body);
       // ignore: avoid_print

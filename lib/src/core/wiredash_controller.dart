@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_nps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/context_cache.dart';
@@ -233,11 +234,26 @@ class WiredashController {
 }
 
 extension NpsWiredash on WiredashController {
+  /// Always opens the NPS flow
+  ///
+  /// Use [autoShowNps] to trigger Wiredash to eventually show the NPS flow
+  /// based on the [NpsOptions.frequency] and [NpsOptions.newUserDelay]
   void showNps({
     bool? inheritMaterialTheme,
     bool? inheritCupertinoTheme,
   }) {
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
     _model.show(flow: WiredashFlow.nps);
+  }
+
+  /// Eventually shows the NPS flow depending on the [NpsOptions.frequency] and
+  /// [NpsOptions.newUserDelay] settings.
+  ///
+  /// Use this method to let Wiredash decide whether it is a good time to show
+  /// the NPS flow or not.
+  void autoShowNps() {
+    final npsOptions = _model.services.wiredashWidget.npsOptions;
+
+    showNps();
   }
 }
