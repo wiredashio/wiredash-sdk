@@ -88,6 +88,9 @@ class _NpsRater extends StatefulWidget {
 }
 
 class _NpsRaterState extends State<_NpsRater> {
+  static const double _twoLineBreakpoint = 600;
+  static const double _minItemWidth = 44;
+
   Delay? _selectionDelay;
 
   // score between pressed and submitted to callback
@@ -121,49 +124,72 @@ class _NpsRaterState extends State<_NpsRater> {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: context.theme.windowSize.width > 800
-          ? Alignment.centerLeft
-          : Alignment.center,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final maxItemWidth = constraints.maxWidth / 6;
-          final selectedScore = _inflightScore ?? widget.score;
-          return Wrap(
-            alignment: WrapAlignment.center,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (final i in [0, 1, 2, 3, 4, 5])
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: maxItemWidth),
-                      child: _RatingCard(
-                        value: i,
-                        checked: i == selectedScore,
-                        onTap: () => _onTap(i),
-                      ),
-                    ),
-                ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double maxItemWidth;
+        final int rows;
+        final itemSpace = constraints.maxWidth / 11;
+        if (itemSpace < _minItemWidth) {
+          // make two rows
+          final two = constraints.maxWidth / 6;
+          rows = 2;
+          maxItemWidth = two;
+        } else {
+          // show everything in a single line
+          rows = 1;
+          maxItemWidth = itemSpace;
+        }
+        final selectedScore = _inflightScore ?? widget.score;
+        final row1 = Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final i in [0, 1, 2, 3, 4, 5])
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxItemWidth),
+                child: _RatingCard(
+                  value: i,
+                  checked: i == selectedScore,
+                  onTap: () => _onTap(i),
+                ),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (final i in [6, 7, 8, 9, 10])
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: maxItemWidth),
-                      child: _RatingCard(
-                        value: i,
-                        checked: i == selectedScore,
-                        onTap: () => _onTap(i),
-                      ),
-                    ),
-                ],
+          ],
+        );
+        final row2 = Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final i in [6, 7, 8, 9, 10])
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxItemWidth),
+                child: _RatingCard(
+                  value: i,
+                  checked: i == selectedScore,
+                  onTap: () => _onTap(i),
+                ),
               ),
-            ],
-          );
-        },
-      ),
+          ],
+        );
+
+        return Align(
+          alignment: rows == 1 ? Alignment.centerLeft : Alignment.center,
+          child: Builder(
+            builder: (context) {
+              if (rows == 1) {
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [...row1.children, ...row2.children],
+                );
+              } else {
+                return Column(
+                  children: [
+                    row1,
+                    row2,
+                  ],
+                );
+              }
+            },
+          ),
+        );
+      },
     );
   }
 }
