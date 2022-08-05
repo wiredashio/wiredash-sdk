@@ -20,6 +20,21 @@ class NpsModel extends ChangeNotifier2 {
     notifyListeners();
   }
 
+  // The question that was shown to the use to be send to the backend
+  String? _questionInUI;
+  bool _submittedQuestionSeen = false;
+
+  // ignore: unnecessary_getters_setters
+  String? get questionInUI => _questionInUI;
+
+  set questionInUI(String? questionInUI) {
+    _questionInUI = questionInUI;
+    if (!_submittedQuestionSeen) {
+      _submittedQuestionSeen = true;
+      submitNpsStart();
+    }
+  }
+
   int _index = 0;
 
   int get index => _index;
@@ -44,6 +59,31 @@ class NpsModel extends ChangeNotifier2 {
   Object? get submissionError => _submissionError;
   Object? _submissionError;
 
+  Future<void> submitNpsStart() async {
+    final deviceId = await _services.deviceIdGenerator.deviceId();
+    final deviceInfo = _services.deviceInfoGenerator.generate();
+    final metaData = _services.wiredashModel.metaData;
+    // Allow devs to collect additional information
+    // TODO use nps collectMetaData
+    final collector =
+        _services.wiredashWidget.feedbackOptions?.collectMetaData ??
+            _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
+    await collector?.call(metaData);
+
+    final body = NpsStartRequestBody(
+      question: _questionInUI!,
+      sdkVersion: wiredashSdkVersion,
+      deviceId: deviceId,
+      userId: metaData.userId,
+      userEmail: metaData.userEmail,
+      appLocale: _services.wiredashModel.appLocaleFromContext?.toLanguageTag(),
+      platformLocale: deviceInfo.platformLocale,
+      platformOS: deviceInfo.platformOS,
+      platformUserAgent: deviceInfo.userAgent,
+    );
+    await _services.api.sendNpsStart(body);
+  }
+
   Future<void> submit() async {
     _submitting = true;
     notifyListeners();
@@ -61,7 +101,7 @@ class NpsModel extends ChangeNotifier2 {
 
       final body = NpsRequestBody(
         score: score!,
-        question: 'TODO get questiosn from translations',
+        question: _questionInUI!,
         message: message,
         sdkVersion: wiredashSdkVersion,
         deviceId: deviceId,
@@ -73,7 +113,6 @@ class NpsModel extends ChangeNotifier2 {
         platformOS: deviceInfo.platformOS,
         platformUserAgent: deviceInfo.userAgent,
       );
-      // TODO don't await this, fail silently
       await _services.api.sendNps(body);
       // ignore: avoid_print
       print("NPS Submitted ($score)");

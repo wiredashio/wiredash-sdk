@@ -110,6 +110,22 @@ class WiredashApi {
     _parseResponseForErrors(response);
   }
 
+  Future<void> sendNpsStart(NpsStartRequestBody body) async {
+    final uri = Uri.parse('$_host/sendNpsStart');
+    final Request request = Request('POST', uri);
+    request.headers['Content-Type'] = 'application/json';
+
+    final args = body.toJson();
+    request.body = jsonEncode(args);
+
+    final response = await _send(request);
+    if (response.statusCode == 200) {
+      // success 🎉
+      return;
+    }
+    _parseResponseForErrors(response);
+  }
+
   Future<PingResponse> ping() async {
     final uri = Uri.parse('$_host/ping');
     final Request request = Request('POST', uri);
@@ -515,6 +531,71 @@ class NpsRequestBody {
     body['question'] = question;
 
     body['score'] = score.intValue;
+
+    body['sdkVersion'] = sdkVersion;
+
+    if (userEmail != null) {
+      body['userEmail'] = userEmail!;
+    }
+
+    if (userId != null) {
+      body['userId'] = userId!;
+    }
+
+    return body;
+  }
+}
+
+class NpsStartRequestBody {
+  const NpsStartRequestBody({
+    this.appLocale,
+    required this.deviceId,
+    required this.question,
+    this.platformLocale,
+    this.platformOS,
+    this.platformOSVersion,
+    this.platformUserAgent,
+    required this.sdkVersion,
+    this.userEmail,
+    this.userId,
+  });
+
+  final String? appLocale;
+  final String deviceId;
+  final String question;
+  final String? platformLocale;
+  final String? platformOS;
+  final String? platformOSVersion;
+  final String? platformUserAgent;
+  final int sdkVersion;
+  final String? userEmail;
+  final String? userId;
+
+  Map<String, Object> toJson() {
+    final Map<String, Object> body = {};
+
+    if (appLocale != null) {
+      body['appLocale'] = appLocale!;
+    }
+
+    body['deviceId'] = deviceId;
+
+    if (platformLocale != null) {
+      body['platformLocale'] = platformLocale!;
+    }
+
+    if (platformOS != null) {
+      body['platformOS'] = platformOS!;
+    }
+    if (platformOSVersion != null) {
+      body['platformOSVersion'] = platformOSVersion!;
+    }
+
+    if (platformUserAgent != null) {
+      body['platformUserAgent'] = platformUserAgent!;
+    }
+
+    body['question'] = question;
 
     body['sdkVersion'] = sdkVersion;
 

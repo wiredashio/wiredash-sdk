@@ -19,8 +19,11 @@ class NpsStep1Rating extends StatefulWidget {
 class _NpsStep1RatingState extends State<NpsStep1Rating> {
   @override
   Widget build(BuildContext context) {
+    final question = context.l10n.npsStep1Question;
+    context.npsModel.questionInUI = question;
+
     return StepPageScaffold(
-      title: Text(context.l10n.npsStep1Question),
+      title: Text(question),
       onClose: () {
         context.wiredashModel.hide(discardNps: true);
       },
