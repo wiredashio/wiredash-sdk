@@ -42,9 +42,9 @@
   "feedbackStep6SubmitSubmitHideDetailsButton": "Ocultar detalles",
   "feedbackStep6SubmitSubmitDetailsTitle": "Comentarios",
 
-  "feedbackStep7SubmissionInFlightMessage": "Envíando tus sugerencias",
+  "feedbackStep7SubmissionInFlightMessage": "Enviando tus sugerencias",
   "feedbackStep7SubmissionSuccessMessage": "¡Gracias por tus sugerencias!",
-  "feedbackStep7SubmissionErrorMessage": "El envío de tus comentarios ha fallado",
+  "feedbackStep7SubmissionErrorMessage": "El envío de tus sugerencias ha fallado",
   "feedbackStep7SubmissionOpenErrorButton": "Pulsa para ver más detalles sobre el error",
   "feedbackStep7SubmissionRetryButton": "Reintentar",
 
