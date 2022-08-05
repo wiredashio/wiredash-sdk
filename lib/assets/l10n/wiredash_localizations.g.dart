@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' as intl;
 
 import 'wiredash_localizations_de.g.dart';
 import 'wiredash_localizations_en.g.dart';
+import 'wiredash_localizations_tr.g.dart';
 
 /// Callers can lookup localized strings with an instance of WiredashLocalizations
 /// returned by `WiredashLocalizations.of(context)`.
@@ -94,7 +95,8 @@ abstract class WiredashLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('de'),
-    Locale('en')
+    Locale('en'),
+    Locale('tr')
   ];
 
   /// No description provided for @feedbackStep1MessageTitle.
@@ -452,7 +454,7 @@ class _WiredashLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['de', 'en'].contains(locale.languageCode);
+      <String>['de', 'en', 'tr'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_WiredashLocalizationsDelegate old) => false;
@@ -465,6 +467,8 @@ WiredashLocalizations lookupWiredashLocalizations(Locale locale) {
       return WiredashLocalizationsDe();
     case 'en':
       return WiredashLocalizationsEn();
+    case 'tr':
+      return WiredashLocalizationsTr();
   }
 
   throw FlutterError(

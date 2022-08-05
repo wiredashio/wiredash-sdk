@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
+- [#231](https://github.com/wiredashio/wiredash-sdk/pull/231) Improve opening animation performance
+- [#232](https://github.com/wiredashio/wiredash-sdk/pull/232) Email step is now enabled by default (as stated in documentation)
+- [#235](https://github.com/wiredashio/wiredash-sdk/pull/235) Fix l10n initialization crash on slow devices
+
 ## 1.0.0
 
 When you're upgrading from 0.7.0:
