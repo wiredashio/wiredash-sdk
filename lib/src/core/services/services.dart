@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/_nps.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
@@ -24,7 +25,7 @@ import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/ui/screencapture.dart';
 import 'package:wiredash/src/metadata/build_info/device_id_generator.dart';
 import 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
-import 'package:wiredash/src/nps/nps_model.dart';
+import 'package:wiredash/src/nps/nps_trigger.dart';
 import 'package:wiredash/src/utils/uuid.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -68,6 +69,8 @@ class WiredashServices extends ChangeNotifier {
 
   ProjectCredentialValidator get projectCredentialValidator => _locator.watch();
 
+  NpsTrigger get npsTrigger => _locator.watch();
+
   void updateWidget(Wiredash wiredashWidget) {
     inject<Wiredash>((_) => wiredashWidget);
   }
@@ -105,6 +108,13 @@ void _setupServices(WiredashServices sl) {
   sl.inject<ProjectCredentialValidator>(
     (_) => const ProjectCredentialValidator(),
   );
+  sl.inject<NpsTrigger>((_) {
+    return NpsTrigger(
+      sharedPreferencesProvider: SharedPreferences.getInstance,
+      options: sl.wiredashWidget.npsOptions ?? defaultNpsOptions,
+      deviceIdGenerator: sl.deviceIdGenerator,
+    );
+  });
   sl.inject<BackdropController>(
     (_) => BackdropController(),
     dispose: (model) => model.dispose(),

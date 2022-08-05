@@ -25,61 +25,14 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
       options: WiredashOptionsData(
         /// Change the locale of the Wiredash UI
         locale: Locale('en'),
-
-        /// Uncomment below to set custom translations work
-        // localizationDelegate: CustomWiredashTranslationsDelegate(),
       ),
-
       npsOptions: NpsOptions(
         collectMetaData: (metaData) => metaData..userEmail = 'dash@wiredash.io',
-      ),
-
-      /// You can adjust the colors of Wiredash to your liking.
-      /// But first check if the automatic theming with
-      /// `Wiredash.of(context).show(inheritMaterialTheme: true)` works for you
-      theme: WiredashThemeData.fromColor(
-        // Customize Brightness and Colors
-        // Primary button color, step indicator, focused input border
-        primaryColor: Colors.red,
-        // Secondary button color is optional
-        // secondaryColor: Colors.purple,
-        brightness: Brightness.dark,
-      ).copyWith(
-        // // Customize the Font Family
-        // fontFamily: 'Monospace',
-        textTheme: WiredashTextTheme(
-          headlineMedium: TextStyle(fontSize: 36, fontWeight: FontWeight.w100),
-          headlineSmall: TextStyle(fontSize: 24, fontWeight: FontWeight.w100),
-        ),
-        // i.e. selected labels, buttons on cards, input border
-        primaryContainerColor: Colors.red[800],
-        textOnPrimaryContainerColor: Colors.white,
-
-        // i.e. labels when not selected
-        secondaryContainerColor: Colors.red[400],
-        textOnSecondaryContainerColor: Colors.white,
-
-        // the color behind the application, only visible when your app is
-        // translucent
-        appBackgroundColor: Colors.white,
-        // The color of the "Return to app" bar
-        appHandleBackgroundColor: Colors.red[1000],
-
-        // The background gradient, top to bottom
-        primaryBackgroundColor: Colors.black,
-        secondaryBackgroundColor: Colors.black,
-
-        errorColor: Colors.orange,
-
-        firstPenColor: Colors.yellow,
-        secondPenColor: Colors.black,
-        thirdPenColor: Color(0xffff0beb),
-        fourthPenColor: Color(0xff0ed9e3),
       ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.red,
+          primarySwatch: Colors.lightGreen,
           brightness: Brightness.dark,
         ),
         home: _HomePage(),
@@ -109,7 +62,8 @@ class _HomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // manually opens wiredash
-          Wiredash.of(context).showNps();
+          // Wiredash.of(context).showNps();
+          Wiredash.of(context).eventuallyShowNps(inheritMaterialTheme: true);
         },
         child: Icon(Icons.feedback_outlined),
       ),

@@ -15,6 +15,8 @@ class NpsOptions {
   /// The duration between recurring NPS surveys
   ///
   /// Defaults to 90 days
+  ///
+  /// Trigger showing the NPS survey with `Wiredash.of(context).eventuallyShowNps()`
   // TODO implement
   final Duration? frequency;
 
@@ -49,6 +51,7 @@ class NpsOptions {
   )? collectMetaData;
 }
 
+/// When `Wiredash(npsOptions: )` are not set, these default options are used
 final NpsOptions defaultNpsOptions = NpsOptions(
   frequency: const Duration(days: 90),
   newUserDelay: const Duration(days: 7),
