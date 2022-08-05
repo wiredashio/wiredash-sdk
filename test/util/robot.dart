@@ -15,6 +15,7 @@ import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/nps/nps_flow.dart';
 import 'package:wiredash/src/nps/step_1_rating.dart';
 import 'package:wiredash/src/nps/step_2_message.dart';
+import 'package:wiredash/src/nps/step_3_thanks.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'assert_widget.dart';
@@ -190,7 +191,7 @@ class WiredashTestRobot {
 
   Future<void> enterNpsMessage(String message) async {
     final step = _pageView.childByType(NpsStep2Message).existsOnce();
-    final done = step.text('l10n.npsDoneButton').existsOnce();
+    final done = step.text('l10n.npsSubmitButton').existsOnce();
     step.text('l10n.npsBackButton').existsOnce();
     await tester.enterText(find.byType(TextField), message);
     await tester.pumpAndSettle();
@@ -404,15 +405,38 @@ class WiredashTestRobot {
     await tester.pumpAndSettle();
 
     /// automatically goes to next step
-    await tester.pump(const Duration(milliseconds: 600));
     await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
+    await tester.pumpAndSettle(const Duration(milliseconds: 600));
   }
 
   Future<void> submitNps() async {
     final step = _pageView.childByType(NpsStep2Message).existsOnce();
-    await tester.tap(step.text('l10n.npsDoneButton').finder);
+    final submitButton = step.byType(
+      TronButton,
+      children: [spot.text('l10n.npsSubmitButton')],
+    ).existsOnce();
+    await tester.scrollUntilVisible(
+      submitButton.finder,
+      -100,
+      scrollable: spot
+          .byType(LarryPageView)
+          .childByType(StepPageScaffold)
+          .childByType(ScrollBox)
+          .childByType(SingleChildScrollView)
+          .child(find.byType(Scrollable).first)
+          .finder,
+    );
+    await tester.tap(submitButton.finder);
     await tester.pumpAndSettle();
     print('submit NPS');
+  }
+
+  Future<void> showsNpsThanksMessage([Finder? finder]) async {
+    final step = _pageView.childByType(NpsStep3Thanks).existsOnce();
+    if (finder != null) {
+      step.child(finder).existsOnce();
+    }
   }
 }
 
