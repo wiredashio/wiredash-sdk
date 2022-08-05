@@ -303,7 +303,8 @@ void main() {
       await robot.enterFeedbackMessage('feedback with labels');
       await robot.goToNextStep();
 
-      selectByType(Wiredash)
+      spot
+          .byType(Wiredash)
           .childByType(WiredashBackdrop)
           .childByType(LarryPageView)
           .childByType(Step2Labels)
@@ -324,4 +325,4 @@ void main() {
 }
 
 final _larryPageView =
-    selectByType(WiredashFeedbackFlow).childByType(LarryPageView);
+    spot.byType(WiredashFeedbackFlow).childByType(LarryPageView);

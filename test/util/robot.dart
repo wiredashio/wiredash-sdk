@@ -106,7 +106,7 @@ class WiredashTestRobot {
   }
 
   WidgetSelector get _backdrop =>
-      selectByType(Wiredash).childByType(WiredashBackdrop);
+      spot.byType(Wiredash).childByType(WiredashBackdrop);
 
   WidgetSelector get _pageView => _backdrop.childByType(LarryPageView);
 
@@ -130,8 +130,7 @@ class WiredashTestRobot {
   }
 
   Future<void> openWiredash() async {
-    final feedbackText =
-        selectByType(MaterialApp).text('Feedback').existsOnce();
+    final feedbackText = spot.byType(MaterialApp).text('Feedback').existsOnce();
     await tester.tap(feedbackText.finder);
 
     // process the event, wait for backdrop to appear in the widget tree
@@ -146,7 +145,7 @@ class WiredashTestRobot {
   }
 
   Future<void> openNps() async {
-    final npsText = selectByType(MaterialApp).text('NPS').existsOnce();
+    final npsText = spot.byType(MaterialApp).text('NPS').existsOnce();
     await tester.tap(npsText.finder);
 
     // process the event, wait for backdrop to appear in the widget tree
@@ -331,12 +330,10 @@ class WiredashTestRobot {
     }
 
     // Wait for active "Save" button
-    final nextButton = find
-        .descendant(
-          of: screenshotBar.childByType(TronButton).finder,
-          matching: find.text('l10n.feedbackStep3ScreenshotBarSaveButton'),
-        )
-        .select;
+    final nextButton = screenshotBar.childByType(
+      TronButton,
+      children: [spot.text('l10n.feedbackStep3ScreenshotBarSaveButton')],
+    );
 
     try {
       await tester.waitUntil(nextButton.finder, findsOneWidget);

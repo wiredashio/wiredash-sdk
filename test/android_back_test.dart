@@ -28,24 +28,24 @@ void main() {
       await robot.goToNextStep();
       await robot.skipScreenshot();
       await robot.skipEmail();
-      selectByType(LarryPageView).childByType(Step6Submit).existsOnce();
+      spot.byType(LarryPageView).childByType(Step6Submit).existsOnce();
 
       await robot.pressAndroidBackButton();
-      selectByType(WiredashBackdrop)
+      spot
+          .byType(WiredashBackdrop)
           .childByType(LarryPageView)
           .childByType(Step5Email)
           .existsOnce();
 
       await robot.pressAndroidBackButton();
-      selectByType(WiredashBackdrop)
+      spot
+          .byType(WiredashBackdrop)
           .childByType(LarryPageView)
           .childByType(Step3ScreenshotOverview)
           .existsOnce();
 
       await robot.pressAndroidBackButton();
-      selectByType(LarryPageView)
-          .childByType(Step1FeedbackMessage)
-          .existsOnce();
+      spot.byType(LarryPageView).childByType(Step1FeedbackMessage).existsOnce();
       expect(robot.services.wiredashModel.isWiredashActive, isTrue);
 
       // closes wiredash
