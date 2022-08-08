@@ -10,33 +10,42 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  test('Do not ask again within frequency', () async {
-    DateTime now = DateTime(2020);
-    await withClock(Clock(() => now), () async {
-      final trigger = NpsTrigger(
-        sharedPreferencesProvider: SharedPreferences.getInstance,
-        deviceIdGenerator: StaticDeviceIdGenerator('qwer'),
-        options: NpsOptions(frequency: const Duration(days: 10)),
-      );
+  group('Do not ask again within frequency', () {
+    const frequencies = [
+      Duration(days: 10),
+      Duration(days: 90),
+      Duration(days: 365),
+    ];
 
-      // trigger is scheduled for a later time based on the deviceId§ and frequency
-      final zeroTime = await trigger.shouldShowNps();
-      expect(zeroTime, isFalse);
+    for (final frequency in frequencies) {
+      test('frequency: ${frequency.inDays} days', () async {
+        DateTime now = DateTime.utc(2020);
+        await withClock(Clock(() => now), () async {
+          final trigger = NpsTrigger(
+            sharedPreferencesProvider: SharedPreferences.getInstance,
+            deviceIdGenerator: StaticDeviceIdGenerator('qwer'),
+            options: NpsOptions(frequency: frequency),
+          );
 
-      // Based on the deviceId, user should
-      now = now.add(const Duration(days: 10));
-      final firstTime = await trigger.shouldShowNps();
-      expect(firstTime, isTrue);
+          final showTimes = <DateTime>[];
+          while (showTimes.length < 3) {
+            final show = await trigger.shouldShowNps();
+            if (show) {
+              await trigger.openedNpsSurvey();
+              showTimes.add(now);
+            }
+            now = now.add(const Duration(days: 1));
+          }
+          expect(showTimes, hasLength(3));
 
-      trigger.openedNpsSurvey();
-
-      final secondTime = await trigger.shouldShowNps();
-      expect(secondTime, isFalse);
-
-      now = now.add(const Duration(days: 10));
-      final thirdTime = await trigger.shouldShowNps();
-      expect(thirdTime, isTrue);
-    });
+          // intervals should match frequency exactly (because we tick with 1 day)
+          final difference1 = showTimes[1].difference(showTimes[0]);
+          expect(difference1, frequency);
+          final difference2 = showTimes[2].difference(showTimes[1]);
+          expect(difference2, frequency);
+        });
+      });
+    }
   });
 }
 

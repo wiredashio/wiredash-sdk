@@ -241,6 +241,7 @@ extension NpsWiredash on WiredashController {
   void showNps({
     bool? inheritMaterialTheme,
     bool? inheritCupertinoTheme,
+    //TODO add NpsOptions? npsOptions,
   }) {
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
     _model.show(flow: WiredashFlow.nps);
@@ -264,6 +265,8 @@ extension NpsWiredash on WiredashController {
         inheritMaterialTheme: inheritMaterialTheme,
         inheritCupertinoTheme: inheritCupertinoTheme,
       );
+    } else {
+      // TODO print when the next survey will be shown
     }
     return shouldShow;
   }

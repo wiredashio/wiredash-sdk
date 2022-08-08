@@ -22,7 +22,7 @@ class NpsTrigger {
   static const lastNpsSurvey = 'io.wiredash.last_nps_survey';
 
   Future<bool> shouldShowNps() async {
-    final DateTime now = clock.now();
+    final DateTime now = clock.now().toUtc();
 
     final DateTime? lastSurvey = await _lastNpsSurvey();
     final DateTime firstAppStart = await _firstAppStart();
@@ -31,18 +31,21 @@ class NpsTrigger {
     final Duration frequency =
         options.frequency ?? defaultNpsOptions.frequency!;
 
-    final DateTime earliestNextSurvey = lastSurvey ?? firstAppStart;
-    final DateTime latestNextSurvey = earliestNextSurvey.add(frequency);
+    final DateTime nextSurvey;
+    if (lastSurvey == null) {
+      // TODO simplify logic. Look for survey time in the past interval
 
-    final random = Random(deviceId.hashCode);
-    final shiftTimeInS = (random.nextDouble() * frequency.inSeconds).toInt();
-    final nextSurveyDateTime =
-        earliestNextSurvey.add(Duration(seconds: shiftTimeInS));
-    print("nextSurveyDateTime: $nextSurveyDateTime");
+      // no survey ever shown, randomly distribute the first survey in the next period
+      final random = Random(deviceId.hashCode);
+      final shiftTimeInS = (random.nextDouble() * frequency.inSeconds).toInt();
+      nextSurvey = firstAppStart.add(Duration(seconds: shiftTimeInS));
+    } else {
+      nextSurvey = lastSurvey.add(frequency);
+    }
+    // print("nextSurveyDateTime: $nextSurveyDateTime");
 
-    assert(nextSurveyDateTime.isBefore(latestNextSurvey));
-
-    if (nextSurveyDateTime.isBefore(now)) {
+    // TODO return nextSurvey for easier testing
+    if (now == nextSurvey || now.isAfter(nextSurvey)) {
       return true;
     }
 
@@ -64,7 +67,7 @@ class NpsTrigger {
       }
     }
     // not yet started
-    final now = clock.now();
+    final now = clock.now().toUtc();
     await prefs.setString(userSince, now.toIso8601String());
     return now;
   }
@@ -82,7 +85,7 @@ class NpsTrigger {
 
   Future<void> openedNpsSurvey() async {
     final prefs = await sharedPreferencesProvider();
-    final now = clock.now();
+    final now = clock.now().toUtc();
     await prefs.setString(lastNpsSurvey, now.toIso8601String());
   }
 
