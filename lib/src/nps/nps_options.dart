@@ -8,8 +8,8 @@ class NpsOptions {
   NpsOptions({
     this.frequency,
     this.newUserDelay,
-    this.appStartInitialDelay,
     this.collectMetaData,
+    this.minimumAppStarts,
   });
 
   /// The duration between recurring NPS surveys
@@ -20,17 +20,18 @@ class NpsOptions {
   // TODO implement
   final Duration? frequency;
 
+  /// The number of time the user has to open the app before seeing a NPS survey
+  /// for the first time
+  ///
+  /// Defaults to 3
+  final int? minimumAppStarts;
+
   /// Duration a user has to use your product before they become be eligible to be surveyed
   ///
   /// Defaults to 7 days
   // TODO implement
+  // TODO decide if this should be shipped
   final Duration? newUserDelay;
-
-  /// The duration after appStart before the NPS survey is shown
-  ///
-  /// When not set, Wiredash will not show a survey automatically
-  // TODO implement
-  final Duration? appStartInitialDelay;
 
   /// Enrich the user feedback with custom metadata
   ///
@@ -55,4 +56,5 @@ class NpsOptions {
 final NpsOptions defaultNpsOptions = NpsOptions(
   frequency: const Duration(days: 90),
   newUserDelay: const Duration(days: 7),
+  minimumAppStarts: 3,
 );
