@@ -237,7 +237,7 @@ extension NpsWiredash on WiredashController {
   /// Always opens the NPS flow
   ///
   /// Use [eventuallyShowNps] to trigger Wiredash to eventually show the NPS flow
-  /// based on the [NpsOptions.frequency] and [NpsOptions.newUserDelay]
+  /// based on the [NpsOptions.frequency] and [NpsOptions.initialDelay]
   void showNps({
     bool? inheritMaterialTheme,
     bool? inheritCupertinoTheme,
@@ -248,7 +248,7 @@ extension NpsWiredash on WiredashController {
   }
 
   /// Eventually shows the NPS flow depending on the [NpsOptions.frequency] and
-  /// [NpsOptions.newUserDelay] settings.
+  /// [NpsOptions.initialDelay] settings.
   ///
   /// Use this method to let Wiredash decide whether it is a good time to show
   /// the NPS flow or not.

@@ -19,24 +19,27 @@ class NpsTrigger {
 
   static const deviceRegistrationDateKey = 'io.wiredash.device_registered_date';
   static const lastNpsSurveyKey = 'io.wiredash.last_nps_survey';
+
+  // TODO is this really the right place to save it? Eventually move to metadata package
   static const appStartsKey = 'io.wiredash.app_starts';
 
   Future<bool> shouldShowNps() async {
     final DateTime now = clock.now().toUtc();
 
     final appStarts = await _appStartCount();
-    // TODO fall back to defaultNpsOptions? Seems odd, test in example
     final minimumAppStarts =
         options.minimumAppStarts ?? defaultNpsOptions.minimumAppStarts!;
+    // TODO test
     if (appStarts < minimumAppStarts) {
       // use has to use the app a bit more before the survey is shown
       return false;
     }
 
     final firstAppStartDate = await _firstAppStart();
-    final newUserDelay =
-        options.newUserDelay ?? defaultNpsOptions.newUserDelay!;
-    final earliestNpsShow = firstAppStartDate.add(newUserDelay);
+    final initialDelay =
+        options.initialDelay ?? defaultNpsOptions.initialDelay!;
+    final earliestNpsShow = firstAppStartDate.add(initialDelay);
+    // TODO test
     if (now.isBefore(earliestNpsShow)) {
       // User has to use the app a bit longer before the survey is shown
       return false;
@@ -54,16 +57,16 @@ class NpsTrigger {
 
   Future<DateTime> earliestNextNpsSurveyDate() async {
     final DateTime? lastSurvey = await _lastNpsSurvey();
-    final DateTime firstAppStart = await _firstAppStart();
-    final String deviceId = await deviceIdGenerator.deviceId();
     final Duration frequency =
         options.frequency ?? defaultNpsOptions.frequency!;
 
     if (lastSurvey == null) {
-      // TODO simplify logic. Look for survey time in the past interval
-      // no survey ever shown, randomly distribute the first survey in the next period
+      // Using the device id to randomly distribute the next survey time within
+      // frequency. This results in the same date for every call of this method
+      final String deviceId = await deviceIdGenerator.deviceId();
       final random = Random(deviceId.hashCode);
       final shiftTimeInS = (random.nextDouble() * frequency.inSeconds).toInt();
+      final DateTime firstAppStart = await _firstAppStart();
       final nextSurvey = firstAppStart.add(Duration(seconds: shiftTimeInS));
       return nextSurvey;
     }
@@ -117,5 +120,5 @@ class NpsTrigger {
     return null;
   }
 
-  // TODO implement clear methods
+// TODO implement clear methods
 }
