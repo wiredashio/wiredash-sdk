@@ -17,22 +17,39 @@ class NpsTrigger {
   final NpsOptions options;
   final DeviceIdGenerator deviceIdGenerator;
 
-  // TODO save together with deviceId? Currently that is calculated lazily at first usage
-  static const userSince = 'io.wiredash.device_registered_date';
-  static const lastNpsSurvey = 'io.wiredash.last_nps_survey';
+  static const deviceRegistrationDateKey = 'io.wiredash.device_registered_date';
+  static const lastNpsSurveyKey = 'io.wiredash.last_nps_survey';
+  static const appStartsKey = 'io.wiredash.app_starts';
 
   Future<bool> shouldShowNps() async {
     final DateTime now = clock.now().toUtc();
-    final nextSurvey = await earliestNextNpsSurveyDate();
 
-    // TODO check for newUserDelay
-    // TODO check for minimumAppStarts
-
-    if (now == nextSurvey || now.isAfter(nextSurvey)) {
-      return true;
+    final appStarts = await _appStartCount();
+    // TODO fall back to defaultNpsOptions? Seems odd, test in example
+    final minimumAppStarts =
+        options.minimumAppStarts ?? defaultNpsOptions.minimumAppStarts!;
+    if (appStarts < minimumAppStarts) {
+      // use has to use the app a bit more before the survey is shown
+      return false;
     }
 
-    return false;
+    final firstAppStartDate = await _firstAppStart();
+    final newUserDelay =
+        options.newUserDelay ?? defaultNpsOptions.newUserDelay!;
+    final earliestNpsShow = firstAppStartDate.add(newUserDelay);
+    if (now.isBefore(earliestNpsShow)) {
+      // User has to use the app a bit longer before the survey is shown
+      return false;
+    }
+
+    final nextSurvey = await earliestNextNpsSurveyDate();
+    if (now != nextSurvey && !now.isAfter(nextSurvey)) {
+      // too early, don't show it just yet
+      return false;
+    }
+
+    // All conditions are met, show the survey
+    return true;
   }
 
   Future<DateTime> earliestNextNpsSurveyDate() async {
@@ -53,43 +70,51 @@ class NpsTrigger {
 
     final nextSurvey = lastSurvey.add(frequency);
     return nextSurvey;
-
-    // TODO calculate percentage at first show, then save last shown time and ask based on frequency
-
-    // TODO unclear: When do we save createdUser? At all? What if the user sign in/out?
-    // Let's scrap this feature for now.
-    // This would also for the wiredash to access the sharedPrefs even when it is not triggered.
   }
 
+  Future<void> openedNpsSurvey() async {
+    final prefs = await sharedPreferencesProvider();
+    final now = clock.now().toUtc();
+    await prefs.setString(lastNpsSurveyKey, now.toIso8601String());
+  }
+
+  // TODO use this
+  Future<void> _incrementAppStartCount() async {
+    final prefs = await sharedPreferencesProvider();
+    final appStarts = await _appStartCount();
+    await prefs.setInt(appStartsKey, appStarts + 1);
+  }
+
+  Future<int> _appStartCount() async {
+    final prefs = await sharedPreferencesProvider();
+    final appStarts = prefs.getInt(appStartsKey) ?? 0;
+    return appStarts;
+  }
+
+  // TODO make sure this is triggered at the first app start. Definitely write a test for it
   Future<DateTime> _firstAppStart() async {
     final prefs = await sharedPreferencesProvider();
-    if (prefs.containsKey(userSince)) {
-      final recovered = prefs.getString(userSince);
+    if (prefs.containsKey(deviceRegistrationDateKey)) {
+      final recovered = prefs.getString(deviceRegistrationDateKey);
       if (recovered != null) {
         return DateTime.parse(recovered);
       }
     }
     // not yet started
     final now = clock.now().toUtc();
-    await prefs.setString(userSince, now.toIso8601String());
+    await prefs.setString(deviceRegistrationDateKey, now.toIso8601String());
     return now;
   }
 
   Future<DateTime?> _lastNpsSurvey() async {
     final prefs = await sharedPreferencesProvider();
-    if (prefs.containsKey(lastNpsSurvey)) {
-      final recovered = prefs.getString(lastNpsSurvey);
+    if (prefs.containsKey(lastNpsSurveyKey)) {
+      final recovered = prefs.getString(lastNpsSurveyKey);
       if (recovered != null) {
         return DateTime.parse(recovered);
       }
     }
     return null;
-  }
-
-  Future<void> openedNpsSurvey() async {
-    final prefs = await sharedPreferencesProvider();
-    final now = clock.now().toUtc();
-    await prefs.setString(lastNpsSurvey, now.toIso8601String());
   }
 
   // TODO implement clear methods

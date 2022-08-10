@@ -17,7 +17,6 @@ class NpsOptions {
   /// Defaults to 90 days
   ///
   /// Trigger showing the NPS survey with `Wiredash.of(context).eventuallyShowNps()`
-  // TODO implement
   final Duration? frequency;
 
   /// The number of time the user has to open the app before seeing a NPS survey
