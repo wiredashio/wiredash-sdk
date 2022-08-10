@@ -23,39 +23,42 @@ class NpsTrigger {
 
   Future<bool> shouldShowNps() async {
     final DateTime now = clock.now().toUtc();
+    final nextSurvey = await earliestNextNpsSurveyDate();
 
-    final DateTime? lastSurvey = await _lastNpsSurvey();
-    final DateTime firstAppStart = await _firstAppStart();
-    final String deviceId = await deviceIdGenerator.deviceId();
-    // TODO do we really wanna merge or just take the options?
-    final Duration frequency =
-        options.frequency ?? defaultNpsOptions.frequency!;
+    // TODO check for newUserDelay
+    // TODO check for minimumAppStarts
 
-    final DateTime nextSurvey;
-    if (lastSurvey == null) {
-      // TODO simplify logic. Look for survey time in the past interval
-
-      // no survey ever shown, randomly distribute the first survey in the next period
-      final random = Random(deviceId.hashCode);
-      final shiftTimeInS = (random.nextDouble() * frequency.inSeconds).toInt();
-      nextSurvey = firstAppStart.add(Duration(seconds: shiftTimeInS));
-    } else {
-      nextSurvey = lastSurvey.add(frequency);
-    }
-    // print("nextSurveyDateTime: $nextSurveyDateTime");
-
-    // TODO return nextSurvey for easier testing
     if (now == nextSurvey || now.isAfter(nextSurvey)) {
       return true;
     }
+
+    return false;
+  }
+
+  Future<DateTime> earliestNextNpsSurveyDate() async {
+    final DateTime? lastSurvey = await _lastNpsSurvey();
+    final DateTime firstAppStart = await _firstAppStart();
+    final String deviceId = await deviceIdGenerator.deviceId();
+    final Duration frequency =
+        options.frequency ?? defaultNpsOptions.frequency!;
+
+    if (lastSurvey == null) {
+      // TODO simplify logic. Look for survey time in the past interval
+      // no survey ever shown, randomly distribute the first survey in the next period
+      final random = Random(deviceId.hashCode);
+      final shiftTimeInS = (random.nextDouble() * frequency.inSeconds).toInt();
+      final nextSurvey = firstAppStart.add(Duration(seconds: shiftTimeInS));
+      return nextSurvey;
+    }
+
+    final nextSurvey = lastSurvey.add(frequency);
+    return nextSurvey;
 
     // TODO calculate percentage at first show, then save last shown time and ask based on frequency
 
     // TODO unclear: When do we save createdUser? At all? What if the user sign in/out?
     // Let's scrap this feature for now.
     // This would also for the wiredash to access the sharedPrefs even when it is not triggered.
-
-    return false;
   }
 
   Future<DateTime> _firstAppStart() async {

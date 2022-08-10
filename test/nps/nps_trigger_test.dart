@@ -23,7 +23,7 @@ void main() {
         await withClock(Clock(() => now), () async {
           final trigger = NpsTrigger(
             sharedPreferencesProvider: SharedPreferences.getInstance,
-            deviceIdGenerator: StaticDeviceIdGenerator('qwer'),
+            deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
             options: NpsOptions(frequency: frequency),
           );
 
@@ -47,12 +47,46 @@ void main() {
       });
     }
   });
+
+  test('first interval is randomly distributed, based on deviceId', () async {
+    final DateTime now = DateTime.utc(2020);
+    await withClock(Clock(() => now), () async {
+      final deviceIdGenerator = FakeDeviceIdGenerator('');
+      const frequency = Duration(days: 10);
+      final trigger = NpsTrigger(
+        sharedPreferencesProvider: SharedPreferences.getInstance,
+        deviceIdGenerator: deviceIdGenerator,
+        options: NpsOptions(frequency: frequency),
+      );
+
+      deviceIdGenerator.mockedDeviceId = 'one';
+      final date1 = await trigger.earliestNextNpsSurveyDate();
+      expect(date1, DateTime.utc(2020, 1, 6, 21, 43, 8));
+
+      deviceIdGenerator.mockedDeviceId = 'two';
+      final date2 = await trigger.earliestNextNpsSurveyDate();
+      expect(date2, DateTime.utc(2020, 1, 4, 5, 45, 30));
+
+      deviceIdGenerator.mockedDeviceId = 'three';
+      final date3 = await trigger.earliestNextNpsSurveyDate();
+      expect(date3, DateTime.utc(2020, 1, 10, 6, 50, 44));
+
+      expect(date1.isAfter(now), isTrue);
+      expect(date2.isAfter(now), isTrue);
+      expect(date3.isAfter(now), isTrue);
+
+      final nextIntervalStart = now.add(frequency);
+      expect(date1.isBefore(nextIntervalStart), isTrue);
+      expect(date2.isBefore(nextIntervalStart), isTrue);
+      expect(date3.isBefore(nextIntervalStart), isTrue);
+    });
+  });
 }
 
-class StaticDeviceIdGenerator implements DeviceIdGenerator {
-  final String mockedDeviceId;
+class FakeDeviceIdGenerator implements DeviceIdGenerator {
+  String mockedDeviceId;
 
-  StaticDeviceIdGenerator(this.mockedDeviceId);
+  FakeDeviceIdGenerator(this.mockedDeviceId);
 
   @override
   Future<String> deviceId() async {
