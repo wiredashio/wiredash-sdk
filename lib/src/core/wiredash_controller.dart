@@ -147,23 +147,31 @@ class WiredashController {
     });
   }
 
-  /// This will open the Wiredash feedback sheet and start the feedback process.
+  /// This will open Wiredash and start the feedback flow.
   ///
-  /// Currently you can customize the theme and translation by providing your
-  /// own [WiredashTheme] and / or [WiredashTranslation] to the [Wiredash]
-  /// root widget. In a future release you'll be able to customize the SDK
-  /// through the Wiredash admin console as well.
+  /// Use [options] to configure the feedback flow.
+  /// Setting the [options] here will override [Wiredash.feedbackOptions].
   ///
-  /// If a Wiredash feedback flow is already active (=a feedback sheet is open),
-  /// does nothing.
+  /// If Wiredash is already open this method does nothing.
+  ///
+  /// ## Theming
+  ///
+  /// As a quick way to style Wiredash based on your app [Theme] set
+  /// [inheritMaterialTheme]/[inheritCupertinoTheme] to `true`.
+  /// Wiredash will automatically read colors from [context], overriding
+  /// [Wiredash.theme].
+  ///
+  /// For more advanced styling check the [documentation](https://docs.wiredash.io/sdk/theming/)
+  /// and use [Wiredash.theme].
   void show({
     bool? inheritMaterialTheme,
     bool? inheritCupertinoTheme,
-    WiredashFeedbackOptions? feedbackOptions,
+    @Deprecated('Use options') WiredashFeedbackOptions? feedbackOptions,
+    WiredashFeedbackOptions? options,
   }) {
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
     _captureAppLocale();
-    _model.feedbackOptionsOverride = feedbackOptions;
+    _model.feedbackOptionsOverride = options ?? feedbackOptions;
     _model.show(flow: WiredashFlow.feedback);
   }
 
@@ -233,41 +241,50 @@ class WiredashController {
   }
 }
 
+/// Methods for NPS related features
 extension NpsWiredash on WiredashController {
-  /// Always opens the NPS flow
+  /// Probably shows the Net Promoter Score survey depending on [options],
+  /// specifically [NpsOptions.frequency], [NpsOptions.initialDelay] and
+  /// [NpsOptions.minimumAppStarts] settings.
   ///
-  /// Use [eventuallyShowNps] to trigger Wiredash to eventually show the NPS flow
-  /// based on the [NpsOptions.frequency] and [NpsOptions.initialDelay]
-  void showNps({
+  /// Wiredash decides whether it is a good time to show the NPS flow or not,
+  /// making sure your users don't see the NPS flow too often while maintaining
+  /// a continuous stream of NPS feedback.
+  ///
+  /// Use [force] to explicitly show open the NPS survey.
+  /// This is useful when you want to trigger the flow at specific/rare times
+  /// in your business logic.
+  /// E.g. a user has paired their Action camera and transferred more than three
+  /// pictures.
+  ///
+  /// This method returns `true` when the flow got opened or `false` when it was
+  /// not a good time to show it.
+  ///
+  /// When providing [options], those settings will be used, overwriting the
+  /// ones defined in [Wiredash.npsOptions].
+  /// The [options] will then be merged with [defaultNpsOptions], filling your
+  /// `null` values
+  Future<bool> showNps({
     bool? inheritMaterialTheme,
     bool? inheritCupertinoTheme,
-    //TODO add NpsOptions? npsOptions,
-  }) {
-    _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
-    _model.show(flow: WiredashFlow.nps);
-  }
-
-  /// Eventually shows the NPS flow depending on the [NpsOptions.frequency] and
-  /// [NpsOptions.initialDelay] settings.
-  ///
-  /// Use this method to let Wiredash decide whether it is a good time to show
-  /// the NPS flow or not.
-  ///
-  /// Returns `true` when the NPS flow will be shown
-  Future<bool> eventuallyShowNps({
-    bool? inheritMaterialTheme,
-    bool? inheritCupertinoTheme,
+    NpsOptions? options,
+    bool? force,
   }) async {
-    final trigger = _model.services.npsTrigger;
-    final shouldShow = await trigger.shouldShowNps();
-    if (shouldShow) {
-      showNps(
-        inheritMaterialTheme: inheritMaterialTheme,
-        inheritCupertinoTheme: inheritCupertinoTheme,
-      );
+    _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
+
+    if (force == true) {
+      await _model.show(flow: WiredashFlow.nps);
+      return true;
     } else {
-      // TODO print when the next survey will be shown
+      final trigger = _model.services.npsTrigger;
+      final shouldShow = await trigger.shouldShowNps();
+      if (shouldShow) {
+        await _model.show(flow: WiredashFlow.nps);
+        return true;
+      } else {
+        // TODO print when the next survey will be shown
+        return false;
+      }
     }
-    return shouldShow;
   }
 }
