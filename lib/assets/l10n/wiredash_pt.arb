@@ -1,0 +1,73 @@
+{
+  "@@locale": "pt",
+  "feedbackStep1MessageTitle": "Envie-nos seu feedback",
+  "feedbackStep1MessageBreadcrumbTitle": "Escrever mensagem",
+  "feedbackStep1MessageDescription": "Adicione uma curta descrição sobre o problema que você encontrou",
+  "feedbackStep1MessageHint": "Acontece um erro desconhecido quando tento trocar minha foto de perfil...",
+  "feedbackStep1MessageErrorMissingMessage": "Por favor digite sua mensagem",
+
+  "feedbackStep2LabelsTitle": "Qual categoria representa melhor seus comentários?",
+  "feedbackStep2LabelsBreadcrumbTitle": "Categorias",
+  "feedbackStep2LabelsDescription": "Selecionar uma categoria apropriada nos ajuda a identificar seu problema e enviar seus comentários à equipe responsável",
+
+
+  "feedbackStep3ScreenshotOverviewTitle": "Deseja adicionar imagens da tela para dar maiores informações?",
+  "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "Capturas de tela",
+  "feedbackStep3ScreenshotOverviewDescription": "Você será capaz de navegar pelo app e escolher quando capturar a tela",
+  "feedbackStep3ScreenshotOverviewSkipButton": "Pular",
+  "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Adicionar Captura de Tela",
+
+  "feedbackStep3ScreenshotBarNavigateTitle": "Faça uma captura de tela",
+  "feedbackStep3ScreenshotBarDrawTitle": "Indique os detalhes relevantes",
+  "feedbackStep3ScreenshotBarDrawUndoButton": "Desfazer",
+  "feedbackStep3ScreenshotBarCaptureButton": "Capturar",
+  "feedbackStep3ScreenshotBarSaveButton": "Salvar",
+  "feedbackStep3ScreenshotBarOkButton": "Ok",
+
+  "feedbackStep3GalleryTitle": "Capturas de tela em anexo",
+  "feedbackStep3GalleryBreadcrumbTitle": "Capturas de tela",
+  "feedbackStep3GalleryDescription": "Você pode adicionar mais capturas de tela para nos ajudar a entender melhor seu problema.",
+
+  "feedbackStep4EmailTitle": "Receba atualizações por email",
+  "feedbackStep4EmailBreadcrumbTitle": "Contato",
+  "feedbackStep4EmailDescription": "Adicione seu endereço de email abaixo ou deixe em branco",
+  "feedbackStep4EmailInvalidEmail": "Este endereço de email não parece válido. Você pode deixar este campo vazio.",
+  "feedbackStep4EmailInputHint": "email@exemplo.com",
+
+  "feedbackStep6SubmitTitle": "Enviar feedback",
+  "feedbackStep6SubmitBreadcrumbTitle": "Enviar",
+  "feedbackStep6SubmitDescription": "Por favor revise todas as informações antes de enviar.\nVocê pode voltar para ajustar seus comentários a qualquer momento.",
+  "feedbackStep6SubmitSubmitButton": "Enviar",
+  "feedbackStep6SubmitSubmitShowDetailsButton": "Ver detalhes",
+  "feedbackStep6SubmitSubmitHideDetailsButton": "Ocultar detalhes",
+  "feedbackStep6SubmitSubmitDetailsTitle": "Comentários",
+
+  "feedbackStep7SubmissionInFlightMessage": "Enviando seus comentários",
+  "feedbackStep7SubmissionSuccessMessage": "Obrigado pelo seu feedback!",
+  "feedbackStep7SubmissionErrorMessage": "O envio dos seus comentários falhou",
+  "feedbackStep7SubmissionOpenErrorButton": "Toque para ver os detalhes do erro",
+  "feedbackStep7SubmissionRetryButton": "Tentar novamente",
+
+  "feedbackStepXOfY": "Passo {current} de {total}",
+  "@feedbackStepXOfY": {
+    "placeholders": {
+      "current": {
+        "description": "current step number 1-max",
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "description": "max number of steps",
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "feedbackDiscardButton": "Descartar comentários",
+  "feedbackDiscardConfirmButton": "Tem certeza? Apagar!",
+  "feedbackNextButton": "Próximo",
+  "feedbackBackButton": "Voltar",
+  "feedbackCloseButton": "Fechar",
+
+  "backdropReturnToApp": "Voltar ao app"
+}
