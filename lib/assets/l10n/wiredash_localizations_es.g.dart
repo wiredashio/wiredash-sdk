@@ -124,7 +124,7 @@ class WiredashLocalizationsEs extends WiredashLocalizations {
 
   @override
   String get feedbackStep7SubmissionInFlightMessage =>
-      'Envíando tus sugerencias';
+      'Enviando tus sugerencias';
 
   @override
   String get feedbackStep7SubmissionSuccessMessage =>
@@ -132,7 +132,7 @@ class WiredashLocalizationsEs extends WiredashLocalizations {
 
   @override
   String get feedbackStep7SubmissionErrorMessage =>
-      'El envío de tus comentarios ha fallado';
+      'El envío de tus sugerencias ha fallado';
 
   @override
   String get feedbackStep7SubmissionOpenErrorButton =>
