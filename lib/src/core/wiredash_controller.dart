@@ -271,6 +271,7 @@ extension NpsWiredash on WiredashController {
     bool? force,
   }) async {
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
+    _captureAppLocale();
 
     if (force == true) {
       await _model.show(flow: WiredashFlow.nps);

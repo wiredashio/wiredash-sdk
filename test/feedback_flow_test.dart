@@ -9,7 +9,6 @@ import 'util/assert_widget.dart';
 import 'util/robot.dart';
 
 void main() {
-  autoUpdateGoldenFiles = true;
   group('Feedback', () {
     setUp(() {
       SharedPreferences.setMockInitialValues({});

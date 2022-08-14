@@ -56,7 +56,7 @@ void main() {
       final trigger = NpsTrigger(
         sharedPreferencesProvider: SharedPreferences.getInstance,
         deviceIdGenerator: deviceIdGenerator,
-        options: NpsOptions(frequency: frequency),
+        options: const NpsOptions(frequency: frequency),
       );
 
       deviceIdGenerator.mockedDeviceId = 'one';

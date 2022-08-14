@@ -25,9 +25,23 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
       options: WiredashOptionsData(
         /// Change the locale of the Wiredash UI
         locale: Locale('en'),
+        // TODO add example how to overwrite the question
       ),
       npsOptions: NpsOptions(
         collectMetaData: (metaData) => metaData..userEmail = 'dash@wiredash.io',
+        // frequency: Duration(days: 90),
+        // frequency: Duration.zero,
+        // initialDelay: Duration(days: 7),
+        // initialDelay: Duration.zero,
+        // minimumAppStarts: 3,
+        // minimumAppStarts: 0,
+      ),
+      feedbackOptions: WiredashFeedbackOptions(
+        collectMetaData: (metaData) => metaData..userEmail = '',
+      ),
+      theme: WiredashThemeData.fromColor(
+        primaryColor: Colors.tealAccent,
+        brightness: Brightness.dark,
       ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -41,8 +55,25 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
   }
 }
 
-class _HomePage extends StatelessWidget {
+class _HomePage extends StatefulWidget {
   _HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<_HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<_HomePage> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Automatically show the NPS
+    Future.delayed(Duration(seconds: 5), () {
+      if (!mounted) return;
+      // force: true is only used for testing
+      Wiredash.of(context).showNps(force: true);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,9 +92,11 @@ class _HomePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // manually opens wiredash
+          // force: true is only used for testing
+          Wiredash.of(context).showNps(force: true);
+          // Always prefer delegating the decision to show the NPS to Wiredash
+          // so you don't annoy your users.
           // Wiredash.of(context).showNps();
-          Wiredash.of(context).eventuallyShowNps(inheritMaterialTheme: true);
         },
         child: Icon(Icons.feedback_outlined),
       ),
