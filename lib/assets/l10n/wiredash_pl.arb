@@ -1,0 +1,63 @@
+{
+    "@@locale": "pl",
+    "feedbackStep1MessageTitle": "Podziel się swoją opinią",
+    "feedbackStep1MessageBreadcrumbTitle": "Wpisz wiadomość",
+    "feedbackStep1MessageDescription": "Opisz krótko problem, który widzisz",
+    "feedbackStep1MessageHint": "Pojawia się nieznany błąd, gdy próbuję zmienić mój avatar...",
+    "feedbackStep1MessageErrorMissingMessage": "Prosimy wpisz wiadomość",
+    "feedbackStep2LabelsTitle": "Która opcja najlepiej pasuje do twojej opinii?",
+    "feedbackStep2LabelsBreadcrumbTitle": "Etykiety",
+    "feedbackStep2LabelsDescription": "Wybranie prawidłowej etykiety pomoże nam skierować opinię do odpowiedniej osoby",
+    "feedbackStep3ScreenshotOverviewTitle": "Czy chcesz dodać zrzut ekranu?",
+    "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "Zrzuty ekranu",
+    "feedbackStep3ScreenshotOverviewDescription": "Możesz nawigować po aplikacji, by wykonać zrzut ekranu",
+    "feedbackStep3ScreenshotOverviewSkipButton": "Pomiń",
+    "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Dodaj zrzut ekranu",
+    "feedbackStep3ScreenshotBarNavigateTitle": "Wykonaj zrzut ekranu",
+    "feedbackStep3ScreenshotBarDrawTitle": "Zaznacz rysując po ekranie",
+    "feedbackStep3ScreenshotBarDrawUndoButton": "Cofnij",
+    "feedbackStep3ScreenshotBarCaptureButton": "Wykonaj",
+    "feedbackStep3ScreenshotBarSaveButton": "Zapisz",
+    "feedbackStep3ScreenshotBarOkButton": "Ok",
+    "feedbackStep3GalleryTitle": "Dodane zrzuty ekranu",
+    "feedbackStep3GalleryBreadcrumbTitle": "Zrzuty ekranu",
+    "feedbackStep3GalleryDescription": "Możesz dodać więcej zrzutów, byśmy lepiej zrozumieli zgłoszenie.",
+    "feedbackStep4EmailTitle": "Otrzymuj powiadomienia e-mail na temat zgłoszenia",
+    "feedbackStep4EmailBreadcrumbTitle": "Kontakt",
+    "feedbackStep4EmailDescription": "Podaj swój adres e-mail lub pozostaw puste",
+    "feedbackStep4EmailInvalidEmail": "Adres nie wygląda na prawidłowy. Możesz zostawić pole puste.",
+    "feedbackStep4EmailInputHint": "mail@example.com",
+    "feedbackStep6SubmitTitle": "Wyślij opinię",
+    "feedbackStep6SubmitBreadcrumbTitle": "Wyślij",
+    "feedbackStep6SubmitDescription": "Sprawdź, czy wszystko się zgadza.\nW każdej chwili możesz wrócić do poprzedniego kroku, by poprawić zgłoszenie.",
+    "feedbackStep6SubmitSubmitButton": "Wyślij",
+    "feedbackStep6SubmitSubmitShowDetailsButton": "Pokaż szczegóły",
+    "feedbackStep6SubmitSubmitHideDetailsButton": "Ukryj szczegóły",
+    "feedbackStep6SubmitSubmitDetailsTitle": "Szczegóły opinii",
+    "feedbackStep7SubmissionInFlightMessage": "Wysyłanie opinii",
+    "feedbackStep7SubmissionSuccessMessage": "Dziękujemy za przesłanie opinii!",
+    "feedbackStep7SubmissionErrorMessage": "Nie udało się wysłać opinii",
+    "feedbackStep7SubmissionOpenErrorButton": "Kliknij, by zobaczyć szczegóły",
+    "feedbackStep7SubmissionRetryButton": "Ponów",
+    "feedbackStepXOfY": "Krok {current} z {total}",
+    "@feedbackStepXOfY": {
+        "placeholders": {
+            "current": {
+                "description": "current step number 1-max",
+                "type": "int",
+                "example": "1"
+            },
+            "total": {
+                "description": "max number of steps",
+                "type": "int",
+                "example": "5"
+            }
+        }
+    },
+    "feedbackDiscardButton": "Odrzuć zgłoszenie",
+    "feedbackDiscardConfirmButton": "Na pewno? Odrzuć!",
+    "feedbackNextButton": "Dalej",
+    "feedbackBackButton": "Wstecz",
+    "feedbackCloseButton": "Zamknij",
+    "backdropReturnToApp": "Wróć do aplikacji"
+}
