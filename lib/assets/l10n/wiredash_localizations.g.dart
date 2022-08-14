@@ -8,6 +8,7 @@ import 'package:intl/intl.dart' as intl;
 import 'wiredash_localizations_de.g.dart';
 import 'wiredash_localizations_en.g.dart';
 import 'wiredash_localizations_es.g.dart';
+import 'wiredash_localizations_pl.g.dart';
 import 'wiredash_localizations_pt.g.dart';
 import 'wiredash_localizations_tr.g.dart';
 
@@ -99,6 +100,7 @@ abstract class WiredashLocalizations {
     Locale('de'),
     Locale('en'),
     Locale('es'),
+    Locale('pl'),
     Locale('pt'),
     Locale('tr')
   ];
@@ -391,8 +393,14 @@ class _WiredashLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['de', 'en', 'es', 'pt', 'tr'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+        'de',
+        'en',
+        'es',
+        'pl',
+        'pt',
+        'tr'
+      ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_WiredashLocalizationsDelegate old) => false;
@@ -407,6 +415,8 @@ WiredashLocalizations lookupWiredashLocalizations(Locale locale) {
       return WiredashLocalizationsEn();
     case 'es':
       return WiredashLocalizationsEs();
+    case 'pl':
+      return WiredashLocalizationsPl();
     case 'pt':
       return WiredashLocalizationsPt();
     case 'tr':
