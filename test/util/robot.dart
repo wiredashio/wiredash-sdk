@@ -78,7 +78,7 @@ class WiredashTestRobot {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Wiredash.of(context).showNps();
+                            Wiredash.of(context).showNps(force: true);
                           },
                           child: const Text('NPS'),
                         ),
