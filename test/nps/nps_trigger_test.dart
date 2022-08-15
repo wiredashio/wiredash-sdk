@@ -24,7 +24,11 @@ void main() {
           final trigger = NpsTrigger(
             sharedPreferencesProvider: SharedPreferences.getInstance,
             deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
-            options: NpsOptions(frequency: frequency),
+            options: NpsOptions(
+              frequency: frequency,
+              initialDelay: Duration.zero,
+              minimumAppStarts: 0,
+            ),
           );
 
           final showTimes = <DateTime>[];
@@ -33,6 +37,12 @@ void main() {
             if (show) {
               await trigger.openedNpsSurvey();
               showTimes.add(now);
+            }
+            if (now.isAfter(DateTime.utc(2030))) {
+              throw Exception(
+                'Not enough show times after $now. '
+                'showTimes: $showTimes',
+              );
             }
             now = now.add(const Duration(days: 1));
           }
