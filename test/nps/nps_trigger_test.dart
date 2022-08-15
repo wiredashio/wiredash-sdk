@@ -10,7 +10,67 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  group('Do not ask again within frequency', () {
+  group('Do not ask again within frequency & initialDelay', () {
+    Future<void> parametrizedTest(
+      Duration frequency,
+      Duration initialDelay,
+    ) async {
+      final appInstallTime = DateTime.utc(2020);
+      DateTime now = appInstallTime;
+      await withClock(Clock(() => now), () async {
+        final trigger = NpsTrigger(
+          sharedPreferencesProvider: SharedPreferences.getInstance,
+          deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
+          options: NpsOptions(
+            frequency: frequency,
+            initialDelay: initialDelay,
+            minimumAppStarts: 0,
+          ),
+        );
+
+        final showTimes = <DateTime>[];
+        while (showTimes.length < 3) {
+          final show = await trigger.shouldShowNps();
+          if (show) {
+            await trigger.onOpenedNpsSurvey();
+            showTimes.add(now);
+          }
+          if (now.isAfter(DateTime.utc(2030))) {
+            throw Exception(
+              'Not enough show times after $now. '
+              'showTimes: $showTimes',
+            );
+          }
+          now = now.add(const Duration(days: 1));
+        }
+        expect(showTimes, hasLength(3));
+
+        final firstGap = showTimes[0].difference(appInstallTime);
+        expect(
+          firstGap >= initialDelay,
+          isTrue,
+          reason: 'The first nps is shown after $firstGap '
+              'which is smaller than initialDelay $initialDelay',
+        );
+
+        // intervals should match frequency exactly (because we tick with 1 day)
+        final secondGap = showTimes[1].difference(showTimes[0]);
+        expect(
+          secondGap,
+          frequency,
+          reason: 'time between first and second nps is $secondGap '
+              'but should be $frequency',
+        );
+        final thirdGap = showTimes[2].difference(showTimes[1]);
+        expect(
+          thirdGap,
+          frequency,
+          reason: 'time between second and third nps is $secondGap '
+              'but should be $frequency',
+        );
+      });
+    }
+
     const frequencies = [
       Duration(days: 10),
       Duration(days: 90),
@@ -18,6 +78,7 @@ void main() {
     ];
 
     const initialDelays = [
+      Duration.zero,
       Duration(days: 1),
       Duration(days: 7),
       Duration(days: 30),
@@ -26,63 +87,10 @@ void main() {
     for (final frequency in frequencies) {
       for (final initialDelay in initialDelays) {
         test(
-            'frequency: ${frequency.inDays}d, initialDelay: ${initialDelay.inDays}d',
-            () async {
-          final appInstallTime = DateTime.utc(2020);
-          DateTime now = appInstallTime;
-          await withClock(Clock(() => now), () async {
-            final trigger = NpsTrigger(
-              sharedPreferencesProvider: SharedPreferences.getInstance,
-              deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
-              options: NpsOptions(
-                frequency: frequency,
-                initialDelay: initialDelay,
-                minimumAppStarts: 0,
-              ),
-            );
-
-            final showTimes = <DateTime>[];
-            while (showTimes.length < 3) {
-              final show = await trigger.shouldShowNps();
-              if (show) {
-                await trigger.openedNpsSurvey();
-                showTimes.add(now);
-              }
-              if (now.isAfter(DateTime.utc(2030))) {
-                throw Exception(
-                  'Not enough show times after $now. '
-                  'showTimes: $showTimes',
-                );
-              }
-              now = now.add(const Duration(days: 1));
-            }
-            expect(showTimes, hasLength(3));
-
-            final firstGap = showTimes[0].difference(appInstallTime);
-            expect(
-              firstGap >= initialDelay,
-              isTrue,
-              reason: 'The first nps is shown after $firstGap '
-                  'which is smaller than initialDelay $initialDelay',
-            );
-
-            // intervals should match frequency exactly (because we tick with 1 day)
-            final secondGap = showTimes[1].difference(showTimes[0]);
-            expect(
-              secondGap,
-              frequency,
-              reason: 'time between first and second nps is $secondGap '
-                  'but should be $frequency',
-            );
-            final thirdGap = showTimes[2].difference(showTimes[1]);
-            expect(
-              thirdGap,
-              frequency,
-              reason: 'time between second and third nps is $secondGap '
-                  'but should be $frequency',
-            );
-          });
-        });
+          'frequency: ${frequency.inDays}d, initialDelay: ${initialDelay.inDays}d',
+          // split test body to make the test less indented and easier to read
+          () async => parametrizedTest(frequency, initialDelay),
+        );
       }
     }
   });
@@ -118,6 +126,49 @@ void main() {
       expect(date1.isBefore(nextIntervalStart), isTrue);
       expect(date2.isBefore(nextIntervalStart), isTrue);
       expect(date3.isBefore(nextIntervalStart), isTrue);
+    });
+  });
+
+  test('Check for minimumAppStarts', () async {
+    DateTime now = DateTime.utc(2020);
+    await withClock(Clock(() => now), () async {
+      final trigger = NpsTrigger(
+        sharedPreferencesProvider: SharedPreferences.getInstance,
+        deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
+        options: const NpsOptions(
+          frequency: Duration.zero,
+          initialDelay: Duration.zero,
+          minimumAppStarts: 3,
+        ),
+      );
+
+      now = now.add(const Duration(days: 100));
+      expect(await trigger.shouldShowNps(), isFalse);
+      await trigger.onAppStart();
+      expect(await trigger.shouldShowNps(), isFalse);
+
+      await trigger.onAppStart();
+      expect(await trigger.shouldShowNps(), isFalse);
+
+      await trigger.onAppStart();
+      expect(await trigger.shouldShowNps(), isTrue);
+    });
+  });
+
+  test('Show immediately when all settings are "cleared"', () async {
+    final DateTime now = DateTime.utc(2020);
+    await withClock(Clock(() => now), () async {
+      final trigger = NpsTrigger(
+        sharedPreferencesProvider: SharedPreferences.getInstance,
+        deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
+        options: const NpsOptions(
+          frequency: Duration.zero,
+          initialDelay: Duration.zero,
+          minimumAppStarts: 0,
+        ),
+      );
+
+      expect(await trigger.shouldShowNps(), isTrue);
     });
   });
 }

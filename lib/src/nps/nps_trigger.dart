@@ -29,7 +29,6 @@ class NpsTrigger {
     final appStarts = await _appStartCount();
     final minimumAppStarts =
         options.minimumAppStarts ?? defaultNpsOptions.minimumAppStarts!;
-    // TODO test
     if (appStarts < minimumAppStarts) {
       // use has to use the app a bit more before the survey is shown
       return false;
@@ -39,7 +38,6 @@ class NpsTrigger {
     final initialDelay =
         options.initialDelay ?? defaultNpsOptions.initialDelay!;
     final earliestNpsShow = firstAppStartDate.add(initialDelay);
-    // TODO test
     if (now.isBefore(earliestNpsShow)) {
       // User has to use the app a bit longer before the survey is shown
       return false;
@@ -75,16 +73,17 @@ class NpsTrigger {
     return nextSurvey;
   }
 
-  Future<void> openedNpsSurvey() async {
+  Future<void> onOpenedNpsSurvey() async {
     final prefs = await sharedPreferencesProvider();
     final now = clock.now().toUtc();
     await prefs.setString(lastNpsSurveyKey, now.toIso8601String());
   }
 
   // TODO use this
-  Future<void> _incrementAppStartCount() async {
-    final prefs = await sharedPreferencesProvider();
+  Future<void> onAppStart() async {
+    // increment app start counter
     final appStarts = await _appStartCount();
+    final prefs = await sharedPreferencesProvider();
     await prefs.setInt(appStartsKey, appStarts + 1);
   }
 
