@@ -17,44 +17,73 @@ void main() {
       Duration(days: 365),
     ];
 
+    const initialDelays = [
+      Duration(days: 1),
+      Duration(days: 7),
+      Duration(days: 30),
+    ];
+
     for (final frequency in frequencies) {
-      test('frequency: ${frequency.inDays} days', () async {
-        DateTime now = DateTime.utc(2020);
-        await withClock(Clock(() => now), () async {
-          final trigger = NpsTrigger(
-            sharedPreferencesProvider: SharedPreferences.getInstance,
-            deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
-            options: NpsOptions(
-              frequency: frequency,
-              initialDelay: Duration.zero,
-              minimumAppStarts: 0,
-            ),
-          );
+      for (final initialDelay in initialDelays) {
+        test(
+            'frequency: ${frequency.inDays}d, initialDelay: ${initialDelay.inDays}d',
+            () async {
+          final appInstallTime = DateTime.utc(2020);
+          DateTime now = appInstallTime;
+          await withClock(Clock(() => now), () async {
+            final trigger = NpsTrigger(
+              sharedPreferencesProvider: SharedPreferences.getInstance,
+              deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
+              options: NpsOptions(
+                frequency: frequency,
+                initialDelay: initialDelay,
+                minimumAppStarts: 0,
+              ),
+            );
 
-          final showTimes = <DateTime>[];
-          while (showTimes.length < 3) {
-            final show = await trigger.shouldShowNps();
-            if (show) {
-              await trigger.openedNpsSurvey();
-              showTimes.add(now);
+            final showTimes = <DateTime>[];
+            while (showTimes.length < 3) {
+              final show = await trigger.shouldShowNps();
+              if (show) {
+                await trigger.openedNpsSurvey();
+                showTimes.add(now);
+              }
+              if (now.isAfter(DateTime.utc(2030))) {
+                throw Exception(
+                  'Not enough show times after $now. '
+                  'showTimes: $showTimes',
+                );
+              }
+              now = now.add(const Duration(days: 1));
             }
-            if (now.isAfter(DateTime.utc(2030))) {
-              throw Exception(
-                'Not enough show times after $now. '
-                'showTimes: $showTimes',
-              );
-            }
-            now = now.add(const Duration(days: 1));
-          }
-          expect(showTimes, hasLength(3));
+            expect(showTimes, hasLength(3));
 
-          // intervals should match frequency exactly (because we tick with 1 day)
-          final difference1 = showTimes[1].difference(showTimes[0]);
-          expect(difference1, frequency);
-          final difference2 = showTimes[2].difference(showTimes[1]);
-          expect(difference2, frequency);
+            final firstGap = showTimes[0].difference(appInstallTime);
+            expect(
+              firstGap >= initialDelay,
+              isTrue,
+              reason: 'The first nps is shown after $firstGap '
+                  'which is smaller than initialDelay $initialDelay',
+            );
+
+            // intervals should match frequency exactly (because we tick with 1 day)
+            final secondGap = showTimes[1].difference(showTimes[0]);
+            expect(
+              secondGap,
+              frequency,
+              reason: 'time between first and second nps is $secondGap '
+                  'but should be $frequency',
+            );
+            final thirdGap = showTimes[2].difference(showTimes[1]);
+            expect(
+              thirdGap,
+              frequency,
+              reason: 'time between second and third nps is $secondGap '
+                  'but should be $frequency',
+            );
+          });
         });
-      });
+      }
     }
   });
 
