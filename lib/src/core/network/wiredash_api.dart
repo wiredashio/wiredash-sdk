@@ -461,12 +461,12 @@ class NpsRequestBody {
     this.appLocale,
     required this.deviceId,
     this.message,
-    this.score,
     required this.question,
     this.platformLocale,
     this.platformOS,
     this.platformOSVersion,
     this.platformUserAgent,
+    this.score,
     required this.sdkVersion,
     this.userEmail,
     this.userId,
@@ -474,6 +474,7 @@ class NpsRequestBody {
   });
 
   final String? appLocale;
+  final BuildInfo buildInfo;
   final String deviceId;
   final String? message;
   final String question;
@@ -485,7 +486,6 @@ class NpsRequestBody {
   final int sdkVersion;
   final String? userEmail;
   final String? userId;
-  final BuildInfo buildInfo;
 
   Map<String, Object> toJson() {
     final Map<String, Object> body = {};
