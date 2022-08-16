@@ -13,7 +13,7 @@ abstract class WiredashTelemetry {
 class PersistentWiredashTelemetry extends WiredashTelemetry {
   PersistentWiredashTelemetry(this.sharedPreferencesProvider);
 
-  static const lastNpsSurveyKey = 'io.wiredash.last_nps_survey';
+  static const _lastNpsSurveyKey = 'io.wiredash.last_nps_survey';
 
   final Future<SharedPreferences> Function() sharedPreferencesProvider;
 
@@ -22,14 +22,14 @@ class PersistentWiredashTelemetry extends WiredashTelemetry {
   Future<void> onOpenedNpsSurvey() async {
     final prefs = await sharedPreferencesProvider();
     final now = clock.now().toUtc();
-    await prefs.setString(lastNpsSurveyKey, now.toIso8601String());
+    await prefs.setString(_lastNpsSurveyKey, now.toIso8601String());
   }
 
   @override
   Future<DateTime?> lastNpsSurvey() async {
     final prefs = await sharedPreferencesProvider();
-    if (prefs.containsKey(lastNpsSurveyKey)) {
-      final recovered = prefs.getString(lastNpsSurveyKey);
+    if (prefs.containsKey(_lastNpsSurveyKey)) {
+      final recovered = prefs.getString(_lastNpsSurveyKey);
       if (recovered != null) {
         return DateTime.parse(recovered);
       }

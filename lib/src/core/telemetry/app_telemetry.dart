@@ -22,8 +22,9 @@ abstract class AppTelemetry {
 class PersistentAppTelemetry extends AppTelemetry {
   PersistentAppTelemetry(this.sharedPreferencesProvider);
 
-  static const deviceRegistrationDateKey = 'io.wiredash.device_registered_date';
-  static const appStartsKey = 'io.wiredash.app_starts';
+  static const _deviceRegistrationDateKey =
+      'io.wiredash.device_registered_date';
+  static const _appStartsKey = 'io.wiredash.app_starts';
 
   final Future<SharedPreferences> Function() sharedPreferencesProvider;
 
@@ -36,8 +37,8 @@ class PersistentAppTelemetry extends AppTelemetry {
   @override
   Future<DateTime?> firstAppStart() async {
     final prefs = await sharedPreferencesProvider();
-    if (prefs.containsKey(deviceRegistrationDateKey)) {
-      final recovered = prefs.getString(deviceRegistrationDateKey);
+    if (prefs.containsKey(_deviceRegistrationDateKey)) {
+      final recovered = prefs.getString(_deviceRegistrationDateKey);
       if (recovered != null) {
         return DateTime.parse(recovered);
       }
@@ -47,24 +48,24 @@ class PersistentAppTelemetry extends AppTelemetry {
 
   Future<void> _saveFirstAppStart() async {
     final prefs = await sharedPreferencesProvider();
-    if (prefs.containsKey(deviceRegistrationDateKey)) {
+    if (prefs.containsKey(_deviceRegistrationDateKey)) {
       return;
     }
     // not yet started
     final now = clock.now().toUtc();
-    await prefs.setString(deviceRegistrationDateKey, now.toIso8601String());
+    await prefs.setString(_deviceRegistrationDateKey, now.toIso8601String());
   }
 
   @override
   Future<int> appStartCount() async {
     final prefs = await sharedPreferencesProvider();
-    final appStarts = prefs.getInt(appStartsKey) ?? 0;
+    final appStarts = prefs.getInt(_appStartsKey) ?? 0;
     return appStarts;
   }
 
   Future<void> _saveAppStartCount() async {
     final appStarts = await appStartCount();
     final prefs = await sharedPreferencesProvider();
-    await prefs.setInt(appStartsKey, appStarts + 1);
+    await prefs.setInt(_appStartsKey, appStarts + 1);
   }
 }
