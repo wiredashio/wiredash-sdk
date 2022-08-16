@@ -2,6 +2,8 @@ import 'package:clock/clock.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/_nps.dart';
+import 'package:wiredash/src/core/telemetry/app_telemetry.dart';
+import 'package:wiredash/src/core/telemetry/wiredash_telemetry.dart';
 import 'package:wiredash/src/metadata/build_info/device_id_generator.dart';
 import 'package:wiredash/src/nps/nps_trigger.dart';
 
@@ -18,8 +20,14 @@ void main() {
       final appInstallTime = DateTime.utc(2020);
       DateTime now = appInstallTime;
       await withClock(Clock(() => now), () async {
+        final wiredashTelemetry =
+            PersistentWiredashTelemetry(SharedPreferences.getInstance);
+        final appTelemetry =
+            PersistentAppTelemetry(SharedPreferences.getInstance);
+        await appTelemetry.onAppStart();
         final trigger = NpsTrigger(
-          sharedPreferencesProvider: SharedPreferences.getInstance,
+          appTelemetry: appTelemetry,
+          wiredashTelemetry: wiredashTelemetry,
           deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
           options: NpsOptions(
             frequency: frequency,
@@ -32,7 +40,7 @@ void main() {
         while (showTimes.length < 3) {
           final show = await trigger.shouldShowNps();
           if (show) {
-            await trigger.onOpenedNpsSurvey();
+            await wiredashTelemetry.onOpenedNpsSurvey();
             showTimes.add(now);
           }
           if (now.isAfter(DateTime.utc(2030))) {
@@ -100,8 +108,14 @@ void main() {
     await withClock(Clock(() => now), () async {
       final deviceIdGenerator = FakeDeviceIdGenerator('');
       const frequency = Duration(days: 10);
+      final wiredashTelemetry =
+          PersistentWiredashTelemetry(SharedPreferences.getInstance);
+      final appTelemetry =
+          PersistentAppTelemetry(SharedPreferences.getInstance);
+      await appTelemetry.onAppStart();
       final trigger = NpsTrigger(
-        sharedPreferencesProvider: SharedPreferences.getInstance,
+        appTelemetry: appTelemetry,
+        wiredashTelemetry: wiredashTelemetry,
         deviceIdGenerator: deviceIdGenerator,
         options: const NpsOptions(frequency: frequency),
       );
@@ -132,8 +146,13 @@ void main() {
   test('Check for minimumAppStarts', () async {
     DateTime now = DateTime.utc(2020);
     await withClock(Clock(() => now), () async {
+      final wiredashTelemetry =
+          PersistentWiredashTelemetry(SharedPreferences.getInstance);
+      final appTelemetry =
+          PersistentAppTelemetry(SharedPreferences.getInstance);
       final trigger = NpsTrigger(
-        sharedPreferencesProvider: SharedPreferences.getInstance,
+        appTelemetry: appTelemetry,
+        wiredashTelemetry: wiredashTelemetry,
         deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
         options: const NpsOptions(
           frequency: Duration.zero,
@@ -144,13 +163,13 @@ void main() {
 
       now = now.add(const Duration(days: 100));
       expect(await trigger.shouldShowNps(), isFalse);
-      await trigger.onAppStart();
+      await appTelemetry.onAppStart();
       expect(await trigger.shouldShowNps(), isFalse);
 
-      await trigger.onAppStart();
+      await appTelemetry.onAppStart();
       expect(await trigger.shouldShowNps(), isFalse);
 
-      await trigger.onAppStart();
+      await appTelemetry.onAppStart();
       expect(await trigger.shouldShowNps(), isTrue);
     });
   });
@@ -158,8 +177,13 @@ void main() {
   test('Show immediately when all settings are "cleared"', () async {
     final DateTime now = DateTime.utc(2020);
     await withClock(Clock(() => now), () async {
+      final appTelemetry =
+          PersistentAppTelemetry(SharedPreferences.getInstance);
+      await appTelemetry.onAppStart();
       final trigger = NpsTrigger(
-        sharedPreferencesProvider: SharedPreferences.getInstance,
+        appTelemetry: appTelemetry,
+        wiredashTelemetry:
+            PersistentWiredashTelemetry(SharedPreferences.getInstance),
         deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
         options: const NpsOptions(
           frequency: Duration.zero,

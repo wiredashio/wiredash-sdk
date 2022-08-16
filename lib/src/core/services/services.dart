@@ -14,6 +14,8 @@ import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/sync/sync_feedback_job.dart';
+import 'package:wiredash/src/core/telemetry/app_telemetry.dart';
+import 'package:wiredash/src/core/telemetry/wiredash_telemetry.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/wiredash_model.dart';
 import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
@@ -71,6 +73,10 @@ class WiredashServices extends ChangeNotifier {
 
   NpsTrigger get npsTrigger => _locator.watch();
 
+  WiredashTelemetry get wiredashTelemetry => _locator.watch();
+
+  AppTelemetry get appTelemetry => _locator.watch();
+
   void updateWidget(Wiredash wiredashWidget) {
     inject<Wiredash>((_) => wiredashWidget);
   }
@@ -108,11 +114,18 @@ void _setupServices(WiredashServices sl) {
   sl.inject<ProjectCredentialValidator>(
     (_) => const ProjectCredentialValidator(),
   );
+  sl.inject<AppTelemetry>(
+    (_) => PersistentAppTelemetry(SharedPreferences.getInstance),
+  );
+  sl.inject<WiredashTelemetry>(
+    (_) => PersistentWiredashTelemetry(SharedPreferences.getInstance),
+  );
   sl.inject<NpsTrigger>((_) {
     return NpsTrigger(
-      sharedPreferencesProvider: SharedPreferences.getInstance,
       options: sl.wiredashWidget.npsOptions ?? defaultNpsOptions,
       deviceIdGenerator: sl.deviceIdGenerator,
+      appTelemetry: sl.appTelemetry,
+      wiredashTelemetry: sl.wiredashTelemetry,
     );
   });
   sl.inject<BackdropController>(
