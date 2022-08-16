@@ -120,11 +120,11 @@ class _Step6SubmitState extends State<Step6Submit> {
                         ),
                       ),
                     if (model.hasAttachments)
-                      const ListTile(
+                      ListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text('Screenshots'),
-                        // TODO add exact number
-                        subtitle: Text('1 Screenshot'),
+                        title: const Text('Screenshots'),
+                        subtitle:
+                            Text('${model.attachments.length} Screenshot'),
                       ),
                     if (data.email != null)
                       ListTile(

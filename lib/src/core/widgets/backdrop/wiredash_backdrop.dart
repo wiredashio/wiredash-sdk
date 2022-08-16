@@ -423,7 +423,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
     const double minContentAreaHeight = 64;
     const double defaultContentAreaHeight = 320.0;
 
-    // TODO check on android with soft keyboard and soft navigation keys
     final currentKeyboardHeight = _mediaQueryData.viewInsets.bottom;
     final bool isKeyboardOpen =
         currentKeyboardHeight.isRoughly(_maxKeyboardHeight, 0.2);

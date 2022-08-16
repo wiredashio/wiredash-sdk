@@ -314,7 +314,6 @@ extension WidgetSelectorMatcher on WidgetSelector {
         int index = 0;
         for (final candidate in matches) {
           print("Possible candidate $index:");
-          // TODO: print tree of parent until candidate
           print(candidate.toStringDeep());
           index++;
         }
