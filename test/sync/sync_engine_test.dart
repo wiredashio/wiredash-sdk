@@ -14,14 +14,14 @@ import '../util/mock_api.dart';
 
 void main() {
   group('sync engine', () {
-    test('onWiredashInit triggers SdkEvent.sppStart 5s after ', () {
+    test('onWiredashInit triggers SdkEvent.appStartDelayed 5s after ', () {
       fakeAsync((async) {
         final syncEngine = SyncEngine();
         addTearDown(() => syncEngine.onWiredashDispose());
 
         DateTime? lastExecution;
         final testJob = TestJob(
-          trigger: [SdkEvent.appStart],
+          trigger: [SdkEvent.appStartDelayed],
           block: () {
             lastExecution = clock.now();
           },
@@ -46,7 +46,7 @@ void main() {
 
       DateTime? lastExecution;
       final testJob = TestJob(
-        trigger: [SdkEvent.appStart],
+        trigger: [SdkEvent.appStartDelayed],
         block: () {
           lastExecution = clock.now();
         },

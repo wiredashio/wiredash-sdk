@@ -94,24 +94,9 @@ class WiredashApi {
     _parseResponseForErrors(response);
   }
 
+  /// Submits score of the nps survey
   Future<void> sendNps(NpsRequestBody body) async {
     final uri = Uri.parse('$_host/sendNps');
-    final Request request = Request('POST', uri);
-    request.headers['Content-Type'] = 'application/json';
-
-    final args = body.toJson();
-    request.body = jsonEncode(args);
-
-    final response = await _send(request);
-    if (response.statusCode == 200) {
-      // success 🎉
-      return;
-    }
-    _parseResponseForErrors(response);
-  }
-
-  Future<void> sendNpsStart(NpsStartRequestBody body) async {
-    final uri = Uri.parse('$_host/sendNpsStart');
     final Request request = Request('POST', uri);
     request.headers['Content-Type'] = 'application/json';
 
@@ -476,12 +461,12 @@ class NpsRequestBody {
     this.appLocale,
     required this.deviceId,
     this.message,
+    this.score,
     required this.question,
     this.platformLocale,
     this.platformOS,
     this.platformOSVersion,
     this.platformUserAgent,
-    required this.score,
     required this.sdkVersion,
     this.userEmail,
     this.userId,
@@ -496,7 +481,7 @@ class NpsRequestBody {
   final String? platformOS;
   final String? platformOSVersion;
   final String? platformUserAgent;
-  final NpsScore score;
+  final NpsScore? score;
   final int sdkVersion;
   final String? userEmail;
   final String? userId;
@@ -547,89 +532,9 @@ class NpsRequestBody {
 
     body['question'] = question;
 
-    body['score'] = score.intValue;
-
-    body['sdkVersion'] = sdkVersion;
-
-    if (userEmail != null) {
-      body['userEmail'] = userEmail!;
+    if (score != null) {
+      body['score'] = score!.intValue;
     }
-
-    if (userId != null) {
-      body['userId'] = userId!;
-    }
-
-    return body;
-  }
-}
-
-class NpsStartRequestBody {
-  const NpsStartRequestBody({
-    this.appLocale,
-    required this.deviceId,
-    required this.question,
-    this.platformLocale,
-    this.platformOS,
-    this.platformOSVersion,
-    this.platformUserAgent,
-    required this.sdkVersion,
-    this.userEmail,
-    this.userId,
-    required this.buildInfo,
-  });
-
-  final String? appLocale;
-  final String deviceId;
-  final String question;
-  final String? platformLocale;
-  final String? platformOS;
-  final String? platformOSVersion;
-  final String? platformUserAgent;
-  final int sdkVersion;
-  final String? userEmail;
-  final String? userId;
-  final BuildInfo buildInfo;
-
-  Map<String, Object> toJson() {
-    final Map<String, Object> body = {};
-
-    if (appLocale != null) {
-      body['appLocale'] = appLocale!;
-    }
-
-    final buildCommit = buildInfo.buildCommit;
-    if (buildCommit != null) {
-      body.addAll({'buildCommit': buildCommit});
-    }
-
-    final buildNumber = buildInfo.buildNumber;
-    if (buildNumber != null) {
-      body.addAll({'buildNumber': buildNumber});
-    }
-
-    final buildVersion = buildInfo.buildVersion;
-    if (buildVersion != null) {
-      body.addAll({'buildVersion': buildVersion});
-    }
-
-    body['deviceId'] = deviceId;
-
-    if (platformLocale != null) {
-      body['platformLocale'] = platformLocale!;
-    }
-
-    if (platformOS != null) {
-      body['platformOS'] = platformOS!;
-    }
-    if (platformOSVersion != null) {
-      body['platformOSVersion'] = platformOSVersion!;
-    }
-
-    if (platformUserAgent != null) {
-      body['platformUserAgent'] = platformUserAgent!;
-    }
-
-    body['question'] = question;
 
     body['sdkVersion'] = sdkVersion;
 

@@ -66,15 +66,6 @@ class MockWiredashApi implements WiredashApi {
     return await sendNpsInvocations.addAsyncMethodCall(args: [body])?.future;
   }
 
-  final MethodInvocationCatcher sendNpsStartInvocations =
-      MethodInvocationCatcher('sendNpsStart');
-
-  @override
-  Future<void> sendNpsStart(NpsStartRequestBody body) async {
-    return await sendNpsStartInvocations
-        .addAsyncMethodCall(args: [body])?.future;
-  }
-
   final MethodInvocationCatcher pingInvocations =
       MethodInvocationCatcher('ping');
 

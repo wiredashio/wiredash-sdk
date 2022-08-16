@@ -179,8 +179,6 @@ class WiredashState extends State<Wiredash> {
     _services.wiredashModel.addListener(_markNeedsBuild);
     _services.backdropController.addListener(_markNeedsBuild);
 
-    // TODO: Save in Zone so that removing/adding wiredash does not trigger a new app start
-    unawaited(_services.appTelemetry.onAppStart());
     // start the sync engine
     unawaited(_services.syncEngine.onWiredashInit());
 

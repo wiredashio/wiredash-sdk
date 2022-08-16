@@ -19,6 +19,7 @@ class NpsModel extends ChangeNotifier2 {
   set score(NpsScore? value) {
     _score = value;
     notifyListeners();
+    unawaited(updateNpsRecord());
   }
 
   // The question that was shown to the use to be send to the backend
@@ -32,10 +33,11 @@ class NpsModel extends ChangeNotifier2 {
     _questionInUI = questionInUI;
     if (!_submittedQuestionSeen) {
       _submittedQuestionSeen = true;
-      submitNpsStart();
+      unawaited(updateNpsRecord());
     }
   }
 
+  /// Page of the NPS survey
   int _index = 0;
 
   int get index => _index;
@@ -45,12 +47,16 @@ class NpsModel extends ChangeNotifier2 {
     notifyListeners();
   }
 
-  String? get message => _message;
+  // The message the user want to attach
   String? _message;
+
+  String? get message => _message;
 
   set message(String? message) {
     _message = message;
     notifyListeners();
+    // Do not call updateNpsRecord, as it would be called to often.
+    // Rely on the submit button
   }
 
   bool get submitting => _submitting;
@@ -60,7 +66,7 @@ class NpsModel extends ChangeNotifier2 {
   Object? get submissionError => _submissionError;
   Object? _submissionError;
 
-  Future<void> submitNpsStart() async {
+  Future<void> updateNpsRecord({bool silentFail = true}) async {
     final deviceId = await _services.deviceIdGenerator.deviceId();
     final deviceInfo = _services.deviceInfoGenerator.generate();
     final metaData = _services.wiredashModel.metaData;
@@ -68,8 +74,10 @@ class NpsModel extends ChangeNotifier2 {
     final collector = _services.wiredashWidget.npsOptions?.collectMetaData;
     await collector?.call(metaData);
 
-    final body = NpsStartRequestBody(
+    final body = NpsRequestBody(
+      score: score,
       question: _questionInUI!,
+      message: message,
       sdkVersion: wiredashSdkVersion,
       deviceId: deviceId,
       userId: metaData.userId,
@@ -81,12 +89,16 @@ class NpsModel extends ChangeNotifier2 {
       buildInfo: buildInfo,
     );
     try {
-      await _services.api.sendNpsStart(body);
+      await _services.api.sendNps(body);
     } catch (e, stack) {
       if (kDevMode) {
         reportWiredashError(e, stack, 'NPS start request failed');
       } else {
-        // fail silently
+        if (silentFail) {
+          // fail silently
+        } else {
+          rethrow;
+        }
       }
     }
   }
@@ -96,29 +108,7 @@ class NpsModel extends ChangeNotifier2 {
     notifyListeners();
     if (kDebugMode) print('Submitting nps ($score)');
     try {
-      final deviceId = await _services.deviceIdGenerator.deviceId();
-      final deviceInfo = _services.deviceInfoGenerator.generate();
-      final metaData = _services.wiredashModel.metaData;
-      // Allow devs to collect additional information
-      final collector = _services.wiredashWidget.npsOptions?.collectMetaData;
-      await collector?.call(metaData);
-
-      final body = NpsRequestBody(
-        score: score!,
-        question: _questionInUI!,
-        message: message,
-        sdkVersion: wiredashSdkVersion,
-        deviceId: deviceId,
-        userId: metaData.userId,
-        userEmail: metaData.userEmail,
-        appLocale:
-            _services.wiredashModel.appLocaleFromContext?.toLanguageTag(),
-        platformLocale: deviceInfo.platformLocale,
-        platformOS: deviceInfo.platformOS,
-        platformUserAgent: deviceInfo.userAgent,
-        buildInfo: buildInfo,
-      );
-      await _services.api.sendNps(body);
+      await updateNpsRecord(silentFail: false);
       // ignore: avoid_print
       print("NPS Submitted ($score)");
       unawaited(_services.syncEngine.onSubmitNPS());

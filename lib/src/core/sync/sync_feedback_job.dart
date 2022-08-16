@@ -11,7 +11,7 @@ class UploadPendingFeedbackJob extends Job {
 
   @override
   bool shouldExecute(SdkEvent event) {
-    return [SdkEvent.appStart].contains(event);
+    return [SdkEvent.appStartDelayed].contains(event);
   }
 
   @override

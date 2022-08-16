@@ -24,7 +24,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall = robot.mockServices.mockApi.sendNpsInvocations.latest;
       final request = latestCall[0] as NpsRequestBody?;
-      expect(request!.score.intValue, 7);
+      expect(request!.score?.intValue, 7);
     });
 
     testWidgets('Shows detractors thanks message', (tester) async {
