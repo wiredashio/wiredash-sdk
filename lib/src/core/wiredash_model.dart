@@ -109,7 +109,6 @@ class WiredashModel with ChangeNotifier {
   /// Closes wiredash
   Future<void> hide({
     bool discardFeedback = false,
-    bool discardNps = false,
   }) async {
     await services.backdropController.animateToClosed();
     isWiredashActive = false;
@@ -122,9 +121,8 @@ class WiredashModel with ChangeNotifier {
     if (discardFeedback) {
       services.discardFeedback();
     }
-    if (discardNps) {
-      services.discardNps();
-    }
+    // always discard NPS
+    services.discardNps();
     notifyListeners();
   }
 }

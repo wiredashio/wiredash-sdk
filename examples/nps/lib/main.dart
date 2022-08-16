@@ -66,7 +66,7 @@ class _HomePageState extends State<_HomePage> {
   void initState() {
     super.initState();
 
-    // Automatically show the NPS
+    // Simple method to automatically show the NPS survey on app start
     Future.delayed(Duration(seconds: 5), () {
       if (!mounted) return;
 

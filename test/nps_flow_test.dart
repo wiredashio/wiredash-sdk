@@ -115,6 +115,16 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
     });
 
+    testWidgets('NPS is discarded when closing Wiredash', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(tester);
+      await robot.openNps();
+      await robot.rateNps(9);
+      expect(robot.services.npsModel.score, NpsScore.rating9);
+      await robot.closeWiredash();
+      await robot.openNps();
+      expect(robot.services.npsModel.score, isNull);
+    });
+
     testWidgets('Track lastNpsSurvey in telemetry', (tester) async {
       final robot = await WiredashTestRobot.launchApp(tester);
       final lastNpsSurvey =

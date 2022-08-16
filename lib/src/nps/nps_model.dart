@@ -125,7 +125,7 @@ class NpsModel extends ChangeNotifier2 {
   }
 
   Future<void> returnToAppPostSubmit() async {
-    await _services.wiredashModel.hide(discardNps: true);
+    await _services.wiredashModel.hide();
   }
 }
 

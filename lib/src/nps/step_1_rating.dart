@@ -24,7 +24,7 @@ class _NpsStep1RatingState extends State<NpsStep1Rating> {
     return StepPageScaffold(
       title: Text(question),
       onClose: () {
-        context.wiredashModel.hide(discardNps: true);
+        context.wiredashModel.hide();
       },
       indicator: const StepIndicator(
         completed: false,
