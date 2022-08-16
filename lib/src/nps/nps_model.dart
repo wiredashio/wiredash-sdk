@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
-import 'package:wiredash/src/feedback/data/delay.dart';
+import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
+import 'package:wiredash/src/utils/delay.dart';
 
 class NpsModel extends ChangeNotifier2 {
   NpsModel(WiredashServices services) : _services = services;
@@ -18,66 +19,113 @@ class NpsModel extends ChangeNotifier2 {
   set score(NpsScore? value) {
     _score = value;
     notifyListeners();
+    unawaited(updateNpsRecord());
   }
 
-  String? get message => _message;
+  // The question that was shown to the use to be send to the backend
+  String? _questionInUI;
+  bool _submittedQuestionSeen = false;
+
+  // ignore: unnecessary_getters_setters
+  String? get questionInUI => _questionInUI;
+
+  set questionInUI(String? questionInUI) {
+    _questionInUI = questionInUI;
+    if (!_submittedQuestionSeen) {
+      _submittedQuestionSeen = true;
+      _services.wiredashTelemetry.onOpenedNpsSurvey();
+      unawaited(updateNpsRecord());
+    }
+  }
+
+  /// Page of the NPS survey
+  int _index = 0;
+
+  int get index => _index;
+
+  set index(int index) {
+    _index = index;
+    notifyListeners();
+  }
+
+  // The message the user want to attach
   String? _message;
+
+  String? get message => _message;
 
   set message(String? message) {
     _message = message;
     notifyListeners();
+    // Do not call updateNpsRecord, as it would be called to often.
+    // Rely on the submit button
   }
 
   bool get submitting => _submitting;
   bool _submitting = false;
+
+  /// The error when submitting the nps rating
+  Object? get submissionError => _submissionError;
+  Object? _submissionError;
+
+  Future<void> updateNpsRecord({bool silentFail = true}) async {
+    final deviceId = await _services.deviceIdGenerator.deviceId();
+    final deviceInfo = _services.deviceInfoGenerator.generate();
+    final metaData = _services.wiredashModel.metaData;
+    // Allow devs to collect additional information
+    final collector = _services.wiredashWidget.npsOptions?.collectMetaData;
+    await collector?.call(metaData);
+
+    final body = NpsRequestBody(
+      score: score,
+      question: _questionInUI!,
+      message: message,
+      sdkVersion: wiredashSdkVersion,
+      deviceId: deviceId,
+      userId: metaData.userId,
+      userEmail: metaData.userEmail,
+      appLocale: _services.wiredashModel.appLocaleFromContext?.toLanguageTag(),
+      platformLocale: deviceInfo.platformLocale,
+      platformOS: deviceInfo.platformOS,
+      platformUserAgent: deviceInfo.userAgent,
+      buildInfo: buildInfo,
+    );
+    try {
+      await _services.api.sendNps(body);
+    } catch (e, stack) {
+      if (kDevMode) {
+        reportWiredashError(e, stack, 'NPS start request failed');
+      } else {
+        if (silentFail) {
+          // fail silently
+        } else {
+          rethrow;
+        }
+      }
+    }
+  }
 
   Future<void> submit() async {
     _submitting = true;
     notifyListeners();
     if (kDebugMode) print('Submitting nps ($score)');
     try {
-      final deviceId = await _services.deviceIdGenerator.deviceId();
-      final deviceInfo = _services.deviceInfoGenerator.generate();
-      final metaData = _services.wiredashModel.metaData;
-      // Allow devs to collect additional information
-      final collector =
-          _services.wiredashWidget.feedbackOptions?.collectMetaData ??
-              _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
-      await collector?.call(metaData);
-
-      final body = NpsRequestBody(
-        score: score!,
-        question: 'TODO get questiosn from translations',
-        message: message,
-        sdkVersion: wiredashSdkVersion,
-        deviceId: deviceId,
-        userId: metaData.userId,
-        userEmail: metaData.userEmail,
-        appLocale:
-            _services.wiredashModel.appLocaleFromContext?.toLanguageTag(),
-        platformLocale: deviceInfo.platformLocale,
-        platformOS: deviceInfo.platformOS,
-        platformUserAgent: deviceInfo.userAgent,
-      );
-      await _services.api.sendNps(body);
+      await updateNpsRecord(silentFail: false);
+      // ignore: avoid_print
+      print("NPS Submitted ($score)");
       unawaited(_services.syncEngine.onSubmitNPS());
-      _closeDelay?.dispose();
-      _closeDelay = Delay(const Duration(seconds: 1));
-      await _closeDelay!.future;
-      _submitting = false;
-      notifyListeners();
-      await returnToAppPostSubmit();
     } catch (e, stack) {
+      _submissionError = e;
       reportWiredashError(e, stack, 'NPS submission failed');
-      _submitting = false;
-      notifyListeners();
+    } finally {
+      _closeDelay?.dispose();
+      _closeDelay = Delay(const Duration(seconds: 2));
+      await _closeDelay!.future;
       await returnToAppPostSubmit();
-      rethrow;
     }
   }
 
   Future<void> returnToAppPostSubmit() async {
-    await _services.wiredashModel.hide(discardNps: true);
+    await _services.wiredashModel.hide();
   }
 }
 

@@ -17,6 +17,10 @@ enum SdkEvent {
   /// User launched the app that is wrapped in Wiredash
   appStart,
 
+  /// Slightly delayed compared to [appStart] but it is better for the users
+  /// app startup performance.
+  appStartDelayed,
+
   /// User opened the Wiredash UI
   openedWiredash,
 
@@ -78,12 +82,17 @@ class SyncEngine {
       }(),
     );
 
-    // _triggerEvent(SdkEvent.appStart);
+    final bool? hasBeenStarted = Zone.current['wiredash:appStart'] as bool?;
+    if (hasBeenStarted == true) {
+      return;
+    }
     // Delay app start a bit, so that Wiredash doesn't slow down the app start
     _initTimer?.cancel();
     _initTimer = Timer(const Duration(seconds: 5), () {
-      _triggerEvent(SdkEvent.appStart);
+      _triggerEvent(SdkEvent.appStartDelayed);
     });
+
+    _triggerEvent(SdkEvent.appStart);
   }
 
   /// Shuts down the sync engine because wiredash is not part of the widget tree
@@ -94,7 +103,7 @@ class SyncEngine {
   }
 
   Future<void> onUserOpenedWiredash() async {
-    await _triggerEvent(SdkEvent.appStart);
+    await _triggerEvent(SdkEvent.openedWiredash);
   }
 
   Future<void> onSubmitFeedback() async {

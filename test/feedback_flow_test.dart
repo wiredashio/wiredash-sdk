@@ -1,16 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'util/assert_widget.dart';
 import 'util/robot.dart';
 
 void main() {
-  autoUpdateGoldenFiles = true;
-  group('Wiredash', () {
+  group('Feedback', () {
     setUp(() {
       SharedPreferences.setMockInitialValues({});
     });
@@ -38,7 +37,7 @@ void main() {
 
       // Pressing next shows error
       await robot.goToNextStep();
-      larryPageView
+      _larryPageView
           .childByType(Step1FeedbackMessage)
           .text('l10n.feedbackStep1MessageErrorMissingMessage')
           .existsOnce();
@@ -47,8 +46,8 @@ void main() {
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
 
-      larryPageView.childByType(Step1FeedbackMessage).doesNotExist();
-      larryPageView.childByType(Step3ScreenshotOverview).existsOnce();
+      _larryPageView.childByType(Step1FeedbackMessage).doesNotExist();
+      _larryPageView.childByType(Step3ScreenshotOverview).existsOnce();
     });
 
     testWidgets('Send feedback with screenshot', (tester) async {
@@ -243,11 +242,11 @@ void main() {
       await robot.goToNextStep();
       await robot.skipScreenshot();
       await robot.skipEmail();
-      larryPageView.childByType(Step6Submit).existsOnce();
+      _larryPageView.childByType(Step6Submit).existsOnce();
 
       await robot.closeWiredash();
       await robot.openWiredash();
-      larryPageView.childByType(Step6Submit).existsOnce();
+      _larryPageView.childByType(Step6Submit).existsOnce();
     });
 
     testWidgets('Dont show hidden labels but send them regardless',
@@ -303,7 +302,8 @@ void main() {
       await robot.enterFeedbackMessage('feedback with labels');
       await robot.goToNextStep();
 
-      selectByType(Wiredash)
+      spot
+          .byType(Wiredash)
           .childByType(WiredashBackdrop)
           .childByType(LarryPageView)
           .childByType(Step2Labels)
@@ -323,5 +323,5 @@ void main() {
   });
 }
 
-final larryPageView =
-    selectByType(WiredashFeedbackFlow).childByType(LarryPageView);
+final _larryPageView =
+    spot.byType(WiredashFeedbackFlow).childByType(LarryPageView);

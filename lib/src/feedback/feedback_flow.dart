@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/material_support_layer.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/feedback/ui/grey_scale_filter.dart';
 
 class WiredashFeedbackFlow extends StatefulWidget {
@@ -56,21 +56,20 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
     final larryPageView = LarryPageView(
       key: _lpvKey,
       stepCount: feedbackModel.steps.length,
-      initialPage: _index,
       pageIndex: _index,
       onPageChanged: (index) {
         setState(() {
           _index = index;
-          final stackIndex = feedbackModel.currentStepIndex;
-          if (stackIndex == null) {
+          final stepIndex = feedbackModel.currentStepIndex;
+          if (stepIndex == null) {
             return;
           }
 
-          if (stackIndex < _index) {
+          if (stepIndex < _index) {
             feedbackModel.goToNextStep();
           }
 
-          if (stackIndex > _index) {
+          if (stepIndex > _index) {
             feedbackModel.goToPreviousStep();
           }
         });

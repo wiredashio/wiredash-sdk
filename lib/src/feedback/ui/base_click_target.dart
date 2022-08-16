@@ -10,9 +10,11 @@ class BaseClickTarget extends StatefulWidget {
     required this.builder,
     this.child,
     this.selected,
+    this.onStateChanged,
   }) : super(key: key);
 
   final void Function()? onTap;
+  final void Function(TargetState state)? onStateChanged;
   final Widget Function(BuildContext context, TargetState state, Widget? child)
       builder;
   final Widget? child;
@@ -41,41 +43,48 @@ class _BaseClickTargetState extends State<BaseClickTarget> {
     );
   }
 
+  void notifyState(void Function() block) {
+    setState(block);
+    widget.onStateChanged?.call(state);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
       cursor: _enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
       onEnter: (event) {
-        setState(() {
+        notifyState(() {
           _hovered = true;
         });
       },
       onExit: (event) {
-        setState(() {
+        notifyState(() {
           _hovered = false;
         });
       },
       child: Focus(
         onFocusChange: (focused) {
-          setState(() {
+          notifyState(() {
             _focused = focused;
           });
         },
         child: GestureDetector(
-          onTap: widget.onTap,
+          onTap: () {
+            widget.onTap?.call();
+          },
           onTapDown: (_) {
             if (!_enabled) return;
-            setState(() {
+            notifyState(() {
               _pressed = true;
             });
           },
           onTapUp: (_) {
-            setState(() {
+            notifyState(() {
               _pressed = false;
             });
           },
           onTapCancel: () {
-            setState(() {
+            notifyState(() {
               _pressed = false;
             });
           },
@@ -155,7 +164,10 @@ class AnimatedClickTarget extends StatefulWidget {
     this.onTap,
     required this.builder,
     this.duration = const Duration(milliseconds: 200),
+    this.hoverDuration = const Duration(milliseconds: 100),
     this.selected,
+    this.curve = Curves.easeInOutCubic,
+    this.reverseCurve,
   }) : super(key: key);
 
   final FocusNode? focusNode;
@@ -166,7 +178,11 @@ class AnimatedClickTarget extends StatefulWidget {
     TargetStateAnimations anims,
   ) builder;
   final Duration duration;
+  final Duration hoverDuration;
   final bool? selected;
+
+  final Curve curve;
+  final Curve? reverseCurve;
 
   @override
   State<AnimatedClickTarget> createState() => _AnimatedClickTargetState();
@@ -174,15 +190,39 @@ class AnimatedClickTarget extends StatefulWidget {
 
 class _AnimatedClickTargetState extends State<AnimatedClickTarget>
     with TickerProviderStateMixin {
-  late AnimationController _focusedController;
-  late AnimationController _pressedController;
-  late AnimationController _hoveredController;
-  late AnimationController _enabledController;
-  late AnimationController _selectedController;
+  AnimationController? _focusedController;
+  AnimationController? _pressedController;
+  AnimationController? _hoveredController;
+  AnimationController? _enabledController;
+  AnimationController? _selectedController;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
+    _createControllers();
+  }
+
+  @override
+  void didUpdateWidget(covariant AnimatedClickTarget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selected != widget.selected) {
+      if (widget.selected == true) {
+        _selectedController!.forward();
+      }
+      if (widget.selected == false) {
+        _selectedController!.reverse();
+      }
+    }
+    if (oldWidget.duration != widget.duration) {
+      _focusedController!.duration = widget.duration;
+      _pressedController!.duration = widget.duration;
+      _hoveredController!.duration = widget.duration;
+      _enabledController!.duration = widget.duration;
+      _selectedController!.duration = widget.duration;
+    }
+  }
+
+  void _createControllers() {
     _focusedController = AnimationController(
       vsync: this,
       duration: widget.duration,
@@ -195,7 +235,7 @@ class _AnimatedClickTargetState extends State<AnimatedClickTarget>
     );
     _hoveredController = AnimationController(
       vsync: this,
-      duration: widget.duration,
+      duration: widget.hoverDuration,
       debugLabel: 'AnimatedClickTarget._hoveredController',
     );
     _enabledController = AnimationController(
@@ -207,69 +247,83 @@ class _AnimatedClickTargetState extends State<AnimatedClickTarget>
       vsync: this,
       duration: widget.duration,
       debugLabel: 'AnimatedClickTarget._selectedController',
+      value: widget.selected == true ? 1.0 : 0.0,
     );
   }
 
   @override
-  void didUpdateWidget(covariant AnimatedClickTarget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.selected != widget.selected) {
-      if (widget.selected == true) _selectedController.forward();
-      if (widget.selected == false) _selectedController.reverse();
-    }
-  }
-
-  @override
   void dispose() {
-    _focusedController.dispose();
-    _pressedController.dispose();
-    _hoveredController.dispose();
-    _enabledController.dispose();
-    _selectedController.dispose();
+    _focusedController!.dispose();
+    _pressedController!.dispose();
+    _hoveredController!.dispose();
+    _enabledController!.dispose();
+    _selectedController!.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final anims = TargetStateAnimations(
-      focusedAnim: _focusedController,
-      pressedAnim: _pressedController,
-      hoveredAnim: _hoveredController,
-      enabledAnim: _enabledController,
-      selectedAnim: _selectedController,
+      focusedAnim: CurvedAnimation(
+        curve: widget.curve,
+        reverseCurve: widget.reverseCurve ?? widget.curve,
+        parent: _focusedController!,
+      ),
+      pressedAnim: CurvedAnimation(
+        curve: widget.curve,
+        reverseCurve: widget.reverseCurve ?? widget.curve,
+        parent: _pressedController!,
+      ),
+      hoveredAnim: CurvedAnimation(
+        curve: widget.curve,
+        reverseCurve: widget.reverseCurve ?? widget.curve,
+        parent: _hoveredController!,
+      ),
+      enabledAnim: CurvedAnimation(
+        curve: widget.curve,
+        reverseCurve: widget.reverseCurve ?? widget.curve,
+        parent: _enabledController!,
+      ),
+      selectedAnim: CurvedAnimation(
+        curve: widget.curve,
+        reverseCurve: widget.reverseCurve ?? widget.curve,
+        parent: _selectedController!,
+      ),
     );
 
     return BaseClickTarget(
       onTap: widget.onTap,
       selected: widget.selected,
-      builder: (context, state, child) {
+      onStateChanged: (state) {
         if (state.focused) {
-          _focusedController.forward();
+          _focusedController!.forward();
         }
         if (!state.focused) {
-          _focusedController.reverse();
+          _focusedController!.reverse();
         }
 
         if (state.pressed) {
-          _pressedController.forward();
+          _pressedController!.forward();
         }
         if (!state.pressed) {
-          _pressedController.reverse();
+          _pressedController!.reverse();
         }
 
         if (state.hovered) {
-          _hoveredController.forward();
+          _hoveredController!.forward();
         }
         if (!state.hovered) {
-          _hoveredController.reverse();
+          _hoveredController!.reverse();
         }
 
         if (state.enabled) {
-          _enabledController.forward();
+          _enabledController!.forward();
         }
         if (!state.enabled) {
-          _enabledController.reverse();
+          _enabledController!.reverse();
         }
+      },
+      builder: (context, state, child) {
         return AnimatedBuilder(
           animation: Listenable.merge([
             _focusedController,

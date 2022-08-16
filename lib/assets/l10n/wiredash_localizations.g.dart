@@ -375,6 +375,72 @@ abstract class WiredashLocalizations {
   /// **'Close'**
   String get feedbackCloseButton;
 
+  /// No description provided for @npsStep1Question.
+  ///
+  /// In en, this message translates to:
+  /// **'How likely are you to recommend us?'**
+  String get npsStep1Question;
+
+  /// No description provided for @npsStep1Description.
+  ///
+  /// In en, this message translates to:
+  /// **'0 = Not likely, 10 = most likely'**
+  String get npsStep1Description;
+
+  /// No description provided for @npsStep2MessageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How likely are you to recommend us to your friends and family?'**
+  String get npsStep2MessageTitle;
+
+  /// No description provided for @npsStep2MessageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Could you tell us a bit more about why you chose {rating}. This step is optional.'**
+  String npsStep2MessageDescription(int rating);
+
+  /// No description provided for @npsStep2MessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'It would be great if you could improve...'**
+  String get npsStep2MessageHint;
+
+  /// No description provided for @npsStep3ThanksMessagePromoters.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for your rating!'**
+  String get npsStep3ThanksMessagePromoters;
+
+  /// No description provided for @npsStep3ThanksMessagePassives.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for your rating!'**
+  String get npsStep3ThanksMessagePassives;
+
+  /// No description provided for @npsStep3ThanksMessageDetractors.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for your rating!'**
+  String get npsStep3ThanksMessageDetractors;
+
+  /// No description provided for @npsNextButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get npsNextButton;
+
+  /// No description provided for @npsBackButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get npsBackButton;
+
+  /// No description provided for @npsSubmitButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get npsSubmitButton;
+
   /// No description provided for @backdropReturnToApp.
   ///
   /// In en, this message translates to:

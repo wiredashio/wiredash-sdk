@@ -14,7 +14,6 @@ class LarryPageView extends StatefulWidget {
     required this.stepCount,
     required this.builder,
     this.onPageChanged,
-    this.initialPage = 0,
     this.pageIndex = 0,
   }) : super(key: key);
 
@@ -25,8 +24,6 @@ class LarryPageView extends StatefulWidget {
 
   /// Number of items to be returned by [builder]
   final int stepCount;
-
-  final int initialPage;
 
   /// The index of the current page
   final int pageIndex;

@@ -158,6 +158,7 @@ class _TronButtonState extends State<TronButton>
                           if (widget.leadingIcon != null)
                             TronIcon(
                               widget.leadingIcon!,
+                              // TODO animate color
                               color: _iconColor,
                             ),
                           if (widget.leadingIcon != null)

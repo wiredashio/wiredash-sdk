@@ -158,11 +158,17 @@ void main() {
           builder: (context) {
             final _AppLocalizations l10n =
                 Localizations.of(context, _AppLocalizations)!;
-
             return Scaffold(
-              body: Text(l10n.customAppString),
-              floatingActionButton: FloatingActionButton(
-                onPressed: Wiredash.of(context).show,
+              body: Column(
+                children: [
+                  Text(l10n.customAppString),
+                  GestureDetector(
+                    onTap: () {
+                      Wiredash.of(context).show();
+                    },
+                    child: const Text('Feedback'),
+                  ),
+                ],
               ),
             );
           },
@@ -204,9 +210,16 @@ void main() {
                   final _AppLocalizations l10n =
                       Localizations.of(context, _AppLocalizations)!;
                   return Scaffold(
-                    body: Text(l10n.customAppString),
-                    floatingActionButton: FloatingActionButton(
-                      onPressed: Wiredash.of(context).show,
+                    body: Column(
+                      children: [
+                        Text(l10n.customAppString),
+                        GestureDetector(
+                          onTap: () {
+                            Wiredash.of(context).show();
+                          },
+                          child: const Text('Feedback'),
+                        ),
+                      ],
                     ),
                   );
                 },
@@ -226,6 +239,15 @@ void main() {
 
         expect(find.text('custom app string'), findsOneWidget);
       });
+    });
+
+    testWidgets('Track telemetry', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(tester);
+      await robot.openWiredash();
+      final appStartCount = await robot.services.appTelemetry.appStartCount();
+      expect(appStartCount, 1);
+      final firstAppStart = await robot.services.appTelemetry.firstAppStart();
+      expect(firstAppStart, isNotNull);
     });
   });
 }
@@ -268,8 +290,15 @@ class _FakeAppState extends State<_FakeApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: Wiredash.of(context).show,
+      body: Column(
+        children: [
+          GestureDetector(
+            onTap: () {
+              Wiredash.of(context).show();
+            },
+            child: const Text('Feedback'),
+          ),
+        ],
       ),
     );
   }

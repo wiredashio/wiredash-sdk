@@ -3,7 +3,7 @@
 import 'dart:ui';
 
 import 'package:test/test.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/metadata/build_info/app_info.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/metadata/device_info/device_info.dart';

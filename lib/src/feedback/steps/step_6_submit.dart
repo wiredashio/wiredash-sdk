@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 
 class Step6Submit extends StatefulWidget {
   const Step6Submit({Key? key}) : super(key: key);
@@ -120,11 +120,11 @@ class _Step6SubmitState extends State<Step6Submit> {
                         ),
                       ),
                     if (model.hasAttachments)
-                      const ListTile(
+                      ListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text('Screenshots'),
-                        // TODO add exact number
-                        subtitle: Text('1 Screenshot'),
+                        title: const Text('Screenshots'),
+                        subtitle:
+                            Text('${model.attachments.length} Screenshot'),
                       ),
                     if (data.email != null)
                       ListTile(

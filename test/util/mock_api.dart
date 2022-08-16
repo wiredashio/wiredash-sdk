@@ -2,9 +2,9 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:http_parser/src/media_type.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 
 import 'invocation_catcher.dart';
 

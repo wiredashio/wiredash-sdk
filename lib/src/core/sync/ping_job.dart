@@ -20,7 +20,7 @@ class PingJob extends Job {
 
   @override
   bool shouldExecute(SdkEvent event) {
-    return event == SdkEvent.appStart;
+    return event == SdkEvent.appStartDelayed;
   }
 
   @override

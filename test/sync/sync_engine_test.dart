@@ -4,24 +4,24 @@ import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter/widgets.dart';
 import 'package:test/test.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/services/services.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/wiredash.dart';
 
 import '../util/mock_api.dart';
 
 void main() {
   group('sync engine', () {
-    test('onWiredashInit triggers SdkEvent.sppStart 5s after ', () {
+    test('onWiredashInit triggers SdkEvent.appStartDelayed 5s after ', () {
       fakeAsync((async) {
         final syncEngine = SyncEngine();
         addTearDown(() => syncEngine.onWiredashDispose());
 
         DateTime? lastExecution;
         final testJob = TestJob(
-          trigger: [SdkEvent.appStart],
+          trigger: [SdkEvent.appStartDelayed],
           block: () {
             lastExecution = clock.now();
           },
@@ -46,7 +46,7 @@ void main() {
 
       DateTime? lastExecution;
       final testJob = TestJob(
-        trigger: [SdkEvent.appStart],
+        trigger: [SdkEvent.appStartDelayed],
         block: () {
           lastExecution = clock.now();
         },

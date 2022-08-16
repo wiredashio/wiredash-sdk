@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/utils/email_validator.dart';
 
 class Step5Email extends StatefulWidget {

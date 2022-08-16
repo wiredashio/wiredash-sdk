@@ -69,5 +69,28 @@
   "feedbackBackButton": "Back",
   "feedbackCloseButton": "Close",
 
+  "npsStep1Question": "How likely are you to recommend us?",
+  "npsStep1Description": "0 = Not likely, 10 = most likely",
+
+  "npsStep2MessageTitle": "How likely are you to recommend us to your friends and family?",
+  "npsStep2MessageDescription": "Could you tell us a bit more about why you chose {rating}. This step is optional.",
+  "@npsStep2MessageDescription": {
+    "placeholders": {
+      "rating": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "npsStep2MessageHint": "It would be great if you could improve...",
+
+  "npsStep3ThanksMessagePromoters": "Thanks for your rating!",
+  "npsStep3ThanksMessagePassives": "Thanks for your rating!",
+  "npsStep3ThanksMessageDetractors": "Thanks for your rating!",
+
+  "npsNextButton": "Next",
+  "npsBackButton": "Back",
+  "npsSubmitButton": "Submit",
+
   "backdropReturnToApp": "Return to app"
 }

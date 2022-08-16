@@ -3,8 +3,8 @@ import 'dart:math' as math;
 
 import 'package:file/file.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 
 /// A class that knows how to "eventually send" a [PersistedFeedbackItem]

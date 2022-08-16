@@ -3,9 +3,8 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wiredash/src/core/options/feedback_options.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 
 import 'util/assert_widget.dart';
 import 'util/robot.dart';
@@ -17,14 +16,14 @@ void main() {
       final WiredashTestRobot robot = await tester.goToEmailStep();
       await robot.enterEmail('dash@flutter.io');
       await robot.submitEmailViaButton();
-      selectByType(LarryPageView).childByType(Step6Submit).existsOnce();
+      spot.byType(LarryPageView).childByType(Step6Submit).existsOnce();
     });
 
     testWidgets('Submit works without email', (tester) async {
       final WiredashTestRobot robot = await tester.goToEmailStep();
       await robot.enterEmail('');
       await robot.submitEmailViaButton();
-      selectByType(LarryPageView).childByType(Step6Submit).existsOnce();
+      spot.byType(LarryPageView).childByType(Step6Submit).existsOnce();
     });
 
     testWidgets('Submit via button - Shows error for invalid email',

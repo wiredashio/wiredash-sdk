@@ -66,7 +66,7 @@ class _LocalizationExampleState extends State<LocalizationExample> {
         onPressed: () {
           Wiredash.of(context).show(
             inheritMaterialTheme: true,
-            feedbackOptions: WiredashFeedbackOptions(
+            options: WiredashFeedbackOptions(
               email: EmailPrompt.optional,
               screenshot: ScreenshotPrompt.optional,
               labels: [

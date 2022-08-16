@@ -94,6 +94,7 @@ class WiredashApi {
     _parseResponseForErrors(response);
   }
 
+  /// Submits score of the nps survey
   Future<void> sendNps(NpsRequestBody body) async {
     final uri = Uri.parse('$_host/sendNps');
     final Request request = Request('POST', uri);
@@ -465,13 +466,15 @@ class NpsRequestBody {
     this.platformOS,
     this.platformOSVersion,
     this.platformUserAgent,
-    required this.score,
+    this.score,
     required this.sdkVersion,
     this.userEmail,
     this.userId,
+    required this.buildInfo,
   });
 
   final String? appLocale;
+  final BuildInfo buildInfo;
   final String deviceId;
   final String? message;
   final String question;
@@ -479,7 +482,7 @@ class NpsRequestBody {
   final String? platformOS;
   final String? platformOSVersion;
   final String? platformUserAgent;
-  final NpsScore score;
+  final NpsScore? score;
   final int sdkVersion;
   final String? userEmail;
   final String? userId;
@@ -491,14 +494,26 @@ class NpsRequestBody {
       body['appLocale'] = appLocale!;
     }
 
+    final buildCommit = buildInfo.buildCommit;
+    if (buildCommit != null) {
+      body.addAll({'buildCommit': buildCommit});
+    }
+
+    final buildNumber = buildInfo.buildNumber;
+    if (buildNumber != null) {
+      body.addAll({'buildNumber': buildNumber});
+    }
+
+    final buildVersion = buildInfo.buildVersion;
+    if (buildVersion != null) {
+      body.addAll({'buildVersion': buildVersion});
+    }
+
     body['deviceId'] = deviceId;
 
     if (message != null && message!.isNotEmpty) {
-      // TODO make nullable in backend
       body['message'] = message!;
     }
-
-    body['question'] = question;
 
     if (platformLocale != null) {
       body['platformLocale'] = platformLocale!;
@@ -508,15 +523,18 @@ class NpsRequestBody {
       body['platformOS'] = platformOS!;
     }
     if (platformOSVersion != null) {
-      // TODO add to backend
-      // body['platformOSVersion'] = platformOSVersion!;
+      body['platformOSVersion'] = platformOSVersion!;
     }
 
     if (platformUserAgent != null) {
       body['platformUserAgent'] = platformUserAgent!;
     }
 
-    body['score'] = score.intValue;
+    body['question'] = question;
+
+    if (score != null) {
+      body['score'] = score!.intValue;
+    }
 
     body['sdkVersion'] = sdkVersion;
 

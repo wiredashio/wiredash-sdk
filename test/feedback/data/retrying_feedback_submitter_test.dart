@@ -6,9 +6,9 @@ import 'package:file/memory.dart';
 import 'package:http/http.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
-import 'package:wiredash/src/feedback/_feedback.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 
 import '../../util/mock_api.dart';
