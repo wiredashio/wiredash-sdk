@@ -103,7 +103,7 @@ class SyncEngine {
   }
 
   Future<void> onUserOpenedWiredash() async {
-    await _triggerEvent(SdkEvent.appStart);
+    await _triggerEvent(SdkEvent.openedWiredash);
   }
 
   Future<void> onSubmitFeedback() async {
