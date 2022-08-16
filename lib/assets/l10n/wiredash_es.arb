@@ -1,0 +1,73 @@
+{
+  "@@locale": "es",
+  "feedbackStep1MessageTitle": "Envíenos sus comentarios",
+  "feedbackStep1MessageBreadcrumbTitle": "Redacta un mensaje",
+  "feedbackStep1MessageDescription": "Escribe una pequeña descripción de lo que ha ocurrido",
+  "feedbackStep1MessageHint": "Ocurre un error desconocido cuando trato de cambiar mi foto de perfil...",
+  "feedbackStep1MessageErrorMissingMessage": "Por favor escriba un mensaje",
+
+  "feedbackStep2LabelsTitle": "¿Qué etiqueta representa mejor tus comentarios?",
+  "feedbackStep2LabelsBreadcrumbTitle": "Etiqueta",
+  "feedbackStep2LabelsDescription": "Seleccionar la categoría correcta nos ayuda a identificar el problema y a enviar tus comentarios al equipo correcto",
+
+
+  "feedbackStep3ScreenshotOverviewTitle": "Añade capturas de pantalla",
+  "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "Capturas de pantalla",
+  "feedbackStep3ScreenshotOverviewDescription": "Podrás navegar por la aplicación y elegir cuándo hacer la captura de pantalla",
+  "feedbackStep3ScreenshotOverviewSkipButton": "Omitir",
+  "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Hacer captura",
+
+  "feedbackStep3ScreenshotBarNavigateTitle": "Haz una captura de pantalla",
+  "feedbackStep3ScreenshotBarDrawTitle": "Marca los detalles importantes",
+  "feedbackStep3ScreenshotBarDrawUndoButton": "Deshacer",
+  "feedbackStep3ScreenshotBarCaptureButton": "Capturar",
+  "feedbackStep3ScreenshotBarSaveButton": "Guardar",
+  "feedbackStep3ScreenshotBarOkButton": "Ok",
+
+  "feedbackStep3GalleryTitle": "Capturas de pantalla adjuntas",
+  "feedbackStep3GalleryBreadcrumbTitle": "Capturas de pantalla",
+  "feedbackStep3GalleryDescription": "Añadir más capturas de pantalla nos ayuda a entender mejor el problema.",
+
+  "feedbackStep4EmailTitle": "Reciba actualizaciones por correo electrónico",
+  "feedbackStep4EmailBreadcrumbTitle": "Contacto",
+  "feedbackStep4EmailDescription": "Agregue su dirección de correo electrónico para recibir acutalizaciones sobre tu caso o déjelo sin rellenar",
+  "feedbackStep4EmailInvalidEmail": "Esto no parece una dirección de correo electrónico válida. Puedes dejarlo sin rellenar.",
+  "feedbackStep4EmailInputHint": "mail@ejemplo.com",
+
+  "feedbackStep6SubmitTitle": "Enviar sugerencias",
+  "feedbackStep6SubmitBreadcrumbTitle": "Enviar",
+  "feedbackStep6SubmitDescription": "Por favor, revise toda la información antes de enviarla.\nPuedes navegar hacia atrás para editar sus comentarios en cualquier momento.",
+  "feedbackStep6SubmitSubmitButton": "Enviar",
+  "feedbackStep6SubmitSubmitShowDetailsButton": "Mostrar detalles",
+  "feedbackStep6SubmitSubmitHideDetailsButton": "Ocultar detalles",
+  "feedbackStep6SubmitSubmitDetailsTitle": "Comentarios",
+
+  "feedbackStep7SubmissionInFlightMessage": "Enviando tus sugerencias",
+  "feedbackStep7SubmissionSuccessMessage": "¡Gracias por tus sugerencias!",
+  "feedbackStep7SubmissionErrorMessage": "El envío de tus sugerencias ha fallado",
+  "feedbackStep7SubmissionOpenErrorButton": "Pulsa para ver más detalles sobre el error",
+  "feedbackStep7SubmissionRetryButton": "Reintentar",
+
+  "feedbackStepXOfY": "Paso {current} de {total}",
+  "@feedbackStepXOfY": {
+    "placeholders": {
+      "current": {
+        "description": "current step number 1-max",
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "description": "max number of steps",
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "feedbackDiscardButton": "Eliminar comentario",
+  "feedbackDiscardConfirmButton": "¿De verdad? ¡Elimínalo!",
+  "feedbackNextButton": "Siguiente",
+  "feedbackBackButton": "Atrás",
+  "feedbackCloseButton": "Cerrar",
+
+  "backdropReturnToApp": "Volver a la aplicación"
+}

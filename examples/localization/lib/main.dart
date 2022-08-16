@@ -41,6 +41,8 @@ class _LocalizationExampleState extends State<LocalizationExample> {
           Locale('de'),
           Locale('pl'),
           Locale('ko'),
+          Locale('es'),
+          Locale('pt'),
         ],
         localizationsDelegates: [
           ...AppLocalizations.localizationsDelegates,
@@ -138,6 +140,22 @@ class _LocalizationExampleState extends State<LocalizationExample> {
                       });
                     },
                     child: Text('ko_KR'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedLocale = Locale('es', 'ES');
+                      });
+                    },
+                    child: Text('es_ES'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedLocale = Locale('pt', 'BR');
+                      });
+                    },
+                    child: Text('pt_BR'),
                   ),
                   ElevatedButton(
                     onPressed: () {
