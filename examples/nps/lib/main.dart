@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
 import 'package:wiredash/wiredash_preview.dart';
@@ -21,7 +22,6 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
     return Wiredash(
       projectId: "Project ID from console.wiredash.io",
       secret: "API Key from console.wiredash.io",
-
       options: WiredashOptionsData(
         /// Change the locale of the Wiredash UI
         locale: Locale('en'),
@@ -70,8 +70,23 @@ class _HomePageState extends State<_HomePage> {
     // Automatically show the NPS
     Future.delayed(Duration(seconds: 5), () {
       if (!mounted) return;
-      // force: true is only used for testing
-      Wiredash.of(context).showNps(force: true);
+
+      // Trigger this at significant point in your application to probably show
+      // the Net Promoter Score survey.
+      // Use [options] to adjust how often the survey is shown.
+      Wiredash.of(context).showNps(
+        options: NpsOptions(
+          // minimum time between two surveys
+          frequency: Duration(days: 90),
+          // delay before the first survey is available
+          initialDelay: Duration(days: 7),
+          // minimum number of app starts before the survey will be shown
+          minimumAppStarts: 3,
+        ),
+
+        // for testing, add force the NPS survey to appear
+        force: true,
+      );
     });
   }
 
