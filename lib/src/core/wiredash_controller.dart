@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
@@ -278,12 +279,19 @@ extension NpsWiredash on WiredashController {
       return true;
     } else {
       final trigger = _model.services.npsTrigger;
-      final shouldShow = await trigger.shouldShowNps();
+      final properties = DiagnosticPropertiesBuilder();
+      final shouldShow =
+          await trigger.shouldShowNps(diagnosticProperties: properties);
       if (shouldShow) {
         await _model.show(flow: WiredashFlow.nps);
         return true;
       } else {
-        // TODO print when the next survey will be shown
+        final reasons = properties.properties.join('\n - ');
+        // ignore: avoid_print
+        print('Wiredash: Not showing NPS because:\n - $reasons');
+        if (kDebugMode) {
+          print('For testing, use Wiredash.of(context).showNps(force: true);');
+        }
         return false;
       }
     }

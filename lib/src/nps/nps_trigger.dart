@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:clock/clock.dart';
+import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/_nps.dart';
 import 'package:wiredash/src/core/telemetry/app_telemetry.dart';
 import 'package:wiredash/src/core/telemetry/wiredash_telemetry.dart';
@@ -20,14 +21,25 @@ class NpsTrigger {
   final AppTelemetry appTelemetry;
   final WiredashTelemetry wiredashTelemetry;
 
-  Future<bool> shouldShowNps() async {
+  /// Reruns true when the next NPS survey is due.
+  ///
+  /// When this method returns false the [diagnosticProperties] are filled with
+  /// information what prevents the survey from being shown right now.
+  Future<bool> shouldShowNps({
+    DiagnosticPropertiesBuilder? diagnosticProperties,
+  }) async {
     final DateTime now = clock.now().toUtc();
 
     final appStarts = await appTelemetry.appStartCount();
     final minimumAppStarts =
         options.minimumAppStarts ?? defaultNpsOptions.minimumAppStarts!;
     if (appStarts < minimumAppStarts) {
-      // use has to use the app a bit more before the survey is shown
+      diagnosticProperties?.add(
+        DiagnosticsNode.message(
+          'Not enough app starts (minimumAppStarts), '
+          'expected minimum $minimumAppStarts, got $appStarts',
+        ),
+      );
       return false;
     }
 
@@ -39,13 +51,30 @@ class NpsTrigger {
         options.initialDelay ?? defaultNpsOptions.initialDelay!;
     final earliestNpsShow = firstAppStart.add(initialDelay);
     if (now.isBefore(earliestNpsShow)) {
-      // User has to use the app a bit longer before the survey is shown
+      diagnosticProperties?.add(
+        DiagnosticsNode.message(
+          'App is not used long enough (initialDelay), '
+          'first NPS survey will be shown $initialDelay after '
+          'firstAppStart: $firstAppStart, earliest $earliestNpsShow',
+        ),
+      );
       return false;
     }
 
-    final nextSurvey = await earliestNextNpsSurveyDate();
+    final DateTime? lastSurvey = await wiredashTelemetry.lastNpsSurvey();
+    final Duration frequency =
+        options.frequency ?? defaultNpsOptions.frequency!;
+    final nextSurvey = await _earliestNextNpsSurvey(lastSurvey, frequency);
     if (now != nextSurvey && !now.isAfter(nextSurvey)) {
-      // too early, don't show it just yet
+      if (lastSurvey != null) {
+        diagnosticProperties
+            ?.add(DiagnosticsNode.message('Last survey was $lastSurvey'));
+      }
+      diagnosticProperties?.add(
+        DiagnosticsNode.message(
+          'Next survey is scheduled for $nextSurvey based on frequency $frequency',
+        ),
+      );
       return false;
     }
 
@@ -53,11 +82,16 @@ class NpsTrigger {
     return true;
   }
 
-  Future<DateTime> earliestNextNpsSurveyDate() async {
-    final DateTime? lastSurvey = await wiredashTelemetry.lastNpsSurvey();
-    final Duration frequency =
-        options.frequency ?? defaultNpsOptions.frequency!;
-
+  /// Calculates the date for the next survey
+  ///
+  /// Usually lastSurvey + frequency
+  ///
+  /// When lastSurvey is null the last survey is artificially set randomly in
+  /// the last frequency period. It uses the deviceId as stable seed.
+  Future<DateTime> _earliestNextNpsSurvey(
+    DateTime? lastSurvey,
+    Duration frequency,
+  ) async {
     if (lastSurvey == null) {
       // Using the device id to randomly distribute the next survey time within
       // frequency. This results in the same date for every call of this method
@@ -76,5 +110,12 @@ class NpsTrigger {
     return nextSurvey;
   }
 
-// TODO implement clear methods
+  /// The scheduled date for the next nps survey
+  @visibleForTesting
+  Future<DateTime> earliestNextNpsSurveyDate() async {
+    final DateTime? lastSurvey = await wiredashTelemetry.lastNpsSurvey();
+    final Duration frequency =
+        options.frequency ?? defaultNpsOptions.frequency!;
+    return _earliestNextNpsSurvey(lastSurvey, frequency);
+  }
 }
