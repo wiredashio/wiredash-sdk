@@ -8,7 +8,6 @@ import 'package:wiredash/src/_nps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/context_cache.dart';
-import 'package:wiredash/src/core/options/wiredash_options.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/not_a_widgets_app.dart';
 import 'package:wiredash/src/feedback/feedback_backdrop.dart';
@@ -306,10 +305,7 @@ class WiredashState extends State<Wiredash> {
         backdropController: _services.backdropController,
         child: PicassoControllerProvider(
           picassoController: _services.picassoController,
-          child: WiredashOptions(
-            data: _services.wiredashOptions,
-            child: backdrop,
-          ),
+          child: backdrop,
         ),
       ),
     );
