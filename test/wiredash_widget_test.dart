@@ -240,6 +240,15 @@ void main() {
         expect(find.text('custom app string'), findsOneWidget);
       });
     });
+
+    testWidgets('Track telemetry', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(tester);
+      await robot.openWiredash();
+      final appStartCount = await robot.services.appTelemetry.appStartCount();
+      expect(appStartCount, 1);
+      final firstAppStart = await robot.services.appTelemetry.firstAppStart();
+      expect(firstAppStart, isNotNull);
+    });
   });
 }
 

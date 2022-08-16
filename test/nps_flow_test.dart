@@ -115,6 +115,21 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
     });
 
+    testWidgets('Track lastNpsSurvey in telemetry', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(tester);
+      final lastNpsSurvey =
+          await robot.services.wiredashTelemetry.lastNpsSurvey();
+      expect(lastNpsSurvey, isNull);
+      await robot.openNps();
+      final latestNpsSurvey =
+          await robot.services.wiredashTelemetry.lastNpsSurvey();
+      expect(latestNpsSurvey, isNotNull);
+      final appStartCount = await robot.services.appTelemetry.appStartCount();
+      expect(appStartCount, 1);
+      final firstAppStart = await robot.services.appTelemetry.firstAppStart();
+      expect(firstAppStart, isNotNull);
+    });
+
     testWidgets(
         'Do not show error when submit fails, complete with thanks message',
         (tester) async {

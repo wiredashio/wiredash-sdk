@@ -17,7 +17,6 @@ class PersistentWiredashTelemetry extends WiredashTelemetry {
 
   final Future<SharedPreferences> Function() sharedPreferencesProvider;
 
-  // TODO actually call
   @override
   Future<void> onOpenedNpsSurvey() async {
     final prefs = await sharedPreferencesProvider();

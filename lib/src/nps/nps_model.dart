@@ -33,6 +33,7 @@ class NpsModel extends ChangeNotifier2 {
     _questionInUI = questionInUI;
     if (!_submittedQuestionSeen) {
       _submittedQuestionSeen = true;
+      _services.wiredashTelemetry.onOpenedNpsSurvey();
       unawaited(updateNpsRecord());
     }
   }

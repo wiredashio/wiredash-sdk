@@ -166,6 +166,7 @@ class WiredashTestRobot {
     await tester.tapAt(Offset(bottomRight.dx / 2, bottomRight.dy - 20));
     await tester.pumpAndSettle();
     _backdrop.childByType(WiredashFeedbackFlow).doesNotExist();
+    _backdrop.childByType(NpsFlow).doesNotExist();
     print('closed Wiredash');
   }
 
