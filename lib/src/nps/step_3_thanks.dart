@@ -15,9 +15,6 @@ class NpsStep3Thanks extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(
-            height: 24,
-          ),
           Icon(
             Wirecons.check,
             size: 48,
@@ -49,6 +46,7 @@ class NpsStep3Thanks extends StatelessWidget {
             textAlign: TextAlign.center,
             style: context.text.title.onBackground,
           ),
+          const SizedBox(height: 36),
         ],
       ),
     );

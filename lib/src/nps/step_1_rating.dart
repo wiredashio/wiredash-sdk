@@ -23,9 +23,7 @@ class _NpsStep1RatingState extends State<NpsStep1Rating> {
 
     return StepPageScaffold(
       title: Text(question),
-      onClose: () {
-        context.wiredashModel.hide();
-      },
+      discardLabel: Text(context.l10n.feedbackCloseButton),
       indicator: const StepIndicator(
         completed: false,
         currentStep: 1,
@@ -52,23 +50,6 @@ class _NpsStep1RatingState extends State<NpsStep1Rating> {
               }
             },
           ),
-          const SizedBox(height: 32),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TronButton(
-                label: context.l10n.npsNextButton,
-                trailingIcon: Wirecons.arrow_right,
-                onTap: context.npsModel.score != null
-                    ? () {
-                        context
-                            .findAncestorStateOfType<LarryPageViewState>()!
-                            .moveToNextPage();
-                      }
-                    : null,
-              ),
-            ],
-          )
         ],
       ),
     );
