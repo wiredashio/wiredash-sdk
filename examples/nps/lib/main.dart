@@ -36,16 +36,20 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
         // minimumAppStarts: 0,
       ),
       feedbackOptions: WiredashFeedbackOptions(
-        collectMetaData: (metaData) => metaData..userEmail = '',
+        collectMetaData: (metaData) => metaData
+          ..userEmail = 'dash@flutter.dev'
+          ..userId = '007',
       ),
       theme: WiredashThemeData.fromColor(
         primaryColor: Colors.tealAccent,
         brightness: Brightness.dark,
+      ).copyWith(
+        appHandleBackgroundColor: Color(0xFF3A3A3A),
       ),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.lightGreen,
+          primarySwatch: Colors.teal,
           brightness: Brightness.dark,
         ),
         home: _HomePage(),
