@@ -213,6 +213,45 @@ class _RatingCard extends StatefulWidget {
 
 class _RatingCardState extends State<_RatingCard>
     with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  late final Animation<double> _bounceAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    )..addListener(() {
+        setState(() {});
+      });
+    _bounceAnim = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.elasticOut,
+      ),
+    );
+  }
+
+  @override
+  void didUpdateWidget(_RatingCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.checked != oldWidget.checked) {
+      if (widget.checked) {
+        _controller.forward();
+      } else {
+        _controller.value = 0;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     const animDuration = Duration(milliseconds: 210);
@@ -241,6 +280,11 @@ class _RatingCardState extends State<_RatingCard>
           final t = max(combined, max(hover, selected));
           return colorTween.transform(t)!;
         }();
+
+        final luminance = color.computeLuminance();
+        final blackOrWhite =
+            luminance < 0.4 ? const Color(0xffffffff) : const Color(0xff000000);
+
         return Container(
           margin: const EdgeInsets.all(4),
           decoration: BoxDecoration(
@@ -254,34 +298,45 @@ class _RatingCardState extends State<_RatingCard>
           child: SizedBox(
             width: 48,
             height: 60,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 1),
-                    child: AnimatedDefaultTextStyle(
-                      curve: Curves.easeInOut,
-                      style: TextStyle(
-                        color: widget.checked
-                            ? theme.primaryTextOnBackgroundColor
-                            : theme.secondaryTextOnBackgroundColor,
+            child: ColoredBox(
+              color: state.selected ? color : const Color(0x00000000),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 1),
+                      child: AnimatedDefaultTextStyle(
+                        curve: Curves.easeInOut,
+                        style: TextStyle(
+                          color: widget.checked
+                              ? blackOrWhite
+                              : theme.secondaryTextOnBackgroundColor,
+                        ),
+                        duration: animDuration,
+                        child: Text(widget.value.toString()),
                       ),
-                      duration: animDuration,
-                      child: Text(widget.value.toString()),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  AnimatedSwitcher(
-                    duration: animDuration * 2,
-                    child: Icon(
-                      widget.checked ? Wirecons.check_circle : Wirecons.circle,
-                      key: ValueKey(widget.checked),
-                      color: color,
-                      size: 18,
+                    const SizedBox(height: 6),
+                    SizedBox(
+                      height: 22,
+                      child: AnimatedSwitcher(
+                        duration: animDuration * 2,
+                        child: ScaleTransition(
+                          scale: _controller.isAnimating
+                              ? _bounceAnim
+                              : const AlwaysStoppedAnimation(1),
+                          child: Icon(
+                            widget.checked ? Wirecons.check : Wirecons.circle,
+                            key: ValueKey(widget.checked),
+                            color: state.selected ? blackOrWhite : color,
+                            size: widget.checked ? 22 : 18,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
