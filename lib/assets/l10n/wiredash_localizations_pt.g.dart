@@ -164,7 +164,7 @@ class WiredashLocalizationsPt extends WiredashLocalizations {
   String get npsStep1Question => 'How likely are you to recommend us?';
 
   @override
-  String get npsStep1Description => '0 = Not likely, 10 = most likely';
+  String get npsStep1Description => '0 = Not likely, 10 = Most likely';
 
   @override
   String get npsStep2MessageTitle =>
@@ -172,7 +172,7 @@ class WiredashLocalizationsPt extends WiredashLocalizations {
 
   @override
   String npsStep2MessageDescription(int rating) {
-    return 'Could you tell us a bit more about why you chose $rating. This step is optional.';
+    return 'Could you tell us a bit more about why you chose $rating? This step is optional.';
   }
 
   @override
