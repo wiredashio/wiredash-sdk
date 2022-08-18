@@ -84,7 +84,7 @@ The Wiredash SDK is completely customizable and offers many configuration option
 labels, custom metadata, custom theming, custom translations and much, much more!) 🤯
 
 For all the details, make sure to check out the full documentation
-at [docs.wiredash.io](https://docs.wiredash.io/configuration/).
+at [docs.wiredash.io](https://docs.wiredash.io/).
 
 Also checkout the [example](https://github.com/wiredashio/wiredash-sdk/blob/stable/example/lib/main.dart) code
 
