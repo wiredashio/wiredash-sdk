@@ -70,10 +70,10 @@
   "feedbackCloseButton": "Close",
 
   "npsStep1Question": "How likely are you to recommend us?",
-  "npsStep1Description": "0 = Not likely, 10 = most likely",
+  "npsStep1Description": "0 = Not likely, 10 = Most likely",
 
   "npsStep2MessageTitle": "How likely are you to recommend us to your friends and family?",
-  "npsStep2MessageDescription": "Could you tell us a bit more about why you chose {rating}. This step is optional.",
+  "npsStep2MessageDescription": "Could you tell us a bit more about why you chose {rating}? This step is optional.",
   "@npsStep2MessageDescription": {
     "placeholders": {
       "rating": {

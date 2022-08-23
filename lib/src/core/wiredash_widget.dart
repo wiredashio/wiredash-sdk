@@ -201,10 +201,13 @@ class WiredashState extends State<Wiredash> {
   @override
   void didUpdateWidget(Wiredash oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _services.projectCredentialValidator.validate(
-      projectId: widget.projectId,
-      secret: widget.secret,
-    );
+    if (oldWidget.projectId != widget.projectId ||
+        oldWidget.secret != widget.secret) {
+      _services.projectCredentialValidator.validate(
+        projectId: widget.projectId,
+        secret: widget.secret,
+      );
+    }
     _services.updateWidget(widget);
   }
 

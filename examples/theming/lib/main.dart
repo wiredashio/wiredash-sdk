@@ -91,7 +91,7 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
 
         // the color behind the application, only visible when your app is
         // translucent
-        appBackgroundColor: Colors.white,
+        // appBackgroundColor: Colors.white,
         // The color of the "Return to app" bar
         appHandleBackgroundColor: Colors.red[1000],
 

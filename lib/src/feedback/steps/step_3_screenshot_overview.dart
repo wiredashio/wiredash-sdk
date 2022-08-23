@@ -117,44 +117,56 @@ class Step3WithGallery extends StatelessWidget {
       description: Text(context.l10n.feedbackStep3GalleryDescription),
       discardLabel: Text(context.l10n.feedbackDiscardButton),
       discardConfirmLabel: Text(context.l10n.feedbackDiscardConfirmButton),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: SizedBox(
-              height: 200,
-              child: Row(
-                children: [
-                  for (final att in context.feedbackModel.attachments)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 16),
-                      child: AttachmentPreview(attachment: att),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                child: SizedBox(
+                  height: 200,
+                  child: Center(
+                    child: Row(
+                      children: [
+                        for (final att in context.feedbackModel.attachments)
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: constraints.maxWidth / 2.5,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 16),
+                              child: AttachmentPreview(attachment: att),
+                            ),
+                          ),
+                        if (context.feedbackModel.attachments.length < 3)
+                          const _NewAttachment(),
+                      ],
                     ),
-                  if (context.feedbackModel.attachments.length < 3)
-                    const _NewAttachment(),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TronButton(
+                    color: context.theme.secondaryColor,
+                    leadingIcon: Wirecons.arrow_left,
+                    label: context.l10n.feedbackBackButton,
+                    onTap: context.feedbackModel.goToPreviousStep,
+                  ),
+                  TronButton(
+                    label: context.l10n.feedbackNextButton,
+                    trailingIcon: Wirecons.arrow_right,
+                    onTap: context.feedbackModel.goToNextStep,
+                  ),
                 ],
               ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TronButton(
-                color: context.theme.secondaryColor,
-                leadingIcon: Wirecons.arrow_left,
-                label: context.l10n.feedbackBackButton,
-                onTap: context.feedbackModel.goToPreviousStep,
-              ),
-              TronButton(
-                label: context.l10n.feedbackNextButton,
-                trailingIcon: Wirecons.arrow_right,
-                onTap: context.feedbackModel.goToNextStep,
-              ),
             ],
-          ),
-        ],
+          );
+        },
       ),
     );
   }

@@ -384,7 +384,7 @@ abstract class WiredashLocalizations {
   /// No description provided for @npsStep1Description.
   ///
   /// In en, this message translates to:
-  /// **'0 = Not likely, 10 = most likely'**
+  /// **'0 = Not likely, 10 = Most likely'**
   String get npsStep1Description;
 
   /// No description provided for @npsStep2MessageTitle.
@@ -396,7 +396,7 @@ abstract class WiredashLocalizations {
   /// No description provided for @npsStep2MessageDescription.
   ///
   /// In en, this message translates to:
-  /// **'Could you tell us a bit more about why you chose {rating}. This step is optional.'**
+  /// **'Could you tell us a bit more about why you chose {rating}? This step is optional.'**
   String npsStep2MessageDescription(int rating);
 
   /// No description provided for @npsStep2MessageHint.
