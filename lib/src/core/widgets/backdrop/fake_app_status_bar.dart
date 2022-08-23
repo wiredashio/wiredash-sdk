@@ -44,8 +44,7 @@ class FakeAppStatusBar extends StatelessWidget {
             ),
             child: Stack(
               children: [
-                Align(
-                  alignment: Alignment.center,
+                Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
