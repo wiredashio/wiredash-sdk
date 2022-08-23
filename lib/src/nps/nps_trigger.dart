@@ -10,13 +10,11 @@ import 'package:wiredash/src/metadata/build_info/device_id_generator.dart';
 /// Decides when it is time to show the NPS survey
 class NpsTrigger {
   NpsTrigger({
-    required this.options,
     required this.deviceIdGenerator,
     required this.appTelemetry,
     required this.wiredashTelemetry,
   });
 
-  final NpsOptions options;
   final DeviceIdGenerator deviceIdGenerator;
   final AppTelemetry appTelemetry;
   final WiredashTelemetry wiredashTelemetry;
@@ -26,6 +24,7 @@ class NpsTrigger {
   /// When this method returns false the [diagnosticProperties] are filled with
   /// information what prevents the survey from being shown right now.
   Future<bool> shouldShowNps({
+    required NpsOptions options,
     DiagnosticPropertiesBuilder? diagnosticProperties,
   }) async {
     final DateTime now = clock.now().toUtc();
@@ -112,7 +111,7 @@ class NpsTrigger {
 
   /// The scheduled date for the next nps survey
   @visibleForTesting
-  Future<DateTime> earliestNextNpsSurveyDate() async {
+  Future<DateTime> earliestNextNpsSurveyDate(NpsOptions options) async {
     final DateTime? lastSurvey = await wiredashTelemetry.lastNpsSurvey();
     final Duration frequency =
         options.frequency ?? defaultNpsOptions.frequency!;

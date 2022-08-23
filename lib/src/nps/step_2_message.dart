@@ -43,7 +43,6 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
         total: 2,
         completed: false,
       ),
-      // title: const Text('What is the most important reason for your score?'),
       title: Text(context.l10n.npsStep2MessageTitle),
       description: Text(
         context.l10n

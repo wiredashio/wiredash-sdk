@@ -123,7 +123,6 @@ void _setupServices(WiredashServices sl) {
   );
   sl.inject<NpsTrigger>((_) {
     return NpsTrigger(
-      options: sl.wiredashWidget.npsOptions ?? defaultNpsOptions,
       deviceIdGenerator: sl.deviceIdGenerator,
       appTelemetry: sl.appTelemetry,
       wiredashTelemetry: sl.wiredashTelemetry,

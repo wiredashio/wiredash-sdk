@@ -273,15 +273,20 @@ extension NpsWiredash on WiredashController {
   }) async {
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
     _captureAppLocale();
+    _model.npsOptionsOverride = options;
 
     if (force == true) {
       await _model.show(flow: WiredashFlow.nps);
       return true;
     } else {
-      final trigger = _model.services.npsTrigger;
+      final actualOptions = _model.npsOptions;
+
       final properties = DiagnosticPropertiesBuilder();
-      final shouldShow =
-          await trigger.shouldShowNps(diagnosticProperties: properties);
+      final trigger = _model.services.npsTrigger;
+      final shouldShow = await trigger.shouldShowNps(
+        options: actualOptions,
+        diagnosticProperties: properties,
+      );
       if (shouldShow) {
         await _model.show(flow: WiredashFlow.nps);
         return true;

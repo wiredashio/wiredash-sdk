@@ -5,6 +5,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/wiredash.dart';
+import 'package:wiredash/wiredash_preview.dart';
 
 class WiredashModel with ChangeNotifier {
   WiredashModel(this.services);
@@ -75,6 +76,21 @@ class WiredashModel with ChangeNotifier {
 
   WiredashFeedbackOptions? get feedbackOptions =>
       _feedbackOptionsOverride ?? services.wiredashWidget.feedbackOptions;
+
+  /// The nps options passed into `Wiredash.of(context).showNps()` call
+  NpsOptions? _npsOptionsOverride;
+
+  NpsOptions? get npsOptionsOverride => _npsOptionsOverride;
+
+  set npsOptionsOverride(NpsOptions? npsOptions) {
+    _npsOptionsOverride = npsOptions;
+    notifyListeners();
+  }
+
+  NpsOptions get npsOptions =>
+      _npsOptionsOverride ??
+      services.wiredashWidget.npsOptions ??
+      defaultNpsOptions;
 
   /// Deletes pending feedbacks
   ///

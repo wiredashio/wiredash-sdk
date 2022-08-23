@@ -72,7 +72,7 @@ class NpsModel extends ChangeNotifier2 {
     final deviceInfo = _services.deviceInfoGenerator.generate();
     final metaData = _services.wiredashModel.metaData;
     // Allow devs to collect additional information
-    final collector = _services.wiredashWidget.npsOptions?.collectMetaData;
+    final collector = _services.wiredashModel.npsOptions.collectMetaData;
     await collector?.call(metaData);
 
     final body = NpsRequestBody(

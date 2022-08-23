@@ -29,16 +29,16 @@ void main() {
           appTelemetry: appTelemetry,
           wiredashTelemetry: wiredashTelemetry,
           deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
-          options: NpsOptions(
-            frequency: frequency,
-            initialDelay: initialDelay,
-            minimumAppStarts: 0,
-          ),
+        );
+        final options = NpsOptions(
+          frequency: frequency,
+          initialDelay: initialDelay,
+          minimumAppStarts: 0,
         );
 
         final showTimes = <DateTime>[];
         while (showTimes.length < 3) {
-          final show = await trigger.shouldShowNps();
+          final show = await trigger.shouldShowNps(options: options);
           if (show) {
             await wiredashTelemetry.onOpenedNpsSurvey();
             showTimes.add(now);
@@ -117,19 +117,19 @@ void main() {
         appTelemetry: appTelemetry,
         wiredashTelemetry: wiredashTelemetry,
         deviceIdGenerator: deviceIdGenerator,
-        options: const NpsOptions(frequency: frequency),
       );
+      const options = NpsOptions(frequency: frequency);
 
       deviceIdGenerator.mockedDeviceId = 'one';
-      final date1 = await trigger.earliestNextNpsSurveyDate();
+      final date1 = await trigger.earliestNextNpsSurveyDate(options);
       expect(date1, DateTime.utc(2020, 1, 6, 21, 43, 8));
 
       deviceIdGenerator.mockedDeviceId = 'two';
-      final date2 = await trigger.earliestNextNpsSurveyDate();
+      final date2 = await trigger.earliestNextNpsSurveyDate(options);
       expect(date2, DateTime.utc(2020, 1, 4, 5, 45, 30));
 
       deviceIdGenerator.mockedDeviceId = 'three';
-      final date3 = await trigger.earliestNextNpsSurveyDate();
+      final date3 = await trigger.earliestNextNpsSurveyDate(options);
       expect(date3, DateTime.utc(2020, 1, 10, 6, 50, 44));
 
       expect(date1.isAfter(now), isTrue);
@@ -150,27 +150,27 @@ void main() {
           PersistentWiredashTelemetry(SharedPreferences.getInstance);
       final appTelemetry =
           PersistentAppTelemetry(SharedPreferences.getInstance);
+      const options = NpsOptions(
+        frequency: Duration.zero,
+        initialDelay: Duration.zero,
+        minimumAppStarts: 3,
+      );
       final trigger = NpsTrigger(
         appTelemetry: appTelemetry,
         wiredashTelemetry: wiredashTelemetry,
         deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
-        options: const NpsOptions(
-          frequency: Duration.zero,
-          initialDelay: Duration.zero,
-          minimumAppStarts: 3,
-        ),
       );
 
       now = now.add(const Duration(days: 100));
-      expect(await trigger.shouldShowNps(), isFalse);
+      expect(await trigger.shouldShowNps(options: options), isFalse);
       await appTelemetry.onAppStart();
-      expect(await trigger.shouldShowNps(), isFalse);
+      expect(await trigger.shouldShowNps(options: options), isFalse);
 
       await appTelemetry.onAppStart();
-      expect(await trigger.shouldShowNps(), isFalse);
+      expect(await trigger.shouldShowNps(options: options), isFalse);
 
       await appTelemetry.onAppStart();
-      expect(await trigger.shouldShowNps(), isTrue);
+      expect(await trigger.shouldShowNps(options: options), isTrue);
     });
   });
 
@@ -180,19 +180,19 @@ void main() {
       final appTelemetry =
           PersistentAppTelemetry(SharedPreferences.getInstance);
       await appTelemetry.onAppStart();
+      const options = NpsOptions(
+        frequency: Duration.zero,
+        initialDelay: Duration.zero,
+        minimumAppStarts: 0,
+      );
       final trigger = NpsTrigger(
         appTelemetry: appTelemetry,
         wiredashTelemetry:
             PersistentWiredashTelemetry(SharedPreferences.getInstance),
         deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
-        options: const NpsOptions(
-          frequency: Duration.zero,
-          initialDelay: Duration.zero,
-          minimumAppStarts: 0,
-        ),
       );
 
-      expect(await trigger.shouldShowNps(), isTrue);
+      expect(await trigger.shouldShowNps(options: options), isTrue);
     });
   });
 }
