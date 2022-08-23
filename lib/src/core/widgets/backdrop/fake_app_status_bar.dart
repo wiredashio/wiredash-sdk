@@ -27,13 +27,6 @@ class FakeAppStatusBar extends StatelessWidget {
 
     return DefaultTextStyle(
       style: TextStyle(
-        shadows: const [
-          Shadow(
-            offset: Offset(2, 2),
-            blurRadius: 2,
-            color: Color.fromARGB(30, 0, 0, 0),
-          ),
-        ],
         color: blackOrWhite,
         fontSize: barContentHeight,
       ),
