@@ -766,7 +766,10 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                           right: 0,
                           bottom: 0,
                           child: ClipRect(
-                            child: child,
+                            child: Opacity(
+                              opacity: 1 - (_appHandleAnimation.value * 0.4),
+                              child: child,
+                            ),
                           ),
                         ),
                         if (withDesktopHandle)
@@ -782,6 +785,18 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                       opacity: _appHandleAnimation,
                       child: fakeAppStatusBar,
                     ),
+                  // Overlay app with colored overlay to indicate inactivity
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: Opacity(
+                        opacity: _appHandleAnimation.value,
+                        child: ColoredBox(
+                          color: context.theme.appHandleBackgroundColor
+                              .withOpacity(0.1),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
