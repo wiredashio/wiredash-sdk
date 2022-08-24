@@ -6,7 +6,6 @@ import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/context_cache.dart';
 import 'package:wiredash/src/utils/object_util.dart';
 import 'package:wiredash/wiredash.dart';
-import 'package:wiredash/wiredash_preview.dart';
 
 /// Use this controller to interact with [Wiredash]
 ///

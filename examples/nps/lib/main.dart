@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
-import 'package:wiredash/wiredash_preview.dart';
 
 void main() {
   runApp(WiredashExampleApp());
