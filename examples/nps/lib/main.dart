@@ -20,19 +20,13 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
     return Wiredash(
       projectId: "Project ID from console.wiredash.io",
       secret: "API Key from console.wiredash.io",
-      options: WiredashOptionsData(
-        /// Change the locale of the Wiredash UI
-        locale: Locale('en'),
-        // TODO add example how to overwrite the question
-      ),
       npsOptions: NpsOptions(
         collectMetaData: (metaData) => metaData..userEmail = 'dash@wiredash.io',
-        // frequency: Duration(days: 90),
-        // frequency: Duration.zero,
-        // initialDelay: Duration(days: 7),
-        // initialDelay: Duration.zero,
-        // minimumAppStarts: 3,
-        // minimumAppStarts: 0,
+        // frequency: Duration(days: 90), // default
+        // initialDelay: Duration(days: 7), // default
+        // initialDelay: Duration.zero, // disable initial delay
+        // minimumAppStarts: 3, // default
+        // minimumAppStarts: 0, // disable minimum app starts
       ),
       feedbackOptions: WiredashFeedbackOptions(
         collectMetaData: (metaData) => metaData
