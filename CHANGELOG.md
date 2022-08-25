@@ -1,16 +1,16 @@
 # Changelog
 
-## 1.2.0
+## 1.5.0
 
-- New: Net Promoter Score Preview 🎉
+- New: Promoter Score Surveys 🎉
   Ask your users how likely they are to recommend your app to their friends on a scale from 0-10. You can see your stats in the console in the new NPS tab.
 
   ```dart
   // Trigger this at significant point in your application to probably show
-  // the Net Promoter Score survey.
+  // the Promoter Score survey.
   // Use [options] to adjust how often the survey is shown.
-  Wiredash.of(context).showNps(
-    options: NpsOptions(
+  Wiredash.of(context).showPromoterSurvey(
+    options: PsOptions(
       // minimum time between two surveys
       frequency: Duration(days: 90),
       // delay before the first survey is available
@@ -19,10 +19,12 @@
       minimumAppStarts: 3,
     ),
   
-    // for testing, add force the NPS survey to appear
+    // for testing, add force the promoter score survey to appear
     force: true,
   );
   ```
+
+## 1.2.0
   
 - New locales polish `pl` 🇵🇱, spanish `es` 🇪🇸🇲🇽, portuguese `pt` 🇵🇹🇧🇷 and turkish `tr` 🇹🇷 by our awesome contributors @orestesgaolin, @jamesblasco, @KyleKun and @AtaTrkgl. Thanks!
   Want to contribute your language? Checkout the docs [Localization - Contribute to Wiredash](https://docs.wiredash.io/sdk/localization/#contribute-to-wiredash)
