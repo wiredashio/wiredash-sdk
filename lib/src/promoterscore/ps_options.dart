@@ -2,31 +2,32 @@ import 'dart:async';
 
 import 'package:wiredash/src/metadata/meta_data.dart';
 
-/// Options for the Net promoter score
-class NpsOptions {
-  /// Options for the Net promoter score
-  const NpsOptions({
+/// Options for the promoter score survey
+class PsOptions {
+  /// Options for the promoter score survey
+  const PsOptions({
     this.frequency,
     this.initialDelay,
     this.collectMetaData,
     this.minimumAppStarts,
   });
 
-  /// The duration between recurring NPS surveys
+  /// The duration between recurring promoter score surveys
   ///
   /// Defaults to 90 days
   ///
-  /// Trigger showing the NPS survey with `Wiredash.of(context).eventuallyShowNps()`.
+  /// Trigger showing the promoter score survey with
+  /// `Wiredash.of(context).showPromoterSurvey()`.
   final Duration? frequency;
 
-  /// The number of time the user has to open the app before seeing a NPS survey
+  /// The number of time the user has to open the app before seeing a survey
   /// for the first time
   ///
   /// Defaults to 3
   ///
   /// To ignore the minimum number of app starts, set it to `0`.
   ///
-  /// This setting only works when calling `Wiredash.of(context).eventuallyShowNps()`.
+  /// This setting only works when calling `Wiredash.of(context).showPromoterSurvey()`.
   final int? minimumAppStarts;
 
   /// Duration the app has to be installed on the device before it becomes
@@ -36,12 +37,13 @@ class NpsOptions {
   ///
   /// To remove the initial delay, set it to [Duration.zero].
   ///
-  /// This setting only works when calling `Wiredash.of(context).eventuallyShowNps()`.
+  /// This setting only works when calling `Wiredash.of(context).showPromoterSurvey()`.
   final Duration? initialDelay;
 
-  /// Enrich the NPS survey answer with custom metadata
+  /// Enrich the promoter score survey answer with custom metadata
   ///
-  /// This function is called by Wiredash when the user submits the NPS survey
+  /// This function is called by Wiredash when the user submits the promoter
+  /// score survey
   ///
   /// Mutate the incoming `metaData` object and add or override values
   ///
@@ -57,8 +59,8 @@ class NpsOptions {
   )? collectMetaData;
 }
 
-/// When `Wiredash(npsOptions: )` are not set, these default options are used
-const NpsOptions defaultNpsOptions = NpsOptions(
+/// When `Wiredash(PsOptions: )` are not set, these default options are used
+const PsOptions defaultPsOptions = PsOptions(
   frequency: Duration(days: 90),
   initialDelay: Duration(days: 7),
   minimumAppStarts: 3,

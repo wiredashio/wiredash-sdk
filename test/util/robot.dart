@@ -9,13 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_feedback.dart';
+import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
-import 'package:wiredash/src/nps/nps_flow.dart';
-import 'package:wiredash/src/nps/step_1_rating.dart';
-import 'package:wiredash/src/nps/step_2_message.dart';
-import 'package:wiredash/src/nps/step_3_thanks.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'assert_widget.dart';
@@ -78,9 +75,10 @@ class WiredashTestRobot {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Wiredash.of(context).showNps(force: true);
+                            Wiredash.of(context)
+                                .showPromoterSurvey(force: true);
                           },
-                          child: const Text('NPS'),
+                          child: const Text('Promoter Score'),
                         ),
                       ],
                     ),
@@ -145,9 +143,10 @@ class WiredashTestRobot {
     print('opened Wiredash');
   }
 
-  Future<void> openNps() async {
-    final npsText = spot.byType(MaterialApp).text('NPS').existsOnce();
-    await tester.tap(npsText.finder);
+  Future<void> openPromoterScore() async {
+    final promoterScoreText =
+        spot.byType(MaterialApp).text('Promoter Score').existsOnce();
+    await tester.tap(promoterScoreText.finder);
 
     // process the event, wait for backdrop to appear in the widget tree
     await tester.pumpN(4);
@@ -156,8 +155,8 @@ class WiredashTestRobot {
     // When the pump pattern on top fails, use this instead
     // await tester.pumpAndSettle();
 
-    _backdrop.childByType(NpsFlow).existsOnce();
-    print('opened NPS');
+    _backdrop.childByType(PromoterScoreFlow).existsOnce();
+    print('opened promoter score');
   }
 
   Future<void> closeWiredash() async {
@@ -166,7 +165,7 @@ class WiredashTestRobot {
     await tester.tapAt(Offset(bottomRight.dx / 2, bottomRight.dy - 20));
     await tester.pumpAndSettle();
     _backdrop.childByType(WiredashFeedbackFlow).doesNotExist();
-    _backdrop.childByType(NpsFlow).doesNotExist();
+    _backdrop.childByType(PromoterScoreFlow).doesNotExist();
     print('closed Wiredash');
   }
 
@@ -190,10 +189,10 @@ class WiredashTestRobot {
     print('entered feedback message: $message');
   }
 
-  Future<void> enterNpsMessage(String message) async {
-    final step = _pageView.childByType(NpsStep2Message).existsOnce();
-    final done = step.text('l10n.npsSubmitButton').existsOnce();
-    step.text('l10n.npsBackButton').existsOnce();
+  Future<void> enterPromotionScoreMessage(String message) async {
+    final step = _pageView.childByType(PsStep2Message).existsOnce();
+    final done = step.text('l10n.promoterScoreSubmitButton').existsOnce();
+    step.text('l10n.promoterScoreBackButton').existsOnce();
     await tester.enterText(find.byType(TextField), message);
     await tester.pumpAndSettle();
     await tester.waitUntil(
@@ -399,9 +398,9 @@ class WiredashTestRobot {
     );
   }
 
-  Future<void> rateNps(int rating) async {
+  Future<void> ratePromoterScore(int rating) async {
     assert(rating >= 0 && rating <= 10);
-    final step = _pageView.childByType(NpsStep1Rating).existsOnce();
+    final step = _pageView.childByType(PsStep1Rating).existsOnce();
     await tester.tap(step.text(rating.toString()).finder);
     await tester.pumpAndSettle();
 
@@ -411,11 +410,11 @@ class WiredashTestRobot {
     await tester.pumpAndSettle(const Duration(milliseconds: 600));
   }
 
-  Future<void> submitNps() async {
-    final step = _pageView.childByType(NpsStep2Message).existsOnce();
+  Future<void> submitPromoterScore() async {
+    final step = _pageView.childByType(PsStep2Message).existsOnce();
     final submitButton = step.byType(
       TronButton,
-      children: [spot.text('l10n.npsSubmitButton')],
+      children: [spot.text('l10n.promoterScoreSubmitButton')],
     ).existsOnce();
     await tester.scrollUntilVisible(
       submitButton.finder,
@@ -430,11 +429,11 @@ class WiredashTestRobot {
     );
     await tester.tap(submitButton.finder);
     await tester.pumpAndSettle();
-    print('submit NPS');
+    print('submit Promoter Score');
   }
 
-  Future<void> showsNpsThanksMessage([Finder? finder]) async {
-    final step = _pageView.childByType(NpsStep3Thanks).existsOnce();
+  Future<void> showsPromoterScoreThanksMessage([Finder? finder]) async {
+    final step = _pageView.childByType(PsStep3Thanks).existsOnce();
     if (finder != null) {
       step.child(finder).existsOnce();
     }

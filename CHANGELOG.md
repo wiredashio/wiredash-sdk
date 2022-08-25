@@ -2,7 +2,7 @@
 
 ## 1.2.0
 
-- New: Net Promoter Score 🎉
+- New: Net Promoter Score Preview 🎉
   Ask your users how likely they are to recommend your app to their friends on a scale from 0-10. You can see your stats in the console in the new NPS tab.
 
   ```dart

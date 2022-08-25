@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/_nps.dart';
+import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
@@ -28,7 +28,6 @@ import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/ui/screencapture.dart';
 import 'package:wiredash/src/metadata/build_info/device_id_generator.dart';
 import 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
-import 'package:wiredash/src/nps/nps_trigger.dart';
 import 'package:wiredash/src/utils/uuid.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -44,7 +43,7 @@ class WiredashServices extends ChangeNotifier {
 
   FeedbackModel get feedbackModel => _locator.watch();
 
-  NpsModel get npsModel => _locator.watch();
+  PsModel get psModel => _locator.watch();
 
   BackdropController get backdropController => _locator.watch();
 
@@ -68,11 +67,11 @@ class WiredashServices extends ChangeNotifier {
 
   DiscardFeedbackUseCase get discardFeedback => _locator.watch();
 
-  DiscardNpsUseCase get discardNps => _locator.watch();
+  DiscardPsUseCase get discardPs => _locator.watch();
 
   ProjectCredentialValidator get projectCredentialValidator => _locator.watch();
 
-  NpsTrigger get npsTrigger => _locator.watch();
+  PsTrigger get psTrigger => _locator.watch();
 
   WiredashTelemetry get wiredashTelemetry => _locator.watch();
 
@@ -121,8 +120,8 @@ void _setupServices(WiredashServices sl) {
   sl.inject<WiredashTelemetry>(
     (_) => PersistentWiredashTelemetry(SharedPreferences.getInstance),
   );
-  sl.inject<NpsTrigger>((_) {
-    return NpsTrigger(
+  sl.inject<PsTrigger>((_) {
+    return PsTrigger(
       deviceIdGenerator: sl.deviceIdGenerator,
       appTelemetry: sl.appTelemetry,
       wiredashTelemetry: sl.wiredashTelemetry,
@@ -162,8 +161,8 @@ void _setupServices(WiredashServices sl) {
     dispose: (model) => model.dispose(),
   );
 
-  sl.inject<NpsModel>(
-    (locator) => NpsModel(sl),
+  sl.inject<PsModel>(
+    (locator) => PsModel(sl),
     dispose: (model) => model.dispose(),
   );
 
@@ -228,7 +227,7 @@ void _setupServices(WiredashServices sl) {
   );
 
   sl.inject<DiscardFeedbackUseCase>((_) => DiscardFeedbackUseCase(sl));
-  sl.inject<DiscardNpsUseCase>((_) => DiscardNpsUseCase(sl));
+  sl.inject<DiscardPsUseCase>((_) => DiscardPsUseCase(sl));
 }
 
 /// Discards the current feedback
@@ -245,15 +244,15 @@ class DiscardFeedbackUseCase {
   }
 }
 
-/// Discards the current NPS
-class DiscardNpsUseCase {
-  DiscardNpsUseCase(this.services);
+/// Discards the current promoter score by recreating the [PsModel]
+class DiscardPsUseCase {
+  DiscardPsUseCase(this.services);
 
   final WiredashServices services;
 
   void call() {
-    services.inject<NpsModel>(
-      (locator) => NpsModel(services),
+    services.inject<PsModel>(
+      (locator) => PsModel(services),
       dispose: (model) => model.dispose(),
     );
   }

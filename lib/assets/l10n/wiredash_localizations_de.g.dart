@@ -156,40 +156,46 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
   String get feedbackCloseButton => 'Schließen';
 
   @override
-  String get npsStep1Question => 'How likely are you to recommend us?';
+  String get promoterScoreStep1Question =>
+      'How likely are you to recommend us?';
 
   @override
-  String get npsStep1Description => '0 = Not likely, 10 = Most likely';
+  String get promoterScoreStep1Description =>
+      '0 = Not likely, 10 = Most likely';
 
   @override
-  String get npsStep2MessageTitle =>
+  String get promoterScoreStep2MessageTitle =>
       'How likely are you to recommend us to your friends and family?';
 
   @override
-  String npsStep2MessageDescription(int rating) {
+  String promoterScoreStep2MessageDescription(int rating) {
     return 'Could you tell us a bit more about why you chose $rating? This step is optional.';
   }
 
   @override
-  String get npsStep2MessageHint => 'It would be great if you could improve...';
+  String get promoterScoreStep2MessageHint =>
+      'It would be great if you could improve...';
 
   @override
-  String get npsStep3ThanksMessagePromoters => 'Thanks for your rating!';
+  String get promoterScoreStep3ThanksMessagePromoters =>
+      'Thanks for your rating!';
 
   @override
-  String get npsStep3ThanksMessagePassives => 'Thanks for your rating!';
+  String get promoterScoreStep3ThanksMessagePassives =>
+      'Thanks for your rating!';
 
   @override
-  String get npsStep3ThanksMessageDetractors => 'Thanks for your rating!';
+  String get promoterScoreStep3ThanksMessageDetractors =>
+      'Thanks for your rating!';
 
   @override
-  String get npsNextButton => 'Next';
+  String get promoterScoreNextButton => 'Next';
 
   @override
-  String get npsBackButton => 'Back';
+  String get promoterScoreBackButton => 'Back';
 
   @override
-  String get npsSubmitButton => 'Submit';
+  String get promoterScoreSubmitButton => 'Submit';
 
   @override
   String get backdropReturnToApp => 'Zurück zur App';

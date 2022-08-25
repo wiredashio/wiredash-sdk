@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/src/_nps.dart';
+import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 
-class NpsStep2Message extends StatefulWidget {
-  const NpsStep2Message({
+class PsStep2Message extends StatefulWidget {
+  const PsStep2Message({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<NpsStep2Message> createState() => _NpsStep2MessageState();
+  State<PsStep2Message> createState() => _PsStep2MessageState();
 }
 
-class _NpsStep2MessageState extends State<NpsStep2Message>
+class _PsStep2MessageState extends State<PsStep2Message>
     with TickerProviderStateMixin {
   late final TextEditingController _controller;
 
@@ -20,11 +20,11 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
   void initState() {
     super.initState();
     _controller = TextEditingController(
-      text: NpsModelProvider.of(context, listen: false).message,
+      text: PsModelProvider.of(context, listen: false).message,
     )..addListener(() {
         final text = _controller.text;
-        if (context.npsModel.message != text) {
-          context.npsModel.message = text;
+        if (context.psModel.message != text) {
+          context.psModel.message = text;
         }
       });
   }
@@ -43,10 +43,11 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
         total: 2,
         completed: false,
       ),
-      title: Text(context.l10n.npsStep2MessageTitle),
+      title: Text(context.l10n.promoterScoreStep2MessageTitle),
       description: Text(
-        context.l10n
-            .npsStep2MessageDescription(context.npsModel.score!.intValue),
+        context.l10n.promoterScoreStep2MessageDescription(
+          context.psModel.score!.intValue,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +76,7 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
                   borderSide: BorderSide(color: context.theme.secondaryColor),
                 ),
                 errorBorder: InputBorder.none,
-                hintText: context.l10n.npsStep2MessageHint,
+                hintText: context.l10n.promoterScoreStep2MessageHint,
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 hintStyle: context.text.input.onSurface.copyWith(
@@ -92,7 +93,7 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
             children: [
               TronButton(
                 color: context.theme.secondaryColor,
-                label: context.l10n.npsBackButton,
+                label: context.l10n.promoterScoreBackButton,
                 onTap: () {
                   context
                       .findAncestorStateOfType<LarryPageViewState>()!
@@ -100,10 +101,10 @@ class _NpsStep2MessageState extends State<NpsStep2Message>
                 },
               ),
               TronButton(
-                label: context.l10n.npsSubmitButton,
+                label: context.l10n.promoterScoreSubmitButton,
                 trailingIcon: Wirecons.check,
                 onTap: () {
-                  context.npsModel.submit();
+                  context.psModel.submit();
                 },
               ),
             ],

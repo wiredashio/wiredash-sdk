@@ -1,11 +1,10 @@
 import 'package:clock/clock.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
-import 'package:wiredash/src/_nps.dart';
+import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/core/telemetry/app_telemetry.dart';
 import 'package:wiredash/src/core/telemetry/wiredash_telemetry.dart';
 import 'package:wiredash/src/metadata/build_info/device_id_generator.dart';
-import 'package:wiredash/src/nps/nps_trigger.dart';
 
 void main() {
   setUp(() {
@@ -25,12 +24,12 @@ void main() {
         final appTelemetry =
             PersistentAppTelemetry(SharedPreferences.getInstance);
         await appTelemetry.onAppStart();
-        final trigger = NpsTrigger(
+        final trigger = PsTrigger(
           appTelemetry: appTelemetry,
           wiredashTelemetry: wiredashTelemetry,
           deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
         );
-        final options = NpsOptions(
+        final options = PsOptions(
           frequency: frequency,
           initialDelay: initialDelay,
           minimumAppStarts: 0,
@@ -38,9 +37,9 @@ void main() {
 
         final showTimes = <DateTime>[];
         while (showTimes.length < 3) {
-          final show = await trigger.shouldShowNps(options: options);
+          final show = await trigger.shouldShowPromoterSurvey(options: options);
           if (show) {
-            await wiredashTelemetry.onOpenedNpsSurvey();
+            await wiredashTelemetry.onOpenedPromoterScoreSurvey();
             showTimes.add(now);
           }
           if (now.isAfter(DateTime.utc(2030))) {
@@ -57,7 +56,7 @@ void main() {
         expect(
           firstGap >= initialDelay,
           isTrue,
-          reason: 'The first nps is shown after $firstGap '
+          reason: 'The first promoter score survey is shown after $firstGap '
               'which is smaller than initialDelay $initialDelay',
         );
 
@@ -66,14 +65,14 @@ void main() {
         expect(
           secondGap,
           frequency,
-          reason: 'time between first and second nps is $secondGap '
+          reason: 'time between first and second survey is $secondGap '
               'but should be $frequency',
         );
         final thirdGap = showTimes[2].difference(showTimes[1]);
         expect(
           thirdGap,
           frequency,
-          reason: 'time between second and third nps is $secondGap '
+          reason: 'time between second and third survey is $secondGap '
               'but should be $frequency',
         );
       });
@@ -113,23 +112,23 @@ void main() {
       final appTelemetry =
           PersistentAppTelemetry(SharedPreferences.getInstance);
       await appTelemetry.onAppStart();
-      final trigger = NpsTrigger(
+      final trigger = PsTrigger(
         appTelemetry: appTelemetry,
         wiredashTelemetry: wiredashTelemetry,
         deviceIdGenerator: deviceIdGenerator,
       );
-      const options = NpsOptions(frequency: frequency);
+      const options = PsOptions(frequency: frequency);
 
       deviceIdGenerator.mockedDeviceId = 'one';
-      final date1 = await trigger.earliestNextNpsSurveyDate(options);
+      final date1 = await trigger.earliestNextPromoterScoreSurveyDate(options);
       expect(date1, DateTime.utc(2020, 1, 6, 21, 43, 8));
 
       deviceIdGenerator.mockedDeviceId = 'two';
-      final date2 = await trigger.earliestNextNpsSurveyDate(options);
+      final date2 = await trigger.earliestNextPromoterScoreSurveyDate(options);
       expect(date2, DateTime.utc(2020, 1, 4, 5, 45, 30));
 
       deviceIdGenerator.mockedDeviceId = 'three';
-      final date3 = await trigger.earliestNextNpsSurveyDate(options);
+      final date3 = await trigger.earliestNextPromoterScoreSurveyDate(options);
       expect(date3, DateTime.utc(2020, 1, 10, 6, 50, 44));
 
       expect(date1.isAfter(now), isTrue);
@@ -150,27 +149,27 @@ void main() {
           PersistentWiredashTelemetry(SharedPreferences.getInstance);
       final appTelemetry =
           PersistentAppTelemetry(SharedPreferences.getInstance);
-      const options = NpsOptions(
+      const options = PsOptions(
         frequency: Duration.zero,
         initialDelay: Duration.zero,
         minimumAppStarts: 3,
       );
-      final trigger = NpsTrigger(
+      final trigger = PsTrigger(
         appTelemetry: appTelemetry,
         wiredashTelemetry: wiredashTelemetry,
         deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
       );
 
       now = now.add(const Duration(days: 100));
-      expect(await trigger.shouldShowNps(options: options), isFalse);
+      expect(await trigger.shouldShowPromoterSurvey(options: options), isFalse);
       await appTelemetry.onAppStart();
-      expect(await trigger.shouldShowNps(options: options), isFalse);
+      expect(await trigger.shouldShowPromoterSurvey(options: options), isFalse);
 
       await appTelemetry.onAppStart();
-      expect(await trigger.shouldShowNps(options: options), isFalse);
+      expect(await trigger.shouldShowPromoterSurvey(options: options), isFalse);
 
       await appTelemetry.onAppStart();
-      expect(await trigger.shouldShowNps(options: options), isTrue);
+      expect(await trigger.shouldShowPromoterSurvey(options: options), isTrue);
     });
   });
 
@@ -180,19 +179,19 @@ void main() {
       final appTelemetry =
           PersistentAppTelemetry(SharedPreferences.getInstance);
       await appTelemetry.onAppStart();
-      const options = NpsOptions(
+      const options = PsOptions(
         frequency: Duration.zero,
         initialDelay: Duration.zero,
         minimumAppStarts: 0,
       );
-      final trigger = NpsTrigger(
+      final trigger = PsTrigger(
         appTelemetry: appTelemetry,
         wiredashTelemetry:
             PersistentWiredashTelemetry(SharedPreferences.getInstance),
         deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
       );
 
-      expect(await trigger.shouldShowNps(options: options), isTrue);
+      expect(await trigger.shouldShowPromoterSurvey(options: options), isTrue);
     });
   });
 }

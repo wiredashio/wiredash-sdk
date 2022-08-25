@@ -241,17 +241,18 @@ class WiredashController {
   }
 }
 
-/// Methods for NPS related features
-extension NpsWiredash on WiredashController {
-  /// Probably shows the Net Promoter Score survey depending on [options],
-  /// specifically [NpsOptions.frequency], [NpsOptions.initialDelay] and
-  /// [NpsOptions.minimumAppStarts] settings.
+/// Methods for promoter score related features
+extension PromoterScoreWiredash on WiredashController {
+  /// Probably shows the Promoter Score survey depending on [options],
+  /// specifically [PsOptions.frequency], [PsOptions.initialDelay] and
+  /// [PsOptions.minimumAppStarts] settings.
   ///
-  /// Wiredash decides whether it is a good time to show the NPS flow or not,
-  /// making sure your users don't see the NPS flow too often while maintaining
-  /// a continuous stream of NPS feedback.
+  /// Wiredash decides whether it is a good time to show the promoter score
+  /// survey or not, making sure your users don't see the promoter score
+  /// survey too often while maintaining a continuous stream of promoter score
+  /// ratings.
   ///
-  /// Use [force] to explicitly show open the NPS survey.
+  /// Use [force] to explicitly show open the promoter score survey.
   /// This is useful when you want to trigger the flow at specific/rare times
   /// in your business logic.
   /// E.g. a user has paired their Action camera and transferred more than three
@@ -261,40 +262,44 @@ extension NpsWiredash on WiredashController {
   /// not a good time to show it.
   ///
   /// When providing [options], those settings will be used, overwriting the
-  /// ones defined in [Wiredash.npsOptions].
-  /// The [options] will then be merged with [defaultNpsOptions], filling your
+  /// ones defined in [Wiredash.psOptions].
+  /// The [options] will then be merged with [defaultPsOptions], filling your
   /// `null` values
-  Future<bool> showNps({
+  Future<bool> showPromoterSurvey({
     bool? inheritMaterialTheme,
     bool? inheritCupertinoTheme,
-    NpsOptions? options,
+    PsOptions? options,
     bool? force,
   }) async {
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
     _captureAppLocale();
-    _model.npsOptionsOverride = options;
+    _model.psOptionsOverride = options;
 
     if (force == true) {
-      await _model.show(flow: WiredashFlow.nps);
+      await _model.show(flow: WiredashFlow.promoterScore);
       return true;
     } else {
-      final actualOptions = _model.npsOptions;
+      final actualOptions = _model.psOptions;
 
       final properties = DiagnosticPropertiesBuilder();
-      final trigger = _model.services.npsTrigger;
-      final shouldShow = await trigger.shouldShowNps(
+      final trigger = _model.services.psTrigger;
+      final shouldShow = await trigger.shouldShowPromoterSurvey(
         options: actualOptions,
         diagnosticProperties: properties,
       );
       if (shouldShow) {
-        await _model.show(flow: WiredashFlow.nps);
+        await _model.show(flow: WiredashFlow.promoterScore);
         return true;
       } else {
         final reasons = properties.properties.join('\n - ');
         // ignore: avoid_print
-        print('Wiredash: Not showing NPS because:\n - $reasons');
+        print(
+          'Wiredash: Not showing promoter score survey because:\n - $reasons',
+        );
         if (kDebugMode) {
-          print('For testing, use Wiredash.of(context).showNps(force: true);');
+          print(
+            'For testing, use Wiredash.of(context).showPromoterSurvey(force: true);',
+          );
         }
         return false;
       }

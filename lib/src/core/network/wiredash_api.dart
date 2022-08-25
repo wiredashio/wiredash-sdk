@@ -10,7 +10,7 @@ import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
-import 'package:wiredash/src/nps/nps_model.dart';
+import 'package:wiredash/src/promoterscore/ps_model.dart';
 
 /// API client to communicate with the Wiredash servers
 class WiredashApi {
@@ -94,9 +94,9 @@ class WiredashApi {
     _parseResponseForErrors(response);
   }
 
-  /// Submits score of the nps survey
-  Future<void> sendNps(NpsRequestBody body) async {
-    final uri = Uri.parse('$_host/sendNps');
+  /// Submits score of the promoter score survey
+  Future<void> sendPromoterScore(PromoterScoreRequestBody body) async {
+    final uri = Uri.parse('$_host/sendPromoterScore');
     final Request request = Request('POST', uri);
     request.headers['Content-Type'] = 'application/json';
 
@@ -456,8 +456,8 @@ extension on CompilationMode {
   }
 }
 
-class NpsRequestBody {
-  const NpsRequestBody({
+class PromoterScoreRequestBody {
+  const PromoterScoreRequestBody({
     this.appLocale,
     required this.deviceId,
     this.message,
@@ -482,7 +482,7 @@ class NpsRequestBody {
   final String? platformOS;
   final String? platformOSVersion;
   final String? platformUserAgent;
-  final NpsScore? score;
+  final PromoterScoreRating? score;
   final int sdkVersion;
   final String? userEmail;
   final String? userId;

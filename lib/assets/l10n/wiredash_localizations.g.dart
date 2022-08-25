@@ -375,71 +375,71 @@ abstract class WiredashLocalizations {
   /// **'Close'**
   String get feedbackCloseButton;
 
-  /// No description provided for @npsStep1Question.
+  /// No description provided for @promoterScoreStep1Question.
   ///
   /// In en, this message translates to:
   /// **'How likely are you to recommend us?'**
-  String get npsStep1Question;
+  String get promoterScoreStep1Question;
 
-  /// No description provided for @npsStep1Description.
+  /// No description provided for @promoterScoreStep1Description.
   ///
   /// In en, this message translates to:
   /// **'0 = Not likely, 10 = Most likely'**
-  String get npsStep1Description;
+  String get promoterScoreStep1Description;
 
-  /// No description provided for @npsStep2MessageTitle.
+  /// No description provided for @promoterScoreStep2MessageTitle.
   ///
   /// In en, this message translates to:
   /// **'How likely are you to recommend us to your friends and family?'**
-  String get npsStep2MessageTitle;
+  String get promoterScoreStep2MessageTitle;
 
-  /// No description provided for @npsStep2MessageDescription.
+  /// No description provided for @promoterScoreStep2MessageDescription.
   ///
   /// In en, this message translates to:
   /// **'Could you tell us a bit more about why you chose {rating}? This step is optional.'**
-  String npsStep2MessageDescription(int rating);
+  String promoterScoreStep2MessageDescription(int rating);
 
-  /// No description provided for @npsStep2MessageHint.
+  /// No description provided for @promoterScoreStep2MessageHint.
   ///
   /// In en, this message translates to:
   /// **'It would be great if you could improve...'**
-  String get npsStep2MessageHint;
+  String get promoterScoreStep2MessageHint;
 
-  /// No description provided for @npsStep3ThanksMessagePromoters.
+  /// No description provided for @promoterScoreStep3ThanksMessagePromoters.
   ///
   /// In en, this message translates to:
   /// **'Thanks for your rating!'**
-  String get npsStep3ThanksMessagePromoters;
+  String get promoterScoreStep3ThanksMessagePromoters;
 
-  /// No description provided for @npsStep3ThanksMessagePassives.
+  /// No description provided for @promoterScoreStep3ThanksMessagePassives.
   ///
   /// In en, this message translates to:
   /// **'Thanks for your rating!'**
-  String get npsStep3ThanksMessagePassives;
+  String get promoterScoreStep3ThanksMessagePassives;
 
-  /// No description provided for @npsStep3ThanksMessageDetractors.
+  /// No description provided for @promoterScoreStep3ThanksMessageDetractors.
   ///
   /// In en, this message translates to:
   /// **'Thanks for your rating!'**
-  String get npsStep3ThanksMessageDetractors;
+  String get promoterScoreStep3ThanksMessageDetractors;
 
-  /// No description provided for @npsNextButton.
+  /// No description provided for @promoterScoreNextButton.
   ///
   /// In en, this message translates to:
   /// **'Next'**
-  String get npsNextButton;
+  String get promoterScoreNextButton;
 
-  /// No description provided for @npsBackButton.
+  /// No description provided for @promoterScoreBackButton.
   ///
   /// In en, this message translates to:
   /// **'Back'**
-  String get npsBackButton;
+  String get promoterScoreBackButton;
 
-  /// No description provided for @npsSubmitButton.
+  /// No description provided for @promoterScoreSubmitButton.
   ///
   /// In en, this message translates to:
   /// **'Submit'**
-  String get npsSubmitButton;
+  String get promoterScoreSubmitButton;
 
   /// No description provided for @backdropReturnToApp.
   ///

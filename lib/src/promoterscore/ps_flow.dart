@@ -1,50 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/_nps.dart';
+import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/support/material_support_layer.dart';
 
-class NpsFlow extends StatefulWidget {
-  const NpsFlow({Key? key}) : super(key: key);
+class PromoterScoreFlow extends StatefulWidget {
+  const PromoterScoreFlow({Key? key}) : super(key: key);
 
   @override
-  State<NpsFlow> createState() => _NpsFlowState();
+  State<PromoterScoreFlow> createState() => _PromoterScoreFlowState();
 }
 
-class _NpsFlowState extends State<NpsFlow> {
+class _PromoterScoreFlowState extends State<PromoterScoreFlow> {
   final GlobalKey<LarryPageViewState> _lpvKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    final npsModel = context.npsModel;
+    final psModel = context.psModel;
     final lpv = LarryPageView(
       key: _lpvKey,
       stepCount: () {
-        if (npsModel.score == null) {
+        if (psModel.score == null) {
           return 1;
         }
-        if (npsModel.submitting) {
+        if (psModel.submitting) {
           return 1;
         }
         return 2;
       }(),
-      pageIndex: npsModel.index,
+      pageIndex: psModel.index,
       onPageChanged: (index) {
         setState(() {
-          npsModel.index = index;
+          psModel.index = index;
         });
       },
       builder: (context) {
-        if (npsModel.submitting) {
-          return const NpsStep3Thanks();
+        if (psModel.submitting) {
+          return const PsStep3Thanks();
         }
-        switch (npsModel.index) {
+        switch (psModel.index) {
           case 0:
-            return const NpsStep1Rating();
+            return const PsStep1Rating();
           case 1:
-            return const NpsStep2Message();
+            return const PsStep2Message();
           default:
-            throw "Unexpected index: ${npsModel.index}";
+            throw "Unexpected index: ${psModel.index}";
         }
       },
     );

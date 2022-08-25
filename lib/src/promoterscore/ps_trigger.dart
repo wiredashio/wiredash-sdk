@@ -2,14 +2,14 @@ import 'dart:math';
 
 import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
-import 'package:wiredash/src/_nps.dart';
+import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/core/telemetry/app_telemetry.dart';
 import 'package:wiredash/src/core/telemetry/wiredash_telemetry.dart';
 import 'package:wiredash/src/metadata/build_info/device_id_generator.dart';
 
-/// Decides when it is time to show the NPS survey
-class NpsTrigger {
-  NpsTrigger({
+/// Decides when it is time to show the promoter score survey
+class PsTrigger {
+  PsTrigger({
     required this.deviceIdGenerator,
     required this.appTelemetry,
     required this.wiredashTelemetry,
@@ -19,19 +19,19 @@ class NpsTrigger {
   final AppTelemetry appTelemetry;
   final WiredashTelemetry wiredashTelemetry;
 
-  /// Reruns true when the next NPS survey is due.
+  /// Reruns true when the next promoter score survey is due.
   ///
   /// When this method returns false the [diagnosticProperties] are filled with
   /// information what prevents the survey from being shown right now.
-  Future<bool> shouldShowNps({
-    required NpsOptions options,
+  Future<bool> shouldShowPromoterSurvey({
+    required PsOptions options,
     DiagnosticPropertiesBuilder? diagnosticProperties,
   }) async {
     final DateTime now = clock.now().toUtc();
 
     final appStarts = await appTelemetry.appStartCount();
     final minimumAppStarts =
-        options.minimumAppStarts ?? defaultNpsOptions.minimumAppStarts!;
+        options.minimumAppStarts ?? defaultPsOptions.minimumAppStarts!;
     if (appStarts < minimumAppStarts) {
       diagnosticProperties?.add(
         DiagnosticsNode.message(
@@ -46,24 +46,23 @@ class NpsTrigger {
     if (firstAppStart == null) {
       throw 'Wiredash did not catch that the app was started';
     }
-    final initialDelay =
-        options.initialDelay ?? defaultNpsOptions.initialDelay!;
-    final earliestNpsShow = firstAppStart.add(initialDelay);
-    if (now.isBefore(earliestNpsShow)) {
+    final initialDelay = options.initialDelay ?? defaultPsOptions.initialDelay!;
+    final earliestShow = firstAppStart.add(initialDelay);
+    if (now.isBefore(earliestShow)) {
       diagnosticProperties?.add(
         DiagnosticsNode.message(
           'App is not used long enough (initialDelay), '
-          'first NPS survey will be shown $initialDelay after '
-          'firstAppStart: $firstAppStart, earliest $earliestNpsShow',
+          'first promoter score survey will be shown $initialDelay after '
+          'firstAppStart: $firstAppStart, earliest $earliestShow',
         ),
       );
       return false;
     }
 
-    final DateTime? lastSurvey = await wiredashTelemetry.lastNpsSurvey();
-    final Duration frequency =
-        options.frequency ?? defaultNpsOptions.frequency!;
-    final nextSurvey = await _earliestNextNpsSurvey(lastSurvey, frequency);
+    final DateTime? lastSurvey =
+        await wiredashTelemetry.lastPromoterScoreSurvey();
+    final Duration frequency = options.frequency ?? defaultPsOptions.frequency!;
+    final nextSurvey = await _earliestNextPsSurvey(lastSurvey, frequency);
     if (now != nextSurvey && !now.isAfter(nextSurvey)) {
       if (lastSurvey != null) {
         diagnosticProperties
@@ -87,7 +86,7 @@ class NpsTrigger {
   ///
   /// When lastSurvey is null the last survey is artificially set randomly in
   /// the last frequency period. It uses the deviceId as stable seed.
-  Future<DateTime> _earliestNextNpsSurvey(
+  Future<DateTime> _earliestNextPsSurvey(
     DateTime? lastSurvey,
     Duration frequency,
   ) async {
@@ -109,12 +108,14 @@ class NpsTrigger {
     return nextSurvey;
   }
 
-  /// The scheduled date for the next nps survey
+  /// The scheduled date for the next promoter score survey
   @visibleForTesting
-  Future<DateTime> earliestNextNpsSurveyDate(NpsOptions options) async {
-    final DateTime? lastSurvey = await wiredashTelemetry.lastNpsSurvey();
-    final Duration frequency =
-        options.frequency ?? defaultNpsOptions.frequency!;
-    return _earliestNextNpsSurvey(lastSurvey, frequency);
+  Future<DateTime> earliestNextPromoterScoreSurveyDate(
+    PsOptions options,
+  ) async {
+    final DateTime? lastSurvey =
+        await wiredashTelemetry.lastPromoterScoreSurvey();
+    final Duration frequency = options.frequency ?? defaultPsOptions.frequency!;
+    return _earliestNextPsSurvey(lastSurvey, frequency);
   }
 }

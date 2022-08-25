@@ -27,8 +27,8 @@ enum SdkEvent {
   /// User submitted feedback. It might not yet be delivered to the backend but the task is completed by the user
   submittedFeedback,
 
-  /// User submitted the NPS
-  submittedNps,
+  /// User submitted the promoter score survey
+  submittedPromoterScore,
 }
 
 /// Executes sync jobs with the network at certain times
@@ -110,8 +110,8 @@ class SyncEngine {
     await _triggerEvent(SdkEvent.submittedFeedback);
   }
 
-  Future<void> onSubmitNPS() async {
-    await _triggerEvent(SdkEvent.submittedNps);
+  Future<void> onSubmitPromoterScore() async {
+    await _triggerEvent(SdkEvent.submittedPromoterScore);
   }
 
   /// Executes all jobs that are listening to the given event

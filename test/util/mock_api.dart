@@ -58,12 +58,12 @@ class MockWiredashApi implements WiredashApi {
     throw 'Not mocked';
   }
 
-  final MethodInvocationCatcher sendNpsInvocations =
-      MethodInvocationCatcher('sendNps');
+  final MethodInvocationCatcher sendPsInvocations =
+      MethodInvocationCatcher('sendPromoterScore');
 
   @override
-  Future<void> sendNps(NpsRequestBody body) async {
-    return await sendNpsInvocations.addAsyncMethodCall(args: [body])?.future;
+  Future<void> sendPromoterScore(PromoterScoreRequestBody body) async {
+    return await sendPsInvocations.addAsyncMethodCall(args: [body])?.future;
   }
 
   final MethodInvocationCatcher pingInvocations =

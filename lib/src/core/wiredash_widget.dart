@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_nps.dart';
+import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/context_cache.dart';
@@ -50,7 +50,7 @@ class Wiredash extends StatefulWidget {
     this.options,
     this.theme,
     this.feedbackOptions,
-    this.npsOptions,
+    this.psOptions,
     this.padding,
     required this.child,
   }) : super(key: key);
@@ -71,8 +71,8 @@ class Wiredash extends StatefulWidget {
   /// Customize the feedback flow
   final WiredashFeedbackOptions? feedbackOptions;
 
-  /// Customize when to show the (Net promoter score) NPS flow
-  final NpsOptions? npsOptions;
+  /// Customize when to show the promoter score flow
+  final PsOptions? psOptions;
 
   /// Default visual properties, like colors and fonts for the Wiredash bottom
   /// sheet and the screenshot capture UI.
@@ -243,10 +243,10 @@ class WiredashState extends State<Wiredash> {
             feedbackModel: _services.feedbackModel,
             child: FeedbackBackdrop(child: app),
           );
-        case WiredashFlow.nps:
-          return NpsModelProvider(
-            npsModel: _services.npsModel,
-            child: NpsBackdrop(child: app),
+        case WiredashFlow.promoterScore:
+          return PsModelProvider(
+            psModel: _services.psModel,
+            child: PsBackdrop(child: app),
           );
       }
     }();

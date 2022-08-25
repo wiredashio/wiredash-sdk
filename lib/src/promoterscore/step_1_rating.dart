@@ -1,25 +1,25 @@
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/_nps.dart';
+import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/utils/delay.dart';
 
-class NpsStep1Rating extends StatefulWidget {
-  const NpsStep1Rating({
+class PsStep1Rating extends StatefulWidget {
+  const PsStep1Rating({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<NpsStep1Rating> createState() => _NpsStep1RatingState();
+  State<PsStep1Rating> createState() => _PsStep1RatingState();
 }
 
-class _NpsStep1RatingState extends State<NpsStep1Rating> {
+class _PsStep1RatingState extends State<PsStep1Rating> {
   @override
   Widget build(BuildContext context) {
-    final question = context.l10n.npsStep1Question;
-    context.npsModel.questionInUI = question;
+    final question = context.l10n.promoterScoreStep1Question;
+    context.psModel.questionInUI = question;
 
     return StepPageScaffold(
       title: Text(question),
@@ -33,13 +33,13 @@ class _NpsStep1RatingState extends State<NpsStep1Rating> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(context.l10n.npsStep1Description),
+          Text(context.l10n.promoterScoreStep1Description),
           const SizedBox(height: 32),
-          _NpsRater(
-            score: context.npsModel.score?.intValue,
+          _PsRater(
+            score: context.psModel.score?.intValue,
             onSelected: (score) async {
-              final rating = score?.let((it) => createNpsRating(it));
-              context.npsModel.score = rating;
+              final rating = score?.let((it) => createPsRating(it));
+              context.psModel.score = rating;
 
               if (rating != null) {
                 final lpv =
@@ -56,8 +56,8 @@ class _NpsStep1RatingState extends State<NpsStep1Rating> {
   }
 }
 
-class _NpsRater extends StatefulWidget {
-  const _NpsRater({
+class _PsRater extends StatefulWidget {
+  const _PsRater({
     Key? key,
     required this.score,
     required this.onSelected,
@@ -67,10 +67,10 @@ class _NpsRater extends StatefulWidget {
   final int? score;
 
   @override
-  State<_NpsRater> createState() => _NpsRaterState();
+  State<_PsRater> createState() => _PsRaterState();
 }
 
-class _NpsRaterState extends State<_NpsRater> {
+class _PsRaterState extends State<_PsRater> {
   static const double _minItemWidth = 44;
 
   Delay? _selectionDelay;

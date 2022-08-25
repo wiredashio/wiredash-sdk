@@ -1,5 +1,5 @@
-name: wiredash_nps
-description: Wiredash sample project demonstrating Net promoter score (NPS)
+name: wiredash_promoter_score
+description: Wiredash sample project demonstrating Promoter Score
 publish_to: 'none'
 version: 1.0.0+1
 

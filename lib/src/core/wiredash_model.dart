@@ -76,20 +76,20 @@ class WiredashModel with ChangeNotifier {
   WiredashFeedbackOptions? get feedbackOptions =>
       _feedbackOptionsOverride ?? services.wiredashWidget.feedbackOptions;
 
-  /// The nps options passed into `Wiredash.of(context).showNps()` call
-  NpsOptions? _npsOptionsOverride;
+  /// The ps options passed into `Wiredash.of(context).showPromoterSurvey()` call
+  PsOptions? _psOptionsOverride;
 
-  NpsOptions? get npsOptionsOverride => _npsOptionsOverride;
+  PsOptions? get psOptionsOverride => _psOptionsOverride;
 
-  set npsOptionsOverride(NpsOptions? npsOptions) {
-    _npsOptionsOverride = npsOptions;
+  set psOptionsOverride(PsOptions? psOptions) {
+    _psOptionsOverride = psOptions;
     notifyListeners();
   }
 
-  NpsOptions get npsOptions =>
-      _npsOptionsOverride ??
-      services.wiredashWidget.npsOptions ??
-      defaultNpsOptions;
+  PsOptions get psOptions =>
+      _psOptionsOverride ??
+      services.wiredashWidget.psOptions ??
+      defaultPsOptions;
 
   /// Deletes pending feedbacks
   ///
@@ -136,8 +136,8 @@ class WiredashModel with ChangeNotifier {
     if (discardFeedback) {
       services.discardFeedback();
     }
-    // always discard NPS
-    services.discardNps();
+    // always discard promoter score rating on close
+    services.discardPs();
     notifyListeners();
   }
 }
@@ -186,5 +186,5 @@ Stream<Duration> _postFrameCallbackStream() async* {
 
 enum WiredashFlow {
   feedback,
-  nps,
+  promoterScore,
 }

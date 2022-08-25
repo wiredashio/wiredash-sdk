@@ -20,7 +20,7 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
     return Wiredash(
       projectId: "Project ID from console.wiredash.io",
       secret: "API Key from console.wiredash.io",
-      npsOptions: NpsOptions(
+      psOptions: PsOptions(
         collectMetaData: (metaData) => metaData..userEmail = 'dash@wiredash.io',
         // frequency: Duration(days: 90), // default
         // initialDelay: Duration(days: 7), // default
@@ -63,15 +63,15 @@ class _HomePageState extends State<_HomePage> {
   void initState() {
     super.initState();
 
-    // Simple method to automatically show the NPS survey on app start
+    // Simple method to automatically show the promoter score survey on app start
     Future.delayed(Duration(seconds: 5), () {
       if (!mounted) return;
 
       // Trigger this at significant point in your application to probably show
-      // the Net Promoter Score survey.
+      // the Promoter Score survey.
       // Use [options] to adjust how often the survey is shown.
-      Wiredash.of(context).showNps(
-        options: NpsOptions(
+      Wiredash.of(context).showPromoterSurvey(
+        options: PsOptions(
           // minimum time between two surveys
           frequency: Duration(days: 90),
           // delay before the first survey is available
@@ -80,7 +80,7 @@ class _HomePageState extends State<_HomePage> {
           minimumAppStarts: 3,
         ),
 
-        // for testing, add force the NPS survey to appear
+        // for testing, add force the promoter score survey to appear
         force: true,
       );
     });
@@ -104,10 +104,10 @@ class _HomePageState extends State<_HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // force: true is only used for testing
-          Wiredash.of(context).showNps(force: true);
-          // Always prefer delegating the decision to show the NPS to Wiredash
-          // so you don't annoy your users.
-          // Wiredash.of(context).showNps();
+          Wiredash.of(context).showPromoterSurvey(force: true);
+          // Always prefer delegating the decision to show the promoter score
+          // to Wiredash so you don't annoy your users.
+          // Wiredash.of(context).showPromoterSurvey();
         },
         child: Icon(Icons.feedback_outlined),
       ),
