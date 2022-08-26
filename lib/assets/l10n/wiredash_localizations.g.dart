@@ -8,18 +8,19 @@ import 'package:intl/intl.dart' as intl;
 import 'wiredash_localizations_de.g.dart';
 import 'wiredash_localizations_en.g.dart';
 import 'wiredash_localizations_es.g.dart';
+import 'wiredash_localizations_hu.g.dart';
 import 'wiredash_localizations_pl.g.dart';
 import 'wiredash_localizations_pt.g.dart';
 import 'wiredash_localizations_tr.g.dart';
 
-/// Callers can lookup localized strings with an instance of WiredashLocalizations
-/// returned by `WiredashLocalizations.of(context)`.
+/// Callers can lookup localized strings with an instance of WiredashLocalizations returned
+/// by `WiredashLocalizations.of(context)`.
 ///
 /// Applications need to include `WiredashLocalizations.delegate()` in their app's
-/// `localizationDelegates` list, and the locales they support in the app's
-/// `supportedLocales` list. For example:
+/// localizationDelegates list, and the locales they support in the app's
+/// supportedLocales list. For example:
 ///
-/// ```dart
+/// ```
 /// import 'l10n/wiredash_localizations.g.dart';
 ///
 /// return MaterialApp(
@@ -34,14 +35,14 @@ import 'wiredash_localizations_tr.g.dart';
 /// Please make sure to update your pubspec.yaml to include the following
 /// packages:
 ///
-/// ```yaml
+/// ```
 /// dependencies:
 ///   # Internationalization support.
 ///   flutter_localizations:
 ///     sdk: flutter
 ///   intl: any # Use the pinned version from flutter_localizations
 ///
-///   # Rest of dependencies
+///   # rest of dependencies
 /// ```
 ///
 /// ## iOS Applications
@@ -100,6 +101,7 @@ abstract class WiredashLocalizations {
     Locale('de'),
     Locale('en'),
     Locale('es'),
+    Locale('hu'),
     Locale('pl'),
     Locale('pt'),
     Locale('tr')
@@ -463,6 +465,7 @@ class _WiredashLocalizationsDelegate
         'de',
         'en',
         'es',
+        'hu',
         'pl',
         'pt',
         'tr'
@@ -481,6 +484,8 @@ WiredashLocalizations lookupWiredashLocalizations(Locale locale) {
       return WiredashLocalizationsEn();
     case 'es':
       return WiredashLocalizationsEs();
+    case 'hu':
+      return WiredashLocalizationsHu();
     case 'pl':
       return WiredashLocalizationsPl();
     case 'pt':
