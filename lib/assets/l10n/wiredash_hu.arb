@@ -1,0 +1,95 @@
+{
+  "@@locale": "hu",
+  "feedbackStep1MessageTitle": "Mondd el a véleményed",
+  "feedbackStep1MessageBreadcrumbTitle": "Fogalmazd meg az üzeneted",
+  "feedbackStep1MessageDescription": "Írd le röviden hogy mit tapasztaltál",
+  "feedbackStep1MessageHint": "Amikor megpróbálom megváltoztatni a profilképemet hiba lép fel...",
+  "feedbackStep1MessageErrorMissingMessage": "Kérlek írj egy üzenetet",
+
+  "feedbackStep2LabelsTitle": "Melyik címke jellemzi legjobban a visszajelzést?",
+  "feedbackStep2LabelsBreadcrumbTitle": "Címkék",
+  "feedbackStep2LabelsDescription": "A megfelelő kategória kiválasztásával segítesz azonosítani a hibát és eljuttatni az üzenetedet az alkalmas személyhez",
+
+  "feedbackStep3ScreenshotOverviewTitle": "Csatolj képernyőképeket jobb tájékoztatás érdekében?",
+  "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "Képernyőképek",
+  "feedbackStep3ScreenshotOverviewDescription": "Navigálhatsz az alkalmazásban, eldöntheted mikor készítesz képernyőképet",
+  "feedbackStep3ScreenshotOverviewSkipButton": "Átugrás",
+  "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Képernyőkép csatolása",
+
+  "feedbackStep3ScreenshotBarNavigateTitle": "Készíts képernyőképet",
+  "feedbackStep3ScreenshotBarDrawTitle": "Rajzolj a képernyőre hogy emeld ki a lényeget",
+  "feedbackStep3ScreenshotBarDrawUndoButton": "Visszavonás",
+  "feedbackStep3ScreenshotBarCaptureButton": "Rögzítés",
+  "feedbackStep3ScreenshotBarSaveButton": "Mentés",
+  "feedbackStep3ScreenshotBarOkButton": "OK",
+
+  "feedbackStep3GalleryTitle": "Csatolt képernyőképek",
+  "feedbackStep3GalleryBreadcrumbTitle": "Képernyőképek",
+  "feedbackStep3GalleryDescription": "Adj hozzá több képernyőképet hogy jobban megérthessük a hibát.",
+
+  "feedbackStep4EmailTitle": "Kapj e-mail értesítéseket a hibáról",
+  "feedbackStep4EmailBreadcrumbTitle": "Kapcsolat",
+  "feedbackStep4EmailDescription": "Add meg az e-mail címed vagy hagyd üresen",
+  "feedbackStep4EmailInvalidEmail": "Nem tűnik érvényes e-mail címnek. Üresen hagyhatod.",
+  "feedbackStep4EmailInputHint": "postafiok@pelda.hu",
+
+  "feedbackStep6SubmitTitle": "Visszajelzés elküldése",
+  "feedbackStep6SubmitBreadcrumbTitle": "Elküldés",
+  "feedbackStep6SubmitDescription": "Kérlek nézz át minden információt beküldés előtt.\nBármikor visszamehetsz és módosíthatod a visszajelzést.",
+  "feedbackStep6SubmitSubmitButton": "Elküldés",
+  "feedbackStep6SubmitSubmitShowDetailsButton": "Részletek megtekintése",
+  "feedbackStep6SubmitSubmitHideDetailsButton": "Részletek elrejtése",
+  "feedbackStep6SubmitSubmitDetailsTitle": "A visszajelzés részletei",
+
+  "feedbackStep7SubmissionInFlightMessage": "Visszajelzés küldése folyamatban",
+  "feedbackStep7SubmissionSuccessMessage": "Köszönjük a visszajelzést!",
+  "feedbackStep7SubmissionErrorMessage": "Hiba történt a visszajelzés küldése során",
+  "feedbackStep7SubmissionOpenErrorButton": "Kattints ide hogy megtekintsd a hibát",
+  "feedbackStep7SubmissionRetryButton": "Próbáld újra",
+
+  "feedbackStepXOfY": "{current}/{total}. lépés",
+  "@feedbackStepXOfY": {
+    "placeholders": {
+      "current": {
+        "description": "current step number 1-max",
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "description": "max number of steps",
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "feedbackDiscardButton": "Visszajelzés törlése",
+  "feedbackDiscardConfirmButton": "Biztos? Törlés!",
+  "feedbackNextButton": "Következő",
+  "feedbackBackButton": "Vissza",
+  "feedbackCloseButton": "Bezárás",
+
+  "promoterScoreStep1Question": "Mennyire valószínű hogy ajnálani fogsz minket?",
+  "promoterScoreStep1Description": "0 = Nem valószínű, 10 = Nagyon valószínű",
+
+  "promoterScoreStep2MessageTitle": "Mennyire valószínű hogy ajánlani fogsz minket a családodnak és barátaidnak?",
+  "promoterScoreStep2MessageDescription": "Mesélnél egy kicsit arról, hogy miért választottál {rating}-t? Ez a lépés nem kötelező.",
+  "@promoterScoreStep2MessageDescription": {
+    "placeholders": {
+      "rating": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "promoterScoreStep2MessageHint": "Jó lenne ha javítanátok...",
+
+  "promoterScoreStep3ThanksMessagePromoters": "Köszönjük az értékelést!",
+  "promoterScoreStep3ThanksMessagePassives": "Köszönjük az értékelést!",
+  "promoterScoreStep3ThanksMessageDetractors": "Köszönjük az értékelést!",
+
+  "promoterScoreNextButton": "Következő",
+  "promoterScoreBackButton": "Vissza",
+  "promoterScoreSubmitButton": "Elküldés",
+
+  "backdropReturnToApp": "Vissza az appba"
+}
