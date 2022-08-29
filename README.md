@@ -7,9 +7,9 @@
 [![Pub](https://img.shields.io/pub/v/wiredash.svg)](https://pub.dartlang.org/packages/wiredash)
 [![Build](https://img.shields.io/github/workflow/status/wiredashio/wiredash-sdk/Static%20Analysis)](https://github.com/wiredashio/wiredash-sdk/actions)
 [![Website](https://img.shields.io/badge/website-wiredash.io-blue.svg)](https://wiredash.io/)
-[![Likes](https://badges.bar/wiredash/likes)](https://pub.dev/packages/wiredash/score)
-[![Popularity](https://badges.bar/wiredash/popularity)](https://pub.dev/packages/wiredash/score)
-[![Pub points](https://badges.bar/wiredash/pub%20points)](https://pub.dev/packages/wiredash/score)
+[![Pub Likes](https://img.shields.io/pub/likes/wiredash)](https://pub.dev/packages/wiredash/score)
+[![Popularity](https://img.shields.io/pub/popularity/wiredash)](https://pub.dev/packages/wiredash/score)
+[![Pub points](https://img.shields.io/pub/points/wiredash)](https://pub.dev/packages/wiredash/score)
 
 Wiredash is probably the easiest, and most convenient way to capture in-app user feedback, wishes, ratings and much
 more. The SDK is completely written in Dart and runs on Android, iOS, Desktop and the Web. For more info, head over
