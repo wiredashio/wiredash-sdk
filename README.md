@@ -66,17 +66,37 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-### 4. Launch the feedback flow
+### 4. Use any of Wiredash's amazing features
+
+#### Launch the feedback flow
 
 From anywhere in your app, call the `Wiredash.show()` method to launch Wiredash:
 
 ```dart
-Wiredash.of(context).show(inheritMaterialTheme: true);
+onTap: () {
+  Wiredash.of(context).show(inheritMaterialTheme: true);
+}
 ```
+
+Checkout [examples/theming](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/theming/lib/main.dart) for the full example.
+
+![Wiredash Feedback demo](https://raw.githubusercontent.com/wiredashio/wiredash-sdk/stable/.github/wiredash-demo.gif)
+
+
+#### Launch the Promoter Score Survey
+
+```dart
+onTap: () {
+  Wiredash.of(context).showPromoterSurvey(force: true);
+}
+```
+
+Checkout [examples/promoter_score](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/promoter_score/lib/main.dart) for the full example
+
+![Promoter Score demo](https://user-images.githubusercontent.com/1096485/187313854-343bfe52-9444-407b-9e7e-64738187f8af.png)
 
 That's already it. Yes, it's *really that easy*. Also works on all platforms.
 
-![Wiredash demo](https://raw.githubusercontent.com/wiredashio/wiredash-sdk/stable/.github/wiredash-demo.gif)
 
 ## Customization & More
 
@@ -86,9 +106,9 @@ labels, custom metadata, custom theming, custom translations and much, much more
 For all the details, make sure to check out the full documentation
 at [docs.wiredash.io](https://docs.wiredash.io/).
 
-Also checkout the [example](https://github.com/wiredashio/wiredash-sdk/blob/stable/example/lib/main.dart) code
+Also checkout the [examples/theming](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/theming/lib/main.dart) code example
 
 ## License
 
-The Wiredash SDK is released under the [Attribution Assurance License](https://opensource.org/licenses/AAL).
+The Wiredash SDK is released under the [Attribution Assurance License](https://opensource.org/licenses/AAL) which is redundant with [BSD](https://opensource.org/licenses/BSD-3-Clause).
 See [LICENSE](https://github.com/wiredashio/wiredash-sdk/blob/stable/LICENSE) for details.
