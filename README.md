@@ -80,7 +80,7 @@ onTap: () {
 
 Checkout [examples/theming](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/theming/lib/main.dart) for the full example.
 
-![Wiredash Feedback demo](https://raw.githubusercontent.com/wiredashio/wiredash-sdk/stable/.github/wiredash-demo.gif)
+![wiredash-wonders-demo](https://user-images.githubusercontent.com/1096485/188439010-8da591df-e5cb-446a-be7f-971d0fda68d1.gif)
 
 
 #### Launch the Promoter Score Survey
