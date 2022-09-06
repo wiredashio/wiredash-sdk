@@ -46,6 +46,8 @@ class WiredashController {
   ///
   /// If a Wiredash feedback flow is already active (=a feedback sheet is open),
   /// does nothing.
+  @Deprecated(
+      'Please upgrade to wiredash: ^1.5.0. The old wiredash: 0.7.X SDK will stop working on 1st Jan 2023')
   void show() => _state.show();
 
   /// A [ValueNotifier] representing the current state of the capture UI. Use
