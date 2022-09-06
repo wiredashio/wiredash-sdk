@@ -158,6 +158,14 @@ A Whole New World
 - Custom labels
 - Automatic theming
 
+## 0.7.2
+
+- Declare end of life support for `0.7.x` SDKs after **1st Jan 2023**
+
+## 0.7.1
+
+- Fix null-safety warning in Flutter 3.0
+
 ## 0.7.0+1
 
 Version Bump
