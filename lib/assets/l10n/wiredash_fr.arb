@@ -1,0 +1,95 @@
+{
+  "@@locale": "fr",
+  "feedbackStep1MessageTitle": "Envoyer des commentaires",
+  "feedbackStep1MessageBreadcrumbTitle": "Votre message",
+  "feedbackStep1MessageDescription": "Décrivez brièvement ce que vous avez constaté",
+  "feedbackStep1MessageHint": "Il y a un message d'erreur quand j'essaie de changer mon avatar...",
+  "feedbackStep1MessageErrorMissingMessage": "Merci de détailler la requête",
+
+  "feedbackStep2LabelsTitle": "Quel tag décrit le mieux votre commentaire ?",
+  "feedbackStep2LabelsBreadcrumbTitle": "Tags",
+  "feedbackStep2LabelsDescription": "Choisir la bonne catégorie aidera à l'analyse et au routage de la demande",
+
+  "feedbackStep3ScreenshotOverviewTitle": "Voulez-vous ajouter une capture d'écran pour aider à la résolution ?",
+  "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "Captures d'écran",
+  "feedbackStep3ScreenshotOverviewDescription": "Vous pourrez naviguer dans l'application et choisir l'écran à capturer",
+  "feedbackStep3ScreenshotOverviewSkipButton": "Passer",
+  "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Capturer l'écran",
+
+  "feedbackStep3ScreenshotBarNavigateTitle": "Prendre une capture d'écran",
+  "feedbackStep3ScreenshotBarDrawTitle": "Dessiner sur l'écran pour en mettre en avant une partie",
+  "feedbackStep3ScreenshotBarDrawUndoButton": "Annuler",
+  "feedbackStep3ScreenshotBarCaptureButton": "Capturer",
+  "feedbackStep3ScreenshotBarSaveButton": "Sauvegarder",
+  "feedbackStep3ScreenshotBarOkButton": "Ok",
+
+  "feedbackStep3GalleryTitle": "Captures d'écran jointes",
+  "feedbackStep3GalleryBreadcrumbTitle": "Captures d'écran",
+  "feedbackStep3GalleryDescription": "Vous pouvez ajouter d'autres captures pour nous aider à comprendre plus précisément la requête.",
+
+  "feedbackStep4EmailTitle": "Recevoir un e-mail de suivi de votre commentaire",
+  "feedbackStep4EmailBreadcrumbTitle": "Contact",
+  "feedbackStep4EmailDescription": "Ajoutez votre adresse e-mail ci-dessous ou laissez le champ vide",
+  "feedbackStep4EmailInvalidEmail": "Cette adresse e-mail n'est pas valide. Vous pouvez aussi laisser ce champ vide.",
+  "feedbackStep4EmailInputHint": "mon_nom@mail.fr",
+
+  "feedbackStep6SubmitTitle": "Envoyer les commentaires",
+  "feedbackStep6SubmitBreadcrumbTitle": "Envoyer",
+  "feedbackStep6SubmitDescription": "Merci de vérifier les informations avant l'envoi.\nVous pouvez revenir en arrière pour ajuster si besoin.",
+  "feedbackStep6SubmitSubmitButton": "Envoyer",
+  "feedbackStep6SubmitSubmitShowDetailsButton": "Afficher les détails",
+  "feedbackStep6SubmitSubmitHideDetailsButton": "Cacher les détails",
+  "feedbackStep6SubmitSubmitDetailsTitle": "Détails des commentaires",
+
+  "feedbackStep7SubmissionInFlightMessage": "Envoi en cours de vos commentaires",
+  "feedbackStep7SubmissionSuccessMessage": "Merci pour vos commentaires !",
+  "feedbackStep7SubmissionErrorMessage": "L'envoi des commentaires a échoué",
+  "feedbackStep7SubmissionOpenErrorButton": "Cliquer ici pour voir le détail de l'erreur",
+  "feedbackStep7SubmissionRetryButton": "Réessayer",
+
+  "feedbackStepXOfY": "Etape {current} sur {total}",
+  "@feedbackStepXOfY": {
+    "placeholders": {
+      "current": {
+        "description": "current step number 1-max",
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "description": "max number of steps",
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "feedbackDiscardButton": "Annuler",
+  "feedbackDiscardConfirmButton": "Annuler, vraiment ?",
+  "feedbackNextButton": "Suivant",
+  "feedbackBackButton": "Précédent",
+  "feedbackCloseButton": "Fermer",
+
+  "promoterScoreStep1Question": "Est-ce que vous recommanderiez l'application ?",
+  "promoterScoreStep1Description": "0 = Peu probable, 10 = Très probable",
+
+  "promoterScoreStep2MessageTitle": "Quelle est la probabilité que vous nous recommandiez à vos amis ou à votre famille ?",
+  "promoterScoreStep2MessageDescription": "Pouvez-vous nous en dire plus sur le choix de ce score ? (optionnel)",
+  "@promoterScoreStep2MessageDescription": {
+    "placeholders": {
+      "rating": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "promoterScoreStep2MessageHint": "Il serait génial de pouvoir améliorer ...",
+
+  "promoterScoreStep3ThanksMessagePromoters": "Merci pour votre évalution !",
+  "promoterScoreStep3ThanksMessagePassives": "Merci pour votre évalution !",
+  "promoterScoreStep3ThanksMessageDetractors": "Merci pour votre évalution !",
+
+  "promoterScoreNextButton": "Suivant",
+  "promoterScoreBackButton": "Précédent",
+  "promoterScoreSubmitButton": "Envoyer",
+
+  "backdropReturnToApp": "Retourner dans l'application"
+}
