@@ -132,7 +132,6 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
 Widget? _getCounterText(
   /// The build context for the TextField.
   BuildContext context, {
-
   /// The length of the string currently in the input.
   required int currentLength,
 
@@ -152,7 +151,10 @@ Widget? _getCounterText(
     } else if (remaining >= 50) {
       return Colors.orange.withOpacity(0.8);
     }
+    // ignore: deprecated_member_use
     return Theme.of(context).errorColor;
+    // replace with this when we drop support for 3.3.0-0.5.pre
+    // return Theme.of(context).colorScheme.error;
   }
 
   return Text(

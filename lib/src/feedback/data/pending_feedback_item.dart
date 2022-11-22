@@ -236,7 +236,7 @@ extension _SerializePersistedFeedbackItem on PersistedFeedbackItem {
           e,
           stack,
           'Could not serialize customMetaData property '
-          '$key=${value.toString()}',
+          '$key=$value',
         );
         return MapEntry(key, null);
       }
