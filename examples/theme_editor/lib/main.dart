@@ -879,16 +879,14 @@ class _MinSizeState extends State<MinSize> {
 
         return Scrollbar(
           controller: _verticalController,
-          isAlwaysShown: shouldScrollVertical,
-          // thumbVisibility: shouldScrollVertical,
+          thumbVisibility: shouldScrollVertical,
           child: SingleChildScrollView(
             controller: _verticalController,
             physics: verticalPhysics,
             child: Scrollbar(
               interactive: true,
               controller: _horizontalController,
-              isAlwaysShown: shouldScrollVertical,
-              // thumbVisibility: shouldScrollHorizontal,
+              thumbVisibility: shouldScrollHorizontal,
               child: SingleChildScrollView(
                 controller: _horizontalController,
                 scrollDirection: Axis.horizontal,
