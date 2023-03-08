@@ -49,7 +49,7 @@ extension WiredashTester on WidgetTester {
           attempt > 1) {
         print(
           'Text on screen (@ $executingTime) should '
-          'match $actualValue but got "${matcher.describe(StringDescription()).toString()}":',
+          'match $actualValue but got "${matcher.describe(StringDescription())}":',
         );
         print(
           "Text on screen: ${allWidgets.whereType<Text>().map((e) => e.data).toList()}",
@@ -74,7 +74,7 @@ extension WiredashTester on WidgetTester {
         print(
           'Waiting for match (attempt: $attempt, @ $executingTime)\n'
           '\tFinder: $actualValue to match\n'
-          '\tMatcher: ${matcher.describe(StringDescription()).toString()}',
+          '\tMatcher: ${matcher.describe(StringDescription())}',
         );
       }
       if (attempt < 10) {

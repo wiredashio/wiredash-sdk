@@ -682,7 +682,7 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
   void didUpdateWidget(WiredashColorPicker oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.color != widget.color) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.required().addPostFrameCallback((_) {
         _textEditingController.text = colorToHex(widget.color);
       });
     }
@@ -790,7 +790,7 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
   }
 
   void openColorPicker() {
-    final overlay = Overlay.of(context)!;
+    final overlay = Overlay.of(context).required();
     late final OverlayEntry entry;
     entry = OverlayEntry(
       builder: (context) {
@@ -904,5 +904,15 @@ class _MinSizeState extends State<MinSize> {
         );
       },
     );
+  }
+}
+
+extension Required<T extends Object> on T? {
+  T required() {
+    if (this == null) {
+      throw Exception('Required value is null');
+    }
+    // ignore: cast_nullable_to_non_nullable
+    return this as T;
   }
 }

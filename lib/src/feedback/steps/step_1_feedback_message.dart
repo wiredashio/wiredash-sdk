@@ -152,7 +152,10 @@ Widget? _getCounterText(
     } else if (remaining >= 50) {
       return Colors.orange.withOpacity(0.8);
     }
+    // ignore: deprecated_member_use
     return Theme.of(context).errorColor;
+    // replace with this when we drop support for 3.3.0-0.5.pre
+    // return Theme.of(context).colorScheme.error;
   }
 
   return Text(
