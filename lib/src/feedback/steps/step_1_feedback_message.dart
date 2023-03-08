@@ -132,7 +132,6 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
 Widget? _getCounterText(
   /// The build context for the TextField.
   BuildContext context, {
-
   /// The length of the string currently in the input.
   required int currentLength,
 
