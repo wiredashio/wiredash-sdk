@@ -1,0 +1,18 @@
+name: wiredash_go_router
+description: Sample project demonstrating using wiredash with go_router
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.18.0 <3.0.0"
+  flutter: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  go_router: 6.0.2
+  wiredash:
+    path: ../../
+
+dev_dependencies:
+  lint: ^1.0.0
