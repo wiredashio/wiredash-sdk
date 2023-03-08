@@ -152,6 +152,8 @@ class WiredashState extends State<Wiredash> {
 
   Timer? _submitTimer;
 
+  final FocusScopeNode _appFocusScopeNode = FocusScopeNode();
+
   WiredashServices get debugServices {
     WiredashServices? services;
     assert(
@@ -195,6 +197,7 @@ class WiredashState extends State<Wiredash> {
     _submitTimer = null;
     _services.dispose();
     _backButtonDispatcher.dispose();
+    _appFocusScopeNode.dispose();
     super.dispose();
   }
 
@@ -215,9 +218,16 @@ class WiredashState extends State<Wiredash> {
   Widget build(BuildContext context) {
     // Assign app an key so it doesn't lose state when wrapped, unwrapped
     // with widgets
-    final Widget app = KeyedSubtree(
+    Widget app = KeyedSubtree(
       key: _appKey,
       child: widget.child,
+    );
+
+    // Fix focus bug for apps that use go_router
+    // https://github.com/flutter/flutter/issues/119849
+    app = FocusScope(
+      node: _appFocusScopeNode,
+      child: app,
     );
 
     if (!_services.wiredashModel.isWiredashActive) {
