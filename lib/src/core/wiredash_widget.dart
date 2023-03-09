@@ -152,6 +152,8 @@ class WiredashState extends State<Wiredash> {
 
   Timer? _submitTimer;
 
+  final FocusScopeNode _appFocusScopeNode = FocusScopeNode();
+
   WiredashServices get debugServices {
     WiredashServices? services;
     assert(
@@ -195,6 +197,7 @@ class WiredashState extends State<Wiredash> {
     _submitTimer = null;
     _services.dispose();
     _backButtonDispatcher.dispose();
+    _appFocusScopeNode.dispose();
     super.dispose();
   }
 
@@ -220,17 +223,18 @@ class WiredashState extends State<Wiredash> {
       child: widget.child,
     );
 
+    // Fix focus bug for apps that use go_router
+    // https://github.com/flutter/flutter/issues/119849
+    app = FocusScope(
+      node: _appFocusScopeNode,
+      child: app,
+    );
+
     if (!_services.wiredashModel.isWiredashActive) {
       // We don't wrap the app at all with any wiredash related widget until
       // users requested to open wiredash
       return app;
     }
-
-    // Fix focus bug for apps that use go_router
-    // https://github.com/flutter/flutter/issues/119849
-    app = FocusScope(
-      child: app,
-    );
 
     final theme = _services.wiredashModel.themeFromContext ??
         widget.theme ??
