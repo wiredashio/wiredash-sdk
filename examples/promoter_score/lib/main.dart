@@ -160,6 +160,7 @@ class _DetailsPage extends StatelessWidget {
             children: [
               Text(
                 'Details page #$index',
+                // ignore: deprecated_member_use
                 style: Theme.of(context).textTheme.headline6,
               ),
               SizedBox(height: 32),
