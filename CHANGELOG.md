@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.0
+
+- [#266](https://github.com/wiredashio/wiredash-sdk/pull/266) Support for Flutter `3.7`. Required for `go_router` users
+- [#255](https://github.com/wiredashio/wiredash-sdk/pull/255) Add french locale `fr` 🇫🇷
+- [#251](https://github.com/wiredashio/wiredash-sdk/pull/251) Add hungarian locale `hu` 🇭🇺
+
 ## 1.5.0
 
 - New: Promoter Score Surveys 🎉

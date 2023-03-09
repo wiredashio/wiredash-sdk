@@ -31,4 +31,5 @@
 /// 130 -> 1.1.0
 /// 140 -> 1.2.0
 /// 150 -> 1.5.0
-const wiredashSdkVersion = 150;
+/// 160 -> 1.6.0
+const wiredashSdkVersion = 160;
