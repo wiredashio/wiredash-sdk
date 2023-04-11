@@ -1,0 +1,96 @@
+{
+  "@@locale": "cs",
+  "feedbackStep1MessageTitle": "Pošlete nám svůj názor",
+  "feedbackStep1MessageBreadcrumbTitle": "Sestavení zprávy",
+  "feedbackStep1MessageDescription": "Přidejte krátký popis toho, s čím jste se setkali",
+  "feedbackStep1MessageHint": "Při pokusu o změnu avataru se objeví neznámá chyba...",
+  "feedbackStep1MessageErrorMissingMessage": "Přidejte prosím zprávu",
+
+  "feedbackStep2LabelsTitle": "Které označení nejlépe vystihuje vaši zpětnou vazbu?",
+  "feedbackStep2LabelsBreadcrumbTitle": "Štítky",
+  "feedbackStep2LabelsDescription": "Výběr správné kategorie nám pomůže identifikovat problém a předat vaši zpětnou vazbu správné zainteresované straně.",
+
+
+  "feedbackStep3ScreenshotOverviewTitle": "Přidat snímky obrazovky pro lepší kontext?",
+  "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "Snímky obrazovky",
+  "feedbackStep3ScreenshotOverviewDescription": "Budete moci procházet aplikací a vybrat si, kdy chcete pořídit snímek obrazovky.",
+  "feedbackStep3ScreenshotOverviewSkipButton": "Přeskočit",
+  "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Přidat snímek obrazovky",
+
+  "feedbackStep3ScreenshotBarNavigateTitle": "Pořiďte snímek obrazovky",
+  "feedbackStep3ScreenshotBarDrawTitle": "Kreslení na obrazovce pro přidání zvýraznění",
+  "feedbackStep3ScreenshotBarDrawUndoButton": "Zrušit",
+  "feedbackStep3ScreenshotBarCaptureButton": "Zachycení",
+  "feedbackStep3ScreenshotBarSaveButton": "Uložit",
+  "feedbackStep3ScreenshotBarOkButton": "Ok",
+
+  "feedbackStep3GalleryTitle": "Přiložené snímky obrazovky",
+  "feedbackStep3GalleryBreadcrumbTitle": "Snímky obrazovky",
+  "feedbackStep3GalleryDescription": "Můžete přidat další snímky obrazovky, které nám pomohou ještě lépe pochopit váš problém.",
+
+  "feedbackStep4EmailTitle": "Získávání e-mailových aktualizací o vašem problému",
+  "feedbackStep4EmailBreadcrumbTitle": "Kontakt",
+  "feedbackStep4EmailDescription": "Níže přidejte svou e-mailovou adresu nebo ji nechte prázdnou",
+  "feedbackStep4EmailInvalidEmail": "Nevypadá to jako platná e-mailová adresa. Můžete ji nechat prázdnou.",
+  "feedbackStep4EmailInputHint": "mail@example.com",
+
+  "feedbackStep6SubmitTitle": "Odeslat zpětnou vazbu",
+  "feedbackStep6SubmitBreadcrumbTitle": "Odeslat",
+  "feedbackStep6SubmitDescription": "Před odesláním si prosím zkontrolujte všechny informace.\nKdykoli se můžete vrátit a upravit svou zpětnou vazbu.",
+  "feedbackStep6SubmitSubmitButton": "Odeslat",
+  "feedbackStep6SubmitSubmitShowDetailsButton": "Zobrazit podrobnosti",
+  "feedbackStep6SubmitSubmitHideDetailsButton": "Skrýt podrobnosti",
+  "feedbackStep6SubmitSubmitDetailsTitle": "Podrobnosti o zpětné vazbě",
+
+  "feedbackStep7SubmissionInFlightMessage": "Odeslání zpětné vazby",
+  "feedbackStep7SubmissionSuccessMessage": "Děkujeme za vaši zpětnou vazbu!",
+  "feedbackStep7SubmissionErrorMessage": "Odeslání zpětné vazby se nezdařilo",
+  "feedbackStep7SubmissionOpenErrorButton": "Kliknutím zobrazíte podrobnosti o chybě",
+  "feedbackStep7SubmissionRetryButton": "Opakování",
+
+  "feedbackStepXOfY": "Krok {current} z {total}",
+  "@feedbackStepXOfY": {
+    "placeholders": {
+      "current": {
+        "description": "číslo aktuálního kroku 1-max",
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "description": "maximální počet kroků",
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "feedbackDiscardButton": "Vyřazení zpětné vazby",
+  "feedbackDiscardConfirmButton": "Opravdu? Vyhodit!",
+  "feedbackNextButton": "Další",
+  "feedbackBackButton": "Zpět",
+  "feedbackCloseButton": "Zavřít",
+
+  "promoterScoreStep1Question": "Jaká je pravděpodobnost, že nás doporučíte?",
+  "promoterScoreStep1Description": "0 = nepravděpodobné, 10 = velmi pravděpodobné",
+
+  "promoterScoreStep2MessageTitle": "Jaká je pravděpodobnost, že nás doporučíte svým přátelům a rodině?",
+  "promoterScoreStep2MessageDescription": "Mohl byste nám říct něco víc o tom, proč jste si vybral {rating}? Tento krok je nepovinný.",
+  "@promoterScoreStep2MessageDescription": {
+    "placeholders": {
+      "rating": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "promoterScoreStep2MessageHint": "Bylo by skvělé, kdybyste mohli vylepšit...",
+
+  "promoterScoreStep3ThanksMessagePromoters": "Děkujeme za vaše hodnocení!",
+  "promoterScoreStep3ThanksMessagePassives": "Děkujeme za vaše hodnocení!",
+  "promoterScoreStep3ThanksMessageDetractors": "Děkujeme za vaše hodnocení!",
+
+  "promoterScoreNextButton": "Další",
+  "promoterScoreBackButton": "Zpět",
+  "promoterScoreSubmitButton": "Odeslat",
+
+  "backdropReturnToApp": "Zpět na aplikaci"
+}
