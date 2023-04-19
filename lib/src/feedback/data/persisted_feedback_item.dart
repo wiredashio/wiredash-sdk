@@ -64,6 +64,7 @@ class PersistedFeedbackItem {
 
   @override
   int get hashCode =>
+      // replace with Object.hashAll() when we drop support for Flutter v3.1.0-0.0.pre.897
       // ignore: deprecated_member_use
       hashList(attachments) ^
       buildInfo.hashCode ^

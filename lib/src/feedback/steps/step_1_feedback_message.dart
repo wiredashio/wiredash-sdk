@@ -153,7 +153,7 @@ Widget? _getCounterText(
     }
     // ignore: deprecated_member_use
     return Theme.of(context).errorColor;
-    // replace with this when we drop support for 3.3.0-0.5.pre
+    // replace with this when we drop support for Flutter v3.3.0-0.5.pre
     // return Theme.of(context).colorScheme.error;
   }
 
