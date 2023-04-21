@@ -53,6 +53,9 @@ class _NotAWidgetsAppState extends State<NotAWidgetsApp> {
     final parentMq = MediaQuery.maybeOf(context);
     if (parentMq == null) {
       // Inject a MediaQuery with information from the app window
+
+      // Replace with MediaQuery.fromView when we drop support for Flutter v3.7.0-32.0.pre.
+      // ignore: deprecated_member_use
       child = MediaQuery.fromWindow(
         child: child,
       );
