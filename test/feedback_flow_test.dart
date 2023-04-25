@@ -39,7 +39,7 @@ void main() {
       await robot.goToNextStep();
       _larryPageView
           .spot<Step1FeedbackMessage>()
-          .spotText('l10n.feedbackStep1MessageErrorMissingMessage')
+          .spotSingleText('l10n.feedbackStep1MessageErrorMissingMessage')
           .existsOnce();
 
       // Entering a message allows continue
