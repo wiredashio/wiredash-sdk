@@ -298,6 +298,7 @@ class FeedbackModel extends ChangeNotifier2 {
             _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
     await collector?.call(metaData);
     _services.wiredashModel.metaData = metaData;
+    notifyListeners();
   }
 
   /// Captures the pixels of the app and the app metadata
