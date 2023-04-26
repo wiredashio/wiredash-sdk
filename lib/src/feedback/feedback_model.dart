@@ -280,6 +280,16 @@ class FeedbackModel extends ChangeNotifier2 {
     notifyListeners();
   }
 
+  /// Allow devs to collect additional information
+  Future<void> _collectMetaData() async {
+    final metaData = _services.wiredashModel.metaData;
+    final collector =
+        _services.wiredashWidget.feedbackOptions?.collectMetaData ??
+            _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
+    await collector?.call(metaData);
+    _services.wiredashModel.metaData = metaData;
+  }
+
   /// Captures the pixels of the app and the app metadata
   ///
   /// Call [createMasterpiece] to finalize the screenshot (with drawing)
@@ -292,15 +302,7 @@ class FeedbackModel extends ChangeNotifier2 {
     await _services.screenCaptureController.captureScreen();
     // TODO show loading indicator?
     _deviceInfo = _services.deviceInfoGenerator.generate();
-    final metaData = _services.wiredashModel.metaData;
-    // Allow devs to collect additional information
-    final collector =
-        _services.wiredashWidget.feedbackOptions?.collectMetaData ??
-            _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
-    await collector?.call(metaData);
-    _services.wiredashModel.metaData = metaData;
-    _collectedMetadataForScreenshot = true;
-    notifyListeners();
+    await _collectMetaData();
 
     _services.picassoController.isActive = true;
     _goToStep(FeedbackFlowStatus.screenshotDrawing);
