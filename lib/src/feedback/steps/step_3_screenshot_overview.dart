@@ -31,11 +31,16 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
   }
 }
 
-class Step3NotAttachments extends StatelessWidget {
+class Step3NotAttachments extends StatefulWidget {
   const Step3NotAttachments({
     Key? key,
   }) : super(key: key);
 
+  @override
+  State<Step3NotAttachments> createState() => _Step3NotAttachmentsState();
+}
+
+class _Step3NotAttachmentsState extends State<Step3NotAttachments> {
   @override
   Widget build(BuildContext context) {
     return StepPageScaffold(
@@ -77,7 +82,10 @@ class Step3NotAttachments extends StatelessWidget {
                         label: context
                             .l10n.feedbackStep3ScreenshotOverviewSkipButton,
                         trailingIcon: Wirecons.chevron_double_right,
-                        onTap: context.feedbackModel.goToNextStep,
+                        onTap: () async {
+                          if (!mounted) return;
+                          await context.feedbackModel.skipScreenshot();
+                        },
                       ),
                       TronButton(
                         label: context.l10n

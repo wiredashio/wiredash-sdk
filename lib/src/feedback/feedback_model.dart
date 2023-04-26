@@ -214,6 +214,16 @@ class FeedbackModel extends ChangeNotifier2 {
     }
   }
 
+  Future<void> skipScreenshot() async {
+    if (!_collectedMetadataForScreenshot) {
+      // The user can take a screenshot and then decide to go back and skip it.
+      // Since taking the screenshot already collected the data, calling it again is
+      // unnecessary.
+      await _collectMetaData();
+    }
+    goToNextStep();
+  }
+
   /// Goes to the previous step in [steps]
   void goToPreviousStep() {
     final index = currentStepIndex;
