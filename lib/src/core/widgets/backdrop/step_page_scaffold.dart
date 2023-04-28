@@ -21,7 +21,7 @@ class StepPageScaffold extends StatefulWidget {
     this.discardConfirmLabel,
     Key? key,
     this.onClose,
-    this.alignemnt,
+    this.alignment,
     this.minHeight,
   }) : super(key: key);
 
@@ -35,7 +35,7 @@ class StepPageScaffold extends StatefulWidget {
   final Widget? discardLabel;
   final Widget? discardConfirmLabel;
   final void Function()? onClose;
-  final StepPageAlignemnt? alignemnt;
+  final StepPageAlignment? alignment;
   final double? minHeight;
 
   final Widget child;
@@ -125,12 +125,12 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: () {
-                switch (widget.alignemnt) {
-                  case StepPageAlignemnt.center:
+                switch (widget.alignment) {
+                  case StepPageAlignment.center:
                     return CrossAxisAlignment.center;
-                  case StepPageAlignemnt.end:
+                  case StepPageAlignment.end:
                     return CrossAxisAlignment.end;
-                  case StepPageAlignemnt.start:
+                  case StepPageAlignment.start:
                   default:
                     return CrossAxisAlignment.start;
                 }
@@ -288,7 +288,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
   }
 }
 
-enum StepPageAlignemnt {
+enum StepPageAlignment {
   start,
   center,
   end,
