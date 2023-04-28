@@ -129,6 +129,63 @@ void main() {
       expect(submittedFeedback.message, 'feedback with labels');
     });
 
+    testWidgets(
+        'E-Mail is prefilled when user email is set and skips screenshot',
+        (tester) async {
+      const userEmail = 'prefilled_address@flutter.io';
+
+      final robot = await WiredashTestRobot.launchApp(
+        tester,
+        feedbackOptions: WiredashFeedbackOptions(
+          // Provide user e-mail
+          collectMetaData: (data) => data..userEmail = userEmail,
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.skipScreenshot();
+      await robot.goToNextStep();
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      expect(submittedFeedback, isNotNull);
+      expect(submittedFeedback!.message, 'test message');
+      expect(submittedFeedback.email, userEmail);
+      expect(submittedFeedback.attachments, hasLength(0));
+    });
+
+    testWidgets(
+        'E-Mail is prefilled when user email is set, wants to take screenshot '
+        'but then goes back and skips', (tester) async {
+      const userEmail = 'prefilled_address@flutter.io';
+
+      final robot = await WiredashTestRobot.launchApp(
+        tester,
+        feedbackOptions: WiredashFeedbackOptions(
+          // Provide user e-mail
+          collectMetaData: (data) => data..userEmail = userEmail,
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.enterScreenshotMode();
+      await robot.goToPrevStep();
+      await robot.skipScreenshot();
+      await robot.goToNextStep();
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      expect(submittedFeedback!.email, userEmail);
+    });
+
     testWidgets('Send feedback with email', (tester) async {
       final robot = await WiredashTestRobot.launchApp(
         tester,
