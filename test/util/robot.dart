@@ -219,9 +219,9 @@ class WiredashTestRobot {
     await tester.tap(
       step.text('l10n.feedbackStep3ScreenshotOverviewSkipButton').finder,
     );
-    await tester.pumpAndSettle(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
-
     print('Skipped taking screenshot, next $newStatus');
   }
 

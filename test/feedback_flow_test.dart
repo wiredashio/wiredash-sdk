@@ -149,6 +149,7 @@ void main() {
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
       await robot.skipScreenshot();
+      await tester.pumpAndSettle(const Duration(seconds: 1));
       await robot.goToNextStep();
       await robot.submitFeedback();
       await robot.waitUntilWiredashIsClosed();
@@ -179,6 +180,7 @@ void main() {
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
       await robot.skipScreenshot();
+      await tester.pumpAndSettle(const Duration(seconds: 1));
       await robot.enterEmail(adjustedEmail);
       // Go back to Screenshot Overview
       await robot.goToPrevStep();
@@ -219,6 +221,7 @@ void main() {
       await robot.enterScreenshotMode();
       await robot.goToPrevStep();
       await robot.skipScreenshot();
+      await tester.pumpAndSettle(const Duration(seconds: 1));
       await robot.goToNextStep();
       await robot.submitFeedback();
       await robot.waitUntilWiredashIsClosed();
