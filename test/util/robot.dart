@@ -293,7 +293,7 @@ class WiredashTestRobot {
 
     await tester.pumpAndSettle();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
-    print('Jumped back from from $oldStatus to prev $newStatus');
+    print('Jumped back from $oldStatus to prev $newStatus');
   }
 
   Future<void> enterScreenshotMode() async {
