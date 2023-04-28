@@ -274,6 +274,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       ),
     );
 
+    final double opacity = () {
+      if (widget.controller.backdropStatus == WiredashBackdropStatus.centered ||
+          widget.controller.backdropStatus ==
+              WiredashBackdropStatus.openingCentered) {
+        return 0.0;
+      }
+      return 1.0;
+    }();
+
     final content = Positioned.fromRect(
       rect: _rectContentArea,
       child: MediaQuery(
@@ -292,13 +301,11 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           debugLabel: 'wiredash backdrop content',
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 300),
-            opacity: widget.controller.backdropStatus ==
-                        WiredashBackdropStatus.centered ||
-                    widget.controller.backdropStatus ==
-                        WiredashBackdropStatus.openingCentered
-                ? 0.0
-                : 1.0,
-            child: widget.contentBuilder(context),
+            opacity: opacity,
+            child: IgnorePointer(
+              ignoring: opacity == 0,
+              child: widget.contentBuilder(context),
+            ),
           ),
         ),
       ),
