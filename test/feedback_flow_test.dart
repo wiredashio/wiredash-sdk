@@ -138,7 +138,10 @@ void main() {
         tester,
         feedbackOptions: WiredashFeedbackOptions(
           // Provide user e-mail
-          collectMetaData: (data) => data..userEmail = userEmail,
+          collectMetaData: (data) async {
+            await Future.delayed(const Duration(seconds: 1));
+            return data..userEmail = userEmail;
+          },
         ),
       );
 
@@ -167,7 +170,10 @@ void main() {
         tester,
         feedbackOptions: WiredashFeedbackOptions(
           // Provide user e-mail
-          collectMetaData: (data) => data..userEmail = userEmail,
+          collectMetaData: (data) async {
+            await Future.delayed(const Duration(seconds: 1));
+            return data..userEmail = userEmail;
+          },
         ),
       );
 
