@@ -116,7 +116,7 @@ void main() {
 }
 
 class _UnknownWidget extends StatelessWidget {
-  const _UnknownWidget({Key? key}) : super(key: key);
+  const _UnknownWidget();
 
   @override
   Widget build(BuildContext context) {

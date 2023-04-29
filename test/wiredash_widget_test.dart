@@ -272,7 +272,7 @@ class _MockProjectCredentialValidator extends Fake
 }
 
 class _FakeApp extends StatefulWidget {
-  const _FakeApp({Key? key}) : super(key: key);
+  const _FakeApp();
 
   @override
   State<_FakeApp> createState() => _FakeAppState();

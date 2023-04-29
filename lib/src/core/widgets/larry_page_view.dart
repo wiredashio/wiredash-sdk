@@ -10,12 +10,12 @@ import 'package:flutter/rendering.dart';
 /// Use [viewInsets] to move the page into a fully visible area
 class LarryPageView extends StatefulWidget {
   const LarryPageView({
-    Key? key,
+    super.key,
     required this.stepCount,
     required this.builder,
     this.onPageChanged,
     this.pageIndex = 0,
-  }) : super(key: key);
+  });
 
   final Widget Function(BuildContext context) builder;
 
@@ -457,10 +457,10 @@ class LarryPageViewState extends State<LarryPageView>
 
 class StepInheritedWidget extends InheritedWidget {
   const StepInheritedWidget({
-    Key? key,
+    super.key,
     required this.data,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   final StepInformation data;
 

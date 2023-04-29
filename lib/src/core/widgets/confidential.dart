@@ -5,11 +5,11 @@ import 'package:wiredash/wiredash.dart';
 /// from being captured inside a feedback screenshot.
 class Confidential extends StatelessWidget {
   const Confidential({
-    Key? key,
+    super.key,
     this.mode = ConfidentialMode.black,
     this.enabled = true,
     required this.child,
-  }) : super(key: key);
+  });
 
   /// How the confidential widget will be hidden when Wiredash is active.
   ///

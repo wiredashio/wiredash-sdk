@@ -3,10 +3,10 @@ import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 
 class BackdropControllerProvider extends InheritedNotifier<BackdropController> {
   const BackdropControllerProvider({
-    Key? key,
+    super.key,
     required BackdropController backdropController,
-    required Widget child,
-  }) : super(key: key, notifier: backdropController, child: child);
+    required super.child,
+  }) : super(notifier: backdropController);
 
   static BackdropController of(BuildContext context, {bool listen = true}) {
     if (listen) {

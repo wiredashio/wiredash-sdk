@@ -11,10 +11,10 @@ import 'package:wiredash/src/feedback/ui/grey_scale_filter.dart';
 
 class ScreenCapture extends StatefulWidget {
   const ScreenCapture({
-    Key? key,
+    super.key,
     required this.controller,
     required this.child,
-  }) : super(key: key);
+  });
 
   final ScreenCaptureController controller;
   final Widget child;

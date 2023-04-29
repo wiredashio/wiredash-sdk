@@ -6,7 +6,7 @@ import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/utils/email_validator.dart';
 
 class Step5Email extends StatefulWidget {
-  const Step5Email({Key? key}) : super(key: key);
+  const Step5Email({super.key});
 
   @override
   State<Step5Email> createState() => _Step5EmailState();

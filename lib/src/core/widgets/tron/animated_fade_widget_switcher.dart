@@ -8,7 +8,7 @@ import 'package:wiredash/src/core/support/widget_binding_support.dart';
 /// out before showing the new one
 class AnimatedFadeWidgetSwitcher extends StatefulWidget {
   const AnimatedFadeWidgetSwitcher({
-    Key? key,
+    super.key,
     this.child,
     this.duration,
     this.alignment,
@@ -17,7 +17,7 @@ class AnimatedFadeWidgetSwitcher extends StatefulWidget {
     this.zoomFactor,
     this.onSwitch,
     this.clipBehavior,
-  }) : super(key: key);
+  });
 
   final Widget? child;
   final Duration? duration;
@@ -112,12 +112,12 @@ class _AnimatedFadeWidgetSwitcherState
 
 class FadeSwapTransition extends StatelessWidget {
   const FadeSwapTransition({
-    Key? key,
+    super.key,
     required this.animation,
     required this.secondaryAnimation,
     this.zoomFactor,
     this.child,
-  }) : super(key: key);
+  });
 
   /// The animation that drives the [child]'s entrance and exit.
   ///
@@ -160,11 +160,10 @@ class FadeSwapTransition extends StatelessWidget {
 
 class _ZoomedFadeInFadeOut extends StatelessWidget {
   const _ZoomedFadeInFadeOut({
-    Key? key,
     required this.animation,
     this.zoomFactor,
     this.child,
-  }) : super(key: key);
+  });
 
   final Animation<double> animation;
   final Widget? child;
