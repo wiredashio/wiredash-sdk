@@ -405,7 +405,8 @@ extension on List<WidgetSelector> {
 class _MultiAncestorDescendantFinder extends Finder {
   _MultiAncestorDescendantFinder(
     this.ancestors,
-    this.finder,);
+    this.finder,
+  );
 
   final List<Finder> ancestors;
   final Finder finder;
