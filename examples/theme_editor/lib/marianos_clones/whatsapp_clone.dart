@@ -312,13 +312,12 @@ class HomeBuilder extends StatefulWidget {
       RefreshCallback refreshCallback) laptopLayout;
 
   HomeBuilder(
-      {Key? key,
+      {super.key,
       required this.refresh,
       required this.callback,
       required this.mobileLayout,
       required this.tabletLayout,
-      required this.laptopLayout})
-      : super(key: key);
+      required this.laptopLayout});
 
   @override
   _HomeBuilderState createState() => _HomeBuilderState();
@@ -466,12 +465,11 @@ class ChatsScreen extends StatefulWidget {
   final bool isMobile;
 
   const ChatsScreen(
-      {Key? key,
+      {super.key,
       this.callback,
       this.refresh,
       required this.context,
-      required this.isMobile})
-      : super(key: key);
+      required this.isMobile});
 
   @override
   ChatsScreenState createState() => ChatsScreenState();
@@ -872,8 +870,7 @@ class ContactItem extends StatelessWidget {
   final User user;
 
   const ContactItem(
-      {Key? key, this.callback, this.isMobile, required this.user})
-      : super(key: key);
+      {super.key, this.callback, this.isMobile, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -940,12 +937,11 @@ class ChatItem extends StatefulWidget {
   final ConversationCallback? callback;
 
   const ChatItem(
-      {Key? key,
+      {super.key,
       required this.isMobile,
       required this.conversation,
       required this.callback,
-      this.refresh})
-      : super(key: key);
+      this.refresh});
 
   @override
   _ChatItemState createState() => _ChatItemState();
@@ -1125,12 +1121,11 @@ class ChatScreen extends StatefulWidget {
   final GlobalKey<ContactScreenState>? contact;
 
   const ChatScreen(
-      {Key? key,
+      {super.key,
       required this.context,
       this.refresh,
       this.conversation,
-      this.contact})
-      : super(key: key);
+      this.contact});
 
   @override
   ChatScreenState createState() => ChatScreenState();
@@ -1713,7 +1708,7 @@ class ChatScreenState extends State<ChatScreen> {
 class ProfileScreen extends StatefulWidget {
   final User user;
 
-  const ProfileScreen({Key? key, required this.user}) : super(key: key);
+  const ProfileScreen({super.key, required this.user});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -1847,7 +1842,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 class ContactsScreen extends StatefulWidget {
   final bool isMobile;
 
-  const ContactsScreen({Key? key, required this.isMobile}) : super(key: key);
+  const ContactsScreen({super.key, required this.isMobile});
 
   @override
   _ContactsScreenState createState() => _ContactsScreenState();
@@ -1967,8 +1962,7 @@ class ContactScreen extends StatefulWidget {
   final User? user;
   final bool visible;
 
-  const ContactScreen({Key? key, this.user, required this.visible})
-      : super(key: key);
+  const ContactScreen({super.key, this.user, required this.visible});
 
   @override
   ContactScreenState createState() => ContactScreenState();

@@ -70,7 +70,7 @@ class _CustomizerAppState extends State<CustomizerApp> {
 }
 
 class CustomizePage extends StatefulWidget {
-  const CustomizePage({Key? key}) : super(key: key);
+  const CustomizePage({super.key});
 
   @override
   State<CustomizePage> createState() => _CustomizePageState();
@@ -324,10 +324,10 @@ class ThemeModel extends ChangeNotifier {
 
 class ThemeModelProvider<T extends ThemeModel> extends InheritedNotifier<T> {
   const ThemeModelProvider({
-    Key? key,
+    super.key,
     required T themeModel,
-    required Widget child,
-  }) : super(key: key, notifier: themeModel, child: child);
+    required super.child,
+  }) : super(notifier: themeModel);
 }
 
 extension on BuildContext {
@@ -337,7 +337,7 @@ extension on BuildContext {
 }
 
 class ThemeControls extends StatefulWidget {
-  const ThemeControls({Key? key}) : super(key: key);
+  const ThemeControls({super.key});
 
   @override
   State<ThemeControls> createState() => _ThemeControlsState();
@@ -622,13 +622,13 @@ class _ThemeControlsState extends State<ThemeControls> {
 
 class WiredashColorPicker extends StatefulWidget {
   const WiredashColorPicker({
-    Key? key,
+    super.key,
     required this.color,
     required this.onColorChanged,
     required this.isSynced,
     this.withAlpha = false,
     this.onSync,
-  }) : super(key: key);
+  });
 
   factory WiredashColorPicker.bindColorModel({
     required ColorModel model,
@@ -837,11 +837,11 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
 /// reaches below [minWidth] or [minHeight]
 class MinSize extends StatefulWidget {
   const MinSize({
-    Key? key,
+    super.key,
     this.minWidth,
     this.minHeight,
     required this.child,
-  }) : super(key: key);
+  });
 
   final Widget child;
 
