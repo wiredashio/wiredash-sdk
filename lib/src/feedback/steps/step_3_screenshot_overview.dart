@@ -32,7 +32,7 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
 }
 
 class Step3NoAttachments extends StatelessWidget {
-  const Step3NotAttachments({
+  const Step3NoAttachments({
     super.key,
   });
 
