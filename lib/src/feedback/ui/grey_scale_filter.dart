@@ -1,8 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 class GreyScaleFilter extends StatelessWidget {
-  const GreyScaleFilter({required this.greyScale, Key? key, this.child})
-      : super(key: key);
+  const GreyScaleFilter({required this.greyScale, super.key, this.child});
 
   final Widget? child;
   final double greyScale;

@@ -3,10 +3,10 @@ import 'package:wiredash/src/promoterscore/ps_model.dart';
 
 class PsModelProvider extends InheritedNotifier<PsModel> {
   const PsModelProvider({
-    Key? key,
+    super.key,
     required PsModel psModel,
-    required Widget child,
-  }) : super(key: key, notifier: psModel, child: child);
+    required super.child,
+  }) : super(notifier: psModel);
 
   static PsModel of(BuildContext context, {bool listen = true}) {
     if (listen) {

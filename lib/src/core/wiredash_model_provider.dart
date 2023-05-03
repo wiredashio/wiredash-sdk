@@ -3,10 +3,10 @@ import 'package:wiredash/src/core/wiredash_model.dart';
 
 class WiredashModelProvider extends InheritedNotifier<WiredashModel> {
   const WiredashModelProvider({
-    Key? key,
+    super.key,
     required WiredashModel wiredashModel,
-    required Widget child,
-  }) : super(key: key, notifier: wiredashModel, child: child);
+    required super.child,
+  }) : super(notifier: wiredashModel);
 
   static WiredashModel of(BuildContext context, {bool listen = true}) {
     if (listen) {

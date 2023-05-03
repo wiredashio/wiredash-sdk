@@ -5,8 +5,8 @@ import 'package:wiredash/src/_wiredash_ui.dart';
 
 class PsStep2Message extends StatefulWidget {
   const PsStep2Message({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<PsStep2Message> createState() => _PsStep2MessageState();

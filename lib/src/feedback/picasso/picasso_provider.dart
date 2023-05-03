@@ -3,10 +3,10 @@ import 'package:wiredash/src/feedback/picasso/picasso.dart';
 
 class PicassoControllerProvider extends InheritedNotifier<PicassoController> {
   const PicassoControllerProvider({
-    Key? key,
+    super.key,
     required PicassoController picassoController,
-    required Widget child,
-  }) : super(key: key, notifier: picassoController, child: child);
+    required super.child,
+  }) : super(notifier: picassoController);
 
   static PicassoController of(BuildContext context, {bool listen = true}) {
     if (listen) {

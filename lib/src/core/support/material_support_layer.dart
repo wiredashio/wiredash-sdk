@@ -13,9 +13,9 @@ import 'package:wiredash/src/utils/semver.dart';
 /// not wrapped into an [MaterialApp]
 class MaterialSupportLayer extends StatefulWidget {
   const MaterialSupportLayer({
-    Key? key,
+    super.key,
     required this.child,
-  }) : super(key: key);
+  });
 
   final Widget child;
 

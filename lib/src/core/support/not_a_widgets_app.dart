@@ -9,8 +9,8 @@ class NotAWidgetsApp extends StatefulWidget {
   const NotAWidgetsApp({
     required this.child,
     this.textDirection,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final Widget child;
 

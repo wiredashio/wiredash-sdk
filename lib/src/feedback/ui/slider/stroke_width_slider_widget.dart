@@ -4,14 +4,14 @@ import 'package:wiredash/src/feedback/ui/slider/stroke_width_slider_painter.dart
 
 class StrokeWidthSlider extends StatefulWidget {
   const StrokeWidthSlider({
-    Key? key,
+    super.key,
     required this.color,
     required this.minWidth,
     required this.maxWidth,
     required this.currentWidth,
     this.onNewWidthSelected,
     this.onInteract,
-  }) : super(key: key);
+  });
 
   final Color color;
   final double minWidth;

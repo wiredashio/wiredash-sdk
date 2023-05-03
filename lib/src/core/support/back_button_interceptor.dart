@@ -6,10 +6,10 @@ import 'package:wiredash/src/core/support/widget_binding_support.dart';
 /// Allows intercepting of the Android back button
 class BackButtonInterceptor extends StatefulWidget {
   const BackButtonInterceptor({
-    Key? key,
+    super.key,
     required this.onBackPressed,
     required this.child,
-  }) : super(key: key);
+  });
 
   /// Return [BackButtonAction.consumed] when a back action was handles and return
   /// [BackButtonAction.ignored] to give other [BackButtonInterceptor]s the chance
@@ -121,10 +121,9 @@ class WiredashBackButtonDispatcher extends WidgetsBindingObserver {
 
 class _BackButtonDispatcherInheritedWidget extends InheritedWidget {
   const _BackButtonDispatcherInheritedWidget({
-    Key? key,
     required this.dispatcher,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   final WiredashBackButtonDispatcher dispatcher;
 

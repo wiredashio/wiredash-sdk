@@ -164,7 +164,7 @@ extension ChangeNotifierAsValueNotifier<C extends ChangeNotifier> on C {
 }
 
 class _DisposableValueNotifier<T> extends ValueNotifier<T> {
-  _DisposableValueNotifier(T value, {required this.onDispose}) : super(value);
+  _DisposableValueNotifier(super.value, {required this.onDispose});
   void Function() onDispose;
 
   @override

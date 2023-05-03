@@ -42,7 +42,7 @@ class Wiredash extends StatefulWidget {
   /// Creates a new [Wiredash] Widget which allows users to send feedback,
   /// wishes, ratings and much more
   const Wiredash({
-    Key? key,
+    super.key,
     required this.projectId,
     required this.secret,
     @Deprecated('Since 1.0.0 the navigatorKey is not required anymore')
@@ -53,7 +53,7 @@ class Wiredash extends StatefulWidget {
     this.psOptions,
     this.padding,
     required this.child,
-  }) : super(key: key);
+  });
 
   /// Reference to the app [Navigator] to show the Wiredash bottom sheet
   @Deprecated('Since 1.0.0 the navigatorKey is not required anymore')

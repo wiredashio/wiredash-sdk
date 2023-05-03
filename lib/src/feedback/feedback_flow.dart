@@ -7,7 +7,7 @@ import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/feedback/ui/grey_scale_filter.dart';
 
 class WiredashFeedbackFlow extends StatefulWidget {
-  const WiredashFeedbackFlow({Key? key}) : super(key: key);
+  const WiredashFeedbackFlow({super.key});
 
   @override
   State<WiredashFeedbackFlow> createState() => _WiredashFeedbackFlowState();
@@ -140,9 +140,9 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
 /// Inherits the step information from [FeedbackModel]
 class FeedbackProgressIndicator extends StatefulWidget {
   const FeedbackProgressIndicator({
-    Key? key,
+    super.key,
     required this.flowStatus,
-  }) : super(key: key);
+  });
 
   final FeedbackFlowStatus flowStatus;
 

@@ -8,10 +8,10 @@ import 'package:wiredash/src/feedback/picasso/stroke.dart';
 
 class Picasso extends StatefulWidget {
   const Picasso({
-    Key? key,
+    super.key,
     required this.controller,
     required this.child,
-  }) : super(key: key);
+  });
 
   final PicassoController controller;
   final Widget child;
