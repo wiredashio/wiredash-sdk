@@ -2,12 +2,12 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spot/spot.dart';
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
 
-import 'util/assert_widget.dart';
 import 'util/mock_api.dart';
 import 'util/robot.dart';
 
@@ -28,24 +28,22 @@ void main() {
       await robot.goToNextStep();
       await robot.skipScreenshot();
       await robot.skipEmail();
-      spot.byType(LarryPageView).childByType(Step6Submit).existsOnce();
+      spot<LarryPageView>().spot<Step6Submit>().existsOnce();
 
       await robot.pressAndroidBackButton();
-      spot
-          .byType(WiredashBackdrop)
-          .childByType(LarryPageView)
-          .childByType(Step5Email)
+      spot<WiredashBackdrop>()
+          .spot<LarryPageView>()
+          .spot<Step5Email>()
           .existsOnce();
 
       await robot.pressAndroidBackButton();
-      spot
-          .byType(WiredashBackdrop)
-          .childByType(LarryPageView)
-          .childByType(Step3ScreenshotOverview)
+      spot<WiredashBackdrop>()
+          .spot<LarryPageView>()
+          .spot<Step3ScreenshotOverview>()
           .existsOnce();
 
       await robot.pressAndroidBackButton();
-      spot.byType(LarryPageView).childByType(Step1FeedbackMessage).existsOnce();
+      spot<LarryPageView>().spot<Step1FeedbackMessage>().existsOnce();
       expect(robot.services.wiredashModel.isWiredashActive, isTrue);
 
       // closes wiredash

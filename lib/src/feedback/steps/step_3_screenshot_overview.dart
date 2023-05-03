@@ -23,7 +23,7 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
       },
       child: () {
         if (!context.feedbackModel.hasAttachments) {
-          return const Step3NotAttachments();
+          return const Step3NoAttachments();
         }
         return const Step3WithGallery();
       }(),
@@ -31,8 +31,8 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
   }
 }
 
-class Step3NotAttachments extends StatelessWidget {
-  const Step3NotAttachments({
+class Step3NoAttachments extends StatelessWidget {
+  const Step3NoAttachments({
     super.key,
   });
 

@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spot/spot.dart';
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
 import 'package:wiredash/wiredash.dart';
 
-import 'util/assert_widget.dart';
 import 'util/robot.dart';
 
 void main() {
@@ -38,16 +38,16 @@ void main() {
       // Pressing next shows error
       await robot.goToNextStep();
       _larryPageView
-          .childByType(Step1FeedbackMessage)
-          .text('l10n.feedbackStep1MessageErrorMissingMessage')
+          .spot<Step1FeedbackMessage>()
+          .spotSingleText('l10n.feedbackStep1MessageErrorMissingMessage')
           .existsOnce();
 
       // Entering a message allows continue
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
 
-      _larryPageView.childByType(Step1FeedbackMessage).doesNotExist();
-      _larryPageView.childByType(Step3ScreenshotOverview).existsOnce();
+      _larryPageView.spot<Step1FeedbackMessage>().doesNotExist();
+      _larryPageView.spot<Step3ScreenshotOverview>().existsOnce();
     });
 
     testWidgets('Send feedback with screenshot', (tester) async {
@@ -242,11 +242,11 @@ void main() {
       await robot.goToNextStep();
       await robot.skipScreenshot();
       await robot.skipEmail();
-      _larryPageView.childByType(Step6Submit).existsOnce();
+      _larryPageView.spot<Step6Submit>().existsOnce();
 
       await robot.closeWiredash();
       await robot.openWiredash();
-      _larryPageView.childByType(Step6Submit).existsOnce();
+      _larryPageView.spot<Step6Submit>().existsOnce();
     });
 
     testWidgets('Dont show hidden labels but send them regardless',
@@ -302,11 +302,10 @@ void main() {
       await robot.enterFeedbackMessage('feedback with labels');
       await robot.goToNextStep();
 
-      spot
-          .byType(Wiredash)
-          .childByType(WiredashBackdrop)
-          .childByType(LarryPageView)
-          .childByType(Step2Labels)
+      spot<Wiredash>()
+          .spot<WiredashBackdrop>()
+          .spot<LarryPageView>()
+          .spot<Step2Labels>()
           .doesNotExist();
 
       await robot.skipScreenshot();
@@ -323,5 +322,4 @@ void main() {
   });
 }
 
-final _larryPageView =
-    spot.byType(WiredashFeedbackFlow).childByType(LarryPageView);
+final _larryPageView = spot<WiredashFeedbackFlow>().spot<LarryPageView>();
