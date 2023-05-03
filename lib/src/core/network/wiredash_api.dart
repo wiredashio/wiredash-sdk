@@ -557,7 +557,7 @@ class PingResponse {
 
 /// Backend returns an error which silences the SDK for one week
 class KillSwitchException extends WiredashApiException {
-  const KillSwitchException({Response? response}) : super(response: response);
+  const KillSwitchException({super.response});
   @override
   String toString() {
     return 'KillSwitchException{${response?.statusCode}, body: ${response?.body}}';

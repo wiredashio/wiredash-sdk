@@ -8,10 +8,10 @@ import 'package:wiredash/src/core/theme/wirecons.dart';
 /// Fakes the system statusbar when the app is floating in [WiredashBackdrop]
 class FakeAppStatusBar extends StatelessWidget {
   const FakeAppStatusBar({
-    Key? key,
+    super.key,
     required this.height,
     required this.color,
-  }) : super(key: key);
+  });
 
   final double height;
   final Color color;

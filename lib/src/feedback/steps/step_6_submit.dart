@@ -5,7 +5,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 
 class Step6Submit extends StatefulWidget {
-  const Step6Submit({Key? key}) : super(key: key);
+  const Step6Submit({super.key});
 
   @override
   State<Step6Submit> createState() => _Step6SubmitState();

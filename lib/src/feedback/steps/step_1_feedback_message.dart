@@ -4,7 +4,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 
 class Step1FeedbackMessage extends StatefulWidget {
-  const Step1FeedbackMessage({Key? key}) : super(key: key);
+  const Step1FeedbackMessage({super.key});
 
   @override
   State<Step1FeedbackMessage> createState() => _Step1FeedbackMessageState();

@@ -5,7 +5,7 @@ import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/support/material_support_layer.dart';
 
 class PromoterScoreFlow extends StatefulWidget {
-  const PromoterScoreFlow({Key? key}) : super(key: key);
+  const PromoterScoreFlow({super.key});
 
   @override
   State<PromoterScoreFlow> createState() => _PromoterScoreFlowState();

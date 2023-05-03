@@ -4,7 +4,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 
 class PsStep3Thanks extends StatelessWidget {
-  const PsStep3Thanks({Key? key}) : super(key: key);
+  const PsStep3Thanks({super.key});
 
   @override
   Widget build(BuildContext context) {

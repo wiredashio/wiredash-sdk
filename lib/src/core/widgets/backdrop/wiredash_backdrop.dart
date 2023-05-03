@@ -18,14 +18,14 @@ import 'package:wiredash/wiredash.dart';
 /// The Wiredash UI behind the app
 class WiredashBackdrop extends StatefulWidget {
   const WiredashBackdrop({
-    Key? key,
+    super.key,
     required this.contentBuilder,
     required this.app,
     required this.controller,
     this.padding,
     this.backgroundLayerBuilder,
     this.foregroundLayerBuilder,
-  }) : super(key: key);
+  });
 
   /// The wrapped app
   final Widget app;
@@ -1251,7 +1251,7 @@ enum WiredashBackdropStatus {
 
 /// Keeps the app alive, even when not in viewport
 class _KeepAppAlive extends StatefulWidget {
-  const _KeepAppAlive({Key? key, required this.child}) : super(key: key);
+  const _KeepAppAlive({required this.child});
 
   final Widget child;
 

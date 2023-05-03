@@ -5,9 +5,8 @@ class AnimatedShape extends ImplicitlyAnimatedWidget {
     required this.color,
     required this.shape,
     required this.child,
-    Key? key,
+    super.key,
   }) : super(
-          key: key,
           curve: Curves.easeInOutCubic,
           duration: const Duration(milliseconds: 150),
         );

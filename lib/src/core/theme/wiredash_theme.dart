@@ -3,10 +3,10 @@ import 'package:wiredash/src/core/theme/wiredash_theme_data.dart';
 
 class WiredashTheme extends StatelessWidget {
   const WiredashTheme({
-    Key? key,
+    super.key,
     required this.data,
     required this.child,
-  }) : super(key: key);
+  });
 
   final WiredashThemeData data;
   final Widget child;
@@ -58,10 +58,9 @@ class WiredashTheme extends StatelessWidget {
 
 class _InheritedWiredashTheme extends InheritedWidget {
   const _InheritedWiredashTheme({
-    Key? key,
     required this.themeData,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   final WiredashThemeData themeData;
 

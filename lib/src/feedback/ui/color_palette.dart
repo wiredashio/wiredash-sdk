@@ -8,14 +8,14 @@ import 'package:wiredash/src/feedback/ui/slider/stroke_width_slider_widget.dart'
 
 class ColorPalette extends StatefulWidget {
   const ColorPalette({
-    Key? key,
+    super.key,
     required this.colors,
     this.initialSelection = const Color(0xff6B46C1),
     this.initialStrokeWidth = 8.0,
     this.onNewColorSelected,
     this.onNewStrokeWidthSelected,
     this.onUndo,
-  }) : super(key: key);
+  });
 
   static const _borderRadius = 20.0;
 
@@ -181,11 +181,11 @@ class _ColorPaletteState extends State<ColorPalette>
 
 class HorizontalColorPicker extends StatelessWidget {
   const HorizontalColorPicker({
-    Key? key,
+    super.key,
     required this.colors,
     this.selectedColor,
     this.onNewColorSelected,
-  }) : super(key: key);
+  });
 
   final List<Color> colors;
   final Color? selectedColor;
@@ -223,7 +223,7 @@ class HorizontalColorPicker extends StatelessWidget {
 }
 
 class StrokeWidthDot extends StatefulWidget {
-  const StrokeWidthDot({Key? key, this.onTap}) : super(key: key);
+  const StrokeWidthDot({super.key, this.onTap});
 
   final VoidCallback? onTap;
 
@@ -305,11 +305,11 @@ class _StrokeWidthDotState extends State<StrokeWidthDot> {
 
 class AnimatedColorDot extends StatefulWidget {
   const AnimatedColorDot({
-    Key? key,
+    super.key,
     required this.color,
     required this.isSelected,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   final Color color;
   final bool isSelected;

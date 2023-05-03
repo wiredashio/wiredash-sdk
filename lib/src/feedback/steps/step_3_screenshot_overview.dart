@@ -4,7 +4,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 
 class Step3ScreenshotOverview extends StatefulWidget {
-  const Step3ScreenshotOverview({Key? key}) : super(key: key);
+  const Step3ScreenshotOverview({super.key});
 
   @override
   State<Step3ScreenshotOverview> createState() =>
@@ -23,7 +23,7 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
       },
       child: () {
         if (!context.feedbackModel.hasAttachments) {
-          return const Step3NotAttachments();
+          return const Step3NoAttachments();
         }
         return const Step3WithGallery();
       }(),
@@ -31,10 +31,10 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
   }
 }
 
-class Step3NotAttachments extends StatelessWidget {
-  const Step3NotAttachments({
-    Key? key,
-  }) : super(key: key);
+class Step3NoAttachments extends StatelessWidget {
+  const Step3NoAttachments({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -104,8 +104,8 @@ class Step3NotAttachments extends StatelessWidget {
 
 class Step3WithGallery extends StatelessWidget {
   const Step3WithGallery({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -177,9 +177,9 @@ class Step3WithGallery extends StatelessWidget {
 
 class AttachmentPreview extends StatelessWidget {
   const AttachmentPreview({
-    Key? key,
+    super.key,
     required this.attachment,
-  }) : super(key: key);
+  });
 
   final PersistedAttachment attachment;
 
@@ -225,9 +225,7 @@ class AttachmentPreview extends StatelessWidget {
 }
 
 class _NewAttachment extends StatelessWidget {
-  const _NewAttachment({
-    Key? key,
-  }) : super(key: key);
+  const _NewAttachment();
 
   @override
   Widget build(BuildContext context) {
@@ -286,7 +284,7 @@ class _NewAttachment extends StatelessWidget {
 }
 
 class Elevation extends StatelessWidget {
-  const Elevation({Key? key, this.child, this.elevation = 2}) : super(key: key);
+  const Elevation({super.key, this.child, this.elevation = 2});
 
   final Widget? child;
   final double elevation;

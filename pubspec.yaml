@@ -6,8 +6,8 @@ repository: https://github.com/wiredashio/wiredash-sdk
 issue_tracker: https://github.com/wiredashio/wiredash-sdk/issues
 
 environment:
-  sdk: ">=2.14.0 <3.0.0"
-  flutter: ">=2.8.0"
+  sdk: ">=2.17.0 <3.0.0"
+  flutter: ">=3.0.0"
 
 dependencies:
   clock: ^1.1.0
@@ -28,9 +28,10 @@ dev_dependencies:
   fake_async: any
   flutter_test:
     sdk: flutter
-  lint: '>=1.5.0 <3.0.0'
-  test: ^1.16.0-nullsafety
-  transparent_image: ^2.0.0-nullsafety.0
+  lint: '>=1.10.0 <3.0.0'
+  spot: ^0.2.1
+  test: ^1.21.0
+  transparent_image: ^2.0.0
 
 flutter:
   assets:

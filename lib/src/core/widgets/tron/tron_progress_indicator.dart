@@ -5,10 +5,10 @@ import 'package:wiredash/src/_wiredash_ui.dart';
 
 class TronProgressIndicator extends StatefulWidget {
   const TronProgressIndicator({
-    Key? key,
+    super.key,
     required this.totalSteps,
     required this.currentStep,
-  }) : super(key: key);
+  });
 
   final int totalSteps;
   final int currentStep;
