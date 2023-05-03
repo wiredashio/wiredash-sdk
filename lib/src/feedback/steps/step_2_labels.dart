@@ -4,7 +4,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 
 class Step2Labels extends StatefulWidget {
-  const Step2Labels({Key? key}) : super(key: key);
+  const Step2Labels({super.key});
 
   @override
   State<Step2Labels> createState() => _Step2LabelsState();
@@ -74,8 +74,7 @@ class _LabelRecommendations extends StatelessWidget {
     required this.labels,
     required this.isLabelSelected,
     required this.toggleSelection,
-    Key? key,
-  }) : super(key: key);
+  });
 
   final List<Label> labels;
   final bool Function(Label) isLabelSelected;
@@ -105,8 +104,7 @@ class _Label extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.toggleSelection,
-    Key? key,
-  }) : super(key: key);
+  });
 
   final Label label;
   final bool selected;

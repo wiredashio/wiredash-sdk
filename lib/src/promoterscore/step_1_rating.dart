@@ -8,8 +8,8 @@ import 'package:wiredash/src/utils/delay.dart';
 
 class PsStep1Rating extends StatefulWidget {
   const PsStep1Rating({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<PsStep1Rating> createState() => _PsStep1RatingState();
@@ -58,10 +58,9 @@ class _PsStep1RatingState extends State<PsStep1Rating> {
 
 class _PsRater extends StatefulWidget {
   const _PsRater({
-    Key? key,
     required this.score,
     required this.onSelected,
-  }) : super(key: key);
+  });
 
   final void Function(int? score) onSelected;
   final int? score;
@@ -178,11 +177,10 @@ class _PsRaterState extends State<_PsRater> {
 
 class _RatingCard extends StatefulWidget {
   const _RatingCard({
-    Key? key,
     required this.value,
     required this.checked,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   final int value;
   final bool checked;

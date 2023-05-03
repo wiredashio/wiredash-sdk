@@ -19,11 +19,11 @@ class StepPageScaffold extends StatefulWidget {
     this.indicator,
     this.discardLabel,
     this.discardConfirmLabel,
-    Key? key,
+    super.key,
     this.onClose,
     this.alignemnt,
     this.minHeight,
-  }) : super(key: key);
+  });
 
   final int? currentStep;
   final int? totalSteps;
@@ -297,10 +297,10 @@ enum StepPageAlignemnt {
 /// Scrollable area with scrollbar
 class ScrollBox extends StatefulWidget {
   const ScrollBox({
-    Key? key,
+    super.key,
     required this.child,
     this.padding,
-  }) : super(key: key);
+  });
 
   final Widget child;
 
@@ -339,11 +339,11 @@ class _ScrollBoxState extends State<ScrollBox> {
 
 class StepIndicator extends StatelessWidget {
   const StepIndicator({
-    Key? key,
+    super.key,
     required this.completed,
     required this.total,
     required this.currentStep,
-  }) : super(key: key);
+  });
 
   final bool completed;
   final int total;

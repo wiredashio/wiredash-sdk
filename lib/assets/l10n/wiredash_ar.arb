@@ -1,0 +1,96 @@
+{
+  "@@locale": "ar",
+  "feedbackStep1MessageTitle": "أرسل لنا مراجعتك",
+  "feedbackStep1MessageBreadcrumbTitle": "كتابة رسالة",
+  "feedbackStep1MessageDescription": "أذكر لنا ملخص عن ما واجهته",
+  "feedbackStep1MessageHint": "هنالك مشكلة غريبة عندما أحاول تغيير صورتي...",
+  "feedbackStep1MessageErrorMissingMessage": "رجاءاً أضف رسالة",
+
+  "feedbackStep2LabelsTitle": "اي تنصيف يمثل مراجعتك",
+  "feedbackStep2LabelsBreadcrumbTitle": "التصنيفات",
+  "feedbackStep2LabelsDescription": "أختيار التنصيف الملائم يسهل علينا توجيه الأقتراح للشخص المناسب.",
+
+
+  "feedbackStep3ScreenshotOverviewTitle": "إضافة لقطة للشاشة؟",
+  "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "لقطات الشاشة",
+  "feedbackStep3ScreenshotOverviewDescription": "يمكنك تصفح التطبيق وأختيار لقطة الشاشة التي ترغب بها",
+  "feedbackStep3ScreenshotOverviewSkipButton": "تخطي",
+  "feedbackStep3ScreenshotOverviewAddScreenshotButton": "إضافة لقطة للشاشة",
+
+  "feedbackStep3ScreenshotBarNavigateTitle": "أخذ لقطة للشاشة",
+  "feedbackStep3ScreenshotBarDrawTitle": "أرسم على الشاشة لإضافة تأشيرة",
+  "feedbackStep3ScreenshotBarDrawUndoButton": "رجوع",
+  "feedbackStep3ScreenshotBarCaptureButton": "التقاط",
+  "feedbackStep3ScreenshotBarSaveButton": "حفظ",
+  "feedbackStep3ScreenshotBarOkButton": "تم",
+
+  "feedbackStep3GalleryTitle": "لقطات الشاشة المرفقة",
+  "feedbackStep3GalleryBreadcrumbTitle": "لقطات الشاشة",
+  "feedbackStep3GalleryDescription": "يمكنك إضافة لقطة للشاشة لكي نستطيع فهم المشكلة أكثر.",
+
+  "feedbackStep4EmailTitle": "أحصل على تحديثات عبر البريد الإلكتروني لمشكلتك",
+  "feedbackStep4EmailBreadcrumbTitle": "التواصل",
+  "feedbackStep4EmailDescription": "ضع بريدك الإلكتروني بالأسفل أو اتركه فارغ",
+  "feedbackStep4EmailInvalidEmail": "هذا لا يبدو بريد إلكتروني صالح، يمكنك تركه فارغ.",
+  "feedbackStep4EmailInputHint": "mail@example.com",
+
+  "feedbackStep6SubmitTitle": "تقديم المراجعة",
+  "feedbackStep6SubmitBreadcrumbTitle": "تقديم",
+  "feedbackStep6SubmitDescription": "رجاءاً راجع جميع المعلومات قبل أن ترسلها.\nبوسعك الوصول إلى مراجعاتك بأي وقت.",
+  "feedbackStep6SubmitSubmitButton": "تقديم",
+  "feedbackStep6SubmitSubmitShowDetailsButton": "عرض التفاصيل",
+  "feedbackStep6SubmitSubmitHideDetailsButton": "أخفاء التفاصيل",
+  "feedbackStep6SubmitSubmitDetailsTitle": "تفاصيل المراجعة",
+
+  "feedbackStep7SubmissionInFlightMessage": "جاري تقديم مراجعتك",
+  "feedbackStep7SubmissionSuccessMessage": "شكراً لمراجعتك!",
+  "feedbackStep7SubmissionErrorMessage": "أرسال المراجعة فشل",
+  "feedbackStep7SubmissionOpenErrorButton": "أضغط لرؤية تفاصيل الخطأ",
+  "feedbackStep7SubmissionRetryButton": "حاول مجدداً",
+
+  "feedbackStepXOfY": "الخطوة {current} من {total}",
+  "@feedbackStepXOfY": {
+    "placeholders": {
+      "current": {
+        "description": "رقم الخطوة الحالية هي 1",
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "description": "عدد الخطوات الكلي",
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "feedbackDiscardButton": "أهمال المراجعة",
+  "feedbackDiscardConfirmButton": "هل ترغب فعلاً بأهماله؟",
+  "feedbackNextButton": "التالي",
+  "feedbackBackButton": "رجوع",
+  "feedbackCloseButton": "أغلاق",
+
+  "promoterScoreStep1Question": "كم نسبة توصيتك بنا؟",
+  "promoterScoreStep1Description": "غير محتمل أطلاقاً = 0, محتمل جداً = 10",
+
+  "promoterScoreStep2MessageTitle": "كم نسبة توصيتك بنا للاصدقاء والعائلة؟",
+  "promoterScoreStep2MessageDescription": "هل بوسعك أخبارنا لماذا أخترت {rating}؟ هذه الخطوة أختيارية.",
+  "@promoterScoreStep2MessageDescription": {
+    "placeholders": {
+      "rating": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "promoterScoreStep2MessageHint": "سيكون عظيماً جداً لو حسنت....",
+
+  "promoterScoreStep3ThanksMessagePromoters": "شكراً لتقييمك!",
+  "promoterScoreStep3ThanksMessagePassives": "شكراً لتقييمك!",
+  "promoterScoreStep3ThanksMessageDetractors": "شكراً لتقييمك!",
+
+  "promoterScoreNextButton": "التالي",
+  "promoterScoreBackButton": "رجوع",
+  "promoterScoreSubmitButton": "تقديم",
+
+  "backdropReturnToApp": "الرجوع للتطبيق"
+}

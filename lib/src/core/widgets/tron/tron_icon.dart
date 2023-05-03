@@ -4,10 +4,10 @@ class TronIcon extends StatefulWidget {
   const TronIcon(
     this.icon, {
     this.color,
-    Key? key,
+    super.key,
     this.size,
     this.duration = const Duration(milliseconds: 250),
-  }) : super(key: key);
+  });
 
   final Color? color;
   final Duration duration;

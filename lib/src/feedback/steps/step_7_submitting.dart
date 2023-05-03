@@ -4,7 +4,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 
 class Step7SubmittingAndError extends StatefulWidget {
-  const Step7SubmittingAndError({Key? key}) : super(key: key);
+  const Step7SubmittingAndError({super.key});
 
   @override
   State<Step7SubmittingAndError> createState() =>
@@ -37,9 +37,7 @@ class _Step7SubmittingAndErrorState extends State<Step7SubmittingAndError> {
 }
 
 class _Submitted extends StatelessWidget {
-  const _Submitted({
-    Key? key,
-  }) : super(key: key);
+  const _Submitted();
 
   @override
   Widget build(BuildContext context) {
@@ -73,9 +71,7 @@ class _Submitted extends StatelessWidget {
 }
 
 class _Submitting extends StatelessWidget {
-  const _Submitting({
-    Key? key,
-  }) : super(key: key);
+  const _Submitting();
 
   @override
   Widget build(BuildContext context) {
@@ -107,8 +103,7 @@ class _Submitting extends StatelessWidget {
 class _Error extends StatelessWidget {
   const _Error({
     required this.error,
-    Key? key,
-  }) : super(key: key);
+  });
 
   final Object error;
 

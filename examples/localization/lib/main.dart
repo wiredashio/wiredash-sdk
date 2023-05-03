@@ -11,8 +11,8 @@ void main() {
 
 class LocalizationExample extends StatefulWidget {
   LocalizationExample({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<LocalizationExample> createState() => _LocalizationExampleState();

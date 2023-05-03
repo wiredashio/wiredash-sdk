@@ -3,10 +3,10 @@ import 'package:wiredash/src/feedback/feedback_model.dart';
 
 class FeedbackModelProvider extends InheritedNotifier<FeedbackModel> {
   const FeedbackModelProvider({
-    Key? key,
+    super.key,
     required FeedbackModel feedbackModel,
-    required Widget child,
-  }) : super(key: key, notifier: feedbackModel, child: child);
+    required super.child,
+  }) : super(notifier: feedbackModel);
 
   static FeedbackModel of(BuildContext context, {bool listen = true}) {
     if (listen) {

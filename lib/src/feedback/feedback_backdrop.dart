@@ -9,9 +9,9 @@ import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 /// The backdrop for [WiredashFlow.feedback]
 class FeedbackBackdrop extends StatelessWidget {
   const FeedbackBackdrop({
-    Key? key,
+    super.key,
     required this.child,
-  }) : super(key: key);
+  });
 
   final Widget child;
 

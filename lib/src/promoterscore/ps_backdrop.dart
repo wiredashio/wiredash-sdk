@@ -6,9 +6,9 @@ import 'package:wiredash/src/_wiredash_ui.dart';
 /// The backdrop for [WiredashFlow.promoterScore]
 class PsBackdrop extends StatelessWidget {
   const PsBackdrop({
-    Key? key,
+    super.key,
     required this.child,
-  }) : super(key: key);
+  });
 
   final Widget child;
 

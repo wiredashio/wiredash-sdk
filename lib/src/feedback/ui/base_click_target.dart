@@ -5,13 +5,13 @@ const buttonBlue = Color(0xFF1A56DB);
 
 class BaseClickTarget extends StatefulWidget {
   const BaseClickTarget({
-    Key? key,
+    super.key,
     this.onTap,
     required this.builder,
     this.child,
     this.selected,
     this.onStateChanged,
-  }) : super(key: key);
+  });
 
   final void Function()? onTap;
   final void Function(TargetState state)? onStateChanged;
@@ -159,7 +159,7 @@ class TargetStateAnimations {
 
 class AnimatedClickTarget extends StatefulWidget {
   const AnimatedClickTarget({
-    Key? key,
+    super.key,
     this.focusNode,
     this.onTap,
     required this.builder,
@@ -168,7 +168,7 @@ class AnimatedClickTarget extends StatefulWidget {
     this.selected,
     this.curve = Curves.easeInOutCubic,
     this.reverseCurve,
-  }) : super(key: key);
+  });
 
   final FocusNode? focusNode;
   final void Function()? onTap;

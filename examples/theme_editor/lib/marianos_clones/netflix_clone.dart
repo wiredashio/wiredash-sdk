@@ -1306,8 +1306,7 @@ class ProfileItem extends StatefulWidget {
   final Color? color;
   final bool isUser;
 
-  const ProfileItem({Key? key, this.name, this.color, required this.isUser})
-      : super(key: key);
+  const ProfileItem({super.key, this.name, this.color, required this.isUser});
 
   @override
   _ProfileItemState createState() => _ProfileItemState();
@@ -2919,11 +2918,11 @@ Input breakpoint<Input>(
 // https://gist.github.com/slightfoot/37d3a9bde249c6660aeeb8ca9fc089b3
 class HandCursor extends StatelessWidget {
   const HandCursor({
-    Key? key,
+    super.key,
     this.onHover,
     this.enabled = true,
     required this.child,
-  }) : super(key: key);
+  });
 
   final ValueChanged<bool>? onHover;
   final bool enabled;

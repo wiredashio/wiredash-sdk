@@ -11,7 +11,7 @@ enum CloseDirection {
 /// [WiredashBackdrop] is open
 class PullToCloseDetector extends StatefulWidget {
   const PullToCloseDetector({
-    Key? key,
+    super.key,
     required this.child,
     // required this.distanceToEdge,
     // required this.openedPosition,
@@ -20,7 +20,7 @@ class PullToCloseDetector extends StatefulWidget {
     required this.startCloseSimulation,
     required this.startReopenSimulation,
     this.closeDirection = CloseDirection.downwards,
-  }) : super(key: key);
+  });
 
   final Widget child;
 

@@ -5,8 +5,8 @@ import 'package:wiredash/src/_wiredash_ui.dart';
 
 class ScreenshotBar extends StatelessWidget {
   const ScreenshotBar({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -11,9 +11,9 @@ import 'package:wiredash/src/_wiredash_ui.dart';
 /// Wiredash.
 class SemiTransparentStatusBar extends StatelessWidget {
   const SemiTransparentStatusBar({
-    Key? key,
+    super.key,
     required this.child,
-  }) : super(key: key);
+  });
 
   final Widget child;
 

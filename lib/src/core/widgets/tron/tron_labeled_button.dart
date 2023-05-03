@@ -4,12 +4,11 @@ import 'package:wiredash/src/_wiredash_ui.dart';
 /// Clickable text
 class TronLabeledButton extends ImplicitlyAnimatedWidget {
   const TronLabeledButton({
-    Key? key,
+    super.key,
     required this.child,
     this.onTap,
     this.padding,
   }) : super(
-          key: key,
           curve: Curves.easeInOutCirc,
           duration: const Duration(milliseconds: 150),
         );

@@ -8,7 +8,7 @@ void main() {
 /// The first widget put into `runApp` should be stateful to make hot reload
 /// work
 class WiredashExampleApp extends StatefulWidget {
-  WiredashExampleApp({Key? key}) : super(key: key);
+  WiredashExampleApp({super.key});
 
   @override
   _WiredashExampleAppState createState() => _WiredashExampleAppState();
@@ -119,7 +119,7 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
 }
 
 class _HomePage extends StatelessWidget {
-  _HomePage({Key? key}) : super(key: key);
+  _HomePage();
 
   @override
   Widget build(BuildContext context) {
@@ -163,9 +163,8 @@ class _HomePage extends StatelessWidget {
 
 class _DetailsPage extends StatelessWidget {
   _DetailsPage({
-    Key? key,
     required this.index,
-  }) : super(key: key);
+  });
 
   final int index;
 
