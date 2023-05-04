@@ -54,5 +54,20 @@
   "feedbackBackButton": "Zurück",
   "feedbackCloseButton": "Schließen",
 
+  "promoterScoreStep1Question": "Mit welcher Wahrscheinlichkeit würdest Du uns weiterempfehlen?",
+  "promoterScoreStep1Description": "0 = Nicht wahrscheinlich, 10 = Sehr wahrscheinlich",
+
+  "promoterScoreStep2MessageTitle": "Mit welcher Wahrscheinlichkeit würdest Du uns Deinen Freunden und Deiner Familie weiterempfehlen?",
+  "promoterScoreStep2MessageDescription": "Könntest Du uns mehr über Deine Auswahl erzählen {rating}? Dieser Schritt ist optional.",
+  "promoterScoreStep2MessageHint": "Es wäre super, wenn ihr folgendes verbessern könntet...",
+
+  "promoterScoreStep3ThanksMessagePromoters": "Danke für Deine Bewertung!",
+  "promoterScoreStep3ThanksMessagePassives": "Danke für Deine Bewertung!",
+  "promoterScoreStep3ThanksMessageDetractors": "Danke für Deine Bewertung!",
+
+  "promoterScoreNextButton": "Weiter",
+  "promoterScoreBackButton": "Zurück",
+  "promoterScoreSubmitButton": "Abschicken",
+
   "backdropReturnToApp": "Zurück zur App"
 }
