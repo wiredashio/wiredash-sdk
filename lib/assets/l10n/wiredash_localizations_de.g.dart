@@ -157,45 +157,45 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
 
   @override
   String get promoterScoreStep1Question =>
-      'How likely are you to recommend us?';
+      'Mit welcher Wahrscheinlichkeit würdest Du uns weiterempfehlen?';
 
   @override
   String get promoterScoreStep1Description =>
-      '0 = Not likely, 10 = Most likely';
+      '0 = Nicht wahrscheinlich, 10 = Sehr wahrscheinlich';
 
   @override
   String get promoterScoreStep2MessageTitle =>
-      'How likely are you to recommend us to your friends and family?';
+      'Mit welcher Wahrscheinlichkeit würdest Du uns Deinen Freunden und Deiner Familie weiterempfehlen?';
 
   @override
   String promoterScoreStep2MessageDescription(int rating) {
-    return 'Could you tell us a bit more about why you chose $rating? This step is optional.';
+    return 'Könntest Du uns mehr über Deine Auswahl erzählen $rating? Dieser Schritt ist optional.';
   }
 
   @override
   String get promoterScoreStep2MessageHint =>
-      'It would be great if you could improve...';
+      'Es wäre super, wenn ihr folgendes verbessern könntet...';
 
   @override
   String get promoterScoreStep3ThanksMessagePromoters =>
-      'Thanks for your rating!';
+      'Danke für Deine Bewertung!';
 
   @override
   String get promoterScoreStep3ThanksMessagePassives =>
-      'Thanks for your rating!';
+      'Danke für Deine Bewertung!';
 
   @override
   String get promoterScoreStep3ThanksMessageDetractors =>
-      'Thanks for your rating!';
+      'Danke für Deine Bewertung!';
 
   @override
-  String get promoterScoreNextButton => 'Next';
+  String get promoterScoreNextButton => 'Weiter';
 
   @override
-  String get promoterScoreBackButton => 'Back';
+  String get promoterScoreBackButton => 'Zurück';
 
   @override
-  String get promoterScoreSubmitButton => 'Submit';
+  String get promoterScoreSubmitButton => 'Abschicken';
 
   @override
   String get backdropReturnToApp => 'Zurück zur App';

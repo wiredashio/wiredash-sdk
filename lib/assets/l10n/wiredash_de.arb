@@ -48,11 +48,48 @@
   "feedbackStep7SubmissionRetryButton": "Wiederholen",
 
   "feedbackStepXOfY": "Schritt {current} von {total}",
+  "@feedbackStepXOfY": {
+      "placeholders": {
+        "current": {
+          "description": "current step number 1-max",
+          "type": "int",
+          "example": "1"
+        },
+        "total": {
+          "description": "max number of steps",
+          "type": "int",
+          "example": "5"
+        }
+      }
+    },
   "feedbackDiscardButton": "Feedback verwerfen",
   "feedbackDiscardConfirmButton": "Sicher? Löschen!",
   "feedbackNextButton": "Weiter",
   "feedbackBackButton": "Zurück",
   "feedbackCloseButton": "Schließen",
+
+  "promoterScoreStep1Question": "Mit welcher Wahrscheinlichkeit würdest Du uns weiterempfehlen?",
+  "promoterScoreStep1Description": "0 = Nicht wahrscheinlich, 10 = Sehr wahrscheinlich",
+
+  "promoterScoreStep2MessageTitle": "Mit welcher Wahrscheinlichkeit würdest Du uns Deinen Freunden und Deiner Familie weiterempfehlen?",
+  "promoterScoreStep2MessageDescription": "Könntest Du uns mehr über Deine Auswahl erzählen {rating}? Dieser Schritt ist optional.",
+  "@promoterScoreStep2MessageDescription": {
+    "placeholders": {
+      "rating": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "promoterScoreStep2MessageHint": "Es wäre super, wenn ihr folgendes verbessern könntet...",
+
+  "promoterScoreStep3ThanksMessagePromoters": "Danke für Deine Bewertung!",
+  "promoterScoreStep3ThanksMessagePassives": "Danke für Deine Bewertung!",
+  "promoterScoreStep3ThanksMessageDetractors": "Danke für Deine Bewertung!",
+
+  "promoterScoreNextButton": "Weiter",
+  "promoterScoreBackButton": "Zurück",
+  "promoterScoreSubmitButton": "Abschicken",
 
   "backdropReturnToApp": "Zurück zur App"
 }
