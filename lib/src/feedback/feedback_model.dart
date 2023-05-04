@@ -315,6 +315,8 @@ class FeedbackModel extends ChangeNotifier2 {
     _deviceInfo = _services.deviceInfoGenerator.generate();
     await _collectMetaData();
 
+    _collectedMetadataForScreenshot = true;
+
     _services.picassoController.isActive = true;
     _goToStep(FeedbackFlowStatus.screenshotDrawing);
   }
