@@ -59,14 +59,6 @@
 
   "promoterScoreStep2MessageTitle": "Mit welcher Wahrscheinlichkeit würdest Du uns Deinen Freunden und Deiner Familie weiterempfehlen?",
   "promoterScoreStep2MessageDescription": "Könntest Du uns mehr über Deine Auswahl erzählen {rating}? Dieser Schritt ist optional.",
-  "@promoterScoreStep2MessageDescription": {
-    "placeholders": {
-      "rating": {
-        "type": "int",
-        "example": "8"
-      }
-    }
-  },
   "promoterScoreStep2MessageHint": "Es wäre super, wenn ihr folgendes verbessern könntet...",
 
   "promoterScoreStep3ThanksMessagePromoters": "Danke für Deine Bewertung!",
