@@ -129,6 +129,108 @@ void main() {
       expect(submittedFeedback.message, 'feedback with labels');
     });
 
+    testWidgets(
+        'E-Mail is prefilled when user email is set and skips screenshot',
+        (tester) async {
+      const userEmail = 'prefilled_address@flutter.io';
+
+      final robot = await WiredashTestRobot.launchApp(
+        tester,
+        feedbackOptions: WiredashFeedbackOptions(
+          // Provide user e-mail
+          collectMetaData: (data) async {
+            await Future.delayed(const Duration(seconds: 1));
+            return data..userEmail = userEmail;
+          },
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.skipScreenshot();
+      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await robot.goToNextStep();
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      expect(submittedFeedback!.email, userEmail);
+    });
+
+    testWidgets(
+        "User adjusts prefilled email and it doesn't get reset when returning to email step",
+        (tester) async {
+      const prefilledEmail = 'prefilled_address@flutter.io';
+      const adjustedEmail = 'dash@flutter.io';
+
+      final robot = await WiredashTestRobot.launchApp(
+        tester,
+        feedbackOptions: WiredashFeedbackOptions(
+          // Provide user e-mail
+          collectMetaData: (data) async {
+            await Future.delayed(const Duration(seconds: 1));
+            return data..userEmail = prefilledEmail;
+          },
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.skipScreenshot();
+      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await robot.enterEmail(adjustedEmail);
+      // Go back to Screenshot Overview
+      await robot.goToPrevStep();
+      await robot.skipScreenshot();
+      // E-Mail prefilled with new value, contiue process
+      await robot.goToNextStep();
+      // Go back to E-Mail page, value still updated
+      await robot.goToPrevStep();
+      // Continue feedback until completion
+      await robot.goToNextStep();
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      expect(submittedFeedback!.email, adjustedEmail);
+    });
+
+    testWidgets(
+        'E-Mail is prefilled when user email is set, wants to take screenshot '
+        'but then goes back and skips', (tester) async {
+      const userEmail = 'prefilled_address@flutter.io';
+
+      final robot = await WiredashTestRobot.launchApp(
+        tester,
+        feedbackOptions: WiredashFeedbackOptions(
+          // Provide user e-mail
+          collectMetaData: (data) async {
+            await Future.delayed(const Duration(seconds: 1));
+            return data..userEmail = userEmail;
+          },
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.enterScreenshotMode();
+      await robot.goToPrevStep();
+      await robot.skipScreenshot();
+      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await robot.goToNextStep();
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      expect(submittedFeedback!.email, userEmail);
+    });
+
     testWidgets('Send feedback with email', (tester) async {
       final robot = await WiredashTestRobot.launchApp(
         tester,

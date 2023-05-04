@@ -10,7 +10,7 @@ class PsStep3Thanks extends StatelessWidget {
   Widget build(BuildContext context) {
     return StepPageScaffold(
       minHeight: 0,
-      alignemnt: StepPageAlignemnt.center,
+      alignment: StepPageAlignment.center,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,

@@ -43,7 +43,7 @@ class _Submitted extends StatelessWidget {
   Widget build(BuildContext context) {
     return StepPageScaffold(
       minHeight: 0,
-      alignemnt: StepPageAlignemnt.center,
+      alignment: StepPageAlignment.center,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -77,7 +77,7 @@ class _Submitting extends StatelessWidget {
   Widget build(BuildContext context) {
     return StepPageScaffold(
       minHeight: 0,
-      alignemnt: StepPageAlignemnt.center,
+      alignment: StepPageAlignment.center,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -111,7 +111,7 @@ class _Error extends StatelessWidget {
   Widget build(BuildContext context) {
     return StepPageScaffold(
       minHeight: 0,
-      alignemnt: StepPageAlignemnt.center,
+      alignment: StepPageAlignment.center,
       child: Column(
         children: [
           Icon(

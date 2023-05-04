@@ -286,10 +286,18 @@ class WiredashTestRobot {
 
   Future<void> goToPrevStep() async {
     final oldStatus = services.feedbackModel.feedbackFlowStatus;
-    await _tap(spotSingleText('l10n.feedbackBackButton'));
+    final texts = spotTexts('l10n.feedbackBackButton');
+    final backdropStatus = services.backdropController.backdropStatus;
+
+    if (backdropStatus == WiredashBackdropStatus.centered) {
+      await _tap(texts.last());
+    } else {
+      await _tap(texts.first());
+    }
+
     await tester.pumpAndSettle();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
-    print('Jumped from $oldStatus to prev $newStatus');
+    print('Jumped back from $oldStatus to prev $newStatus');
   }
 
   Future<void> enterScreenshotMode() async {
