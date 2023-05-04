@@ -48,20 +48,6 @@
   "feedbackStep7SubmissionRetryButton": "Wiederholen",
 
   "feedbackStepXOfY": "Schritt {current} von {total}",
-  "@feedbackStepXOfY": {
-      "placeholders": {
-        "current": {
-          "description": "current step number 1-max",
-          "type": "int",
-          "example": "1"
-        },
-        "total": {
-          "description": "max number of steps",
-          "type": "int",
-          "example": "5"
-        }
-      }
-    },
   "feedbackDiscardButton": "Feedback verwerfen",
   "feedbackDiscardConfirmButton": "Sicher? Löschen!",
   "feedbackNextButton": "Weiter",
