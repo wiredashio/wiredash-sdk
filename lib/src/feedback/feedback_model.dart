@@ -7,7 +7,6 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/metadata/build_info/app_info.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/metadata/device_info/device_info.dart';
-import 'package:wiredash/src/metadata/meta_data.dart';
 import 'package:wiredash/src/metadata/renderer/renderer.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
 import 'package:wiredash/src/utils/delay.dart';
@@ -48,7 +47,7 @@ class FeedbackModel extends ChangeNotifier2 {
 
   bool get hasEmailBeenEdited => _hasEmailBeenEdited;
 
-  bool _collectedMetadataForScreenshot = false;
+  bool _collectedMetadata = false;
 
   List<Label> get selectedLabels => List.unmodifiable(_selectedLabels);
   List<Label> _selectedLabels = [];
@@ -215,7 +214,7 @@ class FeedbackModel extends ChangeNotifier2 {
   }
 
   Future<void> skipScreenshot() async {
-    if (!_collectedMetadataForScreenshot) {
+    if (!_collectedMetadata) {
       // The user can take a screenshot and then decide to go back and skip it.
       // Since taking the screenshot already collected the data, calling it again is
       // unnecessary.
@@ -298,6 +297,7 @@ class FeedbackModel extends ChangeNotifier2 {
             _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
     await collector?.call(metaData);
     _services.wiredashModel.metaData = metaData;
+    _collectedMetadata = true;
     notifyListeners();
   }
 
@@ -314,8 +314,6 @@ class FeedbackModel extends ChangeNotifier2 {
     // TODO show loading indicator?
     _deviceInfo = _services.deviceInfoGenerator.generate();
     await _collectMetaData();
-
-    _collectedMetadataForScreenshot = true;
 
     _services.picassoController.isActive = true;
     _goToStep(FeedbackFlowStatus.screenshotDrawing);
@@ -396,19 +394,10 @@ class FeedbackModel extends ChangeNotifier2 {
     final deviceId = await _services.deviceIdGenerator.deviceId();
     _deviceInfo = _services.deviceInfoGenerator.generate();
 
-    CustomizableWiredashMetaData metaData = _services.wiredashModel.metaData;
-    if (!_collectedMetadataForScreenshot) {
-      // Allow devs to collect additional information
-      final collector =
-          _services.wiredashWidget.feedbackOptions?.collectMetaData ??
-              _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
-      final updated = await collector?.call(metaData);
-      if (updated != null) {
-        metaData = updated;
-        _services.wiredashModel.metaData = metaData;
-        notifyListeners();
-      }
+    if (!_collectedMetadata) {
+      _collectMetaData();
     }
+    final metaData = _services.wiredashModel.metaData;
 
     return PersistedFeedbackItem(
       appInfo: AppInfo(
