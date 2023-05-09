@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
@@ -98,6 +99,8 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
 
   double _minHeight = 0.0;
 
+  static const _verticalPadding = 8.0;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -112,6 +115,8 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    final viewPadding = MediaQuery.of(context).viewPadding;
+
     return Align(
       alignment: Alignment.topLeft,
       child: ScrollBox(
@@ -121,7 +126,10 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
             _reportWidgetHeight();
           },
           child: SafeArea(
-            minimum: const EdgeInsets.symmetric(vertical: 24),
+            minimum: EdgeInsets.only(
+              top: viewPadding.top + _verticalPadding,
+              bottom: viewPadding.bottom + _verticalPadding,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: () {
@@ -148,13 +156,11 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                               child: widget.indicator,
                             ),
                           ),
-                        if (widget.breadcrumbTitle != null &&
-                            context.theme.windowSize.width > 400) ...[
+                        if (widget.breadcrumbTitle != null && context.theme.windowSize.width > 400) ...[
                           SizedBox(
                             height: 16,
                             child: VerticalDivider(
-                              color:
-                                  context.theme.secondaryTextOnBackgroundColor,
+                              color: context.theme.secondaryTextOnBackgroundColor,
                             ),
                           ),
                           Expanded(
@@ -197,8 +203,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                               setState(() {
                                 if (_reallyTimer == null) {
                                   setState(() {
-                                    _reallyTimer =
-                                        Timer(const Duration(seconds: 3), () {
+                                    _reallyTimer = Timer(const Duration(seconds: 3), () {
                                       if (mounted) {
                                         setState(() {
                                           _reallyTimer = null;
@@ -209,8 +214,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                                     });
                                   });
                                 } else {
-                                  context.wiredashModel
-                                      .hide(discardFeedback: true);
+                                  context.wiredashModel.hide(discardFeedback: true);
                                   _reallyTimer = null;
                                 }
                               });
@@ -224,8 +228,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                                   )
                                 : DefaultTextStyle(
                                     style: context.text.caption.onBackground,
-                                    child: widget.discardConfirmLabel ??
-                                        const Text('Really?'),
+                                    child: widget.discardConfirmLabel ?? const Text('Really?'),
                                   ),
                           ),
                         ]
@@ -262,8 +265,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
     }
     // make height a multiple of 64 (round up) to prevent micro animations
     const double multipleOf = 64;
-    final multipleHeight =
-        (_measuredSize.height / multipleOf).ceil() * multipleOf;
+    final multipleHeight = (_measuredSize.height / multipleOf).ceil() * multipleOf;
 
     final minHeight = widget.minHeight ?? context.theme.minContentHeight;
     final height = math.max(multipleHeight, minHeight);
@@ -321,8 +323,7 @@ class _ScrollBoxState extends State<ScrollBox> {
       child: widget.child,
     );
     final targetPlatform = Theme.of(context).platform;
-    final bool isTouchInput = targetPlatform == TargetPlatform.iOS ||
-        targetPlatform == TargetPlatform.android;
+    final bool isTouchInput = targetPlatform == TargetPlatform.iOS || targetPlatform == TargetPlatform.android;
     if (isTouchInput) {
       child = Scrollbar(
         interactive: false,
