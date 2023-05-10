@@ -98,8 +98,6 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
 
   double _minHeight = 0.0;
 
-  static const _verticalPadding = 8.0;
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -114,8 +112,6 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    final viewPadding = MediaQuery.of(context).viewPadding;
-
     return Align(
       alignment: Alignment.topLeft,
       child: ScrollBox(
@@ -125,10 +121,17 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
             _reportWidgetHeight();
           },
           child: SafeArea(
-            minimum: EdgeInsets.only(
-              top: viewPadding.top + _verticalPadding,
-              bottom: viewPadding.bottom + _verticalPadding,
-            ),
+            minimum: () {
+              const min = 24.0;
+              const extra = 8.0;
+              final viewPadding = MediaQuery.of(context).viewPadding;
+              final top = math.max(min, viewPadding.top + extra);
+              final bottom = math.max(min, viewPadding.bottom + extra);
+              return EdgeInsets.only(
+                top: top,
+                bottom: bottom,
+              );
+            }(),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: () {
