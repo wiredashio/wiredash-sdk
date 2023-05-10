@@ -121,7 +121,17 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
             _reportWidgetHeight();
           },
           child: SafeArea(
-            minimum: const EdgeInsets.symmetric(vertical: 24),
+            minimum: () {
+              const min = 24.0;
+              const extra = 8.0;
+              final viewPadding = MediaQuery.of(context).viewPadding;
+              final top = math.max(min, viewPadding.top + extra);
+              final bottom = math.max(min, viewPadding.bottom + extra);
+              return EdgeInsets.only(
+                top: top,
+                bottom: bottom,
+              );
+            }(),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: () {
