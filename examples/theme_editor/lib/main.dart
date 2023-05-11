@@ -108,12 +108,9 @@ class _CustomizePageState extends State<CustomizePage> {
                           constraints.maxWidth,
                           constraints.maxHeight,
                         ),
-                        padding: EdgeInsets.zero,
-                        viewPadding: EdgeInsets.zero,
-                        viewInsets: EdgeInsets.zero,
                       ),
                       child: DeviceFrame(
-                        device: Devices.ios.iPhone12Mini,
+                        device: Devices.ios.iPhone13ProMax,
                         screen: Wiredash(
                           projectId: "Project ID from console.wiredash.io",
                           secret: "API Key from console.wiredash.io",
@@ -374,7 +371,7 @@ class _ThemeControlsState extends State<ThemeControls> {
                   children: [
                     SelectableText(
                       'primaryColor',
-                      style: GoogleFonts.droidSansMono(),
+                      style: GoogleFonts.robotoMono(),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -413,7 +410,7 @@ class _ThemeControlsState extends State<ThemeControls> {
                   children: [
                     SelectableText(
                       'secondaryColor',
-                      style: GoogleFonts.droidSansMono(),
+                      style: GoogleFonts.robotoMono(),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -430,7 +427,7 @@ class _ThemeControlsState extends State<ThemeControls> {
               children: [
                 SelectableText(
                   'darkMode',
-                  style: GoogleFonts.droidSansMono(),
+                  style: GoogleFonts.robotoMono(),
                 ),
                 Switch(
                   value: context.watchThemeModel.brightness == Brightness.dark,
@@ -469,7 +466,7 @@ class _ThemeControlsState extends State<ThemeControls> {
                   children: [
                     SelectableText(
                       'primaryContainerColor',
-                      style: GoogleFonts.droidSansMono(),
+                      style: GoogleFonts.robotoMono(),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -485,7 +482,7 @@ class _ThemeControlsState extends State<ThemeControls> {
                   children: [
                     SelectableText(
                       'textOnPrimaryContainerColor',
-                      style: GoogleFonts.droidSansMono(),
+                      style: GoogleFonts.robotoMono(),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -507,7 +504,7 @@ class _ThemeControlsState extends State<ThemeControls> {
                   children: [
                     SelectableText(
                       'secondaryContainerColor',
-                      style: GoogleFonts.droidSansMono(),
+                      style: GoogleFonts.robotoMono(),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -523,7 +520,7 @@ class _ThemeControlsState extends State<ThemeControls> {
                   children: [
                     SelectableText(
                       'secondaryTextOnBackgroundColor',
-                      style: GoogleFonts.droidSansMono(),
+                      style: GoogleFonts.robotoMono(),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -548,7 +545,7 @@ class _ThemeControlsState extends State<ThemeControls> {
                   children: [
                     SelectableText(
                       'primaryBackgroundColor',
-                      style: GoogleFonts.droidSansMono(),
+                      style: GoogleFonts.robotoMono(),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -564,7 +561,7 @@ class _ThemeControlsState extends State<ThemeControls> {
                   children: [
                     SelectableText(
                       'secondaryBackgroundColor',
-                      style: GoogleFonts.droidSansMono(),
+                      style: GoogleFonts.robotoMono(),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -583,7 +580,7 @@ class _ThemeControlsState extends State<ThemeControls> {
               children: [
                 SelectableText(
                   'appBackgroundColor',
-                  style: GoogleFonts.droidSansMono(),
+                  style: GoogleFonts.robotoMono(),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
@@ -600,7 +597,7 @@ class _ThemeControlsState extends State<ThemeControls> {
               children: [
                 SelectableText(
                   'appHandleBackgroundColor',
-                  style: GoogleFonts.droidSansMono(),
+                  style: GoogleFonts.robotoMono(),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),

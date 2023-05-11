@@ -35,6 +35,8 @@ class WiredashTestRobot {
     TestWidgetsFlutterBinding.ensureInitialized();
     const MethodChannel channel =
         MethodChannel('plugins.flutter.io/path_provider_macos');
+    // Replace with tester.binding.defaultBinaryMessenger.setMockMethodCallHandler when we drop support for Flutter v3.9.0-19.0.pre.
+    // ignore: deprecated_member_use
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       return '.';
     });

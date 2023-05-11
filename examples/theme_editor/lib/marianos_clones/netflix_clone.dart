@@ -17,6 +17,8 @@ class Netflix extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // Remove when we drop support for Flutter v3.7.0-29.0.pre.
+      // ignore: deprecated_member_use
       useInheritedMediaQuery: true,
       debugShowCheckedModeBanner: false,
       home: InitScreen(),

@@ -142,6 +142,8 @@ void _setupServices(WiredashServices sl) {
     },
     dispose: (model) => model.dispose(),
   );
+  // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
+  // ignore: deprecated_member_use
   sl.inject<DeviceInfoGenerator>((_) => DeviceInfoGenerator(window));
   sl.inject<WiredashOptionsData>(
     (_) => sl.wiredashWidget.options ?? const WiredashOptionsData(),

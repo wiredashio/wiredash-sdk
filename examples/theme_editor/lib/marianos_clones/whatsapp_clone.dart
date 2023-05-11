@@ -11,6 +11,8 @@ class WhatsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // Remove when we drop support for Flutter v3.7.0-29.0.pre.
+      // ignore: deprecated_member_use
       useInheritedMediaQuery: true,
       title: 'WhatsApp',
       home: HomeScreen(),
@@ -422,6 +424,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _leftSection(BuildContext context, bool isMobile,
       ConversationCallback callback, RefreshCallback refresh) {
     return MaterialApp(
+      // Remove when we drop support for Flutter v3.7.0-29.0.pre.
+      // ignore: deprecated_member_use
       useInheritedMediaQuery: true,
       title: 'WhatsApp',
       initialRoute: '/',

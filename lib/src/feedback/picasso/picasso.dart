@@ -28,6 +28,8 @@ class _PicassoState extends State<Picasso> {
   final _strokesStreamController = StreamController<List<Stroke?>>.broadcast();
   final _currentStrokeStreamController = StreamController<Stroke?>.broadcast();
 
+  // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
+  // ignore: deprecated_member_use
   Size _sketcherCanvasSize = ui.window.physicalSize;
 
   @override

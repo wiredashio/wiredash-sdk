@@ -304,8 +304,10 @@ extension _SerializeDeviceInfo on FlutterDeviceInfo {
   }
 }
 
-/// [WindowPadding] doesn't offer a public constructor and doesn't implement
+/// WindowPadding doesn't offer a public constructor and doesn't implement
 /// ==() and hashCode
+// Remove when we drop support for Flutter v3.8.0-14.0.pre.
+// ignore: deprecated_member_use
 class WiredashWindowPadding implements WindowPadding {
   const WiredashWindowPadding({
     required this.left,
@@ -323,6 +325,8 @@ class WiredashWindowPadding implements WindowPadding {
     );
   }
 
+  // Remove when we drop support for Flutter v3.8.0-14.0.pre.
+  // ignore: deprecated_member_use
   factory WiredashWindowPadding.fromWindowPadding(WindowPadding padding) {
     return WiredashWindowPadding(
       left: padding.left,
@@ -374,6 +378,8 @@ class WiredashWindowPadding implements WindowPadding {
       left.hashCode ^ top.hashCode ^ right.hashCode ^ bottom.hashCode;
 }
 
+// Remove when we drop support for Flutter v3.8.0-14.0.pre.
+// ignore: deprecated_member_use
 extension on WindowPadding {
   List<double> toJson() {
     return [left, top, right, bottom];
