@@ -1,6 +1,6 @@
 # Release checklist
 
-- run `pana --no-warning` and check score is 120/120 (Actually 110/120 because "Support up-to-date dependencies" fails locally)
+- run `pana --no-warning` and check score is 130/130
 - Bump version in `pubspec.yaml`
 - Increment `wiredashSdkVersion` in `lib/src/version.dart` by `1` for patch releases, by `10` for minor releases
 - Make sure `prod` backend is used, not `dev` in `lib/src/core/network/wiredash_api.dart` (ending with `.io`, not `.dev`)

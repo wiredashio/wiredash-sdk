@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.7.0
+
+- [#278](https://github.com/wiredashio/wiredash-sdk/pull/278) Add Support for Flutter 3.10
+- [#274](https://github.com/wiredashio/wiredash-sdk/pull/274) Raise min Flutter SDK to Flutter 3.0.0 / Dart 2.17
+- [#268](https://github.com/wiredashio/wiredash-sdk/pull/268) Add czech locale `cs` 🇨🇿 @lukas-h
+- [#275](https://github.com/wiredashio/wiredash-sdk/pull/275) Add german promoter score localizations 🇩🇪 @Dev-dfm
+- [#272](https://github.com/wiredashio/wiredash-sdk/pull/272) Fix: Prefill email field from `collectMetadata` if available, when screenshot step is skipped
+- [#276](https://github.com/wiredashio/wiredash-sdk/pull/276) Fix top padding on Android phones with notch.
+
 ## 1.6.0
 
 - [#266](https://github.com/wiredashio/wiredash-sdk/pull/266) Support for Flutter `3.7`. Required for `go_router` users
