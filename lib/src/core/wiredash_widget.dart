@@ -369,7 +369,7 @@ class WiredashState extends State<Wiredash> {
 
 Locale get _defaultLocale {
   // Flutter 1.26 (2.0.1) returns `Locale?`, 1.27 `Locale`
-  // ignore: unnecessary_nullable_for_final_variable_declarations
+  // ignore: unnecessary_nullable_for_final_variable_declarations, deprecated_member_use
   final Locale? locale = ui.window.locale;
   return locale ?? const Locale('en', 'US');
 }

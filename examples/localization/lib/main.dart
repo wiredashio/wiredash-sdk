@@ -20,6 +20,8 @@ class LocalizationExample extends StatefulWidget {
 
 class _LocalizationExampleState extends State<LocalizationExample> {
   /// The locale that was selected by the user, defaults to the system locale
+  // Remove when we drop support for Flutter v3.7.0-32.0.pre.
+  // ignore: deprecated_member_use
   Locale _selectedLocale = window.locale;
 
   @override
@@ -92,6 +94,8 @@ class _LocalizationExampleState extends State<LocalizationExample> {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(height: 20),
+              // Remove when we drop support for Flutter v3.7.0-32.0.pre.
+              // ignore: deprecated_member_use
               Text("System locale: ${window.locale}"),
 
               // When user selects a locale that's not in listed in
@@ -160,6 +164,8 @@ class _LocalizationExampleState extends State<LocalizationExample> {
                   ElevatedButton(
                     onPressed: () {
                       setState(() {
+                        // Remove when we drop support for Flutter v3.7.0-32.0.pre.
+                        // ignore: deprecated_member_use
                         _selectedLocale = window.locale;
                       });
                     },

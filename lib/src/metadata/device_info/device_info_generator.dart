@@ -1,3 +1,5 @@
+// Replace with FlutterView  when we drop support for Flutter v3.7.0-32.0.pre.
+// ignore: deprecated_member_use
 import 'dart:ui' show Locale, SingletonFlutterWindow;
 
 import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
@@ -11,11 +13,15 @@ import 'package:wiredash/src/metadata/device_info/device_info_generator_stub.dar
 abstract class DeviceInfoGenerator {
   /// Loads a [DeviceInfoGenerator] based on the environment by calling the
   /// optional imported createDeviceInfoGenerator function
+  // Replace with FlutterView  when we drop support for Flutter v3.7.0-32.0.pre.
+  // ignore: deprecated_member_use
   factory DeviceInfoGenerator(SingletonFlutterWindow window) {
     return createDeviceInfoGenerator(window);
   }
 
   /// Collection of all [FlutterDeviceInfo] shared between all platforms
+  // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
+  // ignore: deprecated_member_use
   static FlutterDeviceInfo baseDeviceInfo(SingletonFlutterWindow window) {
     Locale windowLocale() {
       // Flutter 1.26 (2.0.1) returns `Locale?`, 1.27 `Locale`
