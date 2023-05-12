@@ -9,3 +9,6 @@ linter:
   rules:
     # Util classes are awesome!
     avoid_classes_with_only_static_members: false
+
+    # Enable when min Dart version reaches 3.0.0
+    unnecessary_library_directive: false
