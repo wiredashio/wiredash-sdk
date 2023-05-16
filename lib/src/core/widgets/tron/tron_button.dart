@@ -227,13 +227,19 @@ class _TronButtonState extends State<TronButton>
     setState(() {
       _pressed = false;
     });
-    _controller.forward().then((value) => _controller.reverse());
+    _controller.forward().then((value) {
+      if (!mounted) return;
+      _controller.reverse();
+    });
   }
 
   void _handleTapCancel() {
     setState(() {
       _pressed = false;
     });
-    _controller.forward().then((value) => _controller.reverse());
+    _controller.forward().then((value) {
+      if (!mounted) return;
+      _controller.reverse();
+    });
   }
 }
