@@ -30,6 +30,41 @@ void main() {
       expect(submittedFeedback!.message, 'test message');
     });
 
+    testWidgets('Discard feedback', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(tester);
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.closeWiredash();
+
+      // feedback is still available and not lost
+      await robot.openWiredash();
+      _larryPageView.spotSingleText('test message').existsOnce();
+
+      // when discarding feedback
+      await robot.discardFeedback();
+      await robot.confirmDiscardFeedback();
+      await robot.waitUntilWiredashIsClosed();
+
+      // it is no longer available
+      await robot.openWiredash();
+      _larryPageView.spotSingleText('test message').doesNotExist();
+    });
+
+    testWidgets('Discard feedback disappears after 3s', (tester) async {
+      final robot = await WiredashTestRobot.launchApp(tester);
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.discardFeedback();
+
+      final confirmDiscardButton =
+          _larryPageView.spotSingleText('l10n.feedbackDiscardConfirmButton');
+      confirmDiscardButton.existsOnce();
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+      confirmDiscardButton.doesNotExist();
+    });
+
     testWidgets('No message shows error, entering one allows continue',
         (tester) async {
       final robot = await WiredashTestRobot.launchApp(tester);

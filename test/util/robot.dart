@@ -465,6 +465,27 @@ class WiredashTestRobot {
   Future<void> _tap(SingleWidgetSelector spot) async {
     await tester.tap(spot.finder);
   }
+
+  SingleWidgetSelector<Widget> get _discard =>
+      _spotPageView.spotSingleText('l10n.feedbackDiscardButton');
+  SingleWidgetSelector<Widget> get _reallyDiscard =>
+      _spotPageView.spotSingleText('l10n.feedbackDiscardConfirmButton');
+
+  /// Starts discarding feedback, call [confirmDiscardFeedback] to confirm
+  Future<void> discardFeedback() async {
+    _discard.existsOnce();
+    await _tap(_discard);
+    await tester.pump();
+    _reallyDiscard.existsOnce();
+  }
+
+  /// Confirms [discardFeedback]
+  Future<void> confirmDiscardFeedback() async {
+    _discard.doesNotExist();
+    _reallyDiscard.existsOnce();
+    await _tap(_reallyDiscard);
+    await tester.pump();
+  }
 }
 
 class WiredashMockServices {
