@@ -206,21 +206,20 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                             onTap: () {
                               setState(() {
                                 if (_reallyTimer == null) {
-                                  setState(() {
-                                    _reallyTimer =
-                                        Timer(const Duration(seconds: 3), () {
-                                      if (mounted) {
-                                        setState(() {
-                                          _reallyTimer = null;
-                                        });
-                                      } else {
+                                  _reallyTimer =
+                                      Timer(const Duration(seconds: 3), () {
+                                    if (mounted) {
+                                      setState(() {
                                         _reallyTimer = null;
-                                      }
-                                    });
+                                      });
+                                    } else {
+                                      _reallyTimer = null;
+                                    }
                                   });
                                 } else {
                                   context.wiredashModel
                                       .hide(discardFeedback: true);
+                                  _reallyTimer?.cancel();
                                   _reallyTimer = null;
                                 }
                               });
