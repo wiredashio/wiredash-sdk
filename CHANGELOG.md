@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.1
+
+- Widen dependency constraints of `http` and `file`
+
 ## 1.7.0
 
 - [#278](https://github.com/wiredashio/wiredash-sdk/pull/278) Add Support for Flutter 3.10
