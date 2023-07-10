@@ -1,4 +1,6 @@
 # Changelog
+## 1.7.2
+- [#285](https://github.com/wiredashio/wiredash-sdk/pull/285) Add Support danish (`da`) and arabic (`ar`)
 
 ## 1.7.1
 
