@@ -108,7 +108,7 @@ class WiredashLocalizationsCs extends WiredashLocalizations {
 
   @override
   String get feedbackStep6SubmitDescription =>
-      'Před odesláním si prosím zkontrolujte všechny informace.\nKdykoli se můžete vrátit a upravit svou zpětnou vazbu.';
+      'Před odesláním si prosím zkontrolujte všechny informace.\nKdykoli se můžete vrátit a upravit svoji zpětnou vazbu.';
 
   @override
   String get feedbackStep6SubmitSubmitButton => 'Odeslat';
