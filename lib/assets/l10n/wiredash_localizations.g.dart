@@ -5,7 +5,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'wiredash_localizations_ar.g.dart';
 import 'wiredash_localizations_cs.g.dart';
+import 'wiredash_localizations_da.g.dart';
 import 'wiredash_localizations_de.g.dart';
 import 'wiredash_localizations_en.g.dart';
 import 'wiredash_localizations_es.g.dart';
@@ -100,7 +102,9 @@ abstract class WiredashLocalizations {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
+    Locale('ar'),
     Locale('cs'),
+    Locale('da'),
     Locale('de'),
     Locale('en'),
     Locale('es'),
@@ -466,7 +470,9 @@ class _WiredashLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) => <String>[
+        'ar',
         'cs',
+        'da',
         'de',
         'en',
         'es',
@@ -484,8 +490,12 @@ class _WiredashLocalizationsDelegate
 WiredashLocalizations lookupWiredashLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'ar':
+      return WiredashLocalizationsAr();
     case 'cs':
       return WiredashLocalizationsCs();
+    case 'da':
+      return WiredashLocalizationsDa();
     case 'de':
       return WiredashLocalizationsDe();
     case 'en':

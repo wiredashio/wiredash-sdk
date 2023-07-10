@@ -1,0 +1,82 @@
+{
+  "@@locale": "da",
+  "feedbackStep1MessageTitle": "Send os din feedback",
+  "feedbackStep1MessageBreadcrumbTitle": "Skriv besked",
+  "feedbackStep1MessageDescription": "Tilføj en kort beskrivelse af, hvad du stødte på",
+  "feedbackStep1MessageHint": "Der er en ukendt fejl, når jeg prøver at ændre min avatar...",
+  "feedbackStep1MessageErrorMissingMessage": "Tilføj venligst en besked",
+  "feedbackStep2LabelsTitle": "Hvilken etiket repræsenterer bedst din feedback?",
+  "feedbackStep2LabelsBreadcrumbTitle": "Etiketter",
+  "feedbackStep2LabelsDescription": "At vælge den rigtige kategori hjælper os med at identificere problemet og sende din feedback til den rigtige interessent",
+  "feedbackStep3ScreenshotOverviewTitle": "Tilføj skærmbilleder for bedre kontekst?",
+  "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "Skærmbilleder",
+  "feedbackStep3ScreenshotOverviewDescription": "Du vil være i stand til at navigere i appen og vælge, hvornår du vil tage et skærmbillede",
+  "feedbackStep3ScreenshotOverviewSkipButton": "Næste",
+  "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Tilføj skærmbillede",
+  "feedbackStep3ScreenshotBarNavigateTitle": "Tag et skærmbillede",
+  "feedbackStep3ScreenshotBarDrawTitle": "Tegn på skærmen for at tilføje højdepunkter",
+  "feedbackStep3ScreenshotBarDrawUndoButton": "Fortryd",
+  "feedbackStep3ScreenshotBarCaptureButton": "Tag skærmkopi",
+  "feedbackStep3ScreenshotBarSaveButton": "Gem",
+  "feedbackStep3ScreenshotBarOkButton": "Ok",
+  "feedbackStep3GalleryTitle": "Vedhæftede skærmbilleder",
+  "feedbackStep3GalleryBreadcrumbTitle": "Skærmbilleder",
+  "feedbackStep3GalleryDescription": "Du kan tilføje flere skærmbilleder for bedre at hjælpe os med at forstå dit problem.",
+  "feedbackStep4EmailTitle": "Få e-mailopdateringer om dit problem",
+  "feedbackStep4EmailBreadcrumbTitle": "Kontakt",
+  "feedbackStep4EmailDescription": "Tilføj din e-mailadresse nedenfor, eller udelad den",
+  "feedbackStep4EmailInvalidEmail": "Dette ligner ikke en gyldig e-mailadresse. Du kan lade den stå tom.",
+  "feedbackStep4EmailInputHint": "mail@eksempel.dk",
+  "feedbackStep6SubmitTitle": "Send feedback",
+  "feedbackStep6SubmitBreadcrumbTitle": "Indsend",
+  "feedbackStep6SubmitDescription": "Gennemgå venligst alle oplysninger før indsendelse.\nDu kan til enhver tid navigere tilbage for at justere din feedback.",
+  "feedbackStep6SubmitSubmitButton": "Indsend",
+  "feedbackStep6SubmitSubmitShowDetailsButton": "Vis detaljer",
+  "feedbackStep6SubmitSubmitHideDetailsButton": "Skjul detaljer",
+  "feedbackStep6SubmitSubmitDetailsTitle": "Feedback detaljer",
+  "feedbackStep7SubmissionInFlightMessage": "Indsender din feedback",
+  "feedbackStep7SubmissionSuccessMessage": "Tak for din tilbagemelding!",
+  "feedbackStep7SubmissionErrorMessage": "Feedbackindsendelse mislykkedes",
+  "feedbackStep7SubmissionOpenErrorButton": "Klik for at se fejloplysninger",
+  "feedbackStep7SubmissionRetryButton": "Prøv igen",
+  "feedbackStepXOfY": "Trin {current} af {total}",
+  "@feedbackStepXOfY": {
+    "placeholders": {
+      "current": {
+        "description": "nuværende trin nummer 1-max",
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "description": "max antal trin",
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "feedbackDiscardButton": "Kassér feedback",
+  "feedbackDiscardConfirmButton": "Sikker på du ønsker at Kassér?",
+  "feedbackNextButton": "Næste",
+  "feedbackBackButton": "Tilbage",
+  "feedbackCloseButton": "Luk",
+  "promoterScoreStep1Question": "Hvor sandsynligt er det, at du vil anbefale os?",
+  "promoterScoreStep1Description": "0 = Ikke sandsynligt, 10 = Højst sandsynlig",
+  "promoterScoreStep2MessageTitle": "Hvor sandsynligt er det, at du vil anbefale os til dine venner og familie?",
+  "promoterScoreStep2MessageDescription": "Kan du fortælle os lidt mere om, hvorfor du valgte {rating}? Dette trin er valgfrit.",
+  "@promoterScoreStep2MessageDescription": {
+    "placeholders": {
+      "rating": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "promoterScoreStep2MessageHint": "Det ville være dejligt, hvis i kunne forbedre...",
+  "promoterScoreStep3ThanksMessagePromoters": "Tak for din vurdering!",
+  "promoterScoreStep3ThanksMessagePassives": "Thanks for your rating!",
+  "promoterScoreStep3ThanksMessageDetractors": "Tak for din vurdering!",
+  "promoterScoreNextButton": "Næste",
+  "promoterScoreBackButton": "Tilbage",
+  "promoterScoreSubmitButton": "Indsend",
+  "backdropReturnToApp": "Vend tilbage til app"
+}

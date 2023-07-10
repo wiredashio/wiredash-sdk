@@ -38,14 +38,7 @@ class _LocalizationExampleState extends State<LocalizationExample> {
       child: MaterialApp(
         locale: _selectedLocale,
         debugShowCheckedModeBanner: false,
-        supportedLocales: [
-          Locale('en'),
-          Locale('de'),
-          Locale('pl'),
-          Locale('ko'),
-          Locale('es'),
-          Locale('pt'),
-        ],
+        supportedLocales: WiredashLocalizations.supportedLocales,
         localizationsDelegates: [
           ...AppLocalizations.localizationsDelegates,
         ],
@@ -156,10 +149,26 @@ class _LocalizationExampleState extends State<LocalizationExample> {
                   ElevatedButton(
                     onPressed: () {
                       setState(() {
+                        _selectedLocale = Locale('da', 'DK');
+                      });
+                    },
+                    child: Text('da_DK'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
                         _selectedLocale = Locale('pt', 'BR');
                       });
                     },
                     child: Text('pt_BR'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedLocale = Locale('ar', 'AR');
+                      });
+                    },
+                    child: Text('ar_AR'),
                   ),
                   ElevatedButton(
                     onPressed: () {
