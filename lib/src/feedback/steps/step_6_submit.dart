@@ -163,7 +163,7 @@ class _Step6SubmitState extends State<Step6Submit> {
                           data.buildInfo.compilationMode,
                           data.buildInfo.buildNumber,
                           data.buildInfo.buildVersion,
-                          data.buildInfo.buildCommit
+                          data.buildInfo.buildCommit,
                         ].where((it) => it != null).join(', '),
                       ),
                     ),

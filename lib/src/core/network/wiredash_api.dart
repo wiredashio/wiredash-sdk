@@ -302,7 +302,7 @@ extension FeedbackBody on PersistedFeedbackItem {
     });
 
     values.addAll({
-      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode()
+      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode(),
     });
 
     final platformDartVersion = deviceInfo.platformVersion;
@@ -327,7 +327,7 @@ extension FeedbackBody on PersistedFeedbackItem {
     }
 
     values.addAll({
-      'platformSupportedLocales': nonNull(deviceInfo.platformSupportedLocales)
+      'platformSupportedLocales': nonNull(deviceInfo.platformSupportedLocales),
     });
 
     // Web only

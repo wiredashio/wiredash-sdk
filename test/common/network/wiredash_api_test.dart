@@ -126,7 +126,7 @@ void main() {
           'compilationMode': 'debug',
           'customMetaData': {
             'customText': 'text',
-            'nestedObject': {'frodo': 'ring', 'sam': 'lembas'}
+            'nestedObject': {'frodo': 'ring', 'sam': 'lembas'},
           },
           'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'labels': ['bug'],
@@ -227,7 +227,7 @@ void main() {
           'windowSize': [1080.0, 2088.0],
           'windowTextScaleFactor': 1.0,
           'windowInsets': [0.0, 0.0, 0.0, 685.0],
-          'windowPadding': [0.0, 66.0, 0.0, 0.0]
+          'windowPadding': [0.0, 66.0, 0.0, 0.0],
         },
       );
     });

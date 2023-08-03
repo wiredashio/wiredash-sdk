@@ -108,7 +108,7 @@ class _PsStep2MessageState extends State<PsStep2Message>
                 },
               ),
             ],
-          )
+          ),
         ],
       ),
     );

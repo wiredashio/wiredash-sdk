@@ -122,7 +122,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                 ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );

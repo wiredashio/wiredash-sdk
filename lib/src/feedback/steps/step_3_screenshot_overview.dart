@@ -100,7 +100,7 @@ class _Step3NoAttachmentsState extends State<Step3NoAttachments> {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

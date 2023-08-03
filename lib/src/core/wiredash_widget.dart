@@ -46,7 +46,7 @@ class Wiredash extends StatefulWidget {
     required this.projectId,
     required this.secret,
     @Deprecated('Since 1.0.0 the navigatorKey is not required anymore')
-        this.navigatorKey,
+    this.navigatorKey,
     this.options,
     this.theme,
     this.feedbackOptions,
@@ -353,7 +353,7 @@ class WiredashState extends State<Wiredash> {
       // Use what users set in WiredashOptions has the highest priority
       widget.options?.locale,
       // Use what users see in the app
-      _services.wiredashModel.appLocaleFromContext
+      _services.wiredashModel.appLocaleFromContext,
     ].whereNotNull();
 
     for (final locale in localesInOrder) {

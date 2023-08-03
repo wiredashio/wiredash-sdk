@@ -191,7 +191,7 @@ class _InitScreenState extends State<InitScreen> {
                 colors: [
                   Colors.black.withOpacity(0.8),
                   Colors.black.withOpacity(0.42),
-                  Colors.black.withOpacity(0.9)
+                  Colors.black.withOpacity(0.9),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -328,7 +328,7 @@ class _InitScreenState extends State<InitScreen> {
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -472,7 +472,7 @@ class _InitScreenState extends State<InitScreen> {
                               Icons.keyboard_arrow_right,
                               color: Colors.white,
                               size: 20,
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -515,7 +515,7 @@ class _InitScreenState extends State<InitScreen> {
                               Icons.keyboard_arrow_right,
                               color: Colors.white,
                               size: 35,
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -596,7 +596,7 @@ class _InitScreenState extends State<InitScreen> {
                         ),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -872,7 +872,7 @@ class _InitScreenState extends State<InitScreen> {
                 Icon(Icons.language, color: Utils.colorLanguage),
                 SizedBox(width: 10),
                 Text('English', style: TextStyle(color: Utils.colorLanguage)),
-                Icon(Icons.arrow_drop_down, color: Utils.colorLanguage)
+                Icon(Icons.arrow_drop_down, color: Utils.colorLanguage),
               ],
             ),
           ),
@@ -912,7 +912,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   colors: [
                     Colors.black.withOpacity(0.8),
                     Colors.black.withOpacity(0.42),
-                    Colors.black.withOpacity(0.9)
+                    Colors.black.withOpacity(0.9),
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -1039,7 +1039,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Color(0xFF8C8C8C),
                                 fontSize: 13,
                               ),
-                            )
+                            ),
                           ],
                         ),
                         SizedBox(height: 50),
@@ -1052,7 +1052,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Color(0xFF737373),
                                 fontSize: 13,
                               ),
-                            )
+                            ),
                           ],
                         ),
                         SizedBox(height: 20),
@@ -1083,7 +1083,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               fontSize: 13,
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -1136,7 +1136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         _language(size),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -1165,7 +1165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Icon(Icons.language, color: Utils.colorLanguage),
                 SizedBox(width: 10),
                 Text('English', style: TextStyle(color: Utils.colorLanguage)),
-                Icon(Icons.arrow_drop_down, color: Utils.colorLanguage)
+                Icon(Icons.arrow_drop_down, color: Utils.colorLanguage),
               ],
             ),
           ),
@@ -1203,7 +1203,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       gradient: LinearGradient(
                         colors: [
                           Colors.black.withOpacity(0.8),
-                          Colors.transparent
+                          Colors.transparent,
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -1475,7 +1475,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieItem(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/netflix_one.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1483,7 +1483,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieItem(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/netflix_two.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1491,7 +1491,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieItem(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/netflix_three.jpg',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1499,7 +1499,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieItem(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/netflix_four.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1507,7 +1507,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieItem(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/netflix_five.jpg',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1515,7 +1515,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieItem(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/netflix_six.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1523,7 +1523,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieItem(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/netflix_seven.jpg',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
   ];
@@ -1534,7 +1534,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieOriginal(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/bbb.jpg',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1542,7 +1542,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieOriginal(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/original_two.jpg',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1550,7 +1550,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieOriginal(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/original_three.jpg',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1558,7 +1558,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieOriginal(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/original_four.jpg',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1566,7 +1566,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieOriginal(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/original_five.jpg',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1574,7 +1574,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieOriginal(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/original_six.jpg',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1582,7 +1582,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _movieOriginal(
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/original_seven.jpg',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
   ];
@@ -1594,7 +1594,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/avengers.jpg',
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/top_one.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1603,7 +1603,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/blood.jpg',
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/top_two.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1612,7 +1612,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
           'https://a.wattpad.com/cover/214526225-352-k990092.jpg.png?alt=media',
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/top_three.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1621,7 +1621,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/john.jpg',
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/top_four.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1630,7 +1630,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/original_seven.jpg',
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/top_five.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1639,7 +1639,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/dietodie.jpg',
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/top_six.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1648,7 +1648,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/break.jpg',
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/top_seven.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1657,7 +1657,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/capmarvel.jpg',
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/top_eight.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1666,7 +1666,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
           'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSfkmPMDfVZLe3FoaHobQqYZ-SGIbeASuzwf21wTcQ8oCTyQmOF&usqp=CAU',
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/top_nine.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
     Row(
@@ -1675,7 +1675,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
           'https://images-na.ssl-images-amazon.com/images/I/71AErpCoZzL._AC_SY679_.jpg',
           'https://s3-us-west-2.amazonaws.com/s.cdpn.io/2399829/top_ten.png',
         ),
-        SizedBox(width: 5)
+        SizedBox(width: 5),
       ],
     ),
   ];
@@ -1754,7 +1754,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                             scrollDirection: Axis.horizontal,
                             children: _trending,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -1806,7 +1806,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                           padding: const EdgeInsets.only(left: 40, right: 40),
                           scrollDirection: Axis.horizontal,
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -1838,7 +1838,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                           scrollDirection: Axis.horizontal,
                           children: _top,
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -1869,7 +1869,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                         padding: const EdgeInsets.only(left: 40, right: 40),
                         scrollDirection: Axis.horizontal,
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -2204,10 +2204,10 @@ class _BrowseScreenState extends State<BrowseScreen> {
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
-                        )
+                        ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -2298,7 +2298,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -2342,7 +2342,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -2388,7 +2388,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
               margin: const EdgeInsets.only(right: 15),
               child: Image.network(url, fit: BoxFit.cover),
             ),
-          )
+          ),
         ],
       ),
     );

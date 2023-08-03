@@ -38,7 +38,7 @@ void main() {
             physicalGeometry: Rect.zero,
             physicalSize: Size(1080, 2088),
           ),
-        )
+        ),
       ],
       buildInfo: BuildInfo(
         buildVersion: '1.2.3',
@@ -172,7 +172,7 @@ void main() {
             'message': 'Hello world!',
             'labels': ['bug', 'lbl-1234'],
             'userId': 'Testy McTestFace',
-            'sdkVersion': 1
+            'sdkVersion': 1,
           },
         }),
         full,
@@ -206,7 +206,7 @@ void main() {
               'gestureInsets': [0.0, 0.0, 0.0, 0.0],
               'viewInsets': [0.0, 0.0, 0.0, 685.0],
               'padding': [0.0, 66, 0, 0.0],
-            }
+            },
           },
         }),
         minimal,
@@ -239,7 +239,7 @@ void main() {
                   'platformVersion':
                       '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
                   'textScaleFactor': 1.0,
-                  'viewInsets': [0.0, 0.0, 0.0, 685.0]
+                  'viewInsets': [0.0, 0.0, 0.0, 685.0],
                 },
                 'path': 'path/to/file.png',
               }
@@ -307,7 +307,7 @@ void main() {
             'viewInsets': [0.0, 0.0, 0.0, 685],
             'padding': [0.0, 66, 0, 0.0],
             'physicalSize': [1280.0, 720.0],
-          }
+          },
         },
       });
     });

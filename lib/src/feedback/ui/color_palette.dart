@@ -293,7 +293,7 @@ class _StrokeWidthDotState extends State<StrokeWidthDot> {
                     color: context.theme.primaryColor,
                     borderRadius: BorderRadius.circular(24),
                   ),
-                )
+                ),
               ],
             ),
           ),

@@ -702,7 +702,7 @@ class ChatsScreenState extends State<ChatsScreen> {
                         ),
                       ),
                     Expanded(child: SizedBox()),
-                    for (var action
+                    for (final action
                         in isMobile ? _mobileActions : _laptopActions)
                       action
                   ],
@@ -1681,7 +1681,8 @@ class ChatScreenState extends State<ChatScreen> {
                 else
                   SizedBox(),
                 // Expanded(child: SizedBox()),
-                for (var action in _isMobile ? _mobileActions : _laptopActions)
+                for (final action
+                    in _isMobile ? _mobileActions : _laptopActions)
                   action
               ],
             ),

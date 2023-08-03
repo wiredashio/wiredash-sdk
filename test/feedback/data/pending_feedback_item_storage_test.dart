@@ -203,7 +203,7 @@ void main() {
           'email': '<email for item to be preserved>',
           'type': '<type for item to be preserved>',
         },
-        'screenshotPath': '<screenshot for invalid item>'
+        'screenshotPath': '<screenshot for invalid item>',
       });
 
       await fileSystem
@@ -321,7 +321,7 @@ void main() {
             PersistedAttachment.screenshot(
               file: FileDataEventuallyOnDisk.uploaded(AttachmentId('1')),
               deviceInfo: firstPending.feedbackItem.deviceInfo,
-            )
+            ),
           ],
         ),
       );
