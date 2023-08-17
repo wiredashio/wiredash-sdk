@@ -1,7 +1,10 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:math' as math;
 
+// ignore: depend_on_referenced_packages
+import 'package:checks/src/checks.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -178,17 +181,13 @@ class WiredashTestRobot {
     _spotPageView.spotSingle<Step1FeedbackMessage>().existsOnce();
     await tester.enterText(find.byType(TextField), message);
     await tester.pumpAndSettle();
-    await tester.waitUntil(
-      tester.getSemantics(
-        find.widgetWithText(TronButton, 'l10n.feedbackNextButton'),
-      ),
-      matchesSemantics(
-        isEnabled: true,
-        isButton: true,
-        isFocusable: true,
-        hasEnabledState: true,
-      ),
+    final button = spotSingle<TronButton>(
+      children: [spotSingleText('l10n.feedbackNextButton')],
     );
+
+    // TODO find easier way to check if the button is clickable. Hit Testing?
+    await button.waitUntil(tester, (it) => it.isTappable(true));
+
     expect(find.text('l10n.feedbackNextButton'), findsOneWidget);
     expect(find.text('l10n.feedbackCloseButton'), findsOneWidget);
     print('entered feedback message: $message');
@@ -196,20 +195,16 @@ class WiredashTestRobot {
 
   Future<void> enterPromotionScoreMessage(String message) async {
     final step = _spotPageView.spotSingle<PsStep2Message>()..existsOnce();
-    final done = step.spotSingleText('l10n.promoterScoreSubmitButton')
-      ..existsOnce();
+    final done = step.spotSingle<TronButton>(
+      children: [spotSingleText('l10n.promoterScoreSubmitButton')],
+    )..existsOnce();
     step.spotSingleText('l10n.promoterScoreBackButton').existsOnce();
     await tester.enterText(find.byType(TextField), message);
     await tester.pumpAndSettle();
-    await tester.waitUntil(
-      tester.getSemantics(done.finder),
-      matchesSemantics(
-        isEnabled: true,
-        isButton: true,
-        isFocusable: true,
-        hasEnabledState: true,
-      ),
-    );
+
+    // TODO find easier way to check if the button is clickable. Hit Testing?
+    await done.waitUntil(tester, (it) => it.isTappable(true));
+
     print('entered feedback message: $message');
   }
 
@@ -468,6 +463,7 @@ class WiredashTestRobot {
 
   SingleWidgetSelector<Widget> get _discard =>
       _spotPageView.spotSingleText('l10n.feedbackDiscardButton');
+
   SingleWidgetSelector<Widget> get _reallyDiscard =>
       _spotPageView.spotSingleText('l10n.feedbackDiscardConfirmButton');
 
@@ -585,5 +581,74 @@ extension on Symbol {
         .skip("Symbol('".length)
         .skipLast("')".length)
         .toString();
+  }
+}
+
+extension SpotWaitUntil<W extends Widget> on SingleWidgetSelector<W> {
+  Future<void> waitUntil(
+    WidgetTester tester,
+    void Function(SingleWidgetSnapshot<W>) matcher, {
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
+    final ogStack = StackTrace.current;
+    final start = DateTime.now();
+    var attempt = 0;
+    while (true) {
+      attempt++;
+
+      final snapshot = this.snapshot();
+
+      final Object error;
+      final StackTrace stack;
+      try {
+        matcher(snapshot);
+        break;
+      } catch (e, s) {
+        error = e;
+        stack = s;
+      }
+
+      final now = DateTime.now();
+      final executingTime = start.difference(now).abs();
+      if (now.isAfter(start.add(timeout))) {
+        // Exit with error
+        print(ogStack);
+        print(stack);
+        throw 'Did not find $this after $timeout (attempt: $attempt)';
+      }
+
+      final duration =
+          Duration(milliseconds: math.pow(attempt, math.e).toInt());
+      if (executingTime > const Duration(seconds: 1) &&
+          duration > const Duration(seconds: 1)) {
+        // show continuous updates
+        print(
+          'Waiting for match (attempt: $attempt, @ $executingTime)\n'
+          '\tSelector: $this to match\n'
+          '\tException: $error',
+        );
+      }
+      if (attempt < 10) {
+        await tester.pumpAndSettle(duration);
+      } else {
+        await tester.pumpHardAndSettle(duration);
+        await tester.pump();
+      }
+    }
+  }
+}
+
+extension EffectiveTextMatcher on WidgetMatcher<TronButton> {
+  WidgetMatcher<TronButton> isTappable(bool value) {
+    return hasProp(
+      selector: (subject) => subject.context.nest<bool>(
+        () => ['is clickable"'],
+        (Element element) {
+          final widget = element.widget as TronButton;
+          return Extracted.value(widget.onTap != null);
+        },
+      ),
+      match: (it) => it.equals(value),
+    );
   }
 }
