@@ -758,7 +758,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             ),
             child: ClipRRect(
               clipBehavior: Clip.antiAliasWithSaveLayer,
-              borderRadius: _cornerRadiusAnimation.value,
+              borderRadius: _cornerRadiusAnimation.value ?? BorderRadius.zero,
               child: Stack(
                 children: [
                   ColoredBox(
