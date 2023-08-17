@@ -3,8 +3,6 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-// ignore: depend_on_referenced_packages
-import 'package:checks/src/checks.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
