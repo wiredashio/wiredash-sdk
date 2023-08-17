@@ -1,4 +1,9 @@
 # Changelog
+
+## 1.7.3
+- Update to Flutter 3.13 [#292](https://github.com/wiredashio/wiredash-sdk/pull/292)
+- Update cirruslabs Flutter containers to always test against the latest Flutter versions
+
 ## 1.7.2
 - [#285](https://github.com/wiredashio/wiredash-sdk/pull/285) Add Support danish (`da`) and arabic (`ar`)
 
