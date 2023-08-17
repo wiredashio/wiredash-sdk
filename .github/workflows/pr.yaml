@@ -12,7 +12,7 @@ jobs:
   code_style:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:stable
+      image: ghcr.io/cirruslabs/flutter:stable
     steps:
       - uses: actions/checkout@v3
       - name: Flutter version
@@ -27,7 +27,7 @@ jobs:
       - name: Analyze
         run: sudo --preserve-env=PATH env flutter analyze --fatal-infos --fatal-warnings .
       - name: Check formatting
-        run: sudo --preserve-env=PATH env flutter format --fix --set-exit-if-changed .
+        run: sudo --preserve-env=PATH env dart format --fix --set-exit-if-changed .
 
   pr-min:
     runs-on: ubuntu-latest
@@ -49,7 +49,7 @@ jobs:
   pr-stable:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:stable
+      image: ghcr.io/cirruslabs/flutter:stable
     if: ${{ github.base_ref != 'beta' || github.base_ref == null && github.ref != 'beta' }}
     steps:
       - uses: actions/checkout@v3
@@ -67,7 +67,7 @@ jobs:
   pr-beta:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:beta
+      image: ghcr.io/cirruslabs/flutter:beta
     if: ${{ github.base_ref == 'beta' || github.base_ref == null && github.ref == 'beta' }}
     steps:
       - uses: actions/checkout@v3

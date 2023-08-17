@@ -180,8 +180,6 @@ class ColorModel {
 
   bool get hasBeenManuallyAdjusted => _hasBeenManuallyAdjusted;
 
-  bool get isDefault => _color == autoColor();
-
   void markAsTouched() {
     _hasBeenManuallyAdjusted = true;
     notifyListeners();

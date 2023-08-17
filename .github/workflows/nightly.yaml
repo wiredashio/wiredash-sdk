@@ -29,7 +29,7 @@ jobs:
   stable:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:stable
+      image: ghcr.io/cirruslabs/flutter:stable
     steps:
       - uses: actions/checkout@v3
         with:
@@ -48,7 +48,7 @@ jobs:
   beta:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:beta
+      image: ghcr.io/cirruslabs/flutter:beta
     steps:
       - uses: actions/checkout@v3
         with:
@@ -64,10 +64,10 @@ jobs:
       - name: Build
         run: cd examples/theming && sudo --preserve-env=PATH env flutter build web
 
-  master:
+  latest:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:latest
+      image: ghcr.io/cirruslabs/flutter:latest
     steps:
       - uses: actions/checkout@v3
         with:
