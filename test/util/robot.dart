@@ -308,12 +308,9 @@ class WiredashTestRobot {
       await _tap(addScreenshotBtn);
     } else {
       final gallery = step.spotSingle<Step3WithGallery>()..existsOnce();
-      final addAttachmentItem = gallery.spotSingleIcon(Wirecons.plus)
+      final addAttachmentItem = gallery.spotSingle<NewAttachment>()
         ..existsOnce();
-      // TODO
-      await _tap(
-        addAttachmentItem, /* warnIfMissed: false*/
-      );
+      await _tap(addAttachmentItem);
     }
 
     await tester.waitUntil(find.byType(ScreenshotBar), findsOneWidget);
