@@ -128,7 +128,7 @@ class _PsRaterState extends State<_PsRater> {
             for (final i in [0, 1, 2, 3, 4, 5])
               ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: maxItemWidth),
-                child: _RatingCard(
+                child: RatingCard(
                   value: i,
                   checked: i == selectedScore,
                   onTap: () => _onTap(i),
@@ -142,7 +142,7 @@ class _PsRaterState extends State<_PsRater> {
             for (final i in [6, 7, 8, 9, 10])
               ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: maxItemWidth),
-                child: _RatingCard(
+                child: RatingCard(
                   value: i,
                   checked: i == selectedScore,
                   onTap: () => _onTap(i),
@@ -176,8 +176,9 @@ class _PsRaterState extends State<_PsRater> {
   }
 }
 
-class _RatingCard extends StatefulWidget {
-  const _RatingCard({
+class RatingCard extends StatefulWidget {
+  const RatingCard({
+    super.key,
     required this.value,
     required this.checked,
     required this.onTap,
@@ -188,10 +189,10 @@ class _RatingCard extends StatefulWidget {
   final void Function() onTap;
 
   @override
-  _RatingCardState createState() => _RatingCardState();
+  State<RatingCard> createState() => _RatingCardState();
 }
 
-class _RatingCardState extends State<_RatingCard>
+class _RatingCardState extends State<RatingCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
@@ -215,7 +216,7 @@ class _RatingCardState extends State<_RatingCard>
   }
 
   @override
-  void didUpdateWidget(_RatingCard oldWidget) {
+  void didUpdateWidget(RatingCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.checked != oldWidget.checked) {
       if (widget.checked) {

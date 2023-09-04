@@ -308,12 +308,9 @@ class WiredashTestRobot {
       await _tap(addScreenshotBtn);
     } else {
       final gallery = step.spotSingle<Step3WithGallery>()..existsOnce();
-      final addAttachmentItem = gallery.spotSingleIcon(Wirecons.plus)
+      final addAttachmentItem = gallery.spotSingle<NewAttachment>()
         ..existsOnce();
-      // TODO
-      await _tap(
-        addAttachmentItem, /* warnIfMissed: false*/
-      );
+      await _tap(addAttachmentItem);
     }
 
     await tester.waitUntil(find.byType(ScreenshotBar), findsOneWidget);
@@ -417,7 +414,16 @@ class WiredashTestRobot {
   Future<void> ratePromoterScore(int rating) async {
     assert(rating >= 0 && rating <= 10);
     final step = _spotPageView.spotSingle<PsStep1Rating>()..existsOnce();
-    await _tap(step.spotSingleText(rating.toString()));
+
+    SingleWidgetSelector<RatingCard> spotRatingCard(int rating) => step
+        .spot<RatingCard>()
+        .whereWidget(
+          (widget) => widget.value == rating,
+          description: 'RatingCard $rating',
+        )
+        .first();
+
+    await _tap(spotRatingCard(rating));
     await tester.pumpAndSettle();
 
     /// automatically goes to next step
@@ -432,16 +438,16 @@ class WiredashTestRobot {
       children: [spotSingleText('l10n.promoterScoreSubmitButton')],
     ).last()
       ..existsOnce();
+    final scrollable = spotSingle<LarryPageView>()
+        .spotSingle<StepPageScaffold>()
+        .spotSingle<ScrollBox>()
+        .spotSingle<SingleChildScrollView>()
+        .spot<Scrollable>()
+        .first();
     await tester.scrollUntilVisible(
       submitButton.finder,
       -100,
-      scrollable: spotSingle<LarryPageView>()
-          .spotSingle<StepPageScaffold>()
-          .spotSingle<ScrollBox>()
-          .spotSingle<SingleChildScrollView>()
-          .spot<Scrollable>()
-          .first()
-          .finder,
+      scrollable: scrollable.finder,
     );
     await _tap(submitButton);
     await tester.pumpAndSettle();

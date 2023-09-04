@@ -149,7 +149,7 @@ class Step3WithGallery extends StatelessWidget {
                             ),
                           ),
                         if (context.feedbackModel.attachments.length < 3)
-                          const _NewAttachment(),
+                          const NewAttachment(),
                       ],
                     ),
                   ),
@@ -229,8 +229,8 @@ class AttachmentPreview extends StatelessWidget {
   }
 }
 
-class _NewAttachment extends StatelessWidget {
-  const _NewAttachment();
+class NewAttachment extends StatelessWidget {
+  const NewAttachment({super.key});
 
   @override
   Widget build(BuildContext context) {
