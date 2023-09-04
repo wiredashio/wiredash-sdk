@@ -230,7 +230,7 @@ class AttachmentPreview extends StatelessWidget {
 }
 
 class NewAttachment extends StatelessWidget {
-  const NewAttachment();
+  const NewAttachment({super.key});
 
   @override
   Widget build(BuildContext context) {
