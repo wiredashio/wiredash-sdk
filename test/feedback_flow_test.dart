@@ -39,7 +39,7 @@ void main() {
 
       // feedback is still available and not lost
       await robot.openWiredash();
-      _larryPageView.spotSingleText('test message').existsOnce();
+      _larryPageView.spotText('test message').existsOnce();
 
       // when discarding feedback
       await robot.discardFeedback();
@@ -48,7 +48,7 @@ void main() {
 
       // it is no longer available
       await robot.openWiredash();
-      _larryPageView.spotSingleText('test message').doesNotExist();
+      _larryPageView.spotText('test message').doesNotExist();
     });
 
     testWidgets('Discard feedback disappears after 3s', (tester) async {
@@ -59,7 +59,7 @@ void main() {
       await robot.discardFeedback();
 
       final confirmDiscardButton =
-          _larryPageView.spotSingleText('l10n.feedbackDiscardConfirmButton');
+          _larryPageView.spotText('l10n.feedbackDiscardConfirmButton');
       confirmDiscardButton.existsOnce();
       await tester.pumpAndSettle(const Duration(seconds: 3));
       confirmDiscardButton.doesNotExist();
@@ -74,7 +74,7 @@ void main() {
       await robot.goToNextStep();
       _larryPageView
           .spot<Step1FeedbackMessage>()
-          .spotSingleText('l10n.feedbackStep1MessageErrorMissingMessage')
+          .spotText('l10n.feedbackStep1MessageErrorMissingMessage')
           .existsOnce();
 
       // Entering a message allows continue

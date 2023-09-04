@@ -280,7 +280,8 @@ class WiredashTestRobot {
 
   Future<void> goToPrevStep() async {
     final oldStatus = services.feedbackModel.feedbackFlowStatus;
-    final texts = spotTexts('l10n.feedbackBackButton');
+    final texts = spot<Text>()
+        .whereText((text) => text.equals('l10n.feedbackBackButton'));
     final backdropStatus = services.backdropController.backdropStatus;
 
     if (backdropStatus == WiredashBackdropStatus.centered) {
@@ -639,10 +640,9 @@ extension SpotWaitUntil<W extends Widget> on SingleWidgetSelector<W> {
 extension EffectiveTextMatcher on WidgetMatcher<TronButton> {
   WidgetMatcher<TronButton> isTappable(bool value) {
     return hasProp(
-      selector: (subject) => subject.context.nest<bool>(
+      widgetSelector: (subject) => subject.context.nest<bool>(
         () => ['is clickable"'],
-        (Element element) {
-          final widget = element.widget as TronButton;
+        (TronButton widget) {
           return Extracted.value(widget.onTap != null);
         },
       ),
