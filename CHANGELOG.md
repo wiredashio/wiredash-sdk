@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7.4
+
+- Localize discard confirm button in Promoter Score survey `feedbackDiscardConfirmButton` #299
+- Localize button screenshot text on mobile `feedbackStep3ScreenshotBottomBarTitle` (new) #299
+- Remove hit testing warnings in tests #300
+
 ## 1.7.3
 - Update to Flutter 3.13 [#292](https://github.com/wiredashio/wiredash-sdk/pull/292)
 - Update cirruslabs Flutter containers to always test against the latest Flutter versions

@@ -36,4 +36,5 @@
 /// 171 -> 1.7.1
 /// 172 -> 1.7.2
 /// 173 -> 1.7.3
-const wiredashSdkVersion = 173;
+/// 174 -> 1.7.4
+const wiredashSdkVersion = 174;
