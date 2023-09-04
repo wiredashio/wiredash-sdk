@@ -9,7 +9,7 @@ import 'package:wiredash/src/core/widgets/measure_size.dart';
 
 /// The default layout of a step in [LarryPageView]
 class StepPageScaffold extends StatefulWidget {
-  const StepPageScaffold({
+  StepPageScaffold({
     this.currentStep,
     this.totalSteps,
     this.title,
@@ -23,7 +23,12 @@ class StepPageScaffold extends StatefulWidget {
     this.onClose,
     this.alignment,
     this.minHeight,
-  });
+  }) : assert(() {
+          if (discardLabel != null && discardConfirmLabel == null) {
+            throw 'discardConfirmLabel must be set if discardLabel is set';
+          }
+          return true;
+        }());
 
   final int? currentStep;
   final int? totalSteps;
@@ -201,7 +206,8 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                               );
                             },
                           )
-                        else if (widget.discardLabel != null) ...[
+                        else if (widget.discardLabel != null &&
+                            widget.discardConfirmLabel != null) ...[
                           TronLabeledButton(
                             onTap: () {
                               setState(() {
@@ -233,8 +239,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
                                   )
                                 : DefaultTextStyle(
                                     style: context.text.caption.onBackground,
-                                    child: widget.discardConfirmLabel ??
-                                        const Text('Really?'),
+                                    child: widget.discardConfirmLabel!,
                                   ),
                           ),
                         ],

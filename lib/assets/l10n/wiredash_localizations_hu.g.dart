@@ -55,6 +55,10 @@ class WiredashLocalizationsHu extends WiredashLocalizations {
   String get feedbackStep3ScreenshotBarNavigateTitle => 'Készíts képernyőképet';
 
   @override
+  String get feedbackStep3ScreenshotBottomBarTitle =>
+      'Include a screenshot for more context';
+
+  @override
   String get feedbackStep3ScreenshotBarDrawTitle =>
       'Rajzolj a képernyőre hogy emeld ki a lényeget';
 

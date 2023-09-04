@@ -53,6 +53,10 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
   String get feedbackStep3ScreenshotBarNavigateTitle => 'Screenshot erstellen';
 
   @override
+  String get feedbackStep3ScreenshotBottomBarTitle =>
+      'Include a screenshot for more context';
+
+  @override
   String get feedbackStep3ScreenshotBarDrawTitle =>
       'Füge Markierungen mit dem Zeichnen-Tool hinzu';
 

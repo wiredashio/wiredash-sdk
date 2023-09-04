@@ -199,6 +199,12 @@ abstract class WiredashLocalizations {
   /// **'Take a screenshot'**
   String get feedbackStep3ScreenshotBarNavigateTitle;
 
+  /// No description provided for @feedbackStep3ScreenshotBottomBarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Include a screenshot for more context'**
+  String get feedbackStep3ScreenshotBottomBarTitle;
+
   /// No description provided for @feedbackStep3ScreenshotBarDrawTitle.
   ///
   /// In en, this message translates to:

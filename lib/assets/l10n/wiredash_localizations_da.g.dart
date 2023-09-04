@@ -55,6 +55,10 @@ class WiredashLocalizationsDa extends WiredashLocalizations {
   String get feedbackStep3ScreenshotBarNavigateTitle => 'Tag et skærmbillede';
 
   @override
+  String get feedbackStep3ScreenshotBottomBarTitle =>
+      'Include a screenshot for more context';
+
+  @override
   String get feedbackStep3ScreenshotBarDrawTitle =>
       'Tegn på skærmen for at tilføje højdepunkter';
 

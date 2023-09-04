@@ -51,6 +51,10 @@ class WiredashLocalizationsAr extends WiredashLocalizations {
   String get feedbackStep3ScreenshotBarNavigateTitle => 'أخذ لقطة للشاشة';
 
   @override
+  String get feedbackStep3ScreenshotBottomBarTitle =>
+      'Include a screenshot for more context';
+
+  @override
   String get feedbackStep3ScreenshotBarDrawTitle =>
       'أرسم على الشاشة لإضافة تأشيرة';
 

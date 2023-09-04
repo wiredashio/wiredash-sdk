@@ -57,6 +57,10 @@ class WiredashLocalizationsPt extends WiredashLocalizations {
       'Faça uma captura de tela';
 
   @override
+  String get feedbackStep3ScreenshotBottomBarTitle =>
+      'Include a screenshot for more context';
+
+  @override
   String get feedbackStep3ScreenshotBarDrawTitle =>
       'Indique os detalhes relevantes';
 

@@ -57,6 +57,10 @@ class WiredashLocalizationsCs extends WiredashLocalizations {
       'Pořiďte snímek obrazovky';
 
   @override
+  String get feedbackStep3ScreenshotBottomBarTitle =>
+      'Include a screenshot for more context';
+
+  @override
   String get feedbackStep3ScreenshotBarDrawTitle =>
       'Kreslení na obrazovce pro přidání zvýraznění';
 
