@@ -187,7 +187,7 @@ Widget? _buildBackgroundLayer(
                 padding: const EdgeInsets.all(8.0),
                 child: Center(
                   child: Text(
-                    'Include a screenshot for more context',
+                    context.l10n.feedbackStep3ScreenshotBottomBarTitle,
                     style: context.text.appbarTitle.onBackground,
                     textAlign: TextAlign.center,
                   ),

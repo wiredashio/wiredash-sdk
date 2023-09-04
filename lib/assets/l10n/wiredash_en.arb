@@ -18,6 +18,7 @@
   "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Add screenshot",
 
   "feedbackStep3ScreenshotBarNavigateTitle": "Take a screenshot",
+  "feedbackStep3ScreenshotBottomBarTitle": "Include a screenshot for more context",
   "feedbackStep3ScreenshotBarDrawTitle": "Draw on screen to add highlights",
   "feedbackStep3ScreenshotBarDrawUndoButton": "Undo",
   "feedbackStep3ScreenshotBarCaptureButton": "Capture",
