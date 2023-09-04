@@ -24,6 +24,7 @@ class _PsStep1RatingState extends State<PsStep1Rating> {
     return StepPageScaffold(
       title: Text(question),
       discardLabel: Text(context.l10n.feedbackCloseButton),
+      discardConfirmLabel: Text(context.l10n.feedbackDiscardConfirmButton),
       indicator: const StepIndicator(
         completed: false,
         currentStep: 1,
