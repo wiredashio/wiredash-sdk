@@ -178,9 +178,9 @@ class WiredashTestRobot {
     _spotPageView.spotSingle<Step1FeedbackMessage>().existsOnce();
     await tester.enterText(find.byType(TextField), message);
     await tester.pumpAndSettle();
-    final button = spotSingle<TronButton>(
-      children: [spotText('l10n.feedbackNextButton')],
-    );
+    final button = spotSingle<TronButton>()
+        .withChild(spotText('l10n.feedbackNextButton'))
+        .single;
 
     // TODO find easier way to check if the button is clickable. Hit Testing?
     await button.waitUntil(tester, (it) => it.isTappable(true));
@@ -192,9 +192,10 @@ class WiredashTestRobot {
 
   Future<void> enterPromotionScoreMessage(String message) async {
     final step = _spotPageView.spotSingle<PsStep2Message>()..existsOnce();
-    final done = step.spotSingle<TronButton>(
-      children: [spotText('l10n.promoterScoreSubmitButton')],
-    )..existsOnce();
+    final done = step
+        .spotSingle<TronButton>()
+        .withChild(spotText('l10n.promoterScoreSubmitButton'))
+      ..existsOnce();
     step.spotText('l10n.promoterScoreBackButton').existsOnce();
     await tester.enterText(find.byType(TextField), message);
     await tester.pumpAndSettle();
@@ -234,9 +235,10 @@ class WiredashTestRobot {
   Future<void> submitFeedback() async {
     final step = _spotPageView.spotSingle<Step6Submit>()..existsOnce();
     await act.tap(
-      step.spot<TronButton>(
-        children: [step.spotText('l10n.feedbackStep6SubmitSubmitButton')],
-      ).last(),
+      step
+          .spot<TronButton>()
+          .withChild(spotText('l10n.feedbackStep6SubmitSubmitButton'))
+          .last(),
     );
     print('submit feedback');
     await tester.pump();
@@ -341,9 +343,10 @@ class WiredashTestRobot {
     }
 
     // Wait for active "Save" button
-    final nextButton = screenshotBar.spotSingle<TronButton>(
-      children: [spotText('l10n.feedbackStep3ScreenshotBarSaveButton')],
-    ).last();
+    final nextButton = screenshotBar
+        .spotSingle<TronButton>()
+        .withChild(spotText('l10n.feedbackStep3ScreenshotBarSaveButton'))
+        .last();
 
     try {
       await tester.waitUntil(nextButton.finder, findsOneWidget);
@@ -433,9 +436,10 @@ class WiredashTestRobot {
 
   Future<void> submitPromoterScore() async {
     final step = _spotPageView.spotSingle<PsStep2Message>()..existsOnce();
-    final submitButton = step.spot<TronButton>(
-      children: [spotText('l10n.promoterScoreSubmitButton')],
-    ).last()
+    final submitButton = step
+        .spot<TronButton>()
+        .withChild(spotText('l10n.promoterScoreSubmitButton'))
+        .last()
       ..existsOnce();
     final scrollable = spotSingle<LarryPageView>()
         .spotSingle<StepPageScaffold>()
@@ -583,7 +587,7 @@ extension on Symbol {
   }
 }
 
-extension SpotWaitUntil<W extends Widget> on SingleWidgetSelector<W> {
+extension SpotWaitUntil<W extends Widget> on WidgetSelector<W> {
   Future<void> waitUntil(
     WidgetTester tester,
     void Function(SingleWidgetSnapshot<W>) matcher, {
@@ -595,7 +599,7 @@ extension SpotWaitUntil<W extends Widget> on SingleWidgetSelector<W> {
     while (true) {
       attempt++;
 
-      final snapshot = this.snapshot();
+      final snapshot = single.snapshot();
 
       final Object error;
       final StackTrace stack;
