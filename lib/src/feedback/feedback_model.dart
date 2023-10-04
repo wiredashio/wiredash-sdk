@@ -395,7 +395,7 @@ class FeedbackModel extends ChangeNotifier2 {
     _deviceInfo = _services.deviceInfoGenerator.generate();
 
     if (!_collectedMetadata) {
-      _collectMetaData();
+      await _collectMetaData();
     }
     final metaData = _services.wiredashModel.metaData;
 
