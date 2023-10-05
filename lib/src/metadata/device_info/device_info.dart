@@ -12,6 +12,9 @@ import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 /// - [_DartHtmlDeviceInfoGenerator]
 /// - [_DartIoDeviceInfoGenerator]
 class FlutterDeviceInfo {
+  /// The name of the device model
+  final String? deviceModel;
+
   /// The primary locale enabled on the device
   ///
   /// https://api.flutter.dev/flutter/dart-ui/SingletonFlutterWindow/locale.html
@@ -85,6 +88,7 @@ class FlutterDeviceInfo {
   final String? userAgent;
 
   const FlutterDeviceInfo({
+    this.deviceModel,
     required this.platformLocale,
     required this.platformSupportedLocales,
     required this.padding,
@@ -102,6 +106,7 @@ class FlutterDeviceInfo {
   });
 
   FlutterDeviceInfo copyWith({
+    String? deviceModel,
     String? deviceId,
     String? platformLocale,
     List<String>? platformSupportedLocales,
@@ -119,6 +124,7 @@ class FlutterDeviceInfo {
     WiredashWindowPadding? gestureInsets,
   }) {
     return FlutterDeviceInfo(
+      deviceModel: deviceModel ?? this.deviceModel,
       platformLocale: platformLocale ?? this.platformLocale,
       platformSupportedLocales:
           platformSupportedLocales ?? this.platformSupportedLocales,
@@ -140,6 +146,7 @@ class FlutterDeviceInfo {
   @override
   String toString() {
     return 'DeviceInfo{'
+        'deviceModel: $deviceModel, '
         'platformLocale: $platformLocale, '
         'platformSupportedLocales: $platformSupportedLocales, '
         'padding: $padding, '
@@ -162,6 +169,7 @@ class FlutterDeviceInfo {
       identical(this, other) ||
       (other is FlutterDeviceInfo &&
           runtimeType == other.runtimeType &&
+          deviceModel == other.deviceModel &&
           platformLocale == other.platformLocale &&
           listEquals(
             platformSupportedLocales,
@@ -182,6 +190,7 @@ class FlutterDeviceInfo {
 
   @override
   int get hashCode =>
+      deviceModel.hashCode ^
       platformLocale.hashCode ^
       // ignore: deprecated_member_use
       hashList(platformSupportedLocales) ^

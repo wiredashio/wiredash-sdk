@@ -7,7 +7,7 @@ import 'dart:ui' show SingletonFlutterWindow;
 import 'package:wiredash/src/metadata/device_info/device_info.dart';
 import 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
 
-class _DartHtmlDeviceInfoGenerator implements DeviceInfoGenerator {
+class _DartHtmlDeviceInfoGenerator implements DeviceInfoCollector {
   _DartHtmlDeviceInfoGenerator(this.window);
 
   // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
@@ -15,17 +15,17 @@ class _DartHtmlDeviceInfoGenerator implements DeviceInfoGenerator {
   final SingletonFlutterWindow window;
 
   @override
-  FlutterDeviceInfo generate() {
-    final base = DeviceInfoGenerator.baseDeviceInfo(window);
+  Future<FlutterDeviceInfo> generate() async {
+    final base = DeviceInfoCollector.flutterInfo(window);
     return base.copyWith(
       userAgent: html.window.navigator.userAgent,
     );
   }
 }
 
-/// Called by [DeviceInfoGenerator] factory constructor in browsers
+/// Called by [DeviceInfoCollector] factory constructor in browsers
 // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
 // ignore: deprecated_member_use
-DeviceInfoGenerator createDeviceInfoGenerator(SingletonFlutterWindow window) {
+DeviceInfoCollector createDeviceInfoGenerator(SingletonFlutterWindow window) {
   return _DartHtmlDeviceInfoGenerator(window);
 }
