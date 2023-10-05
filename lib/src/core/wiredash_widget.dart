@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_ps.dart';
@@ -154,18 +155,13 @@ class WiredashState extends State<Wiredash> {
 
   final FocusScopeNode _appFocusScopeNode = FocusScopeNode();
 
+  /// A way to access the services during testing
+  @visibleForTesting
   WiredashServices get debugServices {
-    WiredashServices? services;
-    assert(
-      () {
-        services = _services;
-        return true;
-      }(),
-    );
-    if (services == null) {
+    if (kReleaseMode) {
       throw "Services can't be accessed in production code";
     }
-    return services!;
+    return _services;
   }
 
   @override
