@@ -7,22 +7,22 @@ import 'package:wiredash/src/metadata/device_info/device_info.dart';
 // import a dart:html or dart:io version of `createDeviceInfoGenerator`
 // if non are available the stub is used
 import 'package:wiredash/src/metadata/device_info/device_info_generator_stub.dart'
-    if (dart.library.html) 'package:wiredash/src/metadata/device_info/dart_html_device_info_generator.dart'
-    if (dart.library.io) 'package:wiredash/src/metadata/device_info/dart_io_device_info_generator.dart';
+    if (dart.library.html) 'package:wiredash/src/metadata/device_info/device_info_generator_html.dart'
+    if (dart.library.io) 'package:wiredash/src/metadata/device_info/device_info_generator_io.dart';
 
-abstract class DeviceInfoGenerator {
-  /// Loads a [DeviceInfoGenerator] based on the environment by calling the
+abstract class DeviceInfoCollector {
+  /// Loads a [DeviceInfoCollector] based on the environment by calling the
   /// optional imported createDeviceInfoGenerator function
   // Replace with FlutterView  when we drop support for Flutter v3.7.0-32.0.pre.
   // ignore: deprecated_member_use
-  factory DeviceInfoGenerator(SingletonFlutterWindow window) {
+  factory DeviceInfoCollector(SingletonFlutterWindow window) {
     return createDeviceInfoGenerator(window);
   }
 
   /// Collection of all [FlutterDeviceInfo] shared between all platforms
   // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
   // ignore: deprecated_member_use
-  static FlutterDeviceInfo baseDeviceInfo(SingletonFlutterWindow window) {
+  static FlutterDeviceInfo flutterInfo(SingletonFlutterWindow window) {
     Locale windowLocale() {
       // Flutter 1.26 (2.0.1) returns `Locale?`, 1.27 `Locale`
       // ignore: unnecessary_nullable_for_final_variable_declarations
@@ -54,5 +54,5 @@ abstract class DeviceInfoGenerator {
   }
 
   /// Collects information from Flutter
-  FlutterDeviceInfo generate();
+  Future<FlutterDeviceInfo> generate();
 }

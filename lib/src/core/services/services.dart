@@ -47,7 +47,7 @@ class WiredashServices extends ChangeNotifier {
 
   BackdropController get backdropController => _locator.watch();
 
-  DeviceInfoGenerator get deviceInfoGenerator => _locator.watch();
+  DeviceInfoCollector get deviceInfoCollector => _locator.watch();
 
   PicassoController get picassoController => _locator.watch();
 
@@ -144,7 +144,7 @@ void _setupServices(WiredashServices sl) {
   );
   // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
   // ignore: deprecated_member_use
-  sl.inject<DeviceInfoGenerator>((_) => DeviceInfoGenerator(window));
+  sl.inject<DeviceInfoCollector>((_) => DeviceInfoCollector(window));
   sl.inject<WiredashOptionsData>(
     (_) => sl.wiredashWidget.options ?? const WiredashOptionsData(),
   );
