@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.5
+- Add norwegian `no` locale 🇳🇴 
+
 ## 1.7.4
 
 - Localize discard confirm button in Promoter Score survey `feedbackDiscardConfirmButton` #299
