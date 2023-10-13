@@ -24,9 +24,9 @@
   "feedbackStep3GalleryTitle": "Vedlagte skjermbilder",
   "feedbackStep3GalleryBreadcrumbTitle": "Skjermbilder",
   "feedbackStep3GalleryDescription": "Du kan legge til flere skjermbilder for å hjelpe oss med å forstå problemet ditt enda bedre.",
-  "feedbackStep4EmailTitle": "Få e-postoppdateringer om problemet ditt",
+  "feedbackStep4EmailTitle": "Vil du bli fulgt opp om dette?",
   "feedbackStep4EmailBreadcrumbTitle": "Kontakt",
-  "feedbackStep4EmailDescription": "Legg til e-postadressen din nedenfor eller la den være tom",
+  "feedbackStep4EmailDescription": "Legg til e-postadressen din dersom du ønsker å bli fulgt opp.",
   "feedbackStep4EmailInvalidEmail": "Dette ser ikke ut som en gyldig e-postadresse. Du kan la den være tom.",
   "feedbackStep4EmailInputHint": "mail@eksempel.com",
   "feedbackStep6SubmitTitle": "Send inn tilbakemelding",
@@ -56,8 +56,8 @@
       }
     }
   },
-  "feedbackDiscardButton": "Glem tilbakemelding",
-  "feedbackDiscardConfirmButton": "Virkelig? Glem!",
+  "feedbackDiscardButton": "Avbryt",
+  "feedbackDiscardConfirmButton": "Helt sikker?",
   "feedbackNextButton": "Neste",
   "feedbackBackButton": "Tilbake",
   "feedbackCloseButton": "Lukk",
