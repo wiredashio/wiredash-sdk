@@ -85,15 +85,14 @@ class WiredashLocalizationsNo extends WiredashLocalizations {
       'Du kan legge til flere skjermbilder for å hjelpe oss med å forstå problemet ditt enda bedre.';
 
   @override
-  String get feedbackStep4EmailTitle =>
-      'Få e-postoppdateringer om problemet ditt';
+  String get feedbackStep4EmailTitle => 'Vil du bli fulgt opp om dette?';
 
   @override
   String get feedbackStep4EmailBreadcrumbTitle => 'Kontakt';
 
   @override
   String get feedbackStep4EmailDescription =>
-      'Legg til e-postadressen din nedenfor eller la den være tom';
+      'Legg til e-postadressen din dersom du ønsker å bli fulgt opp.';
 
   @override
   String get feedbackStep4EmailInvalidEmail =>
@@ -150,10 +149,10 @@ class WiredashLocalizationsNo extends WiredashLocalizations {
   }
 
   @override
-  String get feedbackDiscardButton => 'Glem tilbakemelding';
+  String get feedbackDiscardButton => 'Avbryt';
 
   @override
-  String get feedbackDiscardConfirmButton => 'Virkelig? Glem!';
+  String get feedbackDiscardConfirmButton => 'Helt sikker?';
 
   @override
   String get feedbackNextButton => 'Neste';
