@@ -326,11 +326,9 @@ extension FeedbackBody on FeedbackItem {
         return MapEntry(key, null);
       }
     });
-    if (_customMetaData != null) {
-      _customMetaData.removeWhere((key, value) => value == null);
-      if (_customMetaData.isNotEmpty) {
-        values.addAll({'customMetaData': _customMetaData});
-      }
+    _customMetaData.removeWhere((key, value) => value == null);
+    if (_customMetaData.isNotEmpty) {
+      values.addAll({'customMetaData': _customMetaData});
     }
 
     values.addAll({'deviceId': nonNull(deviceId)});

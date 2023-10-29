@@ -31,24 +31,24 @@ class AppInfo {
 
   @override
   String toString() {
-    return 'AppInfo{' +
-        ' appName: $appName,' +
-        ' applicationId: $bundleId,' +
-        ' version: $version,' +
-        ' buildNumber: $buildNumber,' +
+    return 'AppInfo{'
+        'appName: $appName, '
+        'bundleId: $bundleId, '
+        'version: $version, '
+        'buildNumber: $buildNumber'
         '}';
   }
 
   AppInfo copyWith({
     String? appLocale,
     String? appName,
-    String? applicationId,
+    String? bundleId,
     String? version,
     String? buildNumber,
   }) {
     return AppInfo(
       appName: appName ?? this.appName,
-      bundleId: applicationId ?? this.bundleId,
+      bundleId: bundleId ?? this.bundleId,
       version: version ?? this.version,
       buildNumber: buildNumber ?? this.buildNumber,
     );

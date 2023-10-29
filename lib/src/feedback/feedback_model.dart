@@ -4,12 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/metadata/build_info/app_info.dart';
-import 'package:wiredash/src/metadata/build_info/build_info.dart';
-import 'package:wiredash/src/metadata/device_info/device_info.dart';
-import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/src/metadata/renderer/renderer.dart';
-import 'package:wiredash/src/metadata/user_meta_data.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
 import 'package:wiredash/src/utils/delay.dart';
 
@@ -220,7 +215,9 @@ class FeedbackModel extends ChangeNotifier2 {
   }
 
   Future<void> skipScreenshot() async {
-    await _collectMetaData();
+    if (_sessionMetadata == null) {
+      await _collectMetaData();
+    }
     goToNextStep();
   }
 
@@ -268,8 +265,6 @@ class FeedbackModel extends ChangeNotifier2 {
           const Color(0xffcccccc);
       final screenshot =
           await _services.picassoController.paintDrawingOntoImage(image, bg);
-      final fixedMetaData =
-          await _services.metaDataCollector.collectFixedMetaData();
       final attachment = PersistedAttachment.screenshot(
         file: FileDataEventuallyOnDisk.inMemory(screenshot),
       );
@@ -295,7 +290,7 @@ class FeedbackModel extends ChangeNotifier2 {
   Future<SessionMetaData> _collectMetaData() async {
     _sessionMetadata = await _services.metaDataCollector.collectSessionMetaData(
       _services.wiredashModel.feedbackOptions?.collectMetaData
-          ?.asFutureCreator(),
+          ?.map((it) => it.asFuture()),
     );
     notifyListeners();
     return _sessionMetadata!;
@@ -312,10 +307,7 @@ class FeedbackModel extends ChangeNotifier2 {
     // captures screenshot, it is saved in screenCaptureController
     await _services.screenCaptureController.captureScreen();
     // TODO show loading indicator?
-    _sessionMetadata = await _services.metaDataCollector.collectSessionMetaData(
-      _services.wiredashModel.feedbackOptions?.collectMetaData
-          ?.asFutureCreator(),
-    );
+    await _collectMetaData();
 
     _services.picassoController.isActive = true;
     _goToStep(FeedbackFlowStatus.screenshotDrawing);

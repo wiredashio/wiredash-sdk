@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +16,7 @@ import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
+// ignore: unused_import
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -45,8 +45,9 @@ class WiredashTestRobot {
     );
     TestWidgetsFlutterBinding.ensureInitialized();
 
-    const MethodChannel('dev.fluttercommunity.plus/device_info')
-        .setMockMethodCallHandler((MethodCall methodCall) async {
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        const MethodChannel('dev.fluttercommunity.plus/device_info'),
+        (MethodCall methodCall) async {
       if (methodCall.method == 'getDeviceInfo') {
         return <String, dynamic>{
           'version': <String, dynamic>{

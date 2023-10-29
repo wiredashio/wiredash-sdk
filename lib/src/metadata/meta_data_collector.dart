@@ -33,22 +33,24 @@ class MetaDataCollector {
       return wiredashModel.fixedMetaData!;
     }
 
-    final results = await Future.wait(<Future<Object?>>[
-      _collectAppInfo(),
-      _collectDeviceInfo(),
-      deviceInfoCollector().generate(),
-    ].map(
-      (e) => e.catchError(
-        (Object e, StackTrace stack) {
-          reportWiredashError(
-            e,
-            stack,
-            'Could not collect metadata',
-          );
-          return null;
-        },
+    final results = await Future.wait(
+      <Future<Object?>>[
+        _collectAppInfo(),
+        _collectDeviceInfo(),
+        deviceInfoCollector().generate(),
+      ].map(
+        (e) => e.catchError(
+          (Object e, StackTrace stack) {
+            reportWiredashError(
+              e,
+              stack,
+              'Could not collect metadata',
+            );
+            return null;
+          },
+        ),
       ),
-    ));
+    );
     final appInfo = results[0] as AppInfo?;
     final deviceInfo = results[1] as DeviceInfo?;
     final flutterDeviceInfo = results[2] as FlutterInfo?;
@@ -70,7 +72,7 @@ class MetaDataCollector {
       final packageInfo = await PackageInfo.fromPlatform();
       appInfo = appInfo.copyWith(
         appName: packageInfo.appName,
-        applicationId: packageInfo.packageName,
+        bundleId: packageInfo.packageName,
         version: packageInfo.version,
         buildNumber: packageInfo.buildNumber,
       );

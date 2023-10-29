@@ -1,5 +1,3 @@
-import 'package:wiredash/src/_feedback.dart';
-
 /// A label/tag can be assigned to a [PersistedFeedbackItem].
 ///
 /// Users can select multiple labels for each feedback.

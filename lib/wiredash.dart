@@ -1,7 +1,5 @@
 library wiredash;
 
-import 'package:wiredash/src/metadata/user_meta_data.dart';
-
 export 'assets/l10n/wiredash_localizations.g.dart' show WiredashLocalizations;
 export 'assets/l10n/wiredash_localizations_de.g.dart';
 export 'assets/l10n/wiredash_localizations_en.g.dart';
