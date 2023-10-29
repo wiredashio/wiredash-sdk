@@ -11,6 +11,8 @@ import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/metadata/build_info/app_info.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/metadata/device_info/device_info.dart';
+import 'package:wiredash/src/metadata/meta_data_collector.dart';
+import 'package:wiredash/src/metadata/user_meta_data.dart';
 
 void main() {
   group('Serialize feedback item', () {
@@ -24,15 +26,19 @@ void main() {
         FlutterError.onError = oldOnErrorHandler;
       });
 
-      final body = PersistedFeedbackItem(
+      final body = FeedbackItem(
         appInfo: AppInfo(
-          appLocale: 'de_DE',
+          bundleId: 'com.example.app',
+          appName: 'Example App',
         ),
         buildInfo: BuildInfo(
           compilationMode: CompilationMode.debug,
         ),
         deviceId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-        deviceInfo: FlutterDeviceInfo(
+        deviceInfo: DeviceInfo(
+          deviceModel: 'Google Pixel 8',
+        ),
+        flutterInfo: FlutterInfo(
           platformLocale: 'en_US',
           platformSupportedLocales: ['en_US', 'de_DE'],
           padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
@@ -53,67 +59,25 @@ void main() {
         email: 'email@example.com',
         message: 'Hello world!',
         labels: ['bug'],
-        userId: 'Testy McTestFace',
+        sessionMetadata: CustomizableWiredashMetaData()
+          ..userId = 'Testy McTestFace'
+          ..custom = {
+            'customText': 'text',
+            'nestedObject': {'frodo': 'ring', 'sam': 'lembas'},
+            'ignoreNull': null, // ignores
+            'function': () => null, // reports but doesn't crash
+          }
+          ..appLocale = 'de_DE',
         sdkVersion: 1,
-        customMetaData: {
-          'customText': 'text',
-          'nestedObject': {'frodo': 'ring', 'sam': 'lembas'},
-          'ignoreNull': null, // ignores
-          'function': () => null, // reports but doesn't crash
-        },
         attachments: [
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.uploaded(
               AttachmentId('screenshot_123'),
             ),
-            deviceInfo: FlutterDeviceInfo(
-              platformLocale: 'en_US',
-              platformSupportedLocales: ['en_US', 'de_DE'],
-              padding:
-                  WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
-              physicalSize: Size(1080, 2088),
-              physicalGeometry: Rect.zero,
-              pixelRatio: 2.75,
-              platformOS: 'android',
-              platformOSVersion: 'RSR1.201013.001',
-              platformVersion:
-                  '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on'
-                  ' "android_ia32"',
-              textScaleFactor: 1,
-              viewInsets:
-                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-              platformBrightness: Brightness.dark,
-              gestureInsets:
-                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-            ),
           ),
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.uploaded(
               AttachmentId('screenshot_124'),
-            ),
-            deviceInfo: FlutterDeviceInfo(
-              platformLocale: 'de_DE',
-              platformSupportedLocales: ['en_US', 'de_DE'],
-              padding: WiredashWindowPadding(
-                left: 0,
-                top: 66,
-                right: 0,
-                bottom: 360,
-              ),
-              physicalSize: Size(1080, 2088),
-              physicalGeometry: Rect.zero,
-              pixelRatio: 2.75,
-              platformOS: 'android',
-              platformOSVersion: 'RSR1.201013.001',
-              platformVersion:
-                  '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on'
-                  ' "android_ia32"',
-              textScaleFactor: 1,
-              viewInsets:
-                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-              platformBrightness: Brightness.dark,
-              gestureInsets:
-                  WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
             ),
           ),
         ],
@@ -123,6 +87,8 @@ void main() {
         body,
         {
           'appLocale': 'de_DE',
+          'appName': 'Example App',
+          'bundleId': 'com.example.app',
           'compilationMode': 'debug',
           'customMetaData': {
             'customText': 'text',
@@ -169,15 +135,18 @@ void main() {
     });
 
     test('empty email should not be sent as empty string', () {
-      final body = const PersistedFeedbackItem(
+      final body = FeedbackItem(
         appInfo: AppInfo(
-          appLocale: 'de_DE',
+          buildNumber: '1',
+          version: '1.0.0',
+          bundleId: 'com.example.app',
+          appName: 'Example App',
         ),
         buildInfo: BuildInfo(
           compilationMode: CompilationMode.release,
         ),
         deviceId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-        deviceInfo: FlutterDeviceInfo(
+        flutterInfo: FlutterInfo(
           platformLocale: 'en_US',
           platformSupportedLocales: ['en_US', 'de_DE'],
           padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
@@ -198,15 +167,22 @@ void main() {
         email: '',
         message: 'Hello world!',
         labels: ['bug'],
-        userId: 'Testy McTestFace',
+        sessionMetadata: CustomizableWiredashMetaData()
+          ..userId = 'Testy McTestFace'
+          ..appLocale = 'de_DE',
         sdkVersion: 1,
         attachments: [],
+        deviceInfo: DeviceInfo(
+          deviceModel: 'Google Pixel 8',
+        ),
       ).toFeedbackBody();
 
       expect(
         body,
         {
           'appLocale': 'de_DE',
+          'appName': 'Example App',
+          'bundleId': 'com.example.app',
           'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
           'compilationMode': 'release',
           'labels': ['bug'],

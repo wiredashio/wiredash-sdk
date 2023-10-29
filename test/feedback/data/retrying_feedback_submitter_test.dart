@@ -82,7 +82,6 @@ void main() {
         attachments: [
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
-            deviceInfo: testDeviceInfo,
           ),
         ],
       );
@@ -134,7 +133,6 @@ void main() {
         attachments: [
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
-            deviceInfo: testDeviceInfo,
           ),
         ],
       );

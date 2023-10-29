@@ -29,7 +29,7 @@ class MockWiredashApi implements WiredashApi {
       MethodInvocationCatcher('sendFeedback');
 
   @override
-  Future<void> sendFeedback(PersistedFeedbackItem feedback) async {
+  Future<void> sendFeedback(FeedbackItem feedback) async {
     return await sendFeedbackInvocations.addMethodCall(args: [feedback])?.value;
   }
 

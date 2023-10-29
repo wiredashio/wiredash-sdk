@@ -26,7 +26,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback!.message, 'test message');
     });
 
@@ -100,7 +100,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.message, 'test message');
       expect(submittedFeedback.attachments, hasLength(1));
@@ -125,7 +125,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.message, 'test message');
       expect(submittedFeedback.attachments, hasLength(2));
@@ -158,7 +158,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.labels, ['lbl-2']);
       expect(submittedFeedback.message, 'feedback with labels');
@@ -190,7 +190,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback!.email, userEmail);
     });
 
@@ -230,7 +230,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback!.email, adjustedEmail);
     });
 
@@ -262,7 +262,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback!.email, userEmail);
     });
 
@@ -284,7 +284,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.message, 'test message');
       expect(submittedFeedback.email, 'dash@flutter.io');
@@ -308,7 +308,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.message, 'test message');
       expect(submittedFeedback.email, 'dash@flutter.io');
@@ -367,7 +367,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback!.message, 'test message');
     });
 
@@ -417,7 +417,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback, isNotNull);
       // 'lbl-3' is submitted but was not selected by user
       expect(submittedFeedback!.labels, ['lbl-2', 'lbl-3']);
@@ -451,7 +451,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.labels, ['lbl-1', 'lbl-2']);
       expect(submittedFeedback.message, 'feedback with labels');

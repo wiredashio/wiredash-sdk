@@ -24,6 +24,10 @@ class WiredashController {
 
   final WiredashModel _model;
 
+  Future<void> ensureInitialized() async {
+    await _model.initialize();
+  }
+
   /// Modify the metadata that will be collected with Wiredash
   ///
   /// The metadata include user information (userId and userEmail),
@@ -69,7 +73,8 @@ class WiredashController {
     CustomizableWiredashMetaData Function(CustomizableWiredashMetaData metaData)
         mutation,
   ) {
-    _model.metaData = mutation(_model.metaData);
+    // TODO write warning when metadata is null, but return empty metadata (like the old .populated())
+    _model.metaData = mutation(_model.metaData!.makeCustomizable());
   }
 
   /// Reads the currently set `metaData` (immutable)
@@ -85,9 +90,9 @@ class WiredashController {
   /// Wiredash also need to know when you actually changed the metadata.
   /// [modifyMetaData] is executed immediately (like setState) which solves both.
   WiredashMetaData get metaData {
-    final mutable = _model.metaData;
+    final mutable = _model.metaData?.makeCustomizable();
     // return an immutable view
-    return mutable.copyWith(custom: Map.unmodifiable(mutable.custom));
+    return mutable!.copyWith(custom: Map.unmodifiable(mutable.custom));
   }
 
   /// Use this method to provide custom [userId] and [userEmail] to the feedback.

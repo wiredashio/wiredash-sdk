@@ -10,19 +10,19 @@ import 'package:wiredash/src/metadata/device_info/device_info_generator_stub.dar
     if (dart.library.html) 'package:wiredash/src/metadata/device_info/device_info_generator_html.dart'
     if (dart.library.io) 'package:wiredash/src/metadata/device_info/device_info_generator_io.dart';
 
-abstract class DeviceInfoCollector {
-  /// Loads a [DeviceInfoCollector] based on the environment by calling the
+abstract class FlutterInfoCollector {
+  /// Loads a [FlutterInfoCollector] based on the environment by calling the
   /// optional imported createDeviceInfoGenerator function
   // Replace with FlutterView  when we drop support for Flutter v3.7.0-32.0.pre.
   // ignore: deprecated_member_use
-  factory DeviceInfoCollector(SingletonFlutterWindow window) {
+  factory FlutterInfoCollector(SingletonFlutterWindow window) {
     return createDeviceInfoGenerator(window);
   }
 
-  /// Collection of all [FlutterDeviceInfo] shared between all platforms
+  /// Collection of all [FlutterInfo] shared between all platforms
   // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
   // ignore: deprecated_member_use
-  static FlutterDeviceInfo flutterInfo(SingletonFlutterWindow window) {
+  static FlutterInfo flutterInfo(SingletonFlutterWindow window) {
     Locale windowLocale() {
       // Flutter 1.26 (2.0.1) returns `Locale?`, 1.27 `Locale`
       // ignore: unnecessary_nullable_for_final_variable_declarations
@@ -37,7 +37,7 @@ abstract class DeviceInfoCollector {
       return locales ?? [];
     }
 
-    return FlutterDeviceInfo(
+    return FlutterInfo(
       platformLocale: windowLocale().toLanguageTag(),
       platformSupportedLocales:
           windowLocales().map((it) => it.toLanguageTag()).toList(),
@@ -54,5 +54,5 @@ abstract class DeviceInfoCollector {
   }
 
   /// Collects information from Flutter
-  Future<FlutterDeviceInfo> generate();
+  Future<FlutterInfo> generate();
 }

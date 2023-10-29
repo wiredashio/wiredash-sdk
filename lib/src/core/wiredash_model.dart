@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
+import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/wiredash.dart';
 
 class WiredashModel with ChangeNotifier {
@@ -12,17 +13,22 @@ class WiredashModel with ChangeNotifier {
   // TODO make private?
   final WiredashServices services;
 
-  CustomizableWiredashMetaData? _metaData;
+  SessionMetaData? _metaData = CustomizableWiredashMetaData();
 
   WiredashFlow? get activeFlow => _activeFlow;
   WiredashFlow? _activeFlow;
 
-  CustomizableWiredashMetaData get metaData {
-    _metaData ??= CustomizableWiredashMetaData.populated();
-    return _metaData!;
+  /// In-memory cache for fixed metadata, managed by [MetaDataCollector]
+  FixedMetaData? fixedMetaData;
+
+  /// Cache of the current metadata, may include user values from
+  /// [WiredashFeedbackOptions.collectMetaData] or [PsOptions.collectMetaData]
+  SessionMetaData? get metaData {
+    return _metaData;
   }
 
-  set metaData(CustomizableWiredashMetaData? metaData) {
+  /// Override the current metadata that will be attached to feedbacks
+  set metaData(SessionMetaData? metaData) {
     _metaData = metaData;
     notifyListeners();
   }
@@ -90,6 +96,12 @@ class WiredashModel with ChangeNotifier {
       _psOptionsOverride ??
       services.wiredashWidget.psOptions ??
       defaultPsOptions;
+
+  /// Called during initialization of the [Wiredash] widget
+  Future<void> initialize() async {
+    /// initializes [metadata] with app information
+    await services.metaDataCollector.collectFixedMetaData();
+  }
 
   /// Deletes pending feedbacks
   ///

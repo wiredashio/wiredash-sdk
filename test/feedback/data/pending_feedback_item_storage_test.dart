@@ -13,6 +13,8 @@ import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/metadata/build_info/app_info.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/metadata/device_info/device_info.dart';
+import 'package:wiredash/src/metadata/meta_data_collector.dart';
+import 'package:wiredash/src/metadata/user_meta_data.dart';
 import 'package:wiredash/src/utils/uuid.dart';
 
 import '../../util/invocation_catcher.dart';
@@ -47,15 +49,12 @@ void main() {
         attachments: [
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
-            deviceInfo: testDeviceInfo,
           ),
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.uploaded(AttachmentId('453')),
-            deviceInfo: testDeviceInfo,
           ),
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.file('existing.png'),
-            deviceInfo: testDeviceInfo,
           ),
         ],
       );
@@ -95,11 +94,9 @@ void main() {
         attachments: [
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
-            deviceInfo: testDeviceInfo,
           ),
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
-            deviceInfo: testDeviceInfo,
           ),
         ],
       );
@@ -109,7 +106,6 @@ void main() {
         attachments: [
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
-            deviceInfo: testDeviceInfo,
           ),
         ],
       );
@@ -140,7 +136,6 @@ void main() {
         attachments: [
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
-            deviceInfo: testDeviceInfo,
           ),
         ],
       );
@@ -160,7 +155,6 @@ void main() {
         attachments: [
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
-            deviceInfo: testDeviceInfo,
           ),
         ],
       );
@@ -172,7 +166,6 @@ void main() {
         attachments: [
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
-            deviceInfo: testDeviceInfo,
           ),
         ],
       );
@@ -218,7 +211,6 @@ void main() {
               PersistedAttachment.screenshot(
                 file:
                     FileDataEventuallyOnDisk.file('<existing item screenshot>'),
-                deviceInfo: testDeviceInfo,
               ),
             ],
           ),
@@ -289,7 +281,6 @@ void main() {
         attachments: [
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
-            deviceInfo: testDeviceInfo,
           ),
         ],
       );
@@ -301,7 +292,6 @@ void main() {
         attachments: [
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
-            deviceInfo: testDeviceInfo,
           ),
         ],
       );
@@ -320,7 +310,6 @@ void main() {
           attachments: [
             PersistedAttachment.screenshot(
               file: FileDataEventuallyOnDisk.uploaded(AttachmentId('1')),
-              deviceInfo: firstPending.feedbackItem.deviceInfo,
             ),
           ],
         ),
@@ -429,7 +418,7 @@ class IncrementalUuidV4Generator implements UuidV4Generator {
   }
 }
 
-const testDeviceInfo = FlutterDeviceInfo(
+const testDeviceInfo = FlutterInfo(
   pixelRatio: 1.0,
   textScaleFactor: 1.0,
   platformLocale: 'en_US',
@@ -442,19 +431,32 @@ const testDeviceInfo = FlutterDeviceInfo(
   physicalSize: Size(800, 1200),
 );
 
-PersistedFeedbackItem createFeedback({
+FeedbackItem createFeedback({
   List<PersistedAttachment>? attachments,
   String? message,
 }) {
-  return PersistedFeedbackItem(
-    appInfo: const AppInfo(appLocale: 'de_DE'),
+  return FeedbackItem(
+    appInfo: const AppInfo(
+      version: '1.9.0',
+      bundleId: 'com.example.app',
+      appName: 'Example App',
+      buildNumber: '190',
+    ),
     buildInfo: const BuildInfo(compilationMode: CompilationMode.release),
     deviceId: '1234',
-    deviceInfo: testDeviceInfo,
+    flutterInfo: testDeviceInfo,
     email: 'email@example.com',
     message: message ?? 'Hello world!',
     labels: ['bug'],
-    userId: 'Testy McTestFace',
+    sessionMetadata: CustomizableWiredashMetaData()
+      ..appLocale = 'de_DE'
+      ..userId = 'Testy McTestFace'
+      ..custom = {
+        "customKey": "customValue",
+      },
     attachments: attachments ?? [],
+    deviceInfo: const DeviceInfo(
+      deviceModel: 'Google Pixel 8',
+    ),
   );
 }

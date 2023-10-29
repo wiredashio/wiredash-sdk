@@ -11,10 +11,7 @@ import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 /// Created by following implementations
 /// - [_DartHtmlDeviceInfoGenerator]
 /// - [_DartIoDeviceInfoGenerator]
-class FlutterDeviceInfo {
-  /// The name of the device model
-  final String? deviceModel;
-
+class FlutterInfo {
   /// The primary locale enabled on the device
   ///
   /// https://api.flutter.dev/flutter/dart-ui/SingletonFlutterWindow/locale.html
@@ -87,8 +84,7 @@ class FlutterDeviceInfo {
   /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent
   final String? userAgent;
 
-  const FlutterDeviceInfo({
-    this.deviceModel,
+  const FlutterInfo({
     required this.platformLocale,
     required this.platformSupportedLocales,
     required this.padding,
@@ -105,7 +101,7 @@ class FlutterDeviceInfo {
     required this.gestureInsets,
   });
 
-  FlutterDeviceInfo copyWith({
+  FlutterInfo copyWith({
     String? deviceModel,
     String? deviceId,
     String? platformLocale,
@@ -123,8 +119,7 @@ class FlutterDeviceInfo {
     Brightness? platformBrightness,
     WiredashWindowPadding? gestureInsets,
   }) {
-    return FlutterDeviceInfo(
-      deviceModel: deviceModel ?? this.deviceModel,
+    return FlutterInfo(
       platformLocale: platformLocale ?? this.platformLocale,
       platformSupportedLocales:
           platformSupportedLocales ?? this.platformSupportedLocales,
@@ -146,7 +141,6 @@ class FlutterDeviceInfo {
   @override
   String toString() {
     return 'DeviceInfo{'
-        'deviceModel: $deviceModel, '
         'platformLocale: $platformLocale, '
         'platformSupportedLocales: $platformSupportedLocales, '
         'padding: $padding, '
@@ -167,9 +161,8 @@ class FlutterDeviceInfo {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is FlutterDeviceInfo &&
+      (other is FlutterInfo &&
           runtimeType == other.runtimeType &&
-          deviceModel == other.deviceModel &&
           platformLocale == other.platformLocale &&
           listEquals(
             platformSupportedLocales,
@@ -190,7 +183,6 @@ class FlutterDeviceInfo {
 
   @override
   int get hashCode =>
-      deviceModel.hashCode ^
       platformLocale.hashCode ^
       // ignore: deprecated_member_use
       hashList(platformSupportedLocales) ^

@@ -7,7 +7,9 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/metadata/build_info/app_info.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/metadata/device_info/device_info.dart';
+import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/src/metadata/renderer/renderer.dart';
+import 'package:wiredash/src/metadata/user_meta_data.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
 import 'package:wiredash/src/utils/delay.dart';
 
@@ -47,7 +49,13 @@ class FeedbackModel extends ChangeNotifier2 {
 
   bool get hasEmailBeenEdited => _hasEmailBeenEdited;
 
-  bool _collectedMetadata = false;
+  /// Captured when taking a screenshot
+  ///
+  /// Capturing the metadata at the time the screenshot is taken is beneficial
+  /// to the point when the feedback is submitted because users still have full
+  /// control about the app and can sign out or change the language, etc. which
+  /// might be conflicting with what's seen on the screenshot.
+  SessionMetaData? _sessionMetadata;
 
   List<Label> get selectedLabels => List.unmodifiable(_selectedLabels);
   List<Label> _selectedLabels = [];
@@ -79,8 +87,6 @@ class FeedbackModel extends ChangeNotifier2 {
 
   Delay? _fakeSubmitDelay;
   Delay? _closeDelay;
-
-  late FlutterDeviceInfo _deviceInfo;
 
   /// The error when submitting the feedback
   Object? get submissionError => _submissionError;
@@ -214,12 +220,7 @@ class FeedbackModel extends ChangeNotifier2 {
   }
 
   Future<void> skipScreenshot() async {
-    if (!_collectedMetadata) {
-      // The user can take a screenshot and then decide to go back and skip it.
-      // Since taking the screenshot already collected the data, calling it again is
-      // unnecessary.
-      await _collectMetaData();
-    }
+    await _collectMetaData();
     goToNextStep();
   }
 
@@ -267,9 +268,10 @@ class FeedbackModel extends ChangeNotifier2 {
           const Color(0xffcccccc);
       final screenshot =
           await _services.picassoController.paintDrawingOntoImage(image, bg);
+      final fixedMetaData =
+          await _services.metaDataCollector.collectFixedMetaData();
       final attachment = PersistedAttachment.screenshot(
         file: FileDataEventuallyOnDisk.inMemory(screenshot),
-        deviceInfo: _deviceInfo,
       );
       _attachments.add(attachment);
       notifyListeners();
@@ -290,15 +292,13 @@ class FeedbackModel extends ChangeNotifier2 {
   }
 
   /// Allow devs to collect additional information
-  Future<void> _collectMetaData() async {
-    final metaData = _services.wiredashModel.metaData;
-    final collector =
-        _services.wiredashWidget.feedbackOptions?.collectMetaData ??
-            _services.wiredashModel.feedbackOptionsOverride?.collectMetaData;
-    await collector?.call(metaData);
-    _services.wiredashModel.metaData = metaData;
-    _collectedMetadata = true;
+  Future<SessionMetaData> _collectMetaData() async {
+    _sessionMetadata = await _services.metaDataCollector.collectSessionMetaData(
+      _services.wiredashModel.feedbackOptions?.collectMetaData
+          ?.asFutureCreator(),
+    );
     notifyListeners();
+    return _sessionMetadata!;
   }
 
   /// Captures the pixels of the app and the app metadata
@@ -312,8 +312,10 @@ class FeedbackModel extends ChangeNotifier2 {
     // captures screenshot, it is saved in screenCaptureController
     await _services.screenCaptureController.captureScreen();
     // TODO show loading indicator?
-    _deviceInfo = _services.deviceInfoGenerator.generate();
-    await _collectMetaData();
+    _sessionMetadata = await _services.metaDataCollector.collectSessionMetaData(
+      _services.wiredashModel.feedbackOptions?.collectMetaData
+          ?.asFutureCreator(),
+    );
 
     _services.picassoController.isActive = true;
     _goToStep(FeedbackFlowStatus.screenshotDrawing);
@@ -390,30 +392,19 @@ class FeedbackModel extends ChangeNotifier2 {
     await _services.wiredashModel.hide(discardFeedback: true);
   }
 
-  Future<PersistedFeedbackItem> createFeedback() async {
+  Future<FeedbackItem> createFeedback() async {
     final deviceId = await _services.deviceIdGenerator.deviceId();
-    _deviceInfo = _services.deviceInfoGenerator.generate();
 
-    if (!_collectedMetadata) {
-      await _collectMetaData();
-    }
-    final metaData = _services.wiredashModel.metaData;
+    final fixedMetadata =
+        await _services.metaDataCollector.collectFixedMetaData();
+    final sessionMetadata = _sessionMetadata ?? await _collectMetaData();
 
-    return PersistedFeedbackItem(
-      appInfo: AppInfo(
-        appLocale:
-            _services.wiredashModel.appLocaleFromContext?.toLanguageTag() ??
-                'unknown',
-      ),
+    return FeedbackItem(
+      appInfo: fixedMetadata.appInfo,
       attachments: _attachments,
-      buildInfo: buildInfo.copyWith(
-        buildCommit: metaData.buildCommit,
-        buildNumber: metaData.buildNumber,
-        buildVersion: metaData.buildVersion,
-      ),
-      customMetaData: metaData.custom,
+      buildInfo: fixedMetadata.buildInfo,
       deviceId: deviceId,
-      deviceInfo: _deviceInfo,
+      deviceInfo: fixedMetadata.deviceInfo,
       email: () {
         if (_services.wiredashModel.feedbackOptions?.email ==
                 EmailPrompt.optional &&
@@ -423,11 +414,12 @@ class FeedbackModel extends ChangeNotifier2 {
         }
         return userEmail;
       }(),
-      message: _feedbackMessage!,
+      flutterInfo: fixedMetadata.flutterInfo,
       labels: [..._selectedLabels, ...labels.where((it) => it.hidden == true)]
           .map((it) => it.id)
           .toList(),
-      userId: metaData.userId,
+      message: _feedbackMessage!,
+      sessionMetadata: sessionMetadata,
     );
   }
 

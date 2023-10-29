@@ -70,7 +70,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
 
       // email is not submitted because the user actively deleted it
       expect(submittedFeedback!.email, isNull);
@@ -91,7 +91,7 @@ void main() {
       await robot.waitUntilWiredashIsClosed();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final submittedFeedback = latestCall[0] as PersistedFeedbackItem?;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback!.email, 'dash@flutter.io');
     });
   });

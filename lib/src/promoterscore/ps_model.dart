@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
+import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
 import 'package:wiredash/src/utils/delay.dart';
 
@@ -70,11 +71,11 @@ class PsModel extends ChangeNotifier2 {
 
   Future<void> updatePromoterScoreRecord({bool silentFail = true}) async {
     final deviceId = await _services.deviceIdGenerator.deviceId();
-    final deviceInfo = _services.deviceInfoGenerator.generate();
-    final metaData = _services.wiredashModel.metaData;
-    // Allow devs to collect additional information
-    final collector = _services.wiredashModel.psOptions.collectMetaData;
-    await collector?.call(metaData);
+    final metaData = await _services.metaDataCollector.collectSessionMetaData(
+      _services.wiredashWidget.psOptions?.collectMetaData?.asFutureCreator(),
+    );
+
+    final deviceInfo = await _services.flutterInfoCollector.generate();
 
     final body = PromoterScoreRequestBody(
       score: score,

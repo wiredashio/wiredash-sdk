@@ -2,10 +2,10 @@ library _wiredash_feedback;
 
 export 'package:wiredash/src/core/network/wiredash_api.dart' show AttachmentId;
 export 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
+export 'package:wiredash/src/feedback/data/feedback_item.dart';
 export 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 export 'package:wiredash/src/feedback/data/label.dart';
 export 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
-export 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
 export 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 export 'package:wiredash/src/feedback/feedback_flow.dart';
 export 'package:wiredash/src/feedback/feedback_model.dart';

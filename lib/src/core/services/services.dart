@@ -12,6 +12,7 @@ import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/app_telemetry_job.dart';
+import 'package:wiredash/src/core/sync/collect_metadata_job.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/sync/sync_feedback_job.dart';
@@ -28,6 +29,7 @@ import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/ui/screencapture.dart';
 import 'package:wiredash/src/metadata/build_info/device_id_generator.dart';
 import 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
+import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/src/utils/uuid.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -47,7 +49,7 @@ class WiredashServices extends ChangeNotifier {
 
   BackdropController get backdropController => _locator.watch();
 
-  DeviceInfoCollector get deviceInfoCollector => _locator.watch();
+  FlutterInfoCollector get flutterInfoCollector => _locator.watch();
 
   PicassoController get picassoController => _locator.watch();
 
@@ -76,6 +78,8 @@ class WiredashServices extends ChangeNotifier {
   WiredashTelemetry get wiredashTelemetry => _locator.watch();
 
   AppTelemetry get appTelemetry => _locator.watch();
+
+  MetaDataCollector get metaDataCollector => _locator.watch();
 
   void updateWidget(Wiredash wiredashWidget) {
     inject<Wiredash>((_) => wiredashWidget);
@@ -144,7 +148,7 @@ void _setupServices(WiredashServices sl) {
   );
   // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
   // ignore: deprecated_member_use
-  sl.inject<DeviceInfoCollector>((_) => DeviceInfoCollector(window));
+  sl.inject<FlutterInfoCollector>((_) => FlutterInfoCollector(window));
   sl.inject<WiredashOptionsData>(
     (_) => sl.wiredashWidget.options ?? const WiredashOptionsData(),
   );
@@ -199,21 +203,38 @@ void _setupServices(WiredashServices sl) {
     },
   );
 
+  sl.inject<MetaDataCollector>((sl) {
+    return MetaDataCollector(
+      wiredashModel: sl.get(),
+      deviceInfoCollector: sl.get,
+      wiredashWidget: sl.get,
+    );
+  });
+
   sl.inject<SyncEngine>(
     (locator) {
       final engine = SyncEngine();
 
+      // app start
+      engine.addJob(
+        'app-telemetry',
+        AppTelemetryJob(
+          telemetry: locator.get(),
+        ),
+      );
+      engine.addJob(
+        'collect metadata',
+        CollectMetaDataJob(
+          metaDataCollector: locator.get(),
+        ),
+      );
+
+      // app start delayed
       engine.addJob(
         'ping',
         PingJob(
           apiProvider: locator.get,
           sharedPreferencesProvider: SharedPreferences.getInstance,
-        ),
-      );
-      engine.addJob(
-        'app-telemetry',
-        AppTelemetryJob(
-          telemetry: locator.get(),
         ),
       );
       engine.addJob(
