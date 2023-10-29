@@ -1,7 +1,4 @@
-import 'dart:ui';
-
 import 'package:collection/collection.dart';
-import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/utils/object_util.dart';
 
 /// Mutable version of [WiredashMetaData] that will be sent along the user

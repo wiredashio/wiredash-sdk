@@ -93,7 +93,7 @@ class PendingFeedbackItemParserV2 {
       buildInfo: buildInfo,
       flutterInfo: flutterInfo,
       deviceId: feedbackItemJson['deviceId'] as String,
-      deviceInfo: DeviceInfo(),
+      deviceInfo: const DeviceInfo(),
       sessionMetadata: CustomizableWiredashMetaData()
         ..appLocale = appLocale
         ..userId = feedbackItemJson['userId'] as String?

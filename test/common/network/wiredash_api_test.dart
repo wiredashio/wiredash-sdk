@@ -7,10 +7,6 @@ import 'package:http/http.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/core/network/wiredash_api.dart';
-import 'package:wiredash/src/metadata/build_info/app_info.dart';
-import 'package:wiredash/src/metadata/build_info/build_info.dart';
-import 'package:wiredash/src/metadata/device_info/device_info.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/src/metadata/user_meta_data.dart';
 

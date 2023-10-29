@@ -14,6 +14,7 @@ export 'package:wiredash/src/metadata/build_info/app_info.dart';
 export 'package:wiredash/src/metadata/build_info/build_info.dart';
 export 'package:wiredash/src/metadata/device_info/device_info.dart';
 export 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
+export 'package:wiredash/src/utils/object_util.dart';
 export 'package:wiredash/src/utils/standard_kt.dart';
 
 /// `true` when Wiredash is in development mode, enables enhanced logging

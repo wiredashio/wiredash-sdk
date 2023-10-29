@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/context_cache.dart';
+// ignore: unnecessary_import
 import 'package:wiredash/src/utils/object_util.dart';
 import 'package:wiredash/wiredash.dart';
 
