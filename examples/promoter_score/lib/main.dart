@@ -21,7 +21,8 @@ class _WiredashExampleAppState extends State<WiredashExampleApp> {
       projectId: "Project ID from console.wiredash.io",
       secret: "API Key from console.wiredash.io",
       psOptions: PsOptions(
-        collectMetaData: (metaData) => metaData..userEmail = 'dash@wiredash.io',
+        collectMetaData: (metaData) async =>
+            metaData..userEmail = 'dash@wiredash.io',
         // frequency: Duration(days: 90), // default
         // initialDelay: Duration(days: 7), // default
         // initialDelay: Duration.zero, // disable initial delay

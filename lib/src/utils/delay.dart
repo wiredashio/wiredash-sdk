@@ -37,3 +37,9 @@ class Delay {
 }
 
 class DelayCancelledException implements Exception {}
+
+extension FutureOrExt<T, A> on FutureOr<T> Function(A) {
+  Future<T> Function(A) asFutureCreator() {
+    return (it) => Future(() => this(it));
+  }
+}

@@ -8,7 +8,7 @@ import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/core/version.dart';
-import 'package:wiredash/src/feedback/data/persisted_feedback_item.dart';
+import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/promoterscore/ps_model.dart';
 
@@ -76,7 +76,7 @@ class WiredashApi {
   ///
   /// POST /sendFeedback
   Future<void> sendFeedback(
-    PersistedFeedbackItem feedback,
+    FeedbackItem feedback,
   ) async {
     final uri = Uri.parse('$_host/sendFeedback');
     final Request request = Request('POST', uri);
@@ -113,6 +113,33 @@ class WiredashApi {
   Future<PingResponse> ping() async {
     final uri = Uri.parse('$_host/ping');
     final Request request = Request('POST', uri);
+
+    /// /ping
+    /// HEADERS
+    /// - project
+    /// - secret
+    /// - sdkVersion
+    ///
+    /// POST body
+    ///
+    /// - installId (nanoId)
+    ///
+    /// - appVersion
+    /// - buildNumber
+    /// - buildCommit
+    /// - bundleId
+    ///
+    /// - platformOS
+    /// - platformVersion
+    ///
+    /// - platformLocale
+    ///
+    /// - screen sizes?
+    /// - input?: mouse or touch or both keyboard?
+    ///
+    /// - userAgent (automatically)
+    /// - region/city (via IP)
+
     final response = await _send(request);
     if (response.statusCode == 200) {
       return PingResponse();
@@ -124,9 +151,13 @@ class WiredashApi {
   Future<Response> _send(BaseRequest request) async {
     request.headers['project'] = _projectId;
     request.headers['secret'] = _secret;
-    request.headers['device'] = await _deviceIdProvider();
-    request.headers['version'] = wiredashSdkVersion.toString();
 
+    // TODO remove from HEADER
+    request.headers['device'] = await _deviceIdProvider();
+
+    if (request.headers['version'] == null) {
+      request.headers['version'] = wiredashSdkVersion.toString();
+    }
     final streamedResponse = await _httpClient.send(request);
     return Response.fromStream(streamedResponse);
   }
@@ -223,12 +254,21 @@ class UnauthenticatedWiredashApiException extends WiredashApiException {
   }
 }
 
-extension FeedbackBody on PersistedFeedbackItem {
+extension FeedbackBody on FeedbackItem {
   Map<String, dynamic> toFeedbackBody() {
     final Map<String, Object> values = {};
 
     // Values are sorted alphabetically for easy comparison with the backend
-    values.addAll({'appLocale': nonNull(appInfo.appLocale)});
+    // TODO make appLocale optional in backend
+    final appLocale = sessionMetadata.appLocale;
+    if (appLocale != null) {
+      values.addAll({'appLocale': appLocale});
+    }
+
+    final appName = appInfo.appName;
+    if (appName != null) {
+      values.addAll({'appName': appName});
+    }
 
     if (attachments.isNotEmpty) {
       final items = attachments.map((it) {
@@ -256,11 +296,16 @@ extension FeedbackBody on PersistedFeedbackItem {
       values.addAll({'buildVersion': buildVersion});
     }
 
+    final bundleId = appInfo.bundleId;
+    if (bundleId != null) {
+      values.addAll({'bundleId': bundleId});
+    }
+
     values.addAll({
       'compilationMode': nonNull(this.buildInfo.compilationMode).jsonEncode(),
     });
 
-    final _customMetaData = customMetaData?.map((key, value) {
+    final _customMetaData = sessionMetadata.custom.map((key, value) {
       if (value == null) {
         return MapEntry(key, null);
       }
@@ -297,40 +342,41 @@ extension FeedbackBody on PersistedFeedbackItem {
     values.addAll({'message': nonNull(message)});
 
     values.addAll({
-      'physicalGeometry': nonNull(deviceInfo.physicalGeometry).toJson(),
+      'physicalGeometry': nonNull(flutterInfo.physicalGeometry).toJson(),
     });
 
     values.addAll({
-      'platformBrightness': nonNull(deviceInfo.platformBrightness).jsonEncode(),
+      'platformBrightness':
+          nonNull(flutterInfo.platformBrightness).jsonEncode(),
     });
 
-    final platformDartVersion = deviceInfo.platformVersion;
+    final platformDartVersion = flutterInfo.platformVersion;
     if (platformDartVersion != null) {
       values.addAll({'platformDartVersion': platformDartVersion});
     }
 
     values.addAll({
-      'platformGestureInsets': nonNull(deviceInfo.gestureInsets).toJson(),
+      'platformGestureInsets': nonNull(flutterInfo.gestureInsets).toJson(),
     });
 
-    values.addAll({'platformLocale': nonNull(deviceInfo.platformLocale)});
+    values.addAll({'platformLocale': nonNull(flutterInfo.platformLocale)});
 
-    final platformOS = deviceInfo.platformOS;
+    final platformOS = flutterInfo.platformOS;
     if (platformOS != null) {
       values.addAll({'platformOS': platformOS});
     }
 
-    final platformOSVersion = deviceInfo.platformOSVersion;
+    final platformOSVersion = flutterInfo.platformOSVersion;
     if (platformOSVersion != null) {
       values.addAll({'platformOSVersion': platformOSVersion});
     }
 
     values.addAll({
-      'platformSupportedLocales': nonNull(deviceInfo.platformSupportedLocales),
+      'platformSupportedLocales': nonNull(flutterInfo.platformSupportedLocales),
     });
 
     // Web only
-    final platformUserAgent = deviceInfo.userAgent;
+    final platformUserAgent = flutterInfo.userAgent;
     if (platformUserAgent != null) {
       values.addAll({'platformUserAgent': platformUserAgent});
     }
@@ -342,29 +388,29 @@ extension FeedbackBody on PersistedFeedbackItem {
       values.addAll({'userEmail': userEmail});
     }
 
-    final String? _userId = userId;
-    if (_userId != null) {
-      values.addAll({'userId': _userId});
+    final String? userId = sessionMetadata.userId;
+    if (userId != null) {
+      values.addAll({'userId': userId});
     }
 
     values.addAll({
-      'windowInsets': nonNull(deviceInfo.viewInsets).toJson(),
+      'windowInsets': nonNull(flutterInfo.viewInsets).toJson(),
     });
 
     values.addAll({
-      'windowPadding': nonNull(deviceInfo.padding).toJson(),
+      'windowPadding': nonNull(flutterInfo.padding).toJson(),
     });
 
     values.addAll({
-      'windowPixelRatio': nonNull(deviceInfo.pixelRatio),
+      'windowPixelRatio': nonNull(flutterInfo.pixelRatio),
     });
 
     values.addAll({
-      'windowSize': nonNull(deviceInfo.physicalSize).toJson(),
+      'windowSize': nonNull(flutterInfo.physicalSize).toJson(),
     });
 
     values.addAll({
-      'windowTextScaleFactor': nonNull(deviceInfo.textScaleFactor),
+      'windowTextScaleFactor': nonNull(flutterInfo.textScaleFactor),
     });
 
     return values.map((k, v) => MapEntry(k, v));

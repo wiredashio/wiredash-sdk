@@ -33,7 +33,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
   ///
   /// If sending fails, uses exponential backoff and tries again up to 7 times.
   @override
-  Future<SubmissionState> submit(PersistedFeedbackItem item) async {
+  Future<SubmissionState> submit(FeedbackItem item) async {
     final pending = await _pendingFeedbackItemStorage.addPendingItem(item);
 
     try {
@@ -152,14 +152,13 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
             if (screenshot.isUploaded) {
               continue;
             }
-            assert(screenshot.isOnDisk || screenshot.isInMemomry);
-            if (screenshot.isInMemomry) {
+            assert(screenshot.isOnDisk || screenshot.isInMemory);
+            if (screenshot.isInMemory) {
               final AttachmentId attachemntId =
                   await _api.uploadScreenshot(screenshot.binaryData(fs)!);
 
               final uploaded = PersistedAttachment.screenshot(
                 file: FileDataEventuallyOnDisk.uploaded(attachemntId),
-                deviceInfo: attachment.deviceInfo,
               );
               await updateAttachment(attachment, uploaded);
             } else if (screenshot.isOnDisk) {
@@ -170,7 +169,6 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
 
                 final uploaded = PersistedAttachment.screenshot(
                   file: FileDataEventuallyOnDisk.uploaded(attachemntId),
-                  deviceInfo: attachment.deviceInfo,
                 );
                 await updateAttachment(attachment, uploaded);
               } else {

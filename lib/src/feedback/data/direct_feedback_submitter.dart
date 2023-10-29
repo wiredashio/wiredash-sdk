@@ -8,7 +8,7 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
   final WiredashApi _api;
 
   @override
-  Future<SubmissionState> submit(PersistedFeedbackItem item) async {
+  Future<SubmissionState> submit(FeedbackItem item) async {
     try {
       final List<PersistedAttachment> uploadedAttachments = [];
 

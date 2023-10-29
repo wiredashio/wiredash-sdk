@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:wiredash/src/feedback/data/label.dart';
-import 'package:wiredash/src/metadata/meta_data.dart';
+import 'package:wiredash/src/metadata/user_meta_data.dart';
 
 /// Options that adjust the flow a user has to take when giving feedback
 class WiredashFeedbackOptions {
@@ -47,7 +47,7 @@ class WiredashFeedbackOptions {
   ///     ..custom['isPremium'] = false
   ///     ..custom['nested'] = {'wire': 'dash'},
   /// ```
-  final FutureOr<CustomizableWiredashMetaData> Function(
+  final FutureOr<WiredashMetaData> Function(
     CustomizableWiredashMetaData metaData,
   )? collectMetaData;
 

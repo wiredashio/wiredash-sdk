@@ -71,7 +71,7 @@ class PendingFeedbackItemStorage {
   /// If [screenshot] is non-null, saves it in the application documents
   /// directory
   /// with a randomly generated filename.
-  Future<PendingFeedbackItem> addPendingItem(PersistedFeedbackItem item) async {
+  Future<PendingFeedbackItem> addPendingItem(FeedbackItem item) async {
     // Save in-memory images files to disk
     final List<PersistedAttachment> serializedAttachments = [];
     for (final attachment in item.attachments) {

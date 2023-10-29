@@ -4,11 +4,11 @@ import 'dart:ui';
 
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/metadata/build_info/app_info.dart';
-import 'package:wiredash/src/metadata/build_info/build_info.dart';
-import 'package:wiredash/src/metadata/device_info/device_info.dart';
+import 'package:wiredash/src/feedback/data/pending_feedback_item_parser_v2.dart';
+import 'package:wiredash/src/feedback/data/pending_feedback_item_parser_v3.dart';
+import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
-const int _serializationVersion = 2;
+const int _serializationVersion = 3;
 
 /// Represents a [PersistedFeedbackItem] that has not yet been submitted,
 /// and that has been saved in the persistent storage.
@@ -19,7 +19,7 @@ class PendingFeedbackItem {
   });
 
   final String id;
-  final PersistedFeedbackItem feedbackItem;
+  final FeedbackItem feedbackItem;
 
   @override
   bool operator ==(Object other) =>
@@ -42,7 +42,7 @@ class PendingFeedbackItem {
 
   PendingFeedbackItem copyWith({
     String? id,
-    PersistedFeedbackItem? feedbackItem,
+    FeedbackItem? feedbackItem,
   }) {
     return PendingFeedbackItem(
       id: id ?? this.id,
@@ -67,6 +67,9 @@ PendingFeedbackItem deserializePendingFeedbackItem(String json) {
   if (version == 2) {
     return PendingFeedbackItemParserV2.fromJson(map);
   }
+  if (version == 3) {
+    return PendingFeedbackItemParserV3.fromJson(map);
+  }
   throw 'Unknown version "$version" of PendingFeedbackItem';
 }
 
@@ -74,117 +77,6 @@ PendingFeedbackItem deserializePendingFeedbackItem(String json) {
 String serializePendingFeedbackItem(PendingFeedbackItem item) {
   final json = item.toJson();
   return jsonEncode(json);
-}
-
-class PendingFeedbackItemParserV2 {
-  static FlutterDeviceInfo _parseDeviceInfo(Map deviceInfoJson) {
-    final physicalSize = deviceInfoJson['physicalSize'] as List<dynamic>;
-    final physicalGeometry =
-        deviceInfoJson['physicalGeometry'] as List<dynamic>;
-    return FlutterDeviceInfo(
-      gestureInsets: WiredashWindowPadding.fromJson(
-        deviceInfoJson['gestureInsets'] as List<dynamic>,
-      ),
-      platformLocale: deviceInfoJson['platformLocale'] as String,
-      platformSupportedLocales:
-          (deviceInfoJson['platformSupportedLocales'] as List<dynamic>)
-              .cast<String>(),
-      padding: WiredashWindowPadding.fromJson(
-        deviceInfoJson['padding'] as List<dynamic>,
-      ),
-      platformBrightness: () {
-        final value = deviceInfoJson['platformBrightness'];
-        if (value == 'light') return Brightness.light;
-        if (value == 'dark') return Brightness.dark;
-        throw 'Unknown brightness value $value';
-      }(),
-      physicalSize: Size(
-        (physicalSize[0] as num).toDouble(),
-        (physicalSize[1] as num).toDouble(),
-      ),
-      pixelRatio: (deviceInfoJson['pixelRatio'] as num).toDouble(),
-      platformOS: deviceInfoJson['platformOS'] as String?,
-      platformOSVersion: deviceInfoJson['platformOSBuild'] as String?,
-      platformVersion: deviceInfoJson['platformVersion'] as String?,
-      textScaleFactor: (deviceInfoJson['textScaleFactor'] as num).toDouble(),
-      viewInsets: WiredashWindowPadding.fromJson(
-        deviceInfoJson['viewInsets'] as List<dynamic>,
-      ),
-      userAgent: deviceInfoJson['userAgent'] as String?,
-      physicalGeometry: Rect.fromLTRB(
-        (physicalGeometry[0] as num).toDouble(),
-        (physicalGeometry[1] as num).toDouble(),
-        (physicalGeometry[2] as num).toDouble(),
-        (physicalGeometry[3] as num).toDouble(),
-      ),
-    );
-  }
-
-  static PendingFeedbackItem fromJson(Map json) {
-    final feedbackItemJson = json['feedbackItem'] as Map<dynamic, dynamic>;
-
-    final deviceInfoJson =
-        feedbackItemJson['deviceInfo'] as Map<dynamic, dynamic>;
-    final deviceInfo = _parseDeviceInfo(deviceInfoJson);
-
-    final buildInfoJson =
-        feedbackItemJson['buildInfo'] as Map<dynamic, dynamic>? ?? {};
-    final buildInfo = BuildInfo(
-      compilationMode: () {
-        final mode = buildInfoJson['compilationMode'] as String;
-        if (mode == 'debug') return CompilationMode.debug;
-        if (mode == 'profile') return CompilationMode.profile;
-        return CompilationMode.release;
-      }(),
-      buildCommit: buildInfoJson['buildCommit'] as String?,
-      buildNumber: buildInfoJson['buildNumber'] as String?,
-      buildVersion: buildInfoJson['buildVersion'] as String?,
-    );
-
-    final appInfoJson = feedbackItemJson['appInfo'] as Map<dynamic, dynamic>;
-    final appInfo = AppInfo(
-      appLocale: appInfoJson['appLocale'] as String,
-    );
-    final attachments =
-        (feedbackItemJson['attachments'] as List<dynamic>?)?.map((item) {
-      final map = item as Map<dynamic, dynamic>;
-      final path = map['path'] as String?;
-      final attachmentId = map['id'] as String?;
-      final file = path != null
-          ? FileDataEventuallyOnDisk.file(path)
-          : FileDataEventuallyOnDisk.uploaded(
-              AttachmentId(attachmentId!),
-            );
-      final deviceInfoJson = map['deviceInfo'] as Map;
-      return PersistedAttachment.screenshot(
-        file: file,
-        deviceInfo: _parseDeviceInfo(deviceInfoJson),
-      );
-    }).toList();
-
-    final feedbackItem = PersistedFeedbackItem(
-      appInfo: appInfo,
-      buildInfo: buildInfo,
-      customMetaData: (feedbackItemJson['customMetaData'] as Map?)?.map(
-        (key, value) => MapEntry(key.toString(), jsonDecode(value.toString())),
-      ),
-      deviceInfo: deviceInfo,
-      deviceId: feedbackItemJson['deviceId'] as String,
-      email: feedbackItemJson['email'] as String?,
-      message: feedbackItemJson['message'] as String,
-      sdkVersion: feedbackItemJson['sdkVersion'] as int,
-      labels: (feedbackItemJson['labels'] as List<dynamic>?)
-          ?.map((it) => it as String)
-          .toList(),
-      userId: feedbackItemJson['userId'] as String?,
-      attachments: attachments ?? [],
-    );
-
-    return PendingFeedbackItem(
-      id: json['id'] as String,
-      feedbackItem: feedbackItem,
-    );
-  }
 }
 
 /// Visible for testing
@@ -198,36 +90,61 @@ extension SerializePendingFeedbackItem on PendingFeedbackItem {
   }
 }
 
-extension _SerializePersistedFeedbackItem on PersistedFeedbackItem {
+extension _SerializePersistedFeedbackItem on FeedbackItem {
   Map<String, dynamic> toJson() {
     return SplayTreeMap.from({
       if (attachments.isNotEmpty)
         'attachments': attachments.map((it) => it.toJson()).toList(),
-      'deviceInfo': deviceInfo.toJson(),
-      'appInfo': SplayTreeMap.from({
-        'appLocale': appInfo.appLocale,
-      }),
-      'buildInfo': SplayTreeMap.from({
-        'compilationMode': this.buildInfo.compilationMode.jsonEncode(),
-        if (this.buildInfo.buildVersion != null)
-          'buildVersion': this.buildInfo.buildVersion,
-        if (this.buildInfo.buildNumber != null)
-          'buildNumber': this.buildInfo.buildNumber,
-        if (this.buildInfo.buildCommit != null)
-          'buildCommit': this.buildInfo.buildCommit,
-      }),
+      'appInfo': appInfo.toJson(),
+      'buildInfo': this.buildInfo.toJson(),
       'deviceId': deviceId,
+      'deviceInfo': deviceInfo.toJson(),
       if (email != null) 'email': email,
+      'flutterInfo': flutterInfo.toJson(),
       if (labels != null) 'labels': labels,
-      if (customMetaData != null)
-        'customMetaData': _serializedMetaData(customMetaData!),
+      'sessionMetadata': sessionMetadata.toJson(),
       'message': message,
-      if (userId != null) 'userId': userId,
       'sdkVersion': sdkVersion,
     });
   }
+}
 
-  Map<String, Object> _serializedMetaData(Map<String, Object?> metaData) {
+extension on BuildInfo {
+  Map<String, dynamic> toJson() {
+    return SplayTreeMap.from({
+      'compilationMode': compilationMode.jsonEncode(),
+      if (buildVersion != null) 'buildVersion': buildVersion,
+      if (buildNumber != null) 'buildNumber': buildNumber,
+      if (buildCommit != null) 'buildCommit': buildCommit,
+    });
+  }
+}
+
+extension on AppInfo {
+  Map<String, dynamic> toJson() {
+    return SplayTreeMap.from({
+      if (appName != null) 'appName': appName,
+      if (buildNumber != null) 'buildNumber': buildNumber,
+      if (bundleId != null) 'bundleId': bundleId,
+      if (version != null) 'version': version,
+    });
+  }
+}
+
+extension on SessionMetaData {
+  Map<String, dynamic> toJson() {
+    return SplayTreeMap.from({
+      if (userId != null) 'userId': userId,
+      if (userEmail != null) 'userEmail': userEmail,
+      if (buildVersion != null) 'buildVersion': buildVersion,
+      if (buildNumber != null) 'buildNumber': buildNumber,
+      if (buildCommit != null) 'buildCommit': buildCommit,
+      if (appLocale != null) 'appLocale': appLocale,
+      if (custom.isNotEmpty) 'custom': _serializedCustomMetaData(custom),
+    });
+  }
+
+  Map<String, Object> _serializedCustomMetaData(Map<String, Object?> metaData) {
     final data = metaData.map((key, value) {
       try {
         return MapEntry(key, jsonEncode(value));
@@ -246,11 +163,19 @@ extension _SerializePersistedFeedbackItem on PersistedFeedbackItem {
   }
 }
 
-extension _SerializePersistedAttachment on PersistedAttachment {
+extension on DeviceInfo {
+  Map<String, dynamic> toJson() {
+    return SplayTreeMap.from({
+      if (deviceModel != null) 'deviceModel': deviceModel,
+    });
+  }
+}
+
+extension on PersistedAttachment {
   Map<String, dynamic> toJson() {
     final values = SplayTreeMap<String, dynamic>.from({});
 
-    if (file.isInMemomry) {
+    if (file.isInMemory) {
       throw 'Can not serialize in memory files';
     }
     if (file.isOnDisk) {
@@ -259,15 +184,11 @@ extension _SerializePersistedAttachment on PersistedAttachment {
     if (file.isUploaded) {
       values.addAll({'id': file.attachmentId!.value});
     }
-    if (this is Screenshot) {
-      final screenshot = this as Screenshot;
-      values.addAll({'deviceInfo': screenshot.deviceInfo.toJson()});
-    }
     return values;
   }
 }
 
-extension _SerializeDeviceInfo on FlutterDeviceInfo {
+extension on FlutterInfo {
   Map<String, dynamic> toJson() {
     final values = SplayTreeMap<String, dynamic>.from({});
 

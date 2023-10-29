@@ -96,7 +96,7 @@ class _Step6SubmitState extends State<Step6Submit> {
               ),
               textAlign: TextAlign.left,
             ),
-            FutureBuilder<PersistedFeedbackItem>(
+            FutureBuilder<FeedbackItem>(
               future: model.createFeedback(),
               builder: (context, snapshot) {
                 StepPageScaffold.of(context)?.animateNextSizeChange();
@@ -136,23 +136,23 @@ class _Step6SubmitState extends State<Step6Submit> {
                       contentPadding: EdgeInsets.zero,
                       title: const Text('Locale'),
                       subtitle: Text(
-                        data.appInfo.appLocale,
+                        data.sessionMetadata.appLocale ?? '-',
                       ),
                     ),
-                    if (data.deviceInfo.userAgent != null)
+                    if (data.flutterInfo.userAgent != null)
                       ListTile(
                         contentPadding: EdgeInsets.zero,
                         title: const Text('User agent'),
-                        subtitle: Text('${data.deviceInfo.userAgent}'),
+                        subtitle: Text('${data.flutterInfo.userAgent}'),
                       ),
                     if (!kIsWeb)
                       ListTile(
                         contentPadding: EdgeInsets.zero,
                         title: const Text('Platform'),
                         subtitle: Text(
-                          '${data.deviceInfo.platformOS} '
-                          '${data.deviceInfo.platformOSVersion} '
-                          '(${data.deviceInfo.platformLocale})',
+                          '${data.flutterInfo.platformOS} '
+                          '${data.flutterInfo.platformOSVersion} '
+                          '(${data.flutterInfo.platformLocale})',
                         ),
                       ),
                     ListTile(
@@ -172,19 +172,18 @@ class _Step6SubmitState extends State<Step6Submit> {
                         contentPadding: EdgeInsets.zero,
                         title: const Text('Dart version'),
                         subtitle: Text(
-                          '${data.deviceInfo.platformVersion}',
+                          '${data.flutterInfo.platformVersion}',
                         ),
                       ),
-                    if (data.customMetaData != null)
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Custom metaData'),
-                        subtitle: Text(
-                          data.customMetaData!.entries
-                              .map((it) => '${it.key}=${it.value}, ')
-                              .join(),
-                        ),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('Custom metaData'),
+                      subtitle: Text(
+                        data.sessionMetadata.custom.entries
+                            .map((it) => '${it.key}=${it.value}, ')
+                            .join(),
                       ),
+                    ),
                   ],
                 );
               },

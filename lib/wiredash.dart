@@ -1,5 +1,7 @@
 library wiredash;
 
+import 'package:wiredash/src/metadata/user_meta_data.dart';
+
 export 'assets/l10n/wiredash_localizations.g.dart' show WiredashLocalizations;
 export 'assets/l10n/wiredash_localizations_de.g.dart';
 export 'assets/l10n/wiredash_localizations_en.g.dart';
@@ -11,5 +13,5 @@ export 'src/core/wiredash_controller.dart'
 export 'src/core/wiredash_widget.dart' show Wiredash;
 export 'src/feedback/data/label.dart';
 export 'src/feedback/feedback_options.dart';
-export 'src/metadata/meta_data.dart';
+export 'src/metadata/user_meta_data.dart';
 export 'src/promoterscore/ps_options.dart';

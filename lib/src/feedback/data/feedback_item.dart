@@ -6,10 +6,9 @@ import 'package:file/file.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/_feedback.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
-import 'package:wiredash/src/metadata/build_info/app_info.dart';
-import 'package:wiredash/src/metadata/build_info/build_info.dart';
-import 'package:wiredash/src/metadata/device_info/device_info.dart';
+import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
 /// Contains all relevant feedback information, both user-provided and
 /// automatically inferred, that will be eventually sent to the Wiredash
@@ -17,50 +16,49 @@ import 'package:wiredash/src/metadata/device_info/device_info.dart';
 /// [PendingFeedbackItem].
 ///
 /// Actual serialization happens in [PendingFeedbackItem]
-class PersistedFeedbackItem {
-  const PersistedFeedbackItem({
+class FeedbackItem {
+  const FeedbackItem({
+    required this.appInfo,
     required this.attachments,
     required this.buildInfo,
     required this.deviceId,
-    this.email,
-    required this.message,
-    this.userId,
-    this.labels,
-    this.customMetaData,
     required this.deviceInfo,
-    required this.appInfo,
+    required this.flutterInfo,
+    this.email,
+    this.labels,
+    required this.message,
     this.sdkVersion = wiredashSdkVersion,
+    required this.sessionMetadata,
   });
 
+  final AppInfo appInfo;
   final List<PersistedAttachment> attachments;
   final BuildInfo buildInfo;
   final String deviceId;
+  final DeviceInfo deviceInfo;
+  final FlutterInfo flutterInfo;
   final String? email;
-  final String message;
-  final String? userId;
-  final int sdkVersion;
-  final FlutterDeviceInfo deviceInfo;
   final List<String>? labels;
-  final AppInfo appInfo;
-  final Map<String, Object?>? customMetaData;
+  final String message;
+  final int sdkVersion;
+  final SessionMetaData sessionMetadata;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PersistedFeedbackItem &&
+      other is FeedbackItem &&
           runtimeType == other.runtimeType &&
           listEquals(attachments, other.attachments) &&
           buildInfo == other.buildInfo &&
           deviceId == other.deviceId &&
           email == other.email &&
           message == other.message &&
-          userId == other.userId &&
+          sessionMetadata == other.sessionMetadata &&
           sdkVersion == other.sdkVersion &&
-          deviceInfo == other.deviceInfo &&
+          flutterInfo == other.flutterInfo &&
           listEquals(labels, other.labels) &&
           appInfo == other.appInfo &&
-          const DeepCollectionEquality.unordered()
-              .equals(customMetaData, other.customMetaData);
+          deviceInfo == other.deviceInfo;
 
   @override
   int get hashCode =>
@@ -71,13 +69,13 @@ class PersistedFeedbackItem {
       deviceId.hashCode ^
       email.hashCode ^
       message.hashCode ^
-      userId.hashCode ^
+      sessionMetadata.hashCode ^
       sdkVersion.hashCode ^
-      deviceInfo.hashCode ^
+      flutterInfo.hashCode ^
       // ignore: deprecated_member_use
       hashList(labels) ^
       appInfo.hashCode ^
-      const DeepCollectionEquality.unordered().hash(customMetaData);
+      deviceInfo.hashCode;
 
   @override
   String toString() {
@@ -86,41 +84,42 @@ class PersistedFeedbackItem {
         'deviceId: $deviceId,\n'
         'email: $email,\n'
         'message: $message,\n'
-        'userId: $userId,\n'
-        'deviceInfo: $deviceInfo,\n'
+        'sessionMetadata: $sessionMetadata,\n'
+        'flutterInfo: $flutterInfo,\n'
         'sdkVersion: $sdkVersion,\n'
         'labels: $labels,\n'
         'appInfo: $appInfo,\n'
-        'customMetaData: $customMetaData,\n'
+        'deviceInfo: $deviceInfo,\n'
         'attachments: $attachments\n'
         '}';
   }
 
-  PersistedFeedbackItem copyWith({
+  FeedbackItem copyWith({
     List<PersistedAttachment>? attachments,
     BuildInfo? buildInfo,
     String? deviceId,
     String? email,
     String? message,
-    String? userId,
+    SessionMetaData? sessionMetadata,
     int? sdkVersion,
-    FlutterDeviceInfo? deviceInfo,
+    FlutterInfo? flutterInfo,
     List<String>? labels,
     AppInfo? appInfo,
+    DeviceInfo? deviceInfo,
     Map<String, Object?>? customMetaData,
   }) {
-    return PersistedFeedbackItem(
+    return FeedbackItem(
       attachments: attachments ?? this.attachments,
       buildInfo: buildInfo ?? this.buildInfo,
       deviceId: deviceId ?? this.deviceId,
       email: email ?? this.email,
       message: message ?? this.message,
-      userId: userId ?? this.userId,
+      sessionMetadata: sessionMetadata ?? this.sessionMetadata,
       sdkVersion: sdkVersion ?? this.sdkVersion,
-      deviceInfo: deviceInfo ?? this.deviceInfo,
+      flutterInfo: flutterInfo ?? this.flutterInfo,
       labels: labels ?? this.labels,
       appInfo: appInfo ?? this.appInfo,
-      customMetaData: customMetaData ?? this.customMetaData,
+      deviceInfo: deviceInfo ?? this.deviceInfo,
     );
   }
 }
@@ -135,11 +134,9 @@ abstract class PersistedAttachment {
   // ignore: prefer_constructors_over_static_methods
   static Screenshot screenshot({
     required FileDataEventuallyOnDisk file,
-    required FlutterDeviceInfo deviceInfo,
   }) {
     return Screenshot._(
       file: file,
-      deviceInfo: deviceInfo,
     );
   }
 
@@ -150,18 +147,15 @@ abstract class PersistedAttachment {
 class Screenshot extends PersistedAttachment {
   const Screenshot._({
     required this.file,
-    required this.deviceInfo,
   });
 
   @override
   final FileDataEventuallyOnDisk file;
-  final FlutterDeviceInfo deviceInfo;
 
   @override
   String toString() {
     return 'Screenshot{'
         'file: $file, '
-        'deviceInfo: $deviceInfo, '
         '}';
   }
 
@@ -170,19 +164,17 @@ class Screenshot extends PersistedAttachment {
       identical(this, other) ||
       other is Screenshot &&
           runtimeType == other.runtimeType &&
-          file == other.file &&
-          deviceInfo == other.deviceInfo;
+          file == other.file;
 
   @override
-  int get hashCode => file.hashCode ^ deviceInfo.hashCode;
+  int get hashCode => file.hashCode;
 
   Screenshot copyWith({
     FileDataEventuallyOnDisk? file,
-    FlutterDeviceInfo? deviceInfo,
+    FlutterInfo? deviceInfo,
   }) {
     return PersistedAttachment.screenshot(
       file: file ?? this.file,
-      deviceInfo: deviceInfo ?? this.deviceInfo,
     );
   }
 }
@@ -215,7 +207,7 @@ class FileDataEventuallyOnDisk {
 
   bool get isUploaded => attachmentId != null;
 
-  bool get isInMemomry => data != null;
+  bool get isInMemory => data != null;
 
   @override
   bool operator ==(Object other) =>

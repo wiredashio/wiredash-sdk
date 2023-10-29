@@ -3,11 +3,13 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spot/spot.dart';
 import 'package:wiredash/src/_feedback.dart';
@@ -15,6 +17,7 @@ import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
+import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'mock_api.dart';
@@ -33,13 +36,87 @@ class WiredashTestRobot {
     List<LocalizationsDelegate> appLocalizationsDelegates = const [],
   }) async {
     SharedPreferences.setMockInitialValues({});
+    PackageInfo.setMockInitialValues(
+      appName: 'Wiredash Demo',
+      packageName: 'io.wiredash.demo',
+      version: '0.1.0',
+      buildNumber: '1',
+      buildSignature: 'buildSignature',
+    );
     TestWidgetsFlutterBinding.ensureInitialized();
-    const MethodChannel channel =
-        MethodChannel('plugins.flutter.io/path_provider_macos');
-    // Replace with tester.binding.defaultBinaryMessenger.setMockMethodCallHandler when we drop support for Flutter v3.9.0-19.0.pre.
-    // ignore: deprecated_member_use
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      return '.';
+
+    const MethodChannel('dev.fluttercommunity.plus/device_info')
+        .setMockMethodCallHandler((MethodCall methodCall) async {
+      if (methodCall.method == 'getDeviceInfo') {
+        return <String, dynamic>{
+          'version': <String, dynamic>{
+            'baseOS': 'fake-baseOD',
+            'codename': 'fake-codename',
+            'incremental': 'fake-incremental',
+            'previewSdkInt': 9001,
+            'release': 'FakeOS 9000',
+            'sdkInt': 9000,
+            'securityPatch': 'fake-securityPatch',
+          },
+          'board': 'fake-board',
+          'bootloader': 'fake-bootloader',
+          'brand': 'Canvas',
+          'device': 'fake-device',
+          'display': 'fake-display',
+          'fingerprint': 'fake-fingerprint',
+          'hardware': 'fake-hardware',
+          'host': 'fake-host',
+          'id': 'fake-id',
+          'manufacturer': 'Instructure',
+          'model': 'Some Phone',
+          'product': 'fake-product',
+          'supported32BitAbis': [],
+          'supported64BitAbis': [],
+          'supportedAbis': [],
+          'tags': 'fake-tags',
+          'type': 'take-types',
+          'isPhysicalDevice': false,
+          'androidId': 'fake-androidId',
+          'displayMetrics': <String, dynamic>{
+            'widthPx': 100.0,
+            'heightPx': 100.0,
+            'xDpi': 100.0,
+            'yDpi': 100.0,
+          },
+          'serialNumber': 'fake-serialNumber',
+          'computerName': 'a',
+          'hostName': 'a',
+          'arch': 'a',
+          'kernelVersion': 'a',
+          'osRelease': 'Version OS (Build 22D68)',
+          'majorVersion': 0,
+          'minorVersion': 0,
+          'patchVersion': 0,
+          'activeCPUs': 0,
+          'memorySize': 0,
+          'cpuFrequency': 0,
+          'systemGUID': 'a',
+          'name': 'name',
+          'idLike': [],
+          'versionCodename': 'versionCodename',
+          'versionId': 'versionId',
+          'prettyName': 'prettyName',
+          'buildId': 'buildId',
+          'variant': 'variant',
+          'variantId': 'variantId',
+          'machineId': 'machineId',
+        };
+      }
+      return null;
+    });
+
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        const MethodChannel('plugins.flutter.io/path_provider_macos'),
+        (call) async {
+      if (call.method == 'getApplicationDocumentsDirectory') {
+        return '.';
+      }
+      return null;
     });
 
     debugServicesCreator = () => createMockServices();

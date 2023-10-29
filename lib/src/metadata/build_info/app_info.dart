@@ -1,25 +1,56 @@
 /// Information about the user app
 class AppInfo {
-  final String appLocale;
+  final String? appName;
+  final String? bundleId;
+  final String? version;
+  final String? buildNumber;
 
   const AppInfo({
-    required this.appLocale,
+    this.appName,
+    this.bundleId,
+    this.version,
+    this.buildNumber,
   });
-
-  @override
-  String toString() {
-    return 'AppInfo{'
-        'appLocale: $appLocale, '
-        '}';
-  }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AppInfo &&
+      (other is AppInfo &&
           runtimeType == other.runtimeType &&
-          appLocale == other.appLocale;
+          appName == other.appName &&
+          bundleId == other.bundleId &&
+          version == other.version &&
+          buildNumber == other.buildNumber);
 
   @override
-  int get hashCode => appLocale.hashCode;
+  int get hashCode =>
+      appName.hashCode ^
+      bundleId.hashCode ^
+      version.hashCode ^
+      buildNumber.hashCode;
+
+  @override
+  String toString() {
+    return 'AppInfo{' +
+        ' appName: $appName,' +
+        ' applicationId: $bundleId,' +
+        ' version: $version,' +
+        ' buildNumber: $buildNumber,' +
+        '}';
+  }
+
+  AppInfo copyWith({
+    String? appLocale,
+    String? appName,
+    String? applicationId,
+    String? version,
+    String? buildNumber,
+  }) {
+    return AppInfo(
+      appName: appName ?? this.appName,
+      bundleId: applicationId ?? this.bundleId,
+      version: version ?? this.version,
+      buildNumber: buildNumber ?? this.buildNumber,
+    );
+  }
 }
