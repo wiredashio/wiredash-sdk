@@ -43,7 +43,7 @@ Future<AttachmentId> postUploadAttachment(
     final responseBody = jsonDecode(response.body) as Map<String, dynamic>;
     return AttachmentId(responseBody['id'] as String);
   }
-  context.parseResponseForErrors(response);
+  context.throwApiError(response);
 }
 
 /// The reference id returned by the backend identifying the binary attachment

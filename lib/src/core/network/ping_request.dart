@@ -26,7 +26,7 @@ Future<PingResponse> postPing(
   if (response.statusCode == 200) {
     return PingResponse();
   }
-  context.parseResponseForErrors(response);
+  context.throwApiError(response);
 }
 
 class PingRequestBody {

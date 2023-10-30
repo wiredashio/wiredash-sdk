@@ -27,7 +27,7 @@ Future<void> postSendPromoterScore(
     // success 🎉
     return;
   }
-  context.parseResponseForErrors(response);
+  context.throwApiError(response);
 }
 
 class PromoterScoreRequestBody {

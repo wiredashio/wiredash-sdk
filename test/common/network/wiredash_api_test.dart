@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -286,5 +287,12 @@ void main() {
         },
       );
     });
+  });
+
+  test('API points towards production API', () {
+    final wiredashApiFile = File('lib/src/core/network/wiredash_api.dart');
+    final content = wiredashApiFile.readAsStringSync();
+    expect(content, contains('https://api.wiredash.io/sdk'));
+    expect(content, isNot(contains('https://api.wiredash.dev/sdk')));
   });
 }

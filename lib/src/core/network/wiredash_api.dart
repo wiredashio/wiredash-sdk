@@ -89,7 +89,7 @@ class ApiClientContext {
     return Response.fromStream(streamedResponse);
   }
 
-  Never parseResponseForErrors(Response response) {
+  Never throwApiError(Response response) {
     if (response.statusCode == 401) {
       throw UnauthenticatedWiredashApiException(response, projectId, secret);
     }
