@@ -422,7 +422,7 @@ class IncrementalIdGenerator implements UidGenerator {
   }
 
   @override
-  Future<String> dataSharingId() async {
+  Future<String> submitId() async {
     return next();
   }
 

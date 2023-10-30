@@ -7,10 +7,8 @@ import 'dart:ui';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
-import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/promoterscore/ps_model.dart';
 
 /// API client to communicate with the Wiredash servers
@@ -19,17 +17,17 @@ class WiredashApi {
     required Client httpClient,
     required String projectId,
     required String secret,
-    required Future<String> Function() deviceIdProvider,
+    required UidGenerator uidGenerator,
   })  : _httpClient = httpClient,
         _projectId = projectId,
         _secret = secret,
-        _deviceIdProvider = deviceIdProvider;
+        _uidGenerator = uidGenerator;
 
   final Client _httpClient;
 
   final String _projectId;
   final String _secret;
-  final Future<String> Function() _deviceIdProvider;
+  final UidGenerator _uidGenerator;
 
   static const String _host = 'https://api.wiredash.io/sdk';
 
@@ -52,6 +50,13 @@ class WiredashApi {
     }
 
     final req = MultipartRequest('POST', uri)
+      ..headers.addAll({
+        'project': _projectId,
+        'secret': _secret,
+        'version': wiredashSdkVersion.toString(),
+        // TODO required?
+        'device': await _uidGenerator.submitId(),
+      })
       ..files.add(
         MultipartFile.fromBytes(
           'file',
@@ -81,7 +86,13 @@ class WiredashApi {
   ) async {
     final uri = Uri.parse('$_host/sendFeedback');
     final Request request = Request('POST', uri);
-    request.headers['Content-Type'] = 'application/json';
+
+    request.headers.addAll({
+      'Content-Type': 'application/json',
+      'project': _projectId,
+      'secret': _secret,
+      'version': wiredashSdkVersion.toString(),
+    });
 
     final args = feedback.toRequestJson();
     request.body = jsonEncode(args);
@@ -98,7 +109,13 @@ class WiredashApi {
   Future<void> sendPromoterScore(PromoterScoreRequestBody body) async {
     final uri = Uri.parse('$_host/sendPromoterScore');
     final Request request = Request('POST', uri);
-    request.headers['Content-Type'] = 'application/json';
+
+    request.headers.addAll({
+      'Content-Type': 'application/json',
+      'project': _projectId,
+      'secret': _secret,
+      'version': wiredashSdkVersion.toString(),
+    });
 
     final args = body.toRequestJson();
     request.body = jsonEncode(args);
@@ -111,35 +128,17 @@ class WiredashApi {
     _parseResponseForErrors(response);
   }
 
-  Future<PingResponse> ping() async {
+  Future<PingResponse> ping(PingRequestBody body) async {
     final uri = Uri.parse('$_host/ping');
-    final Request request = Request('POST', uri);
-
-    /// /ping
-    /// HEADERS
-    /// - project
-    /// - secret
-    /// - sdkVersion
-    ///
-    /// POST body
-    ///
-    /// - installId (nanoId)
-    ///
-    /// - appVersion
-    /// - buildNumber
-    /// - buildCommit
-    /// - bundleId
-    ///
-    /// - platformOS
-    /// - platformVersion
-    ///
-    /// - platformLocale
-    ///
-    /// - screen sizes?
-    /// - input?: mouse or touch or both keyboard?
-    ///
-    /// - userAgent (automatically)
-    /// - region/city (via IP)
+    final Request request = Request('POST', uri)
+      ..headers.addAll({
+        'Content-Type': 'application/json',
+        'project': _projectId,
+        'secret': _secret,
+        // TODO double check if version or sdkVersion
+        'version': wiredashSdkVersion.toString(),
+      })
+      ..body = jsonEncode(body.toRequestJson());
 
     final response = await _send(request);
     if (response.statusCode == 200) {
@@ -150,15 +149,6 @@ class WiredashApi {
 
   /// Sends a [BaseRequest] after attaching HTTP headers
   Future<Response> _send(BaseRequest request) async {
-    request.headers['project'] = _projectId;
-    request.headers['secret'] = _secret;
-
-    // TODO remove from HEADER
-    request.headers['device'] = await _deviceIdProvider();
-
-    if (request.headers['version'] == null) {
-      request.headers['version'] = wiredashSdkVersion.toString();
-    }
     final streamedResponse = await _httpClient.send(request);
     return Response.fromStream(streamedResponse);
   }
@@ -260,12 +250,11 @@ extension FeedbackBody on FeedbackItem {
     final Map<String, Object> values = {};
 
     // Values are sorted alphabetically for easy comparison with the backend
-    // TODO make appLocale optional in backend
     final appLocale = sessionMetadata.appLocale;
     if (appLocale != null) {
       values.addAll({'appLocale': appLocale});
     }
-    // TODO add in backend
+
     final appName = appInfo.appName;
     if (appName != null) {
       values.addAll({'appName': appName});
@@ -297,7 +286,6 @@ extension FeedbackBody on FeedbackItem {
       values.addAll({'buildVersion': buildVersion});
     }
 
-    // TODO add in backend
     final bundleId = appInfo.bundleId;
     if (bundleId != null) {
       values.addAll({'bundleId': bundleId});
@@ -334,7 +322,6 @@ extension FeedbackBody on FeedbackItem {
 
     values.addAll({'deviceId': nonNull(deviceId)});
 
-    // TODO add in backend
     final deviceModel = deviceInfo.deviceModel;
     if (deviceModel != null) {
       values.addAll({'deviceModel': deviceModel});
@@ -506,6 +493,71 @@ extension on CompilationMode {
       case CompilationMode.debug:
         return 'debug';
     }
+  }
+}
+
+class PingRequestBody {
+  final String installId;
+  final String? appVersion;
+  final String? buildNumber;
+  final String? buildCommit;
+  final String? bundleId;
+  final String? platformOS;
+  final String? platformVersion;
+  final String? platformLocale;
+
+  PingRequestBody({
+    required this.installId,
+    this.appVersion,
+    this.buildNumber,
+    this.buildCommit,
+    this.bundleId,
+    this.platformOS,
+    this.platformVersion,
+    this.platformLocale,
+  });
+
+  Map<String, Object> toRequestJson() {
+    final Map<String, Object> body = {};
+
+    final _appVersion = appVersion;
+    if (_appVersion != null) {
+      body['appVersion'] = _appVersion;
+    }
+
+    final _buildNumber = buildNumber;
+    if (_buildNumber != null) {
+      body['buildNumber'] = _buildNumber;
+    }
+
+    final _buildCommit = buildCommit;
+    if (_buildCommit != null) {
+      body['buildCommit'] = _buildCommit;
+    }
+
+    final _bundleId = bundleId;
+    if (_bundleId != null) {
+      body['bundleId'] = _bundleId;
+    }
+
+    body['installId'] = installId;
+
+    final _platformOS = platformOS;
+    if (_platformOS != null) {
+      body['platformOS'] = _platformOS;
+    }
+
+    final _platformVersion = platformVersion;
+    if (_platformVersion != null) {
+      body['platformVersion'] = _platformVersion;
+    }
+
+    final _platformLocale = platformLocale;
+    if (_platformLocale != null) {
+      body['platformLocale'] = _platformLocale;
+    }
+
+    return body;
   }
 }
 

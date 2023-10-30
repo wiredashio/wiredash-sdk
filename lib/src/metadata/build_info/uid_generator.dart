@@ -26,11 +26,11 @@ class UidGenerator {
     return nanoid(length: 8, alphabet: Alphabet.noDoppelgangerSafe);
   }
 
-  /// Returns the unique id that is used for feedback and promoter score
+  /// Returns the unique id that is used for submitting feedback and promoter score
   ///
   /// The Future is lazy created an then cached, thus returns very fast when
   /// called multiple times
-  Future<String> dataSharingId() {
+  Future<String> submitId() {
     final future = _deviceIdFuture;
     if (future != null) {
       return future;

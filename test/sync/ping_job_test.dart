@@ -3,9 +3,11 @@ import 'dart:io';
 
 import 'package:fake_async/fake_async.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
+import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
 import '../feedback/data/pending_feedback_item_storage_test.dart';
 import '../util/mock_api.dart';
@@ -22,6 +24,8 @@ void main() {
     PingJob createPingJob() => PingJob(
           apiProvider: () => api,
           sharedPreferencesProvider: prefsProvider,
+          metaDataCollector: () => FakeMetaDataCollector(),
+          uidGenerator: () => IncrementalIdGenerator(),
         );
 
     setUp(() {
@@ -95,6 +99,8 @@ void main() {
         final pingJob = PingJob(
           apiProvider: () => api,
           sharedPreferencesProvider: prefsProvider,
+          metaDataCollector: () => FakeMetaDataCollector(),
+          uidGenerator: () => IncrementalIdGenerator(),
         );
         pingJob.execute();
         async.flushTimers();
@@ -115,6 +121,8 @@ void main() {
         final pingJob = PingJob(
           apiProvider: () => api,
           sharedPreferencesProvider: prefsProvider,
+          metaDataCollector: () => FakeMetaDataCollector(),
+          uidGenerator: () => IncrementalIdGenerator(),
         );
         pingJob.execute();
         async.flushTimers();
@@ -127,3 +135,5 @@ void main() {
     });
   });
 }
+
+class FakeMetaDataCollector with Fake implements MetaDataCollector {}

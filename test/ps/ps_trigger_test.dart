@@ -202,7 +202,7 @@ class FakeDeviceIdGenerator with Fake implements UidGenerator {
   FakeDeviceIdGenerator(this.mockedDeviceId);
 
   @override
-  Future<String> dataSharingId() async {
+  Future<String> submitId() async {
     return mockedDeviceId;
   }
 }

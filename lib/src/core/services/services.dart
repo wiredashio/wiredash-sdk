@@ -53,7 +53,7 @@ class WiredashServices extends ChangeNotifier {
 
   FeedbackSubmitter get feedbackSubmitter => _locator.watch();
 
-  UidGenerator get idGenerator => _locator.watch();
+  UidGenerator get uidGenerator => _locator.watch();
 
   Wiredash get wiredashWidget => _locator.watch();
 
@@ -122,7 +122,7 @@ void _setupServices(WiredashServices sl) {
   );
   sl.inject<PsTrigger>((_) {
     return PsTrigger(
-      deviceIdGenerator: sl.idGenerator,
+      deviceIdGenerator: sl.uidGenerator,
       appTelemetry: sl.appTelemetry,
       wiredashTelemetry: sl.wiredashTelemetry,
     );
@@ -174,7 +174,7 @@ void _setupServices(WiredashServices sl) {
         httpClient: Client(),
         projectId: sl.wiredashWidget.projectId,
         secret: sl.wiredashWidget.secret,
-        deviceIdProvider: sl.idGenerator.dataSharingId,
+        uidGenerator: sl.uidGenerator,
       );
     },
   );
@@ -191,7 +191,7 @@ void _setupServices(WiredashServices sl) {
         sharedPreferencesProvider: SharedPreferences.getInstance,
         dirPathProvider: () async =>
             (await getApplicationDocumentsDirectory()).path,
-        idGenerator: sl.idGenerator,
+        idGenerator: sl.uidGenerator,
       );
       final retryingFeedbackSubmitter =
           RetryingFeedbackSubmitter(fileSystem, storage, sl.api);
@@ -229,7 +229,9 @@ void _setupServices(WiredashServices sl) {
       engine.addJob(
         'ping',
         PingJob(
-          apiProvider: locator.get,
+          apiProvider: () => sl.api,
+          uidGenerator: () => sl.uidGenerator,
+          metaDataCollector: () => sl.metaDataCollector,
           sharedPreferencesProvider: SharedPreferences.getInstance,
         ),
       );
