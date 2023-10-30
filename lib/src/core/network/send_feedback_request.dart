@@ -31,7 +31,7 @@ Future<void> postSendFeedback(
     // success 🎉
     return;
   }
-  context.parseResponseForErrors(response);
+  context.throwApiError(response);
 }
 
 extension FeedbackBody on FeedbackItem {
