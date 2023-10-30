@@ -6,6 +6,7 @@ import 'dart:ui';
 
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
@@ -83,7 +84,7 @@ class WiredashApi {
     final Request request = Request('POST', uri);
     request.headers['Content-Type'] = 'application/json';
 
-    final args = feedback.toFeedbackBody();
+    final args = feedback.toRequestJson();
     request.body = jsonEncode(args);
 
     final response = await _send(request);
@@ -100,7 +101,7 @@ class WiredashApi {
     final Request request = Request('POST', uri);
     request.headers['Content-Type'] = 'application/json';
 
-    final args = body.toJson();
+    final args = body.toRequestJson();
     request.body = jsonEncode(args);
 
     final response = await _send(request);
@@ -256,7 +257,7 @@ class UnauthenticatedWiredashApiException extends WiredashApiException {
 }
 
 extension FeedbackBody on FeedbackItem {
-  Map<String, dynamic> toFeedbackBody() {
+  Map<String, dynamic> toRequestJson() {
     final Map<String, Object> values = {};
 
     // Values are sorted alphabetically for easy comparison with the backend
@@ -512,6 +513,7 @@ extension on CompilationMode {
 class PromoterScoreRequestBody {
   const PromoterScoreRequestBody({
     this.appLocale,
+    required this.appInfo,
     required this.deviceId,
     this.message,
     required this.question,
@@ -527,6 +529,7 @@ class PromoterScoreRequestBody {
   });
 
   final String? appLocale;
+  final AppInfo appInfo;
   final BuildInfo buildInfo;
   final String deviceId;
   final String? message;
@@ -540,7 +543,7 @@ class PromoterScoreRequestBody {
   final String? userEmail;
   final String? userId;
 
-  Map<String, Object> toJson() {
+  Map<String, Object> toRequestJson() {
     final Map<String, Object> body = {};
 
     if (appLocale != null) {

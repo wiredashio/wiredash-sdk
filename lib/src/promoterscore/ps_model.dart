@@ -78,7 +78,9 @@ class PsModel extends ChangeNotifier2 {
           ?.map((it) => it.asFuture()),
     );
 
-    final deviceInfo = await _services.flutterInfoCollector.generate();
+    final fixedMetaData =
+        await _services.metaDataCollector.collectFixedMetaData();
+    final flutterInfo = await _services.flutterInfoCollector.generate();
 
     final body = PromoterScoreRequestBody(
       score: score,
@@ -88,10 +90,11 @@ class PsModel extends ChangeNotifier2 {
       deviceId: deviceId,
       userId: metaData.userId,
       userEmail: metaData.userEmail,
+      appInfo: fixedMetaData.appInfo,
       appLocale: _services.wiredashModel.appLocaleFromContext?.toLanguageTag(),
-      platformLocale: deviceInfo.platformLocale,
-      platformOS: deviceInfo.platformOS,
-      platformUserAgent: deviceInfo.userAgent,
+      platformLocale: flutterInfo.platformLocale,
+      platformOS: flutterInfo.platformOS,
+      platformUserAgent: flutterInfo.userAgent,
       buildInfo: buildInfo,
     );
     try {
