@@ -91,6 +91,7 @@ void main() {
             'nestedObject': {'frodo': 'ring', 'sam': 'lembas'},
           },
           'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+          'deviceModel': 'Google Pixel 8',
           'labels': ['bug'],
           'message': 'Hello world!',
           'sdkVersion': 1,
