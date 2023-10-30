@@ -93,7 +93,7 @@ class PsTrigger {
     if (lastSurvey == null) {
       // Using the device id to randomly distribute the next survey time within
       // frequency. This results in the same date for every call of this method
-      final String deviceId = await deviceIdGenerator.dataSharingId();
+      final String deviceId = await deviceIdGenerator.submitId();
       final random = Random(deviceId.hashCode);
       final shiftTimeInS = (random.nextDouble() * frequency.inSeconds).toInt();
       final DateTime? firstAppStart = await appTelemetry.firstAppStart();

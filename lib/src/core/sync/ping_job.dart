@@ -1,15 +1,20 @@
 import 'package:clock/clock.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
+import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
 class PingJob extends Job {
   final WiredashApi Function() apiProvider;
   final Future<SharedPreferences> Function() sharedPreferencesProvider;
+  final UidGenerator Function() uidGenerator;
+  final MetaDataCollector Function() metaDataCollector;
 
   PingJob({
     required this.apiProvider,
     required this.sharedPreferencesProvider,
+    required this.uidGenerator,
+    required this.metaDataCollector,
   });
 
   static const lastSuccessfulPingKey = 'io.wiredash.last_successful_ping';
@@ -44,8 +49,26 @@ class PingJob extends Job {
       return;
     }
 
+    final fixedData = await metaDataCollector().collectFixedMetaData();
+    // final flutterInfo = await metaDataCollector()
+    //     .collectSessionMetaData((metaData) async => metaData);
+
+    final body = PingRequestBody(
+      installId: await uidGenerator().appUsageId(),
+      buildCommit: fixedData.buildInfo.buildCommit,
+      // TODO overwrite with custom meta data?
+      appVersion: fixedData.buildInfo.buildVersion,
+      buildNumber: fixedData.buildInfo.buildNumber,
+
+      bundleId: fixedData.appInfo.bundleId,
+      platformLocale: fixedData.flutterInfo.platformLocale,
+      platformOS: fixedData.flutterInfo.platformOS,
+      platformVersion: fixedData.flutterInfo.platformVersion,
+      //  TODO add device model?
+      // deviceModel: fixedData.flutterInfo.deviceModel,
+    );
     try {
-      await apiProvider().ping();
+      await apiProvider().ping(body);
       await _saveLastSuccessfulPing(now);
       syncDebugPrint('ping');
     } on KillSwitchException catch (_) {

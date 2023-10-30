@@ -282,7 +282,7 @@ void main() {
           'score': 6,
           'sdkVersion': 173,
           'userEmail': 'testy@mctest.face',
-          'userId': 'Testy McTestFace'
+          'userId': 'Testy McTestFace',
         },
       );
     });

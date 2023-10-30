@@ -70,9 +70,9 @@ class MockWiredashApi implements WiredashApi {
       MethodInvocationCatcher('ping');
 
   @override
-  Future<PingResponse> ping() async {
+  Future<PingResponse> ping(PingRequestBody body) async {
     final mockedReturnValue =
-        pingInvocations.addAsyncMethodCall<PingResponse>();
+        pingInvocations.addAsyncMethodCall<PingResponse>(args: [body]);
     if (mockedReturnValue != null) {
       return mockedReturnValue.future;
     }
