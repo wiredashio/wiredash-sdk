@@ -14,7 +14,7 @@ class _DartIoDeviceInfoGenerator implements FlutterInfoCollector {
   final SingletonFlutterWindow window;
 
   @override
-  Future<FlutterInfo> generate() async {
+  FlutterInfo capture() {
     final base = FlutterInfoCollector.flutterInfo(window);
     final info = base.copyWith(
       platformOS: Platform.operatingSystem,

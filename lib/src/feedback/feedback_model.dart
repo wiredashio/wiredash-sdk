@@ -216,7 +216,7 @@ class FeedbackModel extends ChangeNotifier2 {
 
   Future<void> skipScreenshot() async {
     if (_sessionMetadata == null) {
-      await _collectMetaData();
+      await _collectSessionMetaData();
     }
     goToNextStep();
   }
@@ -287,7 +287,7 @@ class FeedbackModel extends ChangeNotifier2 {
   }
 
   /// Allow devs to collect additional information
-  Future<SessionMetaData> _collectMetaData() async {
+  Future<SessionMetaData> _collectSessionMetaData() async {
     _sessionMetadata = await _services.metaDataCollector.collectSessionMetaData(
       _services.wiredashModel.feedbackOptions?.collectMetaData
           ?.map((it) => it.asFuture()),
@@ -307,7 +307,7 @@ class FeedbackModel extends ChangeNotifier2 {
     // captures screenshot, it is saved in screenCaptureController
     await _services.screenCaptureController.captureScreen();
     // TODO show loading indicator?
-    await _collectMetaData();
+    await _collectSessionMetaData();
 
     _services.picassoController.isActive = true;
     _goToStep(FeedbackFlowStatus.screenshotDrawing);
@@ -389,7 +389,8 @@ class FeedbackModel extends ChangeNotifier2 {
 
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
-    final sessionMetadata = _sessionMetadata ?? await _collectMetaData();
+    final sessionMetadata = _sessionMetadata ?? await _collectSessionMetaData();
+    final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
 
     return FeedbackItem(
       appInfo: fixedMetadata.appInfo,
@@ -406,7 +407,7 @@ class FeedbackModel extends ChangeNotifier2 {
         }
         return userEmail;
       }(),
-      flutterInfo: fixedMetadata.flutterInfo,
+      flutterInfo: flutterInfo,
       labels: [..._selectedLabels, ...labels.where((it) => it.hidden == true)]
           .map((it) => it.id)
           .toList(),

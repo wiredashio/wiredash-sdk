@@ -80,7 +80,7 @@ class PsModel extends ChangeNotifier2 {
 
     final fixedMetaData =
         await _services.metaDataCollector.collectFixedMetaData();
-    final flutterInfo = await _services.flutterInfoCollector.generate();
+    final flutterInfo = await _services.flutterInfoCollector.capture();
 
     final body = PromoterScoreRequestBody(
       score: score,
