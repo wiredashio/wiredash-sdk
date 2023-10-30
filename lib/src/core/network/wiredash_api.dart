@@ -265,7 +265,7 @@ extension FeedbackBody on FeedbackItem {
     if (appLocale != null) {
       values.addAll({'appLocale': appLocale});
     }
-
+    // TODO add in backend
     final appName = appInfo.appName;
     if (appName != null) {
       values.addAll({'appName': appName});
@@ -297,6 +297,7 @@ extension FeedbackBody on FeedbackItem {
       values.addAll({'buildVersion': buildVersion});
     }
 
+    // TODO add in backend
     final bundleId = appInfo.bundleId;
     if (bundleId != null) {
       values.addAll({'bundleId': bundleId});
@@ -332,6 +333,12 @@ extension FeedbackBody on FeedbackItem {
     }
 
     values.addAll({'deviceId': nonNull(deviceId)});
+
+    // TODO add in backend
+    final deviceModel = deviceInfo.deviceModel;
+    if (deviceModel != null) {
+      values.addAll({'deviceModel': deviceModel});
+    }
 
     final _labels = labels;
     if (_labels != null) {
