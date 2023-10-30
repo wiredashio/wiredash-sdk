@@ -8,7 +8,7 @@ import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_ps.dart';
-import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/app_telemetry_job.dart';
@@ -19,7 +19,6 @@ import 'package:wiredash/src/core/sync/sync_feedback_job.dart';
 import 'package:wiredash/src/core/telemetry/app_telemetry.dart';
 import 'package:wiredash/src/core/telemetry/wiredash_telemetry.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
-import 'package:wiredash/src/core/wiredash_model.dart';
 import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
@@ -27,10 +26,7 @@ import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/ui/screencapture.dart';
-import 'package:wiredash/src/metadata/build_info/device_id_generator.dart';
-import 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
-import 'package:wiredash/src/utils/uuid.dart';
 import 'package:wiredash/wiredash.dart';
 
 /// Internal service locator
@@ -57,7 +53,7 @@ class WiredashServices extends ChangeNotifier {
 
   FeedbackSubmitter get feedbackSubmitter => _locator.watch();
 
-  DeviceIdGenerator get deviceIdGenerator => _locator.watch();
+  UidGenerator get idGenerator => _locator.watch();
 
   Wiredash get wiredashWidget => _locator.watch();
 
@@ -114,7 +110,7 @@ void _setupServices(WiredashServices sl) {
       child: SizedBox(),
     ),
   );
-  sl.inject<DeviceIdGenerator>((_) => DeviceIdGenerator());
+  sl.inject<UidGenerator>((_) => UidGenerator());
   sl.inject<ProjectCredentialValidator>(
     (_) => const ProjectCredentialValidator(),
   );
@@ -126,7 +122,7 @@ void _setupServices(WiredashServices sl) {
   );
   sl.inject<PsTrigger>((_) {
     return PsTrigger(
-      deviceIdGenerator: sl.deviceIdGenerator,
+      deviceIdGenerator: sl.idGenerator,
       appTelemetry: sl.appTelemetry,
       wiredashTelemetry: sl.wiredashTelemetry,
     );
@@ -178,7 +174,7 @@ void _setupServices(WiredashServices sl) {
         httpClient: Client(),
         projectId: sl.wiredashWidget.projectId,
         secret: sl.wiredashWidget.secret,
-        deviceIdProvider: sl.deviceIdGenerator.deviceId,
+        deviceIdProvider: sl.idGenerator.dataSharingId,
       );
     },
   );
@@ -195,7 +191,7 @@ void _setupServices(WiredashServices sl) {
         sharedPreferencesProvider: SharedPreferences.getInstance,
         dirPathProvider: () async =>
             (await getApplicationDocumentsDirectory()).path,
-        uuidV4Generator: const UuidV4Generator(),
+        idGenerator: sl.idGenerator,
       );
       final retryingFeedbackSubmitter =
           RetryingFeedbackSubmitter(fileSystem, storage, sl.api);

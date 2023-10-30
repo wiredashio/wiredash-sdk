@@ -1,10 +1,10 @@
 import 'package:clock/clock.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:test/test.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/core/telemetry/app_telemetry.dart';
 import 'package:wiredash/src/core/telemetry/wiredash_telemetry.dart';
-import 'package:wiredash/src/metadata/build_info/device_id_generator.dart';
+import 'package:wiredash/src/metadata/build_info/uid_generator.dart';
 
 void main() {
   setUp(() {
@@ -196,13 +196,13 @@ void main() {
   });
 }
 
-class FakeDeviceIdGenerator implements DeviceIdGenerator {
+class FakeDeviceIdGenerator with Fake implements UidGenerator {
   String mockedDeviceId;
 
   FakeDeviceIdGenerator(this.mockedDeviceId);
 
   @override
-  Future<String> deviceId() async {
+  Future<String> dataSharingId() async {
     return mockedDeviceId;
   }
 }
