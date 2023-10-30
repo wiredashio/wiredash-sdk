@@ -50,8 +50,7 @@ class PingJob extends Job {
     }
 
     final fixedData = await metaDataCollector().collectFixedMetaData();
-    // final flutterInfo = await metaDataCollector()
-    //     .collectSessionMetaData((metaData) async => metaData);
+    final flutterInfo = metaDataCollector().collectFlutterInfo();
 
     final body = PingRequestBody(
       installId: await uidGenerator().appUsageId(),
@@ -61,9 +60,9 @@ class PingJob extends Job {
       buildNumber: fixedData.buildInfo.buildNumber,
 
       bundleId: fixedData.appInfo.bundleId,
-      platformLocale: fixedData.flutterInfo.platformLocale,
-      platformOS: fixedData.flutterInfo.platformOS,
-      platformVersion: fixedData.flutterInfo.platformVersion,
+      platformLocale: flutterInfo.platformLocale,
+      platformOS: flutterInfo.platformOS,
+      platformVersion: flutterInfo.platformVersion,
       //  TODO add device model?
       // deviceModel: fixedData.flutterInfo.deviceModel,
     );

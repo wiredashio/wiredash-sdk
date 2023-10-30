@@ -54,5 +54,5 @@ abstract class FlutterInfoCollector {
   }
 
   /// Collects information from Flutter
-  Future<FlutterInfo> generate();
+  FlutterInfo capture();
 }

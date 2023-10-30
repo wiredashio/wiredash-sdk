@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -37,7 +38,6 @@ class MetaDataCollector {
       <Future<Object?>>[
         _collectAppInfo(),
         _collectDeviceInfo(),
-        deviceInfoCollector().generate(),
       ].map(
         (e) => e.catchError(
           (Object e, StackTrace stack) {
@@ -53,11 +53,9 @@ class MetaDataCollector {
     );
     final appInfo = results[0] as AppInfo?;
     final deviceInfo = results[1] as DeviceInfo?;
-    final flutterDeviceInfo = results[2] as FlutterInfo?;
 
     final combined = FixedMetaData(
       appInfo: appInfo!,
-      flutterInfo: flutterDeviceInfo!,
       deviceInfo: deviceInfo!,
       buildInfo: buildInfo,
     );
@@ -105,6 +103,11 @@ class MetaDataCollector {
       }
     }
     return metadata;
+  }
+
+  /// Synchronously collect all information from the FlutterWindow / FlutterView
+  FlutterInfo collectFlutterInfo() {
+    return deviceInfoCollector().capture();
   }
 
   /// Creates [SessionMetaData] pre-populated with data already collected
@@ -165,14 +168,11 @@ typedef CustomMetaDataCollector = Future<WiredashMetaData> Function(
 /// Information about the app/device/engine that is not changing during a
 /// session of the app.
 class FixedMetaData {
-  // TODO actually most of FlutterInfo can change and should not be cached
-  final FlutterInfo flutterInfo;
   final DeviceInfo deviceInfo;
   final BuildInfo buildInfo;
   final AppInfo appInfo;
 
   const FixedMetaData({
-    required this.flutterInfo,
     required this.deviceInfo,
     required this.buildInfo,
     required this.appInfo,

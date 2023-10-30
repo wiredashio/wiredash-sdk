@@ -15,7 +15,7 @@ class _DartHtmlDeviceInfoGenerator implements FlutterInfoCollector {
   final SingletonFlutterWindow window;
 
   @override
-  Future<FlutterInfo> generate() async {
+  FlutterInfo capture() {
     final base = FlutterInfoCollector.flutterInfo(window);
     return base.copyWith(
       userAgent: html.window.navigator.userAgent,
