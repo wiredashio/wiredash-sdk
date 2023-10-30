@@ -29,6 +29,7 @@ dependencies:
   http_parser: ">=4.0.0 <5.0.0"
   intl: ">=0.16.0 <2.0.0" # whatever "sdk: flutter" depends on
   material_color_utilities: ">=0.1.2 <1.0.0"
+  nanoid2: ^2.0.1
   package_info_plus: ^4.1.0
   path_provider: ">=2.0.0 <3.0.0"
   shared_preferences: '>=2.0.0 <3.0.0'

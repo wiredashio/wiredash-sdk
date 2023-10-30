@@ -20,13 +20,15 @@ void main() {
     late PendingFeedbackItemStorage storage;
     late MockWiredashApi mockApi;
     late RetryingFeedbackSubmitter retryingFeedbackSubmitter;
+    late IncrementalIdGenerator idGenerator;
 
     setUp(() {
       fileSystem = MemoryFileSystem.test();
       final preferences = InMemorySharedPreferences();
+      idGenerator = IncrementalIdGenerator();
       storage = PendingFeedbackItemStorage(
         fileSystem: fileSystem,
-        uuidV4Generator: IncrementalUuidV4Generator(),
+        idGenerator: idGenerator,
         dirPathProvider: () async => '.',
         sharedPreferencesProvider: () async => preferences,
       );
@@ -108,9 +110,8 @@ void main() {
       expect(fileSystem.file('0.png').existsSync(), isFalse);
 
       // submission works now
-      final uuid = IncrementalUuidV4Generator();
       mockApi.uploadAttachmentInvocations.interceptor = (_) {
-        return AttachmentId(uuid.generate());
+        return AttachmentId(idGenerator.next());
       };
       // Submit the item without image now
       await retryingFeedbackSubmitter.submitPendingFeedbackItems();
@@ -158,9 +159,8 @@ void main() {
       expect(fileSystem.file(filePath).existsSync(), isTrue);
 
       // submission works now
-      final uuid = IncrementalUuidV4Generator();
       mockApi.uploadAttachmentInvocations.interceptor = (_) {
-        return AttachmentId(uuid.generate());
+        return AttachmentId(idGenerator.next());
       };
       // Submit the item with image
       await retryingFeedbackSubmitter.submitPendingFeedbackItems();

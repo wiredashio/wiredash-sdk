@@ -385,7 +385,7 @@ class FeedbackModel extends ChangeNotifier2 {
   }
 
   Future<FeedbackItem> createFeedback() async {
-    final deviceId = await _services.deviceIdGenerator.deviceId();
+    final deviceId = await _services.idGenerator.dataSharingId();
 
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();

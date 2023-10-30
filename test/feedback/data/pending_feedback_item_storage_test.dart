@@ -12,10 +12,10 @@ import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/metadata/build_info/app_info.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
+import 'package:wiredash/src/metadata/build_info/uid_generator.dart';
 import 'package:wiredash/src/metadata/device_info/device_info.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/src/metadata/user_meta_data.dart';
-import 'package:wiredash/src/utils/uuid.dart';
 
 import '../../util/invocation_catcher.dart';
 
@@ -23,18 +23,18 @@ void main() {
   group('PendingFeedbackItemStorage', () {
     late FileSystem fileSystem;
     late InMemorySharedPreferences prefs;
-    late IncrementalUuidV4Generator uuidGenerator;
+    late UidGenerator idGenerator;
     late PendingFeedbackItemStorage storage;
 
     setUp(() {
       fileSystem = MemoryFileSystem.test();
       prefs = InMemorySharedPreferences();
-      uuidGenerator = IncrementalUuidV4Generator();
+      idGenerator = IncrementalIdGenerator();
       storage = PendingFeedbackItemStorage(
         fileSystem: fileSystem,
         sharedPreferencesProvider: () async => prefs,
         dirPathProvider: () async => '.',
-        uuidV4Generator: uuidGenerator,
+        idGenerator: idGenerator,
       );
     });
 
@@ -407,14 +407,33 @@ class InMemorySharedPreferences extends Fake implements SharedPreferences {
 }
 
 /// Creates string IDs that increment
-class IncrementalUuidV4Generator implements UuidV4Generator {
-  var _next = 0;
+class IncrementalIdGenerator implements UidGenerator {
+  var _nextInt = 0;
+
+  String next() {
+    final now = _nextInt;
+    _nextInt++;
+    return now.toString();
+  }
 
   @override
-  String generate() {
-    final now = _next;
-    _next++;
-    return now.toString();
+  Future<String> appUsageId() async {
+    return next();
+  }
+
+  @override
+  Future<String> dataSharingId() async {
+    return next();
+  }
+
+  @override
+  String localFeedbackId() {
+    return next();
+  }
+
+  @override
+  String screenshotFilename() {
+    return next();
   }
 }
 

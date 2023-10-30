@@ -12,6 +12,7 @@ export 'package:wiredash/src/core/wiredash_model.dart';
 export 'package:wiredash/src/core/wiredash_model_provider.dart';
 export 'package:wiredash/src/metadata/build_info/app_info.dart';
 export 'package:wiredash/src/metadata/build_info/build_info.dart';
+export 'package:wiredash/src/metadata/build_info/uid_generator.dart';
 export 'package:wiredash/src/metadata/device_info/device_info.dart';
 export 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
 export 'package:wiredash/src/utils/object_util.dart';

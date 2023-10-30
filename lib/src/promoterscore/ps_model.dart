@@ -72,7 +72,7 @@ class PsModel extends ChangeNotifier2 {
   Object? _submissionError;
 
   Future<void> updatePromoterScoreRecord({bool silentFail = true}) async {
-    final deviceId = await _services.deviceIdGenerator.deviceId();
+    final deviceId = await _services.idGenerator.dataSharingId();
     final metaData = await _services.metaDataCollector.collectSessionMetaData(
       _services.wiredashWidget.psOptions?.collectMetaData
           ?.map((it) => it.asFuture()),

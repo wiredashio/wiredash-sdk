@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/services/error_report.dart';
-import 'package:wiredash/src/utils/uuid.dart';
 
 /// A temporary place for [PersistedFeedbackItem] classes and user-generated
 /// screenshot to sit in until they get sent into the Wiredash console.
@@ -15,16 +14,16 @@ class PendingFeedbackItemStorage {
     required FileSystem fileSystem,
     required Future<SharedPreferences> Function() sharedPreferencesProvider,
     required Future<String> Function() dirPathProvider,
-    required UuidV4Generator uuidV4Generator,
+    required UidGenerator idGenerator,
   })  : _fs = fileSystem,
         _sharedPreferences = sharedPreferencesProvider,
         _getScreenshotStorageDirectoryPath = dirPathProvider,
-        _uuidV4Generator = uuidV4Generator;
+        _idGenerator = idGenerator;
 
   final FileSystem _fs;
   final Future<SharedPreferences> Function() _sharedPreferences;
   final Future<String> Function() _getScreenshotStorageDirectoryPath;
-  final UuidV4Generator _uuidV4Generator;
+  final UidGenerator _idGenerator;
 
   static const _feedbackItemsKey = 'io.wiredash.pending_feedback_items';
 
@@ -88,7 +87,7 @@ class PendingFeedbackItemStorage {
         }
         // save file to disk
         final screenshotsDir = await _getScreenshotStorageDirectoryPath();
-        final uniqueFileName = _uuidV4Generator.generate();
+        final uniqueFileName = _idGenerator.screenshotFilename();
         final filePath = _fs.path
             .normalize(_fs.path.join(screenshotsDir, '$uniqueFileName.png'));
         final data = attachment.file.binaryData(_fs)!;
@@ -101,7 +100,7 @@ class PendingFeedbackItemStorage {
     final serializable = item.copyWith(attachments: serializedAttachments);
 
     final pendingItem = PendingFeedbackItem(
-      id: _uuidV4Generator.generate(),
+      id: _idGenerator.localFeedbackId(),
       feedbackItem: serializable,
     );
 
