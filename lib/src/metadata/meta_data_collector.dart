@@ -164,9 +164,8 @@ typedef CustomMetaDataCollector = Future<WiredashMetaData> Function(
 
 /// Information about the app/device/engine that is not changing during a
 /// session of the app.
-///
-///
 class FixedMetaData {
+  // TODO actually most of FlutterInfo can change and should not be cached
   final FlutterInfo flutterInfo;
   final DeviceInfo deviceInfo;
   final BuildInfo buildInfo;

@@ -6,13 +6,14 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/_feedback.dart';
+import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/src/metadata/user_meta_data.dart';
 
 void main() {
   group('Serialize feedback item', () {
-    test('toFeedbackBody()', () {
+    test('FeedbackBody.toJson()', () {
       final oldOnErrorHandler = FlutterError.onError;
       late FlutterErrorDetails caught;
       FlutterError.onError = (FlutterErrorDetails details) {
@@ -26,9 +27,14 @@ void main() {
         appInfo: AppInfo(
           bundleId: 'com.example.app',
           appName: 'Example App',
+          version: '1.0.0',
+          buildNumber: '12',
         ),
         buildInfo: BuildInfo(
           compilationMode: CompilationMode.debug,
+          buildNumber: '65',
+          buildCommit: 'abcdefg',
+          buildVersion: '1.2.0-dev',
         ),
         deviceId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
         deviceInfo: DeviceInfo(
@@ -77,13 +83,24 @@ void main() {
             ),
           ),
         ],
-      ).toFeedbackBody();
+      ).toRequestJson();
 
       expect(
         body,
         {
           'appLocale': 'de_DE',
           'appName': 'Example App',
+          'attachments': [
+            {
+              'id': 'screenshot_123',
+            },
+            {
+              'id': 'screenshot_124',
+            }
+          ],
+          'buildCommit': 'abcdefg',
+          'buildNumber': '65',
+          'buildVersion': '1.2.0-dev',
           'bundleId': 'com.example.app',
           'compilationMode': 'debug',
           'customMetaData': {
@@ -112,14 +129,6 @@ void main() {
           'windowTextScaleFactor': 1.0,
           'windowInsets': [0.0, 0.0, 0.0, 685.0],
           'windowPadding': [0.0, 66.0, 0.0, 0.0],
-          'attachments': [
-            {
-              'id': 'screenshot_123',
-            },
-            {
-              'id': 'screenshot_124',
-            }
-          ],
         },
       );
       expect(
@@ -172,7 +181,7 @@ void main() {
         deviceInfo: DeviceInfo(
           deviceModel: 'Google Pixel 8',
         ),
-      ).toFeedbackBody();
+      ).toRequestJson();
 
       expect(
         body,
@@ -181,6 +190,7 @@ void main() {
           'appName': 'Example App',
           'bundleId': 'com.example.app',
           'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+          'deviceModel': 'Google Pixel 8',
           'compilationMode': 'release',
           'labels': ['bug'],
           'message': 'Hello world!',
@@ -217,6 +227,63 @@ void main() {
       expect(
         exception.messageFromServer,
         "[-1] Cannot read properties of undefined (reading '0')",
+      );
+    });
+  });
+
+  group('Serialize Promoter Score', () {
+    test('PromoterScoreRequestBody.toBody()', () {
+      final ps = PromoterScoreRequestBody(
+        appLocale: 'en_US',
+        appInfo: AppInfo(
+          bundleId: 'com.example.app',
+          appName: 'Example App',
+          version: '1.0.0',
+          buildNumber: '12',
+        ),
+        buildInfo: BuildInfo(
+          compilationMode: CompilationMode.debug,
+          // buildInfo wins over appInfo because buildInfo can be overwritten
+          // with environment variables
+          buildNumber: '65',
+          buildCommit: 'abcdefg',
+          buildVersion: '1.2.0-dev',
+        ),
+        deviceId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+        message: 'Cool app!',
+        question:
+            'How likely are you to recommend this app to a friend or colleague?',
+        platformLocale: 'en_US',
+        platformOS: 'android',
+        platformOSVersion: '15',
+        platformUserAgent: 'my user agent',
+        score: PromoterScoreRating.rating6,
+        sdkVersion: 173,
+        userEmail: 'testy@mctest.face',
+        userId: 'Testy McTestFace',
+      );
+      final body = ps.toRequestJson();
+
+      expect(
+        body,
+        {
+          'appLocale': 'en_US',
+          'buildCommit': 'abcdefg',
+          'buildNumber': '65',
+          'buildVersion': '1.2.0-dev',
+          'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+          'message': 'Cool app!',
+          'platformLocale': 'en_US',
+          'platformOS': 'android',
+          'platformOSVersion': '15',
+          'platformUserAgent': 'my user agent',
+          'question':
+              'How likely are you to recommend this app to a friend or colleague?',
+          'score': 6,
+          'sdkVersion': 173,
+          'userEmail': 'testy@mctest.face',
+          'userId': 'Testy McTestFace'
+        },
       );
     });
   });
