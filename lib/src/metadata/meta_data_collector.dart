@@ -138,17 +138,12 @@ class MetaDataCollector {
       if (deviceInfo is AndroidDeviceInfo) {
         return DeviceInfo(deviceModel: deviceInfo.model);
       }
-      if (deviceInfo is WindowsDeviceInfo) {
-        // TODO
-      }
-      if (deviceInfo is LinuxDeviceInfo) {
-        // TODO
-      }
+      // there's not way to get the model of windows or linux devices
     } catch (e, stack) {
       reportWiredashError(
         e,
         stack,
-        'Failed to collect device info with device_info_plus',
+        'Failed to collect deviceInfo.model with device_info_plus',
       );
     }
     return const DeviceInfo();
