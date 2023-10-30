@@ -63,8 +63,6 @@ class PingJob extends Job {
       platformLocale: flutterInfo.platformLocale,
       platformOS: flutterInfo.platformOS,
       platformVersion: flutterInfo.platformVersion,
-      //  TODO add device model?
-      // deviceModel: fixedData.flutterInfo.deviceModel,
     );
     try {
       await apiProvider().ping(body);

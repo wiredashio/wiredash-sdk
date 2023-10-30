@@ -25,6 +25,8 @@ class WiredashController {
 
   final WiredashModel _model;
 
+  // TODO double check if it is doing what we expect it to do
+  // TODO test
   Future<void> ensureInitialized() async {
     await _model.initialize();
   }
