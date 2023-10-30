@@ -174,7 +174,6 @@ void _setupServices(WiredashServices sl) {
         httpClient: Client(),
         projectId: sl.wiredashWidget.projectId,
         secret: sl.wiredashWidget.secret,
-        uidGenerator: sl.uidGenerator,
       );
     },
   );

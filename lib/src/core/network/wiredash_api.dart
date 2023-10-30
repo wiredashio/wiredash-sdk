@@ -1,15 +1,20 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: no_leading_underscores_for_local_identifiers, unnecessary_await_in_return
 
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/core/version.dart';
+import 'package:wiredash/src/core/network/ping_request.dart';
+import 'package:wiredash/src/core/network/send_feedback_request.dart';
+import 'package:wiredash/src/core/network/send_promoter_score_request.dart';
+import 'package:wiredash/src/core/network/upload_attachment_request.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
-import 'package:wiredash/src/promoterscore/ps_model.dart';
+
+export 'package:wiredash/src/core/network/ping_request.dart';
+export 'package:wiredash/src/core/network/send_feedback_request.dart';
+export 'package:wiredash/src/core/network/send_promoter_score_request.dart';
+export 'package:wiredash/src/core/network/upload_attachment_request.dart';
 
 /// API client to communicate with the Wiredash servers
 class WiredashApi {
@@ -17,20 +22,15 @@ class WiredashApi {
     required Client httpClient,
     required String projectId,
     required String secret,
-    required UidGenerator uidGenerator,
-  })  : _httpClient = httpClient,
-        _projectId = projectId,
-        _secret = secret,
-        _uidGenerator = uidGenerator;
+  }) : _context = ApiClientContext(
+          httpClient: httpClient,
+          projectId: projectId,
+          secret: secret,
+        );
 
-  final Client _httpClient;
-
-  final String _projectId;
-  final String _secret;
-  final UidGenerator _uidGenerator;
+  final ApiClientContext _context;
 
   static const String _host = 'https://api.wiredash.io/sdk';
-  // static const String _host = 'https://api.wiredash.dev/sdk';
 
   /// Uploads a attachment to the Wiredash hosting service
   ///
@@ -41,141 +41,62 @@ class WiredashApi {
     String? filename,
     MediaType? contentType,
   }) async {
-    final uri = Uri.parse('$_host/uploadAttachment');
-
-    final String mappedType;
-    switch (type) {
-      case AttachmentType.screenshot:
-        mappedType = 'screenshot';
-        break;
-    }
-
-    final req = MultipartRequest('POST', uri)
-      ..headers.addAll({
-        'project': _projectId,
-        'secret': _secret,
-        'version': wiredashSdkVersion.toString(),
-        // TODO required?
-        'device': await _uidGenerator.submitId(),
-      })
-      ..files.add(
-        MultipartFile.fromBytes(
-          'file',
-          screenshot,
-          filename: filename,
-          contentType: contentType,
-        ),
-      )
-      ..fields.addAll({
-        'type': mappedType,
-      });
-
-    final response = await _send(req);
-
-    if (response.statusCode == 200) {
-      final map = jsonDecode(response.body) as Map<String, dynamic>;
-      return AttachmentId(map['id'] as String);
-    }
-    _parseResponseForErrors(response);
+    return await postUploadAttachment(
+      _context,
+      '$_host/uploadAttachment',
+      screenshot,
+      filename,
+      contentType,
+      type,
+    );
   }
 
   /// Reports a feedback
   ///
   /// POST /sendFeedback
-  Future<void> sendFeedback(
-    FeedbackItem feedback,
-  ) async {
-    final uri = Uri.parse('$_host/sendFeedback');
-    final Request request = Request('POST', uri);
-
-    request.headers.addAll({
-      'Content-Type': 'application/json',
-      'project': _projectId,
-      'secret': _secret,
-      'version': wiredashSdkVersion.toString(),
-    });
-
-    final args = feedback.toRequestJson();
-    request.body = jsonEncode(args);
-
-    final response = await _send(request);
-    if (response.statusCode == 200) {
-      // success 🎉
-      return;
-    }
-    _parseResponseForErrors(response);
+  Future<void> sendFeedback(FeedbackItem feedback) async {
+    return await postSendFeedback(_context, '$_host/sendFeedback', feedback);
   }
 
   /// Submits score of the promoter score survey
   Future<void> sendPromoterScore(PromoterScoreRequestBody body) async {
-    final uri = Uri.parse('$_host/sendPromoterScore');
-    final Request request = Request('POST', uri);
-
-    request.headers.addAll({
-      'Content-Type': 'application/json',
-      'project': _projectId,
-      'secret': _secret,
-      'version': wiredashSdkVersion.toString(),
-    });
-
-    final args = body.toRequestJson();
-    request.body = jsonEncode(args);
-
-    final response = await _send(request);
-    if (response.statusCode == 200) {
-      // success 🎉
-      return;
-    }
-    _parseResponseForErrors(response);
+    return await postSendPromoterScore(
+      _context,
+      '$_host/sendPromoterScore',
+      body,
+    );
   }
 
   Future<PingResponse> ping(PingRequestBody body) async {
-    final uri = Uri.parse('$_host/ping');
-    final Request request = Request('POST', uri)
-      ..headers.addAll({
-        'Content-Type': 'application/json',
-        'project': _projectId,
-        'secret': _secret,
-        // TODO double check if version or sdkVersion
-        'version': wiredashSdkVersion.toString(),
-      })
-      ..body = jsonEncode(body.toRequestJson());
-
-    final response = await _send(request);
-    if (response.statusCode == 200) {
-      return PingResponse();
-    }
-    _parseResponseForErrors(response);
+    return await postPing(_context, '$_host/ping', body);
   }
+}
+
+class ApiClientContext {
+  final Client httpClient;
+  final String secret;
+  final String projectId;
+
+  ApiClientContext({
+    required this.httpClient,
+    required this.secret,
+    required this.projectId,
+  });
 
   /// Sends a [BaseRequest] after attaching HTTP headers
-  Future<Response> _send(BaseRequest request) async {
-    final streamedResponse = await _httpClient.send(request);
+  Future<Response> send(BaseRequest request) async {
+    final streamedResponse = await httpClient.send(request);
     return Response.fromStream(streamedResponse);
   }
 
-  Never _parseResponseForErrors(Response response) {
+  Never parseResponseForErrors(Response response) {
     if (response.statusCode == 401) {
-      throw UnauthenticatedWiredashApiException(response, _projectId, _secret);
+      throw UnauthenticatedWiredashApiException(response, projectId, secret);
     }
     if (response.statusCode == 403) {
       throw KillSwitchException(response: response);
     }
     throw WiredashApiException(response: response);
-  }
-}
-
-extension UploadScreenshotApi on WiredashApi {
-  /// Uploads an screenshot to the Wiredash image hosting, returning a unique
-  /// [AttachmentId]
-  Future<AttachmentId> uploadScreenshot(Uint8List screenshot) {
-    return uploadAttachment(
-      screenshot: screenshot,
-      type: AttachmentType.screenshot,
-      // TODO generate filename when taking the screenshot
-      filename: 'Screenshot_${DateTime.now().toUtc().toIso8601String()}',
-      contentType: MediaType('image', 'png'),
-    );
   }
 }
 
@@ -246,421 +167,8 @@ class UnauthenticatedWiredashApiException extends WiredashApiException {
   }
 }
 
-extension FeedbackBody on FeedbackItem {
-  Map<String, dynamic> toRequestJson() {
-    final Map<String, Object> values = {};
-
-    // Values are sorted alphabetically for easy comparison with the backend
-    final appLocale = sessionMetadata.appLocale;
-    if (appLocale != null) {
-      values.addAll({'appLocale': appLocale});
-    }
-
-    final appName = appInfo.appName;
-    if (appName != null) {
-      values.addAll({'appName': appName});
-    }
-
-    if (attachments.isNotEmpty) {
-      final items = attachments.map((it) {
-        if (it is Screenshot) {
-          return it.toJson();
-        } else {
-          throw "Unsupported attachment type ${it.runtimeType}";
-        }
-      }).toList();
-      values.addAll({'attachments': items});
-    }
-
-    final buildCommit = this.buildInfo.buildCommit;
-    if (buildCommit != null) {
-      values.addAll({'buildCommit': buildCommit});
-    }
-
-    final buildNumber = this.buildInfo.buildNumber;
-    if (buildNumber != null) {
-      values.addAll({'buildNumber': buildNumber});
-    }
-
-    final buildVersion = this.buildInfo.buildVersion;
-    if (buildVersion != null) {
-      values.addAll({'buildVersion': buildVersion});
-    }
-
-    final bundleId = appInfo.bundleId;
-    if (bundleId != null) {
-      values.addAll({'bundleId': bundleId});
-    }
-
-    values.addAll({
-      'compilationMode': nonNull(this.buildInfo.compilationMode).jsonEncode(),
-    });
-
-    final _customMetaData = sessionMetadata.custom.map((key, value) {
-      if (value == null) {
-        return MapEntry(key, null);
-      }
-      try {
-        // try encoding. We don't care about the actual encoded content because
-        // it will be later by the http library encoded
-        jsonEncode(value);
-        // encoding worked, it's valid data
-        return MapEntry(key, value);
-      } catch (e, stack) {
-        reportWiredashError(
-          e,
-          stack,
-          'Could not serialize customMetaData property '
-          '$key=$value',
-        );
-        return MapEntry(key, null);
-      }
-    });
-    _customMetaData.removeWhere((key, value) => value == null);
-    if (_customMetaData.isNotEmpty) {
-      values.addAll({'customMetaData': _customMetaData});
-    }
-
-    values.addAll({'deviceId': nonNull(deviceId)});
-
-    final deviceModel = deviceInfo.deviceModel;
-    if (deviceModel != null) {
-      values.addAll({'deviceModel': deviceModel});
-    }
-
-    final _labels = labels;
-    if (_labels != null) {
-      values.addAll({'labels': _labels});
-    }
-
-    values.addAll({'message': nonNull(message)});
-
-    values.addAll({
-      'physicalGeometry': nonNull(flutterInfo.physicalGeometry).toJson(),
-    });
-
-    values.addAll({
-      'platformBrightness':
-          nonNull(flutterInfo.platformBrightness).jsonEncode(),
-    });
-
-    final platformDartVersion = flutterInfo.platformVersion;
-    if (platformDartVersion != null) {
-      values.addAll({'platformDartVersion': platformDartVersion});
-    }
-
-    values.addAll({
-      'platformGestureInsets': nonNull(flutterInfo.gestureInsets).toJson(),
-    });
-
-    values.addAll({'platformLocale': nonNull(flutterInfo.platformLocale)});
-
-    final platformOS = flutterInfo.platformOS;
-    if (platformOS != null) {
-      values.addAll({'platformOS': platformOS});
-    }
-
-    final platformOSVersion = flutterInfo.platformOSVersion;
-    if (platformOSVersion != null) {
-      values.addAll({'platformOSVersion': platformOSVersion});
-    }
-
-    values.addAll({
-      'platformSupportedLocales': nonNull(flutterInfo.platformSupportedLocales),
-    });
-
-    // Web only
-    final platformUserAgent = flutterInfo.userAgent;
-    if (platformUserAgent != null) {
-      values.addAll({'platformUserAgent': platformUserAgent});
-    }
-
-    values.addAll({'sdkVersion': nonNull(sdkVersion)});
-
-    final userEmail = email;
-    if (userEmail != null && userEmail.isNotEmpty) {
-      values.addAll({'userEmail': userEmail});
-    }
-
-    final String? userId = sessionMetadata.userId;
-    if (userId != null) {
-      values.addAll({'userId': userId});
-    }
-
-    values.addAll({
-      'windowInsets': nonNull(flutterInfo.viewInsets).toJson(),
-    });
-
-    values.addAll({
-      'windowPadding': nonNull(flutterInfo.padding).toJson(),
-    });
-
-    values.addAll({
-      'windowPixelRatio': nonNull(flutterInfo.pixelRatio),
-    });
-
-    values.addAll({
-      'windowSize': nonNull(flutterInfo.physicalSize).toJson(),
-    });
-
-    values.addAll({
-      'windowTextScaleFactor': nonNull(flutterInfo.textScaleFactor),
-    });
-
-    return values.map((k, v) => MapEntry(k, v));
-  }
-}
-
-extension on Screenshot {
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> values = {
-      'id': file.attachmentId!.value,
-    };
-
-    return values;
-  }
-}
-
-/// Explicitly defines a values a non null, making it a compile time error
-/// when [value] becomes nullable
-///
-/// This prevents accidental null values here that may happen due to refactoring
-T nonNull<T extends Object>(T value) {
-  return value;
-}
-
 enum AttachmentType {
   screenshot,
-}
-
-/// The reference id returned by the backend identifying the binary attachment
-/// hosted in the wiredash cloud
-class AttachmentId {
-  final String value;
-
-  AttachmentId(this.value);
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is AttachmentId &&
-          runtimeType == other.runtimeType &&
-          value == other.value;
-
-  @override
-  int get hashCode => value.hashCode;
-
-  @override
-  String toString() {
-    return 'AttachmentId{$value}';
-  }
-}
-
-// Remove when we drop support for Flutter v3.8.0-14.0.pre.
-// ignore: deprecated_member_use
-extension on WindowPadding {
-  List<double> toJson() {
-    return [left, top, right, bottom];
-  }
-}
-
-extension on Rect {
-  List<double> toJson() {
-    return [left, top, right, bottom];
-  }
-}
-
-extension on Size {
-  List<double> toJson() {
-    return [width, height];
-  }
-}
-
-extension on Brightness {
-  String jsonEncode() {
-    if (this == Brightness.dark) return 'dark';
-    if (this == Brightness.light) return 'light';
-    throw 'Unknown brightness value $this';
-  }
-}
-
-extension on CompilationMode {
-  String jsonEncode() {
-    switch (this) {
-      case CompilationMode.release:
-        return 'release';
-      case CompilationMode.profile:
-        return 'profile';
-      case CompilationMode.debug:
-        return 'debug';
-    }
-  }
-}
-
-class PingRequestBody {
-  final String installId;
-  final String? appVersion;
-  final String? buildNumber;
-  final String? buildCommit;
-  final String? bundleId;
-  final String? platformOS;
-  final String? platformVersion;
-  final String? platformLocale;
-
-  PingRequestBody({
-    required this.installId,
-    this.appVersion,
-    this.buildNumber,
-    this.buildCommit,
-    this.bundleId,
-    this.platformOS,
-    this.platformVersion,
-    this.platformLocale,
-  });
-
-  Map<String, Object> toRequestJson() {
-    final Map<String, Object> body = {};
-
-    final _appVersion = appVersion;
-    if (_appVersion != null) {
-      body['appVersion'] = _appVersion;
-    }
-
-    final _buildNumber = buildNumber;
-    if (_buildNumber != null) {
-      body['buildNumber'] = _buildNumber;
-    }
-
-    final _buildCommit = buildCommit;
-    if (_buildCommit != null) {
-      body['buildCommit'] = _buildCommit;
-    }
-
-    final _bundleId = bundleId;
-    if (_bundleId != null) {
-      body['bundleId'] = _bundleId;
-    }
-
-    body['installId'] = installId;
-
-    final _platformOS = platformOS;
-    if (_platformOS != null) {
-      body['platformOS'] = _platformOS;
-    }
-
-    final _platformVersion = platformVersion;
-    if (_platformVersion != null) {
-      body['platformVersion'] = _platformVersion;
-    }
-
-    final _platformLocale = platformLocale;
-    if (_platformLocale != null) {
-      body['platformLocale'] = _platformLocale;
-    }
-
-    return body;
-  }
-}
-
-class PromoterScoreRequestBody {
-  const PromoterScoreRequestBody({
-    this.appLocale,
-    required this.appInfo,
-    required this.deviceId,
-    this.message,
-    required this.question,
-    this.platformLocale,
-    this.platformOS,
-    this.platformOSVersion,
-    this.platformUserAgent,
-    this.score,
-    required this.sdkVersion,
-    this.userEmail,
-    this.userId,
-    required this.buildInfo,
-  });
-
-  final String? appLocale;
-  final AppInfo appInfo;
-  final BuildInfo buildInfo;
-  final String deviceId;
-  final String? message;
-  final String question;
-  final String? platformLocale;
-  final String? platformOS;
-  final String? platformOSVersion;
-  final String? platformUserAgent;
-  final PromoterScoreRating? score;
-  final int sdkVersion;
-  final String? userEmail;
-  final String? userId;
-
-  Map<String, Object> toRequestJson() {
-    final Map<String, Object> body = {};
-
-    if (appLocale != null) {
-      body['appLocale'] = appLocale!;
-    }
-
-    final buildCommit = buildInfo.buildCommit;
-    if (buildCommit != null) {
-      body.addAll({'buildCommit': buildCommit});
-    }
-
-    final buildNumber = buildInfo.buildNumber;
-    if (buildNumber != null) {
-      body.addAll({'buildNumber': buildNumber});
-    }
-
-    final buildVersion = buildInfo.buildVersion;
-    if (buildVersion != null) {
-      body.addAll({'buildVersion': buildVersion});
-    }
-
-    body['deviceId'] = deviceId;
-
-    if (message != null && message!.isNotEmpty) {
-      body['message'] = message!;
-    }
-
-    if (platformLocale != null) {
-      body['platformLocale'] = platformLocale!;
-    }
-
-    if (platformOS != null) {
-      body['platformOS'] = platformOS!;
-    }
-    if (platformOSVersion != null) {
-      body['platformOSVersion'] = platformOSVersion!;
-    }
-
-    if (platformUserAgent != null) {
-      body['platformUserAgent'] = platformUserAgent!;
-    }
-
-    body['question'] = question;
-
-    if (score != null) {
-      body['score'] = score!.intValue;
-    }
-
-    body['sdkVersion'] = sdkVersion;
-
-    if (userEmail != null) {
-      body['userEmail'] = userEmail!;
-    }
-
-    if (userId != null) {
-      body['userId'] = userId!;
-    }
-
-    return body;
-  }
-}
-
-class PingResponse {
-  // Nothing in here just yet but that will change in the future
-  PingResponse();
 }
 
 /// Backend returns an error which silences the SDK for one week
