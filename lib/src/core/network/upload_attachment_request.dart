@@ -69,6 +69,10 @@ class AttachmentId {
   }
 }
 
+enum AttachmentType {
+  screenshot,
+}
+
 extension UploadScreenshotApi on WiredashApi {
   /// Uploads an screenshot to the Wiredash image hosting, returning a unique
   /// [AttachmentId]

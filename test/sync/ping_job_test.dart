@@ -1,12 +1,19 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:fake_async/fake_async.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
+import 'package:wiredash/src/core/wiredash_model.dart';
+import 'package:wiredash/src/core/wiredash_widget.dart';
+import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
+import 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
 import '../feedback/data/pending_feedback_item_storage_test.dart';
@@ -136,4 +143,27 @@ void main() {
   });
 }
 
-class FakeMetaDataCollector with Fake implements MetaDataCollector {}
+class FakeMetaDataCollector with Fake implements MetaDataCollector {
+  @override
+  Future<FixedMetaData> collectFixedMetaData() async {
+    return const FixedMetaData(
+      flutterInfo: FlutterInfo(
+        pixelRatio: 1.0,
+        textScaleFactor: 1.0,
+        platformLocale: 'en_US',
+        platformSupportedLocales: ['en_US', 'de_DE'],
+        platformBrightness: Brightness.dark,
+        gestureInsets:
+            WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+        padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+        viewInsets:
+            WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
+        physicalGeometry: Rect.zero,
+        physicalSize: Size(1280, 720),
+      ),
+      deviceInfo: DeviceInfo(deviceModel: 'Pixel 2'),
+      buildInfo: BuildInfo(compilationMode: CompilationMode.profile),
+      appInfo: AppInfo(),
+    );
+  }
+}
