@@ -31,6 +31,8 @@ void main() {
     });
 
     testWidgets('ping is send when the Widget gets updated', (tester) async {
+      final robot = WiredashTestRobot(tester);
+      robot.setupMocks();
       await tester.pumpWidget(
         const Wiredash(
           projectId: 'test',
@@ -39,7 +41,6 @@ void main() {
           child: CircularProgressIndicator(),
         ),
       );
-      final robot = WiredashTestRobot(tester);
       final api1 = robot.mockServices.mockApi;
       await tester.pump();
       await tester.pump();

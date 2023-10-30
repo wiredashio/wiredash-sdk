@@ -28,13 +28,7 @@ class WiredashTestRobot {
 
   WiredashTestRobot(this.tester);
 
-  static Future<WiredashTestRobot> launchApp(
-    WidgetTester tester, {
-    WiredashFeedbackOptions? feedbackOptions,
-    Widget Function(BuildContext)? builder,
-    FutureOr<void> Function()? afterPump,
-    List<LocalizationsDelegate> appLocalizationsDelegates = const [],
-  }) async {
+  void setupMocks() {
     SharedPreferences.setMockInitialValues({});
     PackageInfo.setMockInitialValues(
       appName: 'Wiredash Demo',
@@ -119,7 +113,17 @@ class WiredashTestRobot {
       }
       return null;
     });
+  }
 
+  static Future<WiredashTestRobot> launchApp(
+    WidgetTester tester, {
+    WiredashFeedbackOptions? feedbackOptions,
+    Widget Function(BuildContext)? builder,
+    FutureOr<void> Function()? afterPump,
+    List<LocalizationsDelegate> appLocalizationsDelegates = const [],
+  }) async {
+    final robot = WiredashTestRobot(tester);
+    robot.setupMocks();
     debugServicesCreator = () => createMockServices();
     addTearDown(() => debugServicesCreator = null);
 
@@ -169,7 +173,6 @@ class WiredashTestRobot {
         ),
       ),
     );
-    final robot = WiredashTestRobot(tester);
     if (afterPump != null) {
       await afterPump();
     }
