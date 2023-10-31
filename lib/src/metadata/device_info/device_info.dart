@@ -3,7 +3,7 @@ import 'dart:ui' show Brightness;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 
 /// All information we can gather from the Flutter Framework about the
 /// device/window/canvas

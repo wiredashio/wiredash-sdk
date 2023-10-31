@@ -2,8 +2,7 @@
 // ignore: deprecated_member_use
 import 'dart:ui' show Locale, SingletonFlutterWindow;
 
-import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
-import 'package:wiredash/src/metadata/device_info/device_info.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 // import a dart:html or dart:io version of `createDeviceInfoGenerator`
 // if non are available the stub is used
 import 'package:wiredash/src/metadata/device_info/device_info_generator_stub.dart'

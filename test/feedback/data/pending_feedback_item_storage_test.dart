@@ -9,9 +9,8 @@ import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/_feedback.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
-import 'package:wiredash/src/metadata/build_info/build_info.dart';
-import 'package:wiredash/src/metadata/build_info/uid_generator.dart';
 
 import '../../util/invocation_catcher.dart';
 

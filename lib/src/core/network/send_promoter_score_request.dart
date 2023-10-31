@@ -4,7 +4,6 @@ import 'package:http/http.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
 
 Future<void> postSendPromoterScore(
   ApiClientContext context,

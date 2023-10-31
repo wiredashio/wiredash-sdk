@@ -1,6 +1,5 @@
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
@@ -116,78 +115,4 @@ extension on PersistedAttachment {
     }
     return values;
   }
-}
-
-/// WindowPadding doesn't offer a public constructor and doesn't implement
-/// ==() and hashCode
-// Remove when we drop support for Flutter v3.8.0-14.0.pre.
-// ignore: deprecated_member_use
-class WiredashWindowPadding implements WindowPadding {
-  const WiredashWindowPadding({
-    required this.left,
-    required this.top,
-    required this.right,
-    required this.bottom,
-  });
-
-  factory WiredashWindowPadding.fromJson(List json) {
-    return WiredashWindowPadding(
-      left: (json[0] as num).toDouble(),
-      top: (json[1] as num).toDouble(),
-      right: (json[2] as num).toDouble(),
-      bottom: (json[3] as num).toDouble(),
-    );
-  }
-
-  // Remove when we drop support for Flutter v3.8.0-14.0.pre.
-  // ignore: deprecated_member_use
-  factory WiredashWindowPadding.fromWindowPadding(WindowPadding padding) {
-    return WiredashWindowPadding(
-      left: padding.left,
-      top: padding.top,
-      right: padding.right,
-      bottom: padding.bottom,
-    );
-  }
-
-  /// The distance from the left edge to the first unpadded pixel, in physical
-  /// pixels.
-  @override
-  final double left;
-
-  /// The distance from the top edge to the first unpadded pixel, in physical
-  /// pixels.
-  @override
-  final double top;
-
-  /// The distance from the right edge to the first unpadded pixel, in physical
-  /// pixels.
-  @override
-  final double right;
-
-  /// The distance from the bottom edge to the first unpadded pixel, in physical
-  /// pixels.
-  @override
-  final double bottom;
-
-  @override
-  String toString() {
-    return 'WiredashWindowPadding{'
-        'left: $left, top: $top, right: $right, bottom: $bottom'
-        '}';
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is WiredashWindowPadding &&
-          runtimeType == other.runtimeType &&
-          left == other.left &&
-          top == other.top &&
-          right == other.right &&
-          bottom == other.bottom;
-
-  @override
-  int get hashCode =>
-      left.hashCode ^ top.hashCode ^ right.hashCode ^ bottom.hashCode;
 }

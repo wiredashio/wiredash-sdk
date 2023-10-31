@@ -10,6 +10,7 @@ export 'package:wiredash/src/core/wiredash_controller.dart';
 export 'package:wiredash/src/core/wiredash_localizations_ext.dart';
 export 'package:wiredash/src/core/wiredash_model.dart';
 export 'package:wiredash/src/core/wiredash_model_provider.dart';
+export 'package:wiredash/src/metadata/all_meta_data.dart';
 export 'package:wiredash/src/metadata/build_info/app_info.dart';
 export 'package:wiredash/src/metadata/build_info/build_info.dart';
 export 'package:wiredash/src/metadata/build_info/uid_generator.dart';

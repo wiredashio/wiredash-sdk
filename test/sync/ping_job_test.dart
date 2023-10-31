@@ -8,8 +8,8 @@ import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
-import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
+import 'package:wiredash/src/metadata/user_meta_data.dart';
 
 import '../feedback/data/pending_feedback_item_storage_test.dart';
 import '../util/mock_api.dart';
@@ -163,5 +163,12 @@ class FakeMetaDataCollector with Fake implements MetaDataCollector {
       physicalGeometry: Rect.zero,
       physicalSize: Size(1280, 720),
     );
+  }
+
+  @override
+  Future<SessionMetaData> collectSessionMetaData(
+    CustomMetaDataCollector? collector,
+  ) async {
+    return CustomizableWiredashMetaData();
   }
 }
