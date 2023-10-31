@@ -62,6 +62,7 @@ class WiredashController {
   /// ```dart
   /// Wiredash.of(context)
   ///     .modifyMetaData((_) => CustomizableWiredashMetaData.populated());
+  /// Wiredash.of(context).ensureInitialized();
   /// ```
   ///
   /// The metaData will be completely overridden with the values from the

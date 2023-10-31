@@ -392,27 +392,28 @@ class FeedbackModel extends ChangeNotifier2 {
     final sessionMetadata = _sessionMetadata ?? await _collectSessionMetaData();
     final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
 
+    final email = () {
+      if (_services.wiredashModel.feedbackOptions?.email ==
+              EmailPrompt.optional &&
+          userEmail == null) {
+        // user has explicitly deleted their email address
+        return null;
+      }
+      return userEmail;
+    }();
     return FeedbackItem(
-      appInfo: fixedMetadata.appInfo,
       attachments: _attachments,
-      buildInfo: fixedMetadata.buildInfo,
-      deviceId: deviceId,
-      deviceInfo: fixedMetadata.deviceInfo,
-      email: () {
-        if (_services.wiredashModel.feedbackOptions?.email ==
-                EmailPrompt.optional &&
-            userEmail == null) {
-          // user has explicitly deleted their email address
-          return null;
-        }
-        return userEmail;
-      }(),
-      flutterInfo: flutterInfo,
       labels: [..._selectedLabels, ...labels.where((it) => it.hidden == true)]
           .map((it) => it.id)
           .toList(),
       message: _feedbackMessage!,
-      sessionMetadata: sessionMetadata,
+      metadata: AllMetaData.from(
+        sessionMetadata: sessionMetadata,
+        fixedMetadata: fixedMetadata,
+        flutterInfo: flutterInfo,
+        installId: deviceId,
+        email: email,
+      ),
     );
   }
 

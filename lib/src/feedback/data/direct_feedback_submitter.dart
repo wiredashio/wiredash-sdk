@@ -13,7 +13,7 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
       final List<PersistedAttachment> uploadedAttachments = [];
 
       // Upload screenshots that are not yet uploaded
-      for (final attachment in item.attachments) {
+      for (final attachment in item.attachments ?? []) {
         if (attachment is Screenshot) {
           // simplification: upload all attachments from memory
           final id = await _api.uploadScreenshot(attachment.file.data!);

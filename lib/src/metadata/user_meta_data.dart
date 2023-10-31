@@ -10,6 +10,9 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
   /// This constructor returns a 100% clean version with no prefilled data
   CustomizableWiredashMetaData();
 
+  @Deprecated('Use CustomizableWiredashMetaData() instead.')
+  CustomizableWiredashMetaData.populated();
+
   @override
   String? userId;
 

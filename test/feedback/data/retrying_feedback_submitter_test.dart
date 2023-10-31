@@ -155,7 +155,7 @@ void main() {
       final pendingItems = await storage.retrieveAllPendingItems();
       expect(pendingItems, hasLength(1));
       final filePath =
-          pendingItems.first.feedbackItem.attachments.first.file.pathToFile;
+          pendingItems.first.feedbackItem.attachments!.first.file.pathToFile;
       expect(fileSystem.file(filePath).existsSync(), isTrue);
 
       // submission works now

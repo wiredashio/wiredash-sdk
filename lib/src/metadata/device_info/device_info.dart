@@ -25,7 +25,7 @@ class FlutterInfo {
   /// Area not covered with system UI
   ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/padding.html
-  final WiredashWindowPadding padding;
+  final WiredashWindowPadding viewPadding;
 
   /// The dimensions of the rectangle into which the scene rendered in this
   /// view will be drawn on the screen, in physical pixels.
@@ -63,7 +63,7 @@ class FlutterInfo {
   /// The version of the current Dart runtime.
   ///
   /// https://api.flutter.dev/flutter/package-platform_platform/LocalPlatform/version.html
-  final String? platformVersion;
+  final String? platformDartVersion;
 
   /// Text scale factor, default 1.0
   ///
@@ -87,13 +87,13 @@ class FlutterInfo {
   const FlutterInfo({
     required this.platformLocale,
     required this.platformSupportedLocales,
-    required this.padding,
+    required this.viewPadding,
     required this.physicalSize,
     required this.physicalGeometry,
     required this.pixelRatio,
     this.platformOS,
     this.platformOSVersion,
-    this.platformVersion,
+    this.platformDartVersion,
     required this.textScaleFactor,
     required this.viewInsets,
     this.userAgent,
@@ -123,13 +123,13 @@ class FlutterInfo {
       platformLocale: platformLocale ?? this.platformLocale,
       platformSupportedLocales:
           platformSupportedLocales ?? this.platformSupportedLocales,
-      padding: padding ?? this.padding,
+      viewPadding: padding ?? viewPadding,
       physicalSize: physicalSize ?? this.physicalSize,
       physicalGeometry: physicalGeometry ?? this.physicalGeometry,
       pixelRatio: pixelRatio ?? this.pixelRatio,
       platformOS: platformOS ?? this.platformOS,
       platformOSVersion: platformOSVersion ?? this.platformOSVersion,
-      platformVersion: platformVersion ?? this.platformVersion,
+      platformDartVersion: platformVersion ?? platformDartVersion,
       textScaleFactor: textScaleFactor ?? this.textScaleFactor,
       viewInsets: viewInsets ?? this.viewInsets,
       userAgent: userAgent ?? this.userAgent,
@@ -143,13 +143,13 @@ class FlutterInfo {
     return 'DeviceInfo{'
         'platformLocale: $platformLocale, '
         'platformSupportedLocales: $platformSupportedLocales, '
-        'padding: $padding, '
+        'padding: $viewPadding, '
         'physicalSize: $physicalSize, '
         'physicalGeometry: $physicalGeometry, '
         'pixelRatio: $pixelRatio, '
         'platformOS: $platformOS, '
         'platformOSBuild: $platformOSVersion, '
-        'platformVersion: $platformVersion, '
+        'platformVersion: $platformDartVersion, '
         'textScaleFactor: $textScaleFactor, '
         'viewInsets: $viewInsets, '
         'userAgent: $userAgent, '
@@ -168,13 +168,13 @@ class FlutterInfo {
             platformSupportedLocales,
             other.platformSupportedLocales,
           ) &&
-          padding == other.padding &&
+          viewPadding == other.viewPadding &&
           physicalSize == other.physicalSize &&
           physicalGeometry == other.physicalGeometry &&
           pixelRatio == other.pixelRatio &&
           platformOS == other.platformOS &&
           platformOSVersion == other.platformOSVersion &&
-          platformVersion == other.platformVersion &&
+          platformDartVersion == other.platformDartVersion &&
           textScaleFactor == other.textScaleFactor &&
           viewInsets == other.viewInsets &&
           userAgent == other.userAgent &&
@@ -186,13 +186,13 @@ class FlutterInfo {
       platformLocale.hashCode ^
       // ignore: deprecated_member_use
       hashList(platformSupportedLocales) ^
-      padding.hashCode ^
+      viewPadding.hashCode ^
       physicalSize.hashCode ^
       physicalGeometry.hashCode ^
       pixelRatio.hashCode ^
       platformOS.hashCode ^
       platformOSVersion.hashCode ^
-      platformVersion.hashCode ^
+      platformDartVersion.hashCode ^
       textScaleFactor.hashCode ^
       viewInsets.hashCode ^
       userAgent.hashCode ^

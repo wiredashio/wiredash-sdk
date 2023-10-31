@@ -10,12 +10,8 @@ import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
-import 'package:wiredash/src/metadata/build_info/app_info.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/metadata/build_info/uid_generator.dart';
-import 'package:wiredash/src/metadata/device_info/device_info.dart';
-import 'package:wiredash/src/metadata/meta_data_collector.dart';
-import 'package:wiredash/src/metadata/user_meta_data.dart';
 
 import '../../util/invocation_catcher.dart';
 
@@ -61,15 +57,15 @@ void main() {
       final pendingItem = await storage.addPendingItem(item);
 
       expect(
-        pendingItem.feedbackItem.attachments[0].file,
+        pendingItem.feedbackItem.attachments![0].file,
         FileDataEventuallyOnDisk.file('0.png'),
       );
       expect(
-        pendingItem.feedbackItem.attachments[1].file,
+        pendingItem.feedbackItem.attachments![1].file,
         FileDataEventuallyOnDisk.uploaded(AttachmentId('453')),
       );
       expect(
-        pendingItem.feedbackItem.attachments[2].file,
+        pendingItem.feedbackItem.attachments![2].file,
         FileDataEventuallyOnDisk.file('existing.png'),
       );
 
@@ -117,8 +113,8 @@ void main() {
       );
 
       final allAttachments = [
-        ...firstItem.feedbackItem.attachments,
-        ...secondItem.feedbackItem.attachments,
+        ...firstItem.feedbackItem.attachments!,
+        ...secondItem.feedbackItem.attachments!,
       ];
       // all items must be distinct (different ids)
       expect(allAttachments, allAttachments.toSet().toList());
@@ -437,45 +433,42 @@ class IncrementalIdGenerator implements UidGenerator {
   }
 }
 
-const testDeviceInfo = FlutterInfo(
-  pixelRatio: 1.0,
-  textScaleFactor: 1.0,
-  platformLocale: 'en_US',
-  platformSupportedLocales: ['en_US', 'de_DE'],
-  platformBrightness: Brightness.dark,
-  gestureInsets: WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-  padding: WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-  viewInsets: WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-  physicalGeometry: Rect.zero,
-  physicalSize: Size(800, 1200),
-);
-
 FeedbackItem createFeedback({
   List<PersistedAttachment>? attachments,
   String? message,
 }) {
   return FeedbackItem(
-    appInfo: const AppInfo(
-      version: '1.9.0',
-      bundleId: 'com.example.app',
-      appName: 'Example App',
+    metadata: const AllMetaData(
+      appLocale: 'en_US',
+      appName: 'MyApp',
+      buildCommit: 'ab12345',
       buildNumber: '190',
-    ),
-    buildInfo: const BuildInfo(compilationMode: CompilationMode.release),
-    deviceId: '1234',
-    flutterInfo: testDeviceInfo,
-    email: 'email@example.com',
-    message: message ?? 'Hello world!',
-    labels: ['bug'],
-    sessionMetadata: CustomizableWiredashMetaData()
-      ..appLocale = 'de_DE'
-      ..userId = 'Testy McTestFace'
-      ..custom = {
-        "customKey": "customValue",
-      },
-    attachments: attachments ?? [],
-    deviceInfo: const DeviceInfo(
+      buildVersion: '1.9.0',
+      bundleId: 'com.example.app',
+      compilationMode: CompilationMode.profile,
+      custom: {'customKey': 'customValue'},
       deviceModel: 'Google Pixel 8',
+      installId: '1234',
+      physicalGeometry: Rect.zero,
+      platformBrightness: Brightness.light,
+      platformDartVersion: '3.2.0',
+      platformGestureInsets:
+          WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+      platformLocale: 'en_US',
+      platformOS: 'Android',
+      platformOSVersion: '11',
+      platformSupportedLocales: ['en_US', 'de_DE'],
+      sdkVersion: 200,
+      userId: 'Testy McTestFace',
+      userEmail: 'email@example.com',
+      windowInsets: WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+      windowPadding:
+          WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
+      windowPixelRatio: 2.0,
+      windowSize: Size(800, 1200),
+      windowTextScaleFactor: 1.0,
     ),
+    attachments: attachments,
+    message: message ?? 'Hello world!',
   );
 }

@@ -191,7 +191,7 @@ void main() {
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as FeedbackItem?;
-      expect(submittedFeedback!.email, userEmail);
+      expect(submittedFeedback!.metadata.userEmail, userEmail);
     });
 
     testWidgets(
@@ -231,7 +231,7 @@ void main() {
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as FeedbackItem?;
-      expect(submittedFeedback!.email, adjustedEmail);
+      expect(submittedFeedback!.metadata.userEmail, adjustedEmail);
     });
 
     testWidgets(
@@ -263,7 +263,7 @@ void main() {
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as FeedbackItem?;
-      expect(submittedFeedback!.email, userEmail);
+      expect(submittedFeedback!.metadata.userEmail, userEmail);
     });
 
     testWidgets('Send feedback with email', (tester) async {
@@ -287,7 +287,7 @@ void main() {
       final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.message, 'test message');
-      expect(submittedFeedback.email, 'dash@flutter.io');
+      expect(submittedFeedback.metadata.userEmail, 'dash@flutter.io');
       expect(submittedFeedback.attachments, hasLength(0));
     });
 
@@ -311,7 +311,7 @@ void main() {
       final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.message, 'test message');
-      expect(submittedFeedback.email, 'dash@flutter.io');
+      expect(submittedFeedback.metadata.userEmail, 'dash@flutter.io');
       expect(submittedFeedback.attachments, hasLength(0));
     });
 

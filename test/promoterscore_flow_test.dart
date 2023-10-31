@@ -26,17 +26,17 @@ void main() {
       expect(psCalls, hasLength(3));
       final callOne = psCalls[0][0] as PromoterScoreRequestBody?;
       expect(callOne!.score, isNull);
-      expect(callOne.platformOS, isNotNull);
+      expect(callOne.metadata.platformOS, isNotNull);
       expect(callOne.message, isNull);
 
       final callTwo = psCalls[1][0] as PromoterScoreRequestBody?;
       expect(callTwo!.score?.intValue, 7);
-      expect(callTwo.platformOS, isNotNull);
+      expect(callTwo.metadata.platformOS, isNotNull);
       expect(callTwo.message, isNull);
 
       final callThree = psCalls[2][0] as PromoterScoreRequestBody?;
       expect(callThree!.score?.intValue, 7);
-      expect(callThree.platformOS, isNotNull);
+      expect(callThree.metadata.platformOS, isNotNull);
       expect(callThree.message, isNull);
     });
 
@@ -55,17 +55,17 @@ void main() {
       expect(psCalls, hasLength(3));
       final callOne = psCalls[0][0] as PromoterScoreRequestBody?;
       expect(callOne!.score, isNull);
-      expect(callOne.platformOS, isNotNull);
+      expect(callOne.metadata.platformOS, isNotNull);
       expect(callOne.message, isNull);
 
       final callTwo = psCalls[1][0] as PromoterScoreRequestBody?;
       expect(callTwo!.score?.intValue, 3);
-      expect(callTwo.platformOS, isNotNull);
+      expect(callTwo.metadata.platformOS, isNotNull);
       expect(callTwo.message, isNull);
 
       final callThree = psCalls[2][0] as PromoterScoreRequestBody?;
       expect(callThree!.score?.intValue, 3);
-      expect(callThree.platformOS, isNotNull);
+      expect(callThree.metadata.platformOS, isNotNull);
       expect(callThree.message, 'What a cool app!');
     });
 
@@ -74,7 +74,7 @@ void main() {
       await robot.openPromoterScore();
       final latestCall = robot.mockServices.mockApi.sendPsInvocations.latest;
       final request = latestCall[0] as PromoterScoreRequestBody?;
-      expect(request!.deviceId, isNotNull);
+      expect(request!.metadata.installId, isNotNull);
     });
 
     testWidgets('Shows detractors thanks message', (tester) async {

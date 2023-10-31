@@ -99,6 +99,7 @@ class WiredashModel with ChangeNotifier {
 
   /// Called during initialization of the [Wiredash] widget
   Future<void> initialize() async {
+    // TODO test and document
     /// initializes [metadata] with app information
     await services.metaDataCollector.collectFixedMetaData();
   }

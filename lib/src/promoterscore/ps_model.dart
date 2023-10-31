@@ -2,9 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/core/version.dart';
+import 'package:wiredash/src/feedback/data/feedback_item.dart';
 // ignore: unnecessary_import
-import 'package:wiredash/src/metadata/build_info/build_info.dart';
 // ignore: unused_import
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
@@ -73,29 +72,24 @@ class PsModel extends ChangeNotifier2 {
 
   Future<void> updatePromoterScoreRecord({bool silentFail = true}) async {
     final deviceId = await _services.uidGenerator.submitId();
-    final metaData = await _services.metaDataCollector.collectSessionMetaData(
-      _services.wiredashWidget.psOptions?.collectMetaData
-          ?.map((it) => it.asFuture()),
-    );
-
-    final fixedMetaData =
+    final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
-    final flutterInfo = await _services.flutterInfoCollector.capture();
+    final sessionMetadata = await _services.metaDataCollector
+        .collectSessionMetaData(_services
+            .wiredashWidget.psOptions?.collectMetaData
+            ?.map((it) => it.asFuture()),);
+    final flutterInfo = _services.flutterInfoCollector.capture();
 
     final body = PromoterScoreRequestBody(
       score: score,
       question: _questionInUI!,
       message: message,
-      sdkVersion: wiredashSdkVersion,
-      deviceId: deviceId,
-      userId: metaData.userId,
-      userEmail: metaData.userEmail,
-      appInfo: fixedMetaData.appInfo,
-      appLocale: _services.wiredashModel.appLocaleFromContext?.toLanguageTag(),
-      platformLocale: flutterInfo.platformLocale,
-      platformOS: flutterInfo.platformOS,
-      platformUserAgent: flutterInfo.userAgent,
-      buildInfo: buildInfo,
+      metadata: AllMetaData.from(
+        sessionMetadata: sessionMetadata,
+        fixedMetadata: fixedMetadata,
+        flutterInfo: flutterInfo,
+        installId: deviceId,
+      ),
     );
     try {
       await _services.api.sendPromoterScore(body);
