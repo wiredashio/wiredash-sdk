@@ -17,7 +17,6 @@ Future<PingResponse> postPing(
       'Content-Type': 'application/json',
       'project': context.projectId,
       'secret': context.secret,
-      // TODO double check if version or sdkVersion
       'version': wiredashSdkVersion.toString(),
     })
     ..body = jsonEncode(body.toRequestJson());

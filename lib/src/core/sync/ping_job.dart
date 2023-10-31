@@ -52,14 +52,17 @@ class PingJob extends Job {
 
     final fixedData = await metaDataCollector().collectFixedMetaData();
     final flutterInfo = metaDataCollector().collectFlutterInfo();
+    final sessionMetaData =
+        await metaDataCollector().collectSessionMetaData(null);
 
     final body = PingRequestBody(
       installId: await uidGenerator().appUsageId(),
-      buildCommit: fixedData.buildInfo.buildCommit,
-      // TODO overwrite with custom meta data?
-      appVersion: fixedData.buildInfo.buildVersion,
-      buildNumber: fixedData.buildInfo.buildNumber,
-
+      buildCommit:
+          sessionMetaData.buildCommit ?? fixedData.buildInfo.buildCommit,
+      appVersion:
+          sessionMetaData.buildVersion ?? fixedData.buildInfo.buildVersion,
+      buildNumber:
+          sessionMetaData.buildVersion ?? fixedData.buildInfo.buildNumber,
       bundleId: fixedData.appInfo.bundleId,
       platformLocale: flutterInfo.platformLocale,
       platformOS: flutterInfo.platformOS,

@@ -5,7 +5,7 @@ import 'dart:ui';
 
 import 'package:test/test.dart';
 import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/metadata/build_info/build_info.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 
 void main() {
   final minimalFeedbackV2 = PendingFeedbackItem(

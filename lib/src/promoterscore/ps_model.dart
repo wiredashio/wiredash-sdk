@@ -2,10 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/feedback/data/feedback_item.dart';
-// ignore: unnecessary_import
-// ignore: unused_import
-import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
 import 'package:wiredash/src/utils/delay.dart';
 
@@ -74,10 +70,11 @@ class PsModel extends ChangeNotifier2 {
     final deviceId = await _services.uidGenerator.submitId();
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
-    final sessionMetadata = await _services.metaDataCollector
-        .collectSessionMetaData(_services
-            .wiredashWidget.psOptions?.collectMetaData
-            ?.map((it) => it.asFuture()),);
+    final sessionMetadata =
+        await _services.metaDataCollector.collectSessionMetaData(
+      _services.wiredashWidget.psOptions?.collectMetaData
+          ?.map((it) => it.asFuture()),
+    );
     final flutterInfo = _services.flutterInfoCollector.capture();
 
     final body = PromoterScoreRequestBody(
