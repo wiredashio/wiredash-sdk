@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/options/wiredash_options_data.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
@@ -107,6 +108,35 @@ void main() {
       expect(api2.pingInvocations.count, 0);
       await tester.pump(const Duration(seconds: 5));
       expect(api2.pingInvocations.count, 1);
+    });
+
+    testWidgets('overwrite buildNumber of ping', (tester) async {
+      final robot = WiredashTestRobot(tester);
+      robot.setupMocks();
+      await tester.pumpWidget(
+        const Wiredash(
+          projectId: 'test',
+          secret: 'invalid-secret',
+          // this widget never settles, allowing us to jump in the future
+          child: CircularProgressIndicator(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump();
+      await tester.pump();
+
+      robot.wiredashController.setBuildProperties(
+        buildNumber: 'customBuildNumber',
+      );
+
+      print("wait 5s");
+      await tester.pump(const Duration(seconds: 5));
+      final api = robot.mockServices.mockApi;
+      expect(api.pingInvocations.count, 1);
+      final body = api.pingInvocations.latest[0]! as PingRequestBody;
+      expect(body.buildNumber, 'customBuildNumber');
     });
 
     testWidgets(
