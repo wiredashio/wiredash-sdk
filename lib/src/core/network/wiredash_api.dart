@@ -1,6 +1,5 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers, unnecessary_await_in_return
 
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart';

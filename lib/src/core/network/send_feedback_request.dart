@@ -1,5 +1,6 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:ui';
 
@@ -39,18 +40,8 @@ extension FeedbackBody on FeedbackItem {
     final Map<String, Object> values = {};
 
     // Values are sorted alphabetically for easy comparison with the backend
-    final appLocale = sessionMetadata.appLocale;
-    if (appLocale != null) {
-      values.addAll({'appLocale': appLocale});
-    }
-
-    final appName = appInfo.appName;
-    if (appName != null) {
-      values.addAll({'appName': appName});
-    }
-
-    if (attachments.isNotEmpty) {
-      final items = attachments.map((it) {
+    if (attachments != null && attachments!.isNotEmpty) {
+      final items = attachments!.map((it) {
         if (it is Screenshot) {
           return it.toJson();
         } else {
@@ -60,31 +51,59 @@ extension FeedbackBody on FeedbackItem {
       values.addAll({'attachments': items});
     }
 
-    final buildCommit = this.buildInfo.buildCommit;
-    if (buildCommit != null) {
-      values.addAll({'buildCommit': buildCommit});
+    final _labels = labels;
+    if (_labels != null) {
+      values.addAll({'labels': _labels});
     }
 
-    final buildNumber = this.buildInfo.buildNumber;
-    if (buildNumber != null) {
-      values.addAll({'buildNumber': buildNumber});
+    values.addAll({'message': nonNull(message)});
+
+    values.addAll({'metadata': metadata.toJson()});
+
+    return values.map((k, v) => MapEntry(k, v));
+  }
+}
+
+extension AllMetaDataToJson on AllMetaData {
+  Map<String, Object?> toJson() {
+    final Map<String, Object> values = SplayTreeMap.from({});
+
+    // Values are sorted alphabetically for easy comparison with the backend
+    final _appLocale = appLocale;
+    if (_appLocale != null) {
+      values.addAll({'appLocale': _appLocale});
     }
 
-    final buildVersion = this.buildInfo.buildVersion;
-    if (buildVersion != null) {
-      values.addAll({'buildVersion': buildVersion});
+    final _appName = appName;
+    if (_appName != null) {
+      values.addAll({'appName': _appName});
     }
 
-    final bundleId = appInfo.bundleId;
-    if (bundleId != null) {
-      values.addAll({'bundleId': bundleId});
+    final _buildCommit = buildCommit;
+    if (_buildCommit != null) {
+      values.addAll({'buildCommit': _buildCommit});
+    }
+
+    final _buildNumber = buildNumber;
+    if (_buildNumber != null) {
+      values.addAll({'buildNumber': _buildNumber});
+    }
+
+    final _buildVersion = buildVersion;
+    if (_buildVersion != null) {
+      values.addAll({'buildVersion': _buildVersion});
+    }
+
+    final _bundleId = bundleId;
+    if (_bundleId != null) {
+      values.addAll({'bundleId': _bundleId});
     }
 
     values.addAll({
-      'compilationMode': nonNull(this.buildInfo.compilationMode).jsonEncode(),
+      'compilationMode': nonNull(compilationMode.jsonEncode()),
     });
 
-    final customMetaData = sessionMetadata.custom.map((key, value) {
+    final customMetaData = custom?.map((key, value) {
       if (value == null) {
         return MapEntry(key, null);
       }
@@ -104,95 +123,83 @@ extension FeedbackBody on FeedbackItem {
         return MapEntry(key, null);
       }
     });
-    customMetaData.removeWhere((key, value) => value == null);
-    if (customMetaData.isNotEmpty) {
-      values.addAll({'customMetaData': customMetaData});
+    if (customMetaData != null) {
+      customMetaData.removeWhere((key, value) => value == null);
+      if (customMetaData.isNotEmpty) {
+        values.addAll({'custom': customMetaData});
+      }
     }
 
-    values.addAll({'deviceId': nonNull(deviceId)});
+    values.addAll({'installId': nonNull(installId)});
 
-    final deviceModel = deviceInfo.deviceModel;
-    if (deviceModel != null) {
-      values.addAll({'deviceModel': deviceModel});
-    }
-
-    final _labels = labels;
-    if (_labels != null) {
-      values.addAll({'labels': _labels});
-    }
-
-    values.addAll({'message': nonNull(message)});
-
-    values.addAll({
-      'physicalGeometry': nonNull(flutterInfo.physicalGeometry).toJson(),
-    });
-
-    values.addAll({
-      'platformBrightness':
-          nonNull(flutterInfo.platformBrightness).jsonEncode(),
-    });
-
-    final platformDartVersion = flutterInfo.platformVersion;
-    if (platformDartVersion != null) {
-      values.addAll({'platformDartVersion': platformDartVersion});
+    final _deviceModel = deviceModel;
+    if (_deviceModel != null) {
+      values.addAll({'deviceModel': _deviceModel});
     }
 
     values.addAll({
-      'platformGestureInsets': nonNull(flutterInfo.gestureInsets).toJson(),
+      'physicalGeometry': nonNull(physicalGeometry).toJson(),
     });
 
-    values.addAll({'platformLocale': nonNull(flutterInfo.platformLocale)});
+    values.addAll({
+      'platformBrightness': nonNull(platformBrightness).jsonEncode(),
+    });
 
-    final platformOS = flutterInfo.platformOS;
-    if (platformOS != null) {
-      values.addAll({'platformOS': platformOS});
-    }
-
-    final platformOSVersion = flutterInfo.platformOSVersion;
-    if (platformOSVersion != null) {
-      values.addAll({'platformOSVersion': platformOSVersion});
+    final _platformDartVersion = platformDartVersion;
+    if (_platformDartVersion != null) {
+      values.addAll({'platformDartVersion': _platformDartVersion});
     }
 
     values.addAll({
-      'platformSupportedLocales': nonNull(flutterInfo.platformSupportedLocales),
+      'platformGestureInsets': nonNull(platformGestureInsets).toJson(),
     });
 
-    // Web only
-    final platformUserAgent = flutterInfo.userAgent;
-    if (platformUserAgent != null) {
-      values.addAll({'platformUserAgent': platformUserAgent});
+    values.addAll({'platformLocale': nonNull(platformLocale)});
+
+    final _platformOS = platformOS;
+    if (_platformOS != null) {
+      values.addAll({'platformOS': _platformOS});
     }
+
+    final _platformOSVersion = platformOSVersion;
+    if (_platformOSVersion != null) {
+      values.addAll({'platformOSVersion': _platformOSVersion});
+    }
+
+    values.addAll({
+      'platformSupportedLocales': nonNull(platformSupportedLocales),
+    });
 
     values.addAll({'sdkVersion': nonNull(sdkVersion)});
 
-    final userEmail = email;
-    if (userEmail != null && userEmail.isNotEmpty) {
-      values.addAll({'userEmail': userEmail});
+    final _userEmail = userEmail;
+    if (_userEmail != null && _userEmail.isNotEmpty) {
+      values.addAll({'userEmail': _userEmail});
     }
 
-    final String? userId = sessionMetadata.userId;
-    if (userId != null) {
-      values.addAll({'userId': userId});
+    final String? _userId = userId;
+    if (_userId != null) {
+      values.addAll({'userId': _userId});
     }
 
     values.addAll({
-      'windowInsets': nonNull(flutterInfo.viewInsets).toJson(),
+      'windowInsets': nonNull(windowInsets).toJson(),
     });
 
     values.addAll({
-      'windowPadding': nonNull(flutterInfo.padding).toJson(),
+      'windowPadding': nonNull(windowPadding).toJson(),
     });
 
     values.addAll({
-      'windowPixelRatio': nonNull(flutterInfo.pixelRatio),
+      'windowPixelRatio': nonNull(windowPixelRatio),
     });
 
     values.addAll({
-      'windowSize': nonNull(flutterInfo.physicalSize).toJson(),
+      'windowSize': nonNull(windowSize).toJson(),
     });
 
     values.addAll({
-      'windowTextScaleFactor': nonNull(flutterInfo.textScaleFactor),
+      'windowTextScaleFactor': nonNull(windowTextScaleFactor),
     });
 
     return values.map((k, v) => MapEntry(k, v));
@@ -200,12 +207,10 @@ extension FeedbackBody on FeedbackItem {
 }
 
 extension on Screenshot {
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> values = {
+  Map<String, Object> toJson() {
+    return {
       'id': file.attachmentId!.value,
     };
-
-    return values;
   }
 }
 

@@ -73,7 +73,7 @@ void main() {
       final submittedFeedback = latestCall[0] as FeedbackItem?;
 
       // email is not submitted because the user actively deleted it
-      expect(submittedFeedback!.email, isNull);
+      expect(submittedFeedback!.metadata.userEmail, isNull);
     });
 
     testWidgets('Submit prefilled email address', (tester) async {
@@ -92,7 +92,7 @@ void main() {
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as FeedbackItem?;
-      expect(submittedFeedback!.email, 'dash@flutter.io');
+      expect(submittedFeedback!.metadata.userEmail, 'dash@flutter.io');
     });
   });
 }

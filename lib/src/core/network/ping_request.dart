@@ -38,6 +38,7 @@ class PingRequestBody {
   final String? platformOS;
   final String? platformVersion;
   final String? platformLocale;
+  final int sdkVersion;
 
   PingRequestBody({
     required this.installId,
@@ -48,6 +49,7 @@ class PingRequestBody {
     this.platformOS,
     this.platformVersion,
     this.platformLocale,
+    required this.sdkVersion,
   });
 
   Map<String, Object> toRequestJson() {
@@ -89,6 +91,8 @@ class PingRequestBody {
     if (_platformLocale != null) {
       body['platformLocale'] = _platformLocale;
     }
+
+    body['sdkVersion'] = sdkVersion;
 
     return body;
   }

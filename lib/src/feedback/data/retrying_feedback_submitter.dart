@@ -134,7 +134,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
           PersistedAttachment oldAttachment,
           PersistedAttachment? update,
         ) async {
-          final atts = copy.feedbackItem.attachments.toList()
+          final atts = (copy.feedbackItem.attachments?.toList() ?? [])
             ..remove(oldAttachment);
           if (update != null) {
             atts.add(update);
@@ -146,7 +146,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
           await _pendingFeedbackItemStorage.updatePendingItem(copy);
         }
 
-        for (final attachment in item.feedbackItem.attachments) {
+        for (final attachment in item.feedbackItem.attachments ?? []) {
           if (attachment is Screenshot) {
             final screenshot = attachment.file;
             if (screenshot.isUploaded) {
@@ -180,14 +180,15 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
         }
 
         // once all feedback is uploaded
-        assert(copy.feedbackItem.attachments.every((it) => it.isUploaded));
+        assert(
+            (copy.feedbackItem.attachments ?? []).every((it) => it.isUploaded),);
 
         // actually submit the feedback
         await _api.sendFeedback(copy.feedbackItem);
 
         // ignore: avoid_print
         print(
-          'Feedback with ${copy.feedbackItem.attachments.length} screenshots submitted ✌️\n'
+          'Feedback with ${copy.feedbackItem.attachments?.length ?? 0} screenshots submitted ✌️\n'
           'message: ${copy.feedbackItem.message}',
         );
         await _pendingFeedbackItemStorage.clearPendingItem(item.id);

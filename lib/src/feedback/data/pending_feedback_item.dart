@@ -6,7 +6,6 @@ import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_parser_v2.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_parser_v3.dart';
-import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
 const int _serializationVersion = 3;
 
@@ -93,80 +92,11 @@ extension SerializePendingFeedbackItem on PendingFeedbackItem {
 extension _SerializePersistedFeedbackItem on FeedbackItem {
   Map<String, dynamic> toJson() {
     return SplayTreeMap.from({
-      if (attachments.isNotEmpty)
-        'attachments': attachments.map((it) => it.toJson()).toList(),
-      'appInfo': appInfo.toJson(),
-      'buildInfo': this.buildInfo.toJson(),
-      'deviceId': deviceId,
-      'deviceInfo': deviceInfo.toJson(),
-      if (email != null) 'email': email,
-      'flutterInfo': flutterInfo.toJson(),
+      if (attachments != null && attachments!.isNotEmpty)
+        'attachments': attachments!.map((it) => it.toJson()).toList(),
       if (labels != null) 'labels': labels,
-      'sessionMetadata': sessionMetadata.toJson(),
       'message': message,
-      'sdkVersion': sdkVersion,
-    });
-  }
-}
-
-extension on BuildInfo {
-  Map<String, dynamic> toJson() {
-    return SplayTreeMap.from({
-      'compilationMode': compilationMode.jsonEncode(),
-      if (buildVersion != null) 'buildVersion': buildVersion,
-      if (buildNumber != null) 'buildNumber': buildNumber,
-      if (buildCommit != null) 'buildCommit': buildCommit,
-    });
-  }
-}
-
-extension on AppInfo {
-  Map<String, dynamic> toJson() {
-    return SplayTreeMap.from({
-      if (appName != null) 'appName': appName,
-      if (buildNumber != null) 'buildNumber': buildNumber,
-      if (bundleId != null) 'bundleId': bundleId,
-      if (version != null) 'version': version,
-    });
-  }
-}
-
-extension on SessionMetaData {
-  Map<String, dynamic> toJson() {
-    return SplayTreeMap.from({
-      if (userId != null) 'userId': userId,
-      if (userEmail != null) 'userEmail': userEmail,
-      if (buildVersion != null) 'buildVersion': buildVersion,
-      if (buildNumber != null) 'buildNumber': buildNumber,
-      if (buildCommit != null) 'buildCommit': buildCommit,
-      if (appLocale != null) 'appLocale': appLocale,
-      if (custom.isNotEmpty) 'custom': _serializedCustomMetaData(custom),
-    });
-  }
-
-  Map<String, Object> _serializedCustomMetaData(Map<String, Object?> metaData) {
-    final data = metaData.map((key, value) {
-      try {
-        return MapEntry(key, jsonEncode(value));
-      } catch (e, stack) {
-        reportWiredashError(
-          e,
-          stack,
-          'Could not serialize customMetaData property '
-          '$key=$value',
-        );
-        return MapEntry(key, null);
-      }
-    });
-    data.removeWhere((key, value) => value == null);
-    return SplayTreeMap.from(data);
-  }
-}
-
-extension on DeviceInfo {
-  Map<String, dynamic> toJson() {
-    return SplayTreeMap.from({
-      if (deviceModel != null) 'deviceModel': deviceModel,
+      'metadata': metadata.toJson(),
     });
   }
 }
@@ -184,43 +114,6 @@ extension on PersistedAttachment {
     if (file.isUploaded) {
       values.addAll({'id': file.attachmentId!.value});
     }
-    return values;
-  }
-}
-
-extension on FlutterInfo {
-  Map<String, dynamic> toJson() {
-    final values = SplayTreeMap<String, dynamic>.from({});
-
-    values['platformLocale'] = platformLocale;
-    values['platformSupportedLocales'] = platformSupportedLocales;
-    values['padding'] = padding.toJson();
-    values['physicalSize'] = physicalSize.toJson();
-    values['physicalGeometry'] = physicalGeometry.toJson();
-    values['pixelRatio'] = pixelRatio;
-    values['platformBrightness'] = platformBrightness.jsonEncode();
-    values['textScaleFactor'] = textScaleFactor;
-
-    if (platformOS != null) {
-      values['platformOS'] = platformOS;
-    }
-
-    if (platformOSVersion != null) {
-      values['platformOSBuild'] = platformOSVersion;
-    }
-
-    if (platformVersion != null) {
-      values['platformVersion'] = platformVersion;
-    }
-
-    values['viewInsets'] = viewInsets.toJson();
-
-    values['gestureInsets'] = gestureInsets.toJson();
-
-    if (userAgent != null) {
-      values['userAgent'] = userAgent;
-    }
-
     return values;
   }
 }
@@ -297,45 +190,4 @@ class WiredashWindowPadding implements WindowPadding {
   @override
   int get hashCode =>
       left.hashCode ^ top.hashCode ^ right.hashCode ^ bottom.hashCode;
-}
-
-// Remove when we drop support for Flutter v3.8.0-14.0.pre.
-// ignore: deprecated_member_use
-extension on WindowPadding {
-  List<double> toJson() {
-    return [left, top, right, bottom];
-  }
-}
-
-extension on Rect {
-  List<double> toJson() {
-    return [left, top, right, bottom];
-  }
-}
-
-extension on Size {
-  List<double> toJson() {
-    return [width, height];
-  }
-}
-
-extension on Brightness {
-  String jsonEncode() {
-    if (this == Brightness.dark) return 'dark';
-    if (this == Brightness.light) return 'light';
-    throw 'Unknown brightness value $this';
-  }
-}
-
-extension on CompilationMode {
-  String jsonEncode() {
-    switch (this) {
-      case CompilationMode.release:
-        return 'release';
-      case CompilationMode.profile:
-        return 'profile';
-      case CompilationMode.debug:
-        return 'debug';
-    }
-  }
 }

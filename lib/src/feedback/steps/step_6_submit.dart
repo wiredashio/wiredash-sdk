@@ -126,33 +126,27 @@ class _Step6SubmitState extends State<Step6Submit> {
                         subtitle:
                             Text('${model.attachments.length} Screenshot'),
                       ),
-                    if (data.email != null)
+                    if (data.metadata.userEmail != null)
                       ListTile(
                         contentPadding: EdgeInsets.zero,
                         title: const Text('Contact email'),
-                        subtitle: Text(data.email ?? ''),
+                        subtitle: Text(data.metadata.userEmail ?? ''),
                       ),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: const Text('Locale'),
                       subtitle: Text(
-                        data.sessionMetadata.appLocale ?? '-',
+                        data.metadata.appLocale ?? '-',
                       ),
                     ),
-                    if (data.flutterInfo.userAgent != null)
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('User agent'),
-                        subtitle: Text('${data.flutterInfo.userAgent}'),
-                      ),
                     if (!kIsWeb)
                       ListTile(
                         contentPadding: EdgeInsets.zero,
                         title: const Text('Platform'),
                         subtitle: Text(
-                          '${data.flutterInfo.platformOS} '
-                          '${data.flutterInfo.platformOSVersion} '
-                          '(${data.flutterInfo.platformLocale})',
+                          '${data.metadata.platformOS} '
+                          '${data.metadata.platformOSVersion} '
+                          '(${data.metadata.platformLocale})',
                         ),
                       ),
                     ListTile(
@@ -160,10 +154,10 @@ class _Step6SubmitState extends State<Step6Submit> {
                       title: const Text('Build Info'),
                       subtitle: Text(
                         [
-                          data.buildInfo.compilationMode,
-                          data.buildInfo.buildNumber,
-                          data.buildInfo.buildVersion,
-                          data.buildInfo.buildCommit,
+                          data.metadata.compilationMode,
+                          data.metadata.buildNumber,
+                          data.metadata.buildVersion,
+                          data.metadata.buildCommit,
                         ].where((it) => it != null).join(', '),
                       ),
                     ),
@@ -172,14 +166,15 @@ class _Step6SubmitState extends State<Step6Submit> {
                         contentPadding: EdgeInsets.zero,
                         title: const Text('Dart version'),
                         subtitle: Text(
-                          '${data.flutterInfo.platformVersion}',
+                          '${data.metadata.platformDartVersion}',
                         ),
                       ),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: const Text('Custom metaData'),
                       subtitle: Text(
-                        data.sessionMetadata.custom.entries
+                        (data.metadata.custom ?? {})
+                            .entries
                             .map((it) => '${it.key}=${it.value}, ')
                             .join(),
                       ),

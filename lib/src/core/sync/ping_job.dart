@@ -2,6 +2,7 @@ import 'package:clock/clock.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
+import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
 class PingJob extends Job {
@@ -62,7 +63,8 @@ class PingJob extends Job {
       bundleId: fixedData.appInfo.bundleId,
       platformLocale: flutterInfo.platformLocale,
       platformOS: flutterInfo.platformOS,
-      platformVersion: flutterInfo.platformVersion,
+      platformVersion: flutterInfo.platformDartVersion,
+      sdkVersion: wiredashSdkVersion,
     );
     try {
       await apiProvider().ping(body);

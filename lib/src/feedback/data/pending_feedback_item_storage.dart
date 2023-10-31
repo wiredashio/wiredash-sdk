@@ -72,7 +72,7 @@ class PendingFeedbackItemStorage {
   Future<PendingFeedbackItem> addPendingItem(FeedbackItem item) async {
     // Save in-memory images files to disk
     final List<PersistedAttachment> serializedAttachments = [];
-    for (final attachment in item.attachments) {
+    for (final attachment in item.attachments ?? []) {
       if (attachment is Screenshot) {
         if (attachment.file.isUploaded) {
           // good already uploaded
@@ -96,7 +96,9 @@ class PendingFeedbackItemStorage {
         );
       }
     }
-    final serializable = item.copyWith(attachments: serializedAttachments);
+    final serializable = item.copyWith(
+      attachments: serializedAttachments.isEmpty ? null : serializedAttachments,
+    );
 
     final pendingItem = PendingFeedbackItem(
       id: _idGenerator.localFeedbackId(),
@@ -116,7 +118,8 @@ class PendingFeedbackItemStorage {
 
     for (final item in items) {
       if (item.id == itemId) {
-        for (final attachment in item.feedbackItem.attachments) {
+        for (final PersistedAttachment attachment
+            in item.feedbackItem.attachments ?? []) {
           final eventuallyOnDisk = attachment.file;
           if (eventuallyOnDisk.isOnDisk) {
             final screenshot = _fs.file(eventuallyOnDisk.pathToFile);
@@ -144,11 +147,11 @@ class PendingFeedbackItemStorage {
       list.remove(removed);
       list.add(item);
 
-      final List<PersistedAttachment> oldDiskAttachments = removed
-          .feedbackItem.attachments
-          .where((element) => element.file.isOnDisk)
-          .toList();
-      final newDiskAttachments = item.feedbackItem.attachments
+      final List<PersistedAttachment> oldDiskAttachments =
+          (removed.feedbackItem.attachments ?? [])
+              .where((element) => element.file.isOnDisk)
+              .toList();
+      final newDiskAttachments = (item.feedbackItem.attachments ?? [])
           .where((element) => element.file.isOnDisk)
           .toList();
       final uploaded = oldDiskAttachments

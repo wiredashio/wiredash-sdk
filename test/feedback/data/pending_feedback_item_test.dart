@@ -5,38 +5,33 @@ import 'dart:ui';
 
 import 'package:test/test.dart';
 import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/metadata/build_info/app_info.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
-import 'package:wiredash/src/metadata/device_info/device_info.dart';
-import 'package:wiredash/src/metadata/meta_data_collector.dart';
-import 'package:wiredash/src/metadata/user_meta_data.dart';
 
 void main() {
   final minimalFeedbackV2 = PendingFeedbackItem(
     id: 'abc123',
     feedbackItem: FeedbackItem(
-      appInfo: AppInfo(),
       attachments: [],
-      buildInfo: BuildInfo(compilationMode: CompilationMode.profile),
-      deviceId: '1234',
-      flutterInfo: FlutterInfo(
-        pixelRatio: 1.0,
-        textScaleFactor: 1.0,
+      message: 'Hello world!',
+      metadata: AllMetaData(
+        appLocale: 'en_US',
+        windowPixelRatio: 1.0,
+        installId: '1234',
+        sdkVersion: 174,
+        compilationMode: CompilationMode.profile,
+        windowTextScaleFactor: 1.0,
         platformLocale: 'en_US',
         platformSupportedLocales: ['en_US', 'de_DE'],
         platformBrightness: Brightness.dark,
-        gestureInsets:
+        platformGestureInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-        padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
-        viewInsets:
+        windowPadding:
+            WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+        windowInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
         physicalGeometry: Rect.zero,
-        physicalSize: Size(1280, 720),
+        windowSize: Size(1280, 720),
       ),
-      message: 'Hello world!',
-      sdkVersion: 174,
-      deviceInfo: DeviceInfo(),
-      sessionMetadata: CustomizableWiredashMetaData()..appLocale = 'en_US',
     ),
   );
   final minimalJsonV2 = {
@@ -72,49 +67,46 @@ void main() {
   final fullFeedbackV2 = PendingFeedbackItem(
     id: 'abc123',
     feedbackItem: FeedbackItem(
-      appInfo: AppInfo(),
-      sessionMetadata: CustomizableWiredashMetaData()
-        ..appLocale = 'de_DE'
-        ..userId = 'Testy McTestFace'
-        ..custom = {
-          'customText': 'text',
-          'nestedObject': {'frodo': 'ring', 'sam': 'lembas'},
-        },
       attachments: [
         PersistedAttachment.screenshot(
           file: FileDataEventuallyOnDisk.file('path/to/file.png'),
         ),
       ],
-      buildInfo: BuildInfo(
+      message: 'Hello world!',
+      labels: ['bug', 'lbl-1234'],
+      metadata: AllMetaData(
         buildVersion: '1.2.3',
         buildNumber: '543',
         buildCommit: 'abcdef12',
+        appLocale: 'de_DE',
+        windowPixelRatio: 2.75,
+        installId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+        sdkVersion: 174,
         compilationMode: CompilationMode.profile,
-      ),
-      deviceId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-      flutterInfo: FlutterInfo(
-        pixelRatio: 2.75,
-        platformOS: 'android',
-        platformOSVersion: 'RSR1.201013.001',
-        platformVersion: '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
-            '"android_ia32"',
-        textScaleFactor: 1,
+        windowTextScaleFactor: 1.0,
+        userEmail: 'email@example.com',
         platformLocale: 'en_US',
         platformSupportedLocales: ['en_US', 'de_DE'],
         platformBrightness: Brightness.dark,
-        gestureInsets:
+        platformGestureInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-        padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
-        viewInsets:
+        windowPadding:
+            WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+        windowInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
         physicalGeometry: Rect.zero,
-        physicalSize: Size(1080, 2088),
+        windowSize: Size(1080, 2088),
+        custom: {
+          'customText': 'text',
+          'nestedObject': {'frodo': 'ring', 'sam': 'lembas'},
+        },
+        platformOS: 'android',
+        platformOSVersion: 'RSR1.201013.001',
+        platformDartVersion:
+            '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+            '"android_ia32"',
+        userId: 'Testy McTestFace',
       ),
-      email: 'email@example.com',
-      message: 'Hello world!',
-      labels: ['bug', 'lbl-1234'],
-      sdkVersion: 174,
-      deviceInfo: DeviceInfo(),
     ),
   );
   final fullJsonV2 = {
@@ -189,178 +181,141 @@ void main() {
   final fullFeedbackV3 = PendingFeedbackItem(
     id: 'abc123',
     feedbackItem: FeedbackItem(
-      appInfo: AppInfo(
-        bundleId: 'com.example.app',
-        appName: 'Example App',
-        version: '1.9.0',
-        buildNumber: '190',
-      ),
-      sessionMetadata: CustomizableWiredashMetaData()
-        ..appLocale = 'de_DE'
-        ..userId = 'Testy McTestFace'
-        ..userEmail = 'hey@my.app'
-        ..buildNumber = '543'
-        ..buildCommit = 'abcdef12'
-        ..buildVersion = '1.2.3'
-        ..custom = {
-          'customText': 'text',
-          'nestedObject': {'frodo': 'ring', 'sam': 'lembas'},
-        },
       attachments: [
         PersistedAttachment.screenshot(
           file: FileDataEventuallyOnDisk.file('path/to/file.png'),
         ),
       ],
-      buildInfo: BuildInfo(
+      message: 'Hello world!',
+      labels: ['bug', 'lbl-1234'],
+      metadata: AllMetaData(
         buildVersion: '1.2.3',
         buildNumber: '543',
         buildCommit: 'abcdef12',
+        appLocale: 'en_US',
+        windowPixelRatio: 2.75,
+        installId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+        sdkVersion: 174,
         compilationMode: CompilationMode.profile,
-      ),
-      deviceId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-      flutterInfo: FlutterInfo(
-        pixelRatio: 2.75,
-        platformOS: 'android',
-        platformOSVersion: 'RSR1.201013.001',
-        platformVersion: '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
-            '"android_ia32"',
-        textScaleFactor: 1,
+        windowTextScaleFactor: 1.0,
+        userEmail: 'email@example.com',
         platformLocale: 'en_US',
         platformSupportedLocales: ['en_US', 'de_DE'],
         platformBrightness: Brightness.dark,
-        gestureInsets:
+        platformGestureInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-        padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
-        viewInsets:
+        windowPadding:
+            WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+        windowInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
         physicalGeometry: Rect.zero,
-        physicalSize: Size(1080, 2088),
-      ),
-      email: 'email@example.com',
-      message: 'Hello world!',
-      labels: ['bug', 'lbl-1234'],
-      sdkVersion: 200,
-      deviceInfo: DeviceInfo(
+        windowSize: Size(1280, 720),
+        appName: 'MyApp',
+        bundleId: 'com.example.app',
+        custom: {
+          'customText': 'text',
+          'nestedObject': {'frodo': 'ring', 'sam': 'lembas'},
+        },
         deviceModel: 'Google Pixel 8',
+        platformOS: 'android',
+        platformOSVersion: 'RSR1.201013.001',
+        platformDartVersion:
+            '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
+            '"android_ia32"',
+        userId: 'Testy McTestFace',
       ),
     ),
   );
+
   final fullJsonV3 = {
-    'id': 'abc123',
-    'version': 3,
-    'feedbackItem': {
-      'appInfo': {
-        'bundleId': 'com.example.app',
-        'appName': 'Example App',
-        'version': '1.9.0',
-        'buildNumber': '190',
-      },
-      'attachments': [
-        {
-          'path': 'path/to/file.png',
-        },
+    "feedbackItem": {
+      "attachments": [
+        {"path": "path/to/file.png"},
       ],
-      'buildInfo': {
-        'buildVersion': '1.2.3',
-        'buildNumber': '543',
-        'buildCommit': 'abcdef12',
-        'compilationMode': 'profile',
-      },
-      'deviceInfo': {
-        'deviceModel': 'Google Pixel 8',
-      },
-      'sessionMetadata': {
-        'appLocale': 'de_DE',
-        'userId': 'Testy McTestFace',
-        'userEmail': 'hey@my.app',
-        'buildNumber': '543',
-        'buildCommit': 'abcdef12',
-        'buildVersion': '1.2.3',
-        'custom': {
-          'customText': '"text"',
-          'nestedObject': '{"frodo":"ring","sam":"lembas"}',
+      "labels": ["bug", "lbl-1234"],
+      "message": "Hello world!",
+      "metadata": {
+        "appLocale": "en_US",
+        "appName": "MyApp",
+        "buildCommit": "abcdef12",
+        "buildNumber": "543",
+        "buildVersion": "1.2.3",
+        "bundleId": "com.example.app",
+        "compilationMode": "profile",
+        "custom": {
+          "customText": "text",
+          "nestedObject": {"frodo": "ring", "sam": "lembas"},
         },
+        "deviceModel": "Google Pixel 8",
+        "installId": "8F821AB6-B3A7-41BA-882E-32D8367243C1",
+        "physicalGeometry": [0.0, 0.0, 0.0, 0.0],
+        "platformBrightness": "dark",
+        "platformDartVersion":
+            '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on "android_ia32"',
+        "platformGestureInsets": [0.0, 0.0, 0.0, 0.0],
+        "platformLocale": "en_US",
+        "platformOS": "android",
+        "platformOSVersion": "RSR1.201013.001",
+        "platformSupportedLocales": ["en_US", "de_DE"],
+        "sdkVersion": 174,
+        "userEmail": "email@example.com",
+        "userId": "Testy McTestFace",
+        "windowInsets": [0.0, 0.0, 0.0, 685.0],
+        "windowPadding": [0.0, 66.0, 0.0, 0.0],
+        "windowPixelRatio": 2.75,
+        "windowSize": [1280.0, 720.0],
+        "windowTextScaleFactor": 1.0,
       },
-      'flutterInfo': {
-        'padding': [0, 66, 0, 0],
-        'physicalSize': [1080, 2088],
-        'appIsDebug': true,
-        'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-        'pixelRatio': 2.75,
-        'platformOS': 'android',
-        'platformOSBuild': 'RSR1.201013.001',
-        'platformVersion':
-            '2.10.2 (stable) (Tue Oct 13 15:50:27 2020 +0200) on '
-                '"android_ia32"',
-        'textScaleFactor': 1,
-        'platformLocale': 'en_US',
-        'platformSupportedLocales': ['en_US', 'de_DE'],
-        'platformBrightness': 'dark',
-        'gestureInsets': [0, 0, 0, 0],
-        'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
-        'viewInsets': [0, 0, 0, 685],
-      },
-      'deviceId': '8F821AB6-B3A7-41BA-882E-32D8367243C1',
-      'email': 'email@example.com',
-      'message': 'Hello world!',
-      'labels': ['bug', 'lbl-1234'],
-      'userId': 'Testy McTestFace',
-      'sdkVersion': 200,
     },
+    "id": "abc123",
+    "version": 3,
   };
 
   final minimalFeedbackV3 = PendingFeedbackItem(
     id: 'abc123',
     feedbackItem: FeedbackItem(
-      appInfo: AppInfo(),
-      attachments: [],
-      buildInfo: BuildInfo(compilationMode: CompilationMode.profile),
-      deviceId: '1234',
-      flutterInfo: FlutterInfo(
-        pixelRatio: 1.0,
-        textScaleFactor: 1.0,
+      message: 'Hello world!',
+      metadata: AllMetaData(
+        windowPixelRatio: 2.75,
+        installId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+        sdkVersion: 174,
+        compilationMode: CompilationMode.profile,
+        windowTextScaleFactor: 1.0,
         platformLocale: 'en_US',
         platformSupportedLocales: ['en_US', 'de_DE'],
         platformBrightness: Brightness.dark,
-        gestureInsets:
+        platformGestureInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
-        padding: WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
-        viewInsets:
+        windowPadding:
+            WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
+        windowInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
         physicalGeometry: Rect.zero,
-        physicalSize: Size(1280, 720),
+        windowSize: Size(1280, 720),
       ),
-      message: 'Hello world!',
-      sdkVersion: 174,
-      deviceInfo: DeviceInfo(),
-      sessionMetadata: CustomizableWiredashMetaData(),
     ),
   );
   final minimalJsonV3 = {
-    'id': 'abc123',
-    'feedbackItem': {
-      'deviceId': '1234',
-      'message': 'Hello world!',
-      'sdkVersion': 174,
-      'buildInfo': {
-        'compilationMode': 'profile',
-      },
-      'flutterInfo': {
-        'deviceId': '1234',
-        'appIsDebug': false,
-        'pixelRatio': 1,
-        'textScaleFactor': 1.0,
-        'platformLocale': 'en_US',
-        'platformSupportedLocales': ['en_US', 'de_DE'],
-        'platformBrightness': 'dark',
-        'physicalSize': [1280, 720],
-        'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
-        'gestureInsets': [0.0, 0.0, 0.0, 0.0],
-        'viewInsets': [0.0, 0.0, 0.0, 685.0],
-        'padding': [0.0, 66, 0, 0.0],
+    "feedbackItem": {
+      "message": "Hello world!",
+      "metadata": {
+        "compilationMode": "profile",
+        "installId": "8F821AB6-B3A7-41BA-882E-32D8367243C1",
+        "physicalGeometry": [0.0, 0.0, 0.0, 0.0],
+        "platformBrightness": "dark",
+        "platformGestureInsets": [0.0, 0.0, 0.0, 0.0],
+        "platformLocale": "en_US",
+        "platformSupportedLocales": ["en_US", "de_DE"],
+        "sdkVersion": 174,
+        "windowInsets": [0.0, 0.0, 0.0, 685.0],
+        "windowPadding": [0.0, 66.0, 0.0, 0.0],
+        "windowPixelRatio": 2.75,
+        "windowSize": [1280.0, 720.0],
+        "windowTextScaleFactor": 1.0,
       },
     },
-    'version': 3,
+    "id": "abc123",
+    "version": 3,
   };
 
   group('PendingFeedbackItem', () {
@@ -394,8 +349,8 @@ void main() {
   });
 
   test('back and forth - minimal', () {
-    final json = minimalFeedbackV3.toJson();
-    final parsed = deserializePendingFeedbackItem(jsonEncode(json));
+    final json = jsonEncode(minimalFeedbackV3.toJson());
+    final parsed = deserializePendingFeedbackItem(json);
     expect(parsed, minimalFeedbackV3);
     expect(parsed.hashCode, minimalFeedbackV3.hashCode);
   });
