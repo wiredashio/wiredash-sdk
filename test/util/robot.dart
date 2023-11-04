@@ -115,15 +115,13 @@ class WiredashTestRobot {
     });
   }
 
-  static Future<WiredashTestRobot> launchApp(
-    WidgetTester tester, {
+  Future<WiredashTestRobot> launchApp({
     WiredashFeedbackOptions? feedbackOptions,
     Widget Function(BuildContext)? builder,
     FutureOr<void> Function()? afterPump,
     List<LocalizationsDelegate> appLocalizationsDelegates = const [],
   }) async {
-    final robot = WiredashTestRobot(tester);
-    robot.setupMocks();
+    setupMocks();
     debugServicesCreator = () => createMockServices();
     addTearDown(() => debugServicesCreator = null);
 
@@ -178,14 +176,14 @@ class WiredashTestRobot {
     }
 
     // Don't do actual http calls
-    robot.services.inject<WiredashApi>((_) => MockWiredashApi.fake());
+    services.inject<WiredashApi>((_) => MockWiredashApi.fake());
 
     // replace submitter, because for testing we always want to submit directly
-    robot.services.inject<FeedbackSubmitter>(
-      (locator) => DirectFeedbackSubmitter(robot.services.api),
+    services.inject<FeedbackSubmitter>(
+      (locator) => DirectFeedbackSubmitter(services.api),
     );
 
-    return robot;
+    return this;
   }
 
   WidgetSelector<WiredashBackdrop> get _spotBackdrop =>

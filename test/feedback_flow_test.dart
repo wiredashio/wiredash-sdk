@@ -15,7 +15,7 @@ void main() {
     });
 
     testWidgets('Send text only feedback', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
 
       await robot.openWiredash();
       await robot.enterFeedbackMessage('test message');
@@ -31,7 +31,7 @@ void main() {
     });
 
     testWidgets('Discard feedback', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
 
       await robot.openWiredash();
       await robot.enterFeedbackMessage('test message');
@@ -52,7 +52,7 @@ void main() {
     });
 
     testWidgets('Discard feedback disappears after 3s', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
 
       await robot.openWiredash();
       await robot.enterFeedbackMessage('test message');
@@ -67,7 +67,7 @@ void main() {
 
     testWidgets('No message shows error, entering one allows continue',
         (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
       await robot.openWiredash();
 
       // Pressing next shows error
@@ -86,7 +86,7 @@ void main() {
     });
 
     testWidgets('Send feedback with screenshot', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
 
       await robot.openWiredash();
       await robot.enterFeedbackMessage('test message');
@@ -107,7 +107,7 @@ void main() {
     });
 
     testWidgets('Send feedback with multiple screenshots', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
 
       await robot.openWiredash();
       await robot.enterFeedbackMessage('test message');
@@ -132,8 +132,7 @@ void main() {
     });
 
     testWidgets('Send feedback with labels', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(
-        tester,
+      final robot = await WiredashTestRobot(tester).launchApp(
         feedbackOptions: const WiredashFeedbackOptions(
           labels: [
             Label(id: 'lbl-1', title: 'One'),
@@ -169,8 +168,7 @@ void main() {
         (tester) async {
       const userEmail = 'prefilled_address@flutter.io';
 
-      final robot = await WiredashTestRobot.launchApp(
-        tester,
+      final robot = await WiredashTestRobot(tester).launchApp(
         feedbackOptions: WiredashFeedbackOptions(
           // Provide user e-mail
           collectMetaData: (data) async {
@@ -200,8 +198,7 @@ void main() {
       const prefilledEmail = 'prefilled_address@flutter.io';
       const adjustedEmail = 'dash@flutter.io';
 
-      final robot = await WiredashTestRobot.launchApp(
-        tester,
+      final robot = await WiredashTestRobot(tester).launchApp(
         feedbackOptions: WiredashFeedbackOptions(
           // Provide user e-mail
           collectMetaData: (data) async {
@@ -239,8 +236,7 @@ void main() {
         'but then goes back and skips', (tester) async {
       const userEmail = 'prefilled_address@flutter.io';
 
-      final robot = await WiredashTestRobot.launchApp(
-        tester,
+      final robot = await WiredashTestRobot(tester).launchApp(
         feedbackOptions: WiredashFeedbackOptions(
           // Provide user e-mail
           collectMetaData: (data) async {
@@ -267,8 +263,7 @@ void main() {
     });
 
     testWidgets('Send feedback with email', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(
-        tester,
+      final robot = await WiredashTestRobot(tester).launchApp(
         feedbackOptions: const WiredashFeedbackOptions(
           email: EmailPrompt.optional,
         ),
@@ -292,8 +287,7 @@ void main() {
     });
 
     testWidgets('Default steps are message, screenshot, email', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(
-        tester,
+      final robot = await WiredashTestRobot(tester).launchApp(
         // empty feedback options
         feedbackOptions: const WiredashFeedbackOptions(),
       );
@@ -316,8 +310,7 @@ void main() {
     });
 
     testWidgets('Do not ask for email', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(
-        tester,
+      final robot = await WiredashTestRobot(tester).launchApp(
         feedbackOptions: const WiredashFeedbackOptions(
           email: EmailPrompt.hidden,
         ),
@@ -338,8 +331,7 @@ void main() {
     });
 
     testWidgets('Send feedback with everything', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(
-        tester,
+      final robot = await WiredashTestRobot(tester).launchApp(
         feedbackOptions: const WiredashFeedbackOptions(
           email: EmailPrompt.optional,
           labels: [
@@ -372,7 +364,7 @@ void main() {
     });
 
     testWidgets('Restore flow state when reopening', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
 
       await robot.openWiredash();
       await robot.enterFeedbackMessage('test message');
@@ -388,8 +380,7 @@ void main() {
 
     testWidgets('Dont show hidden labels but send them regardless',
         (tester) async {
-      final robot = await WiredashTestRobot.launchApp(
-        tester,
+      final robot = await WiredashTestRobot(tester).launchApp(
         feedbackOptions: const WiredashFeedbackOptions(
           labels: [
             Label(id: 'lbl-1', title: 'One'),
@@ -425,8 +416,7 @@ void main() {
     });
 
     testWidgets('Hidden labels only skip label step', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(
-        tester,
+      final robot = await WiredashTestRobot(tester).launchApp(
         feedbackOptions: const WiredashFeedbackOptions(
           labels: [
             Label(id: 'lbl-1', title: 'One', hidden: true),
