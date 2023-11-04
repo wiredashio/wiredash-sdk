@@ -85,6 +85,26 @@ void main() {
       expect(firstSyncEngine, same(secondSyncEngine));
     });
   });
+
+  test('event listener future', () async {
+    final engine = SyncEngine();
+    String futureState = '';
+    final future = engine
+        .onEvent(SdkEvent.appStart)
+        .whenComplete(() => futureState = 'complete');
+    expect(futureState, '');
+    await engine.onWiredashInit();
+    expect(futureState, 'complete');
+    await future;
+  });
+
+  test('completer is only called once', () async {
+    final engine = SyncEngine();
+    engine.onEvent(SdkEvent.appStart);
+    await engine.onWiredashInit();
+    // completing the completer twice would throw
+    await engine.onWiredashInit();
+  });
 }
 
 class TestJob extends Job {

@@ -41,6 +41,7 @@ class SyncEngine {
   Timer? _initTimer;
 
   final Map<String, Job> _jobs = {};
+  final Map<SdkEvent, List<Completer>> _eventListener = {};
 
   bool get _mounted => _initTimer != null;
 
@@ -131,6 +132,21 @@ class SyncEngine {
         debugPrint('Error executing job ${job._name}:\n$e\n$stack');
       }
     }
+    final listeners = _eventListener[event] ?? [];
+    for (final Completer completer in listeners.toList()) {
+      completer.complete();
+      listeners.remove(completer);
+    }
+  }
+
+  /// Create a future that completes when the [event] was triggered
+  Future<void> onEvent(SdkEvent event) async {
+    // add Completer to _eventListener
+    final completer = Completer<void>();
+    final list = _eventListener.putIfAbsent(event, () => []);
+    list.add(completer);
+
+    return completer.future;
   }
 }
 

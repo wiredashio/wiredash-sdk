@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
+// ignore: depend_on_referenced_packages
+import 'package:async/async.dart' show ResultFuture;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_feedback.dart';
+import 'package:wiredash/src/core/sync/sync_engine.dart';
 
 import 'util/robot.dart';
 import 'util/wiredash_tester.dart';
@@ -38,8 +41,13 @@ void main() {
 
       // wait for the UploadPendingFeedbackJob to start
       await tester.pumpAndSettle(const Duration(seconds: 5));
-      // every disk io call needs to be pumped
-      for (var i = 0; i < 10; i++) {
+
+      final future = ResultFuture(
+        robot.mockServices.services.syncEngine
+            .onEvent(SdkEvent.appStartDelayed),
+      );
+      while (!future.isComplete) {
+        // every disk io call needs to be pumped
         await tester.pumpHardAndSettle();
       }
 
@@ -82,8 +90,13 @@ void main() {
 
       // wait for the UploadPendingFeedbackJob to start
       await tester.pumpAndSettle(const Duration(seconds: 5));
-      // every disk io call needs to be pumped
-      for (var i = 0; i < 10; i++) {
+
+      final future = ResultFuture(
+        robot.mockServices.services.syncEngine
+            .onEvent(SdkEvent.appStartDelayed),
+      );
+      while (!future.isComplete) {
+        // every disk io call needs to be pumped
         await tester.pumpHardAndSettle();
       }
 
