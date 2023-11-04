@@ -28,8 +28,14 @@ class WiredashTestRobot {
 
   WiredashTestRobot(this.tester);
 
+  bool _settedUpMock = false;
+
   void setupMocks() {
-    SharedPreferences.setMockInitialValues({});
+    if (_settedUpMock) return;
+    _settedUpMock = true;
+    SharedPreferences.setMockInitialValues({
+      'mocked': true,
+    });
     PackageInfo.setMockInitialValues(
       appName: 'Wiredash Demo',
       packageName: 'io.wiredash.demo',
@@ -120,6 +126,7 @@ class WiredashTestRobot {
     Widget Function(BuildContext)? builder,
     FutureOr<void> Function()? afterPump,
     List<LocalizationsDelegate> appLocalizationsDelegates = const [],
+    bool useDirectFeedbackSubmitter = true,
   }) async {
     setupMocks();
     debugServicesCreator = () => createMockServices();
@@ -178,10 +185,14 @@ class WiredashTestRobot {
     // Don't do actual http calls
     services.inject<WiredashApi>((_) => MockWiredashApi.fake());
 
-    // replace submitter, because for testing we always want to submit directly
-    services.inject<FeedbackSubmitter>(
-      (locator) => DirectFeedbackSubmitter(services.api),
-    );
+    if (useDirectFeedbackSubmitter) {
+      // replace submitter, because for testing we always want to submit directly
+      services.inject<FeedbackSubmitter>(
+        (locator) => DirectFeedbackSubmitter(services.api),
+      );
+    } else {
+      assert(services.feedbackSubmitter is RetryingFeedbackSubmitter);
+    }
 
     return this;
   }
