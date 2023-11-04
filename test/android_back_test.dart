@@ -19,7 +19,7 @@ void main() {
 
     testWidgets('To submit and back until close - excluding screenshot',
         (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
       final mockApi = MockWiredashApi();
       robot.services.inject<WiredashApi>((_) => mockApi);
 

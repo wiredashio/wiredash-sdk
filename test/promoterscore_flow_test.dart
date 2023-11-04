@@ -13,7 +13,7 @@ void main() {
     });
 
     testWidgets('Send promoter score', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
       await robot.openPromoterScore();
       await robot.ratePromoterScore(7);
       await robot.submitPromoterScore();
@@ -41,7 +41,7 @@ void main() {
     });
 
     testWidgets('Send promoter score with message', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
       await robot.openPromoterScore();
       await robot.ratePromoterScore(3);
       await robot.enterPromotionScoreMessage('What a cool app!');
@@ -70,7 +70,7 @@ void main() {
     });
 
     testWidgets('Send promoter score shown event to console', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
       await robot.openPromoterScore();
       final latestCall = robot.mockServices.mockApi.sendPsInvocations.latest;
       final request = latestCall[0] as PromoterScoreRequestBody?;
@@ -78,7 +78,7 @@ void main() {
     });
 
     testWidgets('Shows detractors thanks message', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
       await robot.openPromoterScore();
       await robot.ratePromoterScore(2);
       await robot.enterPromotionScoreMessage('Hello World');
@@ -90,7 +90,7 @@ void main() {
     });
 
     testWidgets('Shows passives thanks message', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
       await robot.openPromoterScore();
       await robot.ratePromoterScore(8);
       await robot.enterPromotionScoreMessage('Hello World');
@@ -102,7 +102,7 @@ void main() {
     });
 
     testWidgets('Shows promoters thanks message', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
       await robot.openPromoterScore();
       await robot.ratePromoterScore(9);
       await robot.enterPromotionScoreMessage('Hello World');
@@ -115,7 +115,7 @@ void main() {
 
     testWidgets('promoter score is discarded when closing Wiredash',
         (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
       await robot.openPromoterScore();
       await robot.ratePromoterScore(9);
       expect(robot.services.psModel.score, PromoterScoreRating.rating9);
@@ -125,7 +125,7 @@ void main() {
     });
 
     testWidgets('Track lastPromoterScoreSurvey in telemetry', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
       final lastPsSurvey =
           await robot.services.wiredashTelemetry.lastPromoterScoreSurvey();
       expect(lastPsSurvey, isNull);
@@ -142,7 +142,7 @@ void main() {
     testWidgets(
         'Do not show error when submit fails, complete with thanks message',
         (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
 
       robot.mockServices.mockApi.sendPsInvocations.interceptor =
           (invocation) async {

@@ -101,8 +101,7 @@ extension on WidgetTester {
   Future<WiredashTestRobot> goToEmailStep({
     FutureOr<void> Function(WiredashTestRobot robot)? beforeOpen,
   }) async {
-    final robot = await WiredashTestRobot.launchApp(
-      this,
+    final robot = await WiredashTestRobot(this).launchApp(
       feedbackOptions: const WiredashFeedbackOptions(
         email: EmailPrompt.optional,
       ),

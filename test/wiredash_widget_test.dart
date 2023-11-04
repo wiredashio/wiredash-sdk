@@ -165,8 +165,7 @@ void main() {
     );
 
     testWidgets('Do not lose state of app on open/close', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(
-        tester,
+      final robot = await WiredashTestRobot(tester).launchApp(
         builder: (_) => const _FakeApp(),
       );
       expect(_FakeApp.initCount, 1);
@@ -180,8 +179,7 @@ void main() {
       testWidgets(
           'Wiredash on top of MaterialApp does not override existing Localizations',
           (tester) async {
-        final robot = await WiredashTestRobot.launchApp(
-          tester,
+        final robot = await WiredashTestRobot(tester).launchApp(
           appLocalizationsDelegates: const [
             _AppLocalizations.delegate,
             DefaultWidgetsLocalizations.delegate,
@@ -220,8 +218,7 @@ void main() {
       testWidgets(
           'Wiredash below MaterialApp does not override existing Localizations',
           (tester) async {
-        final robot = await WiredashTestRobot.launchApp(
-          tester,
+        final robot = await WiredashTestRobot(tester).launchApp(
           appLocalizationsDelegates: const [
             _AppLocalizations.delegate,
             DefaultWidgetsLocalizations.delegate,
@@ -273,7 +270,7 @@ void main() {
     });
 
     testWidgets('Track telemetry', (tester) async {
-      final robot = await WiredashTestRobot.launchApp(tester);
+      final robot = await WiredashTestRobot(tester).launchApp();
       await robot.openWiredash();
       final appStartCount = await robot.services.appTelemetry.appStartCount();
       expect(appStartCount, 1);
