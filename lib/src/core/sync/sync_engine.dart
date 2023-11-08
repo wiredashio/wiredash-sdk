@@ -141,7 +141,6 @@ class SyncEngine {
 
   /// Create a future that completes when the [event] was triggered
   Future<void> onEvent(SdkEvent event) async {
-    // add Completer to _eventListener
     final completer = Completer<void>();
     final list = _eventListener.putIfAbsent(event, () => []);
     list.add(completer);
