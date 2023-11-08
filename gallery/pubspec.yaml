@@ -1,0 +1,21 @@
+name: wiredash_gallery
+description: Shows the widgets of the wiredash SDK
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  stage_craft:
+    git:
+      url: https://github.com/robiness/stage_craft.git
+  wiredash:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lint: ^2.0.0
