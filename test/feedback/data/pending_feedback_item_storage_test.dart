@@ -57,7 +57,7 @@ void main() {
 
       expect(
         pendingItem.feedbackItem.attachments![0].file,
-        FileDataEventuallyOnDisk.file('0.png'),
+        FileDataEventuallyOnDisk.file('0000000000000000.png'),
       );
       expect(
         pendingItem.feedbackItem.attachments![1].file,
@@ -79,7 +79,7 @@ void main() {
 
       // 0.png because of incrementing uuid
       expect(filesOnDisk(), [
-        '0.png',
+        '0000000000000000.png',
         'existing.png',
       ]);
     });
@@ -120,9 +120,9 @@ void main() {
 
       // 3 saved files
       expect(filesOnDisk(), [
-        '0.png',
-        '1.png',
-        '3.png', // uuidGenerator is also used to create the pending item id
+        '0000000000000000.png',
+        '0000000000000001.png',
+        '0000000000000003.png', // uuidGenerator is also used to create the pending item id
       ]);
     });
 
@@ -136,7 +136,7 @@ void main() {
       );
       final pendingItem = await storage.addPendingItem(item);
       expect(await storage.retrieveAllPendingItems(), [pendingItem]);
-      expect(filesOnDisk(), ['0.png']);
+      expect(filesOnDisk(), ['0000000000000000.png']);
 
       await storage.clearPendingItem(pendingItem.id);
 
@@ -154,8 +154,8 @@ void main() {
         ],
       );
       final firstPending = await storage.addPendingItem(first);
-      expect(firstPending.id, '1');
-      expect(filesOnDisk(), ['0.png']);
+      expect(firstPending.id, '0000000000000001');
+      expect(filesOnDisk(), ['0000000000000000.png']);
 
       final second = createFeedback(
         attachments: [
@@ -165,9 +165,9 @@ void main() {
         ],
       );
       final secondPending = await storage.addPendingItem(second);
-      expect(secondPending.id, '3');
+      expect(secondPending.id, '0000000000000003');
 
-      expect(filesOnDisk(), ['0.png', '2.png']);
+      expect(filesOnDisk(), ['0000000000000000.png', '0000000000000002.png']);
       expect(
         await storage.retrieveAllPendingItems(),
         [firstPending, secondPending],
@@ -176,7 +176,7 @@ void main() {
       await storage.clearPendingItem(firstPending.id);
 
       expect(await storage.retrieveAllPendingItems(), [secondPending]);
-      expect(filesOnDisk(), ['2.png']);
+      expect(filesOnDisk(), ['0000000000000002.png']);
     });
 
     test('removes items which can not be parsed', () async {
@@ -280,8 +280,8 @@ void main() {
         ],
       );
       final firstPending = await storage.addPendingItem(first);
-      expect(firstPending.id, '1');
-      expect(filesOnDisk(), ['0.png']);
+      expect(firstPending.id, '0000000000000001');
+      expect(filesOnDisk(), ['0000000000000000.png']);
 
       final second = createFeedback(
         attachments: [
@@ -291,9 +291,9 @@ void main() {
         ],
       );
       final secondPending = await storage.addPendingItem(second);
-      expect(secondPending.id, '3');
+      expect(secondPending.id, '0000000000000003');
 
-      expect(filesOnDisk(), ['0.png', '2.png']);
+      expect(filesOnDisk(), ['0000000000000000.png', '0000000000000002.png']);
       expect(
         await storage.retrieveAllPendingItems(),
         [firstPending, secondPending],
@@ -312,7 +312,7 @@ void main() {
       await storage.updatePendingItem(update);
 
       expect(await storage.retrieveAllPendingItems(), [secondPending, update]);
-      expect(filesOnDisk(), ['2.png']);
+      expect(filesOnDisk(), ['0000000000000002.png']);
     });
   });
 }
@@ -408,7 +408,7 @@ class IncrementalIdGenerator implements UidGenerator {
   String next() {
     final now = _nextInt;
     _nextInt++;
-    return now.toString();
+    return now.toString().padLeft(16, '0');
   }
 
   @override
@@ -447,7 +447,7 @@ FeedbackItem createFeedback({
       compilationMode: CompilationMode.profile,
       custom: {'customKey': 'customValue'},
       deviceModel: 'Google Pixel 8',
-      installId: '1234',
+      installId: '01234567890123456',
       physicalGeometry: Rect.zero,
       platformBrightness: Brightness.light,
       platformDartVersion: '3.2.0',

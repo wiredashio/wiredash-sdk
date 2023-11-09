@@ -49,7 +49,7 @@ class PingRequestBody {
     this.platformVersion,
     this.platformLocale,
     required this.sdkVersion,
-  });
+  }) : assert(installId.length >= 16);
 
   Map<String, Object> toRequestJson() {
     final Map<String, Object> body = {};
