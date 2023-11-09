@@ -74,7 +74,10 @@ void main() {
 
       // It is persisted on disk
       final saved = await storage.retrieveAllPendingItems();
-      expect(saved, [PendingFeedbackItem(id: '0', feedbackItem: item)]);
+      expect(
+        saved,
+        [PendingFeedbackItem(id: '0000000000000000', feedbackItem: item)],
+      );
     });
 
     test(
@@ -105,9 +108,9 @@ void main() {
 
       // Ensure that the screenshot exists, then delete it, and make sure it
       // was deleted successfully.
-      expect(fileSystem.file('0.png').existsSync(), isTrue);
-      fileSystem.file('0.png').deleteSync();
-      expect(fileSystem.file('0.png').existsSync(), isFalse);
+      expect(fileSystem.file('0000000000000000.png').existsSync(), isTrue);
+      fileSystem.file('0000000000000000.png').deleteSync();
+      expect(fileSystem.file('0000000000000000.png').existsSync(), isFalse);
 
       // submission works now
       mockApi.uploadAttachmentInvocations.interceptor = (_) {

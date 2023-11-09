@@ -130,6 +130,7 @@ extension AllMetaDataToJson on AllMetaData {
       }
     }
 
+    assert(installId.length >= 16);
     values.addAll({'installId': nonNull(installId)});
 
     final _deviceModel = deviceModel;

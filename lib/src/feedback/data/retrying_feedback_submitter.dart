@@ -181,7 +181,8 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
 
         // once all feedback is uploaded
         assert(
-            (copy.feedbackItem.attachments ?? []).every((it) => it.isUploaded),);
+          (copy.feedbackItem.attachments ?? []).every((it) => it.isUploaded),
+        );
 
         // actually submit the feedback
         await _api.sendFeedback(copy.feedbackItem);
