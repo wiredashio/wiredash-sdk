@@ -1,0 +1,84 @@
+{
+  "@@locale": "no",
+  "feedbackStep1MessageTitle": "Send oss tilbakemeldingen din",
+  "feedbackStep1MessageBreadcrumbTitle": "Skriv melding",
+  "feedbackStep1MessageDescription": "Legg til en kort beskrivelse av hva du opplevde",
+  "feedbackStep1MessageHint": "Det er en ukjent feil når jeg prøver å endre avataren min...",
+  "feedbackStep1MessageErrorMissingMessage": "Vennligst legg til en melding",
+
+  "feedbackStep2LabelsTitle": "Hvilken etikett representerer best tilbakemeldingen din?",
+  "feedbackStep2LabelsBreadcrumbTitle": "Etiketter",
+  "feedbackStep2LabelsDescription": "Å velge riktig kategori hjelper oss med å identifisere problemet og sende tilbakemeldingen din til riktig person",
+  "feedbackStep3ScreenshotOverviewTitle": "Legge til skjermbilder for å vise bedre?",
+  "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "Skjermbilder",
+  "feedbackStep3ScreenshotOverviewDescription": "Du vil kunne navigere i appen og velge når du skal ta et skjermbilde",
+  "feedbackStep3ScreenshotOverviewSkipButton": "Hopp over",
+  "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Legg til skjermbilde",
+  "feedbackStep3ScreenshotBarNavigateTitle": "Ta et skjermbilde",
+  "feedbackStep3ScreenshotBottomBarTitle": "Inkluder et skjermbilde for mer kontekst",
+  "feedbackStep3ScreenshotBarDrawTitle": "Tegn på skjermen for å legge til høydepunkter",
+  "feedbackStep3ScreenshotBarDrawUndoButton": "Angre",
+  "feedbackStep3ScreenshotBarCaptureButton": "Ta bilde",
+  "feedbackStep3ScreenshotBarSaveButton": "Lagre",
+  "feedbackStep3ScreenshotBarOkButton": "OK",
+  "feedbackStep3GalleryTitle": "Vedlagte skjermbilder",
+  "feedbackStep3GalleryBreadcrumbTitle": "Skjermbilder",
+  "feedbackStep3GalleryDescription": "Du kan legge til flere skjermbilder for å hjelpe oss med å forstå problemet ditt enda bedre.",
+  "feedbackStep4EmailTitle": "Vil du bli fulgt opp om dette?",
+  "feedbackStep4EmailBreadcrumbTitle": "Kontakt",
+  "feedbackStep4EmailDescription": "Legg til e-postadressen din dersom du ønsker å bli fulgt opp.",
+  "feedbackStep4EmailInvalidEmail": "Dette ser ikke ut som en gyldig e-postadresse. Du kan la den være tom.",
+  "feedbackStep4EmailInputHint": "mail@eksempel.com",
+  "feedbackStep6SubmitTitle": "Send inn tilbakemelding",
+  "feedbackStep6SubmitBreadcrumbTitle": "Send inn",
+  "feedbackStep6SubmitDescription": "Vennligst gjennomgå all informasjon før innsending.\nDu kan navigere tilbake for å justere tilbakemeldingen din når som helst.",
+  "feedbackStep6SubmitSubmitButton": "Send inn",
+  "feedbackStep6SubmitSubmitShowDetailsButton": "Vis detaljer",
+  "feedbackStep6SubmitSubmitHideDetailsButton": "Skjul detaljer",
+  "feedbackStep6SubmitSubmitDetailsTitle": "Detaljer om tilbakemelding",
+  "feedbackStep7SubmissionInFlightMessage": "Sender inn tilbakemeldingen din",
+  "feedbackStep7SubmissionSuccessMessage": "Takk for tilbakemeldingen!",
+  "feedbackStep7SubmissionErrorMessage": "Innsending av tilbakemelding mislyktes",
+  "feedbackStep7SubmissionOpenErrorButton": "Klikk for å se detaljer",
+  "feedbackStep7SubmissionRetryButton": "Prøv igjen",
+  "feedbackStepXOfY": "Trinn {current} av {total}",
+  "@feedbackStepXOfY": {
+    "placeholders": {
+      "current": {
+        "description": "nåværende trinnnummer 1-maks",
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "description": "maks antall trinn",
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "feedbackDiscardButton": "Avbryt",
+  "feedbackDiscardConfirmButton": "Helt sikker?",
+  "feedbackNextButton": "Neste",
+  "feedbackBackButton": "Tilbake",
+  "feedbackCloseButton": "Lukk",
+  "promoterScoreStep1Question": "Hvor sannsynlig er det at du vil anbefale oss?",
+  "promoterScoreStep1Description": "0 = Ikke sannsynlig, 10 = Mest sannsynlig",
+  "promoterScoreStep2MessageTitle": "Hvor sannsynlig er det at du vil anbefale oss til andre?",
+  "promoterScoreStep2MessageDescription": "Kunne du fortelle oss litt mer om hvorfor du valgte {rating}? Dette trinnet er valgfritt.",
+  "@promoterScoreStep2MessageDescription": {
+    "placeholders": {
+      "rating": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "promoterScoreStep2MessageHint": "Det ville vært flott om dere kunne forbedre...",
+  "promoterScoreStep3ThanksMessagePromoters": "Takk for vurderingen din!",
+  "promoterScoreStep3ThanksMessagePassives": "Takk for vurderingen din!",
+  "promoterScoreStep3ThanksMessageDetractors": "Takk for vurderingen din!",
+  "promoterScoreNextButton": "Neste",
+  "promoterScoreBackButton": "Tilbake",
+  "promoterScoreSubmitButton": "Send inn",
+  "backdropReturnToApp": "Returner til appen"
+}
