@@ -20,7 +20,7 @@ Future<void> postSendFeedback(
   request.headers.addAll({
     'Content-Type': 'application/json',
     'project': context.projectId,
-    'secret': context.projectId,
+    'secret': context.secret,
     'version': wiredashSdkVersion.toString(),
   });
 
