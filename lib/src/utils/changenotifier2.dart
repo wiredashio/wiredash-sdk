@@ -21,7 +21,7 @@ class ChangeNotifier2 implements ChangeNotifier {
   final List<void Function()> listeners = [];
 
   ChangeNotifier2() {
-    if (_kFlutterMemoryAllocationsEnabled) {
+    if (kFlutterMemoryAllocationsEnabled) {
       maybeDispatchObjectCreation();
     }
   }
@@ -32,7 +32,7 @@ class ChangeNotifier2 implements ChangeNotifier {
       throw "$instanceName is already disposed.";
     }
 
-    if (_kFlutterMemoryAllocationsEnabled) {
+    if (kFlutterMemoryAllocationsEnabled) {
       maybeDispatchObjectCreation();
     }
     listeners.add(listener);
@@ -79,11 +79,10 @@ class ChangeNotifier2 implements ChangeNotifier {
   }
 
   @override
-  // ignore: override_on_non_overriding_member
   void maybeDispatchObjectCreation() {
     // Tree shaker does not include this method and the class MemoryAllocations
     // if kFlutterMemoryAllocationsEnabled is false.
-    if (_kFlutterMemoryAllocationsEnabled && !_creationDispatched) {
+    if (kFlutterMemoryAllocationsEnabled && !_creationDispatched) {
       MemoryAllocations.instance.dispatchObjectCreated(
         library: 'package:wiredash/src/utils/changenotifier2.dart',
         className: '$ChangeNotifier2',
@@ -93,11 +92,3 @@ class ChangeNotifier2 implements ChangeNotifier {
     }
   }
 }
-
-const bool _kMemoryAllocations =
-    bool.fromEnvironment('flutter.memory_allocations');
-
-/// Copy of [kFlutterMemoryAllocationsEnabled] to be backwards compatible with
-/// Flutter 3.13 and earlier
-const bool _kFlutterMemoryAllocationsEnabled =
-    _kMemoryAllocations || kDebugMode;
