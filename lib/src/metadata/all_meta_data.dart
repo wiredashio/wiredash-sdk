@@ -106,7 +106,7 @@ class AllMetaData {
       platformGestureInsets: flutterInfo.gestureInsets,
       platformLocale: flutterInfo.platformLocale,
       platformOS: flutterInfo.platformOS,
-      platformOSVersion: flutterInfo.platformOSVersion,
+      platformOSVersion: fixedMetadata.deviceInfo.osVersion,
       platformSupportedLocales: flutterInfo.platformSupportedLocales,
       sdkVersion: wiredashSdkVersion,
       userEmail: email == defaultArgument

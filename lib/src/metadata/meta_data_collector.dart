@@ -129,14 +129,48 @@ class MetaDataCollector {
       final deviceInfo = await DeviceInfoPlugin().deviceInfo;
 
       if (deviceInfo is MacOsDeviceInfo) {
-        return DeviceInfo(deviceModel: deviceInfo.model);
+        String? version;
+        try {
+          version = "${deviceInfo.majorVersion}."
+              "${deviceInfo.minorVersion}."
+              "${deviceInfo.patchVersion}";
+        } catch (e) {
+          // ignore
+        }
+        return DeviceInfo(
+          deviceModel: deviceInfo.model,
+          osVersion: version,
+        );
       }
       if (deviceInfo is IosDeviceInfo) {
-        return DeviceInfo(deviceModel: deviceInfo.model);
+        return DeviceInfo(
+          deviceModel: deviceInfo.model,
+          osVersion: deviceInfo.systemVersion,
+        );
       }
       if (deviceInfo is AndroidDeviceInfo) {
-        return DeviceInfo(deviceModel: deviceInfo.model);
+        return DeviceInfo(
+          deviceModel: deviceInfo.model,
+          osVersion: deviceInfo.version.release,
+        );
       }
+      if (deviceInfo is LinuxDeviceInfo) {
+        return DeviceInfo(
+          osVersion: deviceInfo.version,
+        );
+      }
+      if (deviceInfo is WindowsDeviceInfo) {
+        String? version;
+        try {
+          version = "${deviceInfo.majorVersion}.${deviceInfo.minorVersion}";
+        } catch (e) {
+          // ignore
+        }
+        return DeviceInfo(
+          osVersion: version,
+        );
+      }
+
       // there's not way to get the model of windows or linux devices
     } catch (e, stack) {
       reportWiredashError(
@@ -176,9 +210,11 @@ class FixedMetaData {
 /// Information about the device the user is using
 class DeviceInfo {
   final String? deviceModel;
+  final String? osVersion;
 
   const DeviceInfo({
     this.deviceModel,
+    this.osVersion,
   });
 
   @override
@@ -186,19 +222,27 @@ class DeviceInfo {
       identical(this, other) ||
       (other is DeviceInfo &&
           runtimeType == other.runtimeType &&
-          deviceModel == other.deviceModel);
+          deviceModel == other.deviceModel &&
+          osVersion == other.osVersion);
 
   @override
-  int get hashCode => deviceModel.hashCode;
+  int get hashCode => deviceModel.hashCode ^ osVersion.hashCode;
 
   @override
   String toString() {
-    return 'DeviceInfo{deviceModel: $deviceModel}';
+    return 'DeviceInfo{ '
+        'deviceModel: $deviceModel, '
+        'osVersion: $osVersion, '
+        '}';
   }
 
-  DeviceInfo copyWith({String? deviceModel}) {
+  DeviceInfo copyWith({
+    String? deviceModel,
+    String? osVersion,
+  }) {
     return DeviceInfo(
       deviceModel: deviceModel ?? this.deviceModel,
+      osVersion: osVersion ?? this.osVersion,
     );
   }
 }
