@@ -42,6 +42,7 @@ class WiredashTestRobot {
       version: '0.1.0',
       buildNumber: '1',
       buildSignature: 'buildSignature',
+      // ignore: avoid_redundant_argument_values
       installerStore: null,
     );
     TestWidgetsFlutterBinding.ensureInitialized();
