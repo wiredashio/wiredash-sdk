@@ -131,9 +131,15 @@ class MetaDataCollector {
       if (deviceInfo is MacOsDeviceInfo) {
         String? version;
         try {
-          version = "${deviceInfo.majorVersion}."
-              "${deviceInfo.minorVersion}."
-              "${deviceInfo.patchVersion}";
+          // stay backwards compatible with older versions of device_info_plus:8.0.0
+          // which did not have the version properties
+          final dynamic dynamicDeviceInfo = deviceInfo;
+          // ignore: avoid_dynamic_calls
+          version = "${dynamicDeviceInfo.majorVersion}."
+              // ignore: avoid_dynamic_calls
+              "${dynamicDeviceInfo.minorVersion}."
+              // ignore: avoid_dynamic_calls
+              "${dynamicDeviceInfo.patchVersion}";
         } catch (e) {
           // ignore
         }
