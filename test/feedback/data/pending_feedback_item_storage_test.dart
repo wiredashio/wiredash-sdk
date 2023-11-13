@@ -18,18 +18,18 @@ void main() {
   group('PendingFeedbackItemStorage', () {
     late FileSystem fileSystem;
     late InMemorySharedPreferences prefs;
-    late UidGenerator idGenerator;
+    late WuidGenerator wuidGenerator;
     late PendingFeedbackItemStorage storage;
 
     setUp(() {
       fileSystem = MemoryFileSystem.test();
       prefs = InMemorySharedPreferences();
-      idGenerator = IncrementalIdGenerator();
+      wuidGenerator = IncrementalIdGenerator();
       storage = PendingFeedbackItemStorage(
         fileSystem: fileSystem,
         sharedPreferencesProvider: () async => prefs,
         dirPathProvider: () async => '.',
-        idGenerator: idGenerator,
+        wuidGenerator: wuidGenerator,
       );
     });
 
@@ -402,7 +402,7 @@ class InMemorySharedPreferences extends Fake implements SharedPreferences {
 }
 
 /// Creates string IDs that increment
-class IncrementalIdGenerator implements UidGenerator {
+class IncrementalIdGenerator implements WuidGenerator {
   var _nextInt = 0;
 
   String next() {

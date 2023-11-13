@@ -8,13 +8,13 @@ import 'package:wiredash/src/metadata/meta_data_collector.dart';
 class PingJob extends Job {
   final WiredashApi Function() apiProvider;
   final Future<SharedPreferences> Function() sharedPreferencesProvider;
-  final UidGenerator Function() uidGenerator;
+  final WuidGenerator Function() wuidGenerator;
   final MetaDataCollector Function() metaDataCollector;
 
   PingJob({
     required this.apiProvider,
     required this.sharedPreferencesProvider,
-    required this.uidGenerator,
+    required this.wuidGenerator,
     required this.metaDataCollector,
   });
 
@@ -56,7 +56,7 @@ class PingJob extends Job {
         await metaDataCollector().collectSessionMetaData(null);
 
     final body = PingRequestBody(
-      analyticsId: await uidGenerator().appUsageId(),
+      analyticsId: await wuidGenerator().appUsageId(),
       buildCommit:
           sessionMetaData.buildCommit ?? fixedData.buildInfo.buildCommit,
       appVersion:

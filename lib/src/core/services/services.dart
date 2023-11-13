@@ -53,7 +53,7 @@ class WiredashServices extends ChangeNotifier {
 
   FeedbackSubmitter get feedbackSubmitter => _locator.watch();
 
-  UidGenerator get uidGenerator => _locator.watch();
+  WuidGenerator get wuidGenerator => _locator.watch();
 
   Wiredash get wiredashWidget => _locator.watch();
 
@@ -110,7 +110,7 @@ void _setupServices(WiredashServices sl) {
       child: SizedBox(),
     ),
   );
-  sl.inject<UidGenerator>((_) => UidGenerator());
+  sl.inject<WuidGenerator>((_) => WuidGenerator());
   sl.inject<ProjectCredentialValidator>(
     (_) => const ProjectCredentialValidator(),
   );
@@ -122,7 +122,7 @@ void _setupServices(WiredashServices sl) {
   );
   sl.inject<PsTrigger>((_) {
     return PsTrigger(
-      deviceIdGenerator: sl.uidGenerator,
+      wuidGenerator: sl.wuidGenerator,
       appTelemetry: sl.appTelemetry,
       wiredashTelemetry: sl.wiredashTelemetry,
     );
@@ -190,7 +190,7 @@ void _setupServices(WiredashServices sl) {
         sharedPreferencesProvider: SharedPreferences.getInstance,
         dirPathProvider: () async =>
             (await getApplicationDocumentsDirectory()).path,
-        idGenerator: sl.uidGenerator,
+        wuidGenerator: sl.wuidGenerator,
       );
       final retryingFeedbackSubmitter =
           RetryingFeedbackSubmitter(fileSystem, storage, sl.api);
@@ -229,7 +229,7 @@ void _setupServices(WiredashServices sl) {
         'ping',
         PingJob(
           apiProvider: () => sl.api,
-          uidGenerator: () => sl.uidGenerator,
+          wuidGenerator: () => sl.wuidGenerator,
           metaDataCollector: () => sl.metaDataCollector,
           sharedPreferencesProvider: SharedPreferences.getInstance,
         ),

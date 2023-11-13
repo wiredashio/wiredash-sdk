@@ -13,16 +13,16 @@ class PendingFeedbackItemStorage {
     required FileSystem fileSystem,
     required Future<SharedPreferences> Function() sharedPreferencesProvider,
     required Future<String> Function() dirPathProvider,
-    required UidGenerator idGenerator,
+    required WuidGenerator wuidGenerator,
   })  : _fs = fileSystem,
         _sharedPreferences = sharedPreferencesProvider,
         _getScreenshotStorageDirectoryPath = dirPathProvider,
-        _idGenerator = idGenerator;
+        _wuidGenerator = wuidGenerator;
 
   final FileSystem _fs;
   final Future<SharedPreferences> Function() _sharedPreferences;
   final Future<String> Function() _getScreenshotStorageDirectoryPath;
-  final UidGenerator _idGenerator;
+  final WuidGenerator _wuidGenerator;
 
   static const _feedbackItemsKey = 'io.wiredash.pending_feedback_items';
 
@@ -86,7 +86,7 @@ class PendingFeedbackItemStorage {
         }
         // save file to disk
         final screenshotsDir = await _getScreenshotStorageDirectoryPath();
-        final uniqueFileName = _idGenerator.screenshotFilename();
+        final uniqueFileName = _wuidGenerator.screenshotFilename();
         final filePath = _fs.path
             .normalize(_fs.path.join(screenshotsDir, '$uniqueFileName.png'));
         final data = attachment.file.binaryData(_fs)!;
@@ -101,7 +101,7 @@ class PendingFeedbackItemStorage {
     );
 
     final pendingItem = PendingFeedbackItem(
-      id: _idGenerator.localFeedbackId(),
+      id: _wuidGenerator.localFeedbackId(),
       feedbackItem: serializable,
     );
 
