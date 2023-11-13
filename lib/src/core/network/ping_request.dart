@@ -29,7 +29,7 @@ Future<PingResponse> postPing(
 }
 
 class PingRequestBody {
-  final String installId;
+  final String analyticsId;
   final String? appVersion;
   final String? buildNumber;
   final String? buildCommit;
@@ -40,7 +40,7 @@ class PingRequestBody {
   final int sdkVersion;
 
   PingRequestBody({
-    required this.installId,
+    required this.analyticsId,
     this.appVersion,
     this.buildNumber,
     this.buildCommit,
@@ -49,7 +49,7 @@ class PingRequestBody {
     this.platformVersion,
     this.platformLocale,
     required this.sdkVersion,
-  }) : assert(installId.length >= 16);
+  }) : assert(analyticsId.length >= 16);
 
   Map<String, Object> toRequestJson() {
     final Map<String, Object> body = {};
@@ -74,7 +74,7 @@ class PingRequestBody {
       body['bundleId'] = _bundleId;
     }
 
-    body['installId'] = installId;
+    body['analyticsId'] = analyticsId;
 
     final _platformOS = platformOS;
     if (_platformOS != null) {
