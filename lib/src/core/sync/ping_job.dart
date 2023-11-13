@@ -56,7 +56,7 @@ class PingJob extends Job {
         await metaDataCollector().collectSessionMetaData(null);
 
     final body = PingRequestBody(
-      installId: await uidGenerator().appUsageId(),
+      analyticsId: await uidGenerator().appUsageId(),
       buildCommit:
           sessionMetaData.buildCommit ?? fixedData.buildInfo.buildCommit,
       appVersion:
