@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:wiredash/src/utils/object_util.dart';
 
 /// A [ChangeNotifier] but better
@@ -7,33 +7,15 @@ import 'package:wiredash/src/utils/object_util.dart';
 /// - Doesn't crash when [dispose] is called multiple times
 /// - Knows when disposed [isDisposed]
 class ChangeNotifier2 implements ChangeNotifier {
-  /// If true, the event [ObjectCreated] for this instance was dispatched to
-  /// [MemoryAllocations].
-  ///
-  /// As [ChangedNotifier] is used as mixin, it does not have constructor,
-  /// so we use [addListener] to dispatch the event.
-  bool _creationDispatched = false;
-
   bool _isDisposed = false;
-
   bool get isDisposed => _isDisposed;
 
   final List<void Function()> listeners = [];
-
-  ChangeNotifier2() {
-    if (kFlutterMemoryAllocationsEnabled) {
-      maybeDispatchObjectCreation();
-    }
-  }
 
   @override
   void addListener(void Function() listener) {
     if (isDisposed) {
       throw "$instanceName is already disposed.";
-    }
-
-    if (kFlutterMemoryAllocationsEnabled) {
-      maybeDispatchObjectCreation();
     }
     listeners.add(listener);
   }
@@ -54,9 +36,6 @@ class ChangeNotifier2 implements ChangeNotifier {
     }
     _isDisposed = true;
     listeners.clear();
-    if (kFlutterMemoryAllocationsEnabled && _creationDispatched) {
-      MemoryAllocations.instance.dispatchObjectDisposed(object: this);
-    }
   }
 
   @override
@@ -76,19 +55,5 @@ class ChangeNotifier2 implements ChangeNotifier {
       return;
     }
     notifyListeners();
-  }
-
-  @override
-  void maybeDispatchObjectCreation() {
-    // Tree shaker does not include this method and the class MemoryAllocations
-    // if kFlutterMemoryAllocationsEnabled is false.
-    if (kFlutterMemoryAllocationsEnabled && !_creationDispatched) {
-      MemoryAllocations.instance.dispatchObjectCreated(
-        library: 'package:wiredash/src/utils/changenotifier2.dart',
-        className: '$ChangeNotifier2',
-        object: this,
-      );
-      _creationDispatched = true;
-    }
   }
 }
