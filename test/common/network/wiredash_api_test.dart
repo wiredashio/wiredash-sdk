@@ -325,6 +325,54 @@ void main() {
     });
   });
 
+  group('ping', () {
+    test('PingRequestBody.toBody() minimal', () {
+      final ps = PingRequestBody(
+        analyticsId: '0123456789123456',
+        sdkVersion: 180,
+      );
+      final body = ps.toRequestJson();
+
+      expect(
+        body,
+        {
+          'analyticsId': '0123456789123456',
+          'sdkVersion': 180,
+        },
+      );
+    });
+
+    test('PingRequestBody.toBody() full', () {
+      final ps = PingRequestBody(
+        analyticsId: '0123456789123456',
+        appVersion: '1.2.3',
+        buildNumber: '543',
+        buildCommit: 'abcdefg',
+        bundleId: 'com.example.app',
+        platformOS: 'ios',
+        platformVersion: '17.1',
+        platformLocale: 'en_US',
+        sdkVersion: 180,
+      );
+      final body = ps.toRequestJson();
+
+      expect(
+        body,
+        {
+          'analyticsId': '0123456789123456',
+          'appVersion': '1.2.3',
+          'buildNumber': '543',
+          'buildCommit': 'abcdefg',
+          'bundleId': 'com.example.app',
+          'platformOS': 'ios',
+          'platformVersion': '17.1',
+          'platformLocale': 'en_US',
+          'sdkVersion': 180,
+        },
+      );
+    });
+  });
+
   test('API points towards production API', () {
     final wiredashApiFile = File('lib/src/core/network/wiredash_api.dart');
     final content = wiredashApiFile.readAsStringSync();
