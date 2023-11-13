@@ -34,7 +34,7 @@ void main() {
     });
 
     List<String> filesOnDisk() =>
-        fileSystem.directory('').listSync().map((it) => it.path).toList()
+        fileSystem.directory('/').listSync().map((it) => it.path).toList()
           ..sort();
 
     test('can persist one feedback item', () async {
