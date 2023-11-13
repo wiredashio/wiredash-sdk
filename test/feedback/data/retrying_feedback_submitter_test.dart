@@ -28,7 +28,7 @@ void main() {
       idGenerator = IncrementalIdGenerator();
       storage = PendingFeedbackItemStorage(
         fileSystem: fileSystem,
-        idGenerator: idGenerator,
+        wuidGenerator: idGenerator,
         dirPathProvider: () async => '.',
         sharedPreferencesProvider: () async => preferences,
       );

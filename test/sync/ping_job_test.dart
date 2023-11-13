@@ -27,7 +27,7 @@ void main() {
           apiProvider: () => api,
           sharedPreferencesProvider: prefsProvider,
           metaDataCollector: () => FakeMetaDataCollector(),
-          uidGenerator: () => IncrementalIdGenerator(),
+          wuidGenerator: () => IncrementalIdGenerator(),
         );
 
     setUp(() {
@@ -102,7 +102,7 @@ void main() {
           apiProvider: () => api,
           sharedPreferencesProvider: prefsProvider,
           metaDataCollector: () => FakeMetaDataCollector(),
-          uidGenerator: () => IncrementalIdGenerator(),
+          wuidGenerator: () => IncrementalIdGenerator(),
         );
         pingJob.execute();
         async.flushTimers();
@@ -124,7 +124,7 @@ void main() {
           apiProvider: () => api,
           sharedPreferencesProvider: prefsProvider,
           metaDataCollector: () => FakeMetaDataCollector(),
-          uidGenerator: () => IncrementalIdGenerator(),
+          wuidGenerator: () => IncrementalIdGenerator(),
         );
         pingJob.execute();
         async.flushTimers();

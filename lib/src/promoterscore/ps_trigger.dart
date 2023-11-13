@@ -10,12 +10,12 @@ import 'package:wiredash/src/core/telemetry/wiredash_telemetry.dart';
 /// Decides when it is time to show the promoter score survey
 class PsTrigger {
   PsTrigger({
-    required this.deviceIdGenerator,
+    required this.wuidGenerator,
     required this.appTelemetry,
     required this.wiredashTelemetry,
   });
 
-  final UidGenerator deviceIdGenerator;
+  final WuidGenerator wuidGenerator;
   final AppTelemetry appTelemetry;
   final WiredashTelemetry wiredashTelemetry;
 
@@ -93,7 +93,7 @@ class PsTrigger {
     if (lastSurvey == null) {
       // Using the device id to randomly distribute the next survey time within
       // frequency. This results in the same date for every call of this method
-      final String deviceId = await deviceIdGenerator.submitId();
+      final String deviceId = await wuidGenerator.submitId();
       final random = Random(deviceId.hashCode);
       final shiftTimeInS = (random.nextDouble() * frequency.inSeconds).toInt();
       final DateTime? firstAppStart = await appTelemetry.firstAppStart();

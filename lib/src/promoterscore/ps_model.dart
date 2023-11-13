@@ -67,7 +67,7 @@ class PsModel extends ChangeNotifier2 {
   Object? _submissionError;
 
   Future<void> updatePromoterScoreRecord({bool silentFail = true}) async {
-    final deviceId = await _services.uidGenerator.submitId();
+    final deviceId = await _services.wuidGenerator.submitId();
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
     final sessionMetadata =

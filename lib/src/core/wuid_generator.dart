@@ -3,8 +3,8 @@
 import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Generates a unique ids for client identification
-class UidGenerator {
+/// Wiredash Unique Identifier Generator
+class WuidGenerator {
   static const _prefsDeviceID = '_wiredashDeviceID';
   static const _prefsAppUsageID = '_wiredashAppUsageID';
 
@@ -14,7 +14,7 @@ class UidGenerator {
   /// the deviceId fallback should generate in finite time
   static const _sharedPrefsTimeout = Duration(seconds: 2);
 
-  UidGenerator();
+  WuidGenerator();
 
   /// Feedbacks that are saved locally (offline) until they are sent to the server
   String localFeedbackId() {

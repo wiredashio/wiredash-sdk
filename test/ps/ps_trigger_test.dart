@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/core/telemetry/app_telemetry.dart';
 import 'package:wiredash/src/core/telemetry/wiredash_telemetry.dart';
-import 'package:wiredash/src/metadata/build_info/uid_generator.dart';
+import 'package:wiredash/src/core/wuid_generator.dart';
 
 void main() {
   setUp(() {
@@ -27,7 +27,7 @@ void main() {
         final trigger = PsTrigger(
           appTelemetry: appTelemetry,
           wiredashTelemetry: wiredashTelemetry,
-          deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
+          wuidGenerator: FakeWuidGenerator('qwer'),
         );
         final options = PsOptions(
           frequency: frequency,
@@ -105,7 +105,7 @@ void main() {
   test('first interval is randomly distributed, based on deviceId', () async {
     final DateTime now = DateTime.utc(2020);
     await withClock(Clock(() => now), () async {
-      final deviceIdGenerator = FakeDeviceIdGenerator('');
+      final deviceIdGenerator = FakeWuidGenerator('');
       const frequency = Duration(days: 10);
       final wiredashTelemetry =
           PersistentWiredashTelemetry(SharedPreferences.getInstance);
@@ -115,19 +115,19 @@ void main() {
       final trigger = PsTrigger(
         appTelemetry: appTelemetry,
         wiredashTelemetry: wiredashTelemetry,
-        deviceIdGenerator: deviceIdGenerator,
+        wuidGenerator: deviceIdGenerator,
       );
       const options = PsOptions(frequency: frequency);
 
-      deviceIdGenerator.mockedDeviceId = 'one';
+      deviceIdGenerator.mockedSubmitId = 'one';
       final date1 = await trigger.earliestNextPromoterScoreSurveyDate(options);
       expect(date1, DateTime.utc(2020, 1, 6, 21, 43, 8));
 
-      deviceIdGenerator.mockedDeviceId = 'two';
+      deviceIdGenerator.mockedSubmitId = 'two';
       final date2 = await trigger.earliestNextPromoterScoreSurveyDate(options);
       expect(date2, DateTime.utc(2020, 1, 4, 5, 45, 30));
 
-      deviceIdGenerator.mockedDeviceId = 'three';
+      deviceIdGenerator.mockedSubmitId = 'three';
       final date3 = await trigger.earliestNextPromoterScoreSurveyDate(options);
       expect(date3, DateTime.utc(2020, 1, 10, 6, 50, 44));
 
@@ -157,7 +157,7 @@ void main() {
       final trigger = PsTrigger(
         appTelemetry: appTelemetry,
         wiredashTelemetry: wiredashTelemetry,
-        deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
+        wuidGenerator: FakeWuidGenerator('qwer'),
       );
 
       now = now.add(const Duration(days: 100));
@@ -188,7 +188,7 @@ void main() {
         appTelemetry: appTelemetry,
         wiredashTelemetry:
             PersistentWiredashTelemetry(SharedPreferences.getInstance),
-        deviceIdGenerator: FakeDeviceIdGenerator('qwer'),
+        wuidGenerator: FakeWuidGenerator('qwer'),
       );
 
       expect(await trigger.shouldShowPromoterSurvey(options: options), isTrue);
@@ -196,13 +196,13 @@ void main() {
   });
 }
 
-class FakeDeviceIdGenerator with Fake implements UidGenerator {
-  String mockedDeviceId;
+class FakeWuidGenerator with Fake implements WuidGenerator {
+  String mockedSubmitId;
 
-  FakeDeviceIdGenerator(this.mockedDeviceId);
+  FakeWuidGenerator(this.mockedSubmitId);
 
   @override
   Future<String> submitId() async {
-    return mockedDeviceId;
+    return mockedSubmitId;
   }
 }
