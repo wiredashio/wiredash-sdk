@@ -66,7 +66,7 @@ void main() {
       expect(api1.pingInvocations.count, 1);
     });
 
-    testWidgets('readding Wiredash simply works and sends pings again',
+    testWidgets('reading Wiredash simply works and sends pings again',
         (tester) async {
       await tester.pumpWidget(
         const Wiredash(
