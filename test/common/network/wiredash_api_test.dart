@@ -81,14 +81,7 @@ void main() {
       expect(
         body,
         {
-          'attachments': [
-            {
-              'id': 'screenshot_123',
-            },
-            {
-              'id': 'screenshot_124',
-            }
-          ],
+          'attachments': ['screenshot_123', 'screenshot_124'],
           'feedbackId': '1234',
           'labels': ['bug', 'lbl-1234'],
           'message': 'Hello world!',
@@ -349,7 +342,7 @@ void main() {
     test('PingRequestBody.toBody() full', () {
       final ps = PingRequestBody(
         analyticsId: '0123456789123456',
-        appVersion: '1.2.3',
+        buildVersion: '1.2.3',
         buildNumber: '543',
         buildCommit: 'abcdefg',
         bundleId: 'com.example.app',
@@ -364,9 +357,9 @@ void main() {
         body,
         {
           'analyticsId': '0123456789123456',
-          'appVersion': '1.2.3',
           'buildNumber': '543',
           'buildCommit': 'abcdefg',
+          'buildVersion': '1.2.3',
           'bundleId': 'com.example.app',
           'platformOS': 'ios',
           'platformVersion': '17.1',

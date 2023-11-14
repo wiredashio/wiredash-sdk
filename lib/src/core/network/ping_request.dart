@@ -30,9 +30,9 @@ Future<PingResponse> postPing(
 
 class PingRequestBody {
   final String analyticsId;
-  final String? appVersion;
-  final String? buildNumber;
   final String? buildCommit;
+  final String? buildNumber;
+  final String? buildVersion;
   final String? bundleId;
   final String? platformOS;
   final String? platformVersion;
@@ -41,9 +41,9 @@ class PingRequestBody {
 
   PingRequestBody({
     required this.analyticsId,
-    this.appVersion,
-    this.buildNumber,
     this.buildCommit,
+    this.buildNumber,
+    this.buildVersion,
     this.bundleId,
     this.platformOS,
     this.platformVersion,
@@ -54,9 +54,11 @@ class PingRequestBody {
   Map<String, Object> toRequestJson() {
     final Map<String, Object> body = {};
 
-    final _appVersion = appVersion;
-    if (_appVersion != null) {
-      body['appVersion'] = _appVersion;
+    body['analyticsId'] = analyticsId;
+
+    final _buildCommit = buildCommit;
+    if (_buildCommit != null) {
+      body['buildCommit'] = _buildCommit;
     }
 
     final _buildNumber = buildNumber;
@@ -64,17 +66,15 @@ class PingRequestBody {
       body['buildNumber'] = _buildNumber;
     }
 
-    final _buildCommit = buildCommit;
-    if (_buildCommit != null) {
-      body['buildCommit'] = _buildCommit;
+    final _buildVersion = buildVersion;
+    if (_buildVersion != null) {
+      body['buildVersion'] = _buildVersion;
     }
 
     final _bundleId = bundleId;
     if (_bundleId != null) {
       body['bundleId'] = _bundleId;
     }
-
-    body['analyticsId'] = analyticsId;
 
     final _platformOS = platformOS;
     if (_platformOS != null) {
