@@ -96,7 +96,7 @@ extension _SerializePersistedFeedbackItem on FeedbackItem {
     return SplayTreeMap.from({
       if (attachments != null && attachments!.isNotEmpty)
         'attachments': attachments!.map((it) => it.toJson()).toList(),
-      if (feedbackId != null) 'feedbackId': feedbackId,
+      'feedbackId': feedbackId,
       if (labels != null) 'labels': labels,
       'metadata': metadata.toJson(),
       'message': message,

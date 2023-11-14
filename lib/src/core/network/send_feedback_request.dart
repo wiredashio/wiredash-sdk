@@ -43,7 +43,7 @@ extension FeedbackBody on FeedbackItem {
     if (attachments != null && attachments!.isNotEmpty) {
       final items = attachments!.map((it) {
         if (it is Screenshot) {
-          return it.toRequestJson();
+          return it.file.attachmentId!.value;
         } else {
           throw "Unsupported attachment type ${it.runtimeType}";
         }
@@ -56,10 +56,7 @@ extension FeedbackBody on FeedbackItem {
       values.addAll({'labels': _labels});
     }
 
-    final _feedbackId = feedbackId;
-    if (_feedbackId != null) {
-      values.addAll({'feedbackId': _feedbackId});
-    }
+    values.addAll({'feedbackId': feedbackId});
 
     values.addAll({'message': nonNull(message)});
 
@@ -135,13 +132,13 @@ extension AllMetaDataRequestJson on AllMetaData {
       }
     }
 
-    assert(installId.length >= 16);
-    values.addAll({'installId': nonNull(installId)});
-
     final _deviceModel = deviceModel;
     if (_deviceModel != null) {
       values.addAll({'deviceModel': _deviceModel});
     }
+
+    assert(installId.length >= 16);
+    values.addAll({'installId': nonNull(installId)});
 
     values.addAll({
       'physicalGeometry': nonNull(physicalGeometry).toRequestJson(),
@@ -209,14 +206,6 @@ extension AllMetaDataRequestJson on AllMetaData {
     });
 
     return values.map((k, v) => MapEntry(k, v));
-  }
-}
-
-extension on Screenshot {
-  Map<String, Object> toRequestJson() {
-    return {
-      'id': file.attachmentId!.value,
-    };
   }
 }
 

@@ -59,7 +59,7 @@ class PingJob extends Job {
       analyticsId: await wuidGenerator().appUsageId(),
       buildCommit:
           sessionMetaData.buildCommit ?? fixedData.buildInfo.buildCommit,
-      appVersion:
+      buildVersion:
           sessionMetaData.buildVersion ?? fixedData.buildInfo.buildVersion,
       buildNumber:
           sessionMetaData.buildNumber ?? fixedData.buildInfo.buildNumber,
