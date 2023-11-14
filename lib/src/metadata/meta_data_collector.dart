@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/wiredash.dart';
@@ -14,7 +16,7 @@ import 'package:wiredash/wiredash.dart';
 /// - [DeviceInfoPlugin]
 /// - [PackageInfo]
 ///
-/// This class is statelss, all state is cached/stored in [WiredashModel]
+/// This class is stateless, all state is cached/stored in [WiredashModel]
 class MetaDataCollector {
   MetaDataCollector({
     required this.wiredashModel,
@@ -38,7 +40,7 @@ class MetaDataCollector {
         _collectAppInfo(),
         _collectDeviceInfo(),
       ].map(
-        (e) => e.catchError(
+        (e) => e.timeout(const Duration(seconds: 1)).catchError(
           (Object e, StackTrace stack) {
             reportWiredashError(
               e,
@@ -54,8 +56,8 @@ class MetaDataCollector {
     final deviceInfo = results[1] as DeviceInfo?;
 
     final combined = FixedMetaData(
-      appInfo: appInfo!,
-      deviceInfo: deviceInfo!,
+      appInfo: appInfo ?? const AppInfo(),
+      deviceInfo: deviceInfo ?? const DeviceInfo(),
       buildInfo: buildInfo,
     );
 
@@ -125,6 +127,12 @@ class MetaDataCollector {
   }
 
   Future<DeviceInfo> _collectDeviceInfo() async {
+    if (!kIsWeb && Platform.isLinux) {
+      // it just hangs on linux for some reason
+      // https://github.com/fluttercommunity/plus_plugins/issues/1552
+      return const DeviceInfo();
+    }
+
     try {
       final deviceInfo = await DeviceInfoPlugin().deviceInfo;
 
