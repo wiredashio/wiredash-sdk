@@ -1,89 +1,72 @@
-// ignore_for_file: avoid_print
-
+// ignore: depend_on_referenced_packages
+import 'package:async/async.dart' show ResultFuture;
 import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 
 /// Wiredash Unique Identifier Generator
-class WuidGenerator {
-  static const _prefsDeviceID = '_wiredashDeviceID';
-  static const _prefsAppUsageID = '_wiredashAppUsageID';
+abstract class WuidGenerator {
+  /// Generates a unique random secure id of [length]. Every call returns a new id
+  String generateId(int length);
 
-  /// A rather short timeout for shared preferences
+  /// Generates a unique random secure id of [length] and persists it in shared preferences
   ///
-  /// Usually shared preferences shouldn't fail. But if they do or don't react
-  /// the deviceId fallback should generate in finite time
-  static const _sharedPrefsTimeout = Duration(seconds: 2);
+  /// Calling it a second time with the same [key] will return the same id
+  Future<String> generatePersistedId(String key, int length);
+}
 
-  WuidGenerator();
+/// Persistent implementation of [WuidGenerator] that uses shared preferences
+class SharedPrefsWuidGenerator implements WuidGenerator {
+  final Future<SharedPreferences> Function() sharedPrefsProvider;
 
-  /// Feedbacks that are saved locally (offline) until they are sent to the server
-  String localFeedbackId() {
-    return nanoid(length: 8, alphabet: Alphabet.noDoppelgangerSafe);
+  SharedPrefsWuidGenerator({
+    required this.sharedPrefsProvider,
+  });
+
+  final Map<String, ResultFuture<String>> _cache = {};
+
+  /// Generates a random secure nanoid with 36 characters and persists it in
+  /// shared preferences with the given [key]
+  ///
+  /// The identifier stored in shared preferences is only deleted when the app
+  /// is reinstalled
+  ///
+  /// https://zelark.github.io/nano-id-cc/
+  /// ```
+  /// 36 chars / length: 8 => 238K IDs needed, in order to have a 1% probability of at least one collision.
+  /// 36 chars / length: 12 => 308M IDs needed, in order to have a 1% probability of at least one collision.
+  /// 36 chars / length: 16 => 399B IDs needed, in order to have a 1% probability of at least one collision.
+  /// 36 chars / length: 32 => More than 1 quadrillion years or 1,128,353,804,460T IDs needed, in order to have a 1% probability of at least one collision.
+  /// ```
+  @override
+  String generateId(int length) {
+    return nanoid(length: length, alphabet: Alphabet.noDoppelgangerSafe);
   }
 
-  /// screenshot attachment name (png)
-  String screenshotFilename() {
-    return nanoid(length: 8, alphabet: Alphabet.noDoppelgangerSafe);
-  }
+  @override
+  Future<String> generatePersistedId(String key, int length) async {
+    final cachedFuture = _cache[key];
 
-  /// Returns the unique id that is used for submitting feedback and promoter score
-  ///
-  /// The Future is lazy created an then cached, thus returns very fast when
-  /// called multiple times
-  Future<String> submitId() {
-    final future = _deviceIdFuture;
-    if (future != null) {
-      return future;
+    if (cachedFuture != null) {
+      if (!cachedFuture.isComplete) {
+        return cachedFuture;
+      }
+      // do not cache errored futures, instead try again
+      if (cachedFuture.isComplete && cachedFuture.result!.isError) {
+        _cache.remove(key);
+      }
     }
 
-    // caching the Future instead of the actual deviceId to make sure concurrent
-    // calls to deviceId(), before the future completes, returns the same value
-    // and doesn't generate the deviceId multiple times
-    _deviceIdFuture = _getInstallId(
-      prefsKey: _prefsDeviceID,
-      // 36 chars / length: 16 => 399B IDs needed, in order to have a 1% probability of at least one collision
-      // https://zelark.github.io/nano-id-cc/
-      generate: () => nanoid(length: 16, alphabet: Alphabet.noDoppelgangerSafe),
-    );
-    return _deviceIdFuture!;
+    final id = loadFromPrefs(key, length);
+    _cache[key] = ResultFuture(id);
+    return id;
   }
 
-  Future<String>? _deviceIdFuture;
-
-  /// Returns the unique id that is used for tracking app usage
-  ///
-  /// The Future is lazy created an then cached, thus returns very fast when
-  /// called multiple times
-  Future<String> appUsageId() {
-    final future = _appAppUsageIdFuture;
-    if (future != null) {
-      return future;
-    }
-
-    _appAppUsageIdFuture = _getInstallId(
-      prefsKey: _prefsAppUsageID,
-      // 36 chars / length: 16 => 399B IDs needed, in order to have a 1% probability of at least one collision
-      // https://zelark.github.io/nano-id-cc/
-      generate: () => nanoid(length: 16, alphabet: Alphabet.noDoppelgangerSafe),
-    );
-    return _appAppUsageIdFuture!;
-  }
-
-  Future<String>? _appAppUsageIdFuture;
-
-  /// Loads a install identifier from disk or generates a new one
-  ///
-  /// The identifier is stored in shared preferences and only deleted when the
-  /// app is reinstalled
-  static Future<String> _getInstallId({
-    required String prefsKey,
-    required String Function() generate,
-  }) async {
+  Future<String> loadFromPrefs(String key, int length) async {
     try {
-      final prefs =
-          await SharedPreferences.getInstance().timeout(_sharedPrefsTimeout);
-      if (prefs.containsKey(prefsKey)) {
-        final recovered = prefs.getString(prefsKey);
+      final prefs = await sharedPrefsProvider().timeout(_sharedPrefsTimeout);
+      if (prefs.containsKey(key)) {
+        final recovered = prefs.getString(key);
         if (recovered != null) {
           // recovered id from prefs
           return recovered;
@@ -92,20 +75,53 @@ class WuidGenerator {
     } catch (e, stack) {
       // might fail when users manipulate shared prefs. Creating a new id in
       // that case
-      print(e);
-      print(stack);
+      reportWiredashError(e, stack, 'Could not read $key from shared prefs');
     }
 
     // first time generation or fallback in case of sharedPrefs error
-    final deviceId = generate();
+    final deviceId = generateId(length);
     try {
-      final prefs =
-          await SharedPreferences.getInstance().timeout(_sharedPrefsTimeout);
-      await prefs.setString(prefsKey, deviceId).timeout(_sharedPrefsTimeout);
+      final prefs = await sharedPrefsProvider().timeout(_sharedPrefsTimeout);
+      await prefs.setString(key, deviceId).timeout(_sharedPrefsTimeout);
     } catch (e, stack) {
-      print(e);
-      print(stack);
+      reportWiredashError(e, stack, 'Could not write $key to shared prefs');
     }
     return deviceId;
   }
+
+  /// A rather short timeout for shared preferences
+  ///
+  /// Usually shared preferences shouldn't fail. But if they do or don't react
+  /// the deviceId fallback should generate in finite time
+  static const _sharedPrefsTimeout = Duration(seconds: 2);
+}
+
+extension SubmitIdGenerator on WuidGenerator {
+  /// Returns the unique id that is used for submitting feedback and promoter score
+  ///
+  /// The Future is lazy created an then cached, thus returns very fast when
+  /// called multiple times
+  Future<String> submitId() {
+    return generatePersistedId('_wiredashDeviceID', 16);
+  }
+}
+
+extension AppUsageIdGenerator on WuidGenerator {
+  /// Returns the unique id that is used for tracking app usage
+  ///
+  /// The Future is lazy created an then cached, thus returns very fast when
+  /// called multiple times
+  Future<String> appUsageId() {
+    return generatePersistedId('_wiredashAppUsageID', 16);
+  }
+}
+
+extension PersistedFeedbackIds on WuidGenerator {
+  /// Feedbacks that are saved locally (offline) until they are sent to the server
+  String localFeedbackId() => generateId(8);
+}
+
+extension UniqueScreenshotName on WuidGenerator {
+  /// screenshot attachment name (png)
+  String screenshotFilename() => generateId(8);
 }
