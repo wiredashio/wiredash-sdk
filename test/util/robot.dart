@@ -735,6 +735,7 @@ extension SpotWaitUntil<W extends Widget> on SingleWidgetSelector<W> {
 }
 
 extension EffectiveTextMatcher on WidgetMatcher<TronButton> {
+  // ignore: avoid_positional_boolean_parameters
   WidgetMatcher<TronButton> isTappable(bool value) {
     return hasProp(
       selector: (subject) => subject.context.nest<bool>(
