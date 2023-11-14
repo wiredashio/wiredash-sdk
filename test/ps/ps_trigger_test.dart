@@ -196,13 +196,18 @@ void main() {
   });
 }
 
-class FakeWuidGenerator with Fake implements WuidGenerator {
+class FakeWuidGenerator implements WuidGenerator {
   String mockedSubmitId;
 
   FakeWuidGenerator(this.mockedSubmitId);
 
   @override
-  Future<String> submitId() async {
+  String generateId(int length) {
+    return mockedSubmitId;
+  }
+
+  @override
+  Future<String> generatePersistedId(String key, int length) async {
     return mockedSubmitId;
   }
 }

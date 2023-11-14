@@ -110,7 +110,11 @@ void _setupServices(WiredashServices sl) {
       child: SizedBox(),
     ),
   );
-  sl.inject<WuidGenerator>((_) => WuidGenerator());
+  sl.inject<WuidGenerator>(
+    (_) => SharedPrefsWuidGenerator(
+      sharedPrefsProvider: SharedPreferences.getInstance,
+    ),
+  );
   sl.inject<ProjectCredentialValidator>(
     (_) => const ProjectCredentialValidator(),
   );

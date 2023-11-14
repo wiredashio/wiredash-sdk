@@ -57,7 +57,7 @@ void main() {
 
       expect(
         pendingItem.feedbackItem.attachments![0].file,
-        FileDataEventuallyOnDisk.file('0000000000000000.png'),
+        FileDataEventuallyOnDisk.file('00000000.png'),
       );
       expect(
         pendingItem.feedbackItem.attachments![1].file,
@@ -79,7 +79,7 @@ void main() {
 
       // 0.png because of incrementing uuid
       expect(filesOnDisk(), [
-        '0000000000000000.png',
+        '00000000.png',
         'existing.png',
       ]);
     });
@@ -120,9 +120,9 @@ void main() {
 
       // 3 saved files
       expect(filesOnDisk(), [
-        '0000000000000000.png',
-        '0000000000000001.png',
-        '0000000000000003.png', // uuidGenerator is also used to create the pending item id
+        '00000000.png',
+        '00000001.png',
+        '00000003.png', // uuidGenerator is also used to create the pending item id
       ]);
     });
 
@@ -136,7 +136,7 @@ void main() {
       );
       final pendingItem = await storage.addPendingItem(item);
       expect(await storage.retrieveAllPendingItems(), [pendingItem]);
-      expect(filesOnDisk(), ['0000000000000000.png']);
+      expect(filesOnDisk(), ['00000000.png']);
 
       await storage.clearPendingItem(pendingItem.id);
 
@@ -154,8 +154,8 @@ void main() {
         ],
       );
       final firstPending = await storage.addPendingItem(first);
-      expect(firstPending.id, '0000000000000001');
-      expect(filesOnDisk(), ['0000000000000000.png']);
+      expect(firstPending.id, '00000001');
+      expect(filesOnDisk(), ['00000000.png']);
 
       final second = createFeedback(
         attachments: [
@@ -165,9 +165,9 @@ void main() {
         ],
       );
       final secondPending = await storage.addPendingItem(second);
-      expect(secondPending.id, '0000000000000003');
+      expect(secondPending.id, '00000003');
 
-      expect(filesOnDisk(), ['0000000000000000.png', '0000000000000002.png']);
+      expect(filesOnDisk(), ['00000000.png', '00000002.png']);
       expect(
         await storage.retrieveAllPendingItems(),
         [firstPending, secondPending],
@@ -176,7 +176,7 @@ void main() {
       await storage.clearPendingItem(firstPending.id);
 
       expect(await storage.retrieveAllPendingItems(), [secondPending]);
-      expect(filesOnDisk(), ['0000000000000002.png']);
+      expect(filesOnDisk(), ['00000002.png']);
     });
 
     test('removes items which can not be parsed', () async {
@@ -280,8 +280,8 @@ void main() {
         ],
       );
       final firstPending = await storage.addPendingItem(first);
-      expect(firstPending.id, '0000000000000001');
-      expect(filesOnDisk(), ['0000000000000000.png']);
+      expect(firstPending.id, '00000001');
+      expect(filesOnDisk(), ['00000000.png']);
 
       final second = createFeedback(
         attachments: [
@@ -291,9 +291,9 @@ void main() {
         ],
       );
       final secondPending = await storage.addPendingItem(second);
-      expect(secondPending.id, '0000000000000003');
+      expect(secondPending.id, '00000003');
 
-      expect(filesOnDisk(), ['0000000000000000.png', '0000000000000002.png']);
+      expect(filesOnDisk(), ['00000000.png', '00000002.png']);
       expect(
         await storage.retrieveAllPendingItems(),
         [firstPending, secondPending],
@@ -312,7 +312,7 @@ void main() {
       await storage.updatePendingItem(update);
 
       expect(await storage.retrieveAllPendingItems(), [secondPending, update]);
-      expect(filesOnDisk(), ['0000000000000002.png']);
+      expect(filesOnDisk(), ['00000002.png']);
     });
   });
 }
@@ -405,30 +405,22 @@ class InMemorySharedPreferences extends Fake implements SharedPreferences {
 class IncrementalIdGenerator implements WuidGenerator {
   var _nextInt = 0;
 
-  String next() {
+  @override
+  String generateId(int length) {
     final now = _nextInt;
     _nextInt++;
-    return now.toString().padLeft(16, '0');
+    return now.toString().padLeft(length, '0');
   }
 
-  @override
-  Future<String> appUsageId() async {
-    return next();
-  }
+  final Map<String, String> _cache = {};
 
   @override
-  Future<String> submitId() async {
-    return next();
-  }
-
-  @override
-  String localFeedbackId() {
-    return next();
-  }
-
-  @override
-  String screenshotFilename() {
-    return next();
+  Future<String> generatePersistedId(String key, int length) async {
+    final cached = _cache[key];
+    if (cached != null) {
+      return cached;
+    }
+    return _cache[key] = generateId(length);
   }
 }
 

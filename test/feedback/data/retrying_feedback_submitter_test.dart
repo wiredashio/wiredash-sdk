@@ -44,7 +44,7 @@ void main() {
     });
 
     test('submit() - submits the item right away', () async {
-      // When submtting feedback
+      // When submitting feedback
       final item = createFeedback();
       expect(
         await retryingFeedbackSubmitter.submit(item),
@@ -65,7 +65,7 @@ void main() {
         throw "No internet";
       };
 
-      // When submtting feedback
+      // When submitting feedback
       final item = createFeedback();
       expect(
         await retryingFeedbackSubmitter.submit(item),
@@ -76,7 +76,7 @@ void main() {
       final saved = await storage.retrieveAllPendingItems();
       expect(
         saved,
-        [PendingFeedbackItem(id: '0000000000000000', feedbackItem: item)],
+        [PendingFeedbackItem(id: '00000000', feedbackItem: item)],
       );
     });
 
@@ -108,13 +108,13 @@ void main() {
 
       // Ensure that the screenshot exists, then delete it, and make sure it
       // was deleted successfully.
-      expect(fileSystem.file('0000000000000000.png').existsSync(), isTrue);
-      fileSystem.file('0000000000000000.png').deleteSync();
-      expect(fileSystem.file('0000000000000000.png').existsSync(), isFalse);
+      expect(fileSystem.file('00000000.png').existsSync(), isTrue);
+      fileSystem.file('00000000.png').deleteSync();
+      expect(fileSystem.file('00000000.png').existsSync(), isFalse);
 
       // submission works now
       mockApi.uploadAttachmentInvocations.interceptor = (_) {
-        return AttachmentId(idGenerator.next());
+        return AttachmentId(idGenerator.generateId(16));
       };
       // Submit the item without image now
       await retryingFeedbackSubmitter.submitPendingFeedbackItems();
@@ -163,7 +163,7 @@ void main() {
 
       // submission works now
       mockApi.uploadAttachmentInvocations.interceptor = (_) {
-        return AttachmentId(idGenerator.next());
+        return AttachmentId(idGenerator.generateId(16));
       };
       // Submit the item with image
       await retryingFeedbackSubmitter.submitPendingFeedbackItems();
@@ -209,7 +209,7 @@ void main() {
 
       await retryingFeedbackSubmitter.submitPendingFeedbackItems();
 
-      // one item was subitted, the other one is still pending
+      // one item was submitted, the other one is still pending
       expect(await storage.retrieveAllPendingItems(), hasLength(1));
       expect(
         mockApi.sendFeedbackInvocations.invocations.length > 1,
@@ -396,7 +396,7 @@ void main() {
       // Sending one feedback item should be retried no more than 8 times.
       mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
 
-      // Item has beend deleted
+      // Item has been deleted
       expect(await storage.retrieveAllPendingItems(), hasLength(0));
     });
   });
