@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter/foundation.dart';
+import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
@@ -122,7 +123,7 @@ void main() {
       expect(filesOnDisk(), [
         '00000000.png',
         '00000001.png',
-        '00000003.png', // uuidGenerator is also used to create the pending item id
+        '00000002.png',
       ]);
     });
 
@@ -154,7 +155,7 @@ void main() {
         ],
       );
       final firstPending = await storage.addPendingItem(first);
-      expect(firstPending.id, '00000001');
+      expect(firstPending.id, first.feedbackId);
       expect(filesOnDisk(), ['00000000.png']);
 
       final second = createFeedback(
@@ -165,9 +166,9 @@ void main() {
         ],
       );
       final secondPending = await storage.addPendingItem(second);
-      expect(secondPending.id, '00000003');
+      expect(secondPending.id, second.feedbackId);
 
-      expect(filesOnDisk(), ['00000000.png', '00000002.png']);
+      expect(filesOnDisk(), ['00000000.png', '00000001.png']);
       expect(
         await storage.retrieveAllPendingItems(),
         [firstPending, secondPending],
@@ -176,7 +177,7 @@ void main() {
       await storage.clearPendingItem(firstPending.id);
 
       expect(await storage.retrieveAllPendingItems(), [secondPending]);
-      expect(filesOnDisk(), ['00000002.png']);
+      expect(filesOnDisk(), ['00000001.png']);
     });
 
     test('removes items which can not be parsed', () async {
@@ -280,7 +281,7 @@ void main() {
         ],
       );
       final firstPending = await storage.addPendingItem(first);
-      expect(firstPending.id, '00000001');
+      expect(firstPending.id, first.feedbackId);
       expect(filesOnDisk(), ['00000000.png']);
 
       final second = createFeedback(
@@ -291,9 +292,9 @@ void main() {
         ],
       );
       final secondPending = await storage.addPendingItem(second);
-      expect(secondPending.id, '00000003');
+      expect(secondPending.id, second.feedbackId);
 
-      expect(filesOnDisk(), ['00000000.png', '00000002.png']);
+      expect(filesOnDisk(), ['00000000.png', '00000001.png']);
       expect(
         await storage.retrieveAllPendingItems(),
         [firstPending, secondPending],
@@ -312,7 +313,7 @@ void main() {
       await storage.updatePendingItem(update);
 
       expect(await storage.retrieveAllPendingItems(), [secondPending, update]);
-      expect(filesOnDisk(), ['00000002.png']);
+      expect(filesOnDisk(), ['00000001.png']);
     });
   });
 }
@@ -429,6 +430,7 @@ FeedbackItem createFeedback({
   String? message,
 }) {
   return FeedbackItem(
+    feedbackId: nanoid(),
     metadata: const AllMetaData(
       appLocale: 'en_US',
       appName: 'MyApp',

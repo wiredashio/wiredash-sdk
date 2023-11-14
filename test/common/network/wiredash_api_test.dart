@@ -23,6 +23,7 @@ void main() {
       });
 
       final body = FeedbackItem(
+        feedbackId: '1234',
         attachments: [
           PersistedAttachment.screenshot(
             file: FileDataEventuallyOnDisk.uploaded(
@@ -88,6 +89,7 @@ void main() {
               'id': 'screenshot_124',
             }
           ],
+          'feedbackId': '1234',
           'labels': ['bug', 'lbl-1234'],
           'message': 'Hello world!',
           'metadata': {
@@ -136,6 +138,7 @@ void main() {
 
     test('empty email should not be sent as empty string', () {
       final body = FeedbackItem(
+        feedbackId: '1234',
         attachments: [],
         message: 'Hello world!',
         labels: ['bug', 'lbl-1234'],
@@ -180,6 +183,7 @@ void main() {
       expect(
         body,
         {
+          'feedbackId': '1234',
           'labels': ['bug', 'lbl-1234'],
           'message': 'Hello world!',
           'metadata': {

@@ -1,20 +1,15 @@
 import 'package:flutter/foundation.dart';
 
-/// Reports a wiredash error to [FlutterError.onError]
-///
-/// Set [debugOnly] to `true` for errors which should only be logged in debug
-/// builds. Defaults to `false`.
+/// Reports an error within wiredash to [FlutterError.onError], which is critical enough to fail tests
 FlutterErrorDetails reportWiredashError(
   Object e,
-  StackTrace /*?*/ stack,
-  String message, {
-  bool debugOnly = false,
-}) {
+  StackTrace stack,
+  String message,
+) {
   final details = FlutterErrorDetails(
     exception: e,
     stack: stack,
     library: 'wiredash',
-    silent: debugOnly,
     informationCollector: () => [
       DiagnosticsNode.message(message),
     ],
@@ -24,5 +19,25 @@ FlutterErrorDetails reportWiredashError(
   if (reporter != null) {
     reporter.call(details);
   }
+  return details;
+}
+
+/// Reports to the developer and dumps the information into the console
+FlutterErrorDetails reportWiredashInfo(
+  Object e,
+  StackTrace stack,
+  String message,
+) {
+  final details = FlutterErrorDetails(
+    exception: e,
+    stack: stack,
+    library: 'wiredash',
+    informationCollector: () => [
+      DiagnosticsNode.message(message),
+    ],
+  );
+
+  final reporter = FlutterError.presentError;
+  reporter.call(details);
   return details;
 }

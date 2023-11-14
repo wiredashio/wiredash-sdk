@@ -14,15 +14,17 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 ///
 /// Actual serialization happens in [PendingFeedbackItem]
 class FeedbackItem {
-  final AllMetaData metadata;
   final List<PersistedAttachment>? attachments;
+  final String feedbackId;
   final List<String>? labels;
+  final AllMetaData metadata;
   final String message;
 
   const FeedbackItem({
-    required this.metadata,
     this.attachments,
+    required this.feedbackId,
     this.labels,
+    required this.metadata,
     required this.message,
   });
 
@@ -31,39 +33,43 @@ class FeedbackItem {
       identical(this, other) ||
       (other is FeedbackItem &&
           runtimeType == other.runtimeType &&
-          metadata == other.metadata &&
           const ListEquality().equals(attachments, other.attachments) &&
+          feedbackId == other.feedbackId &&
           const ListEquality().equals(labels, other.labels) &&
+          metadata == other.metadata &&
           message == other.message);
 
   @override
   int get hashCode =>
-      metadata.hashCode ^
       const ListEquality().hash(attachments) ^
+      feedbackId.hashCode ^
       const ListEquality().hash(labels) ^
+      metadata.hashCode ^
       message.hashCode;
 
   @override
   String toString() {
     return 'FeedbackItem{ '
-        'metaData: $metadata, '
         'attachments: $attachments, '
+        'feedbackId: $feedbackId, '
         'labels: $labels, '
+        'metadata: $metadata, '
         'message: $message, '
         '}';
   }
 
   FeedbackItem copyWith({
-    AllMetaData? metadata,
     List<PersistedAttachment>? attachments,
-    String? userEmail,
+    String? feedbackId,
     List<String>? labels,
+    AllMetaData? metadata,
     String? message,
   }) {
     return FeedbackItem(
-      metadata: metadata ?? this.metadata,
       attachments: attachments ?? this.attachments,
+      feedbackId: feedbackId ?? this.feedbackId,
       labels: labels ?? this.labels,
+      metadata: metadata ?? this.metadata,
       message: message ?? this.message,
     );
   }

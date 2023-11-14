@@ -90,6 +90,7 @@ class PendingFeedbackItemParserV2 {
       labels: (feedbackItemJson['labels'] as List<dynamic>?)
           ?.map((it) => it as String)
           .toList(),
+      feedbackId: (json['id'] as String).replaceAll('-', '').takeFirst(16),
       attachments: attachments ?? [],
     );
 
@@ -97,5 +98,12 @@ class PendingFeedbackItemParserV2 {
       id: json['id'] as String,
       feedbackItem: feedbackItem,
     );
+  }
+}
+
+extension on String {
+  String takeFirst(int length) {
+    if (length >= this.length) return this;
+    return substring(0, length);
   }
 }

@@ -50,7 +50,7 @@ class PromoterScoreRequestBody {
       body['message'] = message!;
     }
 
-    body['metadata'] = metadata.toJson();
+    body['metadata'] = metadata.toRequestJson();
 
     body['question'] = question;
 

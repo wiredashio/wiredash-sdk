@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spot/spot.dart';
@@ -6,6 +9,7 @@ import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
 import 'package:wiredash/wiredash.dart';
 
+import 'offline_feedback_test.dart';
 import 'util/robot.dart';
 
 void main() {
@@ -28,6 +32,7 @@ void main() {
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback!.message, 'test message');
+      expect(submittedFeedback.feedbackId, isNotNull);
     });
 
     testWidgets('Discard feedback', (tester) async {

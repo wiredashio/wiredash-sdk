@@ -12,6 +12,28 @@ import 'util/robot.dart';
 import 'util/wiredash_tester.dart';
 
 void main() {
+  testWidgets('Send text only feedback (offline)', (tester) async {
+    final robot = await WiredashTestRobot(tester)
+        .launchApp(useDirectFeedbackSubmitter: false);
+    robot.mockServices.mockApi.sendFeedbackInvocations.interceptor =
+        (_) async => throw 'offline';
+
+    await robot.openWiredash();
+    await robot.enterFeedbackMessage('test message');
+    await robot.goToNextStep();
+    await robot.skipScreenshot();
+    await robot.skipEmail();
+    await robot.submitFeedback();
+    await robot.waitUntilWiredashIsClosed();
+    // attempt request which fails
+    robot.mockServices.mockApi.sendFeedbackInvocations.verifyInvocationCount(1);
+
+    // but the feedback is stored securely offline
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getStringList('io.wiredash.pending_feedback_items');
+    expect(saved, hasLength(1));
+  });
+
   group('Offline Feedback', () {
     testWidgets('v2 feedback upload', (tester) async {
       final robot = WiredashTestRobot(tester);
@@ -66,7 +88,7 @@ void main() {
       final robot = WiredashTestRobot(tester);
       robot.setupMocks();
 
-      // insert feedback in v2 format with attachment
+      // insert feedback in v3 format with attachment
       final tempDir = Directory.systemTemp.createTempSync();
       File('${tempDir.path}/image.png').writeAsStringSync('test img content');
       final json = fullJsonV3;
@@ -187,6 +209,7 @@ Map get fullJsonV3 => {
         "attachments": [
           {"path": "ATTACHMENT_PATH"},
         ],
+        "feedbackId": "0123456789abcdef",
         "labels": ["bug", "lbl-1234"],
         "message": "Pending Feedback Item v3",
         "metadata": {

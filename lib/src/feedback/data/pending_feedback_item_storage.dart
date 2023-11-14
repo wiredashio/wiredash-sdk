@@ -101,7 +101,7 @@ class PendingFeedbackItemStorage {
     );
 
     final pendingItem = PendingFeedbackItem(
-      id: _wuidGenerator.localFeedbackId(),
+      id: item.feedbackId,
       feedbackItem: serializable,
     );
 
