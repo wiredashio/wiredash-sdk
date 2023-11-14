@@ -5,6 +5,9 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
+/// A collection of captures metadata from different sources
+///
+/// See [MetaDataCollector] for more information about the data sources
 class AllMetaData {
   final String? appLocale;
   final String? appName;

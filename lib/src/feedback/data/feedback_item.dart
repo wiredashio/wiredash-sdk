@@ -34,19 +34,15 @@ class FeedbackItem {
       (other is FeedbackItem &&
           runtimeType == other.runtimeType &&
           metadata == other.metadata &&
-          listEquals(attachments, other.attachments) &&
-          listEquals(labels, other.labels) &&
+          const ListEquality().equals(attachments, other.attachments) &&
+          const ListEquality().equals(labels, other.labels) &&
           message == other.message);
 
   @override
   int get hashCode =>
       metadata.hashCode ^
-      // 'hashList' is deprecated and shouldn't be used. Use Object.hashAll() or Object.hashAllUnordered() instead. This feature was deprecated in v3.1.0-0.0.pre.897.
-      // ignore: deprecated_member_use
-      hashList(attachments) ^
-      // 'hashList' is deprecated and shouldn't be used. Use Object.hashAll() or Object.hashAllUnordered() instead. This feature was deprecated in v3.1.0-0.0.pre.897.
-      // ignore: deprecated_member_use
-      hashList(labels) ^
+      const ListEquality().hash(attachments) ^
+      const ListEquality().hash(labels) ^
       message.hashCode;
 
   @override

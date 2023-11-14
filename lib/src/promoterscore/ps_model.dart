@@ -67,7 +67,7 @@ class PsModel extends ChangeNotifier2 {
   Object? _submissionError;
 
   Future<void> updatePromoterScoreRecord({bool silentFail = true}) async {
-    final deviceId = await _services.wuidGenerator.submitId();
+    final submitId = await _services.wuidGenerator.submitId();
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
     final sessionMetadata =
@@ -82,10 +82,10 @@ class PsModel extends ChangeNotifier2 {
       question: _questionInUI!,
       message: message,
       metadata: AllMetaData.from(
-        sessionMetadata: sessionMetadata,
+        installId: submitId,
         fixedMetadata: fixedMetadata,
+        sessionMetadata: sessionMetadata,
         flutterInfo: flutterInfo,
-        installId: deviceId,
       ),
     );
     try {
