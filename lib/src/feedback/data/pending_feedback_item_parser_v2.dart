@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 
+/// Parses saved feedback in the format from SDK version 1.0.0 to 1.7.X
 class PendingFeedbackItemParserV2 {
   static PendingFeedbackItem fromJson(Map json) {
     final feedbackItemJson = json['feedbackItem'] as Map<dynamic, dynamic>;
