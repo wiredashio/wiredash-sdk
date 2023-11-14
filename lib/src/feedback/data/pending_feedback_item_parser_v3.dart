@@ -25,6 +25,7 @@ class PendingFeedbackItemParserV3 {
     final physicalGeometry = metadataJson['physicalGeometry'] as List<dynamic>;
 
     final feedbackItem = FeedbackItem(
+      feedbackId: feedbackItemJson['feedbackId'] as String,
       message: feedbackItemJson['message'] as String,
       labels: (feedbackItemJson['labels'] as List<dynamic>?)
           ?.map((it) => it as String)

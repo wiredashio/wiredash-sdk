@@ -402,6 +402,7 @@ class FeedbackModel extends ChangeNotifier2 {
       return userEmail;
     }();
     return FeedbackItem(
+      feedbackId: _services.wuidGenerator.localFeedbackId(),
       attachments: _attachments,
       labels: [..._selectedLabels, ...labels.where((it) => it.hidden == true)]
           .map((it) => it.id)

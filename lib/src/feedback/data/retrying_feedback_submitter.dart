@@ -217,7 +217,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
           await _pendingFeedbackItemStorage.clearPendingItem(item.id);
           rethrow;
         }
-        reportWiredashError(
+        reportWiredashInfo(
           e,
           stack,
           'Wiredash server error. Will retry after app restart',
@@ -226,7 +226,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
       } catch (e, stack) {
         if (attempt >= maxAttempts) {
           // Exit after max attempts
-          reportWiredashError(
+          reportWiredashInfo(
             e,
             stack,
             'Could not send feedback after $attempt attempts',
@@ -235,12 +235,11 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
         }
 
         // Report error and retry with exponential backoff
-        reportWiredashError(
+        reportWiredashInfo(
           e,
           stack,
           'Could not send feedback to server after $attempt attempts. '
           'Retrying...',
-          debugOnly: true,
         );
         await Future.delayed(_exponentialBackoff(attempt));
       }

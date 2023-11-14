@@ -9,8 +9,9 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 
 void main() {
   final minimalFeedbackV2 = PendingFeedbackItem(
-    id: 'abc123',
+    id: '012345-6789-abcdef-ghi',
     feedbackItem: FeedbackItem(
+      feedbackId: '0123456789abcdef',
       attachments: [],
       message: 'Hello world!',
       metadata: AllMetaData(
@@ -35,8 +36,9 @@ void main() {
     ),
   );
   final minimalJsonV2 = {
-    'id': 'abc123',
+    'id': '012345-6789-abcdef-ghi',
     'feedbackItem': {
+      'feedbackid': '0123456789abcdef',
       'deviceId': '1234',
       'message': 'Hello world!',
       'sdkVersion': 174,
@@ -65,7 +67,7 @@ void main() {
   };
 
   final fullFeedbackV2 = PendingFeedbackItem(
-    id: 'abc123',
+    id: '012345-6789-abcdef-ghi',
     feedbackItem: FeedbackItem(
       attachments: [
         PersistedAttachment.screenshot(
@@ -107,12 +109,14 @@ void main() {
             '"android_ia32"',
         userId: 'Testy McTestFace',
       ),
+      feedbackId: '0123456789abcdef',
     ),
   );
   final fullJsonV2 = {
-    'id': 'abc123',
+    'id': '012345-6789-abcdef-ghi',
     'version': 2,
     'feedbackItem': {
+      'feedbackid': '0123456789abcdef',
       'appInfo': {
         'appLocale': 'de_DE',
       },
@@ -179,7 +183,7 @@ void main() {
   };
 
   final fullFeedbackV3 = PendingFeedbackItem(
-    id: 'abc123',
+    id: '012345-6789-abcdef-ghi',
     feedbackItem: FeedbackItem(
       attachments: [
         PersistedAttachment.screenshot(
@@ -224,11 +228,13 @@ void main() {
             '"android_ia32"',
         userId: 'Testy McTestFace',
       ),
+      feedbackId: '0123456789abcdef',
     ),
   );
 
   final fullJsonV3 = {
     "feedbackItem": {
+      "feedbackId": "0123456789abcdef",
       "attachments": [
         {"path": "path/to/file.png"},
       ],
@@ -267,13 +273,14 @@ void main() {
         "windowTextScaleFactor": 1.0,
       },
     },
-    "id": "abc123",
+    "id": "012345-6789-abcdef-ghi",
     "version": 3,
   };
 
   final minimalFeedbackV3 = PendingFeedbackItem(
-    id: 'abc123',
+    id: '012345-6789-abcdef-ghi',
     feedbackItem: FeedbackItem(
+      feedbackId: '0123456789abcdef',
       message: 'Hello world!',
       metadata: AllMetaData(
         windowPixelRatio: 2.75,
@@ -297,9 +304,11 @@ void main() {
   );
   final minimalJsonV3 = {
     "feedbackItem": {
+      'feedbackId': '0123456789abcdef',
       "message": "Hello world!",
       "metadata": {
         "compilationMode": "profile",
+        "feedbackId": "0123456789abcdef",
         "installId": "8F821AB6-B3A7-41BA-882E-32D8367243C1",
         "physicalGeometry": [0.0, 0.0, 0.0, 0.0],
         "platformBrightness": "dark",
@@ -314,7 +323,7 @@ void main() {
         "windowTextScaleFactor": 1.0,
       },
     },
-    "id": "abc123",
+    "id": "012345-6789-abcdef-ghi",
     "version": 3,
   };
 

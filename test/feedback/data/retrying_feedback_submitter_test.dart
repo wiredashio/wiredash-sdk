@@ -76,7 +76,7 @@ void main() {
       final saved = await storage.retrieveAllPendingItems();
       expect(
         saved,
-        [PendingFeedbackItem(id: '00000000', feedbackItem: item)],
+        [PendingFeedbackItem(id: item.feedbackId, feedbackItem: item)],
       );
     });
 

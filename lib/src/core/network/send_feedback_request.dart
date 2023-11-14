@@ -43,7 +43,7 @@ extension FeedbackBody on FeedbackItem {
     if (attachments != null && attachments!.isNotEmpty) {
       final items = attachments!.map((it) {
         if (it is Screenshot) {
-          return it.toJson();
+          return it.toRequestJson();
         } else {
           throw "Unsupported attachment type ${it.runtimeType}";
         }
@@ -56,16 +56,21 @@ extension FeedbackBody on FeedbackItem {
       values.addAll({'labels': _labels});
     }
 
+    final _feedbackId = feedbackId;
+    if (_feedbackId != null) {
+      values.addAll({'feedbackId': _feedbackId});
+    }
+
     values.addAll({'message': nonNull(message)});
 
-    values.addAll({'metadata': metadata.toJson()});
+    values.addAll({'metadata': metadata.toRequestJson()});
 
     return values.map((k, v) => MapEntry(k, v));
   }
 }
 
-extension AllMetaDataToJson on AllMetaData {
-  Map<String, Object?> toJson() {
+extension AllMetaDataRequestJson on AllMetaData {
+  Map<String, Object?> toRequestJson() {
     final Map<String, Object> values = SplayTreeMap.from({});
 
     // Values are sorted alphabetically for easy comparison with the backend
@@ -100,7 +105,7 @@ extension AllMetaDataToJson on AllMetaData {
     }
 
     values.addAll({
-      'compilationMode': nonNull(compilationMode.jsonEncode()),
+      'compilationMode': nonNull(compilationMode.toRequestJson()),
     });
 
     final customMetaData = custom?.map((key, value) {
@@ -139,11 +144,11 @@ extension AllMetaDataToJson on AllMetaData {
     }
 
     values.addAll({
-      'physicalGeometry': nonNull(physicalGeometry).toJson(),
+      'physicalGeometry': nonNull(physicalGeometry).toRequestJson(),
     });
 
     values.addAll({
-      'platformBrightness': nonNull(platformBrightness).jsonEncode(),
+      'platformBrightness': nonNull(platformBrightness).toRequestJson(),
     });
 
     final _platformDartVersion = platformDartVersion;
@@ -152,7 +157,7 @@ extension AllMetaDataToJson on AllMetaData {
     }
 
     values.addAll({
-      'platformGestureInsets': nonNull(platformGestureInsets).toJson(),
+      'platformGestureInsets': nonNull(platformGestureInsets).toRequestJson(),
     });
 
     values.addAll({'platformLocale': nonNull(platformLocale)});
@@ -184,11 +189,11 @@ extension AllMetaDataToJson on AllMetaData {
     }
 
     values.addAll({
-      'windowInsets': nonNull(windowInsets).toJson(),
+      'windowInsets': nonNull(windowInsets).toRequestJson(),
     });
 
     values.addAll({
-      'windowPadding': nonNull(windowPadding).toJson(),
+      'windowPadding': nonNull(windowPadding).toRequestJson(),
     });
 
     values.addAll({
@@ -196,7 +201,7 @@ extension AllMetaDataToJson on AllMetaData {
     });
 
     values.addAll({
-      'windowSize': nonNull(windowSize).toJson(),
+      'windowSize': nonNull(windowSize).toRequestJson(),
     });
 
     values.addAll({
@@ -208,7 +213,7 @@ extension AllMetaDataToJson on AllMetaData {
 }
 
 extension on Screenshot {
-  Map<String, Object> toJson() {
+  Map<String, Object> toRequestJson() {
     return {
       'id': file.attachmentId!.value,
     };
@@ -218,25 +223,25 @@ extension on Screenshot {
 // Remove when we drop support for Flutter v3.8.0-14.0.pre.
 // ignore: deprecated_member_use
 extension on WindowPadding {
-  List<double> toJson() {
+  List<double> toRequestJson() {
     return [left, top, right, bottom];
   }
 }
 
 extension on Rect {
-  List<double> toJson() {
+  List<double> toRequestJson() {
     return [left, top, right, bottom];
   }
 }
 
 extension on Size {
-  List<double> toJson() {
+  List<double> toRequestJson() {
     return [width, height];
   }
 }
 
 extension on Brightness {
-  String jsonEncode() {
+  String toRequestJson() {
     if (this == Brightness.dark) return 'dark';
     if (this == Brightness.light) return 'light';
     throw 'Unknown brightness value $this';
@@ -244,7 +249,7 @@ extension on Brightness {
 }
 
 extension on CompilationMode {
-  String jsonEncode() {
+  String toRequestJson() {
     switch (this) {
       case CompilationMode.release:
         return 'release';
