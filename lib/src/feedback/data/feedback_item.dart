@@ -1,10 +1,8 @@
 // ignore: unnecessary_import
 import 'dart:typed_data';
 
-// ignore: unused_import
 import 'package:collection/collection.dart';
 import 'package:file/file.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
