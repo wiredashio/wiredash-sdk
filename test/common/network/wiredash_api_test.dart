@@ -347,7 +347,7 @@ void main() {
         buildCommit: 'abcdefg',
         bundleId: 'com.example.app',
         platformOS: 'ios',
-        platformVersion: '17.1',
+        platformOSVersion: '17.1',
         platformLocale: 'en_US',
         sdkVersion: 180,
       );
