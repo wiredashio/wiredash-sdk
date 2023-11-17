@@ -35,7 +35,7 @@ class PingRequestBody {
   final String? buildVersion;
   final String? bundleId;
   final String? platformOS;
-  final String? platformVersion;
+  final String? platformOSVersion;
   final String? platformLocale;
   final int sdkVersion;
 
@@ -46,7 +46,7 @@ class PingRequestBody {
     this.buildVersion,
     this.bundleId,
     this.platformOS,
-    this.platformVersion,
+    this.platformOSVersion,
     this.platformLocale,
     required this.sdkVersion,
   }) : assert(analyticsId.length >= 16);
@@ -81,9 +81,9 @@ class PingRequestBody {
       body['platformOS'] = _platformOS;
     }
 
-    final _platformVersion = platformVersion;
-    if (_platformVersion != null) {
-      body['platformVersion'] = _platformVersion;
+    final _platformOSVersion = platformOSVersion;
+    if (_platformOSVersion != null) {
+      body['platformOSVersion'] = _platformOSVersion;
     }
 
     final _platformLocale = platformLocale;
