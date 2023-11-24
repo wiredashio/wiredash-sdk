@@ -125,3 +125,15 @@ extension UniqueScreenshotName on WuidGenerator {
   /// screenshot attachment name (png)
   String screenshotFilename() => generateId(8);
 }
+
+/// Converts a uuid to a nanoid
+String uuidToNanoId(String uuid, {int maxLength = 21}) {
+  return uuid.replaceAll('-', '').takeFirst(maxLength);
+}
+
+extension on String {
+  String takeFirst(int length) {
+    if (length >= this.length) return this;
+    return substring(0, length);
+  }
+}
