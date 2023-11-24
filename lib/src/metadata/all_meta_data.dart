@@ -18,6 +18,8 @@ class AllMetaData {
   final CompilationMode compilationMode;
   final Map<String, Object?>? custom;
   final String? deviceModel;
+
+  /// Either a 16 char nanoId or a 36 char uuid from SDK 1.7.X and earlier
   final String installId;
   final Rect physicalGeometry;
   final Brightness platformBrightness;

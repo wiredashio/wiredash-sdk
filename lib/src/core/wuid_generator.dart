@@ -99,6 +99,9 @@ class SharedPrefsWuidGenerator implements WuidGenerator {
 extension SubmitIdGenerator on WuidGenerator {
   /// Returns the unique id that is used for submitting feedback and promoter score
   ///
+  /// The id is either a 16 character long nanoid (SDK 1.8.0+)
+  /// or a 32 character long uuid when created with SDK <1.8.0
+  ///
   /// The Future is lazy created an then cached, thus returns very fast when
   /// called multiple times
   Future<String> submitId() {
