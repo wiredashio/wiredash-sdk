@@ -138,7 +138,9 @@ extension AllMetaDataRequestJson on AllMetaData {
     }
 
     assert(installId.length >= 16);
-    values.addAll({'installId': nonNull(installId)});
+    // for backwards compatability we convert the old uuid to a nanoId
+    final _installNanoId = uuidToNanoId(installId, maxLength: 32);
+    values.addAll({'installId': nonNull(_installNanoId)});
 
     values.addAll({
       'physicalGeometry': nonNull(physicalGeometry).toRequestJson(),
