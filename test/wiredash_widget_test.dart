@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -110,7 +112,7 @@ void main() {
       expect(api2.pingInvocations.count, 1);
     });
 
-    testWidgets('overwrite buildNumber of ping', (tester) async {
+    testWidgets('No custom metadata is submitted with ping()', (tester) async {
       final robot = WiredashTestRobot(tester);
       robot.setupMocks();
       await tester.pumpWidget(
@@ -127,8 +129,18 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      robot.wiredashController.setBuildProperties(
-        buildNumber: 'customBuildNumber',
+      await robot.wiredashController.modifyMetaData(
+        (metaData) => metaData
+          // ignore: deprecated_member_use_from_same_package
+          ..buildNumber = 'customBuildNumber'
+          // ignore: deprecated_member_use_from_same_package
+          ..buildVersion = 'customBuildVersion'
+          // ignore: deprecated_member_use_from_same_package
+          ..buildCommit = 'customBuildCommit'
+          ..userEmail = 'customUserEmail'
+          ..userId = 'customUserId'
+          ..appLocale = 'customAppLocale'
+          ..custom = {'customKey': 'customValue'},
       );
 
       print("wait 5s");
@@ -136,7 +148,9 @@ void main() {
       final api = robot.mockServices.mockApi;
       expect(api.pingInvocations.count, 1);
       final body = api.pingInvocations.latest[0]! as PingRequestBody;
-      expect(body.buildNumber, 'customBuildNumber');
+      // user is not able to inject any custom information into the ping
+      final json = jsonEncode(body.toRequestJson());
+      expect(json, isNot(contains('custom')));
     });
 
     testWidgets(
