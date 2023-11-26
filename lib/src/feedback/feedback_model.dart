@@ -288,10 +288,11 @@ class FeedbackModel extends ChangeNotifier2 {
 
   /// Allow devs to collect additional information
   Future<SessionMetaData> _collectSessionMetaData() async {
-    _sessionMetadata = await _services.metaDataCollector.collectSessionMetaData(
-      _services.wiredashModel.feedbackOptions?.collectMetaData
-          ?.map((it) => it.asFuture()),
-    );
+    final fallbackCollector = _services
+        .wiredashModel.feedbackOptions?.collectMetaData
+        ?.map((it) => it.asFuture());
+    _sessionMetadata =
+        await _services.wiredashModel.collectSessionMetaData(fallbackCollector);
     notifyListeners();
     return _sessionMetadata!;
   }

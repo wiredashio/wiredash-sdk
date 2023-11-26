@@ -41,13 +41,13 @@ class BuildInfo {
     this.buildCommit,
   });
 
-  /// Semantic version name of the app
+  /// Semantic version name of the app (env.BUILD_VERSION)
   final String? buildVersion;
 
-  /// Always incrementing number of the build. (actually `int`)
+  /// Always incrementing number of the build. (actually `int`) (env.BUILD_NUMBER)
   final String? buildNumber;
 
-  /// Commit hash of the build
+  /// Commit hash of the build (env.BUILD_COMMIT)
   final String? buildCommit;
 
   final CompilationMode compilationMode;

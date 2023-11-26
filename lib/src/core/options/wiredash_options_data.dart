@@ -9,13 +9,13 @@ class WiredashOptionsData {
 
   /// The locale to be used for wiredash
   ///
-  /// By default, wiredash will pick the locale of the phone or fallback to
+  /// By default, Wiredash will pick the locale of the phone or fallback to
   /// en-US. This locale always overrides it.
   ///
   /// When your app only support a limited number of locales, you might want to
   /// inject it here to match the locale and fallback for your app.
   ///
-  /// For custom localtions and new locales see [localizationDelegate]
+  /// For custom locales and new locales see [localizationDelegate]
   final Locale? locale;
 
   /// This [LocalizationsDelegate] overrides wiredash's default. Your delegate

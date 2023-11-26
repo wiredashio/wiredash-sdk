@@ -94,12 +94,9 @@ class AllMetaData {
     return AllMetaData(
       appLocale: sessionMetadata.appLocale,
       appName: fixedMetadata.appInfo.appName,
-      buildCommit:
-          sessionMetadata.buildCommit ?? fixedMetadata.buildInfo.buildCommit,
-      buildNumber:
-          sessionMetadata.buildNumber ?? fixedMetadata.buildInfo.buildNumber,
-      buildVersion:
-          sessionMetadata.buildVersion ?? fixedMetadata.buildInfo.buildVersion,
+      buildCommit: fixedMetadata.buildInfo.buildCommit,
+      buildNumber: fixedMetadata.buildInfo.buildNumber,
+      buildVersion: fixedMetadata.buildInfo.buildVersion,
       bundleId: fixedMetadata.appInfo.bundleId,
       compilationMode: fixedMetadata.buildInfo.compilationMode,
       custom: sessionMetadata.custom,
