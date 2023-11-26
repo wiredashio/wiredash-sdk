@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'package:collection/collection.dart';
 import 'package:wiredash/src/utils/object_util.dart';
 
@@ -10,7 +12,9 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
   /// This constructor returns a 100% clean version with no prefilled data
   CustomizableWiredashMetaData();
 
-  @Deprecated('Use CustomizableWiredashMetaData() instead.')
+  @Deprecated(
+    'Use the default constructor CustomizableWiredashMetaData() instead.',
+  )
   CustomizableWiredashMetaData.populated();
 
   @override
@@ -19,12 +23,26 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
   @override
   String? userEmail;
 
+  @Deprecated(
+    'The buildVersion is now read directly from the native platform. '
+    'Alternatively, provide it at compile time with env.BUILD_VERSION. '
+    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
+  )
   @override
   String? buildVersion;
 
+  @Deprecated(
+    'The buildNumber is now read directly from the native platform. '
+    'Alternatively, provide it at compile time with env.BUILD_NUMBER. '
+    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
+  )
   @override
   String? buildNumber;
 
+  @Deprecated(
+    'Provide the buildCommit at compile time with env.BUILD_NUMBER. '
+    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
+  )
   @override
   String? buildCommit;
 
@@ -130,16 +148,30 @@ abstract class WiredashMetaData {
   /// The "name" of the version, i.e. a semantic version 1.5.10-debug
   ///
   /// This field is prefilled with the environment variable `BUILD_VERSION`
+  @Deprecated(
+    'The buildVersion is now read directly from the native platform. '
+    'Alternatively, provide it at compile time with env.BUILD_VERSION. '
+    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
+  )
   String? get buildVersion;
 
   /// The build number of this version, usually an int
   ///
   /// This field is prefilled with the environment variable `BUILD_NUMBER`
+  @Deprecated(
+    'The buildNumber is now read directly from the native platform. '
+    'Alternatively, provide it at compile time with env.BUILD_NUMBER. '
+    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
+  )
   String? get buildNumber;
 
   /// The commit that was used to build this app
   ///
   /// This field is prefilled with the environment variable `BUILD_COMMIT`
+  @Deprecated(
+    'Provide the buildCommit at compile time with env.BUILD_NUMBER. '
+    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
+  )
   String? get buildCommit;
 
   /// The current locale of the app

@@ -52,17 +52,12 @@ class PingJob extends Job {
 
     final fixedData = await metaDataCollector().collectFixedMetaData();
     final flutterInfo = metaDataCollector().collectFlutterInfo();
-    final sessionMetaData =
-        await metaDataCollector().collectSessionMetaData(null);
 
     final body = PingRequestBody(
       analyticsId: await wuidGenerator().appUsageId(),
-      buildCommit:
-          sessionMetaData.buildCommit ?? fixedData.buildInfo.buildCommit,
-      buildVersion:
-          sessionMetaData.buildVersion ?? fixedData.buildInfo.buildVersion,
-      buildNumber:
-          sessionMetaData.buildNumber ?? fixedData.buildInfo.buildNumber,
+      buildCommit: fixedData.buildInfo.buildCommit,
+      buildVersion: fixedData.buildInfo.buildVersion,
+      buildNumber: fixedData.buildInfo.buildNumber,
       bundleId: fixedData.appInfo.bundleId,
       platformLocale: flutterInfo.platformLocale,
       platformOS: flutterInfo.platformOS,

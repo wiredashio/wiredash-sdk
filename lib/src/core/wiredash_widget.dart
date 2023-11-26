@@ -53,6 +53,7 @@ class Wiredash extends StatefulWidget {
     this.feedbackOptions,
     this.psOptions,
     this.padding,
+    this.collectMetaData,
     required this.child,
   });
 
@@ -68,6 +69,30 @@ class Wiredash extends StatefulWidget {
 
   /// Customize Wiredash's behaviour and language
   final WiredashOptionsData? options;
+
+  /// Adds additional metadata to feedback
+  ///
+  /// This callback is called when Wiredash collects information about the
+  /// device, app and session during the feedback or promoter score flow.
+  /// It may be called once or multiple times during a single flow.
+  ///
+  /// Mutate the incoming `metaData` object and add or override values
+  ///
+  /// ```dart
+  /// Wiredash(
+  ///   projectId: "...",
+  ///   secret: "...",
+  ///   collectMetaData: (metaData) => metaData
+  ///     ..userEmail = 'dash@wiredash.io'
+  ///     ..userEmail = 'dash@wiredash.io'
+  ///     ..custom['isPremium'] = false
+  ///     ..custom['nested'] = {'wire': 'dash'},
+  ///   child: MyApp(),
+  /// ),
+  /// ```
+  final FutureOr<WiredashMetaData> Function(
+    CustomizableWiredashMetaData metaData,
+  )? collectMetaData;
 
   /// Customize the feedback flow
   final WiredashFeedbackOptions? feedbackOptions;

@@ -70,12 +70,11 @@ class PsModel extends ChangeNotifier2 {
     final submitId = await _services.wuidGenerator.submitId();
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
+    final fallbackCollector = _services.wiredashModel.psOptions.collectMetaData
+        ?.map((it) => it.asFuture());
     final sessionMetadata =
-        await _services.metaDataCollector.collectSessionMetaData(
-      _services.wiredashWidget.psOptions?.collectMetaData
-          ?.map((it) => it.asFuture()),
-    );
-    final flutterInfo = _services.flutterInfoCollector.capture();
+        await _services.wiredashModel.collectSessionMetaData(fallbackCollector);
+    final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
 
     final body = PromoterScoreRequestBody(
       score: score,

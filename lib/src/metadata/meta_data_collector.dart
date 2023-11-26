@@ -28,11 +28,14 @@ class MetaDataCollector {
   final FlutterInfoCollector Function() deviceInfoCollector;
   final Wiredash Function() wiredashWidget;
 
+  /// In-memory cache for fixed metadata
+  FixedMetaData? fixedMetaData;
+
   /// Collects all metadata that is pretty much static for the current session
   Future<FixedMetaData> collectFixedMetaData() async {
-    final cache = wiredashModel.fixedMetaData;
+    final cache = fixedMetaData;
     if (cache != null) {
-      return wiredashModel.fixedMetaData!;
+      return fixedMetaData!;
     }
 
     final results = await Future.wait(
@@ -61,7 +64,7 @@ class MetaDataCollector {
       buildInfo: buildInfo,
     );
 
-    wiredashModel.fixedMetaData = combined;
+    fixedMetaData = combined;
     return combined;
   }
 
@@ -82,48 +85,9 @@ class MetaDataCollector {
     return appInfo;
   }
 
-  /// Collects metadata from the user, either with
-  /// [WiredashFeedbackOptions.collectMetaData] or [PsOptions.collectMetaData]
-  /// as [collector]
-  Future<SessionMetaData> collectSessionMetaData(
-    CustomMetaDataCollector? collector,
-  ) async {
-    final metadata =
-        wiredashModel.metaData ?? await _createPopulatedSessionMetadata();
-
-    if (collector != null) {
-      try {
-        final collected = await collector(metadata.makeCustomizable());
-        wiredashModel.metaData = collected;
-      } catch (e, stack) {
-        reportWiredashError(
-          e,
-          stack,
-          'Failed to collect custom metadata',
-        );
-      }
-    }
-    return metadata;
-  }
-
   /// Synchronously collect all information from the FlutterWindow / FlutterView
   FlutterInfo collectFlutterInfo() {
     return deviceInfoCollector().capture();
-  }
-
-  /// Creates [SessionMetaData] pre-populated with data already collected
-  Future<SessionMetaData> _createPopulatedSessionMetadata() async {
-    final fixedMetaData = await collectFixedMetaData();
-
-    final metadata = CustomizableWiredashMetaData();
-    metadata.appLocale = wiredashModel.appLocaleFromContext?.toLanguageTag();
-    metadata.buildVersion =
-        fixedMetaData.buildInfo.buildVersion ?? fixedMetaData.appInfo.version;
-    metadata.buildNumber = fixedMetaData.buildInfo.buildNumber ??
-        fixedMetaData.appInfo.buildNumber;
-    metadata.buildCommit = fixedMetaData.buildInfo.buildCommit;
-
-    return metadata;
   }
 
   Future<DeviceInfo> _collectDeviceInfo() async {

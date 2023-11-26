@@ -18,9 +18,6 @@ class WiredashModel with ChangeNotifier {
   WiredashFlow? get activeFlow => _activeFlow;
   WiredashFlow? _activeFlow;
 
-  /// In-memory cache for fixed metadata, managed by [MetaDataCollector]
-  FixedMetaData? fixedMetaData;
-
   /// Cache of the current metadata, may include user values from
   /// [WiredashFeedbackOptions.collectMetaData] or [PsOptions.collectMetaData]
   SessionMetaData? get metaData {
@@ -98,10 +95,9 @@ class WiredashModel with ChangeNotifier {
       defaultPsOptions;
 
   /// Called during initialization of the [Wiredash] widget
-  Future<void> initialize() async {
-    // TODO test and document
-    /// initializes [metadata] with app information
-    await services.metaDataCollector.collectFixedMetaData();
+  Future<void> initializeMetadata() async {
+    metaData = await _createPopulatedSessionMetadata();
+    notifyListeners();
   }
 
   /// Deletes pending feedbacks
@@ -152,6 +148,52 @@ class WiredashModel with ChangeNotifier {
     // always discard promoter score rating on close
     services.discardPs();
     notifyListeners();
+  }
+
+  /// Collects metadata from the user via [Wiredash.collectMetaData] or
+  /// [fallbackCollector] which can be [WiredashFeedbackOptions.collectMetaData]
+  /// or [PsOptions.collectMetaData]
+  Future<SessionMetaData> collectSessionMetaData(
+    CustomMetaDataCollector? fallbackCollector,
+  ) async {
+    final metadata = metaData ?? await _createPopulatedSessionMetadata();
+
+    if (fallbackCollector != null) {
+      try {
+        final collected = await fallbackCollector(metadata.makeCustomizable());
+        metaData = collected;
+      } catch (e, stack) {
+        reportWiredashError(
+          e,
+          stack,
+          'Failed to collect custom metadata',
+        );
+      }
+    }
+    return metadata;
+  }
+
+  /// Creates [SessionMetaData] pre-populated with data already collected
+  Future<SessionMetaData> _createPopulatedSessionMetadata() async {
+    final fixedMetaData =
+        await services.metaDataCollector.collectFixedMetaData();
+
+    final metadata = CustomizableWiredashMetaData();
+    metadata.appLocale = appLocaleFromContext?.toLanguageTag();
+
+    // buildInfo (values injected via dart-define take precedence) over values captured with native APIs
+    // ignore: deprecated_member_use_from_same_package
+    metadata.buildVersion =
+        fixedMetaData.buildInfo.buildVersion ?? fixedMetaData.appInfo.version;
+    // ignore: deprecated_member_use_from_same_package
+    metadata.buildNumber = fixedMetaData.buildInfo.buildNumber ??
+        fixedMetaData.appInfo.buildNumber;
+
+    // can only be set via dart-define
+    // ignore: deprecated_member_use_from_same_package
+    metadata.buildCommit = fixedMetaData.buildInfo.buildCommit;
+
+    return metadata;
   }
 }
 

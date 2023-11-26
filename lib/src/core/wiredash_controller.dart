@@ -25,28 +25,23 @@ class WiredashController {
 
   final WiredashModel _model;
 
-  // TODO double check if it is doing what we expect it to do
-  // TODO test
-  Future<void> ensureInitialized() async {
-    await _model.initialize();
-  }
-
   /// Modify the metadata that will be collected with Wiredash
   ///
-  /// The metadata include user information (userId and userEmail),
-  /// build information (version, buildNumber, commit) and
+  /// The metadata include user information (userId and userEmail) and
   /// any custom data (Map<String, Object?>) you want to have attached to
   /// feedback.
   ///
   /// Setting the userEmail prefills the email field.
   ///
-  /// The build information is prefilled by [EnvBuildInfo], reading the build
-  /// environment variables during compilation.
+  /// The build information is prefilled with
+  /// - build data from [EnvBuildInfo] injected during compile time
+  /// - app information like the app version
+  /// - session information like the appLocale (from context)
   ///
   /// Usage:
   ///
   /// ```dart
-  /// Wiredash.of(context).modifyMetaData(
+  /// await Wiredash.of(context).modifyMetaData(
   ///   (metaData) => metaData
   ///     ..userEmail = 'dash@wiredash.io'
   ///     ..buildCommit = '43f23dd'
@@ -60,25 +55,55 @@ class WiredashController {
   /// To reset all metadata (i.e. when the user signs out) use:
   ///
   /// ```dart
-  /// Wiredash.of(context)
-  ///     .modifyMetaData((_) => CustomizableWiredashMetaData.populated());
-  /// Wiredash.of(context).ensureInitialized();
+  /// await Wiredash.of(context).resetMetaData();
   /// ```
-  ///
-  /// The metaData will be completely overridden with the values from the
-  /// returned object.
   ///
   /// ## Scope
   ///
   /// Please do not keep a reference to the incoming `metaData` parameter. The
   /// reference might not be outdated and not be used. The `metaData` object is
   /// only guaranteed to be up-to-date within the `modifyMetaData` method.
-  void modifyMetaData(
-    CustomizableWiredashMetaData Function(CustomizableWiredashMetaData metaData)
-        mutation,
-  ) {
-    // TODO write warning when metadata is null, but return empty metadata (like the old .populated())
+  Future<void> modifyMetaData(
+    CustomizableWiredashMetaData Function(
+      CustomizableWiredashMetaData metaData,
+    ) mutation,
+  ) async {
+    _captureAppLocale();
+    await _model.initializeMetadata();
     _model.metaData = mutation(_model.metaData!.makeCustomizable());
+  }
+
+  /// Resets all metadata to the initial state
+  ///
+  /// Call this method when the user signs out to make sure no old metadata like
+  /// [WiredashMetaData.userId] or [WiredashMetaData.userEmail] is still set.
+  /// Same goes for custom metadata.
+  Future<void> resetMetaData() async {
+    await _model.initializeMetadata();
+  }
+
+  /// Reads the currently set `metaData` (immutable)
+  ///
+  /// Deprecated, use the async [getMetaData] method instead. The synchronous
+  /// getter will return an empty metaData, whereas the async version always
+  /// returns a pre-filled version.
+  ///
+  /// Use [modifyMetaData] to update the metaData
+  ///
+  /// ### Discussion
+  ///
+  /// *Why is there no simple `metaData` setter?*
+  ///
+  /// Wiredash wants to provide a pre-filled, mutable [CustomizableWiredashMetaData]
+  /// Object that can easily build upon and continuously filled with new data. But
+  /// Wiredash also need to know when you actually changed the metadata.
+  @Deprecated('Use the async getMetaData() instead')
+  WiredashMetaData get metaData {
+    // fallback to empty when metaData is not yet initialized
+    final mutable =
+        _model.metaData?.makeCustomizable() ?? CustomizableWiredashMetaData();
+    // return an immutable view
+    return mutable.copyWith(custom: Map.unmodifiable(mutable.custom));
   }
 
   /// Reads the currently set `metaData` (immutable)
@@ -89,14 +114,15 @@ class WiredashController {
   ///
   /// *Why is there no simple `metaData` setter?*
   ///
-  /// Wiredash wants to provide a mutable [CustomizableWiredashMetaData] Object
-  /// that can easily build upon and continuously filled with new data. But
+  /// Wiredash wants to provide a pre-filled, mutable [CustomizableWiredashMetaData]
+  /// Object that can easily build upon and continuously filled with new data. But
   /// Wiredash also need to know when you actually changed the metadata.
-  /// [modifyMetaData] is executed immediately (like setState) which solves both.
-  WiredashMetaData get metaData {
-    final mutable = _model.metaData?.makeCustomizable();
+  Future<WiredashMetaData> getMetaData() async {
+    _captureAppLocale();
+    await _model.initializeMetadata();
+    final mutable = _model.metaData!.makeCustomizable();
     // return an immutable view
-    return mutable!.copyWith(custom: Map.unmodifiable(mutable.custom));
+    return mutable.copyWith(custom: Map.unmodifiable(mutable.custom));
   }
 
   /// Use this method to provide custom [userId] and [userEmail] to the feedback.
@@ -104,16 +130,16 @@ class WiredashController {
   /// The [userEmail] parameter can be used to prefill the email input field
   /// but it's up to the user to decide if he want's to include his email with
   /// the feedback.
-  void Function({
+  Future<void> Function({
     String? userId,
     String? userEmail,
   }) get setUserProperties => _setUserProperties;
 
-  void _setUserProperties({
+  Future<void> _setUserProperties({
     Object? userId = defaultArgument,
     Object? userEmail = defaultArgument,
-  }) {
-    modifyMetaData(
+  }) async {
+    await modifyMetaData(
       (metaData) {
         if (userId != defaultArgument) {
           metaData.userId = userId as String?;
@@ -126,34 +152,35 @@ class WiredashController {
     );
   }
 
-  /// Use this method to attach custom [buildVersion], [buildNumber] and
+  /// Deprecated, do not use anymore.
+  ///
+  /// Was used to attach custom [buildVersion], [buildNumber] and
   /// [buildCommit] to the feedback.
   ///
-  /// If these values are also provided through dart-define during compile time
-  /// then they will be overwritten by this method;
-  void Function({
+  /// This information is now collected automatically with platform APIs.
+  ///
+  /// Alternatively, on platforms, that do not provide the correct information
+  /// (sometimes on web) set env.BUILD_VERSION, env.BUILD_NUMBER or
+  /// env.BUILD_COMMIT during compile time with dart-define.
+  /// https://docs.wiredash.io/sdk/custom-properties/#during-compile-time
+  @Deprecated(
+    'Build information has to be provided during build time or is now collected automatically with platform APIs (where possible). '
+    'Set env.BUILD_VERSION, env.BUILD_NUMBER or env.BUILD_COMMIT with --dart-define. '
+    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
+  )
+  void setBuildProperties({
     String? buildVersion,
     String? buildNumber,
     String? buildCommit,
-  }) get setBuildProperties => _setBuildProperties;
-
-  void _setBuildProperties({
-    Object? buildVersion = defaultArgument,
-    Object? buildNumber = defaultArgument,
-    Object? buildCommit = defaultArgument,
   }) {
-    modifyMetaData((metaData) {
-      if (buildVersion != defaultArgument) {
-        metaData.buildVersion = buildVersion as String?;
-      }
-      if (buildNumber != defaultArgument) {
-        metaData.buildNumber = buildNumber as String?;
-      }
-      if (buildCommit != defaultArgument) {
-        metaData.buildCommit = buildCommit as String?;
-      }
-      return metaData;
-    });
+    if (kDebugMode) {
+      print(
+        'Wiredash: setBuildProperties() is deprecated. The version information should be picked up automatically. '
+        'Alternatively, set env.BUILD_VERSION, env.BUILD_NUMBER or env.BUILD_COMMIT during compile time. '
+        'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
+      );
+    }
+    // noop
   }
 
   /// This will open Wiredash and start the feedback flow.
@@ -204,7 +231,6 @@ class WiredashController {
   /// Captures the current locale of the app when opening wiredash
   void _captureAppLocale() {
     final context = _model.services.wiredashWidget.showBuildContext;
-    assert(context != null);
     if (context == null) return;
 
     final locale = Localizations.maybeLocaleOf(context);
