@@ -79,7 +79,7 @@ class AllMetaData {
       fixedMetadata: fixedMetadata,
       flutterInfo: flutterInfo,
       installId: installId,
-      email: email,
+      email: email ?? defaultArgument,
     );
   }
 

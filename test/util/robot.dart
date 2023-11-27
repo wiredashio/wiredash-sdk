@@ -16,6 +16,7 @@ import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
+
 // ignore: unused_import
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/wiredash.dart';
@@ -125,6 +126,10 @@ class WiredashTestRobot {
 
   Future<WiredashTestRobot> launchApp({
     WiredashFeedbackOptions? feedbackOptions,
+    PsOptions? psOptions,
+    FutureOr<WiredashMetaData> Function(
+      CustomizableWiredashMetaData metaData,
+    )? collectMetaData,
     Widget Function(BuildContext)? builder,
     FutureOr<void> Function()? afterPump,
     List<LocalizationsDelegate> appLocalizationsDelegates = const [],
@@ -139,6 +144,8 @@ class WiredashTestRobot {
         projectId: 'test',
         secret: 'test',
         feedbackOptions: feedbackOptions,
+        psOptions: psOptions,
+        collectMetaData: collectMetaData,
         options: WiredashOptionsData(
           locale: const Locale('test'),
           localizationDelegate: WiredashTestLocalizationDelegate(),
@@ -222,6 +229,15 @@ class WiredashTestRobot {
 
   WiredashMockServices get mockServices {
     return WiredashMockServices(services);
+  }
+
+  Future<void> submitTestFeedback() async {
+    await enterFeedbackMessage('test message');
+    await goToNextStep();
+    await skipScreenshot();
+    await skipEmail();
+    await submitFeedback();
+    await waitUntilWiredashIsClosed();
   }
 
   Future<void> openWiredash() async {
@@ -335,14 +351,19 @@ class WiredashTestRobot {
     await tester.pump();
   }
 
-  Future<void> skipEmail() async {
+  Future<void> skipEmail({bool catchError = true}) async {
     final step = _spotPageView.spotSingle<Step5Email>()..existsOnce();
     await _tap(step.spotSingleText('l10n.feedbackNextButton'));
     await tester.pumpAndSettle();
     await tester.pumpAndSettle();
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;
-    print('Skipped email, next $newStatus');
+    if (catchError) {
+      // no email validation error
+      step.spotSingleText('l10n.feedbackStep4EmailInvalidEmail').doesNotExist();
+      expect(newStatus, isNot(FeedbackFlowStatus.email));
+      print('Skipped email, next $newStatus');
+    }
   }
 
   Future<void> submitEmailViaButton() async {
