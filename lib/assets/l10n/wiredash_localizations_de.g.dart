@@ -54,7 +54,7 @@ class WiredashLocalizationsDe extends WiredashLocalizations {
 
   @override
   String get feedbackStep3ScreenshotBottomBarTitle =>
-      'Include a screenshot for more context';
+      'Füge bei bedarf einen Screenshot hinzu';
 
   @override
   String get feedbackStep3ScreenshotBarDrawTitle =>
