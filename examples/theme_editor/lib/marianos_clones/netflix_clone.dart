@@ -2169,6 +2169,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
               child: Text(
                 'Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself.',
                 style: TextStyle(color: Colors.white, fontSize: 20),
+                // ignore: deprecated_member_use
                 textScaleFactor: scaleFactor,
               ),
             ),
