@@ -220,5 +220,30 @@ void main() {
       final submittedFeedback = latestCall[0] as PromoterScoreRequestBody?;
       expect(submittedFeedback!.metadata.userEmail, 'secondary@mail.com');
     });
+
+    testWidgets('All user collected metaData is submitted to the server',
+        (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp(
+        collectMetaData: (metaData) {
+          return metaData
+            ..userEmail = "user@mail.com"
+            ..userId = "123"
+            ..custom['foo'] = 'bar'
+            ..appLocale = 'my-MY'
+            ..appBrightness = Brightness.dark;
+        },
+      );
+      await robot.openWiredash();
+      await robot.submitTestFeedback();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
+      expect(submittedFeedback!.metadata.userEmail, 'user@mail.com');
+      expect(submittedFeedback.metadata.userId, '123');
+      expect(submittedFeedback.metadata.custom!['foo'], 'bar');
+      expect(submittedFeedback.metadata.appLocale, 'my-MY');
+      expect(submittedFeedback.metadata.appBrightness, Brightness.dark);
+    });
   });
 }
