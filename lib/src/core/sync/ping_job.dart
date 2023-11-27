@@ -61,7 +61,7 @@ class PingJob extends Job {
       bundleId: fixedData.appInfo.bundleId,
       platformLocale: flutterInfo.platformLocale,
       platformOS: flutterInfo.platformOS,
-      platformOSVersion: flutterInfo.platformDartVersion,
+      platformOSVersion: fixedData.deviceInfo.osVersion,
       sdkVersion: wiredashSdkVersion,
     );
     try {

@@ -18,7 +18,6 @@ class _DartIoDeviceInfoGenerator implements FlutterInfoCollector {
     final base = FlutterInfoCollector.flutterInfo(window);
     final info = base.copyWith(
       platformOS: Platform.operatingSystem,
-      platformOSVersion: Platform.operatingSystemVersion,
       platformVersion: Platform.version,
     );
     return info;
