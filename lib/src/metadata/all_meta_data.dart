@@ -69,21 +69,13 @@ class AllMetaData {
     required this.windowTextScaleFactor,
   });
 
-  factory AllMetaData.from({
+  static AllMetaData Function({
     required SessionMetaData sessionMetadata,
     required FixedMetaData fixedMetadata,
     required FlutterInfo flutterInfo,
     required String installId,
     String? email,
-  }) {
-    return _from(
-      sessionMetadata: sessionMetadata,
-      fixedMetadata: fixedMetadata,
-      flutterInfo: flutterInfo,
-      installId: installId,
-      email: email ?? defaultArgument,
-    );
-  }
+  }) get from => _from;
 
   // ignore: prefer_constructors_over_static_methods
   static AllMetaData _from({
