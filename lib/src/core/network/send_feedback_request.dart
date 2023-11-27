@@ -71,6 +71,11 @@ extension AllMetaDataRequestJson on AllMetaData {
     final Map<String, Object> values = SplayTreeMap.from({});
 
     // Values are sorted alphabetically for easy comparison with the backend
+    final _appBrightness = appBrightness;
+    if (_appBrightness != null) {
+      values.addAll({'appBrightness': _appBrightness.toRequestJsonValue()});
+    }
+
     final _appLocale = appLocale;
     if (_appLocale != null) {
       values.addAll({'appLocale': _appLocale});
@@ -102,7 +107,7 @@ extension AllMetaDataRequestJson on AllMetaData {
     }
 
     values.addAll({
-      'compilationMode': nonNull(compilationMode.toRequestJson()),
+      'compilationMode': nonNull(compilationMode.toRequestJsonValue()),
     });
 
     final customMetaData = custom?.map((key, value) {
@@ -143,11 +148,11 @@ extension AllMetaDataRequestJson on AllMetaData {
     values.addAll({'installId': nonNull(_installNanoId)});
 
     values.addAll({
-      'physicalGeometry': nonNull(physicalGeometry).toRequestJson(),
+      'physicalGeometry': nonNull(physicalGeometry).toRequestJsonArray(),
     });
 
     values.addAll({
-      'platformBrightness': nonNull(platformBrightness).toRequestJson(),
+      'platformBrightness': nonNull(platformBrightness).toRequestJsonValue(),
     });
 
     final _platformDartVersion = platformDartVersion;
@@ -156,7 +161,8 @@ extension AllMetaDataRequestJson on AllMetaData {
     }
 
     values.addAll({
-      'platformGestureInsets': nonNull(platformGestureInsets).toRequestJson(),
+      'platformGestureInsets':
+          nonNull(platformGestureInsets).toRequestJsonArray(),
     });
 
     values.addAll({'platformLocale': nonNull(platformLocale)});
@@ -188,11 +194,11 @@ extension AllMetaDataRequestJson on AllMetaData {
     }
 
     values.addAll({
-      'windowInsets': nonNull(windowInsets).toRequestJson(),
+      'windowInsets': nonNull(windowInsets).toRequestJsonArray(),
     });
 
     values.addAll({
-      'windowPadding': nonNull(windowPadding).toRequestJson(),
+      'windowPadding': nonNull(windowPadding).toRequestJsonArray(),
     });
 
     values.addAll({
@@ -200,7 +206,7 @@ extension AllMetaDataRequestJson on AllMetaData {
     });
 
     values.addAll({
-      'windowSize': nonNull(windowSize).toRequestJson(),
+      'windowSize': nonNull(windowSize).toRequestJsonArray(),
     });
 
     values.addAll({
@@ -214,25 +220,25 @@ extension AllMetaDataRequestJson on AllMetaData {
 // Remove when we drop support for Flutter v3.8.0-14.0.pre.
 // ignore: deprecated_member_use
 extension on WindowPadding {
-  List<double> toRequestJson() {
+  List<double> toRequestJsonArray() {
     return [left, top, right, bottom];
   }
 }
 
 extension on Rect {
-  List<double> toRequestJson() {
+  List<double> toRequestJsonArray() {
     return [left, top, right, bottom];
   }
 }
 
 extension on Size {
-  List<double> toRequestJson() {
+  List<double> toRequestJsonArray() {
     return [width, height];
   }
 }
 
 extension on Brightness {
-  String toRequestJson() {
+  String toRequestJsonValue() {
     if (this == Brightness.dark) return 'dark';
     if (this == Brightness.light) return 'light';
     throw 'Unknown brightness value $this';
@@ -240,7 +246,7 @@ extension on Brightness {
 }
 
 extension on CompilationMode {
-  String toRequestJson() {
+  String toRequestJsonValue() {
     switch (this) {
       case CompilationMode.release:
         return 'release';

@@ -32,6 +32,12 @@ class PendingFeedbackItemParserV3 {
           .toList(),
       attachments: attachments,
       metadata: AllMetaData(
+        appBrightness: () {
+          final value = metadataJson['appBrightness'];
+          if (value == 'light') return Brightness.light;
+          if (value == 'dark') return Brightness.dark;
+          return null;
+        }(),
         appLocale: metadataJson['appLocale'] as String?,
         appName: metadataJson['appName'] as String?,
         buildCommit: metadataJson['buildCommit'] as String?,

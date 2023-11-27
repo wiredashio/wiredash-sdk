@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
@@ -62,6 +63,15 @@ class WiredashModel with ChangeNotifier {
 
   set appLocaleFromContext(Locale? appLocale) {
     _appLocaleFromContext = appLocale;
+    notifyListeners();
+  }
+
+  Brightness? _appBrightnessFromContext;
+
+  Brightness? get appBrightnessFromContext => _appBrightnessFromContext;
+
+  set appBrightnessFromContext(Brightness? appBrightness) {
+    _appBrightnessFromContext = appBrightness;
     notifyListeners();
   }
 
@@ -183,6 +193,7 @@ class WiredashModel with ChangeNotifier {
 
     final metadata = CustomizableWiredashMetaData();
     metadata.appLocale = appLocaleFromContext?.toLanguageTag();
+    metadata.appBrightness = appBrightnessFromContext;
 
     // buildInfo (values injected via dart-define take precedence) over values captured with native APIs
     // ignore: deprecated_member_use_from_same_package

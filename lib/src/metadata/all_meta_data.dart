@@ -9,6 +9,7 @@ import 'package:wiredash/src/metadata/meta_data_collector.dart';
 ///
 /// See [MetaDataCollector] for more information about the data sources
 class AllMetaData {
+  final Brightness? appBrightness;
   final String? appLocale;
   final String? appName;
   final String? buildCommit;
@@ -39,6 +40,7 @@ class AllMetaData {
   final double windowTextScaleFactor;
 
   const AllMetaData({
+    this.appBrightness,
     this.appLocale,
     this.appName,
     this.buildCommit,
@@ -92,6 +94,7 @@ class AllMetaData {
     Object? email = defaultArgument,
   }) {
     return AllMetaData(
+      appBrightness: sessionMetadata.appBrightness,
       appLocale: sessionMetadata.appLocale,
       appName: fixedMetadata.appInfo.appName,
       buildCommit: fixedMetadata.buildInfo.buildCommit,
