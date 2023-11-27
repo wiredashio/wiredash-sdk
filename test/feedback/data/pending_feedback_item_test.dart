@@ -77,10 +77,10 @@ void main() {
       message: 'Hello world!',
       labels: ['bug', 'lbl-1234'],
       metadata: AllMetaData(
+        appLocale: 'de_DE',
         buildVersion: '1.2.3',
         buildNumber: '543',
         buildCommit: 'abcdef12',
-        appLocale: 'de_DE',
         windowPixelRatio: 2.75,
         installId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
         sdkVersion: 174,
@@ -193,10 +193,11 @@ void main() {
       message: 'Hello world!',
       labels: ['bug', 'lbl-1234'],
       metadata: AllMetaData(
+        appBrightness: Brightness.dark,
+        appLocale: 'en_US',
         buildVersion: '1.2.3',
         buildNumber: '543',
         buildCommit: 'abcdef12',
-        appLocale: 'en_US',
         windowPixelRatio: 2.75,
         installId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
         sdkVersion: 174,
@@ -241,6 +242,7 @@ void main() {
       "labels": ["bug", "lbl-1234"],
       "message": "Hello world!",
       "metadata": {
+        "appBrightness": "dark",
         "appLocale": "en_US",
         "appName": "MyApp",
         "buildCommit": "abcdef12",

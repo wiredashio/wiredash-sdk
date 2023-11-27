@@ -1,5 +1,7 @@
 // ignore_for_file: deprecated_member_use_from_same_package
 
+import 'dart:ui';
+
 import 'package:collection/collection.dart';
 import 'package:wiredash/src/utils/object_util.dart';
 
@@ -50,6 +52,9 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
   String? appLocale;
 
   @override
+  Brightness? appBrightness;
+
+  @override
   Map<String, Object?> custom = {};
 
   @override
@@ -57,6 +62,7 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
     return 'CustomizableWiredashMetaData{'
         'userId: $userId, '
         'userEmail: $userEmail, '
+        'appBrightness: $appBrightness, '
         'appLocale: $appLocale, '
         'custom: $custom'
         '}';
@@ -72,6 +78,7 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
           buildVersion == other.buildVersion &&
           buildNumber == other.buildNumber &&
           buildCommit == other.buildCommit &&
+          appBrightness == other.appBrightness &&
           appLocale == other.appLocale &&
           const DeepCollectionEquality.unordered().equals(custom, other.custom);
 
@@ -82,6 +89,7 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
       buildVersion.hashCode ^
       buildNumber.hashCode ^
       buildCommit.hashCode ^
+      appBrightness.hashCode ^
       appLocale.hashCode ^
       const DeepCollectionEquality.unordered().hash(custom);
 
@@ -92,6 +100,7 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
     String? buildNumber,
     String? buildCommit,
     String? appLocale,
+    Brightness? appBrightness,
     Map<String, Object?>? custom,
   }) get copyWith => _copyWith;
 
@@ -103,6 +112,7 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
     Object? buildCommit = defaultArgument,
     Object? custom = defaultArgument,
     Object? appLocale = defaultArgument,
+    Object? appBrightness = defaultArgument,
   }) {
     final metaData = CustomizableWiredashMetaData();
     metaData.userId =
@@ -120,6 +130,9 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
         : this.buildCommit;
     metaData.appLocale =
         appLocale != defaultArgument ? appLocale as String? : this.appLocale;
+    metaData.appBrightness = appBrightness != defaultArgument
+        ? appBrightness as Brightness?
+        : this.appBrightness;
     if (custom != defaultArgument && custom != null) {
       metaData.custom = custom as Map<String, Object?>;
     } else {
@@ -177,6 +190,11 @@ abstract class WiredashMetaData {
   /// `en`, `en_US`
   String? get appLocale;
 
+  /// The current brightness of the app
+  ///
+  /// By default, captured from the material or cupertino theme
+  Brightness? get appBrightness;
+
   /// Supported data types are String, int, double, bool, List, Map.
   ///
   /// Values that can't be encoded using `jsonEncode` will be omitted.
@@ -188,6 +206,7 @@ abstract class WiredashMetaData {
         'userId: $userId, '
         'userEmail: $userEmail, '
         'appLocale: $appLocale, '
+        'appBrightness: $appBrightness, '
         'custom: $custom'
         '}';
   }
@@ -201,6 +220,7 @@ extension MakeCustomizable on WiredashMetaData {
     }
 
     return CustomizableWiredashMetaData().copyWith(
+      appBrightness: appBrightness,
       appLocale: appLocale,
       userId: userId,
       userEmail: userEmail,

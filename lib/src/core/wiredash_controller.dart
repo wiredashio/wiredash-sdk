@@ -66,6 +66,7 @@ class WiredashController {
   Future<void> modifyMetaData(
     WiredashMetaData Function(CustomizableWiredashMetaData metaData) mutation,
   ) async {
+    _captureAppBrightness();
     _captureAppLocale();
     await _model.initializeMetadata();
     _model.metaData = mutation(_model.metaData!.makeCustomizable());
@@ -252,25 +253,61 @@ class WiredashController {
 
     // reset theme at every call
     _model.themeFromContext = null;
-    final context = _model.services.wiredashWidget.showBuildContext;
-    if (context != null) {
-      // generate theme from current context
-      if (inheritMaterialTheme == true) {
-        final materialTheme = Theme.of(context);
+    if (inheritMaterialTheme == true) {
+      final materialTheme = _captureMaterialTheme();
+      if (materialTheme != null) {
         _model.themeFromContext = WiredashThemeData.fromColor(
           primaryColor: materialTheme.colorScheme.primary,
           secondaryColor: materialTheme.colorScheme.secondary,
           brightness: materialTheme.brightness,
         );
       }
-      if (inheritCupertinoTheme == true) {
-        final cupertinoTheme = CupertinoTheme.of(context);
+    }
+    if (inheritCupertinoTheme == true) {
+      final cupertinoTheme = _captureCupertinoTheme();
+      if (cupertinoTheme != null) {
         _model.themeFromContext = WiredashThemeData.fromColor(
           primaryColor: cupertinoTheme.primaryColor,
           brightness: cupertinoTheme.brightness ?? Brightness.light,
         );
       }
     }
+  }
+
+  /// Captures the current brightness of the app by material or cupertino theme
+  void _captureAppBrightness() {
+    final context = _model.services.wiredashWidget.showBuildContext;
+    if (context == null) return;
+
+    _model.appBrightnessFromContext;
+    final materialBrightness = _captureMaterialTheme()?.brightness;
+    if (materialBrightness != null) {
+      _model.appBrightnessFromContext = materialBrightness;
+      return;
+    }
+    final cupertinoBrightness = _captureCupertinoTheme()?.brightness;
+    if (cupertinoBrightness != null) {
+      _model.appBrightnessFromContext = cupertinoBrightness;
+      return;
+    }
+  }
+
+  /// Search the user context for the material theme
+  ThemeData? _captureMaterialTheme() {
+    final context = _model.services.wiredashWidget.showBuildContext;
+    if (context != null) {
+      return Theme.of(context);
+    }
+    return null;
+  }
+
+  /// Search the user context for the cupertino theme
+  CupertinoThemeData? _captureCupertinoTheme() {
+    final context = _model.services.wiredashWidget.showBuildContext;
+    if (context != null) {
+      return CupertinoTheme.of(context);
+    }
+    return null;
   }
 }
 

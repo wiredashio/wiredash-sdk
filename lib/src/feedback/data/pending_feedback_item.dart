@@ -109,6 +109,11 @@ extension on AllMetaData {
     final Map<String, Object> values = SplayTreeMap.from({});
 
     // Values are sorted alphabetically for easy comparison with the backend
+    final _appBrightness = appBrightness;
+    if (_appBrightness != null) {
+      values.addAll({'appBrightness': _appBrightness.jsonEncode()});
+    }
+
     final _appLocale = appLocale;
     if (_appLocale != null) {
       values.addAll({'appLocale': _appLocale});
