@@ -35,12 +35,16 @@ class WiredashApiException implements Exception {
 
   @override
   String toString() {
-    return 'WiredashApiException{'
-        '"$message", '
-        'endpoint: ${response?.request?.url.path}, '
-        'code: ${response?.statusCode}, '
-        'resp: $messageFromServer'
-        '}';
+    final sb = StringBuffer();
+    sb.write('WiredashApiException{');
+    if (message != null) {
+      sb.write('"$message", ');
+    }
+    sb.write('code: ${response?.statusCode}, ');
+    sb.write('endpoint: ${response?.request?.url.path}, ');
+    sb.write('resp: $messageFromServer');
+    sb.write('}');
+    return sb.toString();
   }
 }
 
