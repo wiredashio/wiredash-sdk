@@ -136,7 +136,9 @@ class WiredashTestRobot {
     bool useDirectFeedbackSubmitter = true,
   }) async {
     setupMocks();
-    debugServicesCreator = () => createMockServices();
+    debugServicesCreator = () => createMockServices(
+          useDirectFeedbackSubmitter: useDirectFeedbackSubmitter,
+        );
     addTearDown(() => debugServicesCreator = null);
 
     await tester.pumpWidget(
@@ -189,18 +191,6 @@ class WiredashTestRobot {
     );
     if (afterPump != null) {
       await afterPump();
-    }
-
-    // Don't do actual http calls
-    services.inject<WiredashApi>((_) => MockWiredashApi.fake());
-
-    if (useDirectFeedbackSubmitter) {
-      // replace submitter, because for testing we always want to submit directly
-      services.inject<FeedbackSubmitter>(
-        (locator) => DirectFeedbackSubmitter(services.api),
-      );
-    } else {
-      assert(services.feedbackSubmitter is RetryingFeedbackSubmitter);
     }
 
     return this;
@@ -609,9 +599,24 @@ class WiredashMockServices {
   MockWiredashApi get mockApi => services.api as MockWiredashApi;
 }
 
-WiredashServices createMockServices() {
+WiredashServices createMockServices({bool useDirectFeedbackSubmitter = false}) {
   final services = WiredashServices();
-  services.inject<WiredashApi>((_) => MockWiredashApi.fake());
+
+  // Don't do actual http calls
+  services.inject<WiredashApi>((_) {
+    // depend on the widget (secret/project)
+    services.wiredashWidget;
+    return MockWiredashApi.fake();
+  });
+
+  if (useDirectFeedbackSubmitter) {
+    // replace submitter, because for testing we always want to submit directly
+    services.inject<FeedbackSubmitter>(
+      (locator) => DirectFeedbackSubmitter(services.api),
+    );
+  } else {
+    assert(services.feedbackSubmitter is RetryingFeedbackSubmitter);
+  }
   return services;
 }
 
