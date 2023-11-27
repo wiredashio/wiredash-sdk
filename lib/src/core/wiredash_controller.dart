@@ -64,9 +64,7 @@ class WiredashController {
   /// reference might not be outdated and not be used. The `metaData` object is
   /// only guaranteed to be up-to-date within the `modifyMetaData` method.
   Future<void> modifyMetaData(
-    CustomizableWiredashMetaData Function(
-      CustomizableWiredashMetaData metaData,
-    ) mutation,
+    WiredashMetaData Function(CustomizableWiredashMetaData metaData) mutation,
   ) async {
     _captureAppLocale();
     await _model.initializeMetadata();

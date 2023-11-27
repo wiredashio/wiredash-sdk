@@ -158,9 +158,12 @@ class WiredashModel with ChangeNotifier {
   ) async {
     final metadata = metaData ?? await _createPopulatedSessionMetadata();
 
-    if (fallbackCollector != null) {
+    final collector =
+        services.wiredashWidget.collectMetaData ?? fallbackCollector;
+
+    if (collector != null) {
       try {
-        final collected = await fallbackCollector(metadata.makeCustomizable());
+        final collected = await collector(metadata.makeCustomizable());
         metaData = collected;
       } catch (e, stack) {
         reportWiredashError(
