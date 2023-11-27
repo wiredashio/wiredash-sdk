@@ -57,8 +57,6 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
     return 'CustomizableWiredashMetaData{'
         'userId: $userId, '
         'userEmail: $userEmail, '
-        'buildVersion: $buildVersion, '
-        'buildNumber: $buildNumber, '
         'appLocale: $appLocale, '
         'custom: $custom'
         '}';
@@ -189,8 +187,6 @@ abstract class WiredashMetaData {
     return 'WiredashMetaData{'
         'userId: $userId, '
         'userEmail: $userEmail, '
-        'buildVersion: $buildVersion, '
-        'buildNumber: $buildNumber, '
         'appLocale: $appLocale, '
         'custom: $custom'
         '}';
