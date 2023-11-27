@@ -220,12 +220,6 @@ void _setupServices(WiredashServices sl) {
           telemetry: locator.get(),
         ),
       );
-      // engine.addJob(
-      //   'collect metadata',
-      //   CollectMetaDataJob(
-      //     metaDataCollector: locator.get(),
-      //   ),
-      // );
 
       // app start delayed
       engine.addJob(
