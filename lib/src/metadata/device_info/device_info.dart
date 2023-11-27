@@ -55,11 +55,6 @@ class FlutterInfo {
   /// https://api.flutter.dev/flutter/package-platform_platform/LocalPlatform/operatingSystem.html
   final String? platformOS;
 
-  /// A string representing the version of the operating system or platform.
-  ///
-  /// https://api.flutter.dev/flutter/package-platform_platform/LocalPlatform/operatingSystemVersion.html
-  final String? platformOSVersion;
-
   /// The version of the current Dart runtime.
   ///
   /// https://api.flutter.dev/flutter/package-platform_platform/LocalPlatform/version.html
@@ -92,7 +87,6 @@ class FlutterInfo {
     required this.physicalGeometry,
     required this.pixelRatio,
     this.platformOS,
-    this.platformOSVersion,
     this.platformDartVersion,
     required this.textScaleFactor,
     required this.viewInsets,
@@ -111,7 +105,6 @@ class FlutterInfo {
     Rect? physicalGeometry,
     double? pixelRatio,
     String? platformOS,
-    String? platformOSVersion,
     String? platformVersion,
     double? textScaleFactor,
     WiredashWindowPadding? viewInsets,
@@ -128,7 +121,6 @@ class FlutterInfo {
       physicalGeometry: physicalGeometry ?? this.physicalGeometry,
       pixelRatio: pixelRatio ?? this.pixelRatio,
       platformOS: platformOS ?? this.platformOS,
-      platformOSVersion: platformOSVersion ?? this.platformOSVersion,
       platformDartVersion: platformVersion ?? platformDartVersion,
       textScaleFactor: textScaleFactor ?? this.textScaleFactor,
       viewInsets: viewInsets ?? this.viewInsets,
@@ -148,7 +140,6 @@ class FlutterInfo {
         'physicalGeometry: $physicalGeometry, '
         'pixelRatio: $pixelRatio, '
         'platformOS: $platformOS, '
-        'platformOSBuild: $platformOSVersion, '
         'platformVersion: $platformDartVersion, '
         'textScaleFactor: $textScaleFactor, '
         'viewInsets: $viewInsets, '
@@ -173,7 +164,6 @@ class FlutterInfo {
           physicalGeometry == other.physicalGeometry &&
           pixelRatio == other.pixelRatio &&
           platformOS == other.platformOS &&
-          platformOSVersion == other.platformOSVersion &&
           platformDartVersion == other.platformDartVersion &&
           textScaleFactor == other.textScaleFactor &&
           viewInsets == other.viewInsets &&
@@ -191,7 +181,6 @@ class FlutterInfo {
       physicalGeometry.hashCode ^
       pixelRatio.hashCode ^
       platformOS.hashCode ^
-      platformOSVersion.hashCode ^
       platformDartVersion.hashCode ^
       textScaleFactor.hashCode ^
       viewInsets.hashCode ^
