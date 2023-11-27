@@ -175,7 +175,7 @@ class MetaDataCollector {
 /// It is called with the latest [WiredashMetaData] returned from this callback.
 /// Developers can then modify the metadata and have the final say in what is
 /// collected.
-typedef CustomMetaDataCollector = Future<WiredashMetaData> Function(
+typedef CustomMetaDataCollector = Future<CustomizableWiredashMetaData> Function(
   CustomizableWiredashMetaData metaData,
 );
 

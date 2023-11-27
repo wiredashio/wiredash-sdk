@@ -90,7 +90,7 @@ class Wiredash extends StatefulWidget {
   ///   child: MyApp(),
   /// ),
   /// ```
-  final FutureOr<WiredashMetaData> Function(
+  final FutureOr<CustomizableWiredashMetaData> Function(
     CustomizableWiredashMetaData metaData,
   )? collectMetaData;
 
@@ -374,7 +374,7 @@ class WiredashState extends State<Wiredash> {
       // Use what users set in WiredashOptions has the highest priority
       widget.options?.locale,
       // Use what users see in the app
-      _services.wiredashModel.appLocaleFromContext,
+      _services.wiredashModel.sessionMetaData?.appLocale,
     ].whereNotNull();
 
     for (final locale in localesInOrder) {

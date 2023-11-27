@@ -7,6 +7,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/metadata/renderer/renderer.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
 import 'package:wiredash/src/utils/delay.dart';
+import 'package:wiredash/wiredash.dart';
 
 enum FeedbackFlowStatus {
   none,
@@ -50,7 +51,7 @@ class FeedbackModel extends ChangeNotifier2 {
   /// to the point when the feedback is submitted because users still have full
   /// control about the app and can sign out or change the language, etc. which
   /// might be conflicting with what's seen on the screenshot.
-  SessionMetaData? _sessionMetadata;
+  CustomizableWiredashMetaData? _customizableMetadata;
 
   List<Label> get selectedLabels => List.unmodifiable(_selectedLabels);
   List<Label> _selectedLabels = [];
@@ -215,8 +216,8 @@ class FeedbackModel extends ChangeNotifier2 {
   }
 
   Future<void> skipScreenshot() async {
-    if (_sessionMetadata == null) {
-      await _collectSessionMetaData();
+    if (_customizableMetadata == null) {
+      await _collectCustomizableMetaData();
     }
     goToNextStep();
   }
@@ -287,14 +288,14 @@ class FeedbackModel extends ChangeNotifier2 {
   }
 
   /// Allow devs to collect additional information
-  Future<SessionMetaData> _collectSessionMetaData() async {
+  Future<CustomizableWiredashMetaData> _collectCustomizableMetaData() async {
     final fallbackCollector = _services
         .wiredashModel.feedbackOptions?.collectMetaData
         ?.map((it) => it.asFuture());
-    _sessionMetadata =
+    _customizableMetadata =
         await _services.wiredashModel.collectSessionMetaData(fallbackCollector);
     notifyListeners();
-    return _sessionMetadata!;
+    return _customizableMetadata!;
   }
 
   /// Captures the pixels of the app and the app metadata
@@ -308,7 +309,7 @@ class FeedbackModel extends ChangeNotifier2 {
     // captures screenshot, it is saved in screenCaptureController
     await _services.screenCaptureController.captureScreen();
     // TODO show loading indicator?
-    await _collectSessionMetaData();
+    await _collectCustomizableMetaData();
 
     _services.picassoController.isActive = true;
     _goToStep(FeedbackFlowStatus.screenshotDrawing);
@@ -390,7 +391,10 @@ class FeedbackModel extends ChangeNotifier2 {
 
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
-    final sessionMetadata = _sessionMetadata ?? await _collectSessionMetaData();
+    final customizableMetadata =
+        _customizableMetadata ?? await _collectCustomizableMetaData();
+    final SessionMetaData? sessionMetadata =
+        _services.wiredashModel.sessionMetaData;
     final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
 
     final email = () {
@@ -410,6 +414,7 @@ class FeedbackModel extends ChangeNotifier2 {
           .toList(),
       message: _feedbackMessage!,
       metadata: AllMetaData.from(
+        customizableMetadata: customizableMetadata,
         sessionMetadata: sessionMetadata,
         fixedMetadata: fixedMetadata,
         flutterInfo: flutterInfo,

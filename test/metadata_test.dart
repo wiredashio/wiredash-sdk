@@ -62,7 +62,7 @@ void main() {
   testWidgets('set metadata before opening wiredash', (tester) async {
     final robot = WiredashTestRobot(tester);
 
-    WiredashMetaData? metadata;
+    CustomizableWiredashMetaData? metadata;
     await robot.launchApp(
       builder: (context) {
         return Scaffold(
@@ -94,7 +94,6 @@ void main() {
     // prefilled
     expect(metadata!.buildNumber, isNotNull);
     expect(metadata!.buildVersion, isNotNull);
-    expect(metadata!.appLocale, isNotNull);
     expect(metadata!.custom.isEmpty, isTrue);
   });
 
@@ -102,8 +101,8 @@ void main() {
       (tester) async {
     final robot = WiredashTestRobot(tester);
 
-    WiredashMetaData? syncMetaData;
-    WiredashMetaData? asyncMetaData;
+    CustomizableWiredashMetaData? syncMetaData;
+    CustomizableWiredashMetaData? asyncMetaData;
     await robot.launchApp(
       builder: (context) {
         return Scaffold(
@@ -131,7 +130,6 @@ void main() {
     expect(syncMetaData!.buildCommit, isNull);
     expect(syncMetaData!.buildNumber, isNull);
     expect(syncMetaData!.buildVersion, isNull);
-    expect(syncMetaData!.appLocale, isNull);
     expect(syncMetaData!.custom.isEmpty, isTrue);
 
     // prefilled
@@ -140,7 +138,6 @@ void main() {
     expect(asyncMetaData!.buildCommit, isNull);
     expect(asyncMetaData!.buildNumber, isNotNull);
     expect(asyncMetaData!.buildVersion, isNotNull);
-    expect(asyncMetaData!.appLocale, isNotNull);
     expect(asyncMetaData!.custom.isEmpty, isTrue);
   });
 
@@ -229,9 +226,7 @@ void main() {
           return metaData
             ..userEmail = "user@mail.com"
             ..userId = "123"
-            ..custom['foo'] = 'bar'
-            ..appLocale = 'my-MY'
-            ..appBrightness = Brightness.dark;
+            ..custom['foo'] = 'bar';
         },
       );
       await robot.openWiredash();
@@ -242,8 +237,6 @@ void main() {
       expect(submittedFeedback!.metadata.userEmail, 'user@mail.com');
       expect(submittedFeedback.metadata.userId, '123');
       expect(submittedFeedback.metadata.custom!['foo'], 'bar');
-      expect(submittedFeedback.metadata.appLocale, 'my-MY');
-      expect(submittedFeedback.metadata.appBrightness, Brightness.dark);
     });
   });
 }

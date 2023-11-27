@@ -64,12 +64,14 @@ class WiredashController {
   /// reference might not be outdated and not be used. The `metaData` object is
   /// only guaranteed to be up-to-date within the `modifyMetaData` method.
   Future<void> modifyMetaData(
-    WiredashMetaData Function(CustomizableWiredashMetaData metaData) mutation,
+    CustomizableWiredashMetaData Function(CustomizableWiredashMetaData metaData)
+        mutation,
   ) async {
-    _captureAppBrightness();
-    _captureAppLocale();
+    _captureSessionMetaData();
     await _model.initializeMetadata();
-    _model.metaData = mutation(_model.metaData!.makeCustomizable());
+    final before = _model.customizableMetaData!.copyWith();
+    final after = mutation(before);
+    _model.customizableMetaData = after;
   }
 
   /// Resets all metadata to the initial state
@@ -78,6 +80,7 @@ class WiredashController {
   /// [WiredashMetaData.userId] or [WiredashMetaData.userEmail] is still set.
   /// Same goes for custom metadata.
   Future<void> resetMetaData() async {
+    _model.customizableMetaData = null;
     await _model.initializeMetadata();
   }
 
@@ -97,10 +100,10 @@ class WiredashController {
   /// Object that can easily build upon and continuously filled with new data. But
   /// Wiredash also need to know when you actually changed the metadata.
   @Deprecated('Use the async getMetaData() instead')
-  WiredashMetaData get metaData {
+  CustomizableWiredashMetaData get metaData {
     // fallback to empty when metaData is not yet initialized
     final mutable =
-        _model.metaData?.makeCustomizable() ?? CustomizableWiredashMetaData();
+        _model.customizableMetaData ?? CustomizableWiredashMetaData();
     // return an immutable view
     return mutable.copyWith(custom: Map.unmodifiable(mutable.custom));
   }
@@ -116,10 +119,10 @@ class WiredashController {
   /// Wiredash wants to provide a pre-filled, mutable [CustomizableWiredashMetaData]
   /// Object that can easily build upon and continuously filled with new data. But
   /// Wiredash also need to know when you actually changed the metadata.
-  Future<WiredashMetaData> getMetaData() async {
-    _captureAppLocale();
+  Future<CustomizableWiredashMetaData> getMetaData() async {
+    _captureSessionMetaData();
     await _model.initializeMetadata();
-    final mutable = _model.metaData!.makeCustomizable();
+    final mutable = _model.customizableMetaData!;
     // return an immutable view
     return mutable.copyWith(custom: Map.unmodifiable(mutable.custom));
   }
@@ -205,7 +208,7 @@ class WiredashController {
     WiredashFeedbackOptions? options,
   }) {
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
-    _captureAppLocale();
+    _captureSessionMetaData();
     _model.feedbackOptionsOverride = options ?? feedbackOptions;
     _model.show(flow: WiredashFlow.feedback);
   }
@@ -227,13 +230,26 @@ class WiredashController {
         .asValueNotifier((c) => openStates.contains(c.backdropStatus));
   }
 
+  /// Captures the session information of the app based on the [BuildContext]
+  void _captureSessionMetaData() {
+    final brightness = _detectAppBrightness();
+    final locale = _captureAppLocale();
+
+    final sessionMetaData = SessionMetaData(
+      appLocale: locale,
+      appBrightness: brightness,
+    );
+
+    _model.sessionMetaData = sessionMetaData;
+  }
+
   /// Captures the current locale of the app when opening wiredash
-  void _captureAppLocale() {
+  Locale? _captureAppLocale() {
     final context = _model.services.wiredashWidget.showBuildContext;
-    if (context == null) return;
+    if (context == null) return null;
 
     final locale = Localizations.maybeLocaleOf(context);
-    _model.appLocaleFromContext = locale;
+    return locale;
   }
 
   /// Search the user context for the app theme
@@ -254,7 +270,7 @@ class WiredashController {
     // reset theme at every call
     _model.themeFromContext = null;
     if (inheritMaterialTheme == true) {
-      final materialTheme = _captureMaterialTheme();
+      final materialTheme = _detectMaterialTheme();
       if (materialTheme != null) {
         _model.themeFromContext = WiredashThemeData.fromColor(
           primaryColor: materialTheme.colorScheme.primary,
@@ -264,7 +280,7 @@ class WiredashController {
       }
     }
     if (inheritCupertinoTheme == true) {
-      final cupertinoTheme = _captureCupertinoTheme();
+      final cupertinoTheme = _detectCupertinoTheme();
       if (cupertinoTheme != null) {
         _model.themeFromContext = WiredashThemeData.fromColor(
           primaryColor: cupertinoTheme.primaryColor,
@@ -275,25 +291,20 @@ class WiredashController {
   }
 
   /// Captures the current brightness of the app by material or cupertino theme
-  void _captureAppBrightness() {
-    final context = _model.services.wiredashWidget.showBuildContext;
-    if (context == null) return;
-
-    _model.appBrightnessFromContext;
-    final materialBrightness = _captureMaterialTheme()?.brightness;
+  Brightness? _detectAppBrightness() {
+    final materialBrightness = _detectMaterialTheme()?.brightness;
     if (materialBrightness != null) {
-      _model.appBrightnessFromContext = materialBrightness;
-      return;
+      return materialBrightness;
     }
-    final cupertinoBrightness = _captureCupertinoTheme()?.brightness;
+    final cupertinoBrightness = _detectCupertinoTheme()?.brightness;
     if (cupertinoBrightness != null) {
-      _model.appBrightnessFromContext = cupertinoBrightness;
-      return;
+      return cupertinoBrightness;
     }
+    return null;
   }
 
   /// Search the user context for the material theme
-  ThemeData? _captureMaterialTheme() {
+  ThemeData? _detectMaterialTheme() {
     final context = _model.services.wiredashWidget.showBuildContext;
     if (context != null) {
       return Theme.of(context);
@@ -302,7 +313,7 @@ class WiredashController {
   }
 
   /// Search the user context for the cupertino theme
-  CupertinoThemeData? _captureCupertinoTheme() {
+  CupertinoThemeData? _detectCupertinoTheme() {
     final context = _model.services.wiredashWidget.showBuildContext;
     if (context != null) {
       return CupertinoTheme.of(context);

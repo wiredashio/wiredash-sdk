@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
@@ -14,20 +13,32 @@ class WiredashModel with ChangeNotifier {
   // TODO make private?
   final WiredashServices services;
 
-  SessionMetaData? _metaData = CustomizableWiredashMetaData();
-
   WiredashFlow? get activeFlow => _activeFlow;
   WiredashFlow? _activeFlow;
 
+  CustomizableWiredashMetaData? _customizableMetaData;
+
   /// Cache of the current metadata, may include user values from
-  /// [WiredashFeedbackOptions.collectMetaData] or [PsOptions.collectMetaData]
-  SessionMetaData? get metaData {
-    return _metaData;
+  /// [Wiredash.collectMetaData]
+  CustomizableWiredashMetaData? get customizableMetaData {
+    return _customizableMetaData;
   }
 
   /// Override the current metadata that will be attached to feedbacks
-  set metaData(SessionMetaData? metaData) {
-    _metaData = metaData;
+  set customizableMetaData(CustomizableWiredashMetaData? metaData) {
+    _customizableMetaData = metaData;
+    notifyListeners();
+  }
+
+  /// Automatically captures information about the buildContext that was used to open Wiredash
+  SessionMetaData? _sessionMetaData;
+
+  SessionMetaData? get sessionMetaData {
+    return _sessionMetaData ?? const SessionMetaData();
+  }
+
+  set sessionMetaData(SessionMetaData? sessionMetaData) {
+    _sessionMetaData = sessionMetaData;
     notifyListeners();
   }
 
@@ -53,25 +64,6 @@ class WiredashModel with ChangeNotifier {
 
   set themeFromContext(WiredashThemeData? themeFromContext) {
     _themeFromContext = themeFromContext;
-    notifyListeners();
-  }
-
-  /// The locale of the application where `Wiredash.of(context)` got called
-  Locale? _appLocaleFromContext;
-
-  Locale? get appLocaleFromContext => _appLocaleFromContext;
-
-  set appLocaleFromContext(Locale? appLocale) {
-    _appLocaleFromContext = appLocale;
-    notifyListeners();
-  }
-
-  Brightness? _appBrightnessFromContext;
-
-  Brightness? get appBrightnessFromContext => _appBrightnessFromContext;
-
-  set appBrightnessFromContext(Brightness? appBrightness) {
-    _appBrightnessFromContext = appBrightness;
     notifyListeners();
   }
 
@@ -106,8 +98,10 @@ class WiredashModel with ChangeNotifier {
 
   /// Called during initialization of the [Wiredash] widget
   Future<void> initializeMetadata() async {
-    metaData = await _createPopulatedSessionMetadata();
-    notifyListeners();
+    if (customizableMetaData == null) {
+      customizableMetaData = await _createPopulatedCustomizableMetadata();
+      notifyListeners();
+    }
   }
 
   /// Deletes pending feedbacks
@@ -149,7 +143,6 @@ class WiredashModel with ChangeNotifier {
 
     // reset options from show() call
     themeFromContext = null;
-    appLocaleFromContext = null;
     feedbackOptionsOverride = null;
 
     if (discardFeedback) {
@@ -163,18 +156,19 @@ class WiredashModel with ChangeNotifier {
   /// Collects metadata from the user via [Wiredash.collectMetaData] or
   /// [fallbackCollector] which can be [WiredashFeedbackOptions.collectMetaData]
   /// or [PsOptions.collectMetaData]
-  Future<SessionMetaData> collectSessionMetaData(
+  Future<CustomizableWiredashMetaData> collectSessionMetaData(
     CustomMetaDataCollector? fallbackCollector,
   ) async {
-    final metadata = metaData ?? await _createPopulatedSessionMetadata();
+    final metadata =
+        customizableMetaData ?? await _createPopulatedCustomizableMetadata();
 
     final collector =
         services.wiredashWidget.collectMetaData ?? fallbackCollector;
 
     if (collector != null) {
       try {
-        final collected = await collector(metadata.makeCustomizable());
-        metaData = collected;
+        final collected = await collector(metadata.copyWith());
+        return customizableMetaData = collected.copyWith();
       } catch (e, stack) {
         reportWiredashError(
           e,
@@ -187,14 +181,14 @@ class WiredashModel with ChangeNotifier {
   }
 
   /// Creates [SessionMetaData] pre-populated with data already collected
-  Future<SessionMetaData> _createPopulatedSessionMetadata() async {
+  Future<CustomizableWiredashMetaData>
+      _createPopulatedCustomizableMetadata() async {
     final fixedMetaData =
         await services.metaDataCollector.collectFixedMetaData();
 
     final metadata = CustomizableWiredashMetaData();
-    metadata.appLocale = appLocaleFromContext?.toLanguageTag();
-    metadata.appBrightness = appBrightnessFromContext;
 
+    // Fill build information for legacy compatibility. Those values are now read-only
     // buildInfo (values injected via dart-define take precedence) over values captured with native APIs
     // ignore: deprecated_member_use_from_same_package
     metadata.buildVersion =
