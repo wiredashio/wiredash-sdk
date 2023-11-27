@@ -33,7 +33,8 @@ void main() {
       expect(find.byType(Wiredash), findsOneWidget);
     });
 
-    testWidgets('ping is send when the Widget gets updated', (tester) async {
+    testWidgets('ping is send, even when the Widget gets updated',
+        (tester) async {
       final robot = WiredashTestRobot(tester);
       robot.setupMocks();
       await tester.pumpWidget(
@@ -59,13 +60,17 @@ void main() {
           child: CircularProgressIndicator(),
         ),
       );
+      final api2 = robot.mockServices.mockApi;
+      expect(api1, isNot(api2)); // was updated
       await tester.pump();
       await tester.pump();
 
-      expect(api1.pingInvocations.count, 0);
+      expect(api2.pingInvocations.count, 0);
       print("wait 5s");
       await tester.pump(const Duration(seconds: 5));
-      expect(api1.pingInvocations.count, 1);
+      expect(api1.pingInvocations.count, 0);
+      // makes sure the job doesn't die after being updated
+      expect(api2.pingInvocations.count, 1);
     });
 
     testWidgets('reading Wiredash simply works and sends pings again',
