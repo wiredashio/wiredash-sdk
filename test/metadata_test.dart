@@ -187,8 +187,8 @@ void main() {
       await robot.openPromoterScore();
       await tester.pump(const Duration(seconds: 1));
       final latestCall = robot.mockServices.mockApi.sendPsInvocations.latest;
-      final submittedFeedback = latestCall[0] as PromoterScoreRequestBody?;
-      expect(submittedFeedback!.metadata.userEmail, 'primary@mail.com');
+      final ps = latestCall[0] as PromoterScoreRequestBody?;
+      expect(ps!.metadata.userEmail, 'primary@mail.com');
     });
 
     testWidgets('Use PsOptions.collectMetaData as fallback', (tester) async {
@@ -203,8 +203,8 @@ void main() {
       await robot.openPromoterScore();
       await tester.pump(const Duration(seconds: 1));
       final latestCall = robot.mockServices.mockApi.sendPsInvocations.latest;
-      final submittedFeedback = latestCall[0] as PromoterScoreRequestBody?;
-      expect(submittedFeedback!.metadata.userEmail, 'secondary@mail.com');
+      final ps = latestCall[0] as PromoterScoreRequestBody?;
+      expect(ps!.metadata.userEmail, 'secondary@mail.com');
     });
 
     testWidgets('All user collected metaData is submitted to the server',
@@ -226,6 +226,30 @@ void main() {
       expect(submittedFeedback!.metadata.userEmail, 'user@mail.com');
       expect(submittedFeedback.metadata.userId, '123');
       expect(submittedFeedback.metadata.custom!['foo'], 'bar');
+    });
+  });
+  group('sessionMetaData', () {
+    testWidgets('sent along feedback', (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp();
+      await robot.openWiredash();
+      await robot.submitTestFeedback();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
+      expect(submittedFeedback!.metadata.appBrightness, Brightness.light);
+      expect(submittedFeedback.metadata.appLocale, 'en-US');
+    });
+
+    testWidgets('send along promoter score', (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp();
+      await robot.openPromoterScore();
+      await tester.pump(const Duration(seconds: 1));
+      final latestCall = robot.mockServices.mockApi.sendPsInvocations.latest;
+      final ps = latestCall[0] as PromoterScoreRequestBody?;
+      expect(ps!.metadata.appBrightness, Brightness.light);
+      expect(ps.metadata.appLocale, 'en-US');
     });
   });
 }
