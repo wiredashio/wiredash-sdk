@@ -36,14 +36,9 @@
         ..custom['myKey'] = {'myValue': '007'}},
   ), 
   ```
-- Rework `metadata` API
-  The changes are considered non-breaking, missing `awaits` will not cause any issues. No API has been removed, but some are deprecated or noop.
-  - `Wiredash.of(context).modifyiMetaData()` now returns a `Future`. Please add `await` accordingly
-  - `setUserProperties()` now returns a Future. Please add `await` accordingly
-  - The sync `Wiredash.of(context).metaData` getter is now deprecated. Use `await Wiredash.of(context).getMetaData()` instead
-  - `CustomizableWiredashMetaData.populated()` is not populated anymore, use the default constructor instead
-  - The metadata properties `buildVersion`, `buildNumber` and `buildCommit` cannot be set via modifyMetadata anymore. This information has to be provided at compile time (dart-define) or is read automatically from the app bundle
-  - `setBuildProperties()` is now deprecated and noop, also use dart-define instead
+- The metadata properties `buildVersion`, `buildNumber` and `buildCommit` cannot be set via `Wiredash.of(context).modifyiMetaData()` anymore. This information has to be provided at compile time (dart-define) or is read automatically from the app bundle
+- `setBuildProperties()` is now deprecated and noop, also use dart-define instead
+- Updated norwegian `no` locale 🇳🇴
 
 
 ## 1.7.5

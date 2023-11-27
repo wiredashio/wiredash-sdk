@@ -129,7 +129,7 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      await robot.wiredashController.modifyMetaData(
+      robot.wiredashController.modifyMetaData(
         (metaData) => metaData
           // ignore: deprecated_member_use_from_same_package
           ..buildNumber = 'customBuildNumber'
