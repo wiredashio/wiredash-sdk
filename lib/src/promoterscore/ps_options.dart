@@ -54,7 +54,7 @@ class PsOptions {
   ///     ..custom['isPremium'] = false
   ///     ..custom['nested'] = {'wire': 'dash'},
   /// ```
-  final FutureOr<WiredashMetaData> Function(
+  final FutureOr<CustomizableWiredashMetaData> Function(
     CustomizableWiredashMetaData metaData,
   )? collectMetaData;
 }

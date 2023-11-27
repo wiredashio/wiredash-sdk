@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
+import 'package:wiredash/src/metadata/user_meta_data.dart';
 
 /// A collection of captures metadata from different sources
 ///
@@ -70,7 +71,8 @@ class AllMetaData {
   });
 
   static AllMetaData Function({
-    required SessionMetaData sessionMetadata,
+    required CustomizableWiredashMetaData customizableMetadata,
+    required SessionMetaData? sessionMetadata,
     required FixedMetaData fixedMetadata,
     required FlutterInfo flutterInfo,
     required String installId,
@@ -79,22 +81,23 @@ class AllMetaData {
 
   // ignore: prefer_constructors_over_static_methods
   static AllMetaData _from({
-    required SessionMetaData sessionMetadata,
+    required CustomizableWiredashMetaData customizableMetadata,
+    required SessionMetaData? sessionMetadata,
     required FixedMetaData fixedMetadata,
     required FlutterInfo flutterInfo,
     required String installId,
     Object? email = defaultArgument,
   }) {
     return AllMetaData(
-      appBrightness: sessionMetadata.appBrightness,
-      appLocale: sessionMetadata.appLocale,
+      appBrightness: sessionMetadata?.appBrightness,
+      appLocale: sessionMetadata?.appLocale?.toLanguageTag(),
       appName: fixedMetadata.appInfo.appName,
       buildCommit: fixedMetadata.buildInfo.buildCommit,
       buildNumber: fixedMetadata.buildInfo.buildNumber,
       buildVersion: fixedMetadata.buildInfo.buildVersion,
       bundleId: fixedMetadata.appInfo.bundleId,
       compilationMode: fixedMetadata.buildInfo.compilationMode,
-      custom: sessionMetadata.custom,
+      custom: customizableMetadata.custom,
       deviceModel: fixedMetadata.deviceInfo.deviceModel,
       installId: installId,
       physicalGeometry: flutterInfo.physicalGeometry,
@@ -107,9 +110,9 @@ class AllMetaData {
       platformSupportedLocales: flutterInfo.platformSupportedLocales,
       sdkVersion: wiredashSdkVersion,
       userEmail: email == defaultArgument
-          ? sessionMetadata.userEmail
+          ? customizableMetadata.userEmail
           : email as String?,
-      userId: sessionMetadata.userId,
+      userId: customizableMetadata.userId,
       windowInsets: flutterInfo.viewInsets,
       windowPadding: flutterInfo.viewPadding,
       windowPixelRatio: flutterInfo.pixelRatio,

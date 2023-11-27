@@ -127,7 +127,7 @@ class WiredashTestRobot {
   Future<WiredashTestRobot> launchApp({
     WiredashFeedbackOptions? feedbackOptions,
     PsOptions? psOptions,
-    FutureOr<WiredashMetaData> Function(
+    FutureOr<CustomizableWiredashMetaData> Function(
       CustomizableWiredashMetaData metaData,
     )? collectMetaData,
     Widget Function(BuildContext)? builder,

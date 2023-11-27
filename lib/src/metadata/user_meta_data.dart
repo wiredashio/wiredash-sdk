@@ -1,16 +1,14 @@
 // ignore_for_file: deprecated_member_use_from_same_package
 
-import 'dart:ui';
-
 import 'package:collection/collection.dart';
 import 'package:wiredash/src/utils/object_util.dart';
 
-/// Mutable version of [WiredashMetaData] that will be sent along the user
-/// feedback to the Wiredash console
+/// Information about the user/ app with will be sent along feedback or
+/// promoter score to the Wiredash console
 ///
 /// This object is intended to be mutable, making it trivial to change
 /// properties.
-class CustomizableWiredashMetaData implements WiredashMetaData {
+class CustomizableWiredashMetaData {
   /// This constructor returns a 100% clean version with no prefilled data
   CustomizableWiredashMetaData();
 
@@ -19,42 +17,50 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
   )
   CustomizableWiredashMetaData.populated();
 
-  @override
+  /// The id of the user, allowing you to match the feedback with the userIds
+  /// of you application
+  ///
+  /// Might be a nickname, a uuid, or an email-address
   String? userId;
 
-  @override
+  /// The email address auto-fills the email address step
+  ///
+  /// This is the best way to contact the user and can be different from
+  /// [userId]
   String? userEmail;
 
+  /// The "name" of the version, i.e. a semantic version 1.5.10-debug
+  ///
+  /// This field is prefilled with the environment variable `BUILD_VERSION`
   @Deprecated(
     'The buildVersion is now read directly from the native platform. '
     'Alternatively, provide it at compile time with env.BUILD_VERSION. '
     'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
   )
-  @override
   String? buildVersion;
 
+  /// The build number of this version, usually an int
+  ///
+  /// This field is prefilled with the environment variable `BUILD_NUMBER`
   @Deprecated(
     'The buildNumber is now read directly from the native platform. '
     'Alternatively, provide it at compile time with env.BUILD_NUMBER. '
     'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
   )
-  @override
   String? buildNumber;
 
+  /// The commit that was used to build this app
+  ///
+  /// This field is prefilled with the environment variable `BUILD_COMMIT`
   @Deprecated(
     'Provide the buildCommit at compile time with env.BUILD_NUMBER. '
     'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
   )
-  @override
   String? buildCommit;
 
-  @override
-  String? appLocale;
-
-  @override
-  Brightness? appBrightness;
-
-  @override
+  /// Supported data types are String, int, double, bool, List, Map.
+  ///
+  /// Values that can't be encoded using `jsonEncode` will be omitted.
   Map<String, Object?> custom = {};
 
   @override
@@ -62,8 +68,6 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
     return 'CustomizableWiredashMetaData{'
         'userId: $userId, '
         'userEmail: $userEmail, '
-        'appBrightness: $appBrightness, '
-        'appLocale: $appLocale, '
         'custom: $custom'
         '}';
   }
@@ -78,8 +82,6 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
           buildVersion == other.buildVersion &&
           buildNumber == other.buildNumber &&
           buildCommit == other.buildCommit &&
-          appBrightness == other.appBrightness &&
-          appLocale == other.appLocale &&
           const DeepCollectionEquality.unordered().equals(custom, other.custom);
 
   @override
@@ -89,8 +91,6 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
       buildVersion.hashCode ^
       buildNumber.hashCode ^
       buildCommit.hashCode ^
-      appBrightness.hashCode ^
-      appLocale.hashCode ^
       const DeepCollectionEquality.unordered().hash(custom);
 
   CustomizableWiredashMetaData Function({
@@ -99,8 +99,6 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
     String? buildVersion,
     String? buildNumber,
     String? buildCommit,
-    String? appLocale,
-    Brightness? appBrightness,
     Map<String, Object?>? custom,
   }) get copyWith => _copyWith;
 
@@ -111,8 +109,6 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
     Object? buildNumber = defaultArgument,
     Object? buildCommit = defaultArgument,
     Object? custom = defaultArgument,
-    Object? appLocale = defaultArgument,
-    Object? appBrightness = defaultArgument,
   }) {
     final metaData = CustomizableWiredashMetaData();
     metaData.userId =
@@ -128,106 +124,11 @@ class CustomizableWiredashMetaData implements WiredashMetaData {
     metaData.buildCommit = buildCommit != defaultArgument
         ? buildCommit as String?
         : this.buildCommit;
-    metaData.appLocale =
-        appLocale != defaultArgument ? appLocale as String? : this.appLocale;
-    metaData.appBrightness = appBrightness != defaultArgument
-        ? appBrightness as Brightness?
-        : this.appBrightness;
     if (custom != defaultArgument && custom != null) {
       metaData.custom = custom as Map<String, Object?>;
     } else {
       metaData.custom = this.custom;
     }
     return metaData;
-  }
-}
-
-/// MetaData that will be sent along the user feedback to the Wiredash console
-abstract class WiredashMetaData {
-  /// The id of the user, allowing you to match the feedback with the userIds
-  /// of you application
-  ///
-  /// Might be a nickname, a uuid, or an email-address
-  String? get userId;
-
-  /// The email address auto-fills the email address step
-  ///
-  /// This is the best way to contact the user and can be different from
-  /// [userId]
-  String? get userEmail;
-
-  /// The "name" of the version, i.e. a semantic version 1.5.10-debug
-  ///
-  /// This field is prefilled with the environment variable `BUILD_VERSION`
-  @Deprecated(
-    'The buildVersion is now read directly from the native platform. '
-    'Alternatively, provide it at compile time with env.BUILD_VERSION. '
-    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
-  )
-  String? get buildVersion;
-
-  /// The build number of this version, usually an int
-  ///
-  /// This field is prefilled with the environment variable `BUILD_NUMBER`
-  @Deprecated(
-    'The buildNumber is now read directly from the native platform. '
-    'Alternatively, provide it at compile time with env.BUILD_NUMBER. '
-    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
-  )
-  String? get buildNumber;
-
-  /// The commit that was used to build this app
-  ///
-  /// This field is prefilled with the environment variable `BUILD_COMMIT`
-  @Deprecated(
-    'Provide the buildCommit at compile time with env.BUILD_NUMBER. '
-    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
-  )
-  String? get buildCommit;
-
-  /// The current locale of the app
-  ///
-  /// `en`, `en_US`
-  String? get appLocale;
-
-  /// The current brightness of the app
-  ///
-  /// By default, captured from the material or cupertino theme
-  Brightness? get appBrightness;
-
-  /// Supported data types are String, int, double, bool, List, Map.
-  ///
-  /// Values that can't be encoded using `jsonEncode` will be omitted.
-  Map<String, Object?> get custom;
-
-  @override
-  String toString() {
-    return 'WiredashMetaData{'
-        'userId: $userId, '
-        'userEmail: $userEmail, '
-        'appLocale: $appLocale, '
-        'appBrightness: $appBrightness, '
-        'custom: $custom'
-        '}';
-  }
-}
-
-extension MakeCustomizable on WiredashMetaData {
-  /// returns a mutable version
-  CustomizableWiredashMetaData makeCustomizable() {
-    if (this is CustomizableWiredashMetaData) {
-      return this as CustomizableWiredashMetaData;
-    }
-
-    return CustomizableWiredashMetaData().copyWith(
-      appBrightness: appBrightness,
-      appLocale: appLocale,
-      userId: userId,
-      userEmail: userEmail,
-      buildVersion: buildVersion,
-      buildNumber: buildNumber,
-      buildCommit: buildCommit,
-      custom: custom,
-    );
   }
 }

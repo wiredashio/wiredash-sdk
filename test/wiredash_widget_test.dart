@@ -139,7 +139,6 @@ void main() {
           ..buildCommit = 'customBuildCommit'
           ..userEmail = 'customUserEmail'
           ..userId = 'customUserId'
-          ..appLocale = 'customAppLocale'
           ..custom = {'customKey': 'customValue'},
       );
 

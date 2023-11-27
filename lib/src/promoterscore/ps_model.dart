@@ -72,8 +72,9 @@ class PsModel extends ChangeNotifier2 {
         await _services.metaDataCollector.collectFixedMetaData();
     final fallbackCollector = _services.wiredashModel.psOptions.collectMetaData
         ?.map((it) => it.asFuture());
-    final sessionMetadata =
+    final customizableMetadata =
         await _services.wiredashModel.collectSessionMetaData(fallbackCollector);
+    final sessionMetadata = _services.wiredashModel.sessionMetaData;
     final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
 
     final body = PromoterScoreRequestBody(
@@ -81,10 +82,11 @@ class PsModel extends ChangeNotifier2 {
       question: _questionInUI!,
       message: message,
       metadata: AllMetaData.from(
-        installId: submitId,
-        fixedMetadata: fixedMetadata,
+        customizableMetadata: customizableMetadata,
         sessionMetadata: sessionMetadata,
+        fixedMetadata: fixedMetadata,
         flutterInfo: flutterInfo,
+        installId: submitId,
       ),
     );
     try {
