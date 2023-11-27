@@ -23,7 +23,7 @@ class Locator {
     return provider!.get as T;
   }
 
-  /// Retrieve a instance of type [T]
+  /// Retrieve a instance of type [T] and subscribe to changes
   T watch<T>() {
     if (_disposed) {
       throw Exception('Locator is disposed');
@@ -125,10 +125,20 @@ class InstanceFactory<T> {
 
   /// Reads the current [_instance], doesn't subscribe the calling [InstanceFactory] to changes.
   T get get {
+    // temporarily disable dependency tracking
+    final tempActive = DependencyTracker._active;
+    DependencyTracker._active = null;
     if (_instance == null) {
-      final T i = create(locator);
+      _tracker.create();
+      late final T i;
+      i = create(locator);
+      _tracker.created();
       _instance = i;
+    } else {
+      _tracker.create();
+      _tracker.created();
     }
+    DependencyTracker._active = tempActive;
     return _instance as T;
   }
 
