@@ -28,9 +28,9 @@ class SessionMetaData {
 
   @override
   String toString() {
-    return 'SessionMetaData{ '
-        ' appLocale: ${appLocale?.toLanguageTag()}, '
-        ' appBrightness: $appBrightness'
+    return 'SessionMetaData{'
+        'appLocale: ${appLocale?.toLanguageTag()}, '
+        'appBrightness: $appBrightness'
         '}';
   }
 

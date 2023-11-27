@@ -205,7 +205,7 @@ class WiredashController {
   /// Captures the session information of the app based on the [BuildContext]
   void _captureSessionMetaData() {
     final brightness = _detectAppBrightness();
-    final locale = _captureAppLocale();
+    final locale = _detectAppLocale();
 
     final sessionMetaData = SessionMetaData(
       appLocale: locale,
@@ -216,7 +216,7 @@ class WiredashController {
   }
 
   /// Captures the current locale of the app when opening wiredash
-  Locale? _captureAppLocale() {
+  Locale? _detectAppLocale() {
     final context = _model.services.wiredashWidget.showBuildContext;
     if (context == null) return null;
 
@@ -325,7 +325,7 @@ extension PromoterScoreWiredash on WiredashController {
     bool? force,
   }) async {
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
-    _captureAppLocale();
+    _captureSessionMetaData();
     _model.psOptionsOverride = options;
 
     if (force == true) {
