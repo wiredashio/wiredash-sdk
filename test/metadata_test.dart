@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'util/robot.dart';
@@ -141,5 +142,83 @@ void main() {
     expect(asyncMetaData!.buildVersion, isNotNull);
     expect(asyncMetaData!.appLocale, isNotNull);
     expect(asyncMetaData!.custom.isEmpty, isTrue);
+  });
+
+  group('collectMetaData', () {
+    testWidgets(
+        'Wiredash.collectMetaData has precedence over WiredashFeedbackOptions',
+        (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp(
+        collectMetaData: (metaData) {
+          return metaData..userEmail = "primary@mail.com";
+        },
+        feedbackOptions: WiredashFeedbackOptions(
+          collectMetaData: (metaData) {
+            return metaData..userEmail = "secondary@mail.com";
+          },
+        ),
+      );
+      await robot.openWiredash();
+      await robot.submitTestFeedback();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
+      expect(submittedFeedback!.metadata.userEmail, 'primary@mail.com');
+    });
+
+    testWidgets('Use WiredashFeedbackOptions.collectMetaData as fallback',
+        (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp(
+        feedbackOptions: WiredashFeedbackOptions(
+          collectMetaData: (metaData) {
+            return metaData..userEmail = "secondary@mail.com";
+          },
+        ),
+      );
+      await robot.openWiredash();
+      await robot.submitTestFeedback();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
+      expect(submittedFeedback!.metadata.userEmail, 'secondary@mail.com');
+    });
+
+    testWidgets('Wiredash.collectMetaData has precedence over PsOptions',
+        (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp(
+        collectMetaData: (metaData) {
+          return metaData..userEmail = "primary@mail.com";
+        },
+        psOptions: PsOptions(
+          collectMetaData: (metaData) {
+            return metaData..userEmail = "secondary@mail.com";
+          },
+        ),
+      );
+      await robot.openPromoterScore();
+      await tester.pump(const Duration(seconds: 1));
+      final latestCall = robot.mockServices.mockApi.sendPsInvocations.latest;
+      final submittedFeedback = latestCall[0] as PromoterScoreRequestBody?;
+      expect(submittedFeedback!.metadata.userEmail, 'primary@mail.com');
+    });
+
+    testWidgets('Use PsOptions.collectMetaData as fallback', (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp(
+        psOptions: PsOptions(
+          collectMetaData: (metaData) {
+            return metaData..userEmail = "secondary@mail.com";
+          },
+        ),
+      );
+      await robot.openPromoterScore();
+      await tester.pump(const Duration(seconds: 1));
+      final latestCall = robot.mockServices.mockApi.sendPsInvocations.latest;
+      final submittedFeedback = latestCall[0] as PromoterScoreRequestBody?;
+      expect(submittedFeedback!.metadata.userEmail, 'secondary@mail.com');
+    });
   });
 }

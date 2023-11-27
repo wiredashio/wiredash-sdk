@@ -18,12 +18,7 @@ void main() {
       final robot = await WiredashTestRobot(tester).launchApp();
 
       await robot.openWiredash();
-      await robot.enterFeedbackMessage('test message');
-      await robot.goToNextStep();
-      await robot.skipScreenshot();
-      await robot.skipEmail();
-      await robot.submitFeedback();
-      await robot.waitUntilWiredashIsClosed();
+      await robot.submitTestFeedback();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as FeedbackItem?;
