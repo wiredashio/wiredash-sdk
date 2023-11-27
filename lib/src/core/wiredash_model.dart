@@ -16,16 +16,17 @@ class WiredashModel with ChangeNotifier {
   WiredashFlow? get activeFlow => _activeFlow;
   WiredashFlow? _activeFlow;
 
-  CustomizableWiredashMetaData? _customizableMetaData;
+  CustomizableWiredashMetaData _customizableMetaData =
+      CustomizableWiredashMetaData();
 
   /// Cache of the current metadata, may include user values from
   /// [Wiredash.collectMetaData]
-  CustomizableWiredashMetaData? get customizableMetaData {
+  CustomizableWiredashMetaData get customizableMetaData {
     return _customizableMetaData;
   }
 
   /// Override the current metadata that will be attached to feedbacks
-  set customizableMetaData(CustomizableWiredashMetaData? metaData) {
+  set customizableMetaData(CustomizableWiredashMetaData metaData) {
     _customizableMetaData = metaData;
     notifyListeners();
   }
@@ -96,14 +97,6 @@ class WiredashModel with ChangeNotifier {
       services.wiredashWidget.psOptions ??
       defaultPsOptions;
 
-  /// Called during initialization of the [Wiredash] widget
-  Future<void> initializeMetadata() async {
-    if (customizableMetaData == null) {
-      customizableMetaData = await _createPopulatedCustomizableMetadata();
-      notifyListeners();
-    }
-  }
-
   /// Deletes pending feedbacks
   ///
   /// Usually only relevant for debug builds
@@ -159,16 +152,14 @@ class WiredashModel with ChangeNotifier {
   Future<CustomizableWiredashMetaData> collectSessionMetaData(
     CustomMetaDataCollector? fallbackCollector,
   ) async {
-    final metadata =
-        customizableMetaData ?? await _createPopulatedCustomizableMetadata();
-
     final collector =
         services.wiredashWidget.collectMetaData ?? fallbackCollector;
 
     if (collector != null) {
       try {
-        final collected = await collector(metadata.copyWith());
-        return customizableMetaData = collected.copyWith();
+        final before = customizableMetaData.copyWith();
+        final after = await collector(before);
+        return customizableMetaData = after.copyWith();
       } catch (e, stack) {
         reportWiredashError(
           e,
@@ -177,31 +168,7 @@ class WiredashModel with ChangeNotifier {
         );
       }
     }
-    return metadata;
-  }
-
-  /// Creates [SessionMetaData] pre-populated with data already collected
-  Future<CustomizableWiredashMetaData>
-      _createPopulatedCustomizableMetadata() async {
-    final fixedMetaData =
-        await services.metaDataCollector.collectFixedMetaData();
-
-    final metadata = CustomizableWiredashMetaData();
-
-    // Fill build information for legacy compatibility. Those values are now read-only
-    // buildInfo (values injected via dart-define take precedence) over values captured with native APIs
-    // ignore: deprecated_member_use_from_same_package
-    metadata.buildVersion =
-        fixedMetaData.buildInfo.buildVersion ?? fixedMetaData.appInfo.version;
-    // ignore: deprecated_member_use_from_same_package
-    metadata.buildNumber = fixedMetaData.buildInfo.buildNumber ??
-        fixedMetaData.appInfo.buildNumber;
-
-    // can only be set via dart-define
-    // ignore: deprecated_member_use_from_same_package
-    metadata.buildCommit = fixedMetaData.buildInfo.buildCommit;
-
-    return metadata;
+    return customizableMetaData;
   }
 }
 

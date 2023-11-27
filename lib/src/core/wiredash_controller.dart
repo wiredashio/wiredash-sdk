@@ -41,7 +41,7 @@ class WiredashController {
   /// Usage:
   ///
   /// ```dart
-  /// await Wiredash.of(context).modifyMetaData(
+  /// Wiredash.of(context).modifyMetaData(
   ///   (metaData) => metaData
   ///     ..userEmail = 'dash@wiredash.io'
   ///     ..buildCommit = '43f23dd'
@@ -63,13 +63,12 @@ class WiredashController {
   /// Please do not keep a reference to the incoming `metaData` parameter. The
   /// reference might not be outdated and not be used. The `metaData` object is
   /// only guaranteed to be up-to-date within the `modifyMetaData` method.
-  Future<void> modifyMetaData(
+  void modifyMetaData(
     CustomizableWiredashMetaData Function(CustomizableWiredashMetaData metaData)
         mutation,
-  ) async {
+  ) {
     _captureSessionMetaData();
-    await _model.initializeMetadata();
-    final before = _model.customizableMetaData!.copyWith();
+    final before = _model.customizableMetaData.copyWith();
     final after = mutation(before);
     _model.customizableMetaData = after;
   }
@@ -79,16 +78,11 @@ class WiredashController {
   /// Call this method when the user signs out to make sure no old metadata like
   /// [WiredashMetaData.userId] or [WiredashMetaData.userEmail] is still set.
   /// Same goes for custom metadata.
-  Future<void> resetMetaData() async {
-    _model.customizableMetaData = null;
-    await _model.initializeMetadata();
+  void resetMetaData() {
+    _model.customizableMetaData = CustomizableWiredashMetaData();
   }
 
   /// Reads the currently set `metaData` (immutable)
-  ///
-  /// Deprecated, use the async [getMetaData] method instead. The synchronous
-  /// getter will return an empty metaData, whereas the async version always
-  /// returns a pre-filled version.
   ///
   /// Use [modifyMetaData] to update the metaData
   ///
@@ -96,33 +90,11 @@ class WiredashController {
   ///
   /// *Why is there no simple `metaData` setter?*
   ///
-  /// Wiredash wants to provide a pre-filled, mutable [CustomizableWiredashMetaData]
+  /// Wiredash wants to provide a mutable [CustomizableWiredashMetaData]
   /// Object that can easily build upon and continuously filled with new data. But
   /// Wiredash also need to know when you actually changed the metadata.
-  @Deprecated('Use the async getMetaData() instead')
   CustomizableWiredashMetaData get metaData {
-    // fallback to empty when metaData is not yet initialized
-    final mutable =
-        _model.customizableMetaData ?? CustomizableWiredashMetaData();
-    // return an immutable view
-    return mutable.copyWith(custom: Map.unmodifiable(mutable.custom));
-  }
-
-  /// Reads the currently set `metaData` (immutable)
-  ///
-  /// Use [modifyMetaData] to update the metaData
-  ///
-  /// ### Discussion
-  ///
-  /// *Why is there no simple `metaData` setter?*
-  ///
-  /// Wiredash wants to provide a pre-filled, mutable [CustomizableWiredashMetaData]
-  /// Object that can easily build upon and continuously filled with new data. But
-  /// Wiredash also need to know when you actually changed the metadata.
-  Future<CustomizableWiredashMetaData> getMetaData() async {
-    _captureSessionMetaData();
-    await _model.initializeMetadata();
-    final mutable = _model.customizableMetaData!;
+    final mutable = _model.customizableMetaData;
     // return an immutable view
     return mutable.copyWith(custom: Map.unmodifiable(mutable.custom));
   }
@@ -132,16 +104,16 @@ class WiredashController {
   /// The [userEmail] parameter can be used to prefill the email input field
   /// but it's up to the user to decide if he want's to include his email with
   /// the feedback.
-  Future<void> Function({
+  void Function({
     String? userId,
     String? userEmail,
   }) get setUserProperties => _setUserProperties;
 
-  Future<void> _setUserProperties({
+  void _setUserProperties({
     Object? userId = defaultArgument,
     Object? userEmail = defaultArgument,
-  }) async {
-    await modifyMetaData(
+  }) {
+    modifyMetaData(
       (metaData) {
         if (userId != defaultArgument) {
           metaData.userId = userId as String?;

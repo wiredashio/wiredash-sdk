@@ -13,7 +13,7 @@ void main() {
     final WiredashModel model = WiredashModel(createMockServices());
     final controller = WiredashController(model);
     expect(controller.metaData.userEmail, isNull);
-    await controller.setUserProperties(userEmail: 'dash@flutter.io');
+    controller.setUserProperties(userEmail: 'dash@flutter.io');
     expect(controller.metaData.userEmail, 'dash@flutter.io');
   });
 
@@ -21,9 +21,9 @@ void main() {
     final WiredashModel model = WiredashModel(createMockServices());
     final controller = WiredashController(model);
     expect(controller.metaData.userEmail, isNull);
-    await controller.setUserProperties(userEmail: 'dash@flutter.io');
+    controller.setUserProperties(userEmail: 'dash@flutter.io');
     expect(controller.metaData.userEmail, 'dash@flutter.io');
-    await controller.setUserProperties(userEmail: null);
+    controller.setUserProperties(userEmail: null);
     expect(controller.metaData.userEmail, isNull);
   });
 
@@ -52,8 +52,7 @@ void main() {
     final WiredashModel model = WiredashModel(createMockServices());
     final controller = WiredashController(model);
     final map = controller.metaData.custom;
-    await controller
-        .modifyMetaData((metaData) => metaData..custom['foo'] = 'bar');
+    controller.modifyMetaData((metaData) => metaData..custom['foo'] = 'bar');
     expect(controller.metaData.custom['foo'], 'bar');
     // getter copy did not change
     expect(map['foo'], isNull);
@@ -71,7 +70,7 @@ void main() {
               GestureDetector(
                 onTap: () async {
                   final wiredash = Wiredash.of(context);
-                  await wiredash.modifyMetaData((metaData) {
+                  wiredash.modifyMetaData((metaData) {
                     metadata = metaData.copyWith();
                     return metaData;
                   });
@@ -90,19 +89,18 @@ void main() {
     expect(metadata!.userId, isNull);
     expect(metadata!.userEmail, isNull);
     expect(metadata!.buildCommit, isNull);
-
-    // prefilled
-    expect(metadata!.buildNumber, isNotNull);
-    expect(metadata!.buildVersion, isNotNull);
     expect(metadata!.custom.isEmpty, isTrue);
+
+    // deprecated
+    expect(metadata!.buildNumber, isNull);
+    expect(metadata!.buildVersion, isNull);
+    expect(metadata!.buildCommit, isNull);
   });
 
-  testWidgets('reading metadata async is prefilled, sync only eventually',
-      (tester) async {
+  testWidgets('reading metadata as first wiredash interaction', (tester) async {
     final robot = WiredashTestRobot(tester);
 
-    CustomizableWiredashMetaData? syncMetaData;
-    CustomizableWiredashMetaData? asyncMetaData;
+    CustomizableWiredashMetaData? metadata;
     await robot.launchApp(
       builder: (context) {
         return Scaffold(
@@ -111,8 +109,7 @@ void main() {
               GestureDetector(
                 onTap: () async {
                   final wiredash = Wiredash.of(context);
-                  syncMetaData = wiredash.metaData;
-                  asyncMetaData = await wiredash.getMetaData();
+                  metadata = wiredash.metaData;
                   wiredash.show();
                 },
                 child: const Text('Feedback'),
@@ -125,20 +122,12 @@ void main() {
     await robot.openWiredash();
 
     // all empty
-    expect(syncMetaData!.userId, isNull);
-    expect(syncMetaData!.userEmail, isNull);
-    expect(syncMetaData!.buildCommit, isNull);
-    expect(syncMetaData!.buildNumber, isNull);
-    expect(syncMetaData!.buildVersion, isNull);
-    expect(syncMetaData!.custom.isEmpty, isTrue);
-
-    // prefilled
-    expect(asyncMetaData!.userId, isNull);
-    expect(asyncMetaData!.userEmail, isNull);
-    expect(asyncMetaData!.buildCommit, isNull);
-    expect(asyncMetaData!.buildNumber, isNotNull);
-    expect(asyncMetaData!.buildVersion, isNotNull);
-    expect(asyncMetaData!.custom.isEmpty, isTrue);
+    expect(metadata!.userId, isNull);
+    expect(metadata!.userEmail, isNull);
+    expect(metadata!.buildCommit, isNull);
+    expect(metadata!.buildNumber, isNull);
+    expect(metadata!.buildVersion, isNull);
+    expect(metadata!.custom.isEmpty, isTrue);
   });
 
   group('collectMetaData', () {
