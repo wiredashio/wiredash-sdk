@@ -1,5 +1,51 @@
 # Changelog
 
+## 1.8.0
+- Wiredash now automatically collects the version information of your app. No need to set `buildVersion`, `buildNumber` anymore. If you want to override this information, you can still do so via dart-define at compile time https://docs.wiredash.io/sdk/custom-properties/#during-compile-time.
+- New: `Wiredash(collectSessionMetaData: )` combines and replaces `collectSessionMetaData` of `WiredashFeedbackOptions` and `PsOptions`. No deduplicate code anymore 🎉
+  ```dart
+  // Before
+  return Wiredash(
+    projectId: "...",
+    secret: "...",
+    feedbackOptions: WiredashFeedbackOptions(
+      collectMetaData: (metaData) {
+        return metaData
+          ..userEmail = 'dash@flutter.dev'
+          ..userId = '007'
+          ..custom['myKey'] = {'myValue': '007'}},
+    ),
+    psOptions: PsOptions(
+      collectMetaData: (metaData) {
+        return metaData
+          ..userEmail = 'dash@flutter.dev'
+          ..userId = '007'
+          ..custom['myKey'] = {'myValue': '007'}},
+    ), 
+  ), 
+  ```
+  ```dart
+  // After
+  return Wiredash(
+    projectId: "...",
+    secret: "...",
+    collectMetaData: (metaData) {
+      return metaData
+        ..userEmail = 'dash@flutter.dev'
+        ..userId = '007'
+        ..custom['myKey'] = {'myValue': '007'}},
+  ), 
+  ```
+- Rework `metadata` API
+  The changes are considered non-breaking, missing `awaits` will not cause any issues. No API has been removed, but some are deprecated or noop.
+  - `Wiredash.of(context).modifyiMetaData()` now returns a `Future`. Please add `await` accordingly
+  - `setUserProperties()` now returns a Future. Please add `await` accordingly
+  - The sync `Wiredash.of(context).metaData` getter is now deprecated. Use `await Wiredash.of(context).getMetaData()` instead
+  - `CustomizableWiredashMetaData.populated()` is not populated anymore, use the default constructor instead
+  - The metadata properties `buildVersion`, `buildNumber` and `buildCommit` cannot be set via modifyMetadata anymore. This information has to be provided at compile time (dart-define) or is read automatically from the app bundle
+  - `setBuildProperties()` is now deprecated and noop, also use dart-define instead
+
+
 ## 1.7.5
 - Add norwegian `no` locale 🇳🇴 
 
