@@ -9,6 +9,7 @@ import 'package:wiredash/src/feedback/feedback_backdrop.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'util/robot.dart';
+import 'util/wiredash_tester.dart';
 
 void main() {
   group('Feedback', () {
@@ -483,6 +484,47 @@ void main() {
 
       await tester.pumpAndSettle();
       spot<FeedbackBackdrop>().doesNotExist();
+    });
+
+    testWidgets('Hold app while submitting feedback resets form',
+        (tester) async {
+      // verifies issue https://github.com/wiredashio/wiredash-sdk/issues/310
+      final robot = await WiredashTestRobot(tester).launchApp();
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.skipScreenshot();
+      await robot.skipEmail();
+
+      // touch and move the app a bit but don't lift the finger
+      final topRight = tester.getTopRight(find.byType(MaterialApp));
+      final gesture =
+          await tester.startGesture(Offset(topRight.dx / 2, topRight.dy + 20));
+      await tester.pump(const Duration(milliseconds: 10));
+      await gesture.moveBy(const Offset(0, 10),
+          timeStamp: const Duration(milliseconds: 10));
+      await tester.pump(const Duration(milliseconds: 10));
+      await gesture.moveBy(const Offset(0, 10),
+          timeStamp: const Duration(milliseconds: 20));
+      await tester.pump(const Duration(milliseconds: 10));
+
+      await robot.submitFeedback();
+
+      // wait for the success screen
+      await tester.waitUntil(
+        find.text('l10n.feedbackStep7SubmissionSuccessMessage'),
+        findsOneWidget,
+      );
+      spotSingle<Step1FeedbackMessage>().doesNotExist();
+
+      // wait for wiredash hide() after 1s delay
+      await tester.pumpAndSettle(const Duration(seconds: 1));
+
+      // back on first step, the form got reset
+      spotSingle<Step1FeedbackMessage>().existsOnce();
+
+      await gesture.up(); // let go of the app
     });
   });
 }
