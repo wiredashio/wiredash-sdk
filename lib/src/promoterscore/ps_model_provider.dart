@@ -22,5 +22,6 @@ class PsModelProvider extends InheritedNotifier<PsModel> {
 }
 
 extension PsModelExtension on BuildContext {
-  PsModel get psModel => PsModelProvider.of(this);
+  PsModel get watchPsModel => PsModelProvider.of(this);
+  PsModel get readPsModel => PsModelProvider.of(this, listen: false);
 }

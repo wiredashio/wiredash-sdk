@@ -16,25 +16,25 @@ class _PromoterScoreFlowState extends State<PromoterScoreFlow> {
 
   @override
   Widget build(BuildContext context) {
-    final psModel = context.psModel;
     final lpv = LarryPageView(
       key: _lpvKey,
       stepCount: () {
-        if (psModel.score == null) {
+        if (context.watchPsModel.score == null) {
           return 1;
         }
-        if (psModel.submitting) {
+        if (context.watchPsModel.submitting) {
           return 1;
         }
         return 2;
       }(),
-      pageIndex: psModel.index,
+      pageIndex: context.watchPsModel.index,
       onPageChanged: (index) {
         setState(() {
-          psModel.index = index;
+          context.readPsModel.index = index;
         });
       },
       builder: (context) {
+        final psModel = context.watchPsModel;
         if (psModel.submitting) {
           return const PsStep3Thanks();
         }

@@ -19,7 +19,7 @@ class _PsStep1RatingState extends State<PsStep1Rating> {
   @override
   Widget build(BuildContext context) {
     final question = context.l10n.promoterScoreStep1Question;
-    context.psModel.questionInUI = question;
+    context.readPsModel.questionInUI = question;
 
     return StepPageScaffold(
       title: Text(question),
@@ -37,10 +37,10 @@ class _PsStep1RatingState extends State<PsStep1Rating> {
           Text(context.l10n.promoterScoreStep1Description),
           const SizedBox(height: 32),
           _PsRater(
-            score: context.psModel.score?.intValue,
+            score: context.watchPsModel.score?.intValue,
             onSelected: (score) async {
               final rating = score?.let((it) => createPsRating(it));
-              context.psModel.score = rating;
+              context.watchPsModel.score = rating;
 
               if (rating != null) {
                 final lpv =

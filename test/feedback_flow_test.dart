@@ -502,11 +502,15 @@ void main() {
       final gesture =
           await tester.startGesture(Offset(topRight.dx / 2, topRight.dy + 20));
       await tester.pump(const Duration(milliseconds: 10));
-      await gesture.moveBy(const Offset(0, 10),
-          timeStamp: const Duration(milliseconds: 10));
+      await gesture.moveBy(
+        const Offset(0, 10),
+        timeStamp: const Duration(milliseconds: 10),
+      );
       await tester.pump(const Duration(milliseconds: 10));
-      await gesture.moveBy(const Offset(0, 10),
-          timeStamp: const Duration(milliseconds: 20));
+      await gesture.moveBy(
+        const Offset(0, 10),
+        timeStamp: const Duration(milliseconds: 20),
+      );
       await tester.pump(const Duration(milliseconds: 10));
 
       await robot.submitFeedback();

@@ -25,7 +25,7 @@ class PsStep3Thanks extends StatelessWidget {
           ),
           Text(
             () {
-              final rating = context.psModel.score!;
+              final rating = context.watchPsModel.score!;
               switch (rating) {
                 case PromoterScoreRating.rating0:
                 case PromoterScoreRating.rating1:

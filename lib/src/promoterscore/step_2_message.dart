@@ -23,8 +23,8 @@ class _PsStep2MessageState extends State<PsStep2Message>
       text: PsModelProvider.of(context, listen: false).message,
     )..addListener(() {
         final text = _controller.text;
-        if (context.psModel.message != text) {
-          context.psModel.message = text;
+        if (context.readPsModel.message != text) {
+          context.readPsModel.message = text;
         }
       });
   }
@@ -46,7 +46,7 @@ class _PsStep2MessageState extends State<PsStep2Message>
       title: Text(context.l10n.promoterScoreStep2MessageTitle),
       description: Text(
         context.l10n.promoterScoreStep2MessageDescription(
-          context.psModel.score!.intValue,
+          context.watchPsModel.score!.intValue,
         ),
       ),
       child: Column(
@@ -104,7 +104,7 @@ class _PsStep2MessageState extends State<PsStep2Message>
                 label: context.l10n.promoterScoreSubmitButton,
                 trailingIcon: Wirecons.check,
                 onTap: () {
-                  context.psModel.submit();
+                  context.readPsModel.submit();
                 },
               ),
             ],
