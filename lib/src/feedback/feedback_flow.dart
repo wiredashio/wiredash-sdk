@@ -22,8 +22,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
   @override
   void initState() {
     super.initState();
-    _index =
-        FeedbackModelProvider.of(context, listen: false).currentStepIndex ?? 0;
+    _index = context.readFeedbackModel.currentStepIndex ?? 0;
   }
 
   @override

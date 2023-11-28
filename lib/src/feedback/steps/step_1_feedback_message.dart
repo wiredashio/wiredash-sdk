@@ -18,7 +18,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
   void initState() {
     super.initState();
     _controller = TextEditingController(
-      text: FeedbackModelProvider.of(context, listen: false).feedbackMessage,
+      text: context.readFeedbackModel.feedbackMessage,
     )..addListener(() {
         final text = _controller.text;
         if (context.watchFeedbackModel.feedbackMessage != text) {

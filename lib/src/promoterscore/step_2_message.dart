@@ -19,9 +19,8 @@ class _PsStep2MessageState extends State<PsStep2Message>
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(
-      text: PsModelProvider.of(context, listen: false).message,
-    )..addListener(() {
+    _controller = TextEditingController(text: context.readPsModel.message)
+      ..addListener(() {
         final text = _controller.text;
         if (context.readPsModel.message != text) {
           context.readPsModel.message = text;
