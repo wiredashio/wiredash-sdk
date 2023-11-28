@@ -7,20 +7,11 @@ class PsModelProvider extends InheritedNotifier<PsModel> {
     required PsModel psModel,
     required super.child,
   }) : super(notifier: psModel);
-
-  static PsModel of(BuildContext context, {bool listen = true}) {
-    if (listen) {
-      return context
-          .dependOnInheritedWidgetOfExactType<PsModelProvider>()!
-          .notifier!;
-    } else {
-      return context
-          .findAncestorWidgetOfExactType<PsModelProvider>()!
-          .notifier!;
-    }
-  }
 }
 
 extension PsModelExtension on BuildContext {
-  PsModel get psModel => PsModelProvider.of(this);
+  PsModel get watchPsModel =>
+      dependOnInheritedWidgetOfExactType<PsModelProvider>()!.notifier!;
+  PsModel get readPsModel =>
+      findAncestorWidgetOfExactType<PsModelProvider>()!.notifier!;
 }

@@ -1,8 +1,9 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spot/spot.dart';
+import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/promoterscore/ps_model.dart';
 
 import 'util/robot.dart';
 
@@ -167,6 +168,43 @@ void main() {
 
       await robot.waitUntilWiredashIsClosed();
       expect(caught.exception.toString(), contains('No internet'));
+    });
+
+    testWidgets('Hold app while submitting ps resets form', (tester) async {
+      // verifies issue https://github.com/wiredashio/wiredash-sdk/issues/310
+      final robot = await WiredashTestRobot(tester).launchApp();
+
+      await robot.openPromoterScore();
+      await robot.ratePromoterScore(7);
+
+      // touch and move the app a bit but don't lift the finger
+      final topRight = tester.getTopRight(find.byType(MaterialApp));
+      final gesture =
+          await tester.startGesture(Offset(topRight.dx / 2, topRight.dy + 20));
+      await tester.pump(const Duration(milliseconds: 10));
+      await gesture.moveBy(
+        const Offset(0, 10),
+        timeStamp: const Duration(milliseconds: 10),
+      );
+      await tester.pump(const Duration(milliseconds: 10));
+      await gesture.moveBy(
+        const Offset(0, 10),
+        timeStamp: const Duration(milliseconds: 20),
+      );
+      await tester.pump(const Duration(milliseconds: 10));
+
+      await robot.submitPromoterScore();
+      await robot.showsPromoterScoreThanksMessage();
+
+      spotSingle<PsStep1Rating>().doesNotExist();
+
+      // wait for wiredash hide() after 2s delay
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
+      // back on first step, the form got reset
+      spotSingle<PsStep1Rating>().existsOnce();
+
+      await gesture.up(); // let go of the app
     });
   });
 }

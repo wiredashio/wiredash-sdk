@@ -18,23 +18,22 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    final feedbackModel = FeedbackModelProvider.of(context, listen: false);
     _controller = TextEditingController(
       // read, not watch, because initState
-      text: feedbackModel.hasEmailBeenEdited
-          ? feedbackModel.userEmail
+      text: context.readFeedbackModel.hasEmailBeenEdited
+          ? context.readFeedbackModel.userEmail
           : WiredashModelProvider.of(context, listen: false)
               .customizableMetaData
               .userEmail,
     )..addListener(() {
         final text = _controller.text;
-        if (context.feedbackModel.userEmail != text) {
-          context.feedbackModel.userEmail = text;
+        if (context.readFeedbackModel.userEmail != text) {
+          context.readFeedbackModel.userEmail = text;
         }
       });
     widgetsBindingInstance.addPostFrameCallback((_) {
       if (!mounted) return;
-      feedbackModel.userEmail = _controller.text;
+      context.readFeedbackModel.userEmail = _controller.text;
     });
   }
 
@@ -74,8 +73,8 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
               cursorColor: context.theme.primaryColor,
               style: context.text.input.onSurface,
               onFieldSubmitted: (_) {
-                if (context.feedbackModel.validateForm()) {
-                  context.feedbackModel.goToNextStep();
+                if (context.readFeedbackModel.validateForm()) {
+                  context.readFeedbackModel.goToNextStep();
                 }
               },
               validator: (data) {
@@ -115,14 +114,14 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                 color: context.theme.secondaryColor,
                 leadingIcon: Wirecons.arrow_left,
                 label: context.l10n.feedbackBackButton,
-                onTap: context.feedbackModel.goToPreviousStep,
+                onTap: context.readFeedbackModel.goToPreviousStep,
               ),
               TronButton(
                 label: context.l10n.feedbackNextButton,
                 trailingIcon: Wirecons.arrow_right,
                 onTap: () {
                   try {
-                    context.feedbackModel.goToNextStep();
+                    context.readFeedbackModel.goToNextStep();
                   } on FormValidationException {
                     // validator triggered, TextFormField shows error
                   }

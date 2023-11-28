@@ -131,19 +131,23 @@ class WiredashModel with ChangeNotifier {
   Future<void> hide({
     bool discardFeedback = false,
   }) async {
-    await services.backdropController.animateToClosed();
-    isWiredashActive = false;
+    try {
+      await services.backdropController.animateToClosed();
 
-    // reset options from show() call
-    themeFromContext = null;
-    feedbackOptionsOverride = null;
-
-    if (discardFeedback) {
-      services.discardFeedback();
+      isWiredashActive = false;
+      // reset options from show() call
+      themeFromContext = null;
+      feedbackOptionsOverride = null;
+    } catch (e) {
+      // might fail when the user holds the app open while hide is called
+    } finally {
+      if (discardFeedback) {
+        services.discardFeedback();
+      }
+      // always discard promoter score rating on close
+      services.discardPs();
+      notifyListeners();
     }
-    // always discard promoter score rating on close
-    services.discardPs();
-    notifyListeners();
   }
 
   /// Collects metadata from the user via [Wiredash.collectMetaData] or

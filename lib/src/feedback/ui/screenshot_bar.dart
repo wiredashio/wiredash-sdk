@@ -10,7 +10,7 @@ class ScreenshotBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final feedbackStatus = context.feedbackModel.feedbackFlowStatus;
+    final feedbackStatus = context.watchFeedbackModel.feedbackFlowStatus;
     Widget? trailing;
 
     if (feedbackStatus == FeedbackFlowStatus.screenshotNavigating) {
@@ -20,7 +20,7 @@ class ScreenshotBar extends StatelessWidget {
         leadingIcon: Wirecons.camera,
         iconOffset: const Offset(-.15, 0),
         label: context.l10n.feedbackStep3ScreenshotBarCaptureButton,
-        onTap: () => context.feedbackModel.captureScreenshot(),
+        onTap: () => context.readFeedbackModel.captureScreenshot(),
       );
     }
 
@@ -38,7 +38,7 @@ class ScreenshotBar extends StatelessWidget {
                 : context.l10n.feedbackStep3ScreenshotBarOkButton,
         onTap: () {
           if (feedbackStatus == FeedbackFlowStatus.screenshotDrawing) {
-            return () => context.feedbackModel.createMasterpiece();
+            return () => context.readFeedbackModel.createMasterpiece();
           }
           if (feedbackStatus == FeedbackFlowStatus.screenshotSaving) {
             return () {/* show enabled while closing */};
@@ -61,7 +61,7 @@ class ScreenshotBar extends StatelessWidget {
                   leadingIcon: Wirecons.arrow_left,
                   color: context.theme.secondaryColor,
                   onTap: () {
-                    context.feedbackModel.cancelScreenshotCapturingMode();
+                    context.readFeedbackModel.cancelScreenshotCapturingMode();
                   },
                 ),
                 if (constraints.maxWidth > 720) ...[
