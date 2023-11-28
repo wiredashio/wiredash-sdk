@@ -14,7 +14,7 @@ class _Step2LabelsState extends State<Step2Labels>
     with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    final feedbackModel = context.feedbackModel;
+    final feedbackModel = context.watchFeedbackModel;
     final selectedLabels = feedbackModel.selectedLabels;
     return StepPageScaffold(
       indicator: const FeedbackProgressIndicator(
@@ -54,12 +54,12 @@ class _Step2LabelsState extends State<Step2Labels>
                 color: context.theme.secondaryColor,
                 leadingIcon: Wirecons.arrow_left,
                 label: context.l10n.feedbackBackButton,
-                onTap: context.feedbackModel.goToPreviousStep,
+                onTap: context.readFeedbackModel.goToPreviousStep,
               ),
               TronButton(
                 label: context.l10n.feedbackNextButton,
                 trailingIcon: Wirecons.arrow_right,
-                onTap: context.feedbackModel.goToNextStep,
+                onTap: context.readFeedbackModel.goToNextStep,
               ),
             ],
           ),

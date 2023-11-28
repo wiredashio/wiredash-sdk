@@ -38,13 +38,13 @@ class _Step6SubmitState extends State<Step6Submit> {
                     color: context.theme.secondaryColor,
                     leadingIcon: Wirecons.arrow_left,
                     label: context.l10n.feedbackBackButton,
-                    onTap: context.feedbackModel.goToPreviousStep,
+                    onTap: context.readFeedbackModel.goToPreviousStep,
                   ),
                   TronButton(
                     label: context.l10n.feedbackStep6SubmitSubmitButton,
                     leadingIcon: Wirecons.check,
                     onTap: () {
-                      context.feedbackModel.submitFeedback();
+                      context.readFeedbackModel.submitFeedback();
                     },
                   ),
                 ],
@@ -79,7 +79,7 @@ class _Step6SubmitState extends State<Step6Submit> {
   }
 
   Widget feedbackDetails() {
-    final model = context.feedbackModel;
+    final model = context.watchFeedbackModel;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: ListTileTheme(

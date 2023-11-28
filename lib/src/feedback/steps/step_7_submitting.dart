@@ -18,12 +18,12 @@ class _Step7SubmittingAndErrorState extends State<Step7SubmittingAndError> {
       alignment: Alignment.topCenter,
       duration: const Duration(milliseconds: 800),
       child: () {
-        final submitting = context.feedbackModel.submitting;
+        final submitting = context.watchFeedbackModel.submitting;
         if (submitting) {
           return const _Submitting();
         }
 
-        final error = context.feedbackModel.submissionError;
+        final error = context.watchFeedbackModel.submissionError;
         if (error != null) {
           return _Error(
             error: error,
@@ -149,7 +149,7 @@ class _Error extends StatelessWidget {
             child: TronButton(
               leadingIcon: Wirecons.refresh,
               onTap: () {
-                context.feedbackModel.submitFeedback();
+                context.readFeedbackModel.submitFeedback();
               },
               child: Text(context.l10n.feedbackStep7SubmissionRetryButton),
             ),

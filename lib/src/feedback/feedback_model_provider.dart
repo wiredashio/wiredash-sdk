@@ -22,5 +22,7 @@ class FeedbackModelProvider extends InheritedNotifier<FeedbackModel> {
 }
 
 extension FeedbackModelExtension on BuildContext {
-  FeedbackModel get feedbackModel => FeedbackModelProvider.of(this);
+  FeedbackModel get watchFeedbackModel => FeedbackModelProvider.of(this);
+  FeedbackModel get readFeedbackModel =>
+      FeedbackModelProvider.of(this, listen: false);
 }

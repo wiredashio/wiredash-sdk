@@ -21,8 +21,8 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
       text: FeedbackModelProvider.of(context, listen: false).feedbackMessage,
     )..addListener(() {
         final text = _controller.text;
-        if (context.feedbackModel.feedbackMessage != text) {
-          context.feedbackModel.feedbackMessage = text;
+        if (context.watchFeedbackModel.feedbackMessage != text) {
+          context.watchFeedbackModel.feedbackMessage = text;
         }
       });
   }
@@ -116,9 +116,9 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                 child: TronButton(
                   label: context.l10n.feedbackNextButton,
                   trailingIcon: Wirecons.arrow_right,
-                  onTap: context.feedbackModel.feedbackMessage == null
-                      ? context.feedbackModel.validateForm
-                      : context.feedbackModel.goToNextStep,
+                  onTap: context.readFeedbackModel.feedbackMessage == null
+                      ? context.readFeedbackModel.validateForm
+                      : context.readFeedbackModel.goToNextStep,
                 ),
               ),
             ],

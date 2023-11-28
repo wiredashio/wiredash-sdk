@@ -28,8 +28,8 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
               .userEmail,
     )..addListener(() {
         final text = _controller.text;
-        if (context.feedbackModel.userEmail != text) {
-          context.feedbackModel.userEmail = text;
+        if (context.readFeedbackModel.userEmail != text) {
+          context.readFeedbackModel.userEmail = text;
         }
       });
     widgetsBindingInstance.addPostFrameCallback((_) {
@@ -74,8 +74,8 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
               cursorColor: context.theme.primaryColor,
               style: context.text.input.onSurface,
               onFieldSubmitted: (_) {
-                if (context.feedbackModel.validateForm()) {
-                  context.feedbackModel.goToNextStep();
+                if (context.readFeedbackModel.validateForm()) {
+                  context.readFeedbackModel.goToNextStep();
                 }
               },
               validator: (data) {
@@ -115,14 +115,14 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                 color: context.theme.secondaryColor,
                 leadingIcon: Wirecons.arrow_left,
                 label: context.l10n.feedbackBackButton,
-                onTap: context.feedbackModel.goToPreviousStep,
+                onTap: context.readFeedbackModel.goToPreviousStep,
               ),
               TronButton(
                 label: context.l10n.feedbackNextButton,
                 trailingIcon: Wirecons.arrow_right,
                 onTap: () {
                   try {
-                    context.feedbackModel.goToNextStep();
+                    context.readFeedbackModel.goToNextStep();
                   } on FormValidationException {
                     // validator triggered, TextFormField shows error
                   }

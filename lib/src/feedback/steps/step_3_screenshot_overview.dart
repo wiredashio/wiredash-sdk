@@ -22,7 +22,7 @@ class _Step3ScreenshotOverviewState extends State<Step3ScreenshotOverview> {
         WiredashBackdrop.maybeOf(context)?.animateSizeChange = true;
       },
       child: () {
-        if (!context.feedbackModel.hasAttachments) {
+        if (!context.watchFeedbackModel.hasAttachments) {
           return const Step3NoAttachments();
         }
         return const Step3WithGallery();
@@ -66,7 +66,7 @@ class _Step3NoAttachmentsState extends State<Step3NoAttachments> {
                   color: context.theme.secondaryColor,
                   leadingIcon: Wirecons.arrow_left,
                   label: context.l10n.feedbackBackButton,
-                  onTap: context.feedbackModel.goToPreviousStep,
+                  onTap: context.watchFeedbackModel.goToPreviousStep,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -84,7 +84,7 @@ class _Step3NoAttachmentsState extends State<Step3NoAttachments> {
                         trailingIcon: Wirecons.chevron_double_right,
                         onTap: () async {
                           if (!mounted) return;
-                          await context.feedbackModel.skipScreenshot();
+                          await context.readFeedbackModel.skipScreenshot();
                         },
                       ),
                       TronButton(
@@ -92,7 +92,7 @@ class _Step3NoAttachmentsState extends State<Step3NoAttachments> {
                             .feedbackStep3ScreenshotOverviewAddScreenshotButton,
                         trailingIcon: Wirecons.arrow_right,
                         maxWidth: 250,
-                        onTap: () => context.feedbackModel
+                        onTap: () => context.readFeedbackModel
                             .enterScreenshotCapturingMode(),
                       ),
                     ],
@@ -138,7 +138,8 @@ class Step3WithGallery extends StatelessWidget {
                   child: Center(
                     child: Row(
                       children: [
-                        for (final att in context.feedbackModel.attachments)
+                        for (final att
+                            in context.watchFeedbackModel.attachments)
                           ConstrainedBox(
                             constraints: BoxConstraints(
                               maxWidth: constraints.maxWidth / 2.5,
@@ -148,7 +149,7 @@ class Step3WithGallery extends StatelessWidget {
                               child: AttachmentPreview(attachment: att),
                             ),
                           ),
-                        if (context.feedbackModel.attachments.length < 3)
+                        if (context.watchFeedbackModel.attachments.length < 3)
                           const NewAttachment(),
                       ],
                     ),
@@ -163,12 +164,12 @@ class Step3WithGallery extends StatelessWidget {
                     color: context.theme.secondaryColor,
                     leadingIcon: Wirecons.arrow_left,
                     label: context.l10n.feedbackBackButton,
-                    onTap: context.feedbackModel.goToPreviousStep,
+                    onTap: context.readFeedbackModel.goToPreviousStep,
                   ),
                   TronButton(
                     label: context.l10n.feedbackNextButton,
                     trailingIcon: Wirecons.arrow_right,
-                    onTap: context.feedbackModel.goToNextStep,
+                    onTap: context.readFeedbackModel.goToNextStep,
                   ),
                 ],
               ),
@@ -213,7 +214,7 @@ class AttachmentPreview extends StatelessWidget {
           child: TronButton(
             color: context.theme.primaryContainerColor,
             onTap: () {
-              context.feedbackModel.deleteAttachment(attachment);
+              context.readFeedbackModel.deleteAttachment(attachment);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -239,7 +240,7 @@ class NewAttachment extends StatelessWidget {
         aspectRatio: context.theme.windowSize.aspectRatio,
         child: AnimatedClickTarget(
           onTap: () {
-            context.feedbackModel.enterScreenshotCapturingMode();
+            context.readFeedbackModel.enterScreenshotCapturingMode();
           },
           builder: (context, state, anims) {
             Color hoverColorAdjustment(Color color) {

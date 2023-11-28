@@ -29,12 +29,12 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_index >= context.feedbackModel.steps.length) {
-      _index = context.feedbackModel.steps.length - 1;
+    if (_index >= context.watchFeedbackModel.steps.length) {
+      _index = context.watchFeedbackModel.steps.length - 1;
     }
 
     final oldIndex = _index;
-    final newIndex = context.feedbackModel.currentStepIndex;
+    final newIndex = context.watchFeedbackModel.currentStepIndex;
     if (newIndex == null) {
       // state not in stack, stay at current page
       return;
@@ -52,31 +52,31 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
 
   @override
   Widget build(BuildContext context) {
-    final feedbackModel = context.feedbackModel;
     final larryPageView = LarryPageView(
       key: _lpvKey,
-      stepCount: feedbackModel.steps.length,
+      stepCount: context.watchFeedbackModel.steps.length,
       pageIndex: _index,
       onPageChanged: (index) {
         setState(() {
           _index = index;
-          final stepIndex = feedbackModel.currentStepIndex;
+          final stepIndex = context.readFeedbackModel.currentStepIndex;
           if (stepIndex == null) {
             return;
           }
 
           if (stepIndex < _index) {
-            feedbackModel.goToNextStep();
+            context.readFeedbackModel.goToNextStep();
           }
 
           if (stepIndex > _index) {
-            feedbackModel.goToPreviousStep();
+            context.readFeedbackModel.goToPreviousStep();
           }
         });
       },
       builder: (context) {
         final index = _index;
         final FeedbackFlowStatus status = () {
+          final feedbackModel = context.watchFeedbackModel;
           if (feedbackModel.steps.length <= index) {
             final stackIndex = feedbackModel.currentStepIndex;
             if (stackIndex == null) {
@@ -125,11 +125,11 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
           if (_index == 0) {
             return BackButtonAction.ignored;
           }
-          feedbackModel.goToPreviousStep();
+          context.readFeedbackModel.goToPreviousStep();
           return BackButtonAction.consumed;
         },
         child: Form(
-          key: feedbackModel.stepFormKey,
+          key: context.watchFeedbackModel.stepFormKey,
           child: larryPageView,
         ),
       ),
@@ -154,7 +154,7 @@ class FeedbackProgressIndicator extends StatefulWidget {
 class _FeedbackProgressIndicatorState extends State<FeedbackProgressIndicator> {
   @override
   Widget build(BuildContext context) {
-    final feedbackModel = context.feedbackModel;
+    final feedbackModel = context.watchFeedbackModel;
     final stepIndex = feedbackModel.indexForFlowStatus(widget.flowStatus);
     var currentStep = stepIndex + 1;
     final total = feedbackModel.maxSteps;

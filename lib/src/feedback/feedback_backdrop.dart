@@ -27,7 +27,7 @@ class FeedbackBackdrop extends StatelessWidget {
       contentBuilder: (context) {
         return WiredashFeedbackFlow(
           // this allows discarding feedback in the message step
-          key: ValueKey(context.feedbackModel),
+          key: ValueKey(context.watchFeedbackModel),
         );
       },
       foregroundLayerBuilder: (c, r, mq) {
@@ -67,7 +67,7 @@ Widget? _buildForegroundLayer(
                 return BackButtonAction.consumed;
               }
 
-              context.feedbackModel.cancelScreenshotCapturingMode();
+              context.readFeedbackModel.cancelScreenshotCapturingMode();
               return BackButtonAction.consumed;
             }
             return BackButtonAction.ignored;
@@ -109,7 +109,7 @@ Widget? _buildForegroundLayer(
         ),
         offset: Offset(
           0,
-          context.feedbackModel.feedbackFlowStatus ==
+          context.watchFeedbackModel.feedbackFlowStatus ==
                   FeedbackFlowStatus.screenshotDrawing
               ? 0
               : 1,
@@ -178,7 +178,7 @@ Widget? _buildBackgroundLayer(
               ),
               offset: Offset(
                 0,
-                context.feedbackModel.feedbackFlowStatus ==
+                context.watchFeedbackModel.feedbackFlowStatus ==
                         FeedbackFlowStatus.screenshotNavigating
                     ? 0
                     : 4,
