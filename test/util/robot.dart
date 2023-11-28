@@ -263,6 +263,17 @@ class WiredashTestRobot {
     print('opened promoter score');
   }
 
+  Future<void> closeWiredashWithButton() async {
+    _spotPageView.spotSingle<Step1FeedbackMessage>().existsOnce();
+    final spotCloseButton = _spotBackdrop.spotSingle<TronButton>(
+      children: [
+        spotSingleText('l10n.feedbackCloseButton'),
+      ],
+    )..existsOnce();
+    await _tap(spotCloseButton);
+    print('closed Wiredash');
+  }
+
   Future<void> closeWiredash() async {
     // tap app which is located at the bottom of the screen
     final bottomRight = tester.getBottomRight(find.byType(Wiredash));
