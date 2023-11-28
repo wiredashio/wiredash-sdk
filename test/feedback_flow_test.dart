@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spot/spot.dart';
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
+import 'package:wiredash/src/feedback/feedback_backdrop.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'util/robot.dart';
@@ -441,6 +443,46 @@ void main() {
       expect(submittedFeedback, isNotNull);
       expect(submittedFeedback!.labels, ['lbl-1', 'lbl-2']);
       expect(submittedFeedback.message, 'feedback with labels');
+    });
+
+    testWidgets('spam tap during close animation', (tester) async {
+      final robot = await WiredashTestRobot(tester).launchApp();
+
+      await robot.openWiredash();
+      final bottomRight = tester.getBottomRight(find.byType(Wiredash));
+      final closeTapLocation = Offset(bottomRight.dx / 2, bottomRight.dy - 20);
+
+      int taps = 0;
+      while (find.byType(FeedbackBackdrop).evaluate().isNotEmpty) {
+        taps++;
+        await tester.tapAt(closeTapLocation);
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+      expect(taps, greaterThan(10));
+      expect(taps, lessThan(20));
+    });
+
+    testWidgets('swipe up then tap to close', (tester) async {
+      // verifies issue https://github.com/wiredashio/wiredash-sdk/issues/311
+      final robot = await WiredashTestRobot(tester).launchApp();
+
+      await robot.openWiredash();
+      final topRight = tester.getTopRight(find.byType(MaterialApp));
+
+      // fling up
+      await tester.flingFrom(
+        Offset(topRight.dx / 2, topRight.dy + 20),
+        // only a bit up so that the close button is still visible
+        const Offset(0, -50),
+        500,
+      );
+      await tester.pump(const Duration(milliseconds: 10));
+
+      // Then tap to close while backdrop is still moving
+      await robot.closeWiredashWithButton(); // caused crash
+
+      await tester.pumpAndSettle();
+      spot<FeedbackBackdrop>().doesNotExist();
     });
   });
 }

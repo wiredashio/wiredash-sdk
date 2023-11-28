@@ -871,7 +871,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               );
               final wiredashModel = context.wiredashModel;
               widget.controller._isAppInteractive = true;
+              _closeAnim = a2;
               await Future.wait([a1, a2]);
+              _closeAnim = null;
               _backdropStatus = WiredashBackdropStatus.closed;
               await wiredashModel.hide();
             },
@@ -892,7 +894,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                 curve: Curves.easeOutExpo,
                 duration: const Duration(milliseconds: 600),
               );
+              _openAnim = a2;
               await Future.wait([a1, a2]);
+              _openAnim = null;
               _backdropStatus = WiredashBackdropStatus.open;
               _swapAnimation();
             },
