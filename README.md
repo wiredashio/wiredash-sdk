@@ -29,7 +29,7 @@ free!_<br />Click on `Create new project` and enter your app's name.
 ### 2. Add wiredash to your pubspec.yaml
 
 ```bash
-$ flutter pub add wiredash: ^1.8.0
+$ flutter pub add wiredash:^1.8.0
 ```
 
 ```yaml
