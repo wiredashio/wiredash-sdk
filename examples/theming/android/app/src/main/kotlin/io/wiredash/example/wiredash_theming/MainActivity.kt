@@ -1,4 +1,4 @@
-package io.wiredash.example
+package io.wiredash.example.wiredash_theming
 
 import io.flutter.embedding.android.FlutterActivity
 
