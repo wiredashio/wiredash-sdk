@@ -1,5 +1,5 @@
-import 'package:sidekick_core/sidekick_core.dart';
 import 'package:dcli/dcli.dart' as dcli;
+import 'package:sidekick_core/sidekick_core.dart';
 
 class SyncBranchesCommand extends Command {
   @override

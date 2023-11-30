@@ -10,6 +10,7 @@ executables:
   main:
 
 dependencies:
+  dcli: ^2.2.3
   sidekick_core: ^2.1.0
 
 dev_dependencies:
