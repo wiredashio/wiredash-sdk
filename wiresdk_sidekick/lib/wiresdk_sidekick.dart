@@ -4,9 +4,9 @@ import 'package:phntmxyz_bump_version_sidekick_plugin/phntmxyz_bump_version_side
 import 'package:sidekick_core/sidekick_core.dart';
 import 'package:wiresdk_sidekick/src/commands/clean_command.dart';
 import 'package:wiresdk_sidekick/src/commands/gen_l10n_command.dart';
+import 'package:wiresdk_sidekick/src/commands/recreate_examples_command.dart';
 import 'package:wiresdk_sidekick/src/commands/sync_branches_command.dart';
 import 'package:wiresdk_sidekick/src/commands/test_command.dart';
-import 'package:wiresdk_sidekick/src/commands/recreate_examples_command.dart';
 
 Future<void> runWiresdk(List<String> args) async {
   final runner = initializeSidekick(

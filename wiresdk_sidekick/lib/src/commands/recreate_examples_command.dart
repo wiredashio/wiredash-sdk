@@ -1,5 +1,5 @@
-import 'package:sidekick_core/sidekick_core.dart';
 import 'package:dcli/dcli.dart' as dcli;
+import 'package:sidekick_core/sidekick_core.dart';
 
 class RecreateExamplesCommand extends Command {
   @override
@@ -7,8 +7,6 @@ class RecreateExamplesCommand extends Command {
 
   @override
   final String name = 'recreate-examples';
-
-  RecreateExamplesCommand() {}
 
   @override
   Future<void> run() async {
