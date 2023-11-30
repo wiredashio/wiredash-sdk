@@ -18,13 +18,11 @@ jobs:
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
-        run: |
-          sudo --preserve-env=PATH env flutter packages get
-          cd examples/theming && sudo --preserve-env=PATH env flutter packages get
+        run: ./wiresdk deps
       - name: Test
-        run: sudo --preserve-env=PATH env flutter test
+        run: ./wiresdk test
       - name: Build
-        run: cd examples/theming && sudo --preserve-env=PATH env flutter build web
+        run: cd examples/theming && ./../../wiresdk flutter build web
 
   stable:
     runs-on: ubuntu-latest
@@ -37,13 +35,11 @@ jobs:
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
-        run: |
-          sudo --preserve-env=PATH env flutter packages get
-          cd examples/theming && sudo --preserve-env=PATH env flutter packages get
+        run: ./wiresdk deps
       - name: Test
-        run: sudo --preserve-env=PATH env flutter test
+        run: ./wiresdk test
       - name: Build
-        run: cd examples/theming && sudo --preserve-env=PATH env flutter build web
+        run: cd examples/theming && ./../../wiresdk flutter build web
 
   beta:
     runs-on: ubuntu-latest
@@ -56,13 +52,11 @@ jobs:
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
-        run: |
-          sudo --preserve-env=PATH env flutter packages get
-          cd examples/theming && sudo --preserve-env=PATH env flutter packages get
+        run: ./wiresdk deps
       - name: Test
-        run: sudo --preserve-env=PATH env flutter test
+        run: ./wiresdk test
       - name: Build
-        run: cd examples/theming && sudo --preserve-env=PATH env flutter build web
+        run: cd examples/theming && ./../../wiresdk flutter build web
 
   latest:
     runs-on: ubuntu-latest
@@ -75,10 +69,8 @@ jobs:
       - name: Flutter version
         run: flutter doctor -v
       - name: Download dependencies
-        run: |
-          sudo --preserve-env=PATH env flutter packages get
-          cd examples/theming && sudo --preserve-env=PATH env flutter packages get
+        run: ./wiresdk deps
       - name: Test
-        run: sudo --preserve-env=PATH env flutter test
+        run: ./wiresdk test
       - name: Build
-        run: cd examples/theming && sudo --preserve-env=PATH env flutter build web
+        run: cd examples/theming && ./../../wiresdk flutter build web
