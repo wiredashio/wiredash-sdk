@@ -14,6 +14,7 @@ import 'wiredash_localizations_es.g.dart';
 import 'wiredash_localizations_fa.g.dart';
 import 'wiredash_localizations_fr.g.dart';
 import 'wiredash_localizations_hu.g.dart';
+import 'wiredash_localizations_it.g.dart';
 import 'wiredash_localizations_no.g.dart';
 import 'wiredash_localizations_pl.g.dart';
 import 'wiredash_localizations_pt.g.dart';
@@ -113,6 +114,7 @@ abstract class WiredashLocalizations {
     Locale('fa'),
     Locale('fr'),
     Locale('hu'),
+    Locale('it'),
     Locale('no'),
     Locale('pl'),
     Locale('pt'),
@@ -489,6 +491,7 @@ class _WiredashLocalizationsDelegate
         'fa',
         'fr',
         'hu',
+        'it',
         'no',
         'pl',
         'pt',
@@ -520,6 +523,8 @@ WiredashLocalizations lookupWiredashLocalizations(Locale locale) {
       return WiredashLocalizationsFr();
     case 'hu':
       return WiredashLocalizationsHu();
+    case 'it':
+      return WiredashLocalizationsIt();
     case 'no':
       return WiredashLocalizationsNo();
     case 'pl':
