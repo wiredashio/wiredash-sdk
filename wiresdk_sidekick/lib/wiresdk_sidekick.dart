@@ -6,6 +6,7 @@ import 'package:wiresdk_sidekick/src/commands/clean_command.dart';
 import 'package:wiresdk_sidekick/src/commands/gen_l10n_command.dart';
 import 'package:wiresdk_sidekick/src/commands/sync_branches_command.dart';
 import 'package:wiresdk_sidekick/src/commands/test_command.dart';
+import 'package:wiresdk_sidekick/src/commands/recreate_examples_command.dart';
 
 Future<void> runWiresdk(List<String> args) async {
   final runner = initializeSidekick(
@@ -21,6 +22,7 @@ Future<void> runWiresdk(List<String> args) async {
     ..addCommand(DartAnalyzeCommand())
     ..addCommand(FormatCommand())
     ..addCommand(SidekickCommand())
+    ..addCommand(RecreateExamplesCommand())
     ..addCommand(SyncBranchesCommand())
     ..addCommand(GenL10nCommand())
     ..addCommand(TestCommand())
