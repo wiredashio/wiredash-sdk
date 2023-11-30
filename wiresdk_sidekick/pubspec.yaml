@@ -4,13 +4,14 @@ version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: ">=3.2.2 <4.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 executables:
   main:
 
 dependencies:
   dcli: ^2.2.3
+  phntmxyz_bump_version_sidekick_plugin: ^1.2.0
   sidekick_core: ^2.1.0
 
 dev_dependencies:
