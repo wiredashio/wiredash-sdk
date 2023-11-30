@@ -1,0 +1,97 @@
+{
+  "@@locale": "it",
+  "feedbackStep1MessageTitle": "Inviaci il tuo feedback",
+  "feedbackStep1MessageBreadcrumbTitle": "Componi il messaggio",
+  "feedbackStep1MessageDescription": "Aggiungi una breve descrizione di ciò che hai riscontrato",
+  "feedbackStep1MessageHint": "Si verificato un errore sconosciuto quando provo a cambiare il mio avatar...",
+  "feedbackStep1MessageErrorMissingMessage": "Per favore aggiungi un messaggio",
+
+  "feedbackStep2LabelsTitle": "Quale label rappresenta al meglio il tuo feedback?",
+  "feedbackStep2LabelsBreadcrumbTitle": "Label",
+  "feedbackStep2LabelsDescription": "Selezionando la giusta categoria ci aiuterai a identificare il problema e a indirizzare il tuo feedback alle parti interessate",
+
+
+  "feedbackStep3ScreenshotOverviewTitle": "Vuoi aggiungere uno screenshot per contestualizzare meglio?",
+  "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "Screenshot",
+  "feedbackStep3ScreenshotOverviewDescription": "Potrai navigare nell'app e scegliere quando acquisire uno screenshot",
+  "feedbackStep3ScreenshotOverviewSkipButton": "Salta",
+  "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Aggiungi screenshot",
+
+  "feedbackStep3ScreenshotBarNavigateTitle": "Fai uno screenshot",
+  "feedbackStep3ScreenshotBottomBarTitle": "Includi uno screenshot per contestualizzare meglio",
+  "feedbackStep3ScreenshotBarDrawTitle": "Disegna sullo schermo per evidenziare",
+  "feedbackStep3ScreenshotBarDrawUndoButton": "Undo",
+  "feedbackStep3ScreenshotBarCaptureButton": "Cattura",
+  "feedbackStep3ScreenshotBarSaveButton": "Salva",
+  "feedbackStep3ScreenshotBarOkButton": "Ok",
+
+  "feedbackStep3GalleryTitle": "Screenshot allegati",
+  "feedbackStep3GalleryBreadcrumbTitle": "Screenshot",
+  "feedbackStep3GalleryDescription": "Puoi aggiungere altri screenshot per aiutarci a comprendere meglio il tuo problema.",
+
+  "feedbackStep4EmailTitle": "Ricevi aggiornamenti via email riguardo il problema riscontrato",
+  "feedbackStep4EmailBreadcrumbTitle": "Contato",
+  "feedbackStep4EmailDescription": "Opzionalmente aggiungi il tuo indirizzo email qui sotto",
+  "feedbackStep4EmailInvalidEmail": "Questo non sembra un indirizzo email valido. Puoi lasciarlo vuoto.",
+  "feedbackStep4EmailInputHint": "mail@esempio.com",
+
+  "feedbackStep6SubmitTitle": "Invia feedback",
+  "feedbackStep6SubmitBreadcrumbTitle": "Invia",
+  "feedbackStep6SubmitDescription": "Si prega di rivedere tutte le informazioni prima dell'invio.\nPuoi tornare indietro per modificare il tuo feedback in qualsiasi momento.",
+  "feedbackStep6SubmitSubmitButton": "Invia",
+  "feedbackStep6SubmitSubmitShowDetailsButton": "Mostra dettagli",
+  "feedbackStep6SubmitSubmitHideDetailsButton": "Nascondi dettagli",
+  "feedbackStep6SubmitSubmitDetailsTitle": "Dettagli feedback",
+
+  "feedbackStep7SubmissionInFlightMessage": "Invio del tuo feedback",
+  "feedbackStep7SubmissionSuccessMessage": "Grazie per il tuo feedback!",
+  "feedbackStep7SubmissionErrorMessage": "Invio del feedback non riuscito",
+  "feedbackStep7SubmissionOpenErrorButton": "Fai clic per visualizzare i dettagli dell'errore",
+  "feedbackStep7SubmissionRetryButton": "Riprova",
+
+  "feedbackStepXOfY": "Passo {current} di {total}",
+  "@feedbackStepXOfY": {
+    "placeholders": {
+      "current": {
+        "description": "current step number 1-max",
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "description": "max number of steps",
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "feedbackDiscardButton": "Annulla il feedback",
+  "feedbackDiscardConfirmButton": "Sei sicuro? Annullo!",
+  "feedbackNextButton": "Avanti",
+  "feedbackBackButton": "Indietro",
+  "feedbackCloseButton": "Chiudi",
+
+  "promoterScoreStep1Question": "Quanto è probabile che tu ci consigli?",
+  "promoterScoreStep1Description": "0 = Non molto, 10 = Molto probabile",
+
+  "promoterScoreStep2MessageTitle": "Quanto è probabile che ci raccomanderesti ai tuoi amici e familiari?",
+  "promoterScoreStep2MessageDescription": "Potresti dirci qualcosa in più sul motivo per cui hai scelto {rating}? Questo passaggio è facoltativo.",
+  "@promoterScoreStep2MessageDescription": {
+    "placeholders": {
+      "rating": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "promoterScoreStep2MessageHint": "Sarebbe fantastico se si potesse migliorare...",
+
+  "promoterScoreStep3ThanksMessagePromoters": "Grazie per la tua valutazione!",
+  "promoterScoreStep3ThanksMessagePassives": "Grazie per la tua valutazione!",
+  "promoterScoreStep3ThanksMessageDetractors": "Grazie per la tua valutazione!",
+
+  "promoterScoreNextButton": "Avanti",
+  "promoterScoreBackButton": "Indietro",
+  "promoterScoreSubmitButton": "Invia",
+
+  "backdropReturnToApp": "Ritorna all'app"
+}
