@@ -11,6 +11,12 @@ class SyncBranchesCommand extends Command {
 
   @override
   Future<void> run() async {
+    try {
+      await git('diff-index --name-status --exit-code HEAD');
+    } catch (e) {
+      throw 'Detected local changes. Please commit or stash them before running this command.';
+    }
+
     await git('checkout stable');
     await git('pull --ff-only');
 
