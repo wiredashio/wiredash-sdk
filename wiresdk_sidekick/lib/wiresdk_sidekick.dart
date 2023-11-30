@@ -78,11 +78,12 @@ Future<void> bumpReadme(
 ) async {
   final readme = package.root.file('README.md');
   final content = readme.readAsStringSync();
+  final next = '${newVersion.major}.${newVersion.minor}.0';
 
-  final versionRegex = RegExp(r'wiredash: \^(.+)');
-  final update = content.replaceFirst(
+  final versionRegex = RegExp(r'wiredash:\s*\^(.+)');
+  final update = content.replaceAllMapped(
     versionRegex,
-    'wiredash: ^${newVersion.major}.${newVersion.minor}.0',
+    (match) => match[0]!.replaceFirst(match[1]!, next),
   );
   readme.writeAsStringSync(update);
 }
