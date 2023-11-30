@@ -36,10 +36,13 @@
         ..custom['myKey'] = {'myValue': '007'}},
   ), 
   ```
-- The metadata properties `buildVersion`, `buildNumber` and `buildCommit` cannot be set via `Wiredash.of(context).modifyiMetaData()` anymore. This information has to be provided at compile time (dart-define) or is read automatically from the app bundle
+- The metadata properties `buildVersion`, `buildNumber` and `buildCommit` cannot be set via `Wiredash.of(context).modifyiMetaData()` anymore. This information has to be provided at compile time (dart-define) or is read automatically from the app bundle 
 - `setBuildProperties()` is now deprecated and noop, also use dart-define instead
-- Updated norwegian `no` locale 🇳🇴
-
+- New `Wiredash.of(context).resetMetaData()` to easily reset all metadata
+- Add italian `it` locale 🇮🇹[#317](https://github.com/wiredashio/wiredash-sdk/pull/317)
+- Add farsi `fa` locale 🇮🇷🇦🇫[#316](https://github.com/wiredashio/wiredash-sdk/pull/316)
+- Updated norwegian `no` locale 🇳🇴[#303](https://github.com/wiredashio/wiredash-sdk/pull/303)
+- Fix issues with the animated backdrop [#314](https://github.com/wiredashio/wiredash-sdk/pull/314) [#315](https://github.com/wiredashio/wiredash-sdk/pull/315)
 
 ## 1.7.5
 - Add norwegian `no` locale 🇳🇴 
