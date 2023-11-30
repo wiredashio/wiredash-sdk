@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:sidekick_core/sidekick_core.dart';
 import 'package:wiresdk_sidekick/src/commands/clean_command.dart';
 import 'package:wiresdk_sidekick/src/commands/test_command.dart';
+import 'package:wiresdk_sidekick/src/commands/gen_l10n_command.dart';
 
 Future<void> runWiresdk(List<String> args) async {
   final runner = initializeSidekick(
@@ -18,6 +19,7 @@ Future<void> runWiresdk(List<String> args) async {
     ..addCommand(DartAnalyzeCommand())
     ..addCommand(FormatCommand())
     ..addCommand(SidekickCommand())
+    ..addCommand(GenL10nCommand())
     ..addCommand(TestCommand());
 
   try {
