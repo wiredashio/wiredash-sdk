@@ -1,0 +1,20 @@
+name: wiresdk_sidekick
+description: Sidekick CLI for wiresdk
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ">=3.2.2 <4.0.0"
+
+executables:
+  main:
+
+dependencies:
+  sidekick_core: ^2.1.0
+
+dev_dependencies:
+  lint: ^2.0.0
+
+# generated code, do not edit this manually
+sidekick:
+  cli_version: 2.1.0
