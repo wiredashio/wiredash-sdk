@@ -56,8 +56,10 @@ class PingJob extends Job {
     final body = PingRequestBody(
       analyticsId: await wuidGenerator().appUsageId(),
       buildCommit: fixedData.buildInfo.buildCommit,
-      buildVersion: fixedData.buildInfo.buildVersion,
-      buildNumber: fixedData.buildInfo.buildNumber,
+      buildVersion:
+          fixedData.buildInfo.buildVersion ?? fixedData.appInfo.version,
+      buildNumber:
+          fixedData.buildInfo.buildNumber ?? fixedData.appInfo.buildNumber,
       bundleId: fixedData.appInfo.bundleId,
       platformLocale: flutterInfo.platformLocale,
       platformOS: flutterInfo.platformOS,

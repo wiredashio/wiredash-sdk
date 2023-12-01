@@ -8,6 +8,7 @@ import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
+import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
 import '../feedback/data/pending_feedback_item_storage_test.dart';
@@ -22,12 +23,20 @@ void main() {
 
     Future<SharedPreferences> prefsProvider() async => prefs;
 
-    PingJob createPingJob() => PingJob(
-          apiProvider: () => api,
-          sharedPreferencesProvider: prefsProvider,
-          metaDataCollector: () => FakeMetaDataCollector(),
-          wuidGenerator: () => IncrementalIdGenerator(),
-        );
+    PingJob createPingJob() {
+      final fakeMetaDataCollector = FakeMetaDataCollector();
+      final incrementalIdGenerator = IncrementalIdGenerator();
+      return PingJob(
+        apiProvider: () => api,
+        sharedPreferencesProvider: prefsProvider,
+        metaDataCollector: () {
+          return fakeMetaDataCollector;
+        },
+        wuidGenerator: () {
+          return incrementalIdGenerator;
+        },
+      );
+    }
 
     setUp(() {
       api = MockWiredashApi();
@@ -44,6 +53,44 @@ void main() {
         pingJob.execute();
         async.flushTimers();
         expect(api.pingInvocations.count, 1);
+      });
+    });
+
+    test('ping sends all fields', () {
+      fakeAsync((async) {
+        final pingJob = createPingJob();
+        pingJob.execute();
+        async.flushTimers();
+        expect(api.pingInvocations.count, 1);
+        final body = api.pingInvocations.invocations[0][0]! as PingRequestBody;
+        expect(body.analyticsId, '0000000000000000');
+        expect(body.buildCommit, null);
+        expect(body.buildNumber, '123');
+        expect(body.buildVersion, '1.2.3');
+        expect(body.bundleId, 'com.example.app');
+        expect(body.platformOS, 'android');
+        expect(body.platformOSVersion, '13');
+        expect(body.platformLocale, 'en_US');
+        expect(body.sdkVersion, wiredashSdkVersion);
+      });
+    });
+
+    test('ping sends buildVersion und buildNumber overrides from environment',
+        () {
+      fakeAsync((async) {
+        final pingJob = createPingJob();
+        (pingJob.metaDataCollector() as FakeMetaDataCollector)
+            .buildInfoOverride = const BuildInfo(
+          buildVersion: '10.0.0',
+          buildNumber: '1000',
+          compilationMode: CompilationMode.profile,
+        );
+        pingJob.execute();
+        async.flushTimers();
+        expect(api.pingInvocations.count, 1);
+        final body = api.pingInvocations.invocations[0][0]! as PingRequestBody;
+        expect(body.buildNumber, '1000');
+        expect(body.buildVersion, '10.0.0');
       });
     });
 
@@ -138,12 +185,24 @@ void main() {
 }
 
 class FakeMetaDataCollector with Fake implements MetaDataCollector {
+  BuildInfo? buildInfoOverride;
+
   @override
   Future<FixedMetaData> collectFixedMetaData() async {
-    return const FixedMetaData(
-      deviceInfo: DeviceInfo(deviceModel: 'Pixel 2'),
-      buildInfo: BuildInfo(compilationMode: CompilationMode.profile),
-      appInfo: AppInfo(),
+    return FixedMetaData(
+      deviceInfo: const DeviceInfo(
+        deviceModel: 'Pixel 2',
+        osVersion: '13',
+      ),
+      buildInfo: buildInfoOverride ??
+          const BuildInfo(
+            compilationMode: CompilationMode.profile,
+          ),
+      appInfo: const AppInfo(
+        version: '1.2.3',
+        buildNumber: '123',
+        bundleId: 'com.example.app',
+      ),
     );
   }
 
@@ -154,6 +213,7 @@ class FakeMetaDataCollector with Fake implements MetaDataCollector {
       textScaleFactor: 1.0,
       platformLocale: 'en_US',
       platformSupportedLocales: ['en_US', 'de_DE'],
+      platformOS: 'android',
       platformBrightness: Brightness.dark,
       gestureInsets:
           WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 0),
