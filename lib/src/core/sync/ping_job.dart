@@ -21,7 +21,7 @@ class PingJob extends Job {
   static const lastSuccessfulPingKey = 'io.wiredash.last_successful_ping';
   static const silenceUntilKey = 'io.wiredash.silence_ping_until';
 
-  static const minPingGap = Duration(hours: 3);
+  static const minPingGap = Duration(minutes: 30);
   static const killSwitchSilenceDuration = Duration(days: 7);
 
   @override
