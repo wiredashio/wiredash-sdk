@@ -221,7 +221,8 @@ class WiredashTestRobot {
     return WiredashMockServices(services);
   }
 
-  Future<void> submitTestFeedback() async {
+  Future<void> submitMinimalFeedback() async {
+    await openWiredash();
     await enterFeedbackMessage('test message');
     await goToNextStep();
     await skipScreenshot();

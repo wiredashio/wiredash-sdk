@@ -19,9 +19,7 @@ void main() {
 
     testWidgets('Send text only feedback', (tester) async {
       final robot = await WiredashTestRobot(tester).launchApp();
-
-      await robot.openWiredash();
-      await robot.submitTestFeedback();
+      await robot.submitMinimalFeedback();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as FeedbackItem?;

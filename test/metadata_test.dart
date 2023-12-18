@@ -145,8 +145,7 @@ void main() {
           },
         ),
       );
-      await robot.openWiredash();
-      await robot.submitTestFeedback();
+      await robot.submitMinimalFeedback();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as FeedbackItem?;
@@ -163,8 +162,7 @@ void main() {
           },
         ),
       );
-      await robot.openWiredash();
-      await robot.submitTestFeedback();
+      await robot.submitMinimalFeedback();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as FeedbackItem?;
@@ -218,8 +216,7 @@ void main() {
             ..custom['foo'] = 'bar';
         },
       );
-      await robot.openWiredash();
-      await robot.submitTestFeedback();
+      await robot.submitMinimalFeedback();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as FeedbackItem?;
@@ -232,8 +229,7 @@ void main() {
     testWidgets('sent along feedback', (tester) async {
       final robot = WiredashTestRobot(tester);
       await robot.launchApp();
-      await robot.openWiredash();
-      await robot.submitTestFeedback();
+      await robot.submitMinimalFeedback();
       final latestCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
       final submittedFeedback = latestCall[0] as FeedbackItem?;
