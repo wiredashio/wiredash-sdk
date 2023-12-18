@@ -7,6 +7,7 @@ import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'util/robot.dart';
+import 'util/wiredash_tester.dart';
 
 void main() {
   test('userEmail can be set', () async {
@@ -56,6 +57,28 @@ void main() {
     expect(controller.metaData.custom['foo'], 'bar');
     // getter copy did not change
     expect(map['foo'], isNull);
+  });
+
+  testWidgets('build information can be set via ENV', (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp();
+    robot.services.inject<BuildInfo>((_) {
+      return const BuildInfo(
+        compilationMode: CompilationMode.profile,
+        // fake from ENV
+        buildCommit: 'abc',
+        buildNumber: '123',
+        buildVersion: '1.2.3',
+      );
+    });
+    // send ping
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpHardAndSettle();
+    final latestPing = robot.mockServices.mockApi.pingInvocations.latest;
+    final ping = latestPing[0] as PingRequestBody?;
+    expect(ping!.buildVersion, '1.2.3');
+    expect(ping.buildNumber, '123');
+    expect(ping.buildCommit, 'abc');
   });
 
   testWidgets('set metadata before opening wiredash', (tester) async {

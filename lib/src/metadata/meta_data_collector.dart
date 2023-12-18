@@ -22,11 +22,13 @@ class MetaDataCollector {
     required this.wiredashModel,
     required this.deviceInfoCollector,
     required this.wiredashWidget,
+    required this.buildInfoProvider,
   });
 
   final WiredashModel wiredashModel;
   final FlutterInfoCollector Function() deviceInfoCollector;
   final Wiredash Function() wiredashWidget;
+  final BuildInfo Function() buildInfoProvider;
 
   /// In-memory cache for fixed metadata
   FixedMetaData? fixedMetaData;
@@ -42,6 +44,7 @@ class MetaDataCollector {
       <Future<Object?>>[
         _collectAppInfo(),
         _collectDeviceInfo(),
+        Future(buildInfoProvider),
       ].map(
         (e) => e.timeout(const Duration(seconds: 1)).catchError(
           (Object e, StackTrace stack) {
@@ -57,11 +60,13 @@ class MetaDataCollector {
     );
     final appInfo = results[0] as AppInfo?;
     final deviceInfo = results[1] as DeviceInfo?;
+    final buildInfo = results[2] as BuildInfo?;
 
     final combined = FixedMetaData(
       appInfo: appInfo ?? const AppInfo(),
       deviceInfo: deviceInfo ?? const DeviceInfo(),
-      buildInfo: buildInfo,
+      buildInfo: buildInfo ??
+          const BuildInfo(compilationMode: CompilationMode.profile),
     );
 
     fixedMetaData = combined;
