@@ -80,12 +80,19 @@ Future<void> bumpReadme(
 ) async {
   final readme = package.root.file('README.md');
   final content = readme.readAsStringSync();
-  final next = '${newVersion.major}.${newVersion.minor}.0';
+  final minorRelease = '${newVersion.major}.${newVersion.minor}.0';
+  if (Version.parse(minorRelease) <= newVersion) {
+    print("Not updating version in README.md, "
+        "because it's not a major or minor version bump");
+    return;
+  }
 
   final versionRegex = RegExp(r'wiredash:\s*\^(.+)');
   final update = content.replaceAllMapped(
     versionRegex,
-    (match) => match[0]!.replaceFirst(match[1]!, next),
+    (match) {
+      return match[0]!.replaceFirst(match[1]!, minorRelease);
+    },
   );
   readme.writeAsStringSync(update);
 }
