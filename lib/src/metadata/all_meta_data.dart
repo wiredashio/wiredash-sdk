@@ -92,11 +92,9 @@ class AllMetaData {
       appBrightness: sessionMetadata?.appBrightness,
       appLocale: sessionMetadata?.appLocale?.toLanguageTag(),
       appName: fixedMetadata.appInfo.appName,
-      buildCommit: fixedMetadata.buildInfo.buildCommit,
-      buildNumber: fixedMetadata.buildInfo.buildNumber ??
-          fixedMetadata.appInfo.buildNumber,
-      buildVersion:
-          fixedMetadata.buildInfo.buildVersion ?? fixedMetadata.appInfo.version,
+      buildCommit: fixedMetadata.resolvedBuildCommit,
+      buildNumber: fixedMetadata.resolvedBuildNumber,
+      buildVersion: fixedMetadata.resolvedBuildVersion,
       bundleId: fixedMetadata.appInfo.bundleId,
       compilationMode: fixedMetadata.buildInfo.compilationMode,
       custom: customizableMetadata.custom,

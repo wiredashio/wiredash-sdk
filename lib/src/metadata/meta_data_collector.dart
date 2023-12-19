@@ -196,6 +196,43 @@ class FixedMetaData {
     required this.buildInfo,
     required this.appInfo,
   });
+
+  String? get resolvedBuildVersion {
+    final fromBuildInfo = buildInfo.buildVersion;
+    if (fromBuildInfo != null && fromBuildInfo.isNotEmpty) {
+      return fromBuildInfo;
+    }
+    return appInfo.version;
+  }
+
+  String? get resolvedBuildNumber {
+    final fromBuildInfo = buildInfo.buildNumber;
+    if (fromBuildInfo != null && fromBuildInfo.isNotEmpty) {
+      return fromBuildInfo;
+    }
+    return appInfo.buildNumber;
+  }
+
+  String? get resolvedBuildCommit {
+    final commit = buildInfo.buildCommit;
+    if (commit != null && commit.isNotEmpty) {
+      return commit;
+    }
+    return null;
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FixedMetaData &&
+          runtimeType == other.runtimeType &&
+          deviceInfo == other.deviceInfo &&
+          buildInfo == other.buildInfo &&
+          appInfo == other.appInfo;
+
+  @override
+  int get hashCode =>
+      deviceInfo.hashCode ^ buildInfo.hashCode ^ appInfo.hashCode;
 }
 
 /// Information about the device the user is using

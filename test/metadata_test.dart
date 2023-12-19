@@ -81,6 +81,29 @@ void main() {
     expect(ping.buildCommit, 'abc');
   });
 
+  testWidgets('empty strings from build information ENVs are ignored',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp();
+    robot.services.inject<BuildInfo>((_) {
+      return const BuildInfo(
+        compilationMode: CompilationMode.profile,
+        // fake from ENV
+        buildCommit: '',
+        buildNumber: '',
+        buildVersion: '',
+      );
+    });
+    // send ping
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpHardAndSettle();
+    final latestPing = robot.mockServices.mockApi.pingInvocations.latest;
+    final ping = latestPing[0] as PingRequestBody?;
+    expect(ping!.buildVersion, '0.1.0'); // from appInfo
+    expect(ping.buildNumber, '1'); // from appInfo
+    expect(ping.buildCommit, isNull);
+  });
+
   testWidgets('set metadata before opening wiredash', (tester) async {
     final robot = WiredashTestRobot(tester);
 
