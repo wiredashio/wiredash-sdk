@@ -50,20 +50,18 @@ class PingJob extends Job {
       return;
     }
 
-    final fixedData = await metaDataCollector().collectFixedMetaData();
+    final fixedMetadata = await metaDataCollector().collectFixedMetaData();
     final flutterInfo = metaDataCollector().collectFlutterInfo();
 
     final body = PingRequestBody(
       analyticsId: await wuidGenerator().appUsageId(),
-      buildCommit: fixedData.buildInfo.buildCommit,
-      buildVersion:
-          fixedData.buildInfo.buildVersion ?? fixedData.appInfo.version,
-      buildNumber:
-          fixedData.buildInfo.buildNumber ?? fixedData.appInfo.buildNumber,
-      bundleId: fixedData.appInfo.bundleId,
+      buildCommit: fixedMetadata.resolvedBuildCommit,
+      buildNumber: fixedMetadata.resolvedBuildNumber,
+      buildVersion: fixedMetadata.resolvedBuildVersion,
+      bundleId: fixedMetadata.appInfo.bundleId,
       platformLocale: flutterInfo.platformLocale,
       platformOS: flutterInfo.platformOS,
-      platformOSVersion: fixedData.deviceInfo.osVersion,
+      platformOSVersion: fixedMetadata.deviceInfo.osVersion,
       sdkVersion: wiredashSdkVersion,
     );
     try {

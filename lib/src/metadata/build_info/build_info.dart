@@ -93,16 +93,20 @@ class BuildInfo {
   }
 }
 
-final buildInfo = BuildInfo(
-  compilationMode: () {
-    if (kDebugMode) return CompilationMode.debug;
-    if (kProfileMode) return CompilationMode.profile;
-    return CompilationMode.release;
-  }(),
-  buildVersion: EnvBuildInfo.buildVersion,
-  buildNumber: EnvBuildInfo.buildNumber,
-  buildCommit: EnvBuildInfo.buildCommit,
-);
+BuildInfo getBuildInformation() {
+  return BuildInfo(
+    compilationMode: getCompilationMode(),
+    buildVersion: EnvBuildInfo.buildVersion,
+    buildNumber: EnvBuildInfo.buildNumber,
+    buildCommit: EnvBuildInfo.buildCommit,
+  );
+}
+
+CompilationMode getCompilationMode() {
+  if (kDebugMode) return CompilationMode.debug;
+  if (kProfileMode) return CompilationMode.profile;
+  return CompilationMode.release;
+}
 
 /// The compile mode the Flutter app was built with
 enum CompilationMode {

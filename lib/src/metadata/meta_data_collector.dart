@@ -22,11 +22,13 @@ class MetaDataCollector {
     required this.wiredashModel,
     required this.deviceInfoCollector,
     required this.wiredashWidget,
+    required this.buildInfoProvider,
   });
 
   final WiredashModel wiredashModel;
   final FlutterInfoCollector Function() deviceInfoCollector;
   final Wiredash Function() wiredashWidget;
+  final BuildInfo Function() buildInfoProvider;
 
   /// In-memory cache for fixed metadata
   FixedMetaData? fixedMetaData;
@@ -42,6 +44,7 @@ class MetaDataCollector {
       <Future<Object?>>[
         _collectAppInfo(),
         _collectDeviceInfo(),
+        Future(buildInfoProvider),
       ].map(
         (e) => e.timeout(const Duration(seconds: 1)).catchError(
           (Object e, StackTrace stack) {
@@ -57,11 +60,13 @@ class MetaDataCollector {
     );
     final appInfo = results[0] as AppInfo?;
     final deviceInfo = results[1] as DeviceInfo?;
+    final buildInfo = results[2] as BuildInfo?;
 
     final combined = FixedMetaData(
       appInfo: appInfo ?? const AppInfo(),
       deviceInfo: deviceInfo ?? const DeviceInfo(),
-      buildInfo: buildInfo,
+      buildInfo: buildInfo ??
+          const BuildInfo(compilationMode: CompilationMode.profile),
     );
 
     fixedMetaData = combined;
@@ -191,6 +196,43 @@ class FixedMetaData {
     required this.buildInfo,
     required this.appInfo,
   });
+
+  String? get resolvedBuildVersion {
+    final fromBuildInfo = buildInfo.buildVersion;
+    if (fromBuildInfo != null && fromBuildInfo.isNotEmpty) {
+      return fromBuildInfo;
+    }
+    return appInfo.version;
+  }
+
+  String? get resolvedBuildNumber {
+    final fromBuildInfo = buildInfo.buildNumber;
+    if (fromBuildInfo != null && fromBuildInfo.isNotEmpty) {
+      return fromBuildInfo;
+    }
+    return appInfo.buildNumber;
+  }
+
+  String? get resolvedBuildCommit {
+    final commit = buildInfo.buildCommit;
+    if (commit != null && commit.isNotEmpty) {
+      return commit;
+    }
+    return null;
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FixedMetaData &&
+          runtimeType == other.runtimeType &&
+          deviceInfo == other.deviceInfo &&
+          buildInfo == other.buildInfo &&
+          appInfo == other.appInfo;
+
+  @override
+  int get hashCode =>
+      deviceInfo.hashCode ^ buildInfo.hashCode ^ appInfo.hashCode;
 }
 
 /// Information about the device the user is using
