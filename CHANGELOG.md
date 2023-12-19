@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.1
+
+- Ignore empty strings when setting `buildNumber`, `buildVersion` or `buildCommit` via `--dart-define` [#323](https://github.com/wiredashio/wiredash-sdk/pull/323)
+- Improve SDK usage reporting
+
 ## 1.8.0
 - Wiredash now automatically collects the version information of your app. No need to set `buildVersion`, `buildNumber` anymore. If you want to override this information, you can still do so via dart-define at compile time https://docs.wiredash.io/sdk/custom-properties/#during-compile-time.
 - New: `Wiredash(collectSessionMetaData: )` combines and replaces `collectSessionMetaData` of `WiredashFeedbackOptions` and `PsOptions`. No deduplicate code anymore 🎉
