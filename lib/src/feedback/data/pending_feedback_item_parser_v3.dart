@@ -22,7 +22,6 @@ class PendingFeedbackItemParserV3 {
 
     final metadataJson = feedbackItemJson['metadata'] as Map<dynamic, dynamic>;
     final windowSize = metadataJson['windowSize'] as List<dynamic>;
-    final physicalGeometry = metadataJson['physicalGeometry'] as List<dynamic>;
 
     final feedbackItem = FeedbackItem(
       feedbackId: feedbackItemJson['feedbackId'] as String,
@@ -57,12 +56,6 @@ class PendingFeedbackItemParserV3 {
         ),
         deviceModel: metadataJson['deviceModel'] as String?,
         installId: metadataJson['installId'] as String,
-        physicalGeometry: Rect.fromLTRB(
-          (physicalGeometry[0] as num).toDouble(),
-          (physicalGeometry[1] as num).toDouble(),
-          (physicalGeometry[2] as num).toDouble(),
-          (physicalGeometry[3] as num).toDouble(),
-        ),
         platformBrightness: () {
           final value = metadataJson['platformBrightness'];
           if (value == 'light') return Brightness.light;

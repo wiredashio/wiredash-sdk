@@ -23,7 +23,6 @@ class AllMetaData {
 
   /// Either a 16 char nanoId or a 36 char uuid from SDK 1.7.X and earlier
   final String installId;
-  final Rect physicalGeometry;
   final Brightness platformBrightness;
   final String? platformDartVersion;
   final WiredashWindowPadding platformGestureInsets;
@@ -52,7 +51,6 @@ class AllMetaData {
     this.custom,
     this.deviceModel,
     required this.installId,
-    required this.physicalGeometry,
     required this.platformBrightness,
     this.platformDartVersion,
     required this.platformGestureInsets,
@@ -100,7 +98,6 @@ class AllMetaData {
       custom: customizableMetadata.custom,
       deviceModel: fixedMetadata.deviceInfo.deviceModel,
       installId: installId,
-      physicalGeometry: flutterInfo.physicalGeometry,
       platformBrightness: flutterInfo.platformBrightness,
       platformDartVersion: flutterInfo.platformDartVersion,
       platformGestureInsets: flutterInfo.gestureInsets,
@@ -136,7 +133,6 @@ class AllMetaData {
           const DeepCollectionEquality().equals(custom, other.custom) &&
           deviceModel == other.deviceModel &&
           installId == other.installId &&
-          physicalGeometry == other.physicalGeometry &&
           platformBrightness == other.platformBrightness &&
           platformDartVersion == other.platformDartVersion &&
           platformGestureInsets == other.platformGestureInsets &&
@@ -168,7 +164,6 @@ class AllMetaData {
       const DeepCollectionEquality().hash(custom) ^
       deviceModel.hashCode ^
       installId.hashCode ^
-      physicalGeometry.hashCode ^
       platformBrightness.hashCode ^
       platformDartVersion.hashCode ^
       platformGestureInsets.hashCode ^
@@ -198,7 +193,6 @@ class AllMetaData {
         'custom: $custom, '
         'deviceModel: $deviceModel, '
         'installId: $installId, '
-        'physicalGeometry: $physicalGeometry, '
         'platformBrightness: $platformBrightness, '
         'platformDartVersion: $platformDartVersion, '
         'platformGestureInsets: $platformGestureInsets, '
@@ -228,7 +222,6 @@ class AllMetaData {
     Map<String, Object?>? custom,
     String? deviceModel,
     String? installId,
-    Rect? physicalGeometry,
     Brightness? platformBrightness,
     String? platformDartVersion,
     WiredashWindowPadding? platformGestureInsets,
@@ -256,7 +249,6 @@ class AllMetaData {
       custom: custom ?? this.custom,
       deviceModel: deviceModel ?? this.deviceModel,
       installId: installId ?? this.installId,
-      physicalGeometry: physicalGeometry ?? this.physicalGeometry,
       platformBrightness: platformBrightness ?? this.platformBrightness,
       platformDartVersion: platformDartVersion ?? this.platformDartVersion,
       platformGestureInsets:

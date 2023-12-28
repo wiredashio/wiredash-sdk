@@ -42,7 +42,6 @@ abstract class FlutterInfoCollector {
           windowLocales().map((it) => it.toLanguageTag()).toList(),
       viewPadding: WiredashWindowPadding.fromWindowPadding(window.padding),
       physicalSize: window.physicalSize,
-      physicalGeometry: window.physicalGeometry,
       pixelRatio: window.devicePixelRatio,
       textScaleFactor: window.textScaleFactor,
       viewInsets: WiredashWindowPadding.fromWindowPadding(window.viewInsets),

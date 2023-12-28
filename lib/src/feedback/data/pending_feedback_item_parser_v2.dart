@@ -12,8 +12,6 @@ class PendingFeedbackItemParserV2 {
     final deviceInfoJson =
         feedbackItemJson['deviceInfo'] as Map<dynamic, dynamic>;
     final physicalSize = deviceInfoJson['physicalSize'] as List<dynamic>;
-    final physicalGeometry =
-        deviceInfoJson['physicalGeometry'] as List<dynamic>;
     final buildInfoJson =
         feedbackItemJson['buildInfo'] as Map<dynamic, dynamic>? ?? {};
     final appInfoJson = feedbackItemJson['appInfo'] as Map<dynamic, dynamic>;
@@ -78,12 +76,6 @@ class PendingFeedbackItemParserV2 {
             (deviceInfoJson['textScaleFactor'] as num).toDouble(),
         windowInsets: WiredashWindowPadding.fromJson(
           deviceInfoJson['viewInsets'] as List<dynamic>,
-        ),
-        physicalGeometry: Rect.fromLTRB(
-          (physicalGeometry[0] as num).toDouble(),
-          (physicalGeometry[1] as num).toDouble(),
-          (physicalGeometry[2] as num).toDouble(),
-          (physicalGeometry[3] as num).toDouble(),
         ),
       ),
       message: feedbackItemJson['message'] as String,

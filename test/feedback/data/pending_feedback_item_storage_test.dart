@@ -442,7 +442,6 @@ FeedbackItem createFeedback({
       custom: {'customKey': 'customValue'},
       deviceModel: 'Google Pixel 8',
       installId: '01234567890123456',
-      physicalGeometry: Rect.zero,
       platformBrightness: Brightness.light,
       platformDartVersion: '3.2.0',
       platformGestureInsets:

@@ -148,10 +148,6 @@ extension AllMetaDataRequestJson on AllMetaData {
     values.addAll({'installId': nonNull(_installNanoId)});
 
     values.addAll({
-      'physicalGeometry': nonNull(physicalGeometry).toRequestJsonArray(),
-    });
-
-    values.addAll({
       'platformBrightness': nonNull(platformBrightness).toRequestJsonValue(),
     });
 
@@ -220,12 +216,6 @@ extension AllMetaDataRequestJson on AllMetaData {
 // Remove when we drop support for Flutter v3.8.0-14.0.pre.
 // ignore: deprecated_member_use
 extension on WindowPadding {
-  List<double> toRequestJsonArray() {
-    return [left, top, right, bottom];
-  }
-}
-
-extension on Rect {
   List<double> toRequestJsonArray() {
     return [left, top, right, bottom];
   }

@@ -30,7 +30,6 @@ void main() {
             WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
         windowInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-        physicalGeometry: Rect.zero,
         windowSize: Size(1280, 720),
       ),
     ),
@@ -96,7 +95,6 @@ void main() {
             WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
         windowInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-        physicalGeometry: Rect.zero,
         windowSize: Size(1080, 2088),
         custom: {
           'customText': 'text',
@@ -213,7 +211,6 @@ void main() {
             WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
         windowInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-        physicalGeometry: Rect.zero,
         windowSize: Size(1280, 720),
         appName: 'MyApp',
         bundleId: 'com.example.app',
@@ -299,7 +296,6 @@ void main() {
             WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
         windowInsets:
             WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-        physicalGeometry: Rect.zero,
         windowSize: Size(1280, 720),
       ),
     ),

@@ -33,12 +33,6 @@ class FlutterInfo {
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/physicalSize.html
   final Size physicalSize;
 
-  /// The dimensions and location of the rectangle into which the scene
-  /// rendered in this view will be drawn on the screen, in physical pixels.
-  ///
-  /// https://api.flutter.dev/flutter/dart-ui/FlutterView/physicalGeometry.html
-  final Rect physicalGeometry;
-
   /// The number of device pixels for each logical pixel for the screen this
   /// view is displayed on.
   ///
@@ -84,7 +78,6 @@ class FlutterInfo {
     required this.platformSupportedLocales,
     required this.viewPadding,
     required this.physicalSize,
-    required this.physicalGeometry,
     required this.pixelRatio,
     this.platformOS,
     this.platformDartVersion,
@@ -102,7 +95,6 @@ class FlutterInfo {
     List<String>? platformSupportedLocales,
     WiredashWindowPadding? padding,
     Size? physicalSize,
-    Rect? physicalGeometry,
     double? pixelRatio,
     String? platformOS,
     String? platformVersion,
@@ -118,7 +110,6 @@ class FlutterInfo {
           platformSupportedLocales ?? this.platformSupportedLocales,
       viewPadding: padding ?? viewPadding,
       physicalSize: physicalSize ?? this.physicalSize,
-      physicalGeometry: physicalGeometry ?? this.physicalGeometry,
       pixelRatio: pixelRatio ?? this.pixelRatio,
       platformOS: platformOS ?? this.platformOS,
       platformDartVersion: platformVersion ?? platformDartVersion,
@@ -137,7 +128,6 @@ class FlutterInfo {
         'platformSupportedLocales: $platformSupportedLocales, '
         'padding: $viewPadding, '
         'physicalSize: $physicalSize, '
-        'physicalGeometry: $physicalGeometry, '
         'pixelRatio: $pixelRatio, '
         'platformOS: $platformOS, '
         'platformVersion: $platformDartVersion, '
@@ -161,7 +151,6 @@ class FlutterInfo {
           ) &&
           viewPadding == other.viewPadding &&
           physicalSize == other.physicalSize &&
-          physicalGeometry == other.physicalGeometry &&
           pixelRatio == other.pixelRatio &&
           platformOS == other.platformOS &&
           platformDartVersion == other.platformDartVersion &&
@@ -178,7 +167,6 @@ class FlutterInfo {
       hashList(platformSupportedLocales) ^
       viewPadding.hashCode ^
       physicalSize.hashCode ^
-      physicalGeometry.hashCode ^
       pixelRatio.hashCode ^
       platformOS.hashCode ^
       platformDartVersion.hashCode ^
