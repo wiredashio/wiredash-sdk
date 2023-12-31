@@ -91,7 +91,8 @@ Future<void> bumpReadme(
   }
 
   print(
-      'Bumping version in README.md to ${newMinorRelease.canonicalizedVersion}');
+    'Bumping version in README.md to ${newMinorRelease.canonicalizedVersion}',
+  );
   final versionRegex = RegExp(r'wiredash:\s*\^(.+)');
   final update = content.replaceAllMapped(
     versionRegex,
