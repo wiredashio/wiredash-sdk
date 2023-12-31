@@ -10,8 +10,12 @@ class WiredashThemeData {
     DeviceClass deviceClass = DeviceClass.handsetLarge400,
     Color? primaryColor,
     Color? secondaryColor,
+    Color? textOnPrimary,
+    Color? textOnSecondary,
     Color? primaryBackgroundColor,
     Color? secondaryBackgroundColor,
+    Color? primaryTextOnBackgroundColor,
+    Color? secondaryTextOnBackgroundColor,
     Color? primaryContainerColor,
     Color? textOnPrimaryContainerColor,
     Color? secondaryContainerColor,
@@ -30,11 +34,15 @@ class WiredashThemeData {
     return WiredashThemeData._(
       primaryColor: primaryColor ?? const Color(0xff1A56DB),
       secondaryColor: secondaryColor,
+      textOnPrimary: textOnPrimary,
+      textOnSecondary: textOnSecondary,
       brightness: brightness,
       deviceClass: deviceClass,
       windowSize: windowSize ?? Size.zero,
       primaryBackgroundColor: primaryBackgroundColor,
       secondaryBackgroundColor: secondaryBackgroundColor,
+      primaryTextOnBackgroundColor: primaryTextOnBackgroundColor,
+      secondaryTextOnBackgroundColor: secondaryTextOnBackgroundColor,
       primaryContainerColor: primaryContainerColor,
       textOnPrimaryContainerColor: textOnPrimaryContainerColor,
       secondaryContainerColor: secondaryContainerColor,
@@ -76,6 +84,8 @@ class WiredashThemeData {
     Color? textOnSecondary,
     Color? primaryBackgroundColor,
     Color? secondaryBackgroundColor,
+    Color? primaryTextOnBackgroundColor,
+    Color? secondaryTextOnBackgroundColor,
     Color? primaryContainerColor,
     Color? textOnPrimaryContainerColor,
     Color? secondaryContainerColor,
@@ -95,6 +105,8 @@ class WiredashThemeData {
         _textOnSecondary = textOnSecondary,
         _primaryBackgroundColor = primaryBackgroundColor,
         _secondaryBackgroundColor = secondaryBackgroundColor,
+        _primaryTextOnBackgroundColor = primaryTextOnBackgroundColor,
+        _secondaryTextOnBackgroundColor = secondaryTextOnBackgroundColor,
         _primaryContainerColor = primaryContainerColor,
         _textOnPrimaryContainerColor = textOnPrimaryContainerColor,
         _secondaryContainerColor = secondaryContainerColor,
@@ -236,7 +248,12 @@ class WiredashThemeData {
     }
   }
 
+  final Color? _primaryTextOnBackgroundColor;
+
   Color get primaryTextOnBackgroundColor {
+    if (_primaryTextOnBackgroundColor != null) {
+      return _primaryTextOnBackgroundColor!;
+    }
     final merged =
         Color.lerp(primaryBackgroundColor, secondaryBackgroundColor, 0.5)!;
     final palette = CorePalette.of(merged.value);
@@ -245,7 +262,12 @@ class WiredashThemeData {
     return Color(palette.neutralVariant.get(tone));
   }
 
+  final Color? _secondaryTextOnBackgroundColor;
+
   Color get secondaryTextOnBackgroundColor {
+    if (_secondaryTextOnBackgroundColor != null) {
+      return _secondaryTextOnBackgroundColor!;
+    }
     final merged =
         Color.lerp(primaryBackgroundColor, secondaryBackgroundColor, 0.5)!;
     final palette = CorePalette.of(merged.value);
@@ -359,8 +381,11 @@ class WiredashThemeData {
           textOnPrimaryColor == other.textOnPrimaryColor &&
           textOnSecondaryColor == other.textOnSecondaryColor &&
           primaryBackgroundColor == other.primaryBackgroundColor &&
-          textOnPrimaryContainerColor == other.textOnPrimaryContainerColor &&
           secondaryBackgroundColor == other.secondaryBackgroundColor &&
+          primaryTextOnBackgroundColor == other.primaryTextOnBackgroundColor &&
+          secondaryTextOnBackgroundColor ==
+              other.secondaryTextOnBackgroundColor &&
+          textOnPrimaryContainerColor == other.textOnPrimaryContainerColor &&
           textOnSecondaryContainerColor ==
               other.textOnSecondaryContainerColor &&
           primaryContainerColor == other.primaryContainerColor &&
@@ -385,6 +410,8 @@ class WiredashThemeData {
       textOnSecondaryColor.hashCode ^
       primaryBackgroundColor.hashCode ^
       secondaryBackgroundColor.hashCode ^
+      primaryTextOnBackgroundColor.hashCode ^
+      secondaryTextOnBackgroundColor.hashCode ^
       primaryContainerColor.hashCode ^
       textOnPrimaryContainerColor.hashCode ^
       secondaryContainerColor.hashCode ^
@@ -410,6 +437,8 @@ class WiredashThemeData {
         'textOnSecondaryColor: $textOnSecondaryColor, '
         'primaryBackgroundColor: $primaryBackgroundColor, '
         'secondaryBackgroundColor: $secondaryBackgroundColor, '
+        'primaryTextOnBackgroundColor: $primaryTextOnBackgroundColor, '
+        'secondaryTextOnBackgroundColor: $secondaryTextOnBackgroundColor, '
         'primaryContainerColor: $primaryContainerColor, '
         'textOnPrimaryContainerColor: $textOnPrimaryContainerColor, '
         'secondaryContainerColor: $secondaryContainerColor, '
@@ -433,6 +462,8 @@ class WiredashThemeData {
     Color? secondaryColor,
     Color? primaryBackgroundColor,
     Color? secondaryBackgroundColor,
+    Color? primaryTextOnBackgroundColor,
+    Color? secondaryTextOnBackgroundColor,
     Color? primaryContainerColor,
     Color? textOnPrimaryContainerColor,
     Color? secondaryContainerColor,
@@ -456,6 +487,10 @@ class WiredashThemeData {
           primaryBackgroundColor ?? this.primaryBackgroundColor,
       secondaryBackgroundColor:
           secondaryBackgroundColor ?? this.secondaryBackgroundColor,
+      primaryTextOnBackgroundColor:
+          primaryTextOnBackgroundColor ?? this.primaryTextOnBackgroundColor,
+      secondaryTextOnBackgroundColor:
+          secondaryTextOnBackgroundColor ?? this.secondaryTextOnBackgroundColor,
       primaryContainerColor:
           primaryContainerColor ?? this.primaryContainerColor,
       textOnPrimaryContainerColor:
@@ -765,9 +800,9 @@ class SurfaceSelector {
       () {
         if (textStyle.color != null && textStyle.color is! InvalidColor) {
           debugPrint(
-            "TextStyle WiredashTextTheme.$debugName defines color "
-            "but it won't be used (color: ${textStyle.color}). "
-            "Remove it and set $instead instead.",
+            "Info: The TextStyle of WiredashTextTheme.$debugName has a color attribute (color: ${textStyle.color}).\n"
+            "This color will be ignored!\n"
+            "The Color will be overwritten by WiredashThemeData $instead.",
           );
         }
         return true;
@@ -776,34 +811,45 @@ class SurfaceSelector {
   }
 
   TextStyle get onBackground {
-    _debugCheckNoColor(instead: "primaryTextOnBackgroundColor");
+    assert(WiredashThemeData(primaryTextOnBackgroundColor: _anyColor).isLight);
+    assert(
+      WiredashThemeData(secondaryTextOnBackgroundColor: _anyColor).isLight,
+    );
+    _debugCheckNoColor(
+      instead:
+          "primaryTextOnBackgroundColor and secondaryTextOnBackgroundColor",
+    );
     return textStyle.copyWith(
       color: _mutateColor(theme.primaryTextOnBackgroundColor),
     );
   }
 
   TextStyle get onSurface {
-    _debugCheckNoColor(instead: "primaryTextOnSurfaceColor");
+    assert(WiredashThemeData(primaryColor: _anyColor).isLight);
+    _debugCheckNoColor(instead: "primaryColor");
     return textStyle.copyWith(
       color: _mutateColor(theme.primaryTextOnSurfaceColor),
     );
   }
 
   TextStyle get onPrimary {
-    _debugCheckNoColor(instead: "textOnPrimaryColor");
+    assert(WiredashThemeData(textOnPrimary: _anyColor).isLight);
+    _debugCheckNoColor(instead: "textOnPrimary");
     return textStyle.copyWith(
       color: _mutateColor(theme.textOnPrimaryColor),
     );
   }
 
   TextStyle get onSecondary {
-    _debugCheckNoColor(instead: "textOnSecondaryColor");
+    assert(WiredashThemeData(textOnSecondary: _anyColor).isLight);
+    _debugCheckNoColor(instead: "textOnSecondary");
     return textStyle.copyWith(
       color: _mutateColor(theme.textOnSecondaryColor),
     );
   }
 
   TextStyle get onPrimaryContainer {
+    assert(WiredashThemeData(textOnPrimaryContainerColor: _anyColor).isLight);
     _debugCheckNoColor(instead: "textOnPrimaryContainerColor");
     return textStyle.copyWith(
       color: _mutateColor(theme.textOnPrimaryContainerColor),
@@ -811,6 +857,7 @@ class SurfaceSelector {
   }
 
   TextStyle get onSecondaryContainer {
+    assert(WiredashThemeData(textOnSecondaryContainerColor: _anyColor).isLight);
     _debugCheckNoColor(instead: "textOnSecondaryContainerColor");
     return textStyle.copyWith(
       color: _mutateColor(theme.textOnSecondaryContainerColor),
@@ -1087,3 +1134,5 @@ class MaterialColorTone {
 
   Color get outline => neutralVariantTone(_isLight ? 50 : 60);
 }
+
+const Color _anyColor = Color(0xff000000);
