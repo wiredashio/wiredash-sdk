@@ -11,7 +11,7 @@ executables:
 
 dependencies:
   dcli: ^2.2.3
-  phntmxyz_bump_version_sidekick_plugin: ^1.2.0
+  phntmxyz_bump_version_sidekick_plugin: ^1.2.1
   sidekick_core: ^2.1.0
 
 dev_dependencies:
