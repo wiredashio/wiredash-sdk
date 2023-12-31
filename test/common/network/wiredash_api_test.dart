@@ -58,7 +58,6 @@ void main() {
               WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
           windowInsets:
               WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-          physicalGeometry: Rect.zero,
           windowSize: Size(1080, 2088),
           appName: 'Example App',
           bundleId: 'com.example.app',
@@ -109,7 +108,6 @@ void main() {
             'platformOSVersion': 'RSR1.201013.001',
             'userEmail': 'email@example.com',
             'userId': 'Testy McTestFace',
-            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'platformBrightness': 'dark',
             'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
             'windowPixelRatio': 2.75,
@@ -154,7 +152,6 @@ void main() {
               WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
           windowInsets:
               WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-          physicalGeometry: Rect.zero,
           windowSize: Size(1080, 2088),
           appName: 'Example App',
           bundleId: 'com.example.app',
@@ -202,7 +199,6 @@ void main() {
             'platformOS': 'android',
             'platformOSVersion': 'RSR1.201013.001',
             'userId': 'Testy McTestFace',
-            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'platformBrightness': 'dark',
             'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
             'windowPixelRatio': 2.75,
@@ -258,7 +254,6 @@ void main() {
               WiredashWindowPadding(left: 0, top: 66, right: 0, bottom: 0),
           windowInsets:
               WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
-          physicalGeometry: Rect.zero,
           windowSize: Size(1280, 720),
           appName: 'Example App',
           bundleId: 'com.example.app',
@@ -308,7 +303,6 @@ void main() {
             'platformOSVersion': 'RSR1.201013.001',
             'userId': 'Testy McTestFace',
             'userEmail': 'email@example.com',
-            'physicalGeometry': [0.0, 0.0, 0.0, 0.0],
             'platformBrightness': 'dark',
             'platformGestureInsets': [0.0, 0.0, 0.0, 0.0],
             'windowPixelRatio': 2.75,
