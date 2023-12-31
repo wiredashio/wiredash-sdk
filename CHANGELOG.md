@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.0
+- Add support for Flutter 3.17.0 (removing [`physicalGeometry`](https://github.com/flutter/flutter/pull/138103)) [#324](https://github.com/wiredashio/wiredash-sdk/pull/324)
+- Add more `WiredashTheme` color overrides [#325](https://github.com/wiredashio/wiredash-sdk/pull/325)
+
 ## 1.8.1
 
 - Ignore empty strings when setting `buildNumber`, `buildVersion` or `buildCommit` via `--dart-define` [#323](https://github.com/wiredashio/wiredash-sdk/pull/323)
