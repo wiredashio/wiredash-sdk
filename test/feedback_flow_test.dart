@@ -343,6 +343,11 @@ void main() {
         FeedbackFlowStatus.email,
       );
       await robot.enterEmail('');
+      await robot.submitEmailViaButton();
+      await tester.waitUntil(
+        find.text('l10n.feedbackStep4EmailInvalidEmail'),
+        findsOneWidget,
+      );
       await robot.goToNextStep();
       expect(
         robot.services.feedbackModel.feedbackFlowStatus,
