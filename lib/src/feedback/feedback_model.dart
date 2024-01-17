@@ -94,7 +94,9 @@ class FeedbackModel extends ChangeNotifier2 {
     var steps = 2;
 
     final emailPrompt = _services.wiredashModel.feedbackOptions?.email;
-    if (emailPrompt == null || emailPrompt == EmailPrompt.optional) {
+    if (emailPrompt == null ||
+        emailPrompt == EmailPrompt.optional ||
+        emailPrompt == EmailPrompt.mandatory) {
       steps++;
     }
     if (_services.wiredashModel.feedbackOptions?.labels?.isNotEmpty == true) {
@@ -140,7 +142,9 @@ class FeedbackModel extends ChangeNotifier2 {
       stack.add(FeedbackFlowStatus.screenshotsOverview);
     }
     final emailPrompt = _services.wiredashModel.feedbackOptions?.email;
-    if (emailPrompt == null || emailPrompt == EmailPrompt.optional) {
+    if (emailPrompt == null ||
+        emailPrompt == EmailPrompt.optional ||
+        emailPrompt == EmailPrompt.mandatory) {
       stack.add(FeedbackFlowStatus.email);
     }
     stack.add(FeedbackFlowStatus.submit);
@@ -398,6 +402,12 @@ class FeedbackModel extends ChangeNotifier2 {
     final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
 
     final email = () {
+      if (_services.wiredashModel.feedbackOptions?.email ==
+              EmailPrompt.mandatory &&
+          userEmail != null) {
+        // user has explicitly deleted their email address
+        return userEmail;
+      }
       if (_services.wiredashModel.feedbackOptions?.email ==
               EmailPrompt.optional &&
           userEmail == null) {
