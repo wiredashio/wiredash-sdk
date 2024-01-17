@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/options/wiredash_options_data.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
@@ -191,6 +192,44 @@ void main() {
       expect(_FakeApp.initCount, 1);
       await robot.closeWiredash();
       expect(_FakeApp.initCount, 1);
+    });
+
+    testWidgets('verify feedback options in show() overrides the options',
+        (tester) async {
+      const options = WiredashFeedbackOptions(
+        email: EmailPrompt.hidden,
+        screenshot: ScreenshotPrompt.hidden,
+      );
+      final robot = await WiredashTestRobot(tester).launchApp(
+        feedbackOptions: const WiredashFeedbackOptions(
+          email: EmailPrompt.optional,
+          screenshot: ScreenshotPrompt.optional,
+        ),
+        builder: (context) {
+          return Scaffold(
+            body: Column(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Wiredash.of(context).show(
+                      options: options,
+                    );
+                  },
+                  child: const Text('Feedback'),
+                ),
+              ],
+            ),
+          );
+        },
+        afterPump: () async {
+          // The Localizations widget shows an empty Container while the
+          // localizations are loaded (which is async)
+          await tester.pumpAndSettle();
+        },
+      );
+
+      await robot.openWiredash();
+      expect(robot.services.wiredashModel.feedbackOptions, options);
     });
 
     group('localization', () {
