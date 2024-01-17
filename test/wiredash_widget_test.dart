@@ -230,6 +230,15 @@ void main() {
 
       await robot.openWiredash();
       expect(robot.services.wiredashModel.feedbackOptions, options);
+
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+
+      // Verify that screenshot and email are hidden
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.submit,
+      );
     });
 
     group('localization', () {
