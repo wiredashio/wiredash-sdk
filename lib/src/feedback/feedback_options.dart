@@ -89,8 +89,7 @@ enum EmailPrompt {
   optional,
 
   /// The email address is mandatory
-  // TODO implement
-  //mandatory,
+  mandatory,
 }
 
 enum ScreenshotPrompt {

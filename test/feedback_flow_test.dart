@@ -327,6 +327,122 @@ void main() {
       );
     });
 
+    testWidgets('Require email if mandatory', (tester) async {
+      final robot = await WiredashTestRobot(tester).launchApp(
+        feedbackOptions: const WiredashFeedbackOptions(
+          email: EmailPrompt.mandatory,
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.skipScreenshot();
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.email,
+      );
+      await robot.enterEmail('');
+      await robot.submitEmailViaButton();
+      await tester.waitUntil(
+        find.text('l10n.feedbackStep4EmailInvalidEmail'),
+        findsOneWidget,
+      );
+      await robot.goToNextStep();
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.email,
+      );
+      await robot.enterEmail('dash@flutter.io');
+      await robot.goToNextStep();
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.submit,
+      );
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
+      expect(submittedFeedback, isNotNull);
+      expect(submittedFeedback!.message, 'test message');
+      expect(submittedFeedback.metadata.userEmail, 'dash@flutter.io');
+      expect(submittedFeedback.attachments, hasLength(0));
+    });
+
+    testWidgets('Do not go to submit when no email is provided but mandatory',
+        (tester) async {
+      final robot = await WiredashTestRobot(tester).launchApp(
+        feedbackOptions: const WiredashFeedbackOptions(
+          email: EmailPrompt.mandatory,
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.skipScreenshot();
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.email,
+      );
+
+      // verify that the no email is not accepted and page is not swiped
+      await robot.swipeToNext();
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.email,
+      );
+
+      await robot.enterEmail('dash@flutter.io');
+      await robot.swipeToNext();
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.submit,
+      );
+    });
+
+    testWidgets('Keep state on swipe and email is mandatory', (tester) async {
+      final robot = await WiredashTestRobot(tester).launchApp(
+        feedbackOptions: const WiredashFeedbackOptions(
+          email: EmailPrompt.mandatory,
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.skipScreenshot();
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.email,
+      );
+      await robot.enterEmail('');
+
+      // verify that the no email is not accepted and page is not swiped
+      await robot.swipeToNext();
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.email,
+      );
+
+      await robot.enterEmail('dash@flutter.io');
+      await robot.swipeToNext();
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.submit,
+      );
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
+      expect(submittedFeedback, isNotNull);
+      expect(submittedFeedback!.message, 'test message');
+      expect(submittedFeedback.metadata.userEmail, 'dash@flutter.io');
+      expect(submittedFeedback.attachments, hasLength(0));
+    });
+
     testWidgets('Send feedback with everything', (tester) async {
       final robot = await WiredashTestRobot(tester).launchApp(
         feedbackOptions: const WiredashFeedbackOptions(

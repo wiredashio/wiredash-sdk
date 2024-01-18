@@ -410,6 +410,20 @@ class WiredashTestRobot {
     print('Jumped back from $oldStatus to prev $newStatus');
   }
 
+  Future<void> swipeToNext() async {
+    final topRight = tester.getTopRight(find.byType(LarryPageView));
+
+    // fling up
+    await tester.flingFrom(
+      Offset(topRight.dx / 2, topRight.dy + 20),
+      // only a bit up so that the close button is still visible
+      const Offset(0, -5000),
+      5000,
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
+  }
+
   Future<void> enterScreenshotMode() async {
     final step = _spotPageView.spotSingle<Step3ScreenshotOverview>()
       ..existsOnce();

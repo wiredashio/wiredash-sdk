@@ -47,6 +47,18 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets('Submit via enter - Shows error for empty email when mandatory',
+        (tester) async {
+      final WiredashTestRobot robot =
+          await tester.goToEmailStep(emailPrompt: EmailPrompt.mandatory);
+      await robot.enterEmail('');
+      await robot.submitEmailViaKeyboard();
+      await tester.waitUntil(
+        find.text('l10n.feedbackStep4EmailInvalidEmail'),
+        findsOneWidget,
+      );
+    });
   });
 
   group('email input', () {
@@ -100,10 +112,11 @@ void main() {
 extension on WidgetTester {
   Future<WiredashTestRobot> goToEmailStep({
     FutureOr<void> Function(WiredashTestRobot robot)? beforeOpen,
+    EmailPrompt emailPrompt = EmailPrompt.optional,
   }) async {
     final robot = await WiredashTestRobot(this).launchApp(
-      feedbackOptions: const WiredashFeedbackOptions(
-        email: EmailPrompt.optional,
+      feedbackOptions: WiredashFeedbackOptions(
+        email: emailPrompt,
       ),
     );
 

@@ -43,9 +43,9 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  bool _isValidEmail(String? data) {
+  bool _isValidEmail(String? data, {bool isMandatory = false}) {
     final email = data ?? '';
-    if (email.isEmpty) {
+    if (email.isEmpty && !isMandatory) {
       // leaving this field empty is ok
       return true;
     }
@@ -78,7 +78,10 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                 }
               },
               validator: (data) {
-                if (!_isValidEmail(data)) {
+                final isMandatory =
+                    context.wiredashModel.feedbackOptions?.email ==
+                        EmailPrompt.mandatory;
+                if (!_isValidEmail(data, isMandatory: isMandatory)) {
                   return context.l10n.feedbackStep4EmailInvalidEmail;
                 }
                 return null;

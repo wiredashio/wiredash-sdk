@@ -7,6 +7,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/metadata/renderer/renderer.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
 import 'package:wiredash/src/utils/delay.dart';
+import 'package:wiredash/src/utils/email_validator.dart';
 import 'package:wiredash/wiredash.dart';
 
 enum FeedbackFlowStatus {
@@ -88,13 +89,17 @@ class FeedbackModel extends ChangeNotifier2 {
   Object? get submissionError => _submissionError;
   Object? _submissionError;
 
+  EmailValidator get _emailValidator => const EmailValidator();
+
   int get maxSteps {
     // message
     // screenshot
     var steps = 2;
 
     final emailPrompt = _services.wiredashModel.feedbackOptions?.email;
-    if (emailPrompt == null || emailPrompt == EmailPrompt.optional) {
+    if (emailPrompt == null ||
+        emailPrompt == EmailPrompt.optional ||
+        emailPrompt == EmailPrompt.mandatory) {
       steps++;
     }
     if (_services.wiredashModel.feedbackOptions?.labels?.isNotEmpty == true) {
@@ -140,13 +145,20 @@ class FeedbackModel extends ChangeNotifier2 {
       stack.add(FeedbackFlowStatus.screenshotsOverview);
     }
     final emailPrompt = _services.wiredashModel.feedbackOptions?.email;
-    if (emailPrompt == null || emailPrompt == EmailPrompt.optional) {
+    if (emailPrompt == null ||
+        emailPrompt == EmailPrompt.optional ||
+        emailPrompt == EmailPrompt.mandatory) {
       stack.add(FeedbackFlowStatus.email);
     }
-    stack.add(FeedbackFlowStatus.submit);
 
-    if (submitting || feedbackProcessed || submissionError != null) {
-      stack.add(FeedbackFlowStatus.submittingAndRetry);
+    if (emailPrompt != EmailPrompt.mandatory ||
+        (emailPrompt == EmailPrompt.mandatory &&
+            _emailValidator.validate(userEmail ?? ''))) {
+      stack.add(FeedbackFlowStatus.submit);
+
+      if (submitting || feedbackProcessed || submissionError != null) {
+        stack.add(FeedbackFlowStatus.submittingAndRetry);
+      }
     }
     return stack;
   }
@@ -398,6 +410,12 @@ class FeedbackModel extends ChangeNotifier2 {
     final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
 
     final email = () {
+      if (_services.wiredashModel.feedbackOptions?.email ==
+              EmailPrompt.mandatory &&
+          userEmail != null) {
+        // user has explicitly deleted their email address
+        return userEmail;
+      }
       if (_services.wiredashModel.feedbackOptions?.email ==
               EmailPrompt.optional &&
           userEmail == null) {
