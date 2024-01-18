@@ -372,20 +372,6 @@ void main() {
 
     testWidgets('Do not go to submit when no email is provided but mandatory',
         (tester) async {
-      Future<void> swipeToNext(WidgetTester tester) async {
-        final topRight = tester.getTopRight(find.byType(LarryPageView));
-
-        // fling up
-        await tester.flingFrom(
-          Offset(topRight.dx / 2, topRight.dy + 20),
-          // only a bit up so that the close button is still visible
-          const Offset(0, -5000),
-          5000,
-        );
-        await tester.pump(const Duration(milliseconds: 100));
-        await tester.pumpAndSettle();
-      }
-
       final robot = await WiredashTestRobot(tester).launchApp(
         feedbackOptions: const WiredashFeedbackOptions(
           email: EmailPrompt.mandatory,
@@ -402,14 +388,14 @@ void main() {
       );
 
       // verify that the no email is not accepted and page is not swiped
-      await swipeToNext(tester);
+      await robot.swipeToNext();
       expect(
         robot.services.feedbackModel.feedbackFlowStatus,
         FeedbackFlowStatus.email,
       );
 
       await robot.enterEmail('dash@flutter.io');
-      await swipeToNext(tester);
+      await robot.swipeToNext();
       expect(
         robot.services.feedbackModel.feedbackFlowStatus,
         FeedbackFlowStatus.submit,
@@ -417,20 +403,6 @@ void main() {
     });
 
     testWidgets('Keep state on swipe and email is mandatory', (tester) async {
-      Future<void> swipeToNext(WidgetTester tester) async {
-        final topRight = tester.getTopRight(find.byType(LarryPageView));
-
-        // fling up
-        await tester.flingFrom(
-          Offset(topRight.dx / 2, topRight.dy + 20),
-          // only a bit up so that the close button is still visible
-          const Offset(0, -5000),
-          5000,
-        );
-        await tester.pump(const Duration(milliseconds: 100));
-        await tester.pumpAndSettle();
-      }
-
       final robot = await WiredashTestRobot(tester).launchApp(
         feedbackOptions: const WiredashFeedbackOptions(
           email: EmailPrompt.mandatory,
@@ -448,14 +420,14 @@ void main() {
       await robot.enterEmail('');
 
       // verify that the no email is not accepted and page is not swiped
-      await swipeToNext(tester);
+      await robot.swipeToNext();
       expect(
         robot.services.feedbackModel.feedbackFlowStatus,
         FeedbackFlowStatus.email,
       );
 
       await robot.enterEmail('dash@flutter.io');
-      await swipeToNext(tester);
+      await robot.swipeToNext();
       expect(
         robot.services.feedbackModel.feedbackFlowStatus,
         FeedbackFlowStatus.submit,
