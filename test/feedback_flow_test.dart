@@ -370,6 +370,61 @@ void main() {
       expect(submittedFeedback.attachments, hasLength(0));
     });
 
+    testWidgets('Keep state on swipe and email is mandatory', (tester) async {
+      Future<void> swipeToNext(WidgetTester tester) async {
+        final topRight = tester.getTopRight(find.byType(LarryPageView));
+
+        // fling up
+        await tester.flingFrom(
+          Offset(topRight.dx / 2, topRight.dy + 20),
+          // only a bit up so that the close button is still visible
+          const Offset(0, -5000),
+          5000,
+        );
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pumpAndSettle();
+      }
+
+      final robot = await WiredashTestRobot(tester).launchApp(
+        feedbackOptions: const WiredashFeedbackOptions(
+          email: EmailPrompt.mandatory,
+        ),
+      );
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.goToNextStep();
+      await robot.skipScreenshot();
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.email,
+      );
+      await robot.enterEmail('dash');
+
+      // verify that the email is not accepted and page is not swiped
+      await swipeToNext(tester);
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.email,
+      );
+
+      await robot.enterEmail('dash@flutter.io');
+      await swipeToNext(tester);
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.submit,
+      );
+      await robot.submitFeedback();
+      await robot.waitUntilWiredashIsClosed();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
+      expect(submittedFeedback, isNotNull);
+      expect(submittedFeedback!.message, 'test message');
+      expect(submittedFeedback.metadata.userEmail, 'dash@flutter.io');
+      expect(submittedFeedback.attachments, hasLength(0));
+    });
+
     testWidgets('Send feedback with everything', (tester) async {
       final robot = await WiredashTestRobot(tester).launchApp(
         feedbackOptions: const WiredashFeedbackOptions(
