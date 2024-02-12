@@ -96,12 +96,6 @@ class MetaDataCollector {
   }
 
   Future<DeviceInfo> _collectDeviceInfo() async {
-    // if (!kIsWeb && Platform.isLinux) {
-    //   // it just hangs on linux for some reason
-    //   // https://github.com/fluttercommunity/plus_plugins/issues/1552
-    //   return const DeviceInfo();
-    // }
-
     try {
       final deviceInfo = await DeviceInfoPlugin().deviceInfo;
 
