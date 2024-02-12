@@ -41,6 +41,23 @@ jobs:
       - name: Build
         run: cd examples/theming && ./../../wiresdk flutter build web
 
+  pr-flutter_3_7_3:
+    runs-on: ubuntu-latest
+    container:
+      image: cirrusci/flutter:3.7.3
+    steps:
+      - uses: actions/checkout@v3
+      - name: Flutter version
+        run: flutter doctor -v
+      - name: Download dependencies
+        run: ./wiresdk deps
+      - name: print deps
+        run: cd examples/theming && ./../../wiresdk flutter pub deps
+      - name: Test
+        run: ./wiresdk test
+      - name: Build
+        run: cd examples/theming && ./../../wiresdk flutter build web
+
   pr-stable:
     runs-on: ubuntu-latest
     container:
