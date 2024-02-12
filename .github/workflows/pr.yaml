@@ -41,10 +41,10 @@ jobs:
       - name: Build
         run: cd examples/theming && ./../../wiresdk flutter build web
 
-  pr-flutter_3_7_3:
+  pr-flutter_3_3_10:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:3.7.3
+      image: cirrusci/flutter:3.3.10
     steps:
       - uses: actions/checkout@v3
       - name: Flutter version
