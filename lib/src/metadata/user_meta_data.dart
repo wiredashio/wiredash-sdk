@@ -35,7 +35,7 @@ class CustomizableWiredashMetaData {
   @Deprecated(
     'The buildVersion is now read directly from the native platform. '
     'Alternatively, provide it at compile time with env.BUILD_VERSION. '
-    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
+    'See https://docs.wiredash.com/sdk/custom-properties/#during-compile-time',
   )
   String? buildVersion;
 
@@ -45,7 +45,7 @@ class CustomizableWiredashMetaData {
   @Deprecated(
     'The buildNumber is now read directly from the native platform. '
     'Alternatively, provide it at compile time with env.BUILD_NUMBER. '
-    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
+    'See https://docs.wiredash.com/sdk/custom-properties/#during-compile-time',
   )
   String? buildNumber;
 
@@ -54,7 +54,7 @@ class CustomizableWiredashMetaData {
   /// This field is prefilled with the environment variable `BUILD_COMMIT`
   @Deprecated(
     'Provide the buildCommit at compile time with env.BUILD_NUMBER. '
-    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
+    'See https://docs.wiredash.com/sdk/custom-properties/#during-compile-time',
   )
   String? buildCommit;
 

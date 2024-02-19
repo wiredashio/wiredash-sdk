@@ -50,7 +50,7 @@ class PsOptions {
   /// ```dart
   /// feedbackOptions: WiredashFeedbackOptions(
   ///   collectMetaData: (metaData) => metaData
-  ///     ..userEmail = 'dash@wiredash.io'
+  ///     ..userEmail = 'dash@wiredash.com'
   ///     ..custom['isPremium'] = false
   ///     ..custom['nested'] = {'wire': 'dash'},
   /// ```

@@ -8,7 +8,7 @@ class WiredashFeedbackOptions {
   /// The labels a user can select
   ///
   /// Please visit the Wiredash Console to get your label ids
-  /// https://console.wiredash.io/
+  /// https://wiredash.com/console
   /// Settings -> Labels
   ///
   /// When `null` the label selection step isn't shown at all
@@ -43,7 +43,7 @@ class WiredashFeedbackOptions {
   /// ```dart
   /// feedbackOptions: WiredashFeedbackOptions(
   ///   collectMetaData: (metaData) => metaData
-  ///     ..userEmail = 'dash@wiredash.io'
+  ///     ..userEmail = 'dash@wiredash.com'
   ///     ..custom['isPremium'] = false
   ///     ..custom['nested'] = {'wire': 'dash'},
   /// ```

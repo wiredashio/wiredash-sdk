@@ -9,21 +9,21 @@
 [![Pub Likes](https://img.shields.io/pub/likes/wiredash)](https://pub.dev/packages/wiredash/score)
 [![Popularity](https://img.shields.io/pub/popularity/wiredash)](https://pub.dev/packages/wiredash/score)
 [![Pub points](https://img.shields.io/pub/points/wiredash)](https://pub.dev/packages/wiredash/score)
-[![Website](https://img.shields.io/badge/website-wiredash.io-blue.svg)](https://wiredash.io/)
+[![Website](https://img.shields.io/badge/website-wiredash.com-blue.svg)](https://wiredash.com/)
 
 Wiredash is probably the easiest, and most convenient way to capture in-app user feedback, wishes, ratings and much
 more. The SDK is completely written in Dart and runs on Android, iOS, Desktop and the Web. For more info, head over
-to [wiredash.io](https://wiredash.io).
+to [wiredash.com](https://wiredash.com).
 
 ## 3-Minute Quick Start
 
 > It takes less than 180 seconds to integrate Wiredash in your existing app 🚀 <br />
-> Visit [docs.wiredash.io](https://docs.wiredash.io/guide/#integrating-wiredash-in-your-app) for the in-depth
+> Visit [docs.wiredash.com](https://docs.wiredash.com/guide/start) for the in-depth
 > guide and additional info.
 
 ### 1. Create an account
 
-Go to the [Wiredash Console](https://console.wiredash.io) and sign in with a valid Google or GitHub account. _It's
+Go to the [Wiredash Console](https://wiredash.com/console) and sign in with a valid Google or GitHub account. _It's
 free!_<br />Click on `Create new project` and enter your app's name.
 
 ### 2. Add wiredash to your pubspec.yaml
@@ -43,7 +43,7 @@ dependencies:
 ### 3. Wrap your root widget with Wiredash
 
 Wrap the root widget of your existing app with Wiredash and make sure to fill in the `projectId` and SDK `secret`
-from the [Wiredash Console](https://console.wiredash.io) > Your project >
+from the [Wiredash Console](https://console.wiredash.com) > Your project >
 Settings > General Settings.
 
 ```dart
@@ -104,7 +104,7 @@ The Wiredash SDK is completely customizable and offers many configuration option
 labels, custom metadata, custom theming, custom translations and much, much more!) 🤯
 
 For all the details, make sure to check out the full documentation
-at [docs.wiredash.io](https://docs.wiredash.io/).
+at [docs.wiredash.com](https://docs.wiredash.com/).
 
 Also checkout the [examples/theming](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/theming/lib/main.dart) code example
 

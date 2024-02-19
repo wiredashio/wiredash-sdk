@@ -43,7 +43,7 @@ class WiredashController {
   /// ```dart
   /// Wiredash.of(context).modifyMetaData(
   ///   (metaData) => metaData
-  ///     ..userEmail = 'dash@wiredash.io'
+  ///     ..userEmail = 'dash@wiredash.com'
   ///     ..buildCommit = '43f23dd'
   ///     ..custom['screen'] = 'HomePage'
   ///     ..custom['isPremium'] = false,
@@ -136,11 +136,11 @@ class WiredashController {
   /// Alternatively, on platforms, that do not provide the correct information
   /// (sometimes on web) set env.BUILD_VERSION, env.BUILD_NUMBER or
   /// env.BUILD_COMMIT during compile time with dart-define.
-  /// https://docs.wiredash.io/sdk/custom-properties/#during-compile-time
+  /// https://docs.wiredash.com/reference/sdk/custom-properties#during-compile-time
   @Deprecated(
     'Build information has to be provided during build time or is now collected automatically with platform APIs (where possible). '
     'Set env.BUILD_VERSION, env.BUILD_NUMBER or env.BUILD_COMMIT with --dart-define. '
-    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
+    'See https://docs.wiredash.com/reference/sdk/custom-properties#during-compile-time',
   )
   void setBuildProperties({
     String? buildVersion,
@@ -151,7 +151,7 @@ class WiredashController {
       print(
         'Wiredash: setBuildProperties() is deprecated. The version information should be picked up automatically. '
         'Alternatively, set env.BUILD_VERSION, env.BUILD_NUMBER or env.BUILD_COMMIT during compile time. '
-        'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
+        'See https://docs.wiredash.com/reference/sdk/custom-properties#during-compile-time',
       );
     }
     // noop
@@ -171,7 +171,7 @@ class WiredashController {
   /// Wiredash will automatically read colors from [context], overriding
   /// [Wiredash.theme].
   ///
-  /// For more advanced styling check the [documentation](https://docs.wiredash.io/sdk/theming/)
+  /// For more advanced styling check the [documentation](https://docs.wiredash.com/reference/sdk/theming)
   /// and use [Wiredash.theme].
   void show({
     bool? inheritMaterialTheme,

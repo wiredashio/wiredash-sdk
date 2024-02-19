@@ -83,8 +83,8 @@ class Wiredash extends StatefulWidget {
   ///   projectId: "...",
   ///   secret: "...",
   ///   collectMetaData: (metaData) => metaData
-  ///     ..userEmail = 'dash@wiredash.io'
-  ///     ..userEmail = 'dash@wiredash.io'
+  ///     ..userEmail = 'dash@wiredash.com'
+  ///     ..userEmail = 'dash@wiredash.com'
   ///     ..custom['isPremium'] = false
   ///     ..custom['nested'] = {'wire': 'dash'},
   ///   child: MyApp(),
