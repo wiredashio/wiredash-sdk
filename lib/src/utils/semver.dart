@@ -76,6 +76,7 @@ class Version implements Comparable<Version> {
 
   /// Determines whether the left-hand [Version] represents an equal precedence to the right-hand [Version].
   @override
+  // ignore: non_nullable_equals_parameter
   bool operator ==(dynamic o) => o is Version && _compare(this, o) == 0;
 
   /// Determines whether the left-hand [Version] represents a greater precedence than the right-hand [Version].
