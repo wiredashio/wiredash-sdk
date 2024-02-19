@@ -1,5 +1,5 @@
-<p align="center">  
-<img src="https://raw.githubusercontent.com/wiredashio/wiredash-sdk/stable/.github/wiredash-text-logo.svg?sanitize=true" width="512px" alt="Wiredash Logo">
+<p align="center">
+  <img width="1280" alt="Wiredash Logo" src="https://github.com/wiredashio/wiredash-sdk/assets/1096485/027485ef-e1d4-4a39-943a-41f4e956ddcc">
 </p>
 
 # Wiredash SDK for Flutter
@@ -11,9 +11,16 @@
 [![Pub points](https://img.shields.io/pub/points/wiredash)](https://pub.dev/packages/wiredash/score)
 [![Website](https://img.shields.io/badge/website-wiredash.com-blue.svg)](https://wiredash.com/)
 
-Wiredash is probably the easiest, and most convenient way to capture in-app user feedback, wishes, ratings and much
-more. The SDK is completely written in Dart and runs on Android, iOS, Desktop and the Web. For more info, head over
-to [wiredash.com](https://wiredash.com).
+- **Real-time analytics**: Get real-time analytics that are GDPR-compliant and hosted in the EU 🇪🇺
+- **Capture in-app user feedback**: Get direct user feedback from within your app with screenshots and tags
+- **Schedule promoter score surveys**: Schedule and automate promoter score surveys.
+- **Console**: The Wiredash [console](https://wiredash.com/console) provides a dashboard to access your feedback and analytics
+- **Universal compatibility**: Written in Dart, Wiredash is compatible with Android, iOS, Web, macOS, Windows, Linux, and IoT
+- **Free**: Wiredash is free for up to 100.000 monthly active devices
+
+From members the Flutter Community 💙 for the Flutter Community 💙
+
+For more info, head over to our website [wiredash.com](https://wiredash.com) or directly into the [documentation](https://docs.wiredash.com).
 
 ## 3-Minute Quick Start
 
@@ -70,43 +77,34 @@ class MyApp extends StatelessWidget {
 
 #### Launch the feedback flow
 
-From anywhere in your app, call the `Wiredash.show()` method to launch Wiredash:
+From anywhere in your app, call the `Wiredash.show()` method to launch Wiredash.
+Place a button in your app can call `show()`. 
 
 ```dart
-onTap: () {
-  Wiredash.of(context).show(inheritMaterialTheme: true);
-}
+FloatingActionButton(
+  onPressed: () {
+    Wiredash.of(context).show(inheritMaterialTheme: true);
+  },
+  child: Icon(Icons.feedback_outlined),
+),
 ```
 
-Checkout [examples/theming](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/theming/lib/main.dart) for the full example.
-
-![wiredash-wonders-demo](https://user-images.githubusercontent.com/1096485/188439010-8da591df-e5cb-446a-be7f-971d0fda68d1.gif)
-
+Checkout [examples/theming](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/theming/lib/main.dart) for the full example or head to the [documentation](https://docs.wiredash.com/reference/feedback) for more info.
 
 #### Launch the Promoter Score Survey
 
 ```dart
-onTap: () {
+FloatingActionButton(
+  onPressed: () {
   Wiredash.of(context).showPromoterSurvey(force: true);
-}
+  },
+  child: Icon(Icons.feedback_outlined),
+),
 ```
 
-Checkout [examples/promoter_score](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/promoter_score/lib/main.dart) for the full example
-
-![Promoter Score demo](https://user-images.githubusercontent.com/1096485/187313854-343bfe52-9444-407b-9e7e-64738187f8af.png)
+Checkout [examples/promoter_score](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/promoter_score/lib/main.dart) for the full example or head to the [documentation](https://docs.wiredash.com/reference/promoter-score) for more info.
 
 That's already it. Yes, it's *really that easy*. Also works on all platforms.
-
-
-## Customization & More
-
-The Wiredash SDK is completely customizable and offers many configuration options (e.g. custom feedback categories a.k.a
-labels, custom metadata, custom theming, custom translations and much, much more!) 🤯
-
-For all the details, make sure to check out the full documentation
-at [docs.wiredash.com](https://docs.wiredash.com/).
-
-Also checkout the [examples/theming](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/theming/lib/main.dart) code example
 
 ## License
 
