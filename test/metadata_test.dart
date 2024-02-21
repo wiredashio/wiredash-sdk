@@ -28,20 +28,6 @@ void main() {
     expect(controller.metaData.userEmail, isNull);
   });
 
-  test('deprecated setBuildProperties() is noop', () async {
-    final WiredashModel model = WiredashModel(createMockServices());
-    final controller = WiredashController(model);
-    expect(controller.metaData.buildNumber, isNull);
-    controller.setBuildProperties(
-      buildNumber: '123',
-      buildCommit: 'abc',
-      buildVersion: '1.0.0',
-    );
-    expect(controller.metaData.buildNumber, isNull);
-    expect(controller.metaData.buildCommit, isNull);
-    expect(controller.metaData.buildVersion, isNull);
-  });
-
   test('custom metadata can not be mutable via metaData getter', () async {
     final WiredashModel model = WiredashModel(createMockServices());
     final controller = WiredashController(model);
@@ -134,13 +120,7 @@ void main() {
     // can only be set by developers
     expect(metadata!.userId, isNull);
     expect(metadata!.userEmail, isNull);
-    expect(metadata!.buildCommit, isNull);
     expect(metadata!.custom.isEmpty, isTrue);
-
-    // deprecated
-    expect(metadata!.buildNumber, isNull);
-    expect(metadata!.buildVersion, isNull);
-    expect(metadata!.buildCommit, isNull);
   });
 
   testWidgets('reading metadata as first wiredash interaction', (tester) async {
@@ -170,9 +150,6 @@ void main() {
     // all empty
     expect(metadata!.userId, isNull);
     expect(metadata!.userEmail, isNull);
-    expect(metadata!.buildCommit, isNull);
-    expect(metadata!.buildNumber, isNull);
-    expect(metadata!.buildVersion, isNull);
     expect(metadata!.custom.isEmpty, isTrue);
   });
 

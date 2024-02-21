@@ -1,5 +1,23 @@
 # Changelog
 
+## 2.0.0
+
+- New: Wiredash Analytics 🎉
+  Get real-time analytics that is GDPR-compliant and hosted in the EU 🇪🇺
+
+- New: Force an email address with `EmailPrompt.mandatory` in feedback flow [#327](https://github.com/wiredashio/wiredash-sdk/pull/327)
+- Compatability with Flutter 3.19.0 (stable) and 3.20.0 (beta)
+
+#### Removed deprecated APIs
+- `WiredashThemeData()` parameter `fontFamily`, use `textTheme` instead
+- `Wiredash.of(context).setBuildProperties()` will be captured automatically. Just remove the call
+- `Wiredash.of(context).show()` parameter `feedbackOptions` is now `options`
+- `Wiredash()` parameter `navigatorKey`, which is not required anymore
+- `WiredashFeedbackOptions()` parameter `bool askForUserEmail` replaced with `EmailPrompt email`
+- `WiredashFeedbackOptions()` parameter `bool screenshotStep` replaced with `ScreenshotPrompt screenshot`
+- `CustomizableWiredashMetaData.populated()` got removed. Use the default `CustomizableWiredashMetaData()` instead
+- `CustomizableWiredashMetaData` removed `buildVersion`, `buildNumber` and `buildCommit`. Those are now captured automatically
+
 ## 1.9.0
 - Add support for Flutter 3.17.0 (removing [`physicalGeometry`](https://github.com/flutter/flutter/pull/138103)) [#324](https://github.com/wiredashio/wiredash-sdk/pull/324)
 - Add more `WiredashTheme` color overrides [#325](https://github.com/wiredashio/wiredash-sdk/pull/325)

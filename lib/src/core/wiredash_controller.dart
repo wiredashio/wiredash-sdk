@@ -126,37 +126,6 @@ class WiredashController {
     );
   }
 
-  /// Deprecated, do not use anymore.
-  ///
-  /// Was used to attach custom [buildVersion], [buildNumber] and
-  /// [buildCommit] to the feedback.
-  ///
-  /// This information is now collected automatically with platform APIs.
-  ///
-  /// Alternatively, on platforms, that do not provide the correct information
-  /// (sometimes on web) set env.BUILD_VERSION, env.BUILD_NUMBER or
-  /// env.BUILD_COMMIT during compile time with dart-define.
-  /// https://docs.wiredash.com/reference/sdk/custom-properties#during-compile-time
-  @Deprecated(
-    'Build information has to be provided during build time or is now collected automatically with platform APIs (where possible). '
-    'Set env.BUILD_VERSION, env.BUILD_NUMBER or env.BUILD_COMMIT with --dart-define. '
-    'See https://docs.wiredash.com/reference/sdk/custom-properties#during-compile-time',
-  )
-  void setBuildProperties({
-    String? buildVersion,
-    String? buildNumber,
-    String? buildCommit,
-  }) {
-    if (kDebugMode) {
-      print(
-        'Wiredash: setBuildProperties() is deprecated. The version information should be picked up automatically. '
-        'Alternatively, set env.BUILD_VERSION, env.BUILD_NUMBER or env.BUILD_COMMIT during compile time. '
-        'See https://docs.wiredash.com/reference/sdk/custom-properties#during-compile-time',
-      );
-    }
-    // noop
-  }
-
   /// This will open Wiredash and start the feedback flow.
   ///
   /// Use [options] to configure the feedback flow.
@@ -176,12 +145,11 @@ class WiredashController {
   void show({
     bool? inheritMaterialTheme,
     bool? inheritCupertinoTheme,
-    @Deprecated('Use options') WiredashFeedbackOptions? feedbackOptions,
     WiredashFeedbackOptions? options,
   }) {
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
     _captureSessionMetaData();
-    _model.feedbackOptionsOverride = options ?? feedbackOptions;
+    _model.feedbackOptionsOverride = options;
     _model.show(flow: WiredashFlow.feedback);
   }
 

@@ -53,23 +53,10 @@ class WiredashFeedbackOptions {
 
   const WiredashFeedbackOptions({
     this.labels,
-    @Deprecated('Use `email` instead') bool? askForUserEmail,
-    EmailPrompt? email,
+    this.email,
     this.collectMetaData,
-    @Deprecated('Use `screenshot` instead') bool? screenshotStep,
-    ScreenshotPrompt? screenshot,
-  })  : screenshot = screenshot ??
-            (screenshotStep == true
-                ? ScreenshotPrompt.optional
-                : screenshotStep == false
-                    ? ScreenshotPrompt.hidden
-                    : null),
-        email = email ??
-            (askForUserEmail == true
-                ? EmailPrompt.optional
-                : askForUserEmail == false
-                    ? EmailPrompt.hidden
-                    : null);
+    this.screenshot,
+  });
 
   @override
   String toString() {

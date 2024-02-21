@@ -1173,9 +1173,6 @@ class BackdropController extends ChangeNotifier {
 
   WiredashBackdropStatus _backdropStatus = WiredashBackdropStatus.closed;
 
-  @Deprecated('moved into wiredashmodel')
-  bool get isWiredashActive => _backdropStatus != WiredashBackdropStatus.closed;
-
   bool get isAppInteractive => _isAppInteractive;
   bool _isAppInteractive = false;
 

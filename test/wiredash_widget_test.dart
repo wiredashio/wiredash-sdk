@@ -137,12 +137,6 @@ void main() {
 
       robot.wiredashController.modifyMetaData(
         (metaData) => metaData
-          // ignore: deprecated_member_use_from_same_package
-          ..buildNumber = 'customBuildNumber'
-          // ignore: deprecated_member_use_from_same_package
-          ..buildVersion = 'customBuildVersion'
-          // ignore: deprecated_member_use_from_same_package
-          ..buildCommit = 'customBuildCommit'
           ..userEmail = 'customUserEmail'
           ..userId = 'customUserId'
           ..custom = {'customKey': 'customValue'},
