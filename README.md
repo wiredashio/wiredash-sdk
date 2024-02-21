@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="1280" alt="Wiredash Logo" src="https://github.com/wiredashio/wiredash-sdk/assets/1096485/027485ef-e1d4-4a39-943a-41f4e956ddcc">
+  <img width="1280" alt="Wiredash Logo" src="https://github.com/wiredashio/wiredash-sdk/assets/1096485/37606b3b-8f0c-4528-b15b-31bcd9949af5">
 </p>
 
 # Wiredash SDK for Flutter
@@ -11,14 +11,14 @@
 [![Pub points](https://img.shields.io/pub/points/wiredash)](https://pub.dev/packages/wiredash/score)
 [![Website](https://img.shields.io/badge/website-wiredash.com-blue.svg)](https://wiredash.com/)
 
-- **Real-time analytics**: Get real-time analytics that are GDPR-compliant and hosted in the EU 🇪🇺
+- **Real-time analytics**: Get real-time analytics that is GDPR-compliant and hosted in the EU 🇪🇺
 - **Capture in-app user feedback**: Get direct user feedback from within your app with screenshots and tags
 - **Schedule promoter score surveys**: Schedule and automate promoter score surveys.
 - **Console**: The Wiredash [console](https://wiredash.com/console) provides a dashboard to access your feedback and analytics
 - **Universal compatibility**: Written in Dart, Wiredash is compatible with Android, iOS, Web, macOS, Windows, Linux, and IoT
 - **Free**: Wiredash is free for up to 100.000 monthly active devices
 
-From members the Flutter Community 💙 for the Flutter Community 💙
+From members of the Flutter Community 💙 for the Flutter Community 💙
 
 For more info, head over to our website [wiredash.com](https://wiredash.com) or directly into the [documentation](https://docs.wiredash.com).
 
@@ -28,12 +28,14 @@ For more info, head over to our website [wiredash.com](https://wiredash.com) or 
 > Visit [docs.wiredash.com](https://docs.wiredash.com/guide/start) for the in-depth
 > guide and additional info.
 
-### 1. Create an account
+### 1. Create an account and project
 
-Go to the [Wiredash Console](https://wiredash.com/console) and sign in with a valid Google or GitHub account. _It's
-free!_<br />Click on `Create new project` and enter your app's name.
+Start by visiting the Wiredash Console: [Wiredash Console](https://wiredash.com/console).
+Create your free account using Google or GitHub or request an email sign-in link.
 
-### 2. Add wiredash to your pubspec.yaml
+Then create a project with a descriptive name.
+
+### 2. Add Wiredash to your pubspec.yaml
 
 ```bash
 $ flutter pub add wiredash:^1.9.0
@@ -73,12 +75,13 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-### 4. Use any of Wiredash's amazing features
+That's already it. Yes, it's *really that easy*.
+
+### 4. (Optional) More features
 
 #### Launch the feedback flow
 
-From anywhere in your app, call the `Wiredash.show()` method to launch Wiredash.
-Place a button in your app can call `show()`. 
+Call the `Wiredash.of(context).show()` method from anywhere in your app to launch the Wiredash Feedback flow.
 
 ```dart
 FloatingActionButton(
@@ -103,8 +106,6 @@ FloatingActionButton(
 ```
 
 Checkout [examples/promoter_score](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/promoter_score/lib/main.dart) for the full example or head to the [documentation](https://docs.wiredash.com/reference/promoter-score) for more info.
-
-That's already it. Yes, it's *really that easy*. Also works on all platforms.
 
 ## License
 
