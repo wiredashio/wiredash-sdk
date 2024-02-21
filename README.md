@@ -38,7 +38,7 @@ Then create a project with a descriptive name.
 ### 2. Add Wiredash to your pubspec.yaml
 
 ```bash
-$ flutter pub add wiredash:^1.9.0
+$ flutter pub add wiredash:^2.0.0
 ```
 
 ```yaml
@@ -46,7 +46,7 @@ dependencies:
   flutter:
     sdk: flutter
   ...
-  wiredash: ^1.9.0
+  wiredash: ^2.0.0
 ```
 
 ### 3. Wrap your root widget with Wiredash
