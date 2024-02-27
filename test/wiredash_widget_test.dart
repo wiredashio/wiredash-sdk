@@ -13,6 +13,7 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 
 import 'util/invocation_catcher.dart';
 import 'util/robot.dart';
+import 'util/wiredash_tester.dart';
 
 void main() {
   group('Wiredash', () {
@@ -99,7 +100,7 @@ void main() {
       // remove wiredash
       expect(find.byType(Wiredash), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
-      await tester.pumpAndSettle();
+      await tester.pumpSmart();
 
       // add it a second time
       await tester.pumpWidget(
@@ -218,7 +219,7 @@ void main() {
         afterPump: () async {
           // The Localizations widget shows an empty Container while the
           // localizations are loaded (which is async)
-          await tester.pumpAndSettle();
+          await tester.pumpSmart();
         },
       );
 
@@ -264,7 +265,7 @@ void main() {
           afterPump: () async {
             // The Localizations widget shows an empty Container while the
             // localizations are loaded (which is async)
-            await tester.pumpAndSettle();
+            await tester.pumpSmart();
           },
         );
 
@@ -317,7 +318,7 @@ void main() {
           afterPump: () async {
             // The Localizations widget shows an empty Container while the
             // localizations are loaded (which is async)
-            await tester.pumpAndSettle();
+            await tester.pumpSmart();
           },
         );
 

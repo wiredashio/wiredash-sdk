@@ -193,7 +193,7 @@ void main() {
       spotSingle<PsStep1Rating>().doesNotExist();
 
       // wait for wiredash hide() after 2s delay
-      await tester.pumpAndSettle(const Duration(seconds: 3));
+      await tester.pumpSmart(const Duration(seconds: 3));
 
       // back on first step, the form got reset
       spotSingle<PsStep1Rating>().existsOnce();

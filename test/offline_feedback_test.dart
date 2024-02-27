@@ -62,7 +62,7 @@ void main() {
       };
 
       // wait for the UploadPendingFeedbackJob to start
-      await tester.pumpAndSettle(const Duration(seconds: 5));
+      await tester.pumpSmart(const Duration(seconds: 5));
 
       final future = ResultFuture(
         robot.mockServices.services.syncEngine
@@ -70,7 +70,7 @@ void main() {
       );
       while (!future.isComplete) {
         // every disk io call needs to be pumped
-        await tester.pumpHardAndSettle();
+        await tester.pumpSmart(const Duration(milliseconds: 100));
       }
 
       final latestFeedbackCall =
@@ -111,7 +111,7 @@ void main() {
       };
 
       // wait for the UploadPendingFeedbackJob to start
-      await tester.pumpAndSettle(const Duration(seconds: 5));
+      await tester.pumpSmart(const Duration(seconds: 5));
 
       final future = ResultFuture(
         robot.mockServices.services.syncEngine
@@ -119,7 +119,7 @@ void main() {
       );
       while (!future.isComplete) {
         // every disk io call needs to be pumped
-        await tester.pumpHardAndSettle();
+        await tester.pumpSmart(const Duration(milliseconds: 100));
       }
 
       final latestFeedbackCall =
