@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +13,7 @@ import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 import 'util/invocation_catcher.dart';
+import 'util/mock_api.dart';
 import 'util/robot.dart';
 
 void main() {
@@ -336,6 +338,41 @@ void main() {
       expect(appStartCount, 1);
       final firstAppStart = await robot.services.appTelemetry.firstAppStart();
       expect(firstAppStart, isNotNull);
+    });
+  });
+
+  group('Third party app', () {
+    testWidgets('A test with Wiredash does no I/O', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+
+      await tester.pumpWidget(
+        const Wiredash(
+          projectId: 'any',
+          secret: 'thing',
+          child: MaterialApp(),
+        ),
+      );
+      final state = find
+          .byType(MaterialApp)
+          .evaluate()
+          .first
+          .findAncestorStateOfType<WiredashState>()!;
+      expect(state, isNotNull);
+      final api = MockWiredashApi();
+      state.debugServices.inject<WiredashApi>((_) => api);
+
+      await tester.pump(const Duration(minutes: 10));
+
+      // TODO verify with Http
+      // No http calls
+      expect(api.pingInvocations.count, 0);
+      expect(api.sendFeedbackInvocations.count, 0);
+      expect(api.uploadAttachmentInvocations.count, 0);
+      expect(api.sendPsInvocations.count, 0);
+
+      // not disk writes
+      final data = await SharedPreferences.getInstance();
+      expect(data.getKeys(), isEmpty);
     });
   });
 }
