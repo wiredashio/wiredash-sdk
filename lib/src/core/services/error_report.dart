@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 
 /// Reports an user errors, that can be resolved by the developer.

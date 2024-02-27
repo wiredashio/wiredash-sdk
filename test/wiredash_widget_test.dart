@@ -21,9 +21,6 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       debugServicesCreator = createMockServices;
       addTearDown(() => debugServicesCreator = null);
-
-      WiredashState.isInsideTestsOverride = false;
-      addTearDown(() => WiredashState.isInsideTestsOverride = null);
     });
 
     testWidgets('widget can be created', (tester) async {
@@ -347,6 +344,18 @@ void main() {
     testWidgets('A test with Wiredash does no I/O', (tester) async {
       SharedPreferences.setMockInitialValues({});
 
+      final api = MockWiredashApi();
+      debugServicesCreator = () {
+        final services = WiredashServices();
+        // Don't do actual http calls
+        services.inject<WiredashApi>((_) {
+          // depend on the widget (secret/project)
+          services.wiredashWidget;
+          return api;
+        });
+        return services;
+      };
+
       await tester.pumpWidget(
         const Wiredash(
           projectId: 'any',
@@ -354,14 +363,6 @@ void main() {
           child: MaterialApp(),
         ),
       );
-      final state = find
-          .byType(MaterialApp)
-          .evaluate()
-          .first
-          .findAncestorStateOfType<WiredashState>()!;
-      expect(state, isNotNull);
-      final api = MockWiredashApi();
-      state.debugServices.inject<WiredashApi>((_) => api);
 
       await tester.pump(const Duration(minutes: 10));
 
