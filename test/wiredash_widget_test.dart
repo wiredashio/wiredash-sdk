@@ -365,7 +365,6 @@ void main() {
 
       await tester.pump(const Duration(minutes: 10));
 
-      // TODO verify with Http
       // No http calls
       expect(api.pingInvocations.count, 0);
       expect(api.sendFeedbackInvocations.count, 0);
