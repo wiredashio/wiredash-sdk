@@ -22,6 +22,9 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       debugServicesCreator = createMockServices;
       addTearDown(() => debugServicesCreator = null);
+
+      WiredashState.isInsideTestsOverride = false;
+      addTearDown(() => WiredashState.isInsideTestsOverride = null);
     });
 
     testWidgets('widget can be created', (tester) async {

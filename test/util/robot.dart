@@ -122,6 +122,9 @@ class WiredashTestRobot {
       }
       return null;
     });
+
+    WiredashState.isInsideTestsOverride = false;
+    addTearDown(() => WiredashState.isInsideTestsOverride = null);
   }
 
   Future<WiredashTestRobot> launchApp({

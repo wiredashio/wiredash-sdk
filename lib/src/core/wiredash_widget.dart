@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:collection/collection.dart';
@@ -183,6 +184,26 @@ class WiredashState extends State<Wiredash> {
     return _services;
   }
 
+  @visibleForTesting
+  static bool? isInsideTestsOverride;
+
+  bool get _isInsideTests {
+    bool? override;
+    assert(() {
+      override = isInsideTestsOverride;
+      return true;
+    }());
+    if (override != null) {
+      return override!;
+    }
+    if (kIsWeb) {
+      // Platform not available
+      return false;
+    }
+
+    return Platform.environment.containsKey('FLUTTER_TEST');
+  }
+
   @override
   void initState() {
     super.initState();
@@ -195,8 +216,15 @@ class WiredashState extends State<Wiredash> {
     _services.wiredashModel.addListener(_markNeedsBuild);
     _services.backdropController.addListener(_markNeedsBuild);
 
-    // start the sync engine
-    unawaited(_services.syncEngine.onWiredashInit());
+    final insideTests = _isInsideTests;
+
+    if (!insideTests) {
+      print('production');
+      // start the sync engine
+      unawaited(_services.syncEngine.onWiredashInit());
+    } else {
+      print('inside tests');
+    }
 
     _backButtonDispatcher = WiredashBackButtonDispatcher()..initialize();
   }
