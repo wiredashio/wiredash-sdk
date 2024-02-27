@@ -26,6 +26,7 @@ import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/ui/screencapture.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
+import 'package:wiredash/src/utils/test_detector.dart';
 import 'package:wiredash/wiredash.dart';
 
 /// Internal service locator
@@ -75,6 +76,8 @@ class WiredashServices extends ChangeNotifier {
   AppTelemetry get appTelemetry => _locator.watch();
 
   MetaDataCollector get metaDataCollector => _locator.watch();
+
+  TestDetector get testDetector => _locator.watch();
 
   void updateWidget(Wiredash wiredashWidget) {
     inject<Wiredash>((_) => wiredashWidget);
@@ -247,6 +250,7 @@ void _setupServices(WiredashServices sl) {
 
   sl.inject<DiscardFeedbackUseCase>((_) => DiscardFeedbackUseCase(sl));
   sl.inject<DiscardPsUseCase>((_) => DiscardPsUseCase(sl));
+  sl.inject<TestDetector>((_) => TestDetector());
 }
 
 /// Discards the current feedback

@@ -112,7 +112,7 @@ void main() {
         },
       );
       expect(
-        errors.presentError.toString(),
+        errors.onError.toString(),
         stringContainsInOrder([
           'customMetaData',
           'property function',

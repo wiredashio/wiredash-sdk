@@ -195,8 +195,11 @@ class WiredashState extends State<Wiredash> {
     _services.wiredashModel.addListener(_markNeedsBuild);
     _services.backdropController.addListener(_markNeedsBuild);
 
-    // start the sync engine
-    unawaited(_services.syncEngine.onWiredashInit());
+    final inFakeAsync = _services.testDetector.inFakeAsync();
+    if (!inFakeAsync) {
+      // start the sync engine
+      unawaited(_services.syncEngine.onWiredashInit());
+    }
 
     _backButtonDispatcher = WiredashBackButtonDispatcher()..initialize();
   }
