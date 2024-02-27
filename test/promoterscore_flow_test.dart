@@ -6,7 +6,6 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 
 import 'util/flutter_error.dart';
 import 'util/robot.dart';
-import 'util/wiredash_tester.dart';
 
 void main() {
   group('promoter score', () {

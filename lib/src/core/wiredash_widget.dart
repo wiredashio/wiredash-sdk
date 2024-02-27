@@ -219,11 +219,8 @@ class WiredashState extends State<Wiredash> {
     final insideTests = _isInsideTests;
 
     if (!insideTests) {
-      print('production');
       // start the sync engine
       unawaited(_services.syncEngine.onWiredashInit());
-    } else {
-      print('inside tests');
     }
 
     _backButtonDispatcher = WiredashBackButtonDispatcher()..initialize();
