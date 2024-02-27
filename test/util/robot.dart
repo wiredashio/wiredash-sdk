@@ -19,6 +19,7 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 
 // ignore: unused_import
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
+import 'package:wiredash/src/utils/test_detector.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'mock_api.dart';
@@ -635,6 +636,9 @@ WiredashServices createMockServices({bool useDirectFeedbackSubmitter = false}) {
     return MockWiredashApi.fake();
   });
 
+  // Let the widget behave as in production
+  services.inject<TestDetector>((_) => _OverlookFakeAsync());
+
   if (useDirectFeedbackSubmitter) {
     // replace submitter, because for testing we always want to submit directly
     services.inject<FeedbackSubmitter>(
@@ -644,6 +648,17 @@ WiredashServices createMockServices({bool useDirectFeedbackSubmitter = false}) {
     assert(services.feedbackSubmitter is RetryingFeedbackSubmitter);
   }
   return services;
+}
+
+/// Fake the test detector to not detect the fake async environment
+///
+/// Wiredash should behave differently in user tests. But wiredash tests should
+/// be able schedule jobs in a fake async environment.
+class _OverlookFakeAsync implements TestDetector {
+  @override
+  bool inFakeAsync() {
+    return false;
+  }
 }
 
 class WiredashTestLocalizationDelegate

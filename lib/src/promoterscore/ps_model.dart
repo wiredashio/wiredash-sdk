@@ -93,7 +93,7 @@ class PsModel extends ChangeNotifier2 {
       await _services.api.sendPromoterScore(body);
     } catch (e, stack) {
       if (kDevMode) {
-        reportWiredashError(e, stack, 'Promoter score start request failed');
+        reportWiredashInfo(e, stack, 'Promoter score start request failed');
       } else {
         if (silentFail) {
           // fail silently
@@ -115,7 +115,7 @@ class PsModel extends ChangeNotifier2 {
       unawaited(_services.syncEngine.onSubmitPromoterScore());
     } catch (e, stack) {
       _submissionError = e;
-      reportWiredashError(e, stack, 'Promoter Score submission failed');
+      reportWiredashInfo(e, stack, 'Promoter Score submission failed');
     } finally {
       _closeDelay?.dispose();
       _closeDelay = Delay(const Duration(seconds: 2));

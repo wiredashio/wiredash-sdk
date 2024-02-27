@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:flutter/foundation.dart';
 import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
@@ -13,6 +12,7 @@ import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 
+import '../../util/flutter_error.dart';
 import '../../util/invocation_catcher.dart';
 
 void main() {
@@ -221,31 +221,21 @@ void main() {
         ],
       );
 
-      final oldOnErrorHandler = FlutterError.onError;
-      late FlutterErrorDetails caught;
-      FlutterError.onError = (FlutterErrorDetails details) {
-        caught = details;
-      };
-      addTearDown(() {
-        // reset error reporter after test
-        FlutterError.onError = oldOnErrorHandler;
-      });
-
+      final errors = captureFlutterErrors();
       final retrieved = await storage.retrieveAllPendingItems();
 
       // method returns only valid items
       expect(retrieved.length, 1);
 
+      expect(errors.presentError, isNotEmpty);
       // error was reported to Flutter.onError
       expect(
-        caught.stack.toString(),
+        errors.presentError[0].stack.toString(),
         stringContainsInOrder([
           'deserializePendingFeedbackItem',
           'PendingFeedbackItemStorage.retrieveAllPendingItems',
         ]),
       );
-      // reset error reporter after successful assertion
-      FlutterError.onError = oldOnErrorHandler;
 
       // add pending item to remove the illegal one
       final newFeedback = createFeedback();

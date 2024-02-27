@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spot/spot.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 
+import 'util/flutter_error.dart';
 import 'util/robot.dart';
 
 void main() {
   group('promoter score', () {
-    setUp(() {
-      SharedPreferences.setMockInitialValues({});
-    });
-
-    testWidgets('Send promoter score', (tester) async {
+    testWidgets('Send promoter score - happy path', (tester) async {
       final robot = await WiredashTestRobot(tester).launchApp();
       await robot.openPromoterScore();
       await robot.ratePromoterScore(7);
@@ -149,14 +145,7 @@ void main() {
           (invocation) async {
         throw Exception('No internet');
       };
-      final oldOnErrorHandler = FlutterError.onError;
-      late FlutterErrorDetails caught;
-      FlutterError.onError = (FlutterErrorDetails details) {
-        caught = details;
-      };
-      addTearDown(() {
-        FlutterError.onError = oldOnErrorHandler;
-      });
+      final errors = captureFlutterErrors();
 
       await robot.openPromoterScore();
       await robot.ratePromoterScore(7);
@@ -167,7 +156,11 @@ void main() {
       await robot.showsPromoterScoreThanksMessage();
 
       await robot.waitUntilWiredashIsClosed();
-      expect(caught.exception.toString(), contains('No internet'));
+      expect(
+        errors.presentError[0].exception.toString(),
+        contains('No internet'),
+      );
+      expect(errors.onError, isEmpty);
     });
 
     testWidgets('Hold app while submitting ps resets form', (tester) async {

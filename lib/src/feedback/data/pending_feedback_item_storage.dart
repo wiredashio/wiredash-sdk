@@ -42,7 +42,7 @@ class PendingFeedbackItemStorage {
 
         // The next time addPendingItem is called, the invalid feedbacks get
         // removed automatically
-        reportWiredashError(e, stack, 'Could not parse item from disk $item');
+        reportWiredashInfo(e, stack, 'Could not parse item from disk $item');
         try {
           // Remove the associated screenshot right now.
           // This here is custom parsing and fails when the serialization
@@ -53,7 +53,7 @@ class PendingFeedbackItemStorage {
             await screenshot.delete();
           }
         } catch (e) {
-          reportWiredashError(
+          reportWiredashInfo(
             e,
             stack,
             'Could not delete screenshot for invalid item $item',

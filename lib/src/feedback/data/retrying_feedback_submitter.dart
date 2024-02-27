@@ -208,7 +208,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
         if (e.response?.statusCode == 400) {
           // The request is invalid. The feedback will never be delivered
           // to the server, therefore discard it.
-          reportWiredashError(
+          reportWiredashInfo(
             e,
             stack,
             'Feedback has missing properties and can not be submitted to '

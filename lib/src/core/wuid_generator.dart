@@ -75,7 +75,7 @@ class SharedPrefsWuidGenerator implements WuidGenerator {
     } catch (e, stack) {
       // might fail when users manipulate shared prefs. Creating a new id in
       // that case
-      reportWiredashError(e, stack, 'Could not read $key from shared prefs');
+      reportWiredashInfo(e, stack, 'Could not read $key from shared prefs');
     }
 
     // first time generation or fallback in case of sharedPrefs error
@@ -84,7 +84,7 @@ class SharedPrefsWuidGenerator implements WuidGenerator {
       final prefs = await sharedPrefsProvider().timeout(_sharedPrefsTimeout);
       await prefs.setString(key, deviceId).timeout(_sharedPrefsTimeout);
     } catch (e, stack) {
-      reportWiredashError(e, stack, 'Could not write $key to shared prefs');
+      reportWiredashInfo(e, stack, 'Could not write $key to shared prefs');
     }
     return deviceId;
   }

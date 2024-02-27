@@ -12,6 +12,7 @@ import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 import 'util/invocation_catcher.dart';
+import 'util/mock_api.dart';
 import 'util/robot.dart';
 
 void main() {
@@ -336,6 +337,44 @@ void main() {
       expect(appStartCount, 1);
       final firstAppStart = await robot.services.appTelemetry.firstAppStart();
       expect(firstAppStart, isNotNull);
+    });
+  });
+
+  group('Third party app', () {
+    testWidgets('A test with Wiredash does no I/O', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+
+      final api = MockWiredashApi();
+      debugServicesCreator = () {
+        final services = WiredashServices();
+        // Don't do actual http calls
+        services.inject<WiredashApi>((_) {
+          // depend on the widget (secret/project)
+          services.wiredashWidget;
+          return api;
+        });
+        return services;
+      };
+
+      await tester.pumpWidget(
+        const Wiredash(
+          projectId: 'any',
+          secret: 'thing',
+          child: MaterialApp(),
+        ),
+      );
+
+      await tester.pump(const Duration(minutes: 10));
+
+      // No http calls
+      expect(api.pingInvocations.count, 0);
+      expect(api.sendFeedbackInvocations.count, 0);
+      expect(api.uploadAttachmentInvocations.count, 0);
+      expect(api.sendPsInvocations.count, 0);
+
+      // not disk writes
+      final data = await SharedPreferences.getInstance();
+      expect(data.getKeys(), isEmpty);
     });
   });
 }
