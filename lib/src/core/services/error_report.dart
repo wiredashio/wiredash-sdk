@@ -13,10 +13,6 @@ FlutterErrorDetails reportWiredashError(
   StackTrace stack,
   String message,
 ) {
-  if (isInFlutterTest()) {
-    // never fail tests
-    return reportWiredashInfo(e, stack, message);
-  }
   final details = FlutterErrorDetails(
     exception: e,
     stack: stack,
@@ -39,9 +35,8 @@ FlutterErrorDetails reportWiredashError(
 FlutterErrorDetails reportWiredashInfo(
   Object e,
   StackTrace stack,
-  String message, {
-  bool ignoreInTests = false,
-}) {
+  String message,
+) {
   final details = FlutterErrorDetails(
     exception: e,
     stack: stack,
@@ -50,14 +45,7 @@ FlutterErrorDetails reportWiredashInfo(
       DiagnosticsNode.message(message),
     ],
   );
-  if (ignoreInTests && isInFlutterTest()) {
-    return details;
-  }
   final reporter = FlutterError.presentError;
   reporter.call(details);
   return details;
-}
-
-bool isInFlutterTest() {
-  return Platform.environment.containsKey('FLUTTER_TEST');
 }
