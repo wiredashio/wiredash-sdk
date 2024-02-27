@@ -41,22 +41,25 @@ class MetaDataCollector {
     }
 
     final results = await Future.wait(
-      <Future<Object?>>[
+      [
         _collectAppInfo(),
         _collectDeviceInfo(),
         Future(buildInfoProvider),
-      ].map(
-        (e) => e.timeout(const Duration(seconds: 1)).catchError(
+      ].map((Future<Object> future) {
+        return future.then<Object?>((value) => value);
+      }).map((e) {
+        return e.timeout(const Duration(seconds: 1)).catchError(
           (Object e, StackTrace stack) {
-            reportWiredashError(
+            reportWiredashInfo(
               e,
               stack,
               'Could not collect metadata',
             );
-            return null;
+            // ignore: avoid_redundant_argument_values
+            return Future.value(null);
           },
-        ),
-      ),
+        );
+      }),
     );
     final appInfo = results[0] as AppInfo?;
     final deviceInfo = results[1] as DeviceInfo?;
@@ -84,7 +87,7 @@ class MetaDataCollector {
         buildNumber: packageInfo.buildNumber,
       );
     } catch (e, stack) {
-      reportWiredashError(e, stack, 'Failed to collect package info');
+      reportWiredashInfo(e, stack, 'Failed to collect package info');
     }
 
     return appInfo;
@@ -164,7 +167,7 @@ class MetaDataCollector {
         return const DeviceInfo();
       }
 
-      reportWiredashError(
+      reportWiredashInfo(
         e,
         stack,
         'Failed to collect deviceInfo.model with device_info_plus',

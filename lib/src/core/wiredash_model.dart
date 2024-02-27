@@ -165,7 +165,7 @@ class WiredashModel with ChangeNotifier {
         final after = await collector(before);
         return customizableMetaData = after.copyWith();
       } catch (e, stack) {
-        reportWiredashError(
+        reportWiredashInfo(
           e,
           stack,
           'Failed to collect custom metadata',
