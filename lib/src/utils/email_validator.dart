@@ -7,6 +7,6 @@ class EmailValidator {
 }
 
 final _pattern = RegExp(
-  r"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*",
+  r"^\S+@\S+\.\S+",
   caseSensitive: false,
 );

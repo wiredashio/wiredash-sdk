@@ -19,6 +19,13 @@ void main() {
       spot<LarryPageView>().spot<Step6Submit>().existsOnce();
     });
 
+    testWidgets('Email may contain umlauts', (tester) async {
+      final WiredashTestRobot robot = await tester.goToEmailStep();
+      await robot.enterEmail('däsh@flütter.iö');
+      await robot.submitEmailViaButton();
+      spot<LarryPageView>().spot<Step6Submit>().existsOnce();
+    });
+
     testWidgets('Submit works without email', (tester) async {
       final WiredashTestRobot robot = await tester.goToEmailStep();
       await robot.enterEmail('');
