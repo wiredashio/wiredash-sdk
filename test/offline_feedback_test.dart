@@ -68,10 +68,7 @@ void main() {
         robot.mockServices.services.syncEngine
             .onEvent(SdkEvent.appStartDelayed),
       );
-      while (!future.isComplete) {
-        // every disk io call needs to be pumped
-        await tester.pumpSmart(const Duration(milliseconds: 100));
-      }
+      await tester.waitUntil(() => future.isComplete, isTrue);
 
       final latestFeedbackCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;
@@ -117,10 +114,7 @@ void main() {
         robot.mockServices.services.syncEngine
             .onEvent(SdkEvent.appStartDelayed),
       );
-      while (!future.isComplete) {
-        // every disk io call needs to be pumped
-        await tester.pumpSmart(const Duration(milliseconds: 100));
-      }
+      await tester.waitUntil(() => future.isComplete, isTrue);
 
       final latestFeedbackCall =
           robot.mockServices.mockApi.sendFeedbackInvocations.latest;

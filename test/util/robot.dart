@@ -452,10 +452,10 @@ class WiredashTestRobot {
       screenshotBar
           .spotSingleText('l10n.feedbackStep3ScreenshotBarCaptureButton'),
     );
-    while (services.feedbackModel.feedbackFlowStatus !=
-        FeedbackFlowStatus.screenshotDrawing) {
-      await tester.pumpSmart();
-    }
+    await tester.waitUntil(
+      () => services.feedbackModel.feedbackFlowStatus,
+      isNot(FeedbackFlowStatus.screenshotDrawing),
+    );
 
     // Wait for active "Save" button
     final nextButton = screenshotBar.spotSingle<TronButton>(
@@ -493,7 +493,7 @@ class WiredashTestRobot {
     );
 
     await tester.waitUntil(
-      services.feedbackModel.feedbackFlowStatus,
+      () => services.feedbackModel.feedbackFlowStatus,
       isNot(
         anyOf(
           FeedbackFlowStatus.screenshotDrawing,
