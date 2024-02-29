@@ -47,7 +47,7 @@ dev_dependencies:
 
 dependency_overrides:
   # checks 0.2.2 requires test_api 0.7.0. Upgrade when upgrading to Dart 3.0+
-  test_api: 0.7.0
+  test_api: ^0.6.0
 
 flutter:
   assets:
