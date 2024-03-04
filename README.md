@@ -1,7 +1,3 @@
-<p align="center">
-  <img width="1280" alt="Wiredash Logo" src="https://github.com/wiredashio/wiredash-sdk/assets/1096485/37606b3b-8f0c-4528-b15b-31bcd9949af5">
-</p>
-
 # Wiredash SDK for Flutter
 
 [![Pub](https://img.shields.io/pub/v/wiredash.svg)](https://pub.dartlang.org/packages/wiredash)
@@ -11,6 +7,8 @@
 [![Pub points](https://img.shields.io/pub/points/wiredash)](https://pub.dev/packages/wiredash/score)
 [![Website](https://img.shields.io/badge/website-wiredash.com-blue.svg)](https://wiredash.com/)
 
+[wiredash.com](https://wiredash.com) | [Console](https://wiredash.com/console) | [Pub](https://pub.dev/packages/wiredash) | [Documentation](https://docs.wiredash.com) | [Get Started](https://docs.wiredash.com/guide/start)
+
 - **Real-time analytics**: Get real-time analytics that is GDPR-compliant and hosted in the EU 🇪🇺
 - **Capture in-app user feedback**: Get direct user feedback from within your app with screenshots and tags
 - **Schedule promoter score surveys**: Schedule and automate promoter score surveys.
@@ -18,9 +16,9 @@
 - **Universal compatibility**: Written in Dart, Wiredash is compatible with Android, iOS, Web, macOS, Windows, Linux, and IoT
 - **Free**: Wiredash is free for up to 100.000 monthly active devices
 
-From members of the Flutter Community 💙 for the Flutter Community 💙
+<img width="830" alt="Wiredash Logo" src="https://github.com/wiredashio/wiredash-sdk/assets/1096485/37255958-2954-4fd4-8a43-82d3ba65a393"> <!-- 3x -->
 
-For more info, head over to our website [wiredash.com](https://wiredash.com) or directly into the [documentation](https://docs.wiredash.com).
+From members of the Flutter Community 💙 for the Flutter Community 💙
 
 ## 3-Minute Quick Start
 
