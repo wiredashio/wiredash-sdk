@@ -99,12 +99,6 @@ class MetaDataCollector {
   }
 
   Future<DeviceInfo> _collectDeviceInfo() async {
-    if (!kIsWeb && Platform.isLinux) {
-      // it just hangs on linux for some reason
-      // https://github.com/fluttercommunity/plus_plugins/issues/1552
-      return const DeviceInfo();
-    }
-
     try {
       final deviceInfo = await DeviceInfoPlugin().deviceInfo;
 
@@ -159,13 +153,15 @@ class MetaDataCollector {
 
       // there's not way to get the model of windows or linux devices
     } catch (e, stack) {
-      const issue1552 =
-          "type 'BaseDeviceInfo' is not a subtype of type 'LinuxDeviceInfo' in type cast";
-      if (e.toString().contains(issue1552)) {
-        // ignore, will be fixed in an upcoming device_info_plus release
-        // https://github.com/fluttercommunity/plus_plugins/issues/1552
-        return const DeviceInfo();
-      }
+      // const issue1552 =
+      //     "type 'BaseDeviceInfo' is not a subtype of type 'LinuxDeviceInfo' in type cast";
+      // if (e.toString().contains(issue1552)) {
+      //   // ignore, will be fixed in an upcoming device_info_plus release
+      //   // https://github.com/fluttercommunity/plus_plugins/issues/1552
+      //   return const DeviceInfo();
+      // }
+      print(e);
+      print(stack);
 
       reportWiredashInfo(
         e,
