@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.0 
+- Prevent `Wiredash` from scheduling tasks in your widget tests [#332](https://github.com/wiredashio/wiredash-sdk/pull/332)
+- Update README with new header image, adjust pub tags
+- Run tests successfully on Flutter 3.0.0 and 3.20.0 [#335](https://github.com/wiredashio/wiredash-sdk/pull/335)
+- Improve testing setup [#334](https://github.com/wiredashio/wiredash-sdk/pull/334)
+
 ## 2.0.0
 
 - New: Wiredash Analytics 🎉
