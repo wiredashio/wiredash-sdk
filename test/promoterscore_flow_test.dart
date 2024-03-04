@@ -6,6 +6,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 
 import 'util/flutter_error.dart';
 import 'util/robot.dart';
+import 'util/wiredash_tester.dart';
 
 void main() {
   group('promoter score', () {
@@ -192,7 +193,7 @@ void main() {
       spotSingle<PsStep1Rating>().doesNotExist();
 
       // wait for wiredash hide() after 2s delay
-      await tester.pumpAndSettle(const Duration(seconds: 3));
+      await tester.pumpSmart(const Duration(seconds: 3));
 
       // back on first step, the form got reset
       spotSingle<PsStep1Rating>().existsOnce();

@@ -58,7 +58,7 @@ void main() {
       final confirmDiscardButton =
           _larryPageView.spotSingleText('l10n.feedbackDiscardConfirmButton');
       confirmDiscardButton.existsOnce();
-      await tester.pumpAndSettle(const Duration(seconds: 3));
+      await tester.pumpSmart(const Duration(seconds: 3));
       confirmDiscardButton.doesNotExist();
     });
 
@@ -179,7 +179,7 @@ void main() {
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
       await robot.skipScreenshot();
-      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await tester.pumpSmart(const Duration(seconds: 1));
       await robot.goToNextStep();
       await robot.submitFeedback();
       await robot.waitUntilWiredashIsClosed();
@@ -209,7 +209,7 @@ void main() {
       await robot.enterFeedbackMessage('test message');
       await robot.goToNextStep();
       await robot.skipScreenshot();
-      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await tester.pumpSmart(const Duration(seconds: 1));
       await robot.enterEmail(adjustedEmail);
       // Go back to Screenshot Overview
       await robot.goToPrevStep();
@@ -249,7 +249,7 @@ void main() {
       await robot.enterScreenshotMode();
       await robot.goToPrevStep();
       await robot.skipScreenshot();
-      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await tester.pumpSmart(const Duration(seconds: 1));
       await robot.goToNextStep();
       await robot.submitFeedback();
       await robot.waitUntilWiredashIsClosed();
@@ -596,7 +596,7 @@ void main() {
       // Then tap to close while backdrop is still moving
       await robot.closeWiredashWithButton(); // caused crash
 
-      await tester.pumpAndSettle();
+      await tester.pumpSmart();
       spot<FeedbackBackdrop>().doesNotExist();
     });
 
@@ -637,7 +637,7 @@ void main() {
       spotSingle<Step1FeedbackMessage>().doesNotExist();
 
       // wait for wiredash hide() after 1s delay
-      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await tester.pumpSmart(const Duration(seconds: 1));
 
       // back on first step, the form got reset
       spotSingle<Step1FeedbackMessage>().existsOnce();

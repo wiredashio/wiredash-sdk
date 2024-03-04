@@ -58,8 +58,7 @@ void main() {
       );
     });
     // send ping
-    await tester.pump(const Duration(seconds: 5));
-    await tester.pumpHardAndSettle();
+    await tester.pumpSmart(const Duration(seconds: 5));
     final latestPing = robot.mockServices.mockApi.pingInvocations.latest;
     final ping = latestPing[0] as PingRequestBody?;
     expect(ping!.buildVersion, '1.2.3');
@@ -81,8 +80,7 @@ void main() {
       );
     });
     // send ping
-    await tester.pump(const Duration(seconds: 5));
-    await tester.pumpHardAndSettle();
+    await tester.pumpSmart(const Duration(seconds: 5));
     final latestPing = robot.mockServices.mockApi.pingInvocations.latest;
     final ping = latestPing[0] as PingRequestBody?;
     expect(ping!.buildVersion, '0.1.0'); // from appInfo

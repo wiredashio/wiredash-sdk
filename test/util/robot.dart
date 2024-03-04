@@ -236,13 +236,7 @@ class WiredashTestRobot {
     final feedbackText = spotSingle<MaterialApp>().spotSingleText('Feedback')
       ..existsOnce();
     await _tap(feedbackText);
-
-    // process the event, wait for backdrop to appear in the widget tree
-    await tester.pumpN(4);
-    // wait for animation finish
-    await tester.pump(const Duration(milliseconds: 500));
-    // When the pump pattern on top fails, use this instead
-    // await tester.pumpAndSettle();
+    await tester.pumpSmart();
 
     _spotBackdrop.spotSingle<WiredashFeedbackFlow>().existsOnce();
     print('opened Wiredash');
@@ -253,13 +247,7 @@ class WiredashTestRobot {
         .spotSingleText('Promoter Score')
       ..existsOnce();
     await _tap(promoterScoreText);
-
-    // process the event, wait for backdrop to appear in the widget tree
-    await tester.pumpN(4);
-    // wait for animation finish
-    await tester.pump(const Duration(milliseconds: 500));
-    // When the pump pattern on top fails, use this instead
-    // await tester.pumpAndSettle();
+    await tester.pumpSmart();
 
     _spotBackdrop.spotSingle<PromoterScoreFlow>().existsOnce();
     print('opened promoter score');
@@ -273,6 +261,7 @@ class WiredashTestRobot {
       ],
     )..existsOnce();
     await _tap(spotCloseButton);
+    await tester.pumpSmart();
     print('closed Wiredash');
   }
 
@@ -280,7 +269,7 @@ class WiredashTestRobot {
     // tap app which is located at the bottom of the screen
     final bottomRight = tester.getBottomRight(find.byType(Wiredash));
     await tester.tapAt(Offset(bottomRight.dx / 2, bottomRight.dy - 20));
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     _spotBackdrop.spotSingle<WiredashFeedbackFlow>().doesNotExist();
     _spotBackdrop.spotSingle<PromoterScoreFlow>().doesNotExist();
     print('closed Wiredash');
@@ -289,7 +278,7 @@ class WiredashTestRobot {
   Future<void> enterFeedbackMessage(String message) async {
     _spotPageView.spotSingle<Step1FeedbackMessage>().existsOnce();
     await tester.enterText(find.byType(TextField), message);
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     final button = spotSingle<TronButton>(
       children: [spotSingleText('l10n.feedbackNextButton')],
     );
@@ -309,7 +298,7 @@ class WiredashTestRobot {
     )..existsOnce();
     step.spotSingleText('l10n.promoterScoreBackButton').existsOnce();
     await tester.enterText(find.byType(TextField), message);
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
 
     // TODO find easier way to check if the button is clickable. Hit Testing?
     await done.waitUntil(tester, (it) => it.isTappable(true));
@@ -320,7 +309,7 @@ class WiredashTestRobot {
   Future<void> enterEmail(String emailAddress) async {
     final step = _spotPageView.spotSingle<Step5Email>()..existsOnce();
     await tester.enterText(step.spotSingle<TextField>().finder, emailAddress);
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     print('entered email: $emailAddress');
   }
 
@@ -330,8 +319,7 @@ class WiredashTestRobot {
     await _tap(
       step.spotSingleText('l10n.feedbackStep3ScreenshotOverviewSkipButton'),
     );
-    await tester.pumpAndSettle();
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Skipped taking screenshot, next $newStatus');
   }
@@ -352,13 +340,13 @@ class WiredashTestRobot {
     );
     print('submit feedback');
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
   }
 
   Future<void> skipEmail({bool catchError = true}) async {
     final step = _spotPageView.spotSingle<Step5Email>()..existsOnce();
     await _tap(step.spotSingleText('l10n.feedbackNextButton'));
-    await tester.pumpAndSettle();
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     if (catchError) {
@@ -372,7 +360,7 @@ class WiredashTestRobot {
   Future<void> submitEmailViaButton() async {
     final step = _spotPageView.spotSingle<Step5Email>()..existsOnce();
     await _tap(step.spotSingleText('l10n.feedbackNextButton'));
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Submitted email, next $newStatus');
@@ -380,7 +368,7 @@ class WiredashTestRobot {
 
   Future<void> submitEmailViaKeyboard() async {
     await tester.testTextInput.receiveAction(TextInputAction.send);
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Submitted email, next $newStatus');
@@ -389,8 +377,7 @@ class WiredashTestRobot {
   Future<void> goToNextStep() async {
     final oldStatus = services.feedbackModel.feedbackFlowStatus;
     await _tap(spotSingleText('l10n.feedbackNextButton'));
-    await tester.pumpAndSettle();
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Jumped from $oldStatus to next $newStatus');
   }
@@ -406,7 +393,7 @@ class WiredashTestRobot {
       await _tap(texts.first());
     }
 
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Jumped back from $oldStatus to prev $newStatus');
   }
@@ -421,8 +408,7 @@ class WiredashTestRobot {
       const Offset(0, -5000),
       5000,
     );
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
   }
 
   Future<void> enterScreenshotMode() async {
@@ -442,7 +428,7 @@ class WiredashTestRobot {
         ..existsOnce();
       await _tap(addAttachmentItem);
     }
-
+    await tester.pumpSmart();
     await tester.waitUntil(find.byType(ScreenshotBar), findsOneWidget);
     await tester.waitUntil(find.byIcon(Wirecons.camera), findsOneWidget);
     expect(
@@ -466,10 +452,10 @@ class WiredashTestRobot {
       screenshotBar
           .spotSingleText('l10n.feedbackStep3ScreenshotBarCaptureButton'),
     );
-    while (services.feedbackModel.feedbackFlowStatus !=
-        FeedbackFlowStatus.screenshotDrawing) {
-      await tester.pumpHardAndSettle();
-    }
+    await tester.waitUntil(
+      () => services.feedbackModel.feedbackFlowStatus,
+      isNot(FeedbackFlowStatus.screenshotDrawing),
+    );
 
     // Wait for active "Save" button
     final nextButton = screenshotBar.spotSingle<TronButton>(
@@ -496,7 +482,7 @@ class WiredashTestRobot {
     await _tap(
       screenshotBar.spotSingleText('l10n.feedbackStep3ScreenshotBarSaveButton'),
     );
-    await tester.pumpHardAndSettle(const Duration(milliseconds: 100));
+    await tester.pumpSmart(const Duration(milliseconds: 100));
 
     // wait until the animation is closed
     await tester.waitUntil(
@@ -507,7 +493,7 @@ class WiredashTestRobot {
     );
 
     await tester.waitUntil(
-      services.feedbackModel.feedbackFlowStatus,
+      () => services.feedbackModel.feedbackFlowStatus,
       isNot(
         anyOf(
           FeedbackFlowStatus.screenshotDrawing,
@@ -524,17 +510,17 @@ class WiredashTestRobot {
 
   Future<void> selectLabel(String labelText) async {
     await _tap(spotSingleText(labelText));
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
   }
 
   Future<void> pressAndroidBackButton() async {
     // ignore: invalid_use_of_protected_member
     await tester.binding.handlePopRoute();
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
   }
 
   Future<void> waitUntilWiredashIsClosed() async {
-    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpSmart();
     await tester.waitUntil(
       () => services.wiredashModel.isWiredashActive,
       isFalse,
@@ -554,12 +540,8 @@ class WiredashTestRobot {
         .first();
 
     await _tap(spotRatingCard(rating));
-    await tester.pumpAndSettle();
-
-    /// automatically goes to next step
-    await tester.pumpAndSettle();
-    await tester.pumpAndSettle();
-    await tester.pumpAndSettle(const Duration(milliseconds: 600));
+    await tester.pumpSmart();
+    await tester.pumpSmart(const Duration(milliseconds: 600));
   }
 
   Future<void> submitPromoterScore() async {
@@ -580,7 +562,7 @@ class WiredashTestRobot {
       scrollable: scrollable.finder,
     );
     await _tap(submitButton);
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     print('submit Promoter Score');
   }
 
@@ -605,7 +587,7 @@ class WiredashTestRobot {
   Future<void> discardFeedback() async {
     _discard.existsOnce();
     await _tap(_discard);
-    await tester.pump();
+    await tester.pumpSmart();
     _reallyDiscard.existsOnce();
   }
 
@@ -614,7 +596,7 @@ class WiredashTestRobot {
     _discard.doesNotExist();
     _reallyDiscard.existsOnce();
     await _tap(_reallyDiscard);
-    await tester.pump();
+    await tester.pumpSmart();
   }
 }
 
@@ -791,12 +773,8 @@ extension SpotWaitUntil<W extends Widget> on SingleWidgetSelector<W> {
           '\tException: $error',
         );
       }
-      if (attempt < 10) {
-        await tester.pumpAndSettle(duration);
-      } else {
-        await tester.pumpHardAndSettle(duration);
-        await tester.pump();
-      }
+
+      await tester.pumpSmart();
     }
   }
 }
