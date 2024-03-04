@@ -71,9 +71,12 @@ jobs:
       - uses: actions/checkout@v3
       - name: Flutter version
         run: flutter doctor -v
-      - name: Download dependencies
-        run: ./wiresdk deps
-      - name: Test
-        run: ./wiresdk test
       - name: Build
         run: cd examples/theming && ./../../wiresdk flutter build web
+      - name: Download dependencies
+        run: |
+          # Override dependencies as long as we depend on checks 0.2.2
+          ./wiresdk flutter pub add 'override:test_api:^0.7.0'
+          ./wiresdk deps
+      - name: Test
+        run: ./wiresdk test
