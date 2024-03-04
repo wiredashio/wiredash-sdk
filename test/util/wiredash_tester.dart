@@ -15,6 +15,10 @@ extension WiredashTester on WidgetTester {
     }
   }
 
+  /// Pumps both, the Dart event loop and new frames as long as there are schedules frames
+  ///
+  /// This method is a combination of [pumpIfNecessary] and [pumpHard]
+  ///
   Future<void> pumpSmart([
     Duration? minimumDuration,
     Duration timeout = const Duration(seconds: 10),
@@ -22,7 +26,7 @@ extension WiredashTester on WidgetTester {
     final binding = TestWidgetsFlutterBinding.instance;
     final start = binding.clock.now();
     final d = minimumDuration ?? Duration.zero;
-    await pumpHardAndSettle(d);
+    await pumpHard(d);
     int count = 0;
     Duration increasing = Duration.zero;
     while (await pumpIfNecessary()) {
@@ -31,7 +35,7 @@ extension WiredashTester on WidgetTester {
       }
 
       count++;
-      await pumpHardAndSettle(increasing);
+      await pumpHard(increasing);
       if (count > 20) {
         if (d != Duration.zero) {
           // only enforce a maximum pump when an explicit duration is given
@@ -43,6 +47,11 @@ extension WiredashTester on WidgetTester {
     }
   }
 
+  /// Pumps new frames as long as there are frames scheduled
+  ///
+  /// This is an advanced version of [pumpAndSettle] that uses an
+  /// advanced pump strategy and automatically stops after [max] iterations
+  /// without a timeout error
   Future<bool> pumpIfNecessary([int max = 20]) async {
     if (!binding.hasScheduledFrame) {
       return false;
@@ -78,14 +87,27 @@ extension WiredashTester on WidgetTester {
     return true;
   }
 
-  /// Pumps and also drains the event queue, then pumps again and settles
-  Future<void> pumpHardAndSettle([
+  /// Pumps regularly until reaching [duration] while new frames are pumped and dart:io operations are executed
+  ///
+  /// Calling it with [duration] == Duration.zero calls the following pattern
+  /// ```
+  /// pump(); // handle input events / draws new frame
+  /// runAsync(() => Future.delayed(Duration.zero)) // start io operations
+  /// runAsync(() => pumpEventQueue()) // waits for io operations to finish
+  /// pump(); // draw new frame
+  /// ```
+  ///
+  /// When the [duration] is greater than zero, then it splits the duration
+  /// into [rounds] segments and  repeats the pattern above. This guarantees
+  /// that I/O operations are continuously executed.
+  Future<void> pumpHard([
     Duration duration = Duration.zero,
+    int rounds = 10,
   ]) async {
     final binding = TestWidgetsFlutterBinding.instance;
     final DateTime endTime = binding.clock.fromNowBy(duration);
 
-    Future<void> pumpHard() async {
+    Future<void> drain() async {
       // pump event queue, trigger timers
       await binding.runAsync(() => Future.delayed(Duration.zero));
       await binding.runAsync(() => pumpEventQueue());
@@ -95,15 +117,14 @@ extension WiredashTester on WidgetTester {
 
     // pump once at the beginning to kick things off
     await binding.pump();
-    await pumpHard();
+    await drain();
 
     if (duration != Duration.zero) {
       // pump for the duration the user defined
-      const rounds = 10;
       final stepDuration =
           Duration(microseconds: duration.inMicroseconds ~/ rounds);
       for (int round = 1; round < rounds; round++) {
-        await pumpHard();
+        await drain();
         await binding.delayed(stepDuration);
       }
     }
@@ -112,12 +133,15 @@ extension WiredashTester on WidgetTester {
     final now = binding.clock.now();
     final remainingTime = endTime.difference(now);
     if (remainingTime > Duration.zero) {
-      await pumpHard();
+      await drain();
       await binding.pump(remainingTime);
-      await pumpHard();
+      await drain();
     }
   }
 
+  /// Continuously checks for [actual] to match [matcher] until [timeout] is reached
+  ///
+  /// Throws an error if the [timeout] is reached and the [actual] does not match [matcher]
   Future<void> waitUntil(
     // ignore: avoid_final_parameters
     final dynamic actual,
