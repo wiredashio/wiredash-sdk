@@ -6,10 +6,9 @@ repository: https://github.com/wiredashio/wiredash-sdk
 issue_tracker: https://github.com/wiredashio/wiredash-sdk/issues
 
 topics:
+  - analytics
   - feedback
-  - user-feedback
   - bug-reporting
-  - crash-reporting
   - nps
 
 environment:
