@@ -378,6 +378,36 @@ void main() {
       expect(data.getKeys(), isEmpty);
     });
   });
+
+  group('registry', () {
+    testWidgets('cleanup removes inaccessible references', (tester) async {
+      expect(WiredashRegistry.referenceCount, 0);
+
+      await tester.pumpWidget(
+        const Wiredash(
+          projectId: 'my-project-id',
+          secret: 'my-secret',
+          child: SizedBox(),
+        ),
+      );
+      expect(WiredashRegistry.referenceCount, 1);
+
+      for (int i = 0; i < 10; i++) {
+        await tester.pumpWidget(
+          Wiredash(
+            key: ValueKey(i),
+            projectId: 'my-project-id-$i',
+            secret: 'my-secret',
+            child: const SizedBox(),
+          ),
+        );
+        expect(WiredashRegistry.referenceCount, 1);
+      }
+
+      await tester.pumpWidget(const SizedBox());
+      expect(WiredashRegistry.referenceCount, 0);
+    });
+  });
 }
 
 class _MockProjectCredentialValidator extends Fake

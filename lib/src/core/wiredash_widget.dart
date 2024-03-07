@@ -174,6 +174,8 @@ class WiredashState extends State<Wiredash> {
 
   final FocusScopeNode _appFocusScopeNode = FocusScopeNode();
 
+  void Function()? _unregister;
+
   /// A way to access the services during testing
   @visibleForTesting
   WiredashServices get debugServices {
@@ -190,6 +192,8 @@ class WiredashState extends State<Wiredash> {
       projectId: widget.projectId,
       secret: widget.secret,
     );
+
+    _unregister = WiredashRegistry.register(this);
     _services.updateWidget(widget);
     _services.addListener(_markNeedsBuild);
     _services.wiredashModel.addListener(_markNeedsBuild);
@@ -213,6 +217,7 @@ class WiredashState extends State<Wiredash> {
   void dispose() {
     _submitTimer?.cancel();
     _submitTimer = null;
+    _unregister?.call();
     _services.dispose();
     _backButtonDispatcher.dispose();
     _appFocusScopeNode.dispose();
@@ -229,6 +234,8 @@ class WiredashState extends State<Wiredash> {
         secret: widget.secret,
       );
     }
+    _unregister?.call();
+    _unregister = WiredashRegistry.register(this);
     _services.updateWidget(widget);
   }
 
@@ -382,6 +389,82 @@ class WiredashState extends State<Wiredash> {
 
     // Use what's set by the operating system
     return _defaultLocale;
+  }
+}
+
+typedef Disposable = void Function();
+
+/// Holds weak references to the [WiredashState] of all currently mounted
+/// Wiredash widgets to send updates to all of them
+class WiredashRegistry {
+  static final List<WeakReference<WiredashState>> _refs = [];
+
+  static final Finalizer<Disposable> _finalizer = Finalizer((fn) => fn());
+
+  /// Register all states of [Wiredash] to receive updates via [forEach]
+  ///
+  /// The returned Dispose function unregisters the [WiredashState] instance
+  static Disposable register(WiredashState state) {
+    final elementRef = WeakReference(state);
+    _refs.add(elementRef);
+
+    // cleanup when the context becomes inaccessible
+    _finalizer.attach(state.context, () {
+      // the context has been garbage collected, clean up in case
+      // the dispose method was not called
+      _refs.remove(elementRef);
+    });
+
+    return () {
+      // dispose called manually
+      _refs.remove(elementRef);
+    };
+  }
+
+  /// The number of currently mounted Wiredash widgets
+  @visibleForTesting
+  static int get referenceCount {
+    purge();
+    return _refs.length;
+  }
+
+  /// Clears all references
+  ///
+  /// This method should never been used unless there is a bug in the sdk or
+  /// eventually for testing purposes
+  ///
+  /// Once cleared, all referenced Wiredash widgets will no longer be able to
+  /// receive updates via [forEach].
+  @visibleForTesting
+  static void clear() {
+    _refs.clear();
+  }
+
+  /// Calls [action] onh all currently mounted Wiredash widgets
+  static void forEach(void Function(WiredashState) action) {
+    for (final ref in _refs.toList()) {
+      final state = ref.target;
+      if (state != null) {
+        try {
+          action(state);
+        } catch (e, stack) {
+          debugPrint(
+            'Error while calling $state: $e\n$stack',
+          );
+        }
+      }
+    }
+    purge();
+  }
+
+  /// Removes all inaccessible references, Widgets that have already been garbage collected
+  static void purge() {
+    for (final ref in _refs) {
+      final state = ref.target;
+      if (state == null) {
+        _refs.remove(ref);
+      }
+    }
   }
 }
 
