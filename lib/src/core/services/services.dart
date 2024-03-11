@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/app_telemetry_job.dart';
@@ -79,6 +80,8 @@ class WiredashServices extends ChangeNotifier {
 
   TestDetector get testDetector => _locator.watch();
 
+  EventSubmitter get eventSubmitter => _locator.watch();
+
   Future<SharedPreferences> Function() get sharedPreferencesProvider =>
       _locator.watch();
 
@@ -140,6 +143,13 @@ void _setupServices(WiredashServices sl) {
       wiredashTelemetry: sl.wiredashTelemetry,
     );
   });
+  sl.inject<EventSubmitter>((_) {
+    return PendingEventSubmitter(
+      api: sl.api,
+      sharedPreferences: sl.sharedPreferencesProvider,
+    );
+  });
+
   sl.inject<BackdropController>(
     (_) => BackdropController(),
     dispose: (model) => model.dispose(),

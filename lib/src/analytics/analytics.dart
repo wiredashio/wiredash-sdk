@@ -22,7 +22,9 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 // TODO validate event name and parameters
 // TODO make the projectId "default" by default
 // TODO check if we can replace Wiredash.of(context).method() with just Wiredash.method()
-
+// TODO validate event key
+// TODO send first_launch event with # in beginning.
+// TODO don't allow # in the beginning
 class WiredashAnalytics {
   /// Optional [projectId] in case multiple [Wiredash] widgets with different
   /// projectIds are used at the same time
@@ -31,36 +33,8 @@ class WiredashAnalytics {
   WiredashAnalytics({
     this.projectId,
   });
-  //
-  // bool _initialized = false;
-  //
-  // void _initialize() {
-  //   if (_initialized) {
-  //     return;
-  //   }
-  //   // TODO inject?
-  //   const ProjectCredentialValidator().validate(
-  //     projectId: projectId,
-  //     secret: secret,
-  //   );
-  //   // TODO inject client?
-  //   final api =
-  //       WiredashApi(secret: secret, projectId: projectId, httpClient: Client());
-  //   _eventSubmitter = DirectEventSubmitter(api: api);
-  //   _initialized = true;
-  // }
-  //
-  // /// A way to access the services during testing
-  // @visibleForTesting
-  // // TODO find better way to initialize the services in tests, so that the real services are never created
-  // WiredashAnalyticsServices get debugServices {
-  //   if (kReleaseMode) {
-  //     throw "Services can't be accessed in production code";
-  //   }
-  //   return WiredashAnalyticsServices();
-  // }
-  //
-  // late final EventSubmitter _eventSubmitter;
+
+  static final eventKeyRegex = RegExp(r'^io\.wiredash\.(\w+)\|(\d+)\|(\w+)$');
 
   Future<void> trackEvent(
     String eventName, {
@@ -77,9 +51,9 @@ class WiredashAnalytics {
 
     final project = projectId ?? "default";
     final millis = event.timestamp!.millisecondsSinceEpoch ~/ 1000;
-    final discriminator =
-        nanoid(length: 6, alphabet: Alphabet.alphanumeric /* no dash ("-")*/);
-    final key = "$project-$millis-$discriminator";
+    final discriminator = nanoid(length: 6);
+    final key = "io.wiredash.$project|$millis|$discriminator";
+    assert(eventKeyRegex.hasMatch(key), 'Invalid event key: $key');
 
     await prefs.setString(key, jsonEncode(serializeEvent(event)));
     print('Saved event $key to disk');
@@ -204,19 +178,7 @@ class Event {
 }
 
 abstract class EventSubmitter {
-  Future<void> submitEvent(Event event);
-}
-
-class DirectEventSubmitter implements EventSubmitter {
-  final WiredashApi api;
-
-  DirectEventSubmitter({required this.api});
-
-  @override
-  Future<void> submitEvent(Event event) async {
-    throw UnimplementedError();
-    // TODO send event to server
-  }
+  Future<void> submitEvents(String projectId);
 }
 
 class PendingEventSubmitter implements EventSubmitter {
@@ -229,12 +191,59 @@ class PendingEventSubmitter implements EventSubmitter {
   });
 
   @override
-  Future<void> submitEvent(Event event) async {
+  Future<void> submitEvents(String projectId) async {
+    // TODO check last sent event call.
+    //  If is was less than 30 seconds ago, start timer
+    //  else kick of sending events to backend for this projectId
     final prefs = await sharedPreferences();
     await prefs.reload();
-    // persist event to disk
-    // TODO how to get the projectId?
-    // prefs.setString("{projectId}_{timestamp}", serializeEvent(eventName, params));}
+    final keys = prefs.getKeys();
+    print('Found $keys events on disk');
+
+    final now = clock.now();
+    final threeDaysAgo = now.subtract(const Duration(days: 3));
+    final int unixThreeDaysAgo = threeDaysAgo.millisecondsSinceEpoch ~/ 1000;
+    final Map<String, Event> toBeSubmitted = {};
+    for (final key in keys) {
+      print('Checking key $key');
+      final match = WiredashAnalytics.eventKeyRegex.firstMatch(key);
+      if (match == null) continue;
+      final eventProjectId = match.group(1);
+      final millis = int.parse(match.group(2)!);
+
+      if (eventProjectId == 'default' || eventProjectId == projectId) {
+        if (millis < unixThreeDaysAgo) {
+          // event is too old, ignore and remove
+          await prefs.remove(key);
+          continue;
+        }
+
+        final eventJson = prefs.getString(key);
+        if (eventJson != null) {
+          try {
+            final Event event = deserializeEvent(jsonDecode(eventJson));
+            print('Found event $key for submission');
+            toBeSubmitted[key] = event;
+          } catch (e, stack) {
+            debugPrint('Error when parsing event $key: $e\n$stack');
+            await prefs.remove(key);
+          }
+        }
+      }
+    }
+
+    print('processed events');
+
+    // Send all events to the backend
+    final events = toBeSubmitted.values.toList();
+    print('Found ${events.length} events for submission');
+    if (events.isNotEmpty) {
+      print('Sending ${events.length} events to backend');
+      await api.sendEvents(events);
+      for (final key in toBeSubmitted.keys) {
+        await prefs.remove(key);
+      }
+    }
   }
 }
 

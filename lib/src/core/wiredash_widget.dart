@@ -226,62 +226,7 @@ class WiredashState extends State<Wiredash> {
   }
 
   Future<void> newEventAdded() async {
-    print('newEventAdded()');
-    // TODO check last sent event call.
-    //  If is was less than 30 seconds ago, start timer
-    //  else kick of sending events to backend for this projectId
-
-    // Collect all events relevant for this projectId
-    final prefs = await _services.sharedPreferencesProvider();
-    await prefs.reload();
-    final keys = prefs.getKeys();
-    print('Found $keys events on disk');
-
-    final now = clock.now();
-    final threeDaysAgo = now.subtract(const Duration(days: 3));
-    final int unixThreeDaysAgo = threeDaysAgo.millisecondsSinceEpoch ~/ 1000;
-    final eventKeyRegex = RegExp(r'^(\w+)-(\d+)-(\w+)$');
-    final Map<String, Event> toBeSubmitted = {};
-    for (final key in keys) {
-      print('Checking key $key');
-      final match = eventKeyRegex.firstMatch(key);
-      if (match == null) continue;
-      final projectId = match.group(1);
-      final millis = int.parse(match.group(2)!);
-
-      if (projectId == widget.projectId || projectId == 'default') {
-        if (millis < unixThreeDaysAgo) {
-          // event is too old, ignore and remove
-          await prefs.remove(key);
-          continue;
-        }
-
-        final eventJson = prefs.getString(key);
-        if (eventJson != null) {
-          try {
-            final event = deserializeEvent(jsonDecode(eventJson));
-            print('Found event $key for submission');
-            toBeSubmitted[key] = event;
-          } catch (e, stack) {
-            debugPrint('Error when parsing event $key: $e\n$stack');
-            await prefs.remove(key);
-          }
-        }
-      }
-    }
-
-    print('processed events');
-
-    // Send all events to the backend
-    final events = toBeSubmitted.values.toList();
-    print('Found ${events.length} events for submission');
-    if (events.isNotEmpty) {
-      print('Sending ${events.length} events to backend');
-      await _services.api.sendEvents(events);
-      for (final key in toBeSubmitted.keys) {
-        await prefs.remove(key);
-      }
-    }
+    await _services.eventSubmitter.submitEvents(widget.projectId);
   }
 
   @override
