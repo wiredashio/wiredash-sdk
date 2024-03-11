@@ -142,6 +142,7 @@ class WiredashTestRobot {
       CustomizableWiredashMetaData metaData,
     )? collectMetaData,
     Widget Function(BuildContext)? builder,
+    String? projectId,
     FutureOr<void> Function()? afterPump,
     List<LocalizationsDelegate> appLocalizationsDelegates = const [],
     bool useDirectFeedbackSubmitter = true,
@@ -154,7 +155,7 @@ class WiredashTestRobot {
 
     await tester.pumpWidget(
       Wiredash(
-        projectId: 'test',
+        projectId: projectId ?? 'test',
         secret: 'test',
         feedbackOptions: feedbackOptions,
         psOptions: psOptions,

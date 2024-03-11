@@ -221,6 +221,45 @@ void main() {
     await tester.pumpSmart(const Duration(seconds: 5));
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
   });
+
+  testWidgets(
+      'project events are only submitted by the correct Wiredash instance',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    robot.setupMocks();
+    await tester.pumpWidget(
+      // No Wiredash widget
+      MaterialApp(
+        home: Scaffold(
+          body: ElevatedButton(
+            onPressed: () {
+              Wiredash.trackEvent('test_event', projectId: 'project1');
+            },
+            child: const Text('Send Event'),
+          ),
+        ),
+      ),
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+
+    // event is saved locally for project1
+    final eventsOnDisk = await getPendingEvents();
+    expect(eventsOnDisk, hasLength(1));
+
+    // other-project does not submit the event
+    await robot.launchApp(projectId: 'other-project');
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(0);
+    await tester.pumpSmart(const Duration(seconds: 5));
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(0);
+
+    // project1 does
+    await robot.launchApp(projectId: 'project1');
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(0);
+    await tester.pumpSmart(const Duration(seconds: 5));
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+  });
 }
 
 Future<List<String>> getPendingEvents() async {

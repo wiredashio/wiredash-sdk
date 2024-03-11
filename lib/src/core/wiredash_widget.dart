@@ -14,6 +14,7 @@ import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/core/context_cache.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/not_a_widgets_app.dart';
+import 'package:wiredash/src/core/sync/event_upload_job.dart';
 import 'package:wiredash/src/feedback/feedback_backdrop.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -211,11 +212,7 @@ class WiredashState extends State<Wiredash> {
     _services.wiredashModel.addListener(_markNeedsBuild);
     _services.backdropController.addListener(_markNeedsBuild);
 
-    final inFakeAsync = _services.testDetector.inFakeAsync();
-    if (!inFakeAsync) {
-      // start the sync engine
-      unawaited(_services.syncEngine.onWiredashInit());
-    }
+    _onProjectIdChanged();
 
     _backButtonDispatcher = WiredashBackButtonDispatcher()..initialize();
   }
@@ -247,16 +244,28 @@ class WiredashState extends State<Wiredash> {
   @override
   void didUpdateWidget(Wiredash oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    _unregister?.call();
+    _unregister = WiredashRegistry.register(this);
+    _services.updateWidget(widget);
+
     if (oldWidget.projectId != widget.projectId ||
         oldWidget.secret != widget.secret) {
       _services.projectCredentialValidator.validate(
         projectId: widget.projectId,
         secret: widget.secret,
       );
+
+      _onProjectIdChanged();
     }
-    _unregister?.call();
-    _unregister = WiredashRegistry.register(this);
-    _services.updateWidget(widget);
+  }
+
+  void _onProjectIdChanged() {
+    final inFakeAsync = _services.testDetector.inFakeAsync();
+    if (!inFakeAsync) {
+      // start the sync engine
+      unawaited(_services.syncEngine.onWiredashInit());
+    }
   }
 
   @override
