@@ -11,7 +11,6 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 // Prio #1
-// TODO delete events when storage exceeds 1MB
 // TODO how to handle when two instances of the app, with two different wiredash configurations are open. Where would events be sent to?
 // TODO save events to local storage
 // TODO send events every 30 seconds to the server (or 5min?)
@@ -20,7 +19,6 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 // TODO save events individually with key "{projectId}_{timestamp}"
 // TODO handle different isolates
 // TODO validate event name and parameters
-// TODO make the projectId "default" by default
 // TODO check if we can replace Wiredash.of(context).method() with just Wiredash.method()
 // TODO validate event key
 // TODO send first_launch event with # in beginning.
@@ -41,6 +39,8 @@ class WiredashAnalytics {
   static final eventKeyRegex =
       RegExp(r'^io\.wiredash\.events\.(\w+)\|(\d+)\|(\w+)$');
 
+  static const _defaultProjectId = 'default';
+
   Future<void> trackEvent(
     String eventName, {
     Map<String, Object?>? params,
@@ -54,7 +54,7 @@ class WiredashAnalytics {
     final prefs = await SharedPreferences.getInstance();
     await prefs.reload();
 
-    final project = projectId ?? "default";
+    final project = projectId ?? _defaultProjectId;
     final millis = event.timestamp!.millisecondsSinceEpoch ~/ 1000;
     final discriminator = nanoid(
       length: 6,
@@ -270,7 +270,8 @@ class PendingEventSubmitter implements EventSubmitter {
       final eventProjectId = match.group(1);
       final millis = int.parse(match.group(2)!);
 
-      if (eventProjectId == 'default' || eventProjectId == projectId) {
+      if (eventProjectId == WiredashAnalytics._defaultProjectId ||
+          eventProjectId == projectId) {
         if (millis < unixThreeDaysAgo) {
           // event is too old, ignore and remove
           await prefs.remove(key);
@@ -306,6 +307,7 @@ class PendingEventSubmitter implements EventSubmitter {
   }
 }
 
+// TODO write documentation with these examples
 void main() async {
   final BuildContext context = RootElement(const RootWidget());
 
@@ -326,24 +328,3 @@ void main() async {
 
   await trackEvent('test_event', params: {'param1': 'value1'});
 }
-
-//
-//
-//
-//
-// final Wiredash wiredash = Wiredash(
-//     projectId: 'YOUR-PROJECT-ID',
-//     secret: 'YOUR-SECRET',
-// );
-//
-//
-// void main() {
-//   wiredash.trackEvent('test_event');
-//
-//   void build(BuildContext context) {
-//     return wiredash.widget(
-//         config: wiredashConfig,
-//         child: MyApp();
-//     );
-//   }
-// }
