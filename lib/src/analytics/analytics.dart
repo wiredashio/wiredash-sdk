@@ -9,22 +9,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
-// TODO send events directly on web
+// Prio #1
+// TODO delete events when storage exceeds 1MB
 // TODO how to handle when two instances of the app, with two different wiredash configurations are open. Where would events be sent to?
-// TODO make sure that ad blockers don't crash the submission
 // TODO save events to local storage
 // TODO send events every 30 seconds to the server (or 5min?)
 // TODO wipe events older than 3 days
 // TODO Save projectId together with event
 // TODO save events individually with key "{projectId}_{timestamp}"
 // TODO handle different isolates
-// TODO delete events when storage exceeds 1MB
 // TODO validate event name and parameters
 // TODO make the projectId "default" by default
 // TODO check if we can replace Wiredash.of(context).method() with just Wiredash.method()
 // TODO validate event key
 // TODO send first_launch event with # in beginning.
 // TODO don't allow # in the beginning
+
+// Nice to have
+// TODO send events directly on web
+
 class WiredashAnalytics {
   /// Optional [projectId] in case multiple [Wiredash] widgets with different
   /// projectIds are used at the same time
@@ -34,7 +37,8 @@ class WiredashAnalytics {
     this.projectId,
   });
 
-  static final eventKeyRegex = RegExp(r'^io\.wiredash\.(\w+)\|(\d+)\|(\w+)$');
+  static final eventKeyRegex =
+      RegExp(r'^io\.wiredash\.events\.(\w+)\|(\d+)\|(\w+)$');
 
   Future<void> trackEvent(
     String eventName, {
@@ -51,8 +55,12 @@ class WiredashAnalytics {
 
     final project = projectId ?? "default";
     final millis = event.timestamp!.millisecondsSinceEpoch ~/ 1000;
-    final discriminator = nanoid(length: 6);
-    final key = "io.wiredash.$project|$millis|$discriminator";
+    final discriminator = nanoid(
+      length: 6,
+      // \w in regex, ignores "-"
+      alphabet: Alphabet.alphanumeric,
+    );
+    final key = "io.wiredash.events.$project|$millis|$discriminator";
     assert(eventKeyRegex.hasMatch(key), 'Invalid event key: $key');
 
     await prefs.setString(key, jsonEncode(serializeEvent(event)));

@@ -226,7 +226,11 @@ class WiredashState extends State<Wiredash> {
   }
 
   Future<void> newEventAdded() async {
-    await _services.eventSubmitter.submitEvents(widget.projectId);
+    try {
+      await _services.eventSubmitter.submitEvents(widget.projectId);
+    } catch (e, stack) {
+      debugPrint('Error submitting events: $e');
+    }
   }
 
   @override
