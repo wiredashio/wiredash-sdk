@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 // TODO explicit analytics import should not be necessary
 import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/wiredash.dart';
@@ -94,6 +96,64 @@ void main() {
 
     final pending = await getPendingEvents();
     expect(pending, hasLength(2));
+  });
+
+  testWidgets('1mb size limit', (tester) async {
+    final robot = WiredashTestRobot(tester);
+
+    const kb100EventToInsert = 20;
+    await robot.launchApp(
+      builder: (context) {
+        return Scaffold(
+          body: Column(
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  final analytics = WiredashAnalytics();
+                  const kb100 = 1024 * 1024 ~/ 10;
+                  for (var i = 0; i < kb100EventToInsert; i++) {
+                    await analytics.trackEvent(
+                      'big',
+                      params: {'param1': "".padLeft(kb100, '0')},
+                    );
+                  }
+                },
+                child: const Text('Big Event'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final analytics = WiredashAnalytics();
+                  await analytics.trackEvent('small');
+                },
+                child: const Text('Small Event'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    robot.mockServices.mockApi.sendEventsInvocations.interceptor =
+        (invocation) async {
+      throw 'offline';
+    };
+
+    await robot.tapText('Big Event');
+    await tester.pumpSmart();
+    await robot.tapText('Small Event');
+    await tester.pumpSmart();
+
+    // always save the last events
+    final pending = await getPendingEvents();
+    expect(pending, hasLength(10));
+
+    final lastEvents = robot.mockServices.mockApi.sendEventsInvocations.latest;
+    final events = lastEvents[0]! as List<Event>;
+    expect(
+      events.any((event) => event.name == 'small'),
+      isTrue,
+      reason: 'small event should be sent,'
+          ' ${events.map((e) => e.name).join(',')}',
+    );
   });
 }
 

@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:clock/clock.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:nanoid2/nanoid2.dart';
@@ -66,6 +67,16 @@ class WiredashAnalytics {
     await prefs.setString(key, jsonEncode(serializeEvent(event)));
     print('Saved event $key to disk');
 
+    try {
+      await _removeOldEvents();
+    } catch (e, stack) {
+      reportWiredashInfo(
+        e,
+        stack,
+        'Could not remove old events',
+      );
+    }
+
     final id = projectId;
     if (id != null) {
       // Inform correct Wiredash instance about event
@@ -100,6 +111,46 @@ class WiredashAnalytics {
       "Please specify a projectId to avoid sending events to all instances, "
       "or use Wiredash.of(context).trackEvent() to send events to a specific instance.",
     );
+  }
+
+  Future<void> _removeOldEvents() async {
+    final prefs = await SharedPreferences.getInstance();
+    final eventKeys = prefs
+        .getKeys()
+        .where((key) => WiredashAnalytics.eventKeyRegex.hasMatch(key))
+        .toList();
+
+    final oldestLast = eventKeys
+        .sortedBy<num>((key) {
+          final match = WiredashAnalytics.eventKeyRegex.firstMatch(key);
+          final int millis = int.parse(match!.group(2)!);
+          return millis;
+        })
+        .reversed
+        .toList();
+
+    const oneMb = 1024 * 1024;
+
+    int limit = oneMb;
+    for (final event in oldestLast.toList()) {
+      final String? data = prefs.getString(event);
+      if (data == null) {
+        continue;
+      }
+      // TODO check what a normal event size is. Adjust limit accordingly
+      final int size /* bytes */ = utf8.encode(data).length;
+      limit -= size;
+      if (limit < 0) {
+        break;
+      }
+      oldestLast.remove(event);
+    }
+
+    // remove remaining events that exceed the maximum size
+    for (final event in oldestLast) {
+      print('Removing $event from disk');
+      await prefs.remove(event);
+    }
   }
 }
 
