@@ -13,6 +13,7 @@ import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/app_telemetry_job.dart';
+import 'package:wiredash/src/core/sync/event_upload_job.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/sync/sync_feedback_job.dart';
@@ -259,6 +260,13 @@ void _setupServices(WiredashServices sl) {
           feedbackSubmitterProvider: locator.get,
         ),
       );
+
+      final job = EventUploadJob(
+        sharedPreferencesProvider: sl.sharedPreferencesProvider,
+        eventSubmitter: () => sl.eventSubmitter,
+        projectId: () => sl.wiredashWidget.projectId,
+      );
+      engine.addJob('upload_events', job);
 
       return engine;
     },

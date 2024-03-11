@@ -189,6 +189,38 @@ void main() {
     final events = await getPendingEvents();
     expect(events, hasLength(1));
   });
+
+  testWidgets('default events are submitted with the next Wiredash instance',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    robot.setupMocks();
+    await tester.pumpWidget(
+      // No Wiredash widget
+      MaterialApp(
+        home: Scaffold(
+          body: ElevatedButton(
+            onPressed: () {
+              Wiredash.trackEvent('test_event', params: {'param1': 'value1'});
+            },
+            child: const Text('Send Event'),
+          ),
+        ),
+      ),
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+
+    // event is saved locally for the "default" project
+    final eventsOnDisk = await getPendingEvents();
+    expect(eventsOnDisk, hasLength(1));
+
+    // When a wiredash Widget is added to the tree, the events are sent
+    await robot.launchApp();
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(0);
+    await tester.pumpSmart(const Duration(seconds: 5));
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+  });
 }
 
 Future<List<String>> getPendingEvents() async {
