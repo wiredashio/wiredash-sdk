@@ -598,6 +598,10 @@ class WiredashTestRobot {
     await _tap(_reallyDiscard);
     await tester.pumpSmart();
   }
+
+  Future<void> tapText(String text) {
+    return _tap(spotSingleText(text));
+  }
 }
 
 class WiredashMockServices {

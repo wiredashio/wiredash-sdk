@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui' as ui;
 
+import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,7 @@ import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/core/context_cache.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/not_a_widgets_app.dart';
@@ -161,6 +164,15 @@ class Wiredash extends StatefulWidget {
     state.widget.showBuildContext = context;
     return WiredashController(state._services.wiredashModel);
   }
+
+  static Future<void> trackEvent(
+    String eventName, {
+    Map<String, Object?>? params,
+    String? projectId,
+  }) async {
+    final analytics = WiredashAnalytics(projectId: projectId);
+    await analytics.trackEvent(eventName, params: params);
+  }
 }
 
 class WiredashState extends State<Wiredash> {
@@ -211,6 +223,65 @@ class WiredashState extends State<Wiredash> {
   void _markNeedsBuild() {
     // rebuild the Wiredash widget state
     setState(() {});
+  }
+
+  Future<void> newEventAdded() async {
+    print('newEventAdded()');
+    // TODO check last sent event call.
+    //  If is was less than 30 seconds ago, start timer
+    //  else kick of sending events to backend for this projectId
+
+    // Collect all events relevant for this projectId
+    final prefs = await _services.sharedPreferencesProvider();
+    await prefs.reload();
+    final keys = prefs.getKeys();
+    print('Found $keys events on disk');
+
+    final now = clock.now();
+    final threeDaysAgo = now.subtract(const Duration(days: 3));
+    final int unixThreeDaysAgo = threeDaysAgo.millisecondsSinceEpoch ~/ 1000;
+    final eventKeyRegex = RegExp(r'^(\w+)-(\d+)-(\w+)$');
+    final Map<String, Event> toBeSubmitted = {};
+    for (final key in keys) {
+      print('Checking key $key');
+      final match = eventKeyRegex.firstMatch(key);
+      if (match == null) continue;
+      final projectId = match.group(1);
+      final millis = int.parse(match.group(2)!);
+
+      if (projectId == widget.projectId || projectId == 'default') {
+        if (millis < unixThreeDaysAgo) {
+          // event is too old, ignore and remove
+          await prefs.remove(key);
+          continue;
+        }
+
+        final eventJson = prefs.getString(key);
+        if (eventJson != null) {
+          try {
+            final event = deserializeEvent(jsonDecode(eventJson));
+            print('Found event $key for submission');
+            toBeSubmitted[key] = event;
+          } catch (e, stack) {
+            debugPrint('Error when parsing event $key: $e\n$stack');
+            await prefs.remove(key);
+          }
+        }
+      }
+    }
+
+    print('processed events');
+
+    // Send all events to the backend
+    final events = toBeSubmitted.values.toList();
+    print('Found ${events.length} events for submission');
+    if (events.isNotEmpty) {
+      print('Sending ${events.length} events to backend');
+      await _services.api.sendEvents(events);
+      for (final key in toBeSubmitted.keys) {
+        await prefs.remove(key);
+      }
+    }
   }
 
   @override
@@ -422,10 +493,20 @@ class WiredashRegistry {
   }
 
   /// The number of currently mounted Wiredash widgets
-  @visibleForTesting
   static int get referenceCount {
     purge();
     return _refs.length;
+  }
+
+  static WiredashState? findByProjectId(String projectId) {
+    purge();
+    for (final ref in _refs) {
+      final state = ref.target;
+      if (state != null && state.widget.projectId == projectId) {
+        return state;
+      }
+    }
+    return null;
   }
 
   /// Clears all references
@@ -441,12 +522,13 @@ class WiredashRegistry {
   }
 
   /// Calls [action] onh all currently mounted Wiredash widgets
-  static void forEach(void Function(WiredashState) action) {
+  static Future<void> forEach(
+      Future<void> Function(WiredashState) action) async {
     for (final ref in _refs.toList()) {
       final state = ref.target;
       if (state != null) {
         try {
-          action(state);
+          await action(state);
         } catch (e, stack) {
           debugPrint(
             'Error while calling $state: $e\n$stack',

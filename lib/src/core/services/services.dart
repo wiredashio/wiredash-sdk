@@ -79,6 +79,9 @@ class WiredashServices extends ChangeNotifier {
 
   TestDetector get testDetector => _locator.watch();
 
+  Future<SharedPreferences> Function() get sharedPreferencesProvider =>
+      _locator.watch();
+
   void updateWidget(Wiredash wiredashWidget) {
     inject<Wiredash>((_) => wiredashWidget);
   }
@@ -105,6 +108,10 @@ class WiredashServices extends ChangeNotifier {
 void _setupServices(WiredashServices sl) {
   sl.inject<WiredashServices>((_) => sl);
 
+  sl.inject<Future<SharedPreferences> Function()>(
+    (_) => SharedPreferences.getInstance,
+  );
+
   sl.inject<Wiredash>(
     (_) => const Wiredash(
       projectId: '',
@@ -114,17 +121,17 @@ void _setupServices(WiredashServices sl) {
   );
   sl.inject<WuidGenerator>(
     (_) => SharedPrefsWuidGenerator(
-      sharedPrefsProvider: SharedPreferences.getInstance,
+      sharedPrefsProvider: sl.sharedPreferencesProvider,
     ),
   );
   sl.inject<ProjectCredentialValidator>(
     (_) => const ProjectCredentialValidator(),
   );
   sl.inject<AppTelemetry>(
-    (_) => PersistentAppTelemetry(SharedPreferences.getInstance),
+    (_) => PersistentAppTelemetry(sl.sharedPreferencesProvider),
   );
   sl.inject<WiredashTelemetry>(
-    (_) => PersistentWiredashTelemetry(SharedPreferences.getInstance),
+    (_) => PersistentWiredashTelemetry(sl.sharedPreferencesProvider),
   );
   sl.inject<PsTrigger>((_) {
     return PsTrigger(
@@ -194,7 +201,7 @@ void _setupServices(WiredashServices sl) {
       const fileSystem = LocalFileSystem();
       final storage = PendingFeedbackItemStorage(
         fileSystem: fileSystem,
-        sharedPreferencesProvider: SharedPreferences.getInstance,
+        sharedPreferencesProvider: sl.sharedPreferencesProvider,
         dirPathProvider: () async =>
             (await getApplicationDocumentsDirectory()).path,
         wuidGenerator: sl.wuidGenerator,
@@ -233,7 +240,7 @@ void _setupServices(WiredashServices sl) {
           apiProvider: () => sl.api,
           wuidGenerator: () => sl.wuidGenerator,
           metaDataCollector: () => sl.metaDataCollector,
-          sharedPreferencesProvider: SharedPreferences.getInstance,
+          sharedPreferencesProvider: sl.sharedPreferencesProvider,
         ),
       );
       engine.addJob(
