@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -154,6 +158,36 @@ void main() {
       reason: 'small event should be sent,'
           ' ${events.map((e) => e.name).join(',')}',
     );
+  });
+
+  testWidgets('send event from isolate', (tester) async {
+    final robot = WiredashTestRobot(tester);
+    robot.setupMocks();
+
+    // TODO create integration_test
+    markTestSkipped('not possible on Dart VM');
+    bool skip = false;
+    assert(() {
+      skip = true;
+      return true;
+    }());
+    if (skip) {
+      return;
+    }
+
+    final token = ServicesBinding.rootIsolateToken!;
+    await tester.runAsync(() async {
+      await compute(
+        (RootIsolateToken token) async {
+          BackgroundIsolateBinaryMessenger.ensureInitialized(token);
+          await Wiredash.trackEvent('test_event');
+        },
+        token,
+      );
+    });
+
+    final events = await getPendingEvents();
+    expect(events, hasLength(1));
   });
 }
 

@@ -15,9 +15,6 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 // TODO save events to local storage
 // TODO send events every 30 seconds to the server (or 5min?)
 // TODO wipe events older than 3 days
-// TODO Save projectId together with event
-// TODO save events individually with key "{projectId}_{timestamp}"
-// TODO handle different isolates
 // TODO validate event name and parameters
 // TODO check if we can replace Wiredash.of(context).method() with just Wiredash.method()
 // TODO validate event key
@@ -25,6 +22,7 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 // TODO don't allow # in the beginning
 
 // Nice to have
+// TODO write integration_test for isolates
 // TODO send events directly on web
 
 class WiredashAnalytics {
@@ -45,6 +43,7 @@ class WiredashAnalytics {
     String eventName, {
     Map<String, Object?>? params,
   }) async {
+    print('Tracking event $eventName');
     final event = Event.internal(
       name: eventName,
       params: params,
@@ -52,6 +51,7 @@ class WiredashAnalytics {
     );
 
     final prefs = await SharedPreferences.getInstance();
+    print('Loaded prefs from disk');
     await prefs.reload();
 
     final project = projectId ?? _defaultProjectId;

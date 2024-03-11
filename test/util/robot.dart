@@ -38,6 +38,7 @@ class WiredashTestRobot {
     SharedPreferences.setMockInitialValues({
       'mocked': true,
     });
+    addTearDown(() => SharedPreferences.setMockInitialValues({}));
     PackageInfo.setMockInitialValues(
       appName: 'Wiredash Demo',
       packageName: 'io.wiredash.demo',
@@ -46,6 +47,15 @@ class WiredashTestRobot {
       buildSignature: 'buildSignature',
       // ignore: avoid_redundant_argument_values
       installerStore: null,
+    );
+    addTearDown(
+      () => PackageInfo.setMockInitialValues(
+        appName: '',
+        packageName: '',
+        version: '',
+        buildNumber: '',
+        buildSignature: '',
+      ),
     );
     TestWidgetsFlutterBinding.ensureInitialized();
 
