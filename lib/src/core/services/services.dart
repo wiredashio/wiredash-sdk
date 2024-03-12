@@ -225,9 +225,7 @@ void _setupServices(WiredashServices sl) {
 
   sl.inject<MetaDataCollector>((sl) {
     return MetaDataCollector(
-      wiredashModel: sl.get(),
       deviceInfoCollector: sl.get,
-      wiredashWidget: sl.get,
       buildInfoProvider: sl.get,
     );
   });

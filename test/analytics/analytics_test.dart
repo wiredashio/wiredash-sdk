@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // TODO explicit analytics import should not be necessary
 import 'package:wiredash/src/analytics/analytics.dart';
+import 'package:wiredash/src/core/network/send_events_request.dart';
 import 'package:wiredash/wiredash.dart';
 
 import '../util/robot.dart';
@@ -35,11 +36,11 @@ void main() {
 
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
     final lastEvents = robot.mockServices.mockApi.sendEventsInvocations.latest;
-    final events = lastEvents[0] as List<Event>?;
+    final events = lastEvents[0] as List<RequestEvent>?;
     expect(events, hasLength(1));
     final event = events![0];
-    expect(event.name, 'test_event');
-    expect(event.params, {'param1': 'value1'});
+    expect(event.eventName, 'test_event');
+    expect(event.eventData, {'param1': 'value1'});
   });
 
   testWidgets('sendEvent (instance)', (tester) async {
@@ -64,11 +65,11 @@ void main() {
 
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
     final lastEvents = robot.mockServices.mockApi.sendEventsInvocations.latest;
-    final events = lastEvents[0] as List<Event>?;
+    final events = lastEvents[0] as List<RequestEvent>?;
     expect(events, hasLength(1));
     final event = events![0];
-    expect(event.name, 'test_event');
-    expect(event.params, {'param1': 'value1'});
+    expect(event.eventName, 'test_event');
+    expect(event.eventData, {'param1': 'value1'});
   });
 
   testWidgets('sendEvent is blocked by ad blocker', (tester) async {
@@ -151,12 +152,12 @@ void main() {
     expect(pending, hasLength(10));
 
     final lastEvents = robot.mockServices.mockApi.sendEventsInvocations.latest;
-    final events = lastEvents[0]! as List<Event>;
+    final events = lastEvents[0]! as List<RequestEvent>;
     expect(
-      events.any((event) => event.name == 'small'),
+      events.any((event) => event.eventName == 'small'),
       isTrue,
       reason: 'small event should be sent,'
-          ' ${events.map((e) => e.name).join(',')}',
+          ' ${events.map((e) => e.eventData).join(',')}',
     );
   });
 

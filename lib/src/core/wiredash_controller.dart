@@ -153,6 +153,11 @@ class WiredashController {
     _model.show(flow: WiredashFlow.feedback);
   }
 
+  Future<void> trackEvent(
+    String eventName, {
+    Map<String, Object?>? params,
+  }) async {}
+
   /// A [ValueNotifier] representing the current state of the capture UI. Use
   /// this to change your app's configuration when the user is in the process
   /// of taking a screenshot of your app - e.g. hiding sensitive information or

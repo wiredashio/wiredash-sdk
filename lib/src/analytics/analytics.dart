@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
@@ -8,10 +9,15 @@ import 'package:flutter/widgets.dart';
 import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/network/send_events_request.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
+import 'package:wiredash/src/metadata/meta_data_collector.dart';
+
+import '../core/version.dart';
 
 // Prio #1
 // TODO how to handle when two instances of the app, with two different wiredash configurations are open. Where would events be sent to?
+// TODO separate api event model and persistence event model
 // TODO save events to local storage
 // TODO send events every 30 seconds to the server (or 5min?)
 // TODO wipe events older than 3 days
@@ -39,15 +45,36 @@ class WiredashAnalytics {
 
   static const _defaultProjectId = 'default';
 
+  final MetaDataCollector metaDataCollector = MetaDataCollector(
+    deviceInfoCollector: () => FlutterInfoCollector(window),
+    buildInfoProvider: () => getBuildInformation(),
+  );
+
   Future<void> trackEvent(
     String eventName, {
     Map<String, Object?>? params,
   }) async {
     print('Tracking event $eventName');
-    final event = Event.internal(
-      name: eventName,
-      params: params,
-      timestamp: clock.now(),
+
+    final WuidGenerator wuidGenerator = SharedPrefsWuidGenerator(
+      sharedPrefsProvider: SharedPreferences.getInstance,
+    );
+    final fixedMetadata = await metaDataCollector.collectFixedMetaData();
+    final flutterInfo = metaDataCollector.collectFlutterInfo();
+
+    final event = PendingEvent(
+      analyticsId: await wuidGenerator.appUsageId(),
+      buildCommit: fixedMetadata.resolvedBuildCommit,
+      buildNumber: fixedMetadata.resolvedBuildNumber,
+      buildVersion: fixedMetadata.resolvedBuildVersion,
+      bundleId: fixedMetadata.appInfo.bundleId,
+      createdAt: clock.now(),
+      eventData: params,
+      eventName: eventName,
+      platformOS: flutterInfo.platformOS,
+      platformOSVersion: fixedMetadata.deviceInfo.osVersion,
+      platformLocale: flutterInfo.platformLocale,
+      sdkVersion: wiredashSdkVersion,
     );
 
     final prefs = await SharedPreferences.getInstance();
@@ -55,7 +82,7 @@ class WiredashAnalytics {
     await prefs.reload();
 
     final project = projectId ?? _defaultProjectId;
-    final millis = event.timestamp!.millisecondsSinceEpoch ~/ 1000;
+    final millis = event.createdAt!.millisecondsSinceEpoch ~/ 1000;
     final discriminator = nanoid(
       length: 6,
       // \w in regex, ignores "-"
@@ -154,14 +181,25 @@ class WiredashAnalytics {
   }
 }
 
-Map<String, Object?> serializeEvent(Event event) {
+Map<String, Object?> serializeEvent(PendingEvent event) {
   final values = SplayTreeMap<String, Object?>.from({
-    "name": event.name,
+    "analyticsId": event.analyticsId,
+    if (event.buildCommit != null) "buildCommit": event.buildCommit,
+    if (event.buildNumber != null) "buildNumber": event.buildNumber,
+    if (event.buildVersion != null) "buildVersion": event.buildVersion,
+    if (event.bundleId != null) "bundleId": event.bundleId,
+    if (event.createdAt != null)
+      "createdAt": event.createdAt!.toIso8601String(),
+    "eventName": event.eventName,
+    if (event.platformOS != null) "platformOS": event.platformOS,
+    if (event.platformOSVersion != null)
+      "platformOSVersion": event.platformOSVersion,
+    if (event.platformLocale != null) "platformLocale": event.platformLocale,
+    "sdkVersion": event.sdkVersion,
     "version": 1,
-    "timestamp": event.timestamp?.toIso8601String(),
   });
 
-  final paramsValidated = event.params?.map((key, value) {
+  final paramsValidated = event.eventData?.map((key, value) {
     if (value == null) {
       return MapEntry(key, null);
     }
@@ -184,22 +222,40 @@ Map<String, Object?> serializeEvent(Event event) {
   if (paramsValidated != null) {
     paramsValidated.removeWhere((key, value) => value == null);
     if (paramsValidated.isNotEmpty) {
-      values.addAll({'params': paramsValidated});
+      values.addAll({'eventData': paramsValidated});
     }
   }
   return values;
 }
 
-Event deserializeEvent(Map<String, Object?> map) {
+PendingEvent deserializeEvent(Map<String, Object?> map) {
   final version = map['version'] as int?;
   if (version == 1) {
-    final name = map['name'] as String?;
-    final params = map['params'] as Map<String, Object?>?;
-    final timestampRaw = map['timestamp'] as String?;
-    return Event.internal(
-      name: name!,
-      params: params,
-      timestamp: DateTime.parse(timestampRaw!),
+    final analyticsId = map['analyticsId']! as String;
+    final buildCommit = map['buildCommit'] as String?;
+    final buildNumber = map['buildNumber'] as String?;
+    final buildVersion = map['buildVersion'] as String?;
+    final bundleId = map['bundleId'] as String?;
+    final createdAtRaw = map['createdAt'] as String?;
+    final eventData = map['eventData'] as Map<String, Object?>?;
+    final eventName = map['eventName']! as String;
+    final platformOS = map['platformOS'] as String?;
+    final platformOSVersion = map['platformOSVersion'] as String?;
+    final platformLocale = map['platformLocale'] as String?;
+    final sdkVersion = map['sdkVersion']! as int;
+    return PendingEvent(
+      analyticsId: analyticsId,
+      buildCommit: buildCommit,
+      buildNumber: buildNumber,
+      buildVersion: buildVersion,
+      bundleId: bundleId,
+      createdAt: createdAtRaw != null ? DateTime.parse(createdAtRaw) : null,
+      eventData: eventData,
+      eventName: eventName,
+      platformOS: platformOS,
+      platformOSVersion: platformOSVersion,
+      platformLocale: platformLocale,
+      sdkVersion: sdkVersion,
     );
   }
 
@@ -219,20 +275,33 @@ class WiredashAnalyticsServices {
   // TODO create service locator
 }
 
-class Event {
-  final String name;
-  final Map<String, Object?>? params;
-  final DateTime? timestamp;
+class PendingEvent {
+  final String analyticsId;
+  final String? buildCommit;
+  final String? buildNumber;
+  final String? buildVersion;
+  final String? bundleId;
+  final DateTime? createdAt;
+  final Map<String, Object?>? eventData;
+  final String eventName;
+  final String? platformOS;
+  final String? platformOSVersion;
+  final String? platformLocale;
+  final int sdkVersion;
 
-  Event({
-    required this.name,
-    required this.params,
-  }) : timestamp = null;
-
-  Event.internal({
-    required this.name,
-    required this.params,
-    required this.timestamp,
+  const PendingEvent({
+    required this.analyticsId,
+    this.buildCommit,
+    this.buildNumber,
+    this.buildVersion,
+    this.bundleId,
+    this.createdAt,
+    this.eventData,
+    required this.eventName,
+    this.platformOS,
+    this.platformOSVersion,
+    this.platformLocale,
+    required this.sdkVersion,
   });
 }
 
@@ -262,7 +331,7 @@ class PendingEventSubmitter implements EventSubmitter {
     final now = clock.now();
     final threeDaysAgo = now.subtract(const Duration(days: 3));
     final int unixThreeDaysAgo = threeDaysAgo.millisecondsSinceEpoch ~/ 1000;
-    final Map<String, Event> toBeSubmitted = {};
+    final Map<String, PendingEvent> toBeSubmitted = {};
     for (final key in keys) {
       print('Checking key $key');
       final match = WiredashAnalytics.eventKeyRegex.firstMatch(key);
@@ -281,7 +350,7 @@ class PendingEventSubmitter implements EventSubmitter {
         final eventJson = prefs.getString(key);
         if (eventJson != null) {
           try {
-            final Event event = deserializeEvent(jsonDecode(eventJson));
+            final PendingEvent event = deserializeEvent(jsonDecode(eventJson));
             print('Found event $key for submission');
             toBeSubmitted[key] = event;
           } catch (e, stack) {
@@ -298,8 +367,25 @@ class PendingEventSubmitter implements EventSubmitter {
     final events = toBeSubmitted.values.toList();
     print('Found ${events.length} events for submission');
     if (events.isNotEmpty) {
+      final requestEvents = events.map((event) {
+        return RequestEvent(
+          analyticsId: event.analyticsId,
+          buildCommit: event.buildCommit,
+          buildNumber: event.buildNumber,
+          buildVersion: event.buildVersion,
+          bundleId: event.bundleId,
+          createdAt: event.createdAt,
+          eventData: event.eventData,
+          eventName: event.eventName,
+          platformOS: event.platformOS,
+          platformOSVersion: event.platformOSVersion,
+          platformLocale: event.platformLocale,
+          sdkVersion: event.sdkVersion,
+        );
+      }).toList();
+
       print('Sending ${events.length} events to backend');
-      await api.sendEvents(events);
+      await api.sendEvents(requestEvents);
       for (final key in toBeSubmitted.keys) {
         await prefs.remove(key);
       }
