@@ -4,25 +4,21 @@ import 'dart:ui';
 
 import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/network/send_events_request.dart';
+import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
-import '../core/version.dart';
-
 // Prio #1
 // TODO how to handle when two instances of the app, with two different wiredash configurations are open. Where would events be sent to?
-// TODO separate api event model and persistence event model
-// TODO save events to local storage
 // TODO send events every 30 seconds to the server (or 5min?)
 // TODO wipe events older than 3 days
 // TODO validate event name and parameters
-// TODO check if we can replace Wiredash.of(context).method() with just Wiredash.method()
+// TODO implement Wiredash.of(context).method()
 // TODO validate event key
 // TODO send first_launch event with # in beginning.
 // TODO don't allow # in the beginning
@@ -45,6 +41,7 @@ class WiredashAnalytics {
 
   static const _defaultProjectId = 'default';
 
+  /// TODO find way to mock the collector
   final MetaDataCollector metaDataCollector = MetaDataCollector(
     deviceInfoCollector: () => FlutterInfoCollector(window),
     buildInfoProvider: () => getBuildInformation(),
@@ -59,6 +56,7 @@ class WiredashAnalytics {
     final WuidGenerator wuidGenerator = SharedPrefsWuidGenerator(
       sharedPrefsProvider: SharedPreferences.getInstance,
     );
+
     final fixedMetadata = await metaDataCollector.collectFixedMetaData();
     final flutterInfo = metaDataCollector.collectFlutterInfo();
 
