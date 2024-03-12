@@ -79,12 +79,13 @@ void main() {
         buildVersion: '',
       );
     });
+
     // send ping
     await tester.pumpSmart(const Duration(seconds: 5));
     final latestPing = robot.mockServices.mockApi.pingInvocations.latest;
     final ping = latestPing[0] as PingRequestBody?;
-    expect(ping!.buildVersion, '0.1.0'); // from appInfo
-    expect(ping.buildNumber, '1'); // from appInfo
+    expect(ping!.buildVersion, '9.9.9'); // from appInfo
+    expect(ping.buildNumber, '9001'); // from appInfo
     expect(ping.buildCommit, isNull);
   });
 

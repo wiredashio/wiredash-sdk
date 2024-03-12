@@ -1,15 +1,14 @@
-import 'dart:async';
-
+import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // TODO explicit analytics import should not be necessary
 import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/core/network/send_events_request.dart';
+import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/wiredash.dart';
 
 import '../util/robot.dart';
@@ -31,6 +30,7 @@ void main() {
       },
     );
 
+    final now = clock.now();
     await robot.tapText('Send Event');
     await tester.pumpSmart();
 
@@ -41,6 +41,16 @@ void main() {
     final event = events![0];
     expect(event.eventName, 'test_event');
     expect(event.eventData, {'param1': 'value1'});
+    expect(event.analyticsId, isNotNull);
+    expect(event.buildCommit, null);
+    expect(event.buildNumber, '9001');
+    expect(event.buildVersion, '9.9.9');
+    expect(event.bundleId, 'io.wiredash.test');
+    expect(event.createdAt, now);
+    expect(event.platformOS, isNotNull);
+    expect(event.platformOSVersion, isNotNull);
+    expect(event.platformLocale, isNotNull);
+    expect(event.sdkVersion, wiredashSdkVersion);
   });
 
   testWidgets('sendEvent (instance)', (tester) async {

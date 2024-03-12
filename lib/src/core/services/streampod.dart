@@ -1,8 +1,23 @@
-/// Service locator
+/// Service locator, read only interface that doesn't allow to register or override services.
 ///
 /// Like riverpod, services can depend on each other and get recreated when
 /// their dependencies change.
-class Locator {
+abstract class Locator {
+  /// Retrieve a instance of type [T]
+  T get<T>();
+
+  /// Retrieve a instance of type [T] and subscribe to changes
+  T watch<T>();
+
+  /// Listen to change of type [T]
+  void listen<T>(void Function(T) callback);
+}
+
+/// A service locator that allows to register and override services.
+///
+/// Like riverpod, services can depend on each other and get recreated when
+/// their dependencies change.
+class InjectableLocator implements Locator {
   final Map<Type, InstanceFactory> _registry = {};
 
   bool _disposed = false;
@@ -15,6 +30,7 @@ class Locator {
   }
 
   /// Retrieve a instance of type [T]
+  @override
   T get<T>() {
     if (_disposed) {
       throw Exception('Locator is disposed');
@@ -24,15 +40,20 @@ class Locator {
   }
 
   /// Retrieve a instance of type [T] and subscribe to changes
+  @override
   T watch<T>() {
     if (_disposed) {
       throw Exception('Locator is disposed');
     }
     final provider = _registry[T];
-    return provider!.watch as T;
+    if (provider == null) {
+      throw Exception('No provider found for type $T');
+    }
+    return provider.watch as T;
   }
 
   /// Listen to change of type [T]
+  @override
   void listen<T>(void Function(T) callback) {
     final factory = _registry[T]!;
 
@@ -90,7 +111,7 @@ class InstanceFactory<T> {
   );
 
   final T Function(Locator) create;
-  final Locator locator;
+  final InjectableLocator locator;
 
   final int id = _id++;
   T? _instance;
@@ -173,7 +194,7 @@ class DependencyTracker {
 
   final InstanceFactory provider;
 
-  Locator get locator => provider.locator;
+  InjectableLocator get locator => provider.locator;
 
   int? _prevActive;
 

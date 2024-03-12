@@ -20,8 +20,8 @@ void main() {
   group('Wiredash', () {
     setUp(() {
       SharedPreferences.setMockInitialValues({});
-      debugServicesCreator = createMockServices;
-      addTearDown(() => debugServicesCreator = null);
+      WiredashServices.debugServicesCreator = createMockServices;
+      addTearDown(() => WiredashServices.debugServicesCreator = null);
     });
 
     testWidgets('widget can be created', (tester) async {
@@ -160,9 +160,9 @@ void main() {
         final _MockProjectCredentialValidator validator =
             _MockProjectCredentialValidator();
 
-        debugServicesCreator = () => createMockServices()
+        WiredashServices.debugServicesCreator = () => createMockServices()
           ..inject<ProjectCredentialValidator>((_) => validator);
-        addTearDown(() => debugServicesCreator = null);
+        addTearDown(() => WiredashServices.debugServicesCreator = null);
 
         await tester.pumpWidget(
           const Wiredash(
@@ -346,15 +346,16 @@ void main() {
       SharedPreferences.setMockInitialValues({});
 
       final api = MockWiredashApi();
-      debugServicesCreator = () {
-        final services = WiredashServices();
-        // Don't do actual http calls
-        services.inject<WiredashApi>((_) {
-          // depend on the widget (secret/project)
-          services.wiredashWidget;
-          return api;
+      WiredashServices.debugServicesCreator = () {
+        return WiredashServices.setup((services) {
+          registerProdWiredashServices(services);
+          // Don't do actual http calls
+          services.inject<WiredashApi>((_) {
+            // depend on the widget (secret/project)
+            services.wiredashWidget;
+            return api;
+          });
         });
-        return services;
       };
 
       await tester.pumpWidget(

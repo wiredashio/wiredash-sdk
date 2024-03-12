@@ -40,10 +40,10 @@ class WiredashTestRobot {
     });
     addTearDown(() => SharedPreferences.setMockInitialValues({}));
     PackageInfo.setMockInitialValues(
-      appName: 'Wiredash Demo',
-      packageName: 'io.wiredash.demo',
-      version: '0.1.0',
-      buildNumber: '1',
+      appName: 'Wiredash Test',
+      packageName: 'io.wiredash.test',
+      version: '9.9.9',
+      buildNumber: '9001',
       buildSignature: 'buildSignature',
       // ignore: avoid_redundant_argument_values
       installerStore: null,
@@ -148,10 +148,10 @@ class WiredashTestRobot {
     bool useDirectFeedbackSubmitter = true,
   }) async {
     setupMocks();
-    debugServicesCreator = () => createMockServices(
+    WiredashServices.debugServicesCreator = () => createMockServices(
           useDirectFeedbackSubmitter: useDirectFeedbackSubmitter,
         );
-    addTearDown(() => debugServicesCreator = null);
+    addTearDown(() => WiredashServices.debugServicesCreator = null);
 
     await tester.pumpWidget(
       Wiredash(
@@ -624,27 +624,28 @@ class WiredashMockServices {
 }
 
 WiredashServices createMockServices({bool useDirectFeedbackSubmitter = false}) {
-  final services = WiredashServices();
+  return WiredashServices.setup((services) {
+    registerProdWiredashServices(services);
 
-  // Don't do actual http calls
-  services.inject<WiredashApi>((_) {
-    // depend on the widget (secret/project)
-    services.wiredashWidget;
-    return MockWiredashApi.fake();
+    // Don't do actual http calls
+    services.inject<WiredashApi>((_) {
+      // depend on the widget (secret/project)
+      services.wiredashWidget;
+      return MockWiredashApi.fake();
+    });
+
+    // Let the widget behave as in production
+    services.inject<TestDetector>((_) => _OverlookFakeAsync());
+
+    if (useDirectFeedbackSubmitter) {
+      // replace submitter, because for testing we always want to submit directly
+      services.inject<FeedbackSubmitter>(
+        (locator) => DirectFeedbackSubmitter(services.api),
+      );
+    } else {
+      assert(services.feedbackSubmitter is RetryingFeedbackSubmitter);
+    }
   });
-
-  // Let the widget behave as in production
-  services.inject<TestDetector>((_) => _OverlookFakeAsync());
-
-  if (useDirectFeedbackSubmitter) {
-    // replace submitter, because for testing we always want to submit directly
-    services.inject<FeedbackSubmitter>(
-      (locator) => DirectFeedbackSubmitter(services.api),
-    );
-  } else {
-    assert(services.feedbackSubmitter is RetryingFeedbackSubmitter);
-  }
-  return services;
 }
 
 /// Fake the test detector to not detect the fake async environment

@@ -33,11 +33,33 @@ import 'package:wiredash/wiredash.dart';
 
 /// Internal service locator
 class WiredashServices extends ChangeNotifier {
-  WiredashServices() {
-    _setupServices(this);
+  factory WiredashServices() {
+    WiredashServices? services;
+    assert(
+      () {
+        if (debugServicesCreator != null) {
+          services = debugServicesCreator!.call();
+        }
+        return true;
+      }(),
+    );
+
+    return services ?? WiredashServices.setup(registerProdWiredashServices);
   }
 
-  final Locator _locator = Locator();
+  WiredashServices.setup(
+    void Function(WiredashServices sl) setup,
+  ) {
+    setup(this);
+  }
+
+  /// Can be used to inject mock services for testing
+  @visibleForTesting
+  static WiredashServices Function()? debugServicesCreator;
+
+  Locator get locator => _locator;
+
+  final InjectableLocator _locator = InjectableLocator();
 
   WiredashModel get wiredashModel => _locator.watch();
 
@@ -109,7 +131,7 @@ class WiredashServices extends ChangeNotifier {
   }
 }
 
-void _setupServices(WiredashServices sl) {
+void registerProdWiredashServices(WiredashServices sl) {
   sl.inject<WiredashServices>((_) => sl);
 
   sl.inject<Future<SharedPreferences> Function()>(

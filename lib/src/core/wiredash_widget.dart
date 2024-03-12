@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:ui' as ui;
 
-import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +12,6 @@ import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/core/context_cache.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/not_a_widgets_app.dart';
-import 'package:wiredash/src/core/sync/event_upload_job.dart';
 import 'package:wiredash/src/feedback/feedback_backdrop.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -168,7 +165,7 @@ class Wiredash extends StatefulWidget {
 
   static Future<void> trackEvent(
     String eventName, {
-    Map<String, Object?>? params, // TODO make positional?
+    Map<String, Object?>? params,
     String? projectId,
   }) async {
     final analytics = WiredashAnalytics(projectId: projectId);
@@ -179,7 +176,7 @@ class Wiredash extends StatefulWidget {
 class WiredashState extends State<Wiredash> {
   final GlobalKey _appKey = GlobalKey(debugLabel: 'app');
 
-  final WiredashServices _services = _createServices();
+  final WiredashServices _services = WiredashServices();
 
   late final WiredashBackButtonDispatcher _backButtonDispatcher;
 
@@ -225,7 +222,7 @@ class WiredashState extends State<Wiredash> {
   Future<void> newEventAdded() async {
     try {
       await _services.eventSubmitter.submitEvents(widget.projectId);
-    } catch (e, stack) {
+    } catch (e) {
       debugPrint('Error submitting events: $e');
     }
   }
@@ -481,7 +478,8 @@ class WiredashRegistry {
 
   /// Calls [action] onh all currently mounted Wiredash widgets
   static Future<void> forEach(
-      Future<void> Function(WiredashState) action) async {
+    Future<void> Function(WiredashState) action,
+  ) async {
     for (final ref in _refs.toList()) {
       final state = ref.target;
       if (state != null) {
@@ -513,20 +511,4 @@ Locale get _defaultLocale {
   // ignore: unnecessary_nullable_for_final_variable_declarations, deprecated_member_use
   final Locale? locale = ui.window.locale;
   return locale ?? const Locale('en', 'US');
-}
-
-/// Can be used to inject mock services for testing
-@visibleForTesting
-WiredashServices Function()? debugServicesCreator;
-
-WiredashServices _createServices() {
-  WiredashServices? services;
-  assert(
-    () {
-      services = debugServicesCreator?.call();
-      return true;
-    }(),
-  );
-
-  return services ?? WiredashServices();
 }

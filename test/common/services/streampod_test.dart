@@ -3,7 +3,7 @@ import 'package:wiredash/src/core/services/streampod.dart';
 
 void main() {
   test('provider rebuild when dependencies change', () {
-    final sl = Locator();
+    final sl = InjectableLocator();
     final apiKeyAProvider = sl.injectProvider<_ApiKey>((_) => _ApiKey('a'));
     final apiProvider =
         sl.injectProvider<_Api>((locator) => _Api(locator.watch()));
@@ -19,7 +19,7 @@ void main() {
   });
 
   test('provider update when dependencies change', () {
-    final sl = Locator();
+    final sl = InjectableLocator();
     final apiKeyAProvider = sl.injectProvider<_ApiKey>((_) => _ApiKey('a'));
     final listenerValues = [];
     final apiProvider = sl.injectProvider<_Api>(
@@ -57,7 +57,7 @@ void main() {
   });
 
   test('multi level rebuild - watch', () {
-    final sl = Locator();
+    final sl = InjectableLocator();
     final keyProviderA = sl.injectProvider<_ApiKey>((_) => _ApiKey('a'));
     final apiProvider =
         sl.injectProvider<_Api>((locator) => _Api(locator.watch()));
@@ -87,7 +87,7 @@ void main() {
   });
 
   test('multi level rebuild - read', () {
-    final sl = Locator();
+    final sl = InjectableLocator();
     final keyProviderA = sl.injectProvider<_ApiKey>((_) => _ApiKey('a'));
     final apiProvider =
         sl.injectProvider<_Api>((locator) => _Api(locator.watch()));

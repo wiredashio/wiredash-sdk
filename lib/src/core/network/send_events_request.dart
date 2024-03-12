@@ -115,4 +115,22 @@ class RequestEvent {
 
     return body;
   }
+
+  @override
+  String toString() {
+    return 'RequestEvent{'
+        'eventName: $eventName, '
+        'eventData: $eventData, '
+        'analyticsId: $analyticsId, '
+        'buildCommit: $buildCommit, '
+        'buildNumber: $buildNumber, '
+        'buildVersion: $buildVersion, '
+        'bundleId: $bundleId, '
+        'createdAt: $createdAt, '
+        'platformOS: $platformOS, '
+        'platformOSVersion: $platformOSVersion, '
+        'platformLocale: $platformLocale, '
+        'sdkVersion: $sdkVersion'
+        '}';
+  }
 }

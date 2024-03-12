@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:http_parser/src/media_type.dart';
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/core/network/send_events_request.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 

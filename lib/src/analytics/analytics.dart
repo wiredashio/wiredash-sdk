@@ -1,6 +1,5 @@
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
@@ -11,11 +10,11 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/network/send_events_request.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
-import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
 // Prio #1
 // TODO how to handle when two instances of the app, with two different wiredash configurations are open. Where would events be sent to?
 // TODO send events every 30 seconds to the server (or 5min?)
+// TODO send events to server on app close
 // TODO wipe events older than 3 days
 // TODO validate event name and parameters
 // TODO implement Wiredash.of(context).method()
@@ -26,6 +25,9 @@ import 'package:wiredash/src/metadata/meta_data_collector.dart';
 // TODO keep events if server responds 400 (code 2201)
 // TODO keep events for any other server error
 // TODO allow white space in eventName
+// TODO drop event when API credentials are obviously wrong
+// TODO allow resetting of the analyticsId
+// TODO allow triggering of event submission
 
 // Nice to have
 // TODO write integration_test for isolates
@@ -45,11 +47,7 @@ class WiredashAnalytics {
 
   static const _defaultProjectId = 'default';
 
-  /// TODO find way to mock the collector
-  final MetaDataCollector metaDataCollector = MetaDataCollector(
-    deviceInfoCollector: () => FlutterInfoCollector(window),
-    buildInfoProvider: () => getBuildInformation(),
-  );
+  final WiredashServices _services = WiredashServices();
 
   Future<void> trackEvent(
     String eventName, {
@@ -57,15 +55,12 @@ class WiredashAnalytics {
   }) async {
     print('Tracking event $eventName');
 
-    final WuidGenerator wuidGenerator = SharedPrefsWuidGenerator(
-      sharedPrefsProvider: SharedPreferences.getInstance,
-    );
-
-    final fixedMetadata = await metaDataCollector.collectFixedMetaData();
-    final flutterInfo = metaDataCollector.collectFlutterInfo();
+    final fixedMetadata =
+        await _services.metaDataCollector.collectFixedMetaData();
+    final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
 
     final event = PendingEvent(
-      analyticsId: await wuidGenerator.appUsageId(),
+      analyticsId: await _services.wuidGenerator.appUsageId(),
       buildCommit: fixedMetadata.resolvedBuildCommit,
       buildNumber: fixedMetadata.resolvedBuildNumber,
       buildVersion: fixedMetadata.resolvedBuildVersion,
@@ -128,8 +123,10 @@ class WiredashAnalytics {
       return;
     }
 
-    assert(activeWiredashInstances > 1,
-        "Expect multiple Wiredash instances to be running.");
+    assert(
+      activeWiredashInstances > 1,
+      "Expect multiple Wiredash instances to be running.",
+    );
     assert(projectId == null, "No projectId defined");
     debugPrint(
       "Multiple Wiredash instances are mounted! "
@@ -317,6 +314,7 @@ class PendingEventSubmitter implements EventSubmitter {
 
   @override
   Future<void> submitEvents(String projectId) async {
+    print('Submitting events for $projectId');
     // TODO check last sent event call.
     //  If is was less than 30 seconds ago, start timer
     //  else kick of sending events to backend for this projectId
@@ -330,7 +328,6 @@ class PendingEventSubmitter implements EventSubmitter {
     final int unixThreeDaysAgo = threeDaysAgo.millisecondsSinceEpoch;
     final Map<String, PendingEvent> toBeSubmitted = {};
     for (final key in keys) {
-      print('Checking key $key');
       final match = WiredashAnalytics.eventKeyRegex.firstMatch(key);
       if (match == null) continue;
       final eventProjectId = match.group(1);
