@@ -151,12 +151,29 @@ class WiredashController {
     _captureSessionMetaData();
     _model.feedbackOptionsOverride = options;
     _model.show(flow: WiredashFlow.feedback);
+    trackEvent(
+      '#wiredashOpen',
+      params: {
+        'inheritMaterialTheme': inheritMaterialTheme,
+        'inheritCupertinoTheme': inheritCupertinoTheme,
+        'screenshot': (options?.screenshot ?? ScreenshotPrompt.optional).name,
+        'email': (options?.email ?? EmailPrompt.optional).name,
+        'labelCount': options?.labels?.length ?? 0,
+        'flow': 'feedback',
+      },
+    );
   }
 
   Future<void> trackEvent(
     String eventName, {
     Map<String, Object?>? params,
-  }) async {}
+  }) async {
+    Wiredash.trackEvent(
+      eventName,
+      params: params,
+      projectId: _model.services.wiredashWidget.projectId,
+    );
+  }
 
   /// A [ValueNotifier] representing the current state of the capture UI. Use
   /// this to change your app's configuration when the user is in the process

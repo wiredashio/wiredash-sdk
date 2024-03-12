@@ -84,7 +84,7 @@ class RequestEvent {
 
     final _createdAt = createdAt;
     if (_createdAt != null) {
-      final unixTimestamp = _createdAt.millisecondsSinceEpoch ~/ 1000;
+      final unixTimestamp = _createdAt.millisecondsSinceEpoch;
       body['createdAt'] = unixTimestamp;
     }
 

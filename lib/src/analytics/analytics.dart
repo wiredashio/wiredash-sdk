@@ -22,6 +22,10 @@ import 'package:wiredash/src/metadata/meta_data_collector.dart';
 // TODO validate event key
 // TODO send first_launch event with # in beginning.
 // TODO don't allow # in the beginning
+// TODO drop event if server responds 400 (code 2200)
+// TODO keep events if server responds 400 (code 2201)
+// TODO keep events for any other server error
+// TODO allow white space in eventName
 
 // Nice to have
 // TODO write integration_test for isolates
@@ -37,7 +41,7 @@ class WiredashAnalytics {
   });
 
   static final eventKeyRegex =
-      RegExp(r'^io\.wiredash\.events\.(\w+)\|(\d+)\|(\w+)$');
+      RegExp(r'^io\.wiredash\.events\.([\w-]+)\|(\d+)\|([\w-]+)$');
 
   static const _defaultProjectId = 'default';
 
@@ -80,12 +84,8 @@ class WiredashAnalytics {
     await prefs.reload();
 
     final project = projectId ?? _defaultProjectId;
-    final millis = event.createdAt!.millisecondsSinceEpoch ~/ 1000;
-    final discriminator = nanoid(
-      length: 6,
-      // \w in regex, ignores "-"
-      alphabet: Alphabet.alphanumeric,
-    );
+    final millis = event.createdAt!.millisecondsSinceEpoch;
+    final discriminator = nanoid(length: 6);
     final key = "io.wiredash.events.$project|$millis|$discriminator";
     assert(eventKeyRegex.hasMatch(key), 'Invalid event key: $key');
 
@@ -218,7 +218,6 @@ Map<String, Object?> serializeEvent(PendingEvent event) {
     }
   });
   if (paramsValidated != null) {
-    paramsValidated.removeWhere((key, value) => value == null);
     if (paramsValidated.isNotEmpty) {
       values.addAll({'eventData': paramsValidated});
     }
@@ -328,7 +327,7 @@ class PendingEventSubmitter implements EventSubmitter {
 
     final now = clock.now();
     final threeDaysAgo = now.subtract(const Duration(days: 3));
-    final int unixThreeDaysAgo = threeDaysAgo.millisecondsSinceEpoch ~/ 1000;
+    final int unixThreeDaysAgo = threeDaysAgo.millisecondsSinceEpoch;
     final Map<String, PendingEvent> toBeSubmitted = {};
     for (final key in keys) {
       print('Checking key $key');
