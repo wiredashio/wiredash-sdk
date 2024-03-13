@@ -106,9 +106,21 @@ class PendingEventSubmitter implements EventSubmitter {
       }).toList();
 
       print('Sending ${events.length} events to backend');
-      await api.sendEvents(requestEvents);
-      for (final key in toBeSubmitted.keys) {
-        await prefs.remove(key);
+      try {
+        await api.sendEvents(requestEvents);
+        print('Submitted ${events.length} events');
+        for (final key in toBeSubmitted.keys) {
+          await prefs.remove(key);
+        }
+      } on InvalidEventFormatException catch (e) {
+        print('Received error when sending events: $e');
+        print('Deleting all events');
+        for (final key in toBeSubmitted.keys) {
+          await prefs.remove(key);
+        }
+      } catch (e, stack) {
+        print('Received error when sending events: $e\n$stack');
+        print('Retrying at a later time');
       }
     }
   }

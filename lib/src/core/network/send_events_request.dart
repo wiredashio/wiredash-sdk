@@ -25,7 +25,21 @@ Future<void> postSendEvents(
   if (response.statusCode == 200) {
     return;
   }
+  if (response.statusCode == 400) {
+    throw InvalidEventFormatException(
+      response: response,
+      message: response.body,
+    );
+  }
+
   context.throwApiError(response);
+}
+
+class InvalidEventFormatException extends WiredashApiException {
+  InvalidEventFormatException({
+    required super.response,
+    super.message,
+  });
 }
 
 class RequestEvent {
