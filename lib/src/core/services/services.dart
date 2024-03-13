@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/analytics.dart';
+import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/app_telemetry_job.dart';
@@ -167,10 +168,19 @@ void registerProdWiredashServices(WiredashServices sl) {
     );
   });
   sl.inject<EventSubmitter>((_) {
+    if (kIsWeb) {
+      return DirectEventSubmitter(
+        sharedPreferences: sl.sharedPreferencesProvider,
+        api: sl.api,
+        projectId: () => sl.wiredashWidget.projectId,
+      );
+    }
+
     return PendingEventSubmitter(
       api: sl.api,
       sharedPreferences: sl.sharedPreferencesProvider,
       projectId: () => sl.wiredashWidget.projectId,
+      throttleDuration: const Duration(seconds: 30),
     );
   });
 

@@ -45,8 +45,6 @@ class WiredashAnalytics {
   static final eventKeyRegex =
       RegExp(r'^io\.wiredash\.events\.([\w-]+)\|(\d+)\|([\w-]+)$');
 
-  static const _defaultProjectId = 'default';
-
   final WiredashServices _services = WiredashServices();
 
   Future<void> trackEvent(
@@ -78,7 +76,7 @@ class WiredashAnalytics {
     print('Loaded prefs from disk');
     await prefs.reload();
 
-    final project = projectId ?? _defaultProjectId;
+    final project = projectId ?? defaultProjectId;
     final millis = event.createdAt!.millisecondsSinceEpoch;
     final discriminator = nanoid(length: 6);
     final key = "io.wiredash.events.$project|$millis|$discriminator";
@@ -175,6 +173,8 @@ class WiredashAnalytics {
     }
   }
 }
+
+const defaultProjectId = 'default';
 
 Map<String, Object?> serializeEvent(PendingEvent event) {
   final values = SplayTreeMap<String, Object?>.from({
@@ -297,97 +297,6 @@ class PendingEvent {
     this.platformLocale,
     required this.sdkVersion,
   });
-}
-
-abstract class EventSubmitter {
-  Future<void> submitEvents();
-}
-
-class PendingEventSubmitter implements EventSubmitter {
-  final Future<SharedPreferences> Function() sharedPreferences;
-  final WiredashApi api;
-  final String Function() projectId;
-
-  PendingEventSubmitter({
-    required this.sharedPreferences,
-    required this.api,
-    required this.projectId,
-  });
-
-  @override
-  Future<void> submitEvents() async {
-    final projectId = this.projectId();
-    print('Submitting events for $projectId');
-    // TODO check last sent event call.
-    //  If is was less than 30 seconds ago, start timer
-    //  else kick of sending events to backend for this projectId
-    final prefs = await sharedPreferences();
-    await prefs.reload();
-    final keys = prefs.getKeys();
-    print('Found $keys events on disk');
-
-    final now = clock.now();
-    final threeDaysAgo = now.subtract(const Duration(days: 3));
-    final int unixThreeDaysAgo = threeDaysAgo.millisecondsSinceEpoch;
-    final Map<String, PendingEvent> toBeSubmitted = {};
-    for (final key in keys) {
-      final match = WiredashAnalytics.eventKeyRegex.firstMatch(key);
-      if (match == null) continue;
-      final eventProjectId = match.group(1);
-      final millis = int.parse(match.group(2)!);
-
-      if (eventProjectId == WiredashAnalytics._defaultProjectId ||
-          eventProjectId == projectId) {
-        if (millis < unixThreeDaysAgo) {
-          // event is too old, ignore and remove
-          await prefs.remove(key);
-          continue;
-        }
-
-        final eventJson = prefs.getString(key);
-        if (eventJson != null) {
-          try {
-            final PendingEvent event = deserializeEvent(jsonDecode(eventJson));
-            print('Found event $key for submission');
-            toBeSubmitted[key] = event;
-          } catch (e, stack) {
-            debugPrint('Error when parsing event $key: $e\n$stack');
-            await prefs.remove(key);
-          }
-        }
-      }
-    }
-
-    print('processed events');
-
-    // Send all events to the backend
-    final events = toBeSubmitted.values.toList();
-    print('Found ${events.length} events for submission');
-    if (events.isNotEmpty) {
-      final requestEvents = events.map((event) {
-        return RequestEvent(
-          analyticsId: event.analyticsId,
-          buildCommit: event.buildCommit,
-          buildNumber: event.buildNumber,
-          buildVersion: event.buildVersion,
-          bundleId: event.bundleId,
-          createdAt: event.createdAt,
-          eventData: event.eventData,
-          eventName: event.eventName,
-          platformOS: event.platformOS,
-          platformOSVersion: event.platformOSVersion,
-          platformLocale: event.platformLocale,
-          sdkVersion: event.sdkVersion,
-        );
-      }).toList();
-
-      print('Sending ${events.length} events to backend');
-      await api.sendEvents(requestEvents);
-      for (final key in toBeSubmitted.keys) {
-        await prefs.remove(key);
-      }
-    }
-  }
 }
 
 // TODO write documentation with these examples

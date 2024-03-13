@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/analytics/analytics.dart';
+import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 
 class EventUploadJob extends Job {
