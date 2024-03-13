@@ -7,7 +7,6 @@ import 'package:flutter/widgets.dart';
 import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/core/network/send_events_request.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
