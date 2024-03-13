@@ -170,6 +170,7 @@ void registerProdWiredashServices(WiredashServices sl) {
     return PendingEventSubmitter(
       api: sl.api,
       sharedPreferences: sl.sharedPreferencesProvider,
+      projectId: () => sl.wiredashWidget.projectId,
     );
   });
 
@@ -284,7 +285,6 @@ void registerProdWiredashServices(WiredashServices sl) {
       final job = EventUploadJob(
         sharedPreferencesProvider: sl.sharedPreferencesProvider,
         eventSubmitter: () => sl.eventSubmitter,
-        projectId: () => sl.wiredashWidget.projectId,
       );
       engine.addJob('upload_events', job);
 

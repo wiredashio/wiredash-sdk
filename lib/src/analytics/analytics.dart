@@ -300,20 +300,23 @@ class PendingEvent {
 }
 
 abstract class EventSubmitter {
-  Future<void> submitEvents(String projectId);
+  Future<void> submitEvents();
 }
 
 class PendingEventSubmitter implements EventSubmitter {
   final Future<SharedPreferences> Function() sharedPreferences;
   final WiredashApi api;
+  final String Function() projectId;
 
   PendingEventSubmitter({
     required this.sharedPreferences,
     required this.api,
+    required this.projectId,
   });
 
   @override
-  Future<void> submitEvents(String projectId) async {
+  Future<void> submitEvents() async {
+    final projectId = this.projectId();
     print('Submitting events for $projectId');
     // TODO check last sent event call.
     //  If is was less than 30 seconds ago, start timer

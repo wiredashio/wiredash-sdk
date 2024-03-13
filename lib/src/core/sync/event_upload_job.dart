@@ -5,12 +5,10 @@ import 'package:wiredash/src/core/sync/sync_engine.dart';
 class EventUploadJob extends Job {
   final Future<SharedPreferences> Function() sharedPreferencesProvider;
   final EventSubmitter Function() eventSubmitter;
-  final String Function() projectId;
 
   EventUploadJob({
     required this.sharedPreferencesProvider,
     required this.eventSubmitter,
-    required this.projectId,
   });
 
   @override
@@ -21,7 +19,6 @@ class EventUploadJob extends Job {
   @override
   Future<void> execute() async {
     final submitter = eventSubmitter();
-    final id = projectId();
-    await submitter.submitEvents(id);
+    await submitter.submitEvents();
   }
 }
