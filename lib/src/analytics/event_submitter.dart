@@ -32,7 +32,7 @@ class PendingEventSubmitter implements EventSubmitter {
     required this.eventStore,
     required this.api,
     required this.projectId,
-    this.throttleDuration = const Duration(seconds: 30),
+    this.throttleDuration = const Duration(seconds: 10),
   });
 
   @override
@@ -81,8 +81,8 @@ class PendingEventSubmitter implements EventSubmitter {
       for (final key in toBeSubmitted.keys) {
         await eventStore.removeEvent(key);
       }
-    } catch (e, stack) {
-      print('Received error when sending events: $e\n$stack');
+    } catch (e) {
+      print('Received error when sending events: $e');
       print('Retrying at a later time');
     }
   }

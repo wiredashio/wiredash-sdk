@@ -38,6 +38,38 @@ class AnalyticsEventStore {
     await prefs.setString(key, jsonEncode(serializeEventV1(event)));
   }
 
+  Future<Map<String, AnalyticsEvent>> getEvents(String? projectId) async {
+    final prefs = await sharedPreferences();
+    await prefs.reload();
+    final keys = prefs.getKeys();
+
+    final Map<String, AnalyticsEvent> toBeSubmitted = {};
+    for (final key in keys) {
+      final match = eventKeyRegex.firstMatch(key);
+      if (match == null) continue;
+      final eventProjectId = match.group(1);
+      if (eventProjectId == defaultProjectId || eventProjectId == projectId) {
+        final eventJson = prefs.getString(key);
+        if (eventJson == null) continue;
+        try {
+          final AnalyticsEvent event =
+              deserializeEventV1(jsonDecode(eventJson));
+          toBeSubmitted[key] = event;
+        } catch (e, stack) {
+          reportWiredashInfo(
+              e, stack, 'Error when parsing event $key. Removing.');
+          await prefs.remove(key);
+        }
+      }
+    }
+    return toBeSubmitted;
+  }
+
+  Future<void> removeEvent(String key) async {
+    final prefs = await sharedPreferences();
+    await prefs.remove(key);
+  }
+
   Future<void> deleteOutdatedEvents() async {
     final prefs = await sharedPreferences();
     await prefs.reload();
@@ -58,10 +90,8 @@ class AnalyticsEventStore {
 
   Future<void> trimToDiskLimit() async {
     final prefs = await sharedPreferences();
-    final eventKeys = prefs
-        .getKeys()
-        .where((key) => eventKeyRegex.hasMatch(key))
-        .toList();
+    final eventKeys =
+        prefs.getKeys().where((key) => eventKeyRegex.hasMatch(key)).toList();
 
     final oldestLast = eventKeys
         .sortedBy<num>((key) {
@@ -92,38 +122,6 @@ class AnalyticsEventStore {
       print('Removing $event from disk');
       await prefs.remove(event);
     }
-  }
-
-  Future<void> removeEvent(String key) async {
-    final prefs = await sharedPreferences();
-    await prefs.remove(key);
-  }
-
-  Future<Map<String, AnalyticsEvent>> getEvents(String? projectId) async {
-    final prefs = await sharedPreferences();
-    await prefs.reload();
-    final keys = prefs.getKeys();
-
-    final Map<String, AnalyticsEvent> toBeSubmitted = {};
-    for (final key in keys) {
-      final match = eventKeyRegex.firstMatch(key);
-      if (match == null) continue;
-      final eventProjectId = match.group(1);
-      if (eventProjectId == defaultProjectId || eventProjectId == projectId) {
-        final eventJson = prefs.getString(key);
-        if (eventJson == null) continue;
-        try {
-          final AnalyticsEvent event =
-              deserializeEventV1(jsonDecode(eventJson));
-          toBeSubmitted[key] = event;
-        } catch (e, stack) {
-          reportWiredashInfo(
-              e, stack, 'Error when parsing event $key. Removing.');
-          await prefs.remove(key);
-        }
-      }
-    }
-    return toBeSubmitted;
   }
 }
 

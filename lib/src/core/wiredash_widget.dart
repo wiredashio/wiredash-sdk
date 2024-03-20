@@ -222,8 +222,8 @@ class WiredashState extends State<Wiredash> {
   Future<void> newEventAdded() async {
     try {
       await _services.eventSubmitter.submitEvents();
-    } catch (e) {
-      debugPrint('Error submitting events: $e');
+    } catch (e, stack) {
+      //reportWiredashInfo(e, stack, 'Error submitting events');
     }
   }
 

@@ -25,6 +25,7 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 // TODO drop event when API credentials are obviously wrong
 // TODO allow resetting of the analyticsId
 // TODO allow triggering of event submission
+// TODO automatically add page_name as property
 
 // Nice to have
 // TODO write integration_test for isolates
