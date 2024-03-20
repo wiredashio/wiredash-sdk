@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/analytics/analytics.dart';
+import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
@@ -104,6 +104,8 @@ class WiredashServices extends ChangeNotifier {
 
   TestDetector get testDetector => _locator.watch();
 
+  AnalyticsEventStore get eventStore => _locator.watch();
+
   EventSubmitter get eventSubmitter => _locator.watch();
 
   Future<SharedPreferences> Function() get sharedPreferencesProvider =>
@@ -167,10 +169,16 @@ void registerProdWiredashServices(WiredashServices sl) {
       wiredashTelemetry: sl.wiredashTelemetry,
     );
   });
+  sl.inject<AnalyticsEventStore>((_) {
+    return AnalyticsEventStore(
+      sharedPreferences: sl.sharedPreferencesProvider,
+    );
+  });
+
   sl.inject<EventSubmitter>((_) {
     if (kIsWeb) {
       return DirectEventSubmitter(
-        sharedPreferences: sl.sharedPreferencesProvider,
+        eventStore: sl.eventStore,
         api: sl.api,
         projectId: () => sl.wiredashWidget.projectId,
       );
@@ -178,9 +186,8 @@ void registerProdWiredashServices(WiredashServices sl) {
 
     return PendingEventSubmitter(
       api: sl.api,
-      sharedPreferences: sl.sharedPreferencesProvider,
+      eventStore: sl.eventStore,
       projectId: () => sl.wiredashWidget.projectId,
-      throttleDuration: const Duration(seconds: 30),
     );
   });
 

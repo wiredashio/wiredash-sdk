@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // TODO explicit analytics import should not be necessary
 import 'package:wiredash/src/analytics/analytics.dart';
+import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/core/network/send_events_request.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/wiredash.dart';
@@ -109,7 +110,7 @@ void main() {
 
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(2);
 
-    final pending = await getPendingEvents();
+    final pending = await robot.services.eventStore.getEvents('test');
     expect(pending, hasLength(2));
   });
 
@@ -158,7 +159,7 @@ void main() {
     await tester.pumpSmart();
 
     // always save the last events
-    final pending = await getPendingEvents();
+    final pending = await robot.services.eventStore.getEvents('test');
     expect(pending, hasLength(10));
 
     final lastEvents = robot.mockServices.mockApi.sendEventsInvocations.latest;
@@ -197,7 +198,7 @@ void main() {
       );
     });
 
-    final events = await getPendingEvents();
+    final events = await robot.services.eventStore.getEvents('test');
     expect(events, hasLength(1));
   });
 
@@ -223,7 +224,8 @@ void main() {
     await tester.pumpSmart();
 
     // event is saved locally for the "default" project
-    final eventsOnDisk = await getPendingEvents();
+    final eventStore = AnalyticsEventStore(sharedPreferences: SharedPreferences.getInstance);
+    final eventsOnDisk = await eventStore.getEvents('default');
     expect(eventsOnDisk, hasLength(1));
 
     // When a wiredash Widget is added to the tree, the events are sent
@@ -256,8 +258,11 @@ void main() {
     await tester.pumpSmart();
 
     // event is saved locally for project1
-    final eventsOnDisk = await getPendingEvents();
+    final eventStore = AnalyticsEventStore(sharedPreferences: SharedPreferences.getInstance);
+    final eventsOnDisk = await eventStore.getEvents('project1');
     expect(eventsOnDisk, hasLength(1));
+    final defaultEventsOnDisk = await eventStore.getEvents('default');
+    expect(defaultEventsOnDisk, hasLength(0));
 
     // other-project does not submit the event
     await robot.launchApp(projectId: 'other-project');
@@ -271,13 +276,4 @@ void main() {
     await tester.pumpSmart(const Duration(seconds: 5));
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
   });
-}
-
-Future<List<String>> getPendingEvents() async {
-  final prefs = await SharedPreferences.getInstance();
-  final events = prefs
-      .getKeys()
-      .where((key) => WiredashAnalytics.eventKeyRegex.hasMatch(key))
-      .toList();
-  return events;
 }
