@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
 import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -75,7 +76,7 @@ class AnalyticsEventStore {
     await prefs.reload();
     final keys = prefs.getKeys();
 
-    final now = DateTime.now();
+    final now = clock.now();
     final threeDaysAgo = now.subtract(outdatedAfter);
     final int unixThreeDaysAgo = threeDaysAgo.millisecondsSinceEpoch;
     for (final key in keys) {

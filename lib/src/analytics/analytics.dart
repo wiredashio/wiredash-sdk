@@ -12,7 +12,6 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 // TODO how to handle when two instances of the app, with two different wiredash configurations are open. Where would events be sent to?
 // TODO send events every 30 seconds to the server (or 5min?)
 // TODO send events to server on app close
-// TODO wipe events older than 3 days (missing test)
 // TODO validate event name and parameters
 // TODO implement Wiredash.of(context).method()
 // TODO validate event key

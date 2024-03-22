@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/core/network/send_events_request.dart';
+import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -224,7 +226,8 @@ void main() {
     await tester.pumpSmart();
 
     // event is saved locally for the "default" project
-    final eventStore = AnalyticsEventStore(sharedPreferences: SharedPreferences.getInstance);
+    final eventStore =
+        AnalyticsEventStore(sharedPreferences: SharedPreferences.getInstance);
     final eventsOnDisk = await eventStore.getEvents('default');
     expect(eventsOnDisk, hasLength(1));
 
@@ -258,7 +261,8 @@ void main() {
     await tester.pumpSmart();
 
     // event is saved locally for project1
-    final eventStore = AnalyticsEventStore(sharedPreferences: SharedPreferences.getInstance);
+    final eventStore =
+        AnalyticsEventStore(sharedPreferences: SharedPreferences.getInstance);
     final eventsOnDisk = await eventStore.getEvents('project1');
     expect(eventsOnDisk, hasLength(1));
     final defaultEventsOnDisk = await eventStore.getEvents('default');
@@ -275,5 +279,62 @@ void main() {
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(0);
     await tester.pumpSmart(const Duration(seconds: 5));
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+  });
+
+  testWidgets('wipe events older than 3 days', (tester) async {
+    final robot = WiredashTestRobot(tester);
+    robot.setupMocks();
+    await tester.pumpWidget(
+      // No Wiredash widget
+      MaterialApp(
+        home: Scaffold(
+          body: ElevatedButton(
+            onPressed: () {
+              Wiredash.trackEvent('test_event', projectId: 'projectX');
+            },
+            child: const Text('Send Event'),
+          ),
+        ),
+      ),
+    );
+    // insert some old events
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+    await tester.pump(const Duration(days: 1));
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+
+    final eventStore =
+        AnalyticsEventStore(sharedPreferences: SharedPreferences.getInstance);
+    final eventsOnDisk1 = await eventStore.getEvents('projectX');
+    expect(eventsOnDisk1, hasLength(2));
+
+    // jump to 3 days in the future
+    await tester.pump(const Duration(days: 2));
+
+    // restart the app
+    await robot.launchApp(projectId: 'projectX');
+    final eventsOnDisk2 = await robot.services.eventStore.getEvents('projectX');
+    expect(eventsOnDisk2, hasLength(2));
+
+    final eventsOnDisk3 = await robot.services.eventStore.getEvents('projectX');
+    expect(eventsOnDisk3, hasLength(2));
+
+    // wait for submission
+    final future = ResultFuture(
+      robot.mockServices.services.syncEngine
+          .onEvent(SdkEvent.appStartDelayed),
+    );
+    await tester.waitUntil(() => future.isComplete, isTrue);
+
+    // Tried to submit only the one that is not older than 3 days
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+    final submittedEvents = robot.mockServices.mockApi.sendEventsInvocations
+        .latest[0]! as List<RequestEvent>;
+    expect(submittedEvents, hasLength(1));
+
+    // keep only that one on disk because submission failed
+    final eventsOnDisk4 = await robot.services.eventStore.getEvents('projectX');
+    expect(eventsOnDisk4, hasLength(1));
   });
 }
