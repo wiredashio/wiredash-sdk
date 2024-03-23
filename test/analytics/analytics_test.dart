@@ -85,6 +85,36 @@ void main() {
     expect(event.eventData, {'param1': 'value1'});
   });
 
+
+  testWidgets('sendEvent (context)', (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      builder: (context) {
+        return Scaffold(
+          body: ElevatedButton(
+            onPressed: () async {
+              await Wiredash.of(context)
+                  .trackEvent('test_event', params: {'param1': 'value1'});
+            },
+            child: const Text('Send Event'),
+          ),
+        );
+      },
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+    print('pump end');
+
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+    final lastEvents = robot.mockServices.mockApi.sendEventsInvocations.latest;
+    final events = lastEvents[0] as List<RequestEvent>?;
+    expect(events, hasLength(1));
+    final event = events![0];
+    expect(event.eventName, 'test_event');
+    expect(event.eventData, {'param1': 'value1'});
+  });
+
   testWidgets('sendEvent is blocked by ad blocker', (tester) async {
     final robot = WiredashTestRobot(tester);
     await robot.launchApp(
