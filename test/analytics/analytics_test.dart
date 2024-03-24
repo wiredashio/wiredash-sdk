@@ -2,11 +2,10 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:clock/clock.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 
 // TODO explicit analytics import should not be necessary
 import 'package:wiredash/src/analytics/analytics.dart';
@@ -14,7 +13,7 @@ import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/core/network/send_events_request.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
-import 'package:wiredash/wiredash.dart';
+import 'package:wiredash/src/core/wiredash_widget.dart';
 
 import '../util/mock_api.dart';
 import '../util/robot.dart';
@@ -460,5 +459,47 @@ void main() {
     // keep only that one on disk because submission failed
     final eventsOnDisk4 = await robot.services.eventStore.getEvents('projectX');
     expect(eventsOnDisk4, hasLength(1));
+  });
+
+  group('registry', () {
+    test('singleton', () {
+      final r1 = WiredashRegistry.instance;
+      final r2 = WiredashRegistry.instance;
+      expect(identical(r1, r2), isTrue);
+    });
+
+    testWidgets('add existing item throws', (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp();
+
+      final registry = WiredashRegistry.instance;
+      final element =
+          tester.firstElement(find.byWidget(robot.widget)) as StatefulElement;
+      expect(
+        () => registry.register(element.state as WiredashState),
+        throwsA(
+          isA<StateError>().having(
+            (e) => e.message,
+            'message',
+            contains('is already registered'),
+          ),
+        ),
+      );
+    });
+
+    testWidgets('add item', (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp();
+
+      final registry = WiredashRegistry.instance;
+      expect(registry.allWidgets, hasLength(1));
+      expect(registry.referenceCount, 1);
+    });
+
+    test('zero items', () {
+      // by default, the registry is empty.
+      // and the state added in the previous test is not present anymore
+      expect(WiredashRegistry.instance.allWidgets, isEmpty);
+    });
   });
 }

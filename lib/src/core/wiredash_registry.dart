@@ -8,6 +8,14 @@ import 'package:wiredash/src/utils/disposable.dart';
 class WiredashRegistry {
   WiredashRegistry._();
 
+  /// Returns the singleton instance of the [WiredashRegistry]
+  ///
+  /// Technically, this class is a singleton with all of its bad behaviors.
+  /// Assuming that widgets tests do not run in parallel on the same isolate,
+  /// this singleton does not cause any issues. When the Wiredash widget is
+  /// removed from the widget tree, which happens automatically at the end of
+  /// every [testWidgets] test, it is removed automatically from the registry.
+  /// Additionally, the registry only holds weak references to the widget states.
   static final WiredashRegistry instance = WiredashRegistry._();
 
   final List<WeakReference<WiredashState>> _refs = [];
