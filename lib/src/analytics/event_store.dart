@@ -123,7 +123,6 @@ class AnalyticsEventStore {
 
     // remove remaining events that exceed the maximum size
     for (final event in oldestLast) {
-      print('Removing $event from disk');
       await prefs.remove(event);
     }
   }

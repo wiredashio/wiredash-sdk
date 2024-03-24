@@ -6,28 +6,30 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
-// Prio #1
-// TODO how to handle when two instances of the app, with two different wiredash configurations are open. Where would events be sent to?
-// TODO send events every 30 seconds to the server (or 5min?)
-// TODO send events to server on app close
+// Required
 // TODO validate event name and parameters
-// TODO implement Wiredash.of(context).method()
 // TODO validate event key
-// TODO send first_launch event with # in beginning.
 // TODO don't allow # in the beginning
+// TODO send first_launch event with # in beginning.
 // TODO Use a fixed list of internal events that start with #
-// TODO drop event if server responds 400 (code 2200)
-// TODO keep events if server responds 400 (code 2201)
-// TODO keep events for any other server error
+// TODO drop event if server responds 400 (code 2200) MISSING TEST
+// TODO keep events if server responds 400 (code 2201) MISSING TEST
+// TODO keep events for any other server error MISSING TEST
 // TODO allow white space in eventName
+// TODO Write documentation
+
+// Important
+// TODO send events to server on app close
+// TODO send events every 30 seconds to the server (or 5min?)
 // TODO drop event when API credentials are obviously wrong
 // TODO allow resetting of the analyticsId
-// TODO allow triggering of event submission
-// TODO automatically add page_name as property
+// TODO send events directly on web
+// TODO test InvalidEventFormatException with real server response
 
 // Nice to have
+// TODO allow triggering of event submission
 // TODO write integration_test for isolates
-// TODO send events directly on web
+// TODO automatically add page_name as property
 
 class WiredashAnalytics {
   /// Optional [projectId] in case multiple [Wiredash] widgets with different
@@ -44,7 +46,6 @@ class WiredashAnalytics {
     String eventName, {
     Map<String, Object?>? params,
   }) async {
-    print('Tracking event $eventName');
 
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
@@ -70,7 +71,9 @@ class WiredashAnalytics {
   }
 
   Future<void> _notifyWiredashInstance(
-      String? projectId, String eventName) async {
+    String? projectId,
+    String eventName,
+  ) async {
     final allWidget = WiredashRegistry.instance.allWidgets;
     if (allWidget.isEmpty) {
       // no Wiredash instance is running. Wait for next mount to send the event
@@ -207,26 +210,4 @@ class NoWiredashInstanceFoundException implements Exception {
 
 class NoProjectIdSpecifiedException implements Exception {
   NoProjectIdSpecifiedException();
-}
-
-// TODO write documentation with these examples
-void main() async {
-  final BuildContext context = RootElement(const RootWidget());
-
-  // plain arguments
-  await trackEvent('test_event', params: {'param1': 'value1'});
-
-  // Event object
-  // final event = Event(name: 'test_event', params: {'param1': 'value1'});
-  // await trackEvent2(event);
-
-  // WiredashAnalytics instance
-  final analytics = WiredashAnalytics();
-  await analytics.trackEvent('test_event', params: {'param1': 'value1'});
-
-  // state instance method (will always work)
-  await Wiredash.of(context)
-      .trackEvent('test_event', params: {'param1': 'value1'});
-
-  await trackEvent('test_event', params: {'param1': 'value1'});
 }

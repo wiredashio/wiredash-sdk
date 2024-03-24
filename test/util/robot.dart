@@ -229,8 +229,9 @@ class WiredashTestRobot {
   WiredashServices servicesForProject(String projectId) {
     final elements =
         find.byType(Wiredash).evaluate().map((e) => e as StatefulElement);
-    final element = elements.firstWhere((element) =>
-        (element.state as WiredashState).widget.projectId == projectId);
+    final element = elements.firstWhere(
+      (e) => (e.state as WiredashState).widget.projectId == projectId,
+    );
     return (element.state as WiredashState).debugServices;
   }
 

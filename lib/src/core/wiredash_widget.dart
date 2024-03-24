@@ -224,7 +224,7 @@ class WiredashState extends State<Wiredash> {
     try {
       await _services.eventSubmitter.submitEvents();
     } catch (e, stack) {
-      //reportWiredashInfo(e, stack, 'Error submitting events');
+      reportWiredashInfo(e, stack, 'Unexpected error while submitting events');
     }
   }
 

@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/core/network/send_events_request.dart';
-import 'package:wiredash/src/core/network/wiredash_api.dart';
 
 /// Abstract interface for submitting events to the backend
 ///
@@ -38,7 +38,6 @@ class PendingEventSubmitter implements EventSubmitter {
   @override
   Future<void> submitEvents() async {
     final projectId = this.projectId();
-    print('Submitting events for $projectId');
     // TODO check last sent event call.
     //  If is was less than 30 seconds ago, start timer
     //  else kick of sending events to backend for this projectId
@@ -47,7 +46,6 @@ class PendingEventSubmitter implements EventSubmitter {
     await eventStore.trimToDiskLimit();
     final toBeSubmitted = await eventStore.getEvents(projectId);
 
-    print('Found ${toBeSubmitted.length} events for submission');
     if (toBeSubmitted.isEmpty) {
       return;
     }
@@ -71,19 +69,24 @@ class PendingEventSubmitter implements EventSubmitter {
 
     try {
       await api.sendEvents(requestEvents);
-      print('Submitted ${toBeSubmitted.length} events');
       for (final key in toBeSubmitted.keys) {
         await eventStore.removeEvent(key);
       }
-    } on InvalidEventFormatException catch (e) {
-      print('Received error when sending events: $e');
-      print('Deleting all events');
+    } on InvalidEventFormatException catch (e, stack) {
+      reportWiredashInfo(
+        e,
+        stack,
+        'Some events where rejected by the backend.',
+      );
       for (final key in toBeSubmitted.keys) {
         await eventStore.removeEvent(key);
       }
-    } catch (e) {
-      print('Received error when sending events: $e');
-      print('Retrying at a later time');
+    } catch (e, stack) {
+      reportWiredashInfo(
+        e,
+        stack,
+        'Could not submit events to backend. Retrying later.',
+      );
     }
   }
 }

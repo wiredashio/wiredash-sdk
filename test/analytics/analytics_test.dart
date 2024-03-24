@@ -75,7 +75,6 @@ void main() {
 
     await robot.tapText('Send Event');
     await tester.pumpSmart();
-    print('pump end');
 
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
     final lastEvents = robot.mockServices.mockApi.sendEventsInvocations.latest;
@@ -104,7 +103,6 @@ void main() {
 
     await robot.tapText('Send Event');
     await tester.pumpSmart();
-    print('pump end');
 
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
     final lastEvents = robot.mockServices.mockApi.sendEventsInvocations.latest;
@@ -117,7 +115,8 @@ void main() {
 
   testWidgets(
       'sendEvent top-level with two instances - '
-      'forwards to the first registered with warning - order 1', (tester) async {
+      'forwards to the first registered with warning - order 1',
+      (tester) async {
     final robot = WiredashTestRobot(tester);
     await robot.launchApp(
       wrapWithWiredash: false,
@@ -144,7 +143,7 @@ void main() {
                   await Wiredash.trackEvent('test_event');
                 },
                 child: const Text('Send Event'),
-              )
+              ),
             ],
           ),
         );
@@ -153,7 +152,6 @@ void main() {
 
     await robot.tapText('Send Event');
     await tester.pumpSmart();
-    print('pump end');
 
     final api1 = robot.servicesForProject('project1').api as MockWiredashApi;
     final api2 = robot.servicesForProject('project2').api as MockWiredashApi;
@@ -163,7 +161,8 @@ void main() {
 
   testWidgets(
       'sendEvent top-level with two instances - '
-          'forwards to the first registered with warning - order 2', (tester) async {
+      'forwards to the first registered with warning - order 2',
+      (tester) async {
     final robot = WiredashTestRobot(tester);
     await robot.launchApp(
       wrapWithWiredash: false,
@@ -190,7 +189,7 @@ void main() {
                   await Wiredash.trackEvent('test_event');
                 },
                 child: const Text('Send Event'),
-              )
+              ),
             ],
           ),
         );
@@ -199,7 +198,6 @@ void main() {
 
     await robot.tapText('Send Event');
     await tester.pumpSmart();
-    print('pump end');
 
     final api1 = robot.servicesForProject('project1').api as MockWiredashApi;
     final api2 = robot.servicesForProject('project2').api as MockWiredashApi;
