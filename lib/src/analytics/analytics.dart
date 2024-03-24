@@ -7,16 +7,13 @@ import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 // Required
-// TODO validate event name and parameters
-// TODO validate event key
-// TODO don't allow # in the beginning
-// TODO send first_launch event with # in beginning.
-// TODO Use a fixed list of internal events that start with #
+// TODO validate event parameters
 // TODO drop event if server responds 400 (code 2200) MISSING TEST
 // TODO keep events if server responds 400 (code 2201) MISSING TEST
 // TODO keep events for any other server error MISSING TEST
 // TODO ignore corrupt events on disk (users might edit it on web)
 // TODO allow white space in eventName
+// TODO allow at most 10 parameters
 // TODO Write documentation
 
 // Important
@@ -48,6 +45,8 @@ class WiredashAnalytics {
     String eventName, {
     Map<String, Object?>? params,
   }) async {
+    validateEventName(eventName);
+
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
     final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
@@ -211,4 +210,87 @@ class NoWiredashInstanceFoundException implements Exception {
 
 class NoProjectIdSpecifiedException implements Exception {
   NoProjectIdSpecifiedException();
+}
+
+const List<String> _internalEvents = [
+  '#first_launch',
+];
+
+final _eventKeyRegExp = RegExp(r'^#?[A-Za-z]+(?: ?[0-9A-Za-z_-]{2,})+$');
+
+/// The event name must be between 3 to 64 characters long
+/// Contain only letters (a-zA-Z), numbers (0-9), - and _
+/// Must start with a letter (a-zA-Z)
+/// Must not contain double spaces
+/// Must not contain double or trailing spaces
+void validateEventName(String eventName) {
+  if (eventName.isEmpty) {
+    throw ArgumentError.value(
+        eventName, 'eventName', 'Event name must not be empty',);
+  }
+
+  if (eventName.startsWith('#')) {
+    if (!_internalEvents.contains(eventName)) {
+      throw ArgumentError.value(
+        eventName,
+        'eventName',
+        'Unknown internal event (starting with #)',
+      );
+    }
+  }
+
+  if (eventName.length < 3 || eventName.length > 64) {
+    throw ArgumentError.value(
+      eventName,
+      'eventName',
+      'Event name must be between 3 and 64 characters long',
+    );
+  }
+
+  if (eventName.contains('  ')) {
+    throw ArgumentError.value(
+      eventName,
+      'eventName',
+      'Event name must not contain double spaces',
+    );
+  }
+
+  if (eventName.endsWith(' ')) {
+    throw ArgumentError.value(
+      eventName,
+      'eventName',
+      'Event name must not contain trailing spaces',
+    );
+  }
+
+  if (eventName.contains('ä') || eventName.contains('ö') || eventName.contains('ü')) {
+    throw ArgumentError.value(
+      eventName,
+      'eventName',
+      'Event name must not contain umlauts',
+    );
+  }
+
+  String firstChar = String.fromCharCode(eventName.codeUnitAt(0));
+  if (firstChar == '#') {
+    firstChar = String.fromCharCode(eventName.codeUnitAt(1));
+  }
+  final regex = RegExp('^[A-Za-z]');
+  if (!regex.hasMatch(firstChar)) {
+    throw ArgumentError.value(
+      eventName,
+      'eventName',
+      'Event name must start with a letter (a-zA-Z)',
+    );
+  }
+
+  if (!_eventKeyRegExp.hasMatch(eventName)) {
+    throw ArgumentError.value(
+      eventName,
+      'eventName',
+      'Event name does not match $_eventKeyRegExp',
+    );
+  }
+
+  // valid
 }
