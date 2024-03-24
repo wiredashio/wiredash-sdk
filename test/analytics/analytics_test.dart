@@ -300,28 +300,29 @@ void main() {
 
     // TODO create integration_test
     markTestSkipped('not possible on Dart VM');
-    bool skip = false;
-    assert(() {
-      skip = true;
-      return true;
-    }());
-    if (skip) {
-      return;
-    }
-
-    final token = ServicesBinding.rootIsolateToken!;
-    await tester.runAsync(() async {
-      await compute(
-        (RootIsolateToken token) async {
-          BackgroundIsolateBinaryMessenger.ensureInitialized(token);
-          await Wiredash.trackEvent('test_event');
-        },
-        token,
-      );
-    });
-
-    final events = await robot.services.eventStore.getEvents('test');
-    expect(events, hasLength(1));
+    return;
+    // bool skip = false;
+    // assert(() {
+    //   skip = true;
+    //   return true;
+    // }());
+    // if (skip) {
+    //   return;
+    // }
+    //
+    // final token = ServicesBinding.rootIsolateToken!;
+    // await tester.runAsync(() async {
+    //   await compute(
+    //     (RootIsolateToken token) async {
+    //       BackgroundIsolateBinaryMessenger.ensureInitialized(token);
+    //       await Wiredash.trackEvent('test_event');
+    //     },
+    //     token,
+    //   );
+    // });
+    //
+    // final events = await robot.services.eventStore.getEvents('test');
+    // expect(events, hasLength(1));
   });
 
   testWidgets('default events are submitted with the next Wiredash instance',
