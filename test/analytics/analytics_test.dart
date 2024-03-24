@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:async/async.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
@@ -52,7 +54,9 @@ void main() {
     expect(event.bundleId, 'io.wiredash.test');
     expect(event.createdAt, now);
     expect(event.platformOS, isNotNull);
-    expect(event.platformOSVersion, isNotNull);
+    if (!Platform.isLinux) {
+      expect(event.platformOSVersion, '10.0.1');
+    }
     expect(event.platformLocale, isNotNull);
     expect(event.sdkVersion, wiredashSdkVersion);
   });
