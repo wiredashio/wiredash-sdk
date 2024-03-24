@@ -47,7 +47,6 @@ class WiredashAnalytics {
     String eventName, {
     Map<String, Object?>? params,
   }) async {
-
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
     final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
