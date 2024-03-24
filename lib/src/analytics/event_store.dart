@@ -58,7 +58,10 @@ class AnalyticsEventStore {
           toBeSubmitted[key] = event;
         } catch (e, stack) {
           reportWiredashInfo(
-              e, stack, 'Error when parsing event $key. Removing.');
+            e,
+            stack,
+            'Error when parsing event $key. Removing.',
+          );
           await prefs.remove(key);
         }
       }

@@ -382,7 +382,7 @@ void main() {
 
   group('registry', () {
     testWidgets('cleanup removes inaccessible references', (tester) async {
-      expect(WiredashRegistry.referenceCount, 0);
+      expect(WiredashRegistry.instance.referenceCount, 0);
 
       await tester.pumpWidget(
         const Wiredash(
@@ -391,7 +391,7 @@ void main() {
           child: SizedBox(),
         ),
       );
-      expect(WiredashRegistry.referenceCount, 1);
+      expect(WiredashRegistry.instance.referenceCount, 1);
 
       for (int i = 0; i < 10; i++) {
         await tester.pumpWidget(
@@ -402,11 +402,11 @@ void main() {
             child: const SizedBox(),
           ),
         );
-        expect(WiredashRegistry.referenceCount, 1);
+        expect(WiredashRegistry.instance.referenceCount, 1);
       }
 
       await tester.pumpWidget(const SizedBox());
-      expect(WiredashRegistry.referenceCount, 0);
+      expect(WiredashRegistry.instance.referenceCount, 0);
     });
   });
 }

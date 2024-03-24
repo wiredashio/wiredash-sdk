@@ -83,6 +83,7 @@ class SyncEngine {
       }(),
     );
 
+    // TODO remove? it is never set
     final bool? hasBeenStarted = Zone.current['wiredash:appStart'] as bool?;
     if (hasBeenStarted == true) {
       return;

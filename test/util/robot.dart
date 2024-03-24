@@ -146,6 +146,7 @@ class WiredashTestRobot {
     FutureOr<void> Function()? afterPump,
     List<LocalizationsDelegate> appLocalizationsDelegates = const [],
     bool useDirectFeedbackSubmitter = true,
+    bool wrapWithWiredash = true,
   }) async {
     setupMocks();
     WiredashServices.debugServicesCreator = () => createMockServices(
@@ -153,8 +154,38 @@ class WiredashTestRobot {
         );
     addTearDown(() => WiredashServices.debugServicesCreator = null);
 
-    await tester.pumpWidget(
-      Wiredash(
+    Widget child = MaterialApp(
+      locale: const Locale('test'),
+      localizationsDelegates: [
+        ...appLocalizationsDelegates,
+        DefaultWidgetsLocalizations.delegate,
+      ],
+      home: Builder(
+        builder: builder ??
+            (context) {
+              return Scaffold(
+                body: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Wiredash.of(context).show();
+                      },
+                      child: const Text('Feedback'),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Wiredash.of(context).showPromoterSurvey(force: true);
+                      },
+                      child: const Text('Promoter Score'),
+                    ),
+                  ],
+                ),
+              );
+            },
+      ),
+    );
+    if (wrapWithWiredash) {
+      child = Wiredash(
         projectId: projectId ?? 'test',
         secret: 'test',
         feedbackOptions: feedbackOptions,
@@ -168,39 +199,10 @@ class WiredashTestRobot {
           primaryBackgroundColor: Colors.grey,
           secondaryBackgroundColor: Colors.brown,
         ),
-        child: MaterialApp(
-          locale: const Locale('test'),
-          localizationsDelegates: [
-            ...appLocalizationsDelegates,
-            DefaultWidgetsLocalizations.delegate,
-          ],
-          home: Builder(
-            builder: builder ??
-                (context) {
-                  return Scaffold(
-                    body: Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Wiredash.of(context).show();
-                          },
-                          child: const Text('Feedback'),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Wiredash.of(context)
-                                .showPromoterSurvey(force: true);
-                          },
-                          child: const Text('Promoter Score'),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-          ),
-        ),
-      ),
-    );
+        child: child,
+      );
+    }
+    await tester.pumpWidget(child);
     if (afterPump != null) {
       await afterPump();
     }
@@ -221,6 +223,14 @@ class WiredashTestRobot {
 
   WiredashServices get services {
     final element = find.byType(Wiredash).evaluate().first as StatefulElement;
+    return (element.state as WiredashState).debugServices;
+  }
+
+  WiredashServices servicesForProject(String projectId) {
+    final elements =
+        find.byType(Wiredash).evaluate().map((e) => e as StatefulElement);
+    final element = elements.firstWhere((element) =>
+        (element.state as WiredashState).widget.projectId == projectId);
     return (element.state as WiredashState).debugServices;
   }
 

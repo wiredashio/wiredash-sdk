@@ -14,6 +14,7 @@ import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/wiredash.dart';
 
+import '../util/mock_api.dart';
 import '../util/robot.dart';
 import '../util/wiredash_tester.dart';
 
@@ -85,7 +86,6 @@ void main() {
     expect(event.eventData, {'param1': 'value1'});
   });
 
-
   testWidgets('sendEvent (context)', (tester) async {
     final robot = WiredashTestRobot(tester);
     await robot.launchApp(
@@ -113,6 +113,98 @@ void main() {
     final event = events![0];
     expect(event.eventName, 'test_event');
     expect(event.eventData, {'param1': 'value1'});
+  });
+
+  testWidgets(
+      'sendEvent top-level with two instances - '
+      'forwards to the first registered with warning - order 1', (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      wrapWithWiredash: false,
+      builder: (context) {
+        return Scaffold(
+          body: Column(
+            children: [
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project1',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project2',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await Wiredash.trackEvent('test_event');
+                },
+                child: const Text('Send Event'),
+              )
+            ],
+          ),
+        );
+      },
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+    print('pump end');
+
+    final api1 = robot.servicesForProject('project1').api as MockWiredashApi;
+    final api2 = robot.servicesForProject('project2').api as MockWiredashApi;
+    api1.sendEventsInvocations.verifyInvocationCount(1);
+    api2.sendEventsInvocations.verifyInvocationCount(0);
+  });
+
+  testWidgets(
+      'sendEvent top-level with two instances - '
+          'forwards to the first registered with warning - order 2', (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      wrapWithWiredash: false,
+      builder: (context) {
+        return Scaffold(
+          body: Column(
+            children: [
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project2',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project1',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await Wiredash.trackEvent('test_event');
+                },
+                child: const Text('Send Event'),
+              )
+            ],
+          ),
+        );
+      },
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+    print('pump end');
+
+    final api1 = robot.servicesForProject('project1').api as MockWiredashApi;
+    final api2 = robot.servicesForProject('project2').api as MockWiredashApi;
+    api1.sendEventsInvocations.verifyInvocationCount(0);
+    api2.sendEventsInvocations.verifyInvocationCount(1);
   });
 
   testWidgets('sendEvent is blocked by ad blocker', (tester) async {
@@ -352,8 +444,7 @@ void main() {
 
     // wait for submission
     final future = ResultFuture(
-      robot.mockServices.services.syncEngine
-          .onEvent(SdkEvent.appStartDelayed),
+      robot.mockServices.services.syncEngine.onEvent(SdkEvent.appStartDelayed),
     );
     await tester.waitUntil(() => future.isComplete, isTrue);
 

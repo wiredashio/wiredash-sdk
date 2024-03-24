@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
+import 'package:wiredash/src/utils/disposable.dart';
 
 /// Allows intercepting of the Android back button
 class BackButtonInterceptor extends StatefulWidget {
@@ -27,7 +28,7 @@ class _BackButtonInterceptorState extends State<BackButtonInterceptor> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _disposable?.call();
+    _disposable?.dispose();
     _disposable = WiredashBackButtonDispatcher.of(context)
         .addListener(widget.onBackPressed);
   }
@@ -36,7 +37,7 @@ class _BackButtonInterceptorState extends State<BackButtonInterceptor> {
   void didUpdateWidget(covariant BackButtonInterceptor oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.onBackPressed != widget.onBackPressed) {
-      _disposable?.call();
+      _disposable?.dispose();
       _disposable = WiredashBackButtonDispatcher.of(context)
           .addListener(widget.onBackPressed);
     }
@@ -45,7 +46,7 @@ class _BackButtonInterceptorState extends State<BackButtonInterceptor> {
   @override
   void dispose() {
     super.dispose();
-    _disposable?.call();
+    _disposable?.dispose();
   }
 
   @override
@@ -55,8 +56,6 @@ class _BackButtonInterceptorState extends State<BackButtonInterceptor> {
 }
 
 typedef OnBackPressed = FutureOr<BackButtonAction> Function();
-
-typedef Disposable = void Function();
 
 enum BackButtonAction {
   /// When a back button action has been triggered and no further action
@@ -81,7 +80,7 @@ class WiredashBackButtonDispatcher extends WidgetsBindingObserver {
 
   @override
   Future<bool> didPopRoute() async {
-    // process listeneres in reverse order, assuming the latest listener added
+    // process listeners in reverse order, assuming the latest listener added
     // is the furthest down the widget tree. Ignoring that that part of the
     // widget tree might not have the focus
     final listeners = _listeners.reversed.toList();
@@ -106,9 +105,9 @@ class WiredashBackButtonDispatcher extends WidgetsBindingObserver {
 
   Disposable addListener(OnBackPressed onBackPressed) {
     _listeners.add(onBackPressed);
-    return () {
+    return Disposable(() {
       _listeners.remove(onBackPressed);
-    };
+    });
   }
 
   /// Use this to inject this dispatcher into the widget tree. Children can
