@@ -54,7 +54,7 @@ class AnalyticsEventStore {
         if (eventJson == null) continue;
         try {
           final AnalyticsEvent event =
-              deserializeEventV1(jsonDecode(eventJson));
+              deserializeEventV1(jsonDecode(eventJson) as Map<String, Object?>);
           toBeSubmitted[key] = event;
         } catch (e, stack) {
           reportWiredashInfo(

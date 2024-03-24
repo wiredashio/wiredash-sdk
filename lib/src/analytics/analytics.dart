@@ -15,6 +15,7 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 // TODO drop event if server responds 400 (code 2200) MISSING TEST
 // TODO keep events if server responds 400 (code 2201) MISSING TEST
 // TODO keep events for any other server error MISSING TEST
+// TODO ignore corrupt events on disk (users might edit it on web)
 // TODO allow white space in eventName
 // TODO Write documentation
 
