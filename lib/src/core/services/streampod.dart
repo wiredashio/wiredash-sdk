@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-const _kDebugStreamPod = true;
+const _kDebugStreamPod = false;
 
 void _log(Object? Function() message) {
   if (_kDebugStreamPod && kDebugMode) {
