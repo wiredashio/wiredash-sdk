@@ -7,13 +7,13 @@ import 'package:wiredash/src/core/network/send_events_request.dart';
 ///
 /// Implementations are
 /// - [DirectEventSubmitter] for immediate submission of events (usually web)
-/// - [PendingEventSubmitter] for batching events within a certain time frame (usually mobile)
+/// - [DebounceEventSubmitter] for batching events within a certain time frame (usually mobile)
 abstract class EventSubmitter {
   /// Submits all pending events in [SharedPreferences] to the backend
   Future<void> submitEvents();
 }
 
-class DirectEventSubmitter extends PendingEventSubmitter {
+class DirectEventSubmitter extends DebounceEventSubmitter {
   DirectEventSubmitter({
     required super.eventStore,
     required super.api,
@@ -21,14 +21,14 @@ class DirectEventSubmitter extends PendingEventSubmitter {
   }) : super(throttleDuration: Duration.zero);
 }
 
-class PendingEventSubmitter implements EventSubmitter {
+class DebounceEventSubmitter implements EventSubmitter {
   final AnalyticsEventStore eventStore;
   final WiredashApi api;
   final String Function() projectId;
 
   final Duration throttleDuration;
 
-  PendingEventSubmitter({
+  DebounceEventSubmitter({
     required this.eventStore,
     required this.api,
     required this.projectId,

@@ -187,7 +187,7 @@ void registerProdWiredashServices(WiredashServices sl) {
       );
     }
 
-    return PendingEventSubmitter(
+    return DebounceEventSubmitter(
       api: sl.api,
       eventStore: sl.eventStore,
       projectId: () => sl.wiredashWidget.projectId,

@@ -15,6 +15,7 @@ import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 // ignore: unused_import
@@ -146,11 +147,13 @@ class WiredashTestRobot {
     FutureOr<void> Function()? afterPump,
     List<LocalizationsDelegate> appLocalizationsDelegates = const [],
     bool useDirectFeedbackSubmitter = true,
+    bool useDirectEventSubmitter = true,
     bool wrapWithWiredash = true,
   }) async {
     setupMocks();
     WiredashServices.debugServicesCreator = () => createMockServices(
           useDirectFeedbackSubmitter: useDirectFeedbackSubmitter,
+          useDirectEventSubmitter: useDirectEventSubmitter,
         );
     addTearDown(() => WiredashServices.debugServicesCreator = null);
 
@@ -634,16 +637,21 @@ class WiredashMockServices {
   MockWiredashApi get mockApi => services.api as MockWiredashApi;
 }
 
-WiredashServices createMockServices({bool useDirectFeedbackSubmitter = false}) {
+WiredashServices createMockServices({
+  bool useDirectFeedbackSubmitter = false,
+  bool useDirectEventSubmitter = false,
+}) {
   return WiredashServices.setup((services) {
     registerProdWiredashServices(services);
 
     // Don't do actual http calls
-    services.inject<WiredashApi>((_) {
-      // depend on the widget (secret/project)
-      services.wiredashWidget;
-      return MockWiredashApi.fake();
-    });
+    services.inject<WiredashApi>(
+      (_) {
+        // depend on the widget (secret/project)
+        services.wiredashWidget;
+        return MockWiredashApi.fake();
+      },
+    );
 
     // Let the widget behave as in production
     services.inject<TestDetector>((_) => _OverlookFakeAsync());
@@ -651,10 +659,28 @@ WiredashServices createMockServices({bool useDirectFeedbackSubmitter = false}) {
     if (useDirectFeedbackSubmitter) {
       // replace submitter, because for testing we always want to submit directly
       services.inject<FeedbackSubmitter>(
-        (locator) => DirectFeedbackSubmitter(services.api),
+        (_) => DirectFeedbackSubmitter(services.api),
       );
     } else {
-      assert(services.feedbackSubmitter is RetryingFeedbackSubmitter);
+      assert(
+        services.feedbackSubmitter.runtimeType == RetryingFeedbackSubmitter,
+      );
+    }
+
+    if (useDirectEventSubmitter) {
+      services.inject<EventSubmitter>(
+        (_) {
+          print('create direct submitter');
+          return DirectEventSubmitter(
+            projectId: () => services.wiredashWidget.projectId,
+            eventStore: services.eventStore,
+            api: services.api,
+          );
+        },
+        dispose: (submitter) => print('dispose ${submitter.instanceName}'),
+      );
+    } else {
+      assert(services.eventSubmitter.runtimeType == DebounceEventSubmitter);
     }
   });
 }
