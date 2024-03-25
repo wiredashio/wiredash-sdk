@@ -14,6 +14,7 @@ import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
+import '../util/flutter_error.dart';
 import '../util/mock_api.dart';
 import '../util/robot.dart';
 import '../util/wiredash_tester.dart';
@@ -26,7 +27,7 @@ void main() {
         return Scaffold(
           body: ElevatedButton(
             onPressed: () {
-              Wiredash.trackEvent('test_event', params: {'param1': 'value1'});
+              Wiredash.trackEvent('test_event', data: {'param1': 'value1'});
             },
             child: const Text('Send Event'),
           ),
@@ -67,7 +68,7 @@ void main() {
           body: ElevatedButton(
             onPressed: () {
               final analytics = WiredashAnalytics();
-              analytics.trackEvent('test_event', params: {'param1': 'value1'});
+              analytics.trackEvent('test_event', data: {'param1': 'value1'});
             },
             child: const Text('Send Event'),
           ),
@@ -95,7 +96,7 @@ void main() {
           body: ElevatedButton(
             onPressed: () async {
               await Wiredash.of(context)
-                  .trackEvent('test_event', params: {'param1': 'value1'});
+                  .trackEvent('test_event', data: {'param1': 'value1'});
             },
             child: const Text('Send Event'),
           ),
@@ -215,7 +216,7 @@ void main() {
           body: ElevatedButton(
             onPressed: () {
               final analytics = WiredashAnalytics();
-              analytics.trackEvent('test_event', params: {'param1': 'value1'});
+              analytics.trackEvent('test_event', data: {'param1': 'value1'});
             },
             child: const Text('Send Event'),
           ),
@@ -239,9 +240,10 @@ void main() {
   });
 
   testWidgets('1mb size limit', (tester) async {
+    final errors = captureFlutterErrors();
     final robot = WiredashTestRobot(tester);
 
-    const kb100EventToInsert = 20;
+    const eventToInsert = 120;
     await robot.launchApp(
       builder: (context) {
         return Scaffold(
@@ -250,11 +252,22 @@ void main() {
               ElevatedButton(
                 onPressed: () async {
                   final analytics = WiredashAnalytics();
-                  const kb100 = 1024 * 1024 ~/ 10;
-                  for (var i = 0; i < kb100EventToInsert; i++) {
+                  const oneKb = 1024;
+                  for (var i = 0; i < eventToInsert; i++) {
                     await analytics.trackEvent(
                       'big',
-                      params: {'param1': "".padLeft(kb100, '0')},
+                      data: {
+                        'param1': "".padLeft(oneKb - 2, '0'),
+                        'param2': "".padLeft(oneKb - 2, '1'),
+                        'param3': "".padLeft(oneKb - 2, '2'),
+                        'param4': "".padLeft(oneKb - 2, '3'),
+                        'param5': "".padLeft(oneKb - 2, '4'),
+                        'param6': "".padLeft(oneKb - 2, '5'),
+                        'param7': "".padLeft(oneKb - 2, '6'),
+                        'param8': "".padLeft(oneKb - 2, '7'),
+                        'param9': "".padLeft(oneKb - 2, '8'),
+                        'param10': "".padLeft(oneKb - 2, '9'),
+                      },
                     );
                   }
                 },
@@ -282,9 +295,15 @@ void main() {
     await robot.tapText('Small Event');
     await tester.pumpSmart();
 
+    errors.restoreDefaultErrorHandlers();
+    expect(errors.onError, isEmpty);
+    final presentErrors = errors.presentError
+        .where((element) => !element.toString().contains('offline'));
+    expect(presentErrors, isEmpty);
+
     // always save the last events
     final pending = await robot.services.eventStore.getEvents('test');
-    expect(pending, hasLength(10));
+    expect(pending, hasLength(99)); // which is less than 120 (eventToInsert)
 
     final lastEvents = robot.mockServices.mockApi.sendEventsInvocations.latest;
     final events = lastEvents[0]! as List<RequestEvent>;
@@ -337,7 +356,12 @@ void main() {
         home: Scaffold(
           body: ElevatedButton(
             onPressed: () {
-              Wiredash.trackEvent('test_event', params: {'param1': 'value1'});
+              Wiredash.trackEvent(
+                'test_event',
+                data: {
+                  'param1': 'value1',
+                },
+              );
             },
             child: const Text('Send Event'),
           ),

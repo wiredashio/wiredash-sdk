@@ -13,6 +13,7 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 // TODO keep events for any other server error MISSING TEST
 // TODO ignore corrupt events on disk (users might edit it on web)
 // TODO Write documentation
+// TODO export analytics
 
 // Important
 // TODO send events to server on app close
@@ -41,11 +42,10 @@ class WiredashAnalytics {
 
   Future<void> trackEvent(
     String eventName, {
-    // TODO rename to args, arguments, properties, data, params, attributes, values, fields?
-    Map<String, Object?>? params,
+    Map<String, Object?>? data,
   }) async {
     validateEventName(eventName);
-    final eventData = validateParams(params, eventName);
+    final eventData = validateParams(data, eventName);
 
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
@@ -167,11 +167,11 @@ class WiredashAnalytics {
 
 Future<void> trackEvent(
   String eventName, {
-  Map<String, Object?>? params,
+  Map<String, Object?>? data,
   String? projectId,
 }) async {
   final analytics = WiredashAnalytics(projectId: projectId);
-  await analytics.trackEvent(eventName, params: params);
+  await analytics.trackEvent(eventName, data: data);
 }
 
 class AnalyticsEvent {
@@ -210,101 +210,6 @@ class NoWiredashInstanceFoundException implements Exception {
 
 class NoProjectIdSpecifiedException implements Exception {
   NoProjectIdSpecifiedException();
-}
-
-/// Parameters must not contain more than 10 key-value pairs
-///
-/// Keys must not exceed 128 characters
-///
-/// Values must not exceed 1024 characters (after running them through jsonEncode)
-/// Values can be String, int or bool. null is allowed, too.
-Map<String, Object?> validateParams(
-    Map<String, Object?>? params, String eventName) {
-  if (params == null) {
-    return {};
-  }
-  final preprocessed = Map.of(params);
-
-  // drop all keys that exceed the limit
-  final keysToRemove = preprocessed.keys.skip(10).toList();
-  for (final key in keysToRemove) {
-    preprocessed.remove(key);
-  }
-  if (keysToRemove.isNotEmpty) {
-    reportWiredashInfo(
-      TooManyEventParametersException(),
-      StackTrace.current,
-      'Dropped the keys $keysToRemove because the event parameters must not exceed 10 key-value pairs.',
-    );
-  }
-
-  for (final key in preprocessed.keys.toList()) {
-    if (key.length > 128) {
-      // drop key because it is too long
-      preprocessed.remove(key);
-      reportWiredashInfo(
-        InvalidEventKeyFormatException(key),
-        StackTrace.current,
-        'Dropped the key $key of event $eventName because it exceeds 128 characters.',
-      );
-    }
-
-    if (key == "") {
-      preprocessed.remove(key);
-      reportWiredashInfo(
-        InvalidEventKeyFormatException(key),
-        StackTrace.current,
-        'Dropped the key "$key" of event $eventName because it is empty.',
-      );
-    }
-
-    final value = params[key];
-    if (value == null || value is int || value is bool) {
-      continue;
-    }
-    if (value is String) {
-      final encoded = jsonEncode(value);
-      if (encoded.length > 1024) {
-        preprocessed.remove(key);
-        reportWiredashInfo(
-          ArgumentError.value(
-            params,
-            'params["$key"]',
-            'Event parameter value for "$key" has a length of ${encoded.length} '
-                'and exceeds the maximum of 1024 characters\n'
-                'Encoded Value: $encoded',
-          ),
-          StackTrace.current,
-          'Dropped the key $key of event $eventName because it exceeds 1024 characters.',
-        );
-      }
-      continue;
-    }
-    // all other types are unsupported
-    final type = value.runtimeType;
-    preprocessed.remove(key);
-    reportWiredashInfo(
-      ArgumentError.value(
-        params,
-        'params["$key"]',
-        'Event parameter value for "$key" has an unsupported type $type',
-      ),
-      StackTrace.current,
-      'Dropped the key $key of event $eventName because it has an unsupported type $type.',
-    );
-  }
-
-  return preprocessed;
-}
-
-class TooManyEventParametersException implements Exception {
-  TooManyEventParametersException();
-}
-
-class InvalidEventKeyFormatException implements Exception {
-  final String key;
-
-  InvalidEventKeyFormatException(this.key);
 }
 
 const List<String> _internalEvents = [
@@ -393,4 +298,101 @@ void validateEventName(String eventName) {
   }
 
   // valid
+}
+
+/// Parameters must not contain more than 10 key-value pairs
+///
+/// Keys must not exceed 128 characters
+///
+/// Values can be String, int or bool. null is allowed, too.
+/// Each value must not exceed 1024 characters (after running them through jsonEncode).
+Map<String, Object?> validateParams(
+  Map<String, Object?>? params,
+  String eventName,
+) {
+  if (params == null) {
+    return {};
+  }
+  final preprocessed = Map.of(params);
+
+  // drop all keys that exceed the limit
+  final keysToRemove = preprocessed.keys.skip(10).toList();
+  for (final key in keysToRemove) {
+    preprocessed.remove(key);
+  }
+  if (keysToRemove.isNotEmpty) {
+    reportWiredashInfo(
+      TooManyEventParametersException(),
+      StackTrace.current,
+      'Dropped the keys $keysToRemove because the event parameters must not exceed 10 key-value pairs.',
+    );
+  }
+
+  for (final key in preprocessed.keys.toList()) {
+    if (key.length > 128) {
+      // drop key because it is too long
+      preprocessed.remove(key);
+      reportWiredashInfo(
+        InvalidEventKeyFormatException(key),
+        StackTrace.current,
+        'Dropped the key $key of event $eventName because it exceeds 128 characters.',
+      );
+    }
+
+    if (key == "") {
+      preprocessed.remove(key);
+      reportWiredashInfo(
+        InvalidEventKeyFormatException(key),
+        StackTrace.current,
+        'Dropped the key "$key" of event $eventName because it is empty.',
+      );
+    }
+
+    final value = params[key];
+    if (value == null || value is int || value is bool) {
+      continue;
+    }
+    if (value is String) {
+      final encoded = jsonEncode(value);
+      if (encoded.length > 1024) {
+        preprocessed.remove(key);
+        reportWiredashInfo(
+          ArgumentError.value(
+            params,
+            'data["$key"]',
+            'Event parameter value for "$key" has a length of ${encoded.length} '
+                'and exceeds the maximum of 1024 characters\n'
+                'Encoded Value: $encoded',
+          ),
+          StackTrace.current,
+          'Dropped the key $key of event $eventName because it exceeds 1024 characters.',
+        );
+      }
+      continue;
+    }
+    // all other types are unsupported
+    final type = value.runtimeType;
+    preprocessed.remove(key);
+    reportWiredashInfo(
+      ArgumentError.value(
+        params,
+        'data["$key"]',
+        'Event parameter value for "$key" has an unsupported type $type',
+      ),
+      StackTrace.current,
+      'Dropped the key $key of event $eventName because it has an unsupported type $type.',
+    );
+  }
+
+  return preprocessed;
+}
+
+class TooManyEventParametersException implements Exception {
+  TooManyEventParametersException();
+}
+
+class InvalidEventKeyFormatException implements Exception {
+  final String key;
+
+  InvalidEventKeyFormatException(this.key);
 }

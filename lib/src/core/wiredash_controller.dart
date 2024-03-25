@@ -151,26 +151,15 @@ class WiredashController {
     _captureSessionMetaData();
     _model.feedbackOptionsOverride = options;
     _model.show(flow: WiredashFlow.feedback);
-    trackEvent(
-      '#wiredashOpen',
-      params: {
-        'inheritMaterialTheme': inheritMaterialTheme,
-        'inheritCupertinoTheme': inheritCupertinoTheme,
-        'screenshot': (options?.screenshot ?? ScreenshotPrompt.optional).name,
-        'email': (options?.email ?? EmailPrompt.optional).name,
-        'labelCount': options?.labels?.length ?? 0,
-        'flow': 'feedback',
-      },
-    );
   }
 
   Future<void> trackEvent(
     String eventName, {
-    Map<String, Object?>? params,
+    Map<String, Object?>? data,
   }) async {
     Wiredash.trackEvent(
       eventName,
-      params: params,
+      data: data,
       projectId: _model.services.wiredashWidget.projectId,
     );
   }

@@ -166,11 +166,11 @@ class Wiredash extends StatefulWidget {
 
   static Future<void> trackEvent(
     String eventName, {
-    Map<String, Object?>? params,
+    Map<String, Object?>? data,
     String? projectId,
   }) async {
     final analytics = WiredashAnalytics(projectId: projectId);
-    await analytics.trackEvent(eventName, params: params);
+    await analytics.trackEvent(eventName, data: data);
   }
 }
 

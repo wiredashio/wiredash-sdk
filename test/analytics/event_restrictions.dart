@@ -118,7 +118,7 @@ void main() {
         'seven',
         'eight',
         'nine',
-        'ten'
+        'ten',
       ]);
     });
 
@@ -169,7 +169,8 @@ void main() {
       _runValidateParameters({'x'.padLeft(128 + 1, 'x'): 'too long key'})
           .hasInfoContaining('Dropped the key')
           .hasInfoContaining(
-              'event event_name because it exceeds 128 characters')
+            'event event_name because it exceeds 128 characters',
+          )
           .hasNoErrors()
           .remainingKeys([]);
 
