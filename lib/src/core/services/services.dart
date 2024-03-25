@@ -108,8 +108,11 @@ class WiredashServices extends ChangeNotifier {
 
   EventSubmitter get eventSubmitter => _locator.watch();
 
-  Future<SharedPreferences> Function() get sharedPreferencesProvider =>
-      _locator.watch();
+  Future<SharedPreferences> Function() get sharedPreferencesProvider {
+    // explicitly using get instead of watch, because it is a factory not an
+    // object that returns the correct object for every call
+    return _locator.get();
+  }
 
   void updateWidget(Wiredash wiredashWidget) {
     inject<Wiredash>((_) => wiredashWidget);
