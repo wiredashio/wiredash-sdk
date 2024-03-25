@@ -104,7 +104,7 @@ class InjectableLocator implements Locator {
         }).join(', ');
         final depsText = deps.isEmpty ? '' : ', rebuilds $deps';
 
-        return '${DependencyTracker.levelIndent}Recreate ${existing.factoryType}$depsText';
+        return '${DependencyTracker._levelIndent}Recreate ${existing.factoryType}$depsText';
       });
       existing.consumers = [];
       existing.dependencies = [];
@@ -156,15 +156,15 @@ class InstanceFactory<T> {
   T get watch {
     _log(() {
       if (DependencyTracker._active == null) {
-        return '${DependencyTracker.levelIndent}Get $factoryType (via watch)';
+        return '${DependencyTracker._levelIndent}Get $factoryType (via watch)';
       } else {
-        return '${DependencyTracker.levelIndent}Watch $factoryType';
+        return '${DependencyTracker._levelIndent}Watch $factoryType';
       }
     });
 
     if (_instance == null) {
       _tracker.create();
-      _log(() => '${DependencyTracker.levelIndent}Creating $factoryType');
+      _log(() => '${DependencyTracker._levelIndent}Creating $factoryType');
       late final T i;
       i = create(locator);
       _log(() {
@@ -175,7 +175,7 @@ class InstanceFactory<T> {
           return '${e.factoryType}=>${i.objectId}';
         }).join(', ');
         final depsText = deps.isEmpty ? '' : ', watching $deps';
-        return '${DependencyTracker.levelIndent}Created $factoryType=>${(i as Object?).objectId}$depsText';
+        return '${DependencyTracker._levelIndent}Created $factoryType=>${(i as Object?).objectId}$depsText';
       });
       _tracker.created();
       _instance = i;
@@ -188,13 +188,13 @@ class InstanceFactory<T> {
 
   /// Reads the current [_instance], doesn't subscribe the calling [InstanceFactory] to changes.
   T get get {
-    _log(() => '${DependencyTracker.levelIndent}Get $factoryType');
+    _log(() => '${DependencyTracker._levelIndent}Get $factoryType');
     // temporarily disable dependency tracking
     final tempActive = DependencyTracker._active;
     DependencyTracker._active = null;
     if (_instance == null) {
       _tracker.create();
-      _log(() => '${DependencyTracker.levelIndent}Creating $factoryType');
+      _log(() => '${DependencyTracker._levelIndent}Creating $factoryType');
       late final T i;
       i = create(locator);
       _log(() {
@@ -205,7 +205,7 @@ class InstanceFactory<T> {
           return '${e.factoryType}=>${i.objectId}';
         }).join(', ');
         final depsText = deps.isEmpty ? '' : ', watching $deps';
-        return '${DependencyTracker.levelIndent}Created $factoryType=>${(i as Object?).objectId}$depsText';
+        return '${DependencyTracker._levelIndent}Created $factoryType=>${(i as Object?).objectId}$depsText';
       });
       _tracker.created();
       _instance = i;
@@ -232,7 +232,7 @@ class InstanceFactory<T> {
       }).join('\n- ');
       final depsText = deps.isEmpty ? '' : ', recreating\n- $deps';
 
-      return '${DependencyTracker.levelIndent}Disposing $factoryType=>${_instance.objectId}$depsText';
+      return '${DependencyTracker._levelIndent}Disposing $factoryType=>${_instance.objectId}$depsText';
     });
     dependencies = [];
     this.consumers = [];
@@ -258,7 +258,7 @@ class DependencyTracker {
   static int? _active;
   static int _level = 0;
 
-  static get levelIndent => ''.padLeft(DependencyTracker._level);
+  static String get _levelIndent => ''.padLeft(DependencyTracker._level);
 
   DependencyTracker(this.provider);
 
