@@ -1,3 +1,14 @@
+import 'package:flutter/foundation.dart';
+
+const _kDebugStreamPod = true;
+
+void _log(Object? Function() message) {
+  if (_kDebugStreamPod && kDebugMode) {
+    final text = message().toString();
+    debugPrint(text);
+  }
+}
+
 /// Service locator, read only interface that doesn't allow to register or override services.
 ///
 /// Like riverpod, services can depend on each other and get recreated when
@@ -6,7 +17,8 @@ abstract class Locator {
   /// Retrieve a instance of type [T]
   T get<T>();
 
-  /// Retrieve a instance of type [T] and subscribe to changes
+  /// Retrieve a instance of type [T] and subscribe to changes when called
+  /// from within `injectProvider(create:(){ ...})`
   T watch<T>();
 
   /// Listen to change of type [T]
@@ -83,6 +95,17 @@ class InjectableLocator implements Locator {
     if (existing != null) {
       final consumers = existing.consumers.toList();
       final listeners = existing.listeners.toList();
+      _log(() {
+        final deps = consumers.map((e) {
+          final i = e._instance as Object?;
+          if (i == null) return e.factoryType;
+          if (i is Function) return i.objectId;
+          return '${e.factoryType}=>${i.objectId}';
+        }).join(', ');
+        final depsText = deps.isEmpty ? '' : ', rebuilds $deps';
+
+        return '${DependencyTracker.levelIndent}Recreate ${existing.factoryType}$depsText';
+      });
       existing.consumers = [];
       existing.dependencies = [];
       existing.listeners = [];
@@ -131,10 +154,29 @@ class InstanceFactory<T> {
 
   /// Rebuilds the calling [InstanceFactory] when [_instance] changes.
   T get watch {
+    _log(() {
+      if (DependencyTracker._active == null) {
+        return '${DependencyTracker.levelIndent}Get $factoryType (via watch)';
+      } else {
+        return '${DependencyTracker.levelIndent}Watch $factoryType';
+      }
+    });
+
     if (_instance == null) {
       _tracker.create();
+      _log(() => '${DependencyTracker.levelIndent}Creating $factoryType');
       late final T i;
       i = create(locator);
+      _log(() {
+        final deps = dependencies.map((e) {
+          final i = e._instance as Object?;
+          if (i == null) return e.factoryType;
+          if (i is Function) return i.objectId;
+          return '${e.factoryType}=>${i.objectId}';
+        }).join(', ');
+        final depsText = deps.isEmpty ? '' : ', watching $deps';
+        return '${DependencyTracker.levelIndent}Created $factoryType=>${(i as Object?).objectId}$depsText';
+      });
       _tracker.created();
       _instance = i;
     } else {
@@ -146,13 +188,25 @@ class InstanceFactory<T> {
 
   /// Reads the current [_instance], doesn't subscribe the calling [InstanceFactory] to changes.
   T get get {
+    _log(() => '${DependencyTracker.levelIndent}Get $factoryType');
     // temporarily disable dependency tracking
     final tempActive = DependencyTracker._active;
     DependencyTracker._active = null;
     if (_instance == null) {
       _tracker.create();
+      _log(() => '${DependencyTracker.levelIndent}Creating $factoryType');
       late final T i;
       i = create(locator);
+      _log(() {
+        final deps = dependencies.map((e) {
+          final i = e._instance as Object?;
+          if (i == null) return e.factoryType;
+          if (i is Function) return i.objectId;
+          return '${e.factoryType}=>${i.objectId}';
+        }).join(', ');
+        final depsText = deps.isEmpty ? '' : ', watching $deps';
+        return '${DependencyTracker.levelIndent}Created $factoryType=>${(i as Object?).objectId}$depsText';
+      });
       _tracker.created();
       _instance = i;
     } else {
@@ -169,6 +223,17 @@ class InstanceFactory<T> {
   void rebuild() {
     dispose?.call();
     final consumers = this.consumers.toList();
+    _log(() {
+      final deps = consumers.map((e) {
+        final i = e._instance as Object?;
+        if (i == null) return e.factoryType;
+        if (i is Function) return i.objectId;
+        return '${e.factoryType}=>${i.objectId}';
+      }).join('\n- ');
+      final depsText = deps.isEmpty ? '' : ', recreating\n- $deps';
+
+      return '${DependencyTracker.levelIndent}Disposing $factoryType=>${_instance.objectId}$depsText';
+    });
     dependencies = [];
     this.consumers = [];
     _instance = null;
@@ -181,6 +246,8 @@ class InstanceFactory<T> {
     }
   }
 
+  Type get factoryType => T;
+
   @override
   String toString() {
     return 'InstanceFactory<$T>{id: $id}';
@@ -189,6 +256,9 @@ class InstanceFactory<T> {
 
 class DependencyTracker {
   static int? _active;
+  static int _level = 0;
+
+  static get levelIndent => ''.padLeft(DependencyTracker._level);
 
   DependencyTracker(this.provider);
 
@@ -203,6 +273,7 @@ class DependencyTracker {
     if (_active != provider.id) {
       _active = provider.id;
     }
+    _level++;
     if (_prevActive != null) {
       final listener = locator._registry.values
           .firstWhere((element) => element.id == _prevActive);
@@ -213,5 +284,11 @@ class DependencyTracker {
 
   void created() {
     _active = _prevActive;
+    _level--;
   }
+}
+
+extension ObjectExt on Object? {
+  // ignore: no_runtimetype_tostring
+  String get objectId => '$runtimeType@${hashCode.toRadixString(16)}';
 }
