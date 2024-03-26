@@ -8,10 +8,13 @@ import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/core/context_cache.dart';
+import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/not_a_widgets_app.dart';
 import 'package:wiredash/src/feedback/feedback_backdrop.dart';
+import 'package:wiredash/src/utils/disposable.dart';
 import 'package:wiredash/wiredash.dart';
 
 /// Capture in-app user feedback, wishes, ratings and much more
@@ -161,18 +164,27 @@ class Wiredash extends StatefulWidget {
     state.widget.showBuildContext = context;
     return WiredashController(state._services.wiredashModel);
   }
+
+  static Future<void> trackEvent(
+    String eventName, {
+    Map<String, Object?>? data,
+    String? projectId,
+  }) async {
+    final analytics = WiredashAnalytics(projectId: projectId);
+    await analytics.trackEvent(eventName, data: data);
+  }
 }
 
 class WiredashState extends State<Wiredash> {
   final GlobalKey _appKey = GlobalKey(debugLabel: 'app');
 
-  final WiredashServices _services = _createServices();
+  final WiredashServices _services = WiredashServices();
 
   late final WiredashBackButtonDispatcher _backButtonDispatcher;
 
-  Timer? _submitTimer;
-
   final FocusScopeNode _appFocusScopeNode = FocusScopeNode();
+
+  Disposable? _unregister;
 
   /// A way to access the services during testing
   @visibleForTesting
@@ -190,16 +202,21 @@ class WiredashState extends State<Wiredash> {
       projectId: widget.projectId,
       secret: widget.secret,
     );
+
+    _unregister = WiredashRegistry.instance.register(this);
     _services.updateWidget(widget);
     _services.addListener(_markNeedsBuild);
     _services.wiredashModel.addListener(_markNeedsBuild);
     _services.backdropController.addListener(_markNeedsBuild);
 
-    final inFakeAsync = _services.testDetector.inFakeAsync();
-    if (!inFakeAsync) {
-      // start the sync engine
-      unawaited(_services.syncEngine.onWiredashInit());
-    }
+    _services.appLifecycleNotifier.addListener(() {
+      final state = _services.appLifecycleNotifier.value;
+      if (state == AppLifecycleState_hidden_compat()) {
+        _services.syncEngine.onAppMovedToBackground();
+      }
+    });
+
+    _onProjectIdChanged();
 
     _backButtonDispatcher = WiredashBackButtonDispatcher()..initialize();
   }
@@ -209,10 +226,17 @@ class WiredashState extends State<Wiredash> {
     setState(() {});
   }
 
+  Future<void> newEventAdded() async {
+    try {
+      await _services.eventSubmitter.submitEvents();
+    } catch (e, stack) {
+      reportWiredashInfo(e, stack, 'Unexpected error while submitting events');
+    }
+  }
+
   @override
   void dispose() {
-    _submitTimer?.cancel();
-    _submitTimer = null;
+    _unregister?.dispose();
     _services.dispose();
     _backButtonDispatcher.dispose();
     _appFocusScopeNode.dispose();
@@ -222,14 +246,28 @@ class WiredashState extends State<Wiredash> {
   @override
   void didUpdateWidget(Wiredash oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    _unregister?.dispose();
+    _unregister = WiredashRegistry.instance.register(this);
+    _services.updateWidget(widget);
+
     if (oldWidget.projectId != widget.projectId ||
         oldWidget.secret != widget.secret) {
       _services.projectCredentialValidator.validate(
         projectId: widget.projectId,
         secret: widget.secret,
       );
+
+      _onProjectIdChanged();
     }
-    _services.updateWidget(widget);
+  }
+
+  void _onProjectIdChanged() {
+    final inFakeAsync = _services.testDetector.inFakeAsync();
+    if (!inFakeAsync) {
+      // start the sync engine
+      unawaited(_services.syncEngine.onWiredashInit());
+    }
   }
 
   @override
@@ -390,20 +428,4 @@ Locale get _defaultLocale {
   // ignore: unnecessary_nullable_for_final_variable_declarations, deprecated_member_use
   final Locale? locale = ui.window.locale;
   return locale ?? const Locale('en', 'US');
-}
-
-/// Can be used to inject mock services for testing
-@visibleForTesting
-WiredashServices Function()? debugServicesCreator;
-
-WiredashServices _createServices() {
-  WiredashServices? services;
-  assert(
-    () {
-      services = debugServicesCreator?.call();
-      return true;
-    }(),
-  );
-
-  return services ?? WiredashServices();
 }

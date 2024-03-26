@@ -21,6 +21,10 @@ enum SdkEvent {
   /// app startup performance.
   appStartDelayed,
 
+  /// The app lost focus and is now running in the background, a good time to
+  /// upload data to the server
+  appMovedToBackground,
+
   /// User opened the Wiredash UI
   openedWiredash,
 
@@ -73,20 +77,10 @@ class SyncEngine {
   /// Called when the SDK is initialized (by wrapping the app)
   ///
   /// Triggers [SdkEvent.appStart] after the app settled down.
+  ///
+  /// This method is called multiple times when the Wiredash widget changes
+  /// the projectId.
   Future<void> onWiredashInit() async {
-    assert(
-      () {
-        if (_initTimer != null) {
-          debugPrint("Warning: called onWiredashInitialized multiple times");
-        }
-        return true;
-      }(),
-    );
-
-    final bool? hasBeenStarted = Zone.current['wiredash:appStart'] as bool?;
-    if (hasBeenStarted == true) {
-      return;
-    }
     // Delay app start a bit, so that Wiredash doesn't slow down the app start
     _initTimer?.cancel();
     _initTimer = Timer(const Duration(seconds: 5), () {
@@ -115,6 +109,10 @@ class SyncEngine {
     await _triggerEvent(SdkEvent.submittedPromoterScore);
   }
 
+  Future<void> onAppMovedToBackground() async {
+    await _triggerEvent(SdkEvent.appMovedToBackground);
+  }
+
   /// Executes all jobs that are listening to the given event
   Future<void> _triggerEvent(SdkEvent event) async {
     for (final job in _jobs.values) {
@@ -126,7 +124,7 @@ class SyncEngine {
       try {
         if (job.shouldExecute(event)) {
           syncDebugPrint('Executing job ${job._name}');
-          await job.execute();
+          await job.execute(event);
         }
       } catch (e, stack) {
         debugPrint('Error executing job ${job._name}:\n$e\n$stack');
@@ -157,5 +155,5 @@ abstract class Job {
 
   bool shouldExecute(SdkEvent event);
 
-  Future<void> execute();
+  Future<void> execute(SdkEvent event);
 }

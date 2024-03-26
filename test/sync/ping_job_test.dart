@@ -8,6 +8,7 @@ import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
+import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
@@ -50,7 +51,7 @@ void main() {
     test('ping gets submitted', () {
       fakeAsync((async) {
         final pingJob = createPingJob();
-        pingJob.execute();
+        pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
         expect(api.pingInvocations.count, 1);
       });
@@ -59,7 +60,7 @@ void main() {
     test('ping sends all fields', () {
       fakeAsync((async) {
         final pingJob = createPingJob();
-        pingJob.execute();
+        pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
         expect(api.pingInvocations.count, 1);
         final body = api.pingInvocations.invocations[0][0]! as PingRequestBody;
@@ -85,7 +86,7 @@ void main() {
           buildNumber: '1000',
           compilationMode: CompilationMode.profile,
         );
-        pingJob.execute();
+        pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
         expect(api.pingInvocations.count, 1);
         final body = api.pingInvocations.invocations[0][0]! as PingRequestBody;
@@ -97,12 +98,12 @@ void main() {
     test('do not ping again within minPingGap window', () {
       fakeAsync((async) {
         final pingJob = createPingJob();
-        pingJob.execute();
+        pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
         expect(api.pingInvocations.count, 1);
 
         async.elapse(PingJob.minPingGap - tenSeconds);
-        pingJob.execute();
+        pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
         expect(api.pingInvocations.count, 1);
       });
@@ -111,12 +112,12 @@ void main() {
     test('ping after minPingGap window', () {
       fakeAsync((async) {
         final pingJob = createPingJob();
-        pingJob.execute();
+        pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
         expect(api.pingInvocations.count, 1);
 
         async.elapse(PingJob.minPingGap);
-        pingJob.execute();
+        pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
         expect(api.pingInvocations.count, 2);
       });
@@ -128,12 +129,12 @@ void main() {
           throw const KillSwitchException();
         };
         final pingJob = createPingJob();
-        pingJob.execute();
+        pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
         expect(api.pingInvocations.count, 1);
 
         async.elapse(const Duration(days: 7) - tenSeconds);
-        pingJob.execute();
+        pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
         expect(api.pingInvocations.count, 1);
       });
@@ -150,12 +151,12 @@ void main() {
           metaDataCollector: () => FakeMetaDataCollector(),
           wuidGenerator: () => IncrementalIdGenerator(),
         );
-        pingJob.execute();
+        pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
         expect(api.pingInvocations.count, 1);
 
         async.elapse(const Duration(days: 7));
-        pingJob.execute();
+        pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
         expect(api.pingInvocations.count, 2);
       });
@@ -172,11 +173,11 @@ void main() {
           metaDataCollector: () => FakeMetaDataCollector(),
           wuidGenerator: () => IncrementalIdGenerator(),
         );
-        pingJob.execute();
+        pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
         expect(api.pingInvocations.count, 1);
 
-        pingJob.execute();
+        pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
         expect(api.pingInvocations.count, 2);
       });

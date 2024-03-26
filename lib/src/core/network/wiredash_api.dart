@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:wiredash/src/core/network/api_exceptions.dart';
 import 'package:wiredash/src/core/network/ping_request.dart';
+import 'package:wiredash/src/core/network/send_events_request.dart';
 import 'package:wiredash/src/core/network/send_feedback_request.dart';
 import 'package:wiredash/src/core/network/send_promoter_score_request.dart';
 import 'package:wiredash/src/core/network/upload_attachment_request.dart';
@@ -70,6 +71,10 @@ class WiredashApi {
 
   Future<PingResponse> ping(PingRequestBody body) async {
     return await postPing(_context, '$_host/ping', body);
+  }
+
+  Future<void> sendEvents(List<RequestEvent> events) async {
+    return await postSendEvents(_context, '$_host/sendEvents', events);
   }
 }
 

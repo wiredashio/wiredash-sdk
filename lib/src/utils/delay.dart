@@ -3,13 +3,17 @@ import 'dart:async';
 /// A cancellable version of [Future.delayed]
 class Delay {
   Delay(this.duration, {this.errorOnDispose = false}) {
-    _timer = Timer(duration, _afterDelay);
+    if (duration == Duration.zero) {
+      _completer.complete();
+    } else {
+      _timer = Timer(duration, _afterDelay);
+    }
   }
 
   final Duration duration;
 
-  /// When true, the [future] throws an error on complete. When false it never
-  /// completes
+  /// When true, the [future] throws an error on dispose.
+  /// When false the [future] never completes in case of dispose.
   final bool errorOnDispose;
 
   Timer? _timer;
@@ -25,13 +29,13 @@ class Delay {
   }
 
   void dispose() {
-    final timer = _timer;
-    if (timer == null) {
-      return;
-    }
-    timer.cancel();
-    if (errorOnDispose) {
-      _completer.completeError(DelayCancelledException());
+    _timer?.cancel();
+    if (!_completer.isCompleted) {
+      if (errorOnDispose) {
+        _completer.completeError(DelayCancelledException());
+      } else {
+        // let future run forever, never complete or error
+      }
     }
   }
 }
