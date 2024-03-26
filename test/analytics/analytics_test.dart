@@ -15,6 +15,7 @@ import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 import '../util/flutter_error.dart';
+import '../util/invocation_catcher.dart';
 import '../util/mock_api.dart';
 import '../util/robot.dart';
 import '../util/wiredash_tester.dart';
@@ -444,6 +445,7 @@ void main() {
         ),
       ),
     );
+
     // insert some old events
     await robot.tapText('Send Event');
     await tester.pumpSmart();
@@ -461,6 +463,10 @@ void main() {
 
     // restart the app
     await robot.launchApp(projectId: 'projectX');
+    robot.mockServices.mockApi.sendEventsInvocations.interceptor =
+        (invocation) async {
+      throw 'offline';
+    };
     final eventsOnDisk2 = await robot.services.eventStore.getEvents('projectX');
     expect(eventsOnDisk2, hasLength(2));
 
@@ -487,6 +493,10 @@ void main() {
   testWidgets('submit events after app moves to background', (tester) async {
     final robot = WiredashTestRobot(tester);
     await robot.launchApp();
+    robot.mockServices.mockApi.sendEventsInvocations.interceptor =
+        (invocation) async {
+      throw 'offline';
+    };
     await robot.triggerAnalyticsEvent();
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
     final eventsOnDisk = await robot.services.eventStore.getEvents('test');

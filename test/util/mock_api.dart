@@ -23,6 +23,10 @@ class MockWiredashApi implements WiredashApi {
     api.pingInvocations.interceptor = (iv) {
       return PingResponse();
     };
+
+    api.sendEventsInvocations.interceptor = (iv) async {
+      // success
+    };
     return api;
   }
 
