@@ -14,7 +14,7 @@ class AppTelemetryJob extends Job {
   }
 
   @override
-  Future<void> execute() async {
+  Future<void> execute(SdkEvent event) async {
     await telemetry.onAppStart();
   }
 }

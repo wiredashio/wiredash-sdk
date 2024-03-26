@@ -28,6 +28,8 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 // TODO write integration_test for isolates
 // TODO automatically add page_name as property
 // TODO check if WiredashRegistry instance could be saved in the zone
+// TODO implement lifecycle for windows
+// TODO implement lifecycle for linux
 
 class WiredashAnalytics {
   /// Optional [projectId] in case multiple [Wiredash] widgets with different

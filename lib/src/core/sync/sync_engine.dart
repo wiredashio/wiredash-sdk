@@ -21,6 +21,10 @@ enum SdkEvent {
   /// app startup performance.
   appStartDelayed,
 
+  /// The app lost focus and is now running in the background, a good time to
+  /// upload data to the server
+  appMovedToBackground,
+
   /// User opened the Wiredash UI
   openedWiredash,
 
@@ -105,6 +109,10 @@ class SyncEngine {
     await _triggerEvent(SdkEvent.submittedPromoterScore);
   }
 
+  Future<void> onAppMovedToBackground() async {
+    await _triggerEvent(SdkEvent.appMovedToBackground);
+  }
+
   /// Executes all jobs that are listening to the given event
   Future<void> _triggerEvent(SdkEvent event) async {
     for (final job in _jobs.values) {
@@ -116,7 +124,7 @@ class SyncEngine {
       try {
         if (job.shouldExecute(event)) {
           syncDebugPrint('Executing job ${job._name}');
-          await job.execute();
+          await job.execute(event);
         }
       } catch (e, stack) {
         debugPrint('Error executing job ${job._name}:\n$e\n$stack');
@@ -147,5 +155,5 @@ abstract class Job {
 
   bool shouldExecute(SdkEvent event);
 
-  Future<void> execute();
+  Future<void> execute(SdkEvent event);
 }

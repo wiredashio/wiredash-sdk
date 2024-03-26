@@ -483,4 +483,16 @@ void main() {
     final eventsOnDisk4 = await robot.services.eventStore.getEvents('projectX');
     expect(eventsOnDisk4, hasLength(1));
   });
+
+  testWidgets('submit events after app moves to background', (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp();
+    await robot.triggerAnalyticsEvent();
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+    final eventsOnDisk = await robot.services.eventStore.getEvents('test');
+    expect(eventsOnDisk, hasLength(1));
+
+    await robot.moveAppToBackground();
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(2);
+  });
 }

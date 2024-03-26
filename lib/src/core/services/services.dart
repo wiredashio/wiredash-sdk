@@ -11,6 +11,10 @@ import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
+import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
+import 'package:wiredash/src/core/lifecycle/lifecycle_stub.dart'
+    if (dart.library.io) 'package:wiredash/src/core/lifecycle/lifecycle_io.dart'
+    if (dart.library.html) 'package:wiredash/src/core/lifecycle/lifecycle_web.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/app_telemetry_job.dart';
@@ -107,6 +111,8 @@ class WiredashServices extends ChangeNotifier {
   AnalyticsEventStore get eventStore => _locator.watch();
 
   EventSubmitter get eventSubmitter => _locator.watch();
+
+  FlutterAppLifecycleNotifier get appLifecycleNotifier => _locator.watch();
 
   Future<SharedPreferences> Function() get sharedPreferencesProvider {
     // explicitly using get instead of watch, because it is a factory not an
@@ -272,6 +278,13 @@ void registerProdWiredashServices(WiredashServices sl) {
       buildInfoProvider: sl.get,
     );
   });
+
+  sl.inject<FlutterAppLifecycleNotifier>(
+    (_) => createFlutterAppLifecycleNotifier(),
+    dispose: (notifier) {
+      notifier.dispose();
+    },
+  );
 
   sl.inject<SyncEngine>(
     (locator) {

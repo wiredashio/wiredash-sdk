@@ -181,6 +181,17 @@ class WiredashTestRobot {
                       },
                       child: const Text('Promoter Score'),
                     ),
+                    GestureDetector(
+                      onTap: () {
+                        Wiredash.of(context).trackEvent(
+                          'default_event',
+                          data: {
+                            'wire': 'dash',
+                          },
+                        );
+                      },
+                      child: const Text('Send event'),
+                    ),
                   ],
                 ),
               );
@@ -278,6 +289,12 @@ class WiredashTestRobot {
     print('opened promoter score');
   }
 
+  Future<void> triggerAnalyticsEvent() async {
+    await _tap(spotSingleText('Send event'));
+    await tester.pumpSmart();
+    print('sent event');
+  }
+
   Future<void> closeWiredashWithButton() async {
     _spotPageView.spotSingle<Step1FeedbackMessage>().existsOnce();
     final spotCloseButton = _spotBackdrop.spotSingle<TronButton>(
@@ -298,6 +315,27 @@ class WiredashTestRobot {
     _spotBackdrop.spotSingle<WiredashFeedbackFlow>().doesNotExist();
     _spotBackdrop.spotSingle<PromoterScoreFlow>().doesNotExist();
     print('closed Wiredash');
+  }
+
+  Future<void> moveAppToBackground() async {
+    print('Robot: Moving app to background');
+
+    // iPad: resumed | (move to background) | inactive, hidden, paused
+    // iPad: resumed | (app switcher) | inactive
+    // iPad: resumed | (app switcher -> kill) | inactive, hidden, paused, detached | <dead>
+    // macos: resumed | (app switcher) | inactive
+    // macos: resumed | (minimize) | inactive, hidden
+    // macos: resumed | (CMD + Q) or close button | <dead>
+    // android: resumed | (switch app) | inactive, hidden, paused
+    // android: resumed | (app switcher -> kill) | inactive, hidden, paused
+    // android: resumed | (home) | inactive, hidden, paused
+    // android: resumed | (back (close)) | inactive, hidden, paused, detached | <dead>
+    // chrome: resumed | (switch tab) | inactive, hidden
+    // chrome: resumed | (switch app) | inactive
+    // chrome: resumed | (close tab) | hidden | <dead>
+    TestWidgetsFlutterBinding.instance
+        .handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    await tester.pumpSmart(const Duration(seconds: 1));
   }
 
   Future<void> enterFeedbackMessage(String message) async {

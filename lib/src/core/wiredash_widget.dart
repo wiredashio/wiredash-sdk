@@ -210,6 +210,13 @@ class WiredashState extends State<Wiredash> {
     _services.wiredashModel.addListener(_markNeedsBuild);
     _services.backdropController.addListener(_markNeedsBuild);
 
+    _services.appLifecycleNotifier.addListener(() {
+      final state = _services.appLifecycleNotifier.value;
+      if (state == AppLifecycleState.hidden) {
+        _services.syncEngine.onAppMovedToBackground();
+      }
+    });
+
     _onProjectIdChanged();
 
     _backButtonDispatcher = WiredashBackButtonDispatcher()..initialize();

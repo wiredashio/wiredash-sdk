@@ -13,11 +13,19 @@ class EventUploadJob extends Job {
 
   @override
   bool shouldExecute(SdkEvent event) {
-    return event == SdkEvent.appStartDelayed;
+    return [
+      SdkEvent.appStartDelayed,
+      SdkEvent.appMovedToBackground,
+    ].contains(event);
   }
 
   @override
-  Future<void> execute() async {
+  Future<void> execute(SdkEvent event) async {
+    if (event == SdkEvent.appMovedToBackground) {
+      // in case the app gets killed (which happens fast after this event),
+      // do not run the job half-way
+      await Future.delayed(const Duration(seconds: 1));
+    }
     final submitter = eventSubmitter();
     await submitter.submitEvents();
   }

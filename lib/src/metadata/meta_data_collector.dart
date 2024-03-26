@@ -40,7 +40,7 @@ class MetaDataCollector {
       [
         _collectAppInfo(),
         _collectDeviceInfo(),
-        Future(buildInfoProvider),
+        Future.sync(buildInfoProvider),
       ].map((Future<Object> future) {
         return future.then<Object?>((value) => value);
       }).map((e) {
