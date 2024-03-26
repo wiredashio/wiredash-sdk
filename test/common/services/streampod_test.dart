@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:test/test.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
+import 'package:wiredash/src/utils/changenotifier2.dart';
+import 'package:wiredash/src/utils/disposable.dart';
 
 void main() {
   test('provider rebuild when dependencies change', () {
@@ -114,6 +118,31 @@ void main() {
     // the old one was disposed
     expect(keyProviderA.dependencies, []);
     expect(keyProviderA.consumers, []);
+  });
+
+  test('auto-dispose', () {
+    final sl = InjectableLocator();
+    // ChangeNotifier
+    sl.injectProvider<ChangeNotifier2>((_) => ChangeNotifier2());
+    final cn = sl.get<ChangeNotifier2>();
+
+    // dynamic close()
+    sl.injectProvider<StreamController<int>>((p0) => StreamController());
+    final streamController = sl.get<StreamController<int>>();
+
+    // dynamic dispose()
+    sl.injectProvider<Disposable>((_) => Disposable(() {}));
+    final disposable = sl.get<Disposable>();
+
+    // dynamic cancel()
+    sl.injectProvider<Timer>((_) => Timer(const Duration(days: 1), () {}));
+    final timer = sl.get<Timer>();
+    sl.dispose();
+
+    expect(cn.isDisposed, isTrue);
+    expect(streamController.isClosed, isTrue);
+    expect(disposable.isDisposed, isTrue);
+    expect(timer.isActive, isFalse);
   });
 }
 
