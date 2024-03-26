@@ -336,6 +336,11 @@ class WiredashTestRobot {
     // chrome: resumed | (close tab) | hidden | <dead>
     TestWidgetsFlutterBinding.instance
         .handleAppLifecycleStateChanged(AppLifecycleState_hidden_compat());
+    addTearDown(() {
+      // reset to default
+      TestWidgetsFlutterBinding.instance
+          .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    });
     await tester.pumpSmart(const Duration(seconds: 1));
   }
 
