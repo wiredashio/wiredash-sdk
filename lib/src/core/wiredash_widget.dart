@@ -182,8 +182,6 @@ class WiredashState extends State<Wiredash> {
 
   late final WiredashBackButtonDispatcher _backButtonDispatcher;
 
-  Timer? _submitTimer;
-
   final FocusScopeNode _appFocusScopeNode = FocusScopeNode();
 
   Disposable? _unregister;
@@ -238,8 +236,6 @@ class WiredashState extends State<Wiredash> {
 
   @override
   void dispose() {
-    _submitTimer?.cancel();
-    _submitTimer = null;
     _unregister?.dispose();
     _services.dispose();
     _backButtonDispatcher.dispose();

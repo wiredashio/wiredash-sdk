@@ -716,7 +716,6 @@ WiredashServices createMockServices({
             api: services.api,
           );
         },
-        dispose: (submitter) => print('dispose ${submitter.instanceName}'),
       );
     } else {
       assert(services.eventSubmitter.runtimeType == DebounceEventSubmitter);

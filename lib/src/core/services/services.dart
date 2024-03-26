@@ -184,37 +184,35 @@ void registerProdWiredashServices(WiredashServices sl) {
     );
   });
 
-  sl.inject<EventSubmitter>((_) {
-    if (kIsWeb) {
-      return DirectEventSubmitter(
-        eventStore: sl.eventStore,
+  sl.inject<EventSubmitter>(
+    (_) {
+      if (kIsWeb) {
+        return DirectEventSubmitter(
+          eventStore: sl.eventStore,
+          api: sl.api,
+          projectId: () => sl.wiredashWidget.projectId,
+        );
+      }
+
+      return DebounceEventSubmitter(
         api: sl.api,
+        eventStore: sl.eventStore,
         projectId: () => sl.wiredashWidget.projectId,
       );
-    }
-
-    return DebounceEventSubmitter(
-      api: sl.api,
-      eventStore: sl.eventStore,
-      projectId: () => sl.wiredashWidget.projectId,
-    );
-  });
+    },
+  );
 
   sl.inject<BackdropController>(
     (_) => BackdropController(),
-    dispose: (model) => model.dispose(),
   );
-  sl.inject<PicassoController>(
-    (locator) {
-      final controller = PicassoController();
-      locator.listen<Wiredash>((wiredashWidget) {
-        controller.color ??= wiredashWidget.theme?.firstPenColor;
-      });
+  sl.inject<PicassoController>((locator) {
+    final controller = PicassoController();
+    locator.listen<Wiredash>((wiredashWidget) {
+      controller.color ??= wiredashWidget.theme?.firstPenColor;
+    });
 
-      return controller;
-    },
-    dispose: (model) => model.dispose(),
-  );
+    return controller;
+  });
   // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
   // ignore: deprecated_member_use
   sl.inject<FlutterInfoCollector>((_) => FlutterInfoCollector(window));
@@ -222,25 +220,13 @@ void registerProdWiredashServices(WiredashServices sl) {
   sl.inject<WiredashOptionsData>(
     (_) => sl.wiredashWidget.options ?? const WiredashOptionsData(),
   );
-  sl.inject<ScreenCaptureController>(
-    (locator) => ScreenCaptureController(),
-    dispose: (model) => model.dispose(),
-  );
+  sl.inject<ScreenCaptureController>((locator) => ScreenCaptureController());
 
-  sl.inject<WiredashModel>(
-    (locator) => WiredashModel(sl),
-    dispose: (model) => model.dispose(),
-  );
+  sl.inject<WiredashModel>((locator) => WiredashModel(sl));
 
-  sl.inject<FeedbackModel>(
-    (locator) => FeedbackModel(sl),
-    dispose: (model) => model.dispose(),
-  );
+  sl.inject<FeedbackModel>((locator) => FeedbackModel(sl));
 
-  sl.inject<PsModel>(
-    (locator) => PsModel(sl),
-    dispose: (model) => model.dispose(),
-  );
+  sl.inject<PsModel>((locator) => PsModel(sl));
 
   sl.inject<WiredashApi>(
     (locator) {
@@ -281,9 +267,6 @@ void registerProdWiredashServices(WiredashServices sl) {
 
   sl.inject<FlutterAppLifecycleNotifier>(
     (_) => createFlutterAppLifecycleNotifier(),
-    dispose: (notifier) {
-      notifier.dispose();
-    },
   );
 
   sl.inject<SyncEngine>(
@@ -338,10 +321,7 @@ class DiscardFeedbackUseCase {
   final WiredashServices services;
 
   void call() {
-    services.inject<FeedbackModel>(
-      (locator) => FeedbackModel(services),
-      dispose: (model) => model.dispose(),
-    );
+    services.inject<FeedbackModel>((locator) => FeedbackModel(services));
   }
 }
 
@@ -352,9 +332,6 @@ class DiscardPsUseCase {
   final WiredashServices services;
 
   void call() {
-    services.inject<PsModel>(
-      (locator) => PsModel(services),
-      dispose: (model) => model.dispose(),
-    );
+    services.inject<PsModel>((locator) => PsModel(services));
   }
 }
