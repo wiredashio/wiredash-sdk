@@ -16,6 +16,7 @@ import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
+import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 // ignore: unused_import
@@ -334,7 +335,7 @@ class WiredashTestRobot {
     // chrome: resumed | (switch app) | inactive
     // chrome: resumed | (close tab) | hidden | <dead>
     TestWidgetsFlutterBinding.instance
-        .handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+        .handleAppLifecycleStateChanged(AppLifecycleState_hidden_compat());
     await tester.pumpSmart(const Duration(seconds: 1));
   }
 

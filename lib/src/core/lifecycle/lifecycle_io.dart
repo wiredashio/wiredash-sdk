@@ -10,15 +10,29 @@ FlutterAppLifecycleNotifier createFlutterAppLifecycleNotifier() {
     notifier.value = state;
   }
 
-  // As of March 24, the supported platform are Android, iOS, macOS
-  final appLifecycleListener = AppLifecycleListener(
-    onStateChange: (state) {
-      notifier.value = state;
-    },
-  );
+  // Can't use AppLifecycleListener, as it was introduced in Flutter3.13
+  final observer = LifecycleChangeObserver((state) {
+    notifier.value = state;
+  });
+  widgetsBindingInstance.addObserver(observer);
+
   notifier.addOnDisposeListener(() {
-    appLifecycleListener.dispose();
+    widgetsBindingInstance.removeObserver(observer);
   });
 
   return notifier;
+}
+
+class LifecycleChangeObserver extends WidgetsBindingObserver {
+  final void Function(AppLifecycleState) onAppLifecycleStateChange;
+
+  LifecycleChangeObserver(
+    this.onAppLifecycleStateChange,
+  );
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // As of Flutter 3.21, this callback is only supported on Android, iOS, macOS
+    onAppLifecycleStateChange(state);
+  }
 }

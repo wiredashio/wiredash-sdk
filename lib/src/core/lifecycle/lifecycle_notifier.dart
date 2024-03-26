@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 
 class FlutterAppLifecycleNotifier extends ValueNotifier<AppLifecycleState> {
@@ -20,4 +21,15 @@ class FlutterAppLifecycleNotifier extends ValueNotifier<AppLifecycleState> {
     }
     super.dispose();
   }
+}
+
+/// A backwards compatible version of AppLifecycleState.hidden,
+/// which returns AppLifecycleState.inactive for Flutter 3.13 and below
+// ignore: non_constant_identifier_names
+AppLifecycleState AppLifecycleState_hidden_compat() {
+  // The hidden state was added in Flutter 3.13
+  final AppLifecycleState? hidden = AppLifecycleState.values
+      .firstWhereOrNull((element) => element.name == 'hidden');
+  // for earlier flutter versions, fallback to inactive
+  return hidden ?? AppLifecycleState.inactive;
 }

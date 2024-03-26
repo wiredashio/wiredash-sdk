@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:js_util' as js_util;
 
+import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 
@@ -46,7 +47,7 @@ FlutterAppLifecycleNotifier createFlutterAppLifecycleNotifier() {
 
 AppLifecycleState readLifecycleState() {
   if (document.hidden == true) {
-    return AppLifecycleState.hidden;
+    return AppLifecycleState_hidden_compat();
   }
   final focused = js_util.callMethod(document, 'hasFocus', []);
   if (focused == true) {
