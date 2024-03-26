@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:js_util' as js_util;
 
-import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 
