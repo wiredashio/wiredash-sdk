@@ -539,11 +539,8 @@ void main() {
     await tester.pumpSmart(const Duration(seconds: 1));
 
     await tester.pumpSmart(const Duration(seconds: 60));
-    print('Triggering analytics event ${clock.now()}');
     await robot.triggerAnalyticsEvent();
-    print('Triggered ${clock.now()}');
     await tester.pumpSmart(const Duration(milliseconds: 1));
-    print('Waited ${clock.now()}');
 
     final List<AssertableInvocation> calls =
         robot.mockServices.mockApi.sendEventsInvocations.invocations;

@@ -55,7 +55,6 @@ class DebounceEventSubmitter implements EventSubmitter {
   @override
   Future<void> submitEvents() async {
     if (_pendingSubmit != null) {
-      print('${clock.now()} Already scheduled');
       return _pendingSubmit!;
     }
 
@@ -73,7 +72,6 @@ class DebounceEventSubmitter implements EventSubmitter {
         _delay = Delay(timeToWait);
       }
     }
-    print('${clock.now()} Schedule submit with ${_delay?.duration}');
     _initialSubmitted = true;
     _pendingSubmit = _actuallySubmit();
     await _pendingSubmit;
@@ -84,11 +82,8 @@ class DebounceEventSubmitter implements EventSubmitter {
     await _delay!.future;
     _lastSubmit = clock.now();
     _delay = null;
-    print("SUBMIT! $_lastSubmit");
+
     final projectId = this.projectId();
-    // TODO check last sent event call.
-    //  If is was less than 30 seconds ago, start timer
-    //  else kick of sending events to backend for this projectId
 
     await eventStore.deleteOutdatedEvents();
     await eventStore.trimToDiskLimit();
