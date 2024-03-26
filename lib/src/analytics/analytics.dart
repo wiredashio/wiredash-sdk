@@ -8,7 +8,6 @@ import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 // Required
-// TODO send events every 30 seconds to the server (or 5min?)
 // TODO drop event if server responds 400 (code 2200) MISSING TEST
 // TODO keep events if server responds 400 (code 2201) MISSING TEST
 // TODO keep events for any other server error MISSING TEST
@@ -20,14 +19,12 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 // TODO send events to server on app close
 // TODO drop event when API credentials are obviously wrong
 // TODO allow resetting of the analyticsId
-// TODO send events directly on web
 // TODO test InvalidEventFormatException with real server response
 
 // Nice to have
 // TODO allow triggering of event submission
 // TODO write integration_test for isolates
 // TODO automatically add page_name as property
-// TODO check if WiredashRegistry instance could be saved in the zone
 // TODO implement lifecycle for windows
 // TODO implement lifecycle for linux
 
