@@ -86,8 +86,12 @@ class InjectableLocator implements Locator {
     late InstanceFactory<T> provider;
     provider = InstanceFactory(this, create, () {
       final instance = provider._instance;
-      if (instance != null && dispose != null) {
-        dispose(instance);
+      if (instance != null) {
+        if (dispose != null) {
+          dispose(instance);
+        } else {
+          _autoDispose(instance);
+        }
       }
     });
     final existing = _registry[T];
@@ -122,6 +126,46 @@ class InjectableLocator implements Locator {
     }
     return provider;
   }
+}
+
+/// Tries to call common dispose methods on the instance dynamically
+///
+/// Returns true if the [instance] reacted to a dispose method call
+bool _autoDispose(dynamic instance) {
+  // try calling dispose on the instance
+  final dynamic eventuallyDisposable = instance;
+  final methods = [
+    (i) {
+      if (i is ChangeNotifier) {
+        i.dispose();
+      } else {
+        throw NoSuchMethodError.withInvocation(
+          'Not a ChangeNotifier',
+          Invocation.method(#dispose, []),
+        );
+      }
+    },
+    // ignore: avoid_dynamic_calls
+    (i) => i.dispose(),
+    // ignore: avoid_dynamic_calls
+    (i) => i.close(),
+    // ignore: avoid_dynamic_calls
+    (i) => i.cancel(),
+  ];
+
+  for (final method in methods) {
+    try {
+      method(eventuallyDisposable);
+      return true;
+      // ignore: avoid_catching_errors
+    } on NoSuchMethodError catch (_) {
+      // ignore when method does not exist
+      // ignore: avoid_catching_errors
+    } on UnimplementedError catch (_) {
+      // ignore fakes
+    }
+  }
+  return false;
 }
 
 class InstanceFactory<T> {
