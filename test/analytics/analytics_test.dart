@@ -495,4 +495,51 @@ void main() {
     await robot.moveAppToBackground();
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(2);
   });
+
+  testWidgets(
+      'send first event immediately, then after 5s, then after 30s continuously',
+      (tester) async {
+    final start = clock.now();
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(useDirectEventSubmitter: false);
+    debugDumpApp();
+    for (int i = 0; i < 65; i++) {
+      await robot.triggerAnalyticsEvent();
+      await tester.pumpSmart(const Duration(seconds: 1));
+    }
+    final diff = clock.now().difference(start);
+    expect(diff, const Duration(seconds: 65)); // one event each second
+
+    final List<AssertableInvocation> calls =
+        robot.mockServices.mockApi.sendEventsInvocations.invocations;
+    final batches = calls.map((e) => e[0]! as List<RequestEvent>).toList();
+    expect(batches, hasLength(3));
+    expect(batches[0], hasLength(5));
+    expect(batches[1], hasLength(30));
+    expect(batches[2], hasLength(30));
+  });
+
+  testWidgets('send event immediately when no event was sent for 30s',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(useDirectEventSubmitter: false);
+
+    // send first event to kick things off
+    await robot.triggerAnalyticsEvent();
+    await tester.pumpSmart(const Duration(seconds: 1));
+
+    await tester.pumpSmart(const Duration(seconds: 60));
+    print('Triggering analytics event ${clock.now()}');
+    await robot.triggerAnalyticsEvent();
+    print('Triggered ${clock.now()}');
+    await tester.pumpSmart(const Duration(milliseconds: 1));
+    print('Waited ${clock.now()}');
+
+    final List<AssertableInvocation> calls =
+        robot.mockServices.mockApi.sendEventsInvocations.invocations;
+    final batches = calls.map((e) => e[0]! as List<RequestEvent>).toList();
+    expect(batches, hasLength(2));
+    expect(batches[0], hasLength(1));
+    expect(batches[1], hasLength(1));
+  });
 }
