@@ -490,63 +490,65 @@ void main() {
     expect(eventsOnDisk4, hasLength(1));
   });
 
-  testWidgets('submit events after app moves to background', (tester) async {
-    final robot = WiredashTestRobot(tester);
-    await robot.launchApp();
-    robot.mockServices.mockApi.sendEventsInvocations.interceptor =
-        (invocation) async {
-      throw 'offline';
-    };
-    await robot.triggerAnalyticsEvent();
-    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
-    final eventsOnDisk = await robot.services.eventStore.getEvents('test');
-    expect(eventsOnDisk, hasLength(1));
+  group('batching', () {
+    testWidgets('submit events after app moves to background', (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp();
+      robot.mockServices.mockApi.sendEventsInvocations.interceptor =
+          (invocation) async {
+        throw 'offline';
+      };
+      await robot.triggerAnalyticsEvent();
+      robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+      final eventsOnDisk = await robot.services.eventStore.getEvents('test');
+      expect(eventsOnDisk, hasLength(1));
 
-    await robot.moveAppToBackground();
-    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(2);
-  });
+      await robot.moveAppToBackground();
+      robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(2);
+    });
 
-  testWidgets(
-      'send first event immediately, then after 5s, then after 30s continuously',
-      (tester) async {
-    final start = clock.now();
-    final robot = WiredashTestRobot(tester);
-    await robot.launchApp(useDirectEventSubmitter: false);
-    debugDumpApp();
-    for (int i = 0; i < 65; i++) {
+    testWidgets(
+        'send first event immediately, then after 5s, then after 30s continuously',
+        (tester) async {
+      final start = clock.now();
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp(useDirectEventSubmitter: false);
+      debugDumpApp();
+      for (int i = 0; i < 65; i++) {
+        await robot.triggerAnalyticsEvent();
+        await tester.pumpSmart(const Duration(seconds: 1));
+      }
+      final diff = clock.now().difference(start);
+      expect(diff, const Duration(seconds: 65)); // one event each second
+
+      final List<AssertableInvocation> calls =
+          robot.mockServices.mockApi.sendEventsInvocations.invocations;
+      final batches = calls.map((e) => e[0]! as List<RequestEvent>).toList();
+      expect(batches, hasLength(3));
+      expect(batches[0], hasLength(5));
+      expect(batches[1], hasLength(30));
+      expect(batches[2], hasLength(30));
+    });
+
+    testWidgets('send event immediately when no event was sent for 30s',
+        (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp(useDirectEventSubmitter: false);
+
+      // send first event to kick things off
       await robot.triggerAnalyticsEvent();
       await tester.pumpSmart(const Duration(seconds: 1));
-    }
-    final diff = clock.now().difference(start);
-    expect(diff, const Duration(seconds: 65)); // one event each second
 
-    final List<AssertableInvocation> calls =
-        robot.mockServices.mockApi.sendEventsInvocations.invocations;
-    final batches = calls.map((e) => e[0]! as List<RequestEvent>).toList();
-    expect(batches, hasLength(3));
-    expect(batches[0], hasLength(5));
-    expect(batches[1], hasLength(30));
-    expect(batches[2], hasLength(30));
-  });
+      await tester.pumpSmart(const Duration(seconds: 60));
+      await robot.triggerAnalyticsEvent();
+      await tester.pumpSmart(const Duration(milliseconds: 1));
 
-  testWidgets('send event immediately when no event was sent for 30s',
-      (tester) async {
-    final robot = WiredashTestRobot(tester);
-    await robot.launchApp(useDirectEventSubmitter: false);
-
-    // send first event to kick things off
-    await robot.triggerAnalyticsEvent();
-    await tester.pumpSmart(const Duration(seconds: 1));
-
-    await tester.pumpSmart(const Duration(seconds: 60));
-    await robot.triggerAnalyticsEvent();
-    await tester.pumpSmart(const Duration(milliseconds: 1));
-
-    final List<AssertableInvocation> calls =
-        robot.mockServices.mockApi.sendEventsInvocations.invocations;
-    final batches = calls.map((e) => e[0]! as List<RequestEvent>).toList();
-    expect(batches, hasLength(2));
-    expect(batches[0], hasLength(1));
-    expect(batches[1], hasLength(1));
+      final List<AssertableInvocation> calls =
+          robot.mockServices.mockApi.sendEventsInvocations.invocations;
+      final batches = calls.map((e) => e[0]! as List<RequestEvent>).toList();
+      expect(batches, hasLength(2));
+      expect(batches[0], hasLength(1));
+      expect(batches[1], hasLength(1));
+    });
   });
 }
