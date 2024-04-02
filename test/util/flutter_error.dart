@@ -40,4 +40,11 @@ class FlutterErrors {
     FlutterError.onError = _originalOnError;
     FlutterError.presentError = _originalPresentError;
   }
+
+  String get presentErrorText {
+    final renderer = TextTreeRenderer(wrapWidth: 100000);
+    return presentError.map((e) {
+      return renderer.render(e.toDiagnosticsNode());
+    }).join('\n');
+  }
 }

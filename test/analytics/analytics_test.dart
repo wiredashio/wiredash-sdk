@@ -4,12 +4,14 @@ import 'package:async/async.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // TODO explicit analytics import should not be necessary
 import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/core/network/send_events_request.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
@@ -550,5 +552,109 @@ void main() {
       expect(batches[0], hasLength(1));
       expect(batches[1], hasLength(1));
     });
+  });
+
+  testWidgets('Server marks event as illegal - code 2200', (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp();
+
+    final errors = captureFlutterErrors();
+    robot.mockServices.mockApi.sendEventsInvocations.interceptor =
+        (invocation) async {
+      const body =
+          '{"errorCode": 2200, "errorMessage": "event X has illegal format"}';
+      final response = Response(body, 400);
+      throw InvalidEventFormatException(response: response);
+    };
+
+    await robot.triggerAnalyticsEvent();
+
+    errors.restoreDefaultErrorHandlers();
+    expect(errors.onError, isEmpty);
+    final warningOutput = errors.presentError.join('\n');
+    expect(
+      warningOutput,
+      contains('Some events where rejected by the backend.'),
+    );
+    expect(
+      warningOutput,
+      contains('event X has illegal format'),
+    );
+    expect(
+      warningOutput,
+      contains('code: 400'),
+    );
+    expect(
+      warningOutput,
+      contains('[2200]'),
+    );
+
+    // no events are left to be resubmitted
+    final eventsOnDisk = await robot.services.eventStore.getEvents('test');
+    expect(eventsOnDisk, hasLength(0));
+  });
+
+  testWidgets('Server could not handle requests - code 2201', (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp();
+
+    final errors = captureFlutterErrors();
+    robot.mockServices.mockApi.sendEventsInvocations.interceptor =
+        (invocation) async {
+      const body =
+          '{"errorCode": 2201, "errorMessage": "can not process events at the moment"}';
+      final response = Response(body, 400);
+      throw CouldNotHandleRequestException(response: response);
+    };
+
+    await robot.triggerAnalyticsEvent();
+
+    errors.restoreDefaultErrorHandlers();
+    expect(errors.onError, isEmpty);
+    expect(
+      errors.presentErrorText,
+      contains('Could not submit events to backend. Retrying later.'),
+    );
+    expect(
+      errors.presentErrorText,
+      contains('can not process events at the moment'),
+    );
+    expect(
+      errors.presentErrorText,
+      contains('code: 400'),
+    );
+    expect(
+      errors.presentErrorText,
+      contains('[2201]'),
+    );
+
+    // all events will be resubmitted at a later point
+    final eventsOnDisk = await robot.services.eventStore.getEvents('test');
+    expect(eventsOnDisk, hasLength(1));
+  });
+
+  testWidgets('Server could not handle requests - statuscode 500',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp();
+
+    final errors = captureFlutterErrors();
+    robot.mockServices.mockApi.sendEventsInvocations.interceptor =
+        (invocation) async {
+      throw WiredashApiException(response: Response('', 500));
+    };
+
+    await robot.triggerAnalyticsEvent();
+
+    errors.restoreDefaultErrorHandlers();
+    expect(errors.onError, isEmpty);
+    expect(
+      errors.presentErrorText,
+      contains('Could not submit events to backend. Retrying later.'),
+    );
+
+    // all events will be resubmitted at a later point
+    final eventsOnDisk = await robot.services.eventStore.getEvents('test');
+    expect(eventsOnDisk, hasLength(1));
   });
 }

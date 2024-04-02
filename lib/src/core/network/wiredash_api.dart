@@ -1,5 +1,6 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers, unnecessary_await_in_return
 
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart';
@@ -103,5 +104,23 @@ class ApiClientContext {
       throw KillSwitchException(response: response);
     }
     throw WiredashApiException(response: response);
+  }
+}
+
+class WiredashApiErrorResponse {
+  final String? message;
+  final int code;
+
+  WiredashApiErrorResponse(this.message, this.code);
+
+  static WiredashApiErrorResponse? tryParse(Response response) {
+    try {
+      final json = jsonDecode(response.body) as Map?;
+      final message = json?['errorMessage'] as String?;
+      final code = json?['errorCode'] as int;
+      return WiredashApiErrorResponse(message, code);
+    } catch (_) {
+      return null;
+    }
   }
 }

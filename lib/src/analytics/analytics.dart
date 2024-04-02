@@ -8,9 +8,6 @@ import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 // Required
-// TODO drop event if server responds 400 (code 2200) MISSING TEST
-// TODO keep events if server responds 400 (code 2201) MISSING TEST
-// TODO keep events for any other server error MISSING TEST
 // TODO ignore corrupt events on disk (users might edit it on web)
 // TODO export analytics
 // TODO Write documentation
@@ -201,6 +198,24 @@ class AnalyticsEvent {
     this.platformLocale,
     required this.sdkVersion,
   });
+
+  @override
+  String toString() {
+    return 'AnalyticsEvent{'
+        'analyticsId: $analyticsId, '
+        'buildCommit: $buildCommit, '
+        'buildNumber: $buildNumber, '
+        'buildVersion: $buildVersion, '
+        'bundleId: $bundleId, '
+        'createdAt: $createdAt, '
+        'eventData: $eventData, '
+        'eventName: $eventName, '
+        'platformOS: $platformOS, '
+        'platformOSVersion: $platformOSVersion, '
+        'platformLocale: $platformLocale, '
+        'sdkVersion: $sdkVersion'
+        '}';
+  }
 }
 
 class NoWiredashInstanceFoundException implements Exception {

@@ -13,10 +13,10 @@ import 'package:wiredash/src/utils/delay.dart';
 /// - [DirectEventSubmitter] for immediate submission of events (usually web)
 /// - [DebounceEventSubmitter] for batching events within a certain time frame (usually mobile)
 abstract class EventSubmitter {
-  /// Submits all pending events in [SharedPreferences] to the backend
+  /// Submits all pending events in [AnalyticsEventStore] ([SharedPreferences]) to the backend
   Future<void> submitEvents();
 
-  /// Disposes the [EventSubmitter]
+  /// Disposes the [EventSubmitter], cancels all scheduled tasks and timers
   void dispose();
 }
 
@@ -78,6 +78,7 @@ class DebounceEventSubmitter implements EventSubmitter {
     _pendingSubmit = null;
   }
 
+  /// Gathers events from [eventStore] and sends them to the backend via [api]
   Future<void> _actuallySubmit() async {
     await _delay!.future;
     _lastSubmit = clock.now();

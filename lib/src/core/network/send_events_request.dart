@@ -25,11 +25,25 @@ Future<void> postSendEvents(
   if (response.statusCode == 200) {
     return;
   }
-  if (response.statusCode == 400) {
-    throw InvalidEventFormatException(
-      response: response,
-      message: response.body,
-    );
+
+  final errorResponse = WiredashApiErrorResponse.tryParse(response);
+  if (errorResponse != null) {
+    if (response.statusCode == 400 && errorResponse.code == 2200) {
+      // Events are processed, but some have an error
+      throw InvalidEventFormatException(
+        response: response,
+        message:
+            'some events could not be saved on the server due to invalid format',
+      );
+    }
+
+    if (response.statusCode == 400 && errorResponse.code == 2201) {
+      // Events not processed, please resend
+      throw CouldNotHandleRequestException(
+        response: response,
+        message: 'no event was saved on the server, retry at a later time',
+      );
+    }
   }
 
   context.throwApiError(response);
@@ -37,9 +51,18 @@ Future<void> postSendEvents(
 
 class InvalidEventFormatException extends WiredashApiException {
   InvalidEventFormatException({
-    required super.response,
+    required Response response,
     super.message,
-  });
+  })  : assert(response.statusCode == 400),
+        super(response: response);
+}
+
+class CouldNotHandleRequestException extends WiredashApiException {
+  CouldNotHandleRequestException({
+    required Response response,
+    super.message,
+  })  : assert(response.statusCode == 400),
+        super(response: response);
 }
 
 class RequestEvent {
