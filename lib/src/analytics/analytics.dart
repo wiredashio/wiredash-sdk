@@ -8,7 +8,6 @@ import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 // Required
-// TODO ignore corrupt events on disk (users might edit it on web)
 // TODO export analytics
 // TODO Write documentation
 

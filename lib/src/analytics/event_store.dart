@@ -64,7 +64,7 @@ class PersistentAnalyticsEventStore implements AnalyticsEventStore {
     await prefs.reload();
     final keys = prefs.getKeys();
 
-    final Map<String, AnalyticsEvent> toBeSubmitted = {};
+    final Map<String, AnalyticsEvent> result = {};
     for (final key in keys) {
       final match = eventKeyRegex.firstMatch(key);
       if (match == null) continue;
@@ -75,7 +75,7 @@ class PersistentAnalyticsEventStore implements AnalyticsEventStore {
         try {
           final AnalyticsEvent event =
               deserializeEventV1(jsonDecode(eventJson) as Map<String, Object?>);
-          toBeSubmitted[key] = event;
+          result[key] = event;
         } catch (e, stack) {
           reportWiredashInfo(
             e,
@@ -86,7 +86,7 @@ class PersistentAnalyticsEventStore implements AnalyticsEventStore {
         }
       }
     }
-    return toBeSubmitted;
+    return result;
   }
 
   @override
