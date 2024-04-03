@@ -8,9 +8,27 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/core/services/error_report.dart';
 
+/// Saves [AnalyticsEvent] when recorded until they are submitted to the backend
+abstract class AnalyticsEventStore {
+  /// Returns all events for a given project
+  Future<Map<String, AnalyticsEvent>> getEvents(String? projectId);
+
+  /// Removes event by key from the store
+  Future<void> removeEvent(String key);
+
+  /// Adds [event] to the store
+  Future<void> saveEvent(AnalyticsEvent event, String? projectId);
+
+  /// Removes events that exceed the maximum disk size
+  Future<void> trimToDiskLimit();
+
+  /// Removes outdated events
+  Future<void> deleteOutdatedEvents();
+}
+
 /// Saves [AnalyticsEvent] on disk
-class AnalyticsEventStore {
-  AnalyticsEventStore({
+class PersistentAnalyticsEventStore implements AnalyticsEventStore {
+  PersistentAnalyticsEventStore({
     required this.sharedPreferences,
   });
 
@@ -23,6 +41,7 @@ class AnalyticsEventStore {
 
   final Future<SharedPreferences> Function() sharedPreferences;
 
+  @override
   Future<void> saveEvent(AnalyticsEvent event, String? projectId) async {
     final prefs = await sharedPreferences();
     await prefs.reload();
@@ -39,6 +58,7 @@ class AnalyticsEventStore {
     await prefs.setString(key, jsonEncode(serializeEventV1(event)));
   }
 
+  @override
   Future<Map<String, AnalyticsEvent>> getEvents(String? projectId) async {
     final prefs = await sharedPreferences();
     await prefs.reload();
@@ -69,11 +89,13 @@ class AnalyticsEventStore {
     return toBeSubmitted;
   }
 
+  @override
   Future<void> removeEvent(String key) async {
     final prefs = await sharedPreferences();
     await prefs.remove(key);
   }
 
+  @override
   Future<void> deleteOutdatedEvents() async {
     final prefs = await sharedPreferences();
     await prefs.reload();
@@ -92,6 +114,7 @@ class AnalyticsEventStore {
     }
   }
 
+  @override
   Future<void> trimToDiskLimit() async {
     final prefs = await sharedPreferences();
     final eventKeys =

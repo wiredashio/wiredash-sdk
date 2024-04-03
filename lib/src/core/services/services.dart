@@ -179,7 +179,7 @@ void registerProdWiredashServices(WiredashServices sl) {
     );
   });
   sl.inject<AnalyticsEventStore>((_) {
-    return AnalyticsEventStore(
+    return PersistentAnalyticsEventStore(
       sharedPreferences: sl.sharedPreferencesProvider,
     );
   });

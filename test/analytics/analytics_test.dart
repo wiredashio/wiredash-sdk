@@ -376,8 +376,9 @@ void main() {
     await tester.pumpSmart();
 
     // event is saved locally for the "default" project
-    final eventStore =
-        AnalyticsEventStore(sharedPreferences: SharedPreferences.getInstance);
+    final eventStore = PersistentAnalyticsEventStore(
+      sharedPreferences: SharedPreferences.getInstance,
+    );
     final eventsOnDisk = await eventStore.getEvents('default');
     expect(eventsOnDisk, hasLength(1));
 
@@ -411,8 +412,9 @@ void main() {
     await tester.pumpSmart();
 
     // event is saved locally for project1
-    final eventStore =
-        AnalyticsEventStore(sharedPreferences: SharedPreferences.getInstance);
+    final eventStore = PersistentAnalyticsEventStore(
+      sharedPreferences: SharedPreferences.getInstance,
+    );
     final eventsOnDisk = await eventStore.getEvents('project1');
     expect(eventsOnDisk, hasLength(1));
     final defaultEventsOnDisk = await eventStore.getEvents('default');
@@ -455,8 +457,9 @@ void main() {
     await robot.tapText('Send Event');
     await tester.pumpSmart();
 
-    final eventStore =
-        AnalyticsEventStore(sharedPreferences: SharedPreferences.getInstance);
+    final eventStore = PersistentAnalyticsEventStore(
+      sharedPreferences: SharedPreferences.getInstance,
+    );
     final eventsOnDisk1 = await eventStore.getEvents('projectX');
     expect(eventsOnDisk1, hasLength(2));
 
