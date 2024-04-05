@@ -258,6 +258,12 @@ class WiredashState extends State<Wiredash> {
         secret: widget.secret,
       );
 
+      if (oldWidget.options?.localizationDelegate !=
+          widget.options?.localizationDelegate) {
+        _verifySyncLocalizationsDelegate();
+      }
+      _services.updateWidget(widget);
+
       _onProjectIdChanged();
     }
   }
@@ -420,6 +426,34 @@ class WiredashState extends State<Wiredash> {
 
     // Use what's set by the operating system
     return _defaultLocale;
+  }
+
+  void _verifySyncLocalizationsDelegate() {
+    assert(() {
+      final delegate = widget.options?.localizationDelegate;
+      if (delegate == null) {
+        return true;
+      }
+      final locale = _currentLocale;
+      if (!delegate.isSupported(locale)) {
+        // load should not be called
+        return true;
+      }
+      final loadFuture = delegate.load(locale);
+      if (loadFuture is! SynchronousFuture) {
+        reportWiredashInfo(
+          'Warning: $delegate load() is async',
+          StackTrace.current,
+          'Warning: ${delegate.runtimeType}.load() returned a Future for Locale "$locale".\n'
+              'This will lead to your app losing all its state when you open Wiredash!\n'
+              '\tDO return a SynchronousFuture from your LocalizationsDelegate.load() method. \n'
+              '\tDO NOT use the async keyword in LocalizationsDelegate.load().\n'
+              'When load() returns SynchronousFuture the Localizations widget can build your app widget with the already loaded localizations at the first frame.\n'
+              'For more information visit https://github.com/wiredashio/wiredash-sdk/issues/341',
+        );
+      }
+      return true;
+    }());
   }
 }
 
