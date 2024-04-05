@@ -14,9 +14,6 @@ dependencies:
   phntmxyz_bump_version_sidekick_plugin: ^1.2.1
   sidekick_core: ^2.1.0
 
-dependency_overrides:
-  dart_console2: "<3.1.0"
-
 dev_dependencies:
   lint: ^2.0.0
 
