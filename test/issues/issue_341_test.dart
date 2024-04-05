@@ -8,7 +8,7 @@ import '../util/flutter_error.dart';
 void main() {
   group('issue 341', () {
     testWidgets('no LocalizationsDelegate', (tester) async {
-      await tester.pumpWidget(const MyApp(asyncDelegate: null));
+      await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle();
       expect(TestWidget.createCount, 1);
       await tester.tap(find.byType(FloatingActionButton));
@@ -36,8 +36,10 @@ void main() {
       // This causes the TestWidget to lose its state
       expect(TestWidget.createCount, 2);
       expect(errors.presentErrorText, contains("SynchronousFuture"));
-      expect(errors.presentErrorText,
-          contains("AsyncCustomWiredashTranslationsDelegate"));
+      expect(
+        errors.presentErrorText,
+        contains("AsyncCustomWiredashTranslationsDelegate"),
+      );
       expect(errors.presentError.length, 1);
     });
   });
@@ -88,7 +90,7 @@ class _TestWidgetState extends State<TestWidget> {
   @override
   void initState() {
     super.initState();
-    print("TestWidget initState");
+    debugPrint("TestWidget initState");
     addTearDown(() {
       TestWidget.createCount = 0;
     });
