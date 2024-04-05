@@ -12,11 +12,11 @@ executables:
 dependencies:
   dcli: ^2.2.3
   phntmxyz_bump_version_sidekick_plugin: ^1.2.1
-  sidekick_core: ^2.1.1
+  sidekick_core: ^2.1.2
 
 dev_dependencies:
   lint: ^2.0.0
 
 # generated code, do not edit this manually
 sidekick:
-  cli_version: 2.1.1
+  cli_version: 2.1.2
