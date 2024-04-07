@@ -31,6 +31,7 @@ class _NotAWidgetsAppState extends State<NotAWidgetsApp> {
     );
 
     // Allow inspection of widgets
+    // ignore: deprecated_member_use
     if (kDebugMode && WidgetsApp.debugShowWidgetInspectorOverride) {
       child = WidgetInspector(
         selectButtonBuilder: (BuildContext context, void Function() onPressed) {
