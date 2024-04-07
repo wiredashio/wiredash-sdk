@@ -202,6 +202,7 @@ class WiredashState extends State<Wiredash> {
       projectId: widget.projectId,
       secret: widget.secret,
     );
+    _verifySyncLocalizationsDelegate();
 
     _unregister = WiredashRegistry.instance.register(this);
     _services.updateWidget(widget);
@@ -215,7 +216,6 @@ class WiredashState extends State<Wiredash> {
         _services.syncEngine.onAppMovedToBackground();
       }
     });
-
     _onProjectIdChanged();
 
     _backButtonDispatcher = WiredashBackButtonDispatcher()..initialize();
