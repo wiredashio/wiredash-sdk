@@ -164,6 +164,67 @@ class Wiredash extends StatefulWidget {
     return WiredashController(state._services.wiredashModel);
   }
 
+  /// Tracks an event with Wiredash.
+  ///
+  /// This method allows you to record user interactions or other significant
+  /// occurrences within your app and send them to the Wiredash service for
+  /// analysis.
+  ///
+  /// ```dart
+  /// await Wiredash.trackEvent('button_tapped', data: {
+  ///  'button_id': 'submit_button',
+  /// });
+  /// ```
+  ///
+  /// **[eventName] constraints**
+  /// {@macro eventNameConstraints}
+  ///
+  /// **[data] constraints**
+  /// {@macro eventDataConstraints}
+  ///
+  /// **Event Sending Behavior:**
+  ///
+  /// * Events are batched and sent to the Wiredash server periodically at 30-second intervals.
+  /// * The first batch of events is sent after a 5-second delay.
+  /// * Events are also sent immediately when the app goes to the background (not applicable to web platforms).
+  /// * If events cannot be sent due to network issues, they are stored locally and retried later.
+  /// * Unsent events are discarded after 3 days.
+  ///
+  /// **Multiple Wiredash Widgets:**
+  ///
+  /// If you have multiple [Wiredash] widgets in your app with different projectIds,
+  /// you can specify the desired [projectId] when creating [WiredashAnalytics].
+  /// This ensures that the event is sent to the correct project.
+  ///
+  /// If no [projectId] is provided and multiple widgets are mounted, the event will be sent to
+  /// the project associated with the first mounted widget. A warning message will also be logged
+  /// to the console in this scenario.
+  ///
+  /// **Background Isolates:**
+  ///
+  /// When calling [trackEvent] from a background isolate, the event will be stored locally.
+  /// The main isolate will pick up these events and send them along with the next batch or
+  /// when the app goes to the background.
+  ///
+  /// **See also**
+  ///
+  /// Use [WiredashAnalytics] for easy mocking and testing
+  ///
+  /// ```dart
+  /// final analytics = WiredashAnalytics();
+  /// await analytics.trackEvent('Click Button', data: {/**/});
+  ///
+  /// // inject into other classes
+  /// final bloc = MyBloc(analytics: analytics);
+  /// ```
+  ///
+  /// Access the correct [Wiredash] project via context to send events to if you
+  /// use multiple Wiredash widgets in your app. This way you don't have to
+  /// specify the [projectId] every time you call [trackEvent].
+  ///
+  /// ```dart
+  /// Wiredash.of(context).trackEvent('Click Button');
+  /// ```
   static Future<void> trackEvent(
     String eventName, {
     Map<String, Object?>? data,

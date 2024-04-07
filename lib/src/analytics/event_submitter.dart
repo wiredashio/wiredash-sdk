@@ -20,6 +20,9 @@ abstract class EventSubmitter {
   void dispose();
 }
 
+/// Sends events directly to the backend without batching.
+///
+/// Usually used on platform web
 class DirectEventSubmitter extends DebounceEventSubmitter {
   DirectEventSubmitter({
     required super.eventStore,
@@ -31,6 +34,10 @@ class DirectEventSubmitter extends DebounceEventSubmitter {
         );
 }
 
+/// Denounces event submission to the backend, minimizing network traffic by batching events.
+///
+/// Use [initialThrottleDuration] to set the time to wait before sending the first event.
+/// Set [throttleDuration] to set the time to wait between sending batches of events.
 class DebounceEventSubmitter implements EventSubmitter {
   final AnalyticsEventStore eventStore;
   final WiredashApi api;
@@ -45,7 +52,8 @@ class DebounceEventSubmitter implements EventSubmitter {
     required this.projectId,
     this.throttleDuration = const Duration(seconds: 30),
     this.initialThrottleDuration = const Duration(seconds: 5),
-  });
+  })  : assert(!throttleDuration.isNegative),
+        assert(!initialThrottleDuration.isNegative);
 
   Delay? _delay;
   bool _initialSubmitted = false;

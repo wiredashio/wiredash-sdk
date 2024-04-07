@@ -4,6 +4,7 @@ import 'dart:isolate';
 import 'package:clock/clock.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
@@ -88,6 +89,22 @@ class WiredashAnalytics {
   /// When calling [trackEvent] from a background isolate, the event will be stored locally.
   /// The main isolate will pick up these events and send them along with the next batch or
   /// when the app goes to the background.
+  ///
+  /// **See also**
+  ///
+  /// Use [Wiredash.trackEvent] for easy access from everywhere in your app.
+  ///
+  /// ```dart
+  /// await Wiredash.trackEvent('Click Button', data: {/**/});
+  /// ```
+  ///
+  /// Access the correct [Wiredash] project via context to send events to if you
+  /// use multiple Wiredash widgets in your app. This way you don't have to
+  /// specify the [projectId] every time you call [trackEvent].
+  ///
+  /// ```dart
+  /// Wiredash.of(context).trackEvent('Click Button');
+  /// ```
   Future<void> trackEvent(
     String eventName, {
     Map<String, Object?>? data,
@@ -217,58 +234,16 @@ class WiredashAnalytics {
   }
 }
 
-class AnalyticsEvent {
-  final String analyticsId;
-  final String? buildCommit;
-  final String? buildNumber;
-  final String? buildVersion;
-  final String? bundleId;
-  final DateTime? createdAt;
-  final Map<String, Object?>? eventData;
-  final String eventName;
-  final String? platformOS;
-  final String? platformOSVersion;
-  final String? platformLocale;
-  final int sdkVersion;
-
-  const AnalyticsEvent({
-    required this.analyticsId,
-    this.buildCommit,
-    this.buildNumber,
-    this.buildVersion,
-    this.bundleId,
-    this.createdAt,
-    this.eventData,
-    required this.eventName,
-    this.platformOS,
-    this.platformOSVersion,
-    this.platformLocale,
-    required this.sdkVersion,
-  });
-
-  @override
-  String toString() {
-    return 'AnalyticsEvent{'
-        'analyticsId: $analyticsId, '
-        'buildCommit: $buildCommit, '
-        'buildNumber: $buildNumber, '
-        'buildVersion: $buildVersion, '
-        'bundleId: $bundleId, '
-        'createdAt: $createdAt, '
-        'eventData: $eventData, '
-        'eventName: $eventName, '
-        'platformOS: $platformOS, '
-        'platformOSVersion: $platformOSVersion, '
-        'platformLocale: $platformLocale, '
-        'sdkVersion: $sdkVersion'
-        '}';
-  }
-}
-
+/// Reported when [WiredashAnalytics.trackEvent] but no [Wiredash] widget is mounted.
+///
+/// This warning is only throw on the main isolate, where the [Wiredash] widget
+/// is expected to be always mounted.
 class NoWiredashInstanceFoundException implements Exception {
   NoWiredashInstanceFoundException();
 }
 
+/// Reported when multiple [Wiredash] widgets with different projectIds are
+/// mounted but [Wiredash.trackEvent] is called without a [projectId].
 class NoProjectIdSpecifiedException implements Exception {
   NoProjectIdSpecifiedException();
 }
@@ -370,8 +345,9 @@ void validateEventName(String eventName) {
 /// {@template eventDataConstraints}
 /// - Parameters must not contain more than 10 key-value pairs
 /// - Keys must not exceed 128 characters
+/// - Keys must not be empty
 /// - Values can be String, int or bool. null is allowed, too.
-/// - Each value must not exceed 1024 characters (after running them through jsonEncode).
+/// - Each individual value must not exceed 1024 characters (after running them through jsonEncode).
 /// {@endtemplate}
 Map<String, Object?> validateEventData(
   Map<String, Object?>? data,
@@ -454,10 +430,15 @@ Map<String, Object?> validateEventData(
   return preprocessed;
 }
 
+/// Reported when the event parameters exceed the limit of 10 key-value pairs.
+/// Additional parameters are dropped.
 class TooManyEventParametersException implements Exception {
   TooManyEventParametersException();
 }
 
+/// Event key does not match the required format, and is therefore dropped.
+///
+/// {@macro eventNameConstraints}
 class InvalidEventKeyFormatException implements Exception {
   final String key;
 

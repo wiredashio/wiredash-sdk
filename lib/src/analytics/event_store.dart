@@ -26,6 +26,55 @@ abstract class AnalyticsEventStore {
   Future<void> deleteOutdatedEvents();
 }
 
+/// Event to be saved in the [AnalyticsEventStore]
+class AnalyticsEvent {
+  final String analyticsId;
+  final String? buildCommit;
+  final String? buildNumber;
+  final String? buildVersion;
+  final String? bundleId;
+  final DateTime? createdAt;
+  final Map<String, Object?>? eventData;
+  final String eventName;
+  final String? platformOS;
+  final String? platformOSVersion;
+  final String? platformLocale;
+  final int sdkVersion;
+
+  const AnalyticsEvent({
+    required this.analyticsId,
+    this.buildCommit,
+    this.buildNumber,
+    this.buildVersion,
+    this.bundleId,
+    this.createdAt,
+    this.eventData,
+    required this.eventName,
+    this.platformOS,
+    this.platformOSVersion,
+    this.platformLocale,
+    required this.sdkVersion,
+  });
+
+  @override
+  String toString() {
+    return 'AnalyticsEvent{'
+        'analyticsId: $analyticsId, '
+        'buildCommit: $buildCommit, '
+        'buildNumber: $buildNumber, '
+        'buildVersion: $buildVersion, '
+        'bundleId: $bundleId, '
+        'createdAt: $createdAt, '
+        'eventData: $eventData, '
+        'eventName: $eventName, '
+        'platformOS: $platformOS, '
+        'platformOSVersion: $platformOSVersion, '
+        'platformLocale: $platformLocale, '
+        'sdkVersion: $sdkVersion'
+        '}';
+  }
+}
+
 /// Saves [AnalyticsEvent] on disk
 class PersistentAnalyticsEventStore implements AnalyticsEventStore {
   PersistentAnalyticsEventStore({
