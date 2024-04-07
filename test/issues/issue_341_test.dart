@@ -35,6 +35,7 @@ void main() {
       errors.restoreDefaultErrorHandlers();
       // This causes the TestWidget to lose its state
       expect(TestWidget.createCount, 2);
+      printOnFailure("captured error: ${errors.presentErrorText}");
       expect(errors.presentErrorText, contains("SynchronousFuture"));
       expect(
         errors.presentErrorText,
