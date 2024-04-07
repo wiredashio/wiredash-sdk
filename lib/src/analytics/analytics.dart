@@ -24,23 +24,76 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 // TODO implement lifecycle for windows
 // TODO implement lifecycle for linux
 
+/// Interact with the Wiredash Analytics service.
+///
+/// This class provides a convenient way to track events and send them to the
+/// Wiredash Console.
+///
+/// This class makes it easy to inject and mock the [trackEvent] method for testing.
+/// For simple scenarios, call [Wiredash.trackEvent] directly.
 class WiredashAnalytics {
   /// Optional [projectId] in case multiple [Wiredash] widgets with different
   /// projectIds are used at the same time
   final String? projectId;
 
+  /// Creates a new instance of [WiredashAnalytics], creating multiple is totally fine.
+  /// The events are stored on disk and sent to the server in periodic intervals.
+  ///
+  /// Set the [projectId] in case you have multiple [Wiredash] widgets with different
+  /// projectIds in your app. If you only have one [Wiredash] widget, you can omit the [projectId].
   WiredashAnalytics({
     this.projectId,
   });
 
   final WiredashServices _services = WiredashServices();
 
+  /// Tracks an event with Wiredash.
+  ///
+  /// This method allows you to record user interactions or other significant
+  /// occurrences within your app and send them to the Wiredash service for
+  /// analysis.
+  ///
+  /// ```dart
+  /// final analytics = WiredashAnalytics();
+  /// await analytics.trackEvent('button_tapped', data: {
+  ///  'button_id': 'submit_button',
+  /// });
+  /// ```
+  /// ### [eventName] constraints
+  /// {@macro eventNameConstraints}
+  ///
+  /// ### [data] constraints
+  /// {@macro eventDataConstraints}
+  ///
+  /// **Event Sending Behavior:**
+  ///
+  /// * Events are batched and sent to the Wiredash server periodically at 30-second intervals.
+  /// * The first batch of events is sent after a 5-second delay.
+  /// * Events are also sent immediately when the app goes to the background (not applicable to web platforms).
+  /// * If events cannot be sent due to network issues, they are stored locally and retried later.
+  /// * Unsent events are discarded after 3 days.
+  ///
+  /// **Multiple Wiredash Widgets:**
+  ///
+  /// If you have multiple [Wiredash] widgets in your app with different projectIds,
+  /// you can specify the desired [projectId] when creating [WiredashAnalytics].
+  /// This ensures that the event is sent to the correct project.
+  ///
+  /// If no [projectId] is provided and multiple widgets are mounted, the event will be sent to
+  /// the project associated with the first mounted widget. A warning message will also be logged
+  /// to the console in this scenario.
+  ///
+  /// **Background Isolates:**
+  ///
+  /// When calling [trackEvent] from a background isolate, the event will be stored locally.
+  /// The main isolate will pick up these events and send them along with the next batch or
+  /// when the app goes to the background.
   Future<void> trackEvent(
     String eventName, {
     Map<String, Object?>? data,
   }) async {
     validateEventName(eventName);
-    final eventData = validateParams(data, eventName);
+    final eventData = validateEventData(data, eventName);
 
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
@@ -65,6 +118,10 @@ class WiredashAnalytics {
     await _notifyWiredashInstance(projectId, eventName);
   }
 
+  /// Checks the currently mounted [Wiredash] widgets and notifies the correct one
+  /// to send the event.
+  /// This ensures only a single instance sends the event on the main isolate,
+  /// making batching and sending more efficient.
   Future<void> _notifyWiredashInstance(
     String? projectId,
     String eventName,
@@ -160,15 +217,6 @@ class WiredashAnalytics {
   }
 }
 
-Future<void> trackEvent(
-  String eventName, {
-  Map<String, Object?>? data,
-  String? projectId,
-}) async {
-  final analytics = WiredashAnalytics(projectId: projectId);
-  await analytics.trackEvent(eventName, data: data);
-}
-
 class AnalyticsEvent {
   final String analyticsId;
   final String? buildCommit;
@@ -231,11 +279,15 @@ const List<String> _internalEvents = [
 
 final _eventKeyRegExp = RegExp(r'^#?[A-Za-z]+(?: ?[0-9A-Za-z_-]{2,})+$');
 
-/// The event name must be between 3 to 64 characters long
-/// Contain only letters (a-zA-Z), numbers (0-9), - and _
-/// Must start with a letter (a-zA-Z)
-/// Must not contain double spaces
-/// Must not contain double or trailing spaces
+/// Validates the event name.
+///
+/// {@template eventNameConstraints}
+/// - The event name must be between 3 to 64 characters long
+/// - Contain only letters (a-zA-Z), numbers (0-9), - and _ and spaces
+/// - Must start with a letter (a-zA-Z)
+/// - Must not contain double spaces
+/// - Must not contain double or trailing spaces
+/// {@endtemplate}
 void validateEventName(String eventName) {
   if (eventName.isEmpty) {
     throw ArgumentError.value(
@@ -313,20 +365,22 @@ void validateEventName(String eventName) {
   // valid
 }
 
-/// Parameters must not contain more than 10 key-value pairs
+/// Validates the event data of [WiredashAnalytics.trackEvent].
 ///
-/// Keys must not exceed 128 characters
-///
-/// Values can be String, int or bool. null is allowed, too.
-/// Each value must not exceed 1024 characters (after running them through jsonEncode).
-Map<String, Object?> validateParams(
-  Map<String, Object?>? params,
+/// {@template eventDataConstraints}
+/// - Parameters must not contain more than 10 key-value pairs
+/// - Keys must not exceed 128 characters
+/// - Values can be String, int or bool. null is allowed, too.
+/// - Each value must not exceed 1024 characters (after running them through jsonEncode).
+/// {@endtemplate}
+Map<String, Object?> validateEventData(
+  Map<String, Object?>? data,
   String eventName,
 ) {
-  if (params == null) {
+  if (data == null) {
     return {};
   }
-  final preprocessed = Map.of(params);
+  final preprocessed = Map.of(data);
 
   // drop all keys that exceed the limit
   final keysToRemove = preprocessed.keys.skip(10).toList();
@@ -361,7 +415,7 @@ Map<String, Object?> validateParams(
       );
     }
 
-    final value = params[key];
+    final value = data[key];
     if (value == null || value is int || value is bool) {
       continue;
     }
@@ -371,7 +425,7 @@ Map<String, Object?> validateParams(
         preprocessed.remove(key);
         reportWiredashInfo(
           ArgumentError.value(
-            params,
+            data,
             'data["$key"]',
             'Event parameter value for "$key" has a length of ${encoded.length} '
                 'and exceeds the maximum of 1024 characters\n'
@@ -388,7 +442,7 @@ Map<String, Object?> validateParams(
     preprocessed.remove(key);
     reportWiredashInfo(
       ArgumentError.value(
-        params,
+        data,
         'data["$key"]',
         'Event parameter value for "$key" has an unsupported type $type',
       ),

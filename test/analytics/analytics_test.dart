@@ -6,15 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-// TODO explicit analytics import should not be necessary
-import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
+
 import 'package:wiredash/src/core/network/send_events_request.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
-import 'package:wiredash/src/core/wiredash_widget.dart';
+import 'package:wiredash/wiredash.dart';
 
 import '../util/flutter_error.dart';
 import '../util/invocation_catcher.dart';
@@ -660,4 +658,25 @@ void main() {
     final eventsOnDisk = await robot.services.eventStore.getEvents('test');
     expect(eventsOnDisk, hasLength(1));
   });
+
+  test('3rd party implements WiredashAnalytics', () {
+    final analytics = ThirdPartyAnalytics();
+    expect(analytics.projectId, isNull);
+    expect(
+      () => analytics.trackEvent('test_event', data: {'param1': 'value1'}),
+      returnsNormally,
+    );
+  });
+}
+
+// verifies no new methods are accidentally added to WiredashAnalytics, making it easy to mock
+class ThirdPartyAnalytics implements WiredashAnalytics {
+  @override
+  String? get projectId => null;
+
+  @override
+  Future<void> trackEvent(
+    String eventName, {
+    Map<String, Object?>? data,
+  }) async {}
 }
