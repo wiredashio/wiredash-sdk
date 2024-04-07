@@ -14,7 +14,7 @@ void main() {
   group('DebounceEventSubmitter', () {
     testWidgets('sends initial event after initialThrottleDuration',
         (tester) async {
-      final store = InMemoryEventStore();
+      final store = InMemoryEventStore.withDefaults();
       final api = MockWiredashApi();
       final DebounceEventSubmitter submitter = DebounceEventSubmitter(
         eventStore: store,
@@ -44,7 +44,7 @@ void main() {
     });
 
     testWidgets('cancel timer after dispose', (tester) async {
-      final store = InMemoryEventStore();
+      final store = InMemoryEventStore.withDefaults();
       final api = MockWiredashApi();
       final DebounceEventSubmitter submitter = DebounceEventSubmitter(
         eventStore: store,
@@ -86,9 +86,13 @@ class InMemoryEventStore implements AnalyticsEventStore {
   final Map<String, AnalyticsEvent> _events = {};
 
   InMemoryEventStore({
-    this.cutOffAfter = const Duration(days: 3),
-    this.maximumDiskSizeInBytes = 1024 * 1024 /*1mb*/,
+    required this.cutOffAfter,
+    required this.maximumDiskSizeInBytes,
   });
+
+  InMemoryEventStore.withDefaults()
+      : cutOffAfter = const Duration(days: 30),
+        maximumDiskSizeInBytes = 1024 * 1024;
 
   final Duration cutOffAfter;
   final int maximumDiskSizeInBytes;
