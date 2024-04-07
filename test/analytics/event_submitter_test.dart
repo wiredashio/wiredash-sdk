@@ -85,6 +85,7 @@ void main() {
 class InMemoryEventStore implements AnalyticsEventStore {
   final Map<String, AnalyticsEvent> _events = {};
 
+  // ignore: unreachable_from_main
   InMemoryEventStore({
     required this.cutOffAfter,
     required this.maximumDiskSizeInBytes,
