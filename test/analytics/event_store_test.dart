@@ -14,7 +14,9 @@ void main() {
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
-        'io.wiredash.events.default|1234567890|abc', '{"invalid": "event"}');
+      'io.wiredash.events.default|1234567890|abc',
+      '{"invalid": "event"}',
+    );
     final events = await eventStore.getEvents(null);
 
     errors.restoreDefaultErrorHandlers();
