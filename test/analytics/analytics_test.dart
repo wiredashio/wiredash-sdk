@@ -299,8 +299,8 @@ void main() {
     await tester.pumpSmart();
 
     errors.restoreDefaultErrorHandlers();
-    expect(errors.onError, isEmpty);
-    final presentErrors = errors.presentError
+    expect(errors.errors, isEmpty);
+    final presentErrors = errors.warnings
         .where((element) => !element.toString().contains('offline'));
     expect(presentErrors, isEmpty);
 
@@ -573,8 +573,8 @@ void main() {
     await robot.triggerAnalyticsEvent();
 
     errors.restoreDefaultErrorHandlers();
-    expect(errors.onError, isEmpty);
-    final warningOutput = errors.presentError.join('\n');
+    expect(errors.errors, isEmpty);
+    final warningOutput = errors.warnings.join('\n');
     expect(
       warningOutput,
       contains('Some events where rejected by the backend.'),
@@ -613,21 +613,21 @@ void main() {
     await robot.triggerAnalyticsEvent();
 
     errors.restoreDefaultErrorHandlers();
-    expect(errors.onError, isEmpty);
+    expect(errors.errors, isEmpty);
     expect(
-      errors.presentErrorText,
+      errors.warningText,
       contains('Could not submit events to backend. Retrying later.'),
     );
     expect(
-      errors.presentErrorText,
+      errors.warningText,
       contains('can not process events at the moment'),
     );
     expect(
-      errors.presentErrorText,
+      errors.warningText,
       contains('code: 400'),
     );
     expect(
-      errors.presentErrorText,
+      errors.warningText,
       contains('[2201]'),
     );
 
@@ -650,9 +650,9 @@ void main() {
     await robot.triggerAnalyticsEvent();
 
     errors.restoreDefaultErrorHandlers();
-    expect(errors.onError, isEmpty);
+    expect(errors.errors, isEmpty);
     expect(
-      errors.presentErrorText,
+      errors.warningText,
       contains('Could not submit events to backend. Retrying later.'),
     );
 

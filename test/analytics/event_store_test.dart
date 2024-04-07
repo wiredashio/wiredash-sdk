@@ -24,7 +24,7 @@ void main() {
     expect(events, hasLength(0));
     // reported warning
     expect(
-      errors.presentErrorText,
+      errors.warningText,
       contains(
         'Error when parsing event io.wiredash.events.default|1234567890|abc. Removing',
       ),

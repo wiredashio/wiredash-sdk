@@ -63,6 +63,10 @@ void main() {
       );
     });
 
+    test('allow spaces', () {
+      expect(() => validateEventName('event name'), returnsNormally);
+    });
+
     test('no leading or trailing spaces', () {
       expect(
         () => validateEventName('trailing '),
@@ -219,7 +223,8 @@ Matcher argErrorContaining(String containing) {
 
 _ValidateResult _runValidateParameters(Map<String, Object?>? params) {
   final FlutterErrors errors = captureFlutterErrors();
-  final Map<String, Object?> processed = validateParams(params, 'event_name');
+  final Map<String, Object?> processed =
+      validateEventData(params, 'event_name');
   return _ValidateResult(params, processed, errors);
 }
 
@@ -231,18 +236,18 @@ class _ValidateResult {
   _ValidateResult(this.input, this.processed, this.errors);
 
   _ValidateResult hasNoErrorsNoInfos() {
-    expect(errors.onError, isEmpty, reason: 'Expected no errors');
-    expect(errors.presentError, isEmpty, reason: 'Expected no errors');
+    expect(errors.errors, isEmpty, reason: 'Expected no errors');
+    expect(errors.warnings, isEmpty, reason: 'Expected no errors');
     return this;
   }
 
   _ValidateResult hasNoErrors() {
-    expect(errors.onError, isEmpty, reason: 'Expected no errors');
+    expect(errors.errors, isEmpty, reason: 'Expected no errors');
     return this;
   }
 
   _ValidateResult hasNoInfos() {
-    expect(errors.presentError, isEmpty, reason: 'Expected no errors');
+    expect(errors.warnings, isEmpty, reason: 'Expected no errors');
     return this;
   }
 
@@ -257,7 +262,7 @@ class _ValidateResult {
 
   _ValidateResult hasErrorContaining(String text) {
     expect(
-      errors.onError.join(),
+      errors.errorText,
       contains(text),
       reason: 'Expected an error containing "$text"',
     );
@@ -266,7 +271,7 @@ class _ValidateResult {
 
   _ValidateResult hasInfoContaining(String text) {
     expect(
-      errors.presentError.join(),
+      errors.warningText,
       contains(text),
       reason: 'Expected an info containing "$text"',
     );

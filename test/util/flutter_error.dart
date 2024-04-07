@@ -29,11 +29,12 @@ class FlutterErrors {
     this._originalPresentError,
   );
 
-  List<FlutterErrorDetails> get onError => List.unmodifiable(_onError);
+  /// All errors caught by [FlutterError.onError]
+  List<FlutterErrorDetails> get errors => List.unmodifiable(_onError);
   final List<FlutterErrorDetails> _onError = [];
 
-  List<FlutterErrorDetails> get presentError =>
-      List.unmodifiable(_presentError);
+  /// All errors caught by [FlutterError.presentError]
+  List<FlutterErrorDetails> get warnings => List.unmodifiable(_presentError);
   final List<FlutterErrorDetails> _presentError = [];
 
   void restoreDefaultErrorHandlers() {
@@ -41,9 +42,16 @@ class FlutterErrors {
     FlutterError.presentError = _originalPresentError;
   }
 
-  String get presentErrorText {
+  String get errorText {
     final renderer = TextTreeRenderer(wrapWidth: 100000);
-    return presentError.map((e) {
+    return warnings.map((e) {
+      return renderer.render(e.toDiagnosticsNode());
+    }).join('\n');
+  }
+
+  String get warningText {
+    final renderer = TextTreeRenderer(wrapWidth: 100000);
+    return warnings.map((e) {
       return renderer.render(e.toDiagnosticsNode());
     }).join('\n');
   }

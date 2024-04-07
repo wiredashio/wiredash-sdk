@@ -158,10 +158,10 @@ void main() {
 
       await robot.waitUntilWiredashIsClosed();
       expect(
-        errors.presentError[0].exception.toString(),
+        errors.warnings[0].exception.toString(),
         contains('No internet'),
       );
-      expect(errors.onError, isEmpty);
+      expect(errors.errors, isEmpty);
     });
 
     testWidgets('Hold app while submitting ps resets form', (tester) async {
