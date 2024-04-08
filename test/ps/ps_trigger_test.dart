@@ -196,7 +196,7 @@ void main() {
   });
 }
 
-class FakeWuidGenerator implements WuidGenerator {
+class FakeWuidGenerator with OnKeyCreatedNotifier implements WuidGenerator {
   String mockedSubmitId;
 
   FakeWuidGenerator(this.mockedSubmitId);

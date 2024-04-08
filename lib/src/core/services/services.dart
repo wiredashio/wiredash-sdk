@@ -158,9 +158,17 @@ void registerProdWiredashServices(WiredashServices sl) {
     ),
   );
   sl.inject<WuidGenerator>(
-    (_) => SharedPrefsWuidGenerator(
-      sharedPrefsProvider: sl.sharedPreferencesProvider,
-    ),
+    (_) {
+      final generator = SharedPrefsWuidGenerator(
+        sharedPrefsProvider: sl.sharedPreferencesProvider,
+      );
+      generator.addOnKeyCreatedListener((key) {
+        if (key == '_wiredashAppUsageID') {
+          Wiredash.trackEvent('#first_launch');
+        }
+      });
+      return generator;
+    },
   );
   sl.inject<ProjectCredentialValidator>(
     (_) => const ProjectCredentialValidator(),

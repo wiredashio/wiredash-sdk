@@ -1,8 +1,11 @@
 // ignore: depend_on_referenced_packages
+import 'dart:async';
+
 import 'package:async/async.dart' show ResultFuture;
 import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/utils/disposable.dart';
 
 /// Wiredash Unique Identifier Generator
 abstract class WuidGenerator {
@@ -13,10 +16,15 @@ abstract class WuidGenerator {
   ///
   /// Calling it a second time with the same [key] will return the same id
   Future<String> generatePersistedId(String key, int length);
+
+  /// Adds a listener that is called when a new key is created
+  Disposable addOnKeyCreatedListener(void Function(String key) listener);
 }
 
 /// Persistent implementation of [WuidGenerator] that uses shared preferences
-class SharedPrefsWuidGenerator implements WuidGenerator {
+class SharedPrefsWuidGenerator
+    with OnKeyCreatedNotifier
+    implements WuidGenerator {
   final Future<SharedPreferences> Function() sharedPrefsProvider;
 
   SharedPrefsWuidGenerator({
@@ -80,6 +88,7 @@ class SharedPrefsWuidGenerator implements WuidGenerator {
 
     // first time generation or fallback in case of sharedPrefs error
     final deviceId = generateId(length);
+    Future(() => notifyKeyCreated(key));
     try {
       final prefs = await sharedPrefsProvider().timeout(_sharedPrefsTimeout);
       await prefs.setString(key, deviceId).timeout(_sharedPrefsTimeout);
@@ -94,6 +103,25 @@ class SharedPrefsWuidGenerator implements WuidGenerator {
   /// Usually shared preferences shouldn't fail. But if they do or don't react
   /// the deviceId fallback should generate in finite time
   static const _sharedPrefsTimeout = Duration(seconds: 2);
+}
+
+mixin OnKeyCreatedNotifier {
+  final List<void Function(String key)> _onKeyCreatedListeners = [];
+
+  Disposable addOnKeyCreatedListener(void Function(String key) listener) {
+    _onKeyCreatedListeners.add(listener);
+    return Disposable(() => _onKeyCreatedListeners.remove(listener));
+  }
+
+  void notifyKeyCreated(String key) {
+    for (final listener in _onKeyCreatedListeners.toList()) {
+      try {
+        listener(key);
+      } catch (e, stack) {
+        reportWiredashError(e, stack, 'Error in onKeyCreatedListener');
+      }
+    }
+  }
 }
 
 extension SubmitIdGenerator on WuidGenerator {

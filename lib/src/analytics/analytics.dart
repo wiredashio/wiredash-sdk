@@ -8,6 +8,8 @@ import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
+// Required
+
 // Important
 // TODO drop event when API credentials are obviously wrong
 // TODO allow resetting of the analyticsId

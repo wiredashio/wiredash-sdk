@@ -11,6 +11,7 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
+import 'package:wiredash/src/utils/disposable.dart';
 
 import '../../util/flutter_error.dart';
 import '../../util/invocation_catcher.dart';
@@ -393,7 +394,9 @@ class InMemorySharedPreferences extends Fake implements SharedPreferences {
 }
 
 /// Creates string IDs that increment
-class IncrementalIdGenerator implements WuidGenerator {
+class IncrementalIdGenerator
+    with OnKeyCreatedNotifier
+    implements WuidGenerator {
   var _nextInt = 0;
 
   @override
