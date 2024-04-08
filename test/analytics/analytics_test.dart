@@ -351,6 +351,7 @@ void main() {
       (tester) async {
     final robot = WiredashTestRobot(tester);
     robot.setupMocks();
+    await robot.regenerateAnalyticsId();
     await tester.pumpWidget(
       // No Wiredash widget
       MaterialApp(
@@ -392,6 +393,7 @@ void main() {
       (tester) async {
     final robot = WiredashTestRobot(tester);
     robot.setupMocks();
+    await robot.regenerateAnalyticsId();
     await tester.pumpWidget(
       // No Wiredash widget
       MaterialApp(
@@ -434,6 +436,7 @@ void main() {
   testWidgets('wipe events older than 3 days', (tester) async {
     final robot = WiredashTestRobot(tester);
     robot.setupMocks();
+    await robot.regenerateAnalyticsId();
     await tester.pumpWidget(
       // No Wiredash widget
       MaterialApp(

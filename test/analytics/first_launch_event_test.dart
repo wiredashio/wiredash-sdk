@@ -8,7 +8,7 @@ import '../util/wiredash_tester.dart';
 void main() {
   testWidgets('#first_launch event is submitted', (tester) async {
     final robot = WiredashTestRobot(tester);
-    await robot.launchApp();
+    await robot.launchApp(firstLaunch: true);
     await tester.pumpSmart(const Duration(seconds: 5));
     final eventSubmissions =
         robot.mockServices.mockApi.sendEventsInvocations.invocations;

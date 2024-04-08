@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nanoid2/nanoid2.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spot/spot.dart';
@@ -150,6 +151,7 @@ class WiredashTestRobot {
     bool useDirectFeedbackSubmitter = true,
     bool useDirectEventSubmitter = true,
     bool wrapWithWiredash = true,
+    bool firstLaunch = false,
   }) async {
     setupMocks();
     WiredashServices.debugServicesCreator = () => createMockServices(
@@ -157,6 +159,10 @@ class WiredashTestRobot {
           useDirectEventSubmitter: useDirectEventSubmitter,
         );
     addTearDown(() => WiredashServices.debugServicesCreator = null);
+
+    if (!firstLaunch) {
+      await regenerateAnalyticsId();
+    }
 
     Widget child = MaterialApp(
       locale: const Locale('test'),
@@ -257,6 +263,11 @@ class WiredashTestRobot {
 
   WiredashMockServices get mockServices {
     return WiredashMockServices(services);
+  }
+
+  Future<void> regenerateAnalyticsId() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('_wiredashAppUsageID', nanoid(length: 16));
   }
 
   Future<void> submitMinimalFeedback() async {
