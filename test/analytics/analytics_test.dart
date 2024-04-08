@@ -564,6 +564,8 @@ void main() {
         (invocation) async {
       const body =
           '{"errorCode": 2200, "errorMessage": "event X has illegal format"}';
+      // Real world example
+      // {"errorCode":2200,"errorMessage":"Event at index 0 {\n  \"analyticsId\": \"dFGhwKT8wGK6jKM6\",\n  \"buildNumber\": \"\",\n  \"buildVersion\": \"2.2.0-dev.1-215\",\n  \"bundleId\": \"wiredash_demo\",\n  \"createdAt\": 1712587368695,\n  \"platformLocale\": \"en-US\",\n  \"sdkVersion\": 215,\n  \"eventName\" [1]: \"jkla;sdf^$Df\"\n}\n\n[1] \"eventName\" with value \"jkla;sdf^$Df\" fails to match the required pattern: /^#?(?:[0-9A-Za-z_-]+ ?)+$/"}
       final response = Response(body, 400);
       throw InvalidEventFormatException(response: response);
     };
@@ -572,21 +574,20 @@ void main() {
 
     errors.restoreDefaultErrorHandlers();
     expect(errors.errors, isEmpty);
-    final warningOutput = errors.warnings.join('\n');
     expect(
-      warningOutput,
+      errors.warningText,
       contains('Some events where rejected by the backend.'),
     );
     expect(
-      warningOutput,
+      errors.warningText,
       contains('event X has illegal format'),
     );
     expect(
-      warningOutput,
+      errors.warningText,
       contains('code: 400'),
     );
     expect(
-      warningOutput,
+      errors.warningText,
       contains('[2200]'),
     );
 
