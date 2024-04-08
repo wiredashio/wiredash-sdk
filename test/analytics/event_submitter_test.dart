@@ -2,7 +2,6 @@ import 'package:async/async.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nanoid2/nanoid2.dart';
-import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/version.dart';

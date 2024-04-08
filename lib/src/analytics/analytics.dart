@@ -8,12 +8,7 @@ import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
-// Required
-// TODO export analytics
-// TODO Write documentation
-
 // Important
-// TODO send events to server on app close
 // TODO drop event when API credentials are obviously wrong
 // TODO allow resetting of the analyticsId
 // TODO test InvalidEventFormatException with real server response
@@ -248,11 +243,17 @@ class NoProjectIdSpecifiedException implements Exception {
   NoProjectIdSpecifiedException();
 }
 
+/// This is the complete list of internal events that Wiredash uses.
+/// Those events should not be used by the user, only the SDK itself.
 const List<String> _internalEvents = [
   '#first_launch',
 ];
 
-final _eventKeyRegExp = RegExp(r'^#?[A-Za-z]+(?: ?[0-9A-Za-z_-]{2,})+$');
+/// The complete regular expression to validate a event name.
+///
+/// All checks in validateEventName are based on this regular expression but
+/// are split up for better error messages.
+final _eventNameRegExp = RegExp(r'^#?[A-Za-z]+(?: ?[0-9A-Za-z_-]{2,})+$');
 
 /// Validates the event name.
 ///
@@ -329,11 +330,11 @@ void validateEventName(String eventName) {
     );
   }
 
-  if (!_eventKeyRegExp.hasMatch(eventName)) {
+  if (!_eventNameRegExp.hasMatch(eventName)) {
     throw ArgumentError.value(
       eventName,
       'eventName',
-      'Event name does not match $_eventKeyRegExp',
+      'Event name does not match $_eventNameRegExp',
     );
   }
 

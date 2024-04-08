@@ -5,7 +5,6 @@ import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
 import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/analytics/analytics.dart';
 import 'package:wiredash/src/core/services/error_report.dart';
 
 /// Saves [AnalyticsEvent] when recorded until they are submitted to the backend
