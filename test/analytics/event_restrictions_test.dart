@@ -43,7 +43,7 @@ void main() {
       expect(() => validateEventName('\$__'), argErrorContaining('(a-zA-Z)'));
       expect(
         () => validateEventName('#__'),
-        argErrorContaining('Unknown internal event'),
+        argErrorContaining('unknown internal event'),
       );
       expect(() => validateEventName('?__'), argErrorContaining('(a-zA-Z)'));
       expect(() => validateEventName('ä__'), argErrorContaining('umlaut'));
@@ -56,10 +56,10 @@ void main() {
     });
 
     test('internal events', () {
-      expect(() => validateEventName('#first_launch'), returnsNormally);
+      expect(() => validateEventName('#firstLaunch'), returnsNormally);
       expect(
         () => validateEventName('#unkown'),
-        argErrorContaining('Unknown internal event'),
+        argErrorContaining('unknown internal event'),
       );
     });
 

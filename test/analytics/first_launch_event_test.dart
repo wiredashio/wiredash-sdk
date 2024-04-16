@@ -6,7 +6,7 @@ import '../util/robot.dart';
 import '../util/wiredash_tester.dart';
 
 void main() {
-  testWidgets('#first_launch event is submitted', (tester) async {
+  testWidgets('#firstLaunch event is submitted', (tester) async {
     final robot = WiredashTestRobot(tester);
     await robot.launchApp(firstLaunch: true);
     await tester.pumpSmart(const Duration(seconds: 5));
@@ -16,10 +16,10 @@ void main() {
     final events = eventSubmissions[0][0]! as List<RequestEvent>;
     expect(events, hasLength(1)); // one event
     final event = events[0];
-    expect(event.eventName, '#first_launch');
+    expect(event.eventName, '#firstLaunch');
   });
 
-  testWidgets('No #first_launch at second launch', (tester) async {
+  testWidgets('No #firstLaunch at second launch', (tester) async {
     final robot = WiredashTestRobot(tester);
     robot.setupMocks();
     final prefs = await SharedPreferences.getInstance();

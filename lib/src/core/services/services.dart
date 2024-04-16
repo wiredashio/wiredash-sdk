@@ -164,7 +164,7 @@ void registerProdWiredashServices(WiredashServices sl) {
       );
       generator.addOnKeyCreatedListener((key) {
         if (key == '_wiredashAppUsageID') {
-          Wiredash.trackEvent('#first_launch');
+          Wiredash.trackEvent('#firstLaunch');
         }
       });
       return generator;

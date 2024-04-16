@@ -248,7 +248,7 @@ class NoProjectIdSpecifiedException implements Exception {
 /// This is the complete list of internal events that Wiredash uses.
 /// Those events should not be used by the user, only the SDK itself.
 const List<String> _internalEvents = [
-  '#first_launch',
+  '#firstLaunch',
 ];
 
 /// The complete regular expression to validate a event name.
@@ -271,7 +271,7 @@ void validateEventName(String eventName) {
     throw ArgumentError.value(
       eventName,
       'eventName',
-      'Event name must not be empty',
+      '$eventName must not be empty',
     );
   }
 
@@ -280,7 +280,7 @@ void validateEventName(String eventName) {
       throw ArgumentError.value(
         eventName,
         'eventName',
-        'Unknown internal event (starting with #)',
+        '$eventName is an unknown internal event (starting with #)',
       );
     }
   }
@@ -289,7 +289,7 @@ void validateEventName(String eventName) {
     throw ArgumentError.value(
       eventName,
       'eventName',
-      'Event name must be between 3 and 64 characters long',
+      '$eventName must be between 3 and 64 characters long',
     );
   }
 
@@ -297,7 +297,7 @@ void validateEventName(String eventName) {
     throw ArgumentError.value(
       eventName,
       'eventName',
-      'Event name must not contain double spaces',
+      '$eventName must not contain double spaces',
     );
   }
 
@@ -305,7 +305,7 @@ void validateEventName(String eventName) {
     throw ArgumentError.value(
       eventName,
       'eventName',
-      'Event name must not contain trailing spaces',
+      '$eventName must not contain trailing spaces',
     );
   }
 
@@ -315,7 +315,7 @@ void validateEventName(String eventName) {
     throw ArgumentError.value(
       eventName,
       'eventName',
-      'Event name must not contain umlauts',
+      '$eventName must not contain umlauts',
     );
   }
 
@@ -328,7 +328,7 @@ void validateEventName(String eventName) {
     throw ArgumentError.value(
       eventName,
       'eventName',
-      'Event name must start with a letter (a-zA-Z)',
+      '$eventName must start with a letter (a-zA-Z)',
     );
   }
 
@@ -336,7 +336,7 @@ void validateEventName(String eventName) {
     throw ArgumentError.value(
       eventName,
       'eventName',
-      'Event name does not match $_eventNameRegExp',
+      '$eventName does not match $_eventNameRegExp',
     );
   }
 
