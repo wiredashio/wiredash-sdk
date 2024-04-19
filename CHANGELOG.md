@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.1
+
+- Widen ranges for device_info_plus and package_info_plus [#344](https://github.com/wiredashio/wiredash-sdk/pull/344)
+
 ## 2.1.0 
 - Prevent `Wiredash` from scheduling tasks in your widget tests [#332](https://github.com/wiredashio/wiredash-sdk/pull/332)
 - Update README with new header image, adjust pub tags
