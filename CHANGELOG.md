@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.2
+
+- Widen package_info_plus range (include 8.x)
+
 ## 2.1.1
 
 - Widen ranges for device_info_plus and package_info_plus [#344](https://github.com/wiredashio/wiredash-sdk/pull/344)
