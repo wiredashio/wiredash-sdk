@@ -16,7 +16,7 @@ FlutterErrorDetails reportWiredashError(
     stack: stack,
     library: 'wiredash',
     informationCollector: () => [
-      DiagnosticsNode.message(message),
+      ErrorSummary(message),
     ],
   );
 
@@ -40,7 +40,7 @@ FlutterErrorDetails reportWiredashInfo(
     stack: stack,
     library: 'wiredash',
     informationCollector: () => [
-      DiagnosticsNode.message(message),
+      ErrorSummary(message),
     ],
   );
   final reporter = FlutterError.presentError;
