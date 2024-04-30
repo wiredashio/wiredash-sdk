@@ -16,7 +16,6 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 // TODO allow resetting of the analyticsId
 
 // Nice to have
-// TODO allow triggering of event submission
 // TODO write integration_test for isolates
 // TODO automatically add page_name as property
 // TODO implement lifecycle for windows
