@@ -13,7 +13,6 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 // Important
 // TODO drop event when API credentials are obviously wrong
 // TODO allow resetting of the analyticsId
-// TODO test InvalidEventFormatException with real server response
 
 // Nice to have
 // TODO allow triggering of event submission
@@ -163,17 +162,17 @@ class WiredashAnalytics {
     }
 
     if (allWidget.length == 1) {
-      final state = allWidget.first;
+      final WiredashState state = allWidget.first;
       if (projectId == null) {
         // notify the only registered Wiredash instance
-        await state.newEventAdded();
+        await state.triggerAnalyticsEventUpload();
         return;
       }
 
       final widget = state.widget;
       if (widget.projectId == projectId) {
         // projectId matches, notify the only and correct Wiredash instance
-        await state.newEventAdded();
+        await state.triggerAnalyticsEventUpload();
         return;
       }
       // The only registered Wiredash instance has a different projectId
@@ -203,7 +202,7 @@ class WiredashAnalytics {
         "    Wiredash.of(context).trackEvent('$eventName');\n"
         "The event '$eventName' was sent to project '${firstWidgetState.widget.projectId}', because that Wiredash widget was registered first.",
       );
-      await firstWidgetState.newEventAdded();
+      await firstWidgetState.triggerAnalyticsEventUpload();
       return;
     }
 
@@ -220,7 +219,7 @@ class WiredashAnalytics {
       return;
     } else {
       // multiple with the same projectId, take the first one
-      await projectInstances.first.newEventAdded();
+      await projectInstances.first.triggerAnalyticsEventUpload();
     }
 
     debugPrint(

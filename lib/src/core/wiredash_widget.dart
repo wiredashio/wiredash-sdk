@@ -8,6 +8,7 @@ import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/context_cache.dart';
 import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
@@ -171,7 +172,7 @@ class Wiredash extends StatefulWidget {
   /// analysis.
   ///
   /// ```dart
-  /// await Wiredash.trackEvent('button_tapped', data: {
+  /// await Wiredash.of(context).trackEvent('button_tapped', data: {
   ///  'button_id': 'submit_button',
   /// });
   /// ```
@@ -286,7 +287,11 @@ class WiredashState extends State<Wiredash> {
     setState(() {});
   }
 
-  Future<void> newEventAdded() async {
+  /// Notifies the [EventSubmitter] to send all pending events to the server.
+  ///
+  /// This method is called by [WiredashAnalytics] when new events have been
+  /// added or the app goes to the background.
+  Future<void> triggerAnalyticsEventUpload() async {
     try {
       await _services.eventSubmitter.submitEvents();
     } catch (e, stack) {
