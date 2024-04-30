@@ -151,6 +151,7 @@ class _HomePage extends StatelessWidget {
   }
 
   void _openDetailsPage(BuildContext context, int which) {
+    Wiredash.trackEvent('open details page', data: {'index': which});
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {

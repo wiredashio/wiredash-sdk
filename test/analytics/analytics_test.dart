@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:async/async.dart';
@@ -5,7 +6,9 @@ import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
+import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 
 import 'package:wiredash/src/core/network/send_events_request.dart';
@@ -565,33 +568,58 @@ void main() {
     final errors = captureFlutterErrors();
     robot.mockServices.mockApi.sendEventsInvocations.interceptor =
         (invocation) async {
-      const body =
-          '{"errorCode": 2200, "errorMessage": "event X has illegal format"}';
-      // Real world example
-      // {"errorCode":2200,"errorMessage":"Event at index 0 {\n  \"analyticsId\": \"dFGhwKT8wGK6jKM6\",\n  \"buildNumber\": \"\",\n  \"buildVersion\": \"2.2.0-dev.1-215\",\n  \"bundleId\": \"wiredash_demo\",\n  \"createdAt\": 1712587368695,\n  \"platformLocale\": \"en-US\",\n  \"sdkVersion\": 215,\n  \"eventName\" [1]: \"jkla;sdf^$Df\"\n}\n\n[1] \"eventName\" with value \"jkla;sdf^$Df\" fails to match the required pattern: /^#?(?:[0-9A-Za-z_-]+ ?)+$/"}
-      final response = Response(body, 400);
-      throw InvalidEventFormatException(response: response);
+      final httpClient = MockClient((request) async {
+        final body = jsonEncode(
+          {
+            "warnings": [
+              {
+                "index": 0,
+                "code": 2200,
+                "message":
+                    'Event at index 0: {\n  "analyticsId": "Bp8RNRpLMgmtMNLD",\n  "buildNumber": "1",\n  "buildVersion": "1.0.0",\n  "bundleId": "wiredash_theming",\n  "createdAt": 1714430633384,\n  "eventData": {\n    "index": 9\n  },\n  "platformLocale": "en-GB",\n  "sdkVersion": 215,\n  "eventName" [1]: "illegal asdfadfasdfasdf}|"" fails to match the required pattern: /^#?(?:[0-9A-Za-z_-]+ ?)+\$/',
+              },
+            ],
+          },
+        );
+        // Real world example
+        // {
+        //     "warnings": [
+        //         {
+        //             "index": 0,
+        //             "code": 2200,
+        //             "message": "Event at index 0: {\n  \"analyticsId\": \"Bp8RNRpLMgmtMNLD\",\n  \"buildNumber\": \"1\",\n  \"buildVersion\": \"1.0.0\",\n  \"bundleId\": \"wiredash_theming\",\n  \"createdAt\": 1714430633384,\n  \"eventData\": {\n    \"index\": 9\n  },\n  \"platformLocale\": \"en-GB\",\n  \"sdkVersion\": 215,\n  \"eventName\" [1]: \"illegal ^asdfadfasdfasdf\"\" fails to match the required pattern: /^#?(?:[0-9A-Za-z_-]+ ?)+$/"
+        //         },
+        //     ]
+        // }
+        return Response.bytes(body.codeUnits, 200);
+      });
+      final context =
+          ApiClientContext(httpClient: httpClient, secret: '', projectId: '');
+      return postSendEvents(
+        context,
+        'url',
+        invocation.positionalArguments[0] as List<RequestEvent>,
+      );
     };
 
     await robot.triggerAnalyticsEvent();
+    await tester.idle();
 
     errors.restoreDefaultErrorHandlers();
     expect(errors.errors, isEmpty);
     expect(
       errors.warningText,
-      contains('Some events where rejected by the backend.'),
+      contains(
+        'Event "default_event" was rejected by the server due to an invalid format',
+      ),
     );
     expect(
       errors.warningText,
-      contains('event X has illegal format'),
+      contains('fails to match the required pattern'),
     );
     expect(
       errors.warningText,
-      contains('code: 400'),
-    );
-    expect(
-      errors.warningText,
-      contains('[2200]'),
+      contains('code: 2200'),
     );
 
     // no events are left to be resubmitted

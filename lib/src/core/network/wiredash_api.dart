@@ -3,6 +3,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:wiredash/src/core/network/api_exceptions.dart';
@@ -11,6 +13,7 @@ import 'package:wiredash/src/core/network/send_events_request.dart';
 import 'package:wiredash/src/core/network/send_feedback_request.dart';
 import 'package:wiredash/src/core/network/send_promoter_score_request.dart';
 import 'package:wiredash/src/core/network/upload_attachment_request.dart';
+import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 
 export 'package:wiredash/src/core/network/api_exceptions.dart';
@@ -33,7 +36,9 @@ class WiredashApi {
 
   final ApiClientContext _context;
 
-  static const String _host = 'https://api.wiredash.io/sdk';
+  // static const String _host = 'https://api.wiredash.io/sdk';
+  // static const String _host = 'https://api.wiredash.dev/sdk';
+  static const String _host = 'http://localhost:3123/sdk';
 
   /// Uploads a attachment to the Wiredash hosting service
   ///
@@ -105,22 +110,31 @@ class ApiClientContext {
     }
     throw WiredashApiException(response: response);
   }
-}
 
-class WiredashApiErrorResponse {
-  final String? message;
-  final int code;
-
-  WiredashApiErrorResponse(this.message, this.code);
-
-  static WiredashApiErrorResponse? tryParse(Response response) {
-    try {
-      final json = jsonDecode(response.body) as Map?;
-      final message = json?['errorMessage'] as String?;
-      final code = json?['errorCode'] as int;
-      return WiredashApiErrorResponse(message, code);
-    } catch (_) {
-      return null;
+  /// Reports all warnings from [response] to [FlutterError.presentError]
+  ///
+  /// Return a specific exceptions from [handleWarning] to enhance error reporting
+  void reportResponseWarnings(
+    Response response,
+    Exception? Function(WiredashApiWarning warning)? handleWarning,
+  ) {
+    final warnings = response.readWiredashWarnings();
+    if (warnings.isEmpty) return;
+    for (final warning in warnings) {
+      Object? mappedException;
+      try {
+        mappedException = handleWarning?.call(warning);
+      } catch (_) {
+        // ignore
+        print(_);
+      }
+      reportWiredashInfo(
+        mappedException ?? warning,
+        StackTrace.current,
+        'Warning from Wiredash API',
+      );
     }
   }
+
+  void handleWarning() {}
 }

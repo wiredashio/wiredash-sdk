@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_redundant_argument_values
 
+import 'dart:convert';
+
 import 'package:fake_async/fake_async.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -376,7 +378,11 @@ void main() {
 
       mockApi.sendFeedbackInvocations.interceptor = (iv) {
         final response = Response(
-          '''{"message":"\\"compilationMode\\" is not allowed"}''',
+          jsonEncode({
+            "errorCode": -1,
+            "errorMessage":
+                "Feedback validation failed: metadata.compilationMode: `something` is not a valid enum value for path `compilationMode`."
+          }),
           400,
         );
         throw WiredashApiException(response: response);
@@ -388,7 +394,7 @@ void main() {
           isA<WiredashApiException>().having(
             (e) => e.messageFromServer,
             'response',
-            '"compilationMode" is not allowed',
+            '[-1] Feedback validation failed: metadata.compilationMode: `something` is not a valid enum value for path `compilationMode`.',
           ),
         ),
       );

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:http/http.dart';
 
 /// Generic error from the Wiredash API
@@ -12,18 +13,21 @@ class WiredashApiException implements Exception {
       final json = jsonDecode(response?.body ?? '') as Map?;
       final message = json?['errorMessage'] as String?;
       final code = json?['errorCode'] as int?;
+      final data = json?['data'] as Map?;
+      final warnings = response?.readWiredashWarnings();
+
+      final sb = StringBuffer();
       if (code != null) {
-        return '[$code] ${message ?? '<no message>'}';
+        sb.write('[$code] ');
       }
-      return message!;
-    } catch (_) {
-      // ignore
-    }
-    try {
-      // Parsing errors often have this format
-      final json = jsonDecode(response?.body ?? '') as Map?;
-      final message = json?['message'] as String?;
-      return message!;
+      sb.write(message ?? '<no message>');
+      if (data != null) {
+        sb.write(' data: $data');
+      }
+      if (warnings != null && warnings.isNotEmpty) {
+        sb.write(' warnings: $warnings');
+      }
+      return sb.toString();
     } catch (_) {
       // ignore
     }
@@ -79,5 +83,70 @@ class KillSwitchException extends WiredashApiException {
   @override
   String toString() {
     return 'KillSwitchException{${response?.statusCode}, body: ${response?.body}}';
+  }
+}
+
+class WiredashApiErrorResponse {
+  final String? message;
+  final int code;
+
+  WiredashApiErrorResponse(this.message, this.code);
+
+  static WiredashApiErrorResponse? tryParse(Response response) {
+    try {
+      final json = jsonDecode(response.body) as Map?;
+      final message = json?['errorMessage'] as String?;
+      final code = json?['errorCode'] as int;
+      return WiredashApiErrorResponse(message, code);
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
+class WiredashApiWarning {
+  final int code;
+  final String message;
+  final Map data;
+
+  WiredashApiWarning(this.code, this.message, this.data);
+
+  static WiredashApiWarning? tryParse(Map json) {
+    try {
+      final code = json['code'] as int;
+      final message = json['message'] as String;
+      final data = Map.of(json)
+        ..removeWhere((key, value) => key == 'code' || key == 'message');
+      return WiredashApiWarning(code, message, data);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  String toString() {
+    return 'WiredashApiWarning{code: $code, message: $message, data: $data}';
+  }
+}
+
+extension WiredashApiWarnings on Response {
+  /// Any response from the Wiredash API might contain a
+  /// top-level 'warnings' key with a list of warnings that
+  /// may have popped up during the request
+  List<WiredashApiWarning> readWiredashWarnings() {
+    try {
+      final json = jsonDecode(body) as Map?;
+      final warnings = json?['warnings'] as List?;
+      if (warnings == null) {
+        return [];
+      }
+      return warnings
+          .whereType<Map>()
+          .map((w) => WiredashApiWarning.tryParse(w))
+          .whereNotNull()
+          .toList();
+    } catch (_) {
+      return [];
+    }
   }
 }

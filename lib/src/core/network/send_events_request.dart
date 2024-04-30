@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/version.dart';
 
@@ -23,20 +24,22 @@ Future<void> postSendEvents(
 
   final response = await context.send(request);
   if (response.statusCode == 200) {
+    context.reportResponseWarnings(response, (WiredashApiWarning warning) {
+      if (warning.code != 2200) return null;
+      final index = warning.data['index'] as int;
+      final event = body[index];
+      return InvalidEventFormatException(
+        'Event "${event.eventName}" was rejected by the server due to an invalid format',
+        event,
+        warning,
+      );
+    });
+
     return;
   }
 
   final errorResponse = WiredashApiErrorResponse.tryParse(response);
   if (errorResponse != null) {
-    if (response.statusCode == 400 && errorResponse.code == 2200) {
-      // Events are processed, but some have an error
-      throw InvalidEventFormatException(
-        response: response,
-        message:
-            'some events could not be saved on the server due to invalid format',
-      );
-    }
-
     if (response.statusCode == 400 && errorResponse.code == 2201) {
       // Events not processed, please resend
       throw CouldNotHandleRequestException(
@@ -49,12 +52,17 @@ Future<void> postSendEvents(
   context.throwApiError(response);
 }
 
-class InvalidEventFormatException extends WiredashApiException {
-  InvalidEventFormatException({
-    required Response response,
-    super.message,
-  })  : assert(response.statusCode == 400),
-        super(response: response);
+class InvalidEventFormatException implements Exception {
+  final String message;
+  final RequestEvent event;
+  final WiredashApiWarning warning;
+
+  InvalidEventFormatException(this.message, this.event, this.warning);
+
+  @override
+  String toString() {
+    return 'InvalidEventFormatException{message: $message, event: $event, warning: $warning}';
+  }
 }
 
 class CouldNotHandleRequestException extends WiredashApiException {
@@ -156,18 +164,7 @@ class RequestEvent {
   @override
   String toString() {
     return 'RequestEvent{'
-        'eventName: $eventName, '
-        'eventData: $eventData, '
-        'analyticsId: $analyticsId, '
-        'buildCommit: $buildCommit, '
-        'buildNumber: $buildNumber, '
-        'buildVersion: $buildVersion, '
-        'bundleId: $bundleId, '
-        'createdAt: $createdAt, '
-        'platformOS: $platformOS, '
-        'platformOSVersion: $platformOSVersion, '
-        'platformLocale: $platformLocale, '
-        'sdkVersion: $sdkVersion'
+        '${toRequestJson()}'
         '}';
   }
 }
