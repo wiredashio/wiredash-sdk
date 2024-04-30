@@ -34,9 +34,7 @@ class WiredashApi {
 
   final ApiClientContext _context;
 
-  // static const String _host = 'https://api.wiredash.io/sdk';
-  // static const String _host = 'https://api.wiredash.dev/sdk';
-  static const String _host = 'http://localhost:3123/sdk';
+  static const String _host = 'https://api.wiredash.io/sdk';
 
   /// Uploads a attachment to the Wiredash hosting service
   ///
