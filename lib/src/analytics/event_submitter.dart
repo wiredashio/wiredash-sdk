@@ -48,6 +48,11 @@ class DebounceEventSubmitter implements EventSubmitter {
   final Duration throttleDuration;
   final Duration initialThrottleDuration;
 
+  /// The current plan the project is using.
+  ///
+  /// Custom events are not allowed in the free plan.
+  bool? _freePlan;
+
   DebounceEventSubmitter({
     required this.eventStore,
     required this.api,
@@ -113,6 +118,21 @@ class DebounceEventSubmitter implements EventSubmitter {
     if (toBeSubmitted.isEmpty) {
       return;
     }
+    if (_freePlan == true) {
+      // drop all custom events, those are only available in paid plans
+      final List<String> droppedKeys = [];
+      toBeSubmitted.removeWhere((key, value) {
+        final custom = !value.eventName.startsWith('#');
+        droppedKeys.add(key);
+        return custom;
+      });
+      for (final key in droppedKeys) {
+        await eventStore.removeEvent(key);
+      }
+    }
+    if (toBeSubmitted.isEmpty) {
+      return;
+    }
 
     final List<RequestEvent> requestEvents = toBeSubmitted.values.map((event) {
       return RequestEvent(
@@ -136,15 +156,13 @@ class DebounceEventSubmitter implements EventSubmitter {
       for (final key in toBeSubmitted.keys) {
         await eventStore.removeEvent(key);
       }
-    } on InvalidEventFormatException catch (e, stack) {
+    } on PaidFeatureException catch (e, stack) {
+      _freePlan = true;
       reportWiredashInfo(
         e,
         stack,
-        'Some events where rejected by the backend.',
+        'Custom events is a paid feature. Upgrade now https://wiredash.com/console/$projectId/settings/billing.',
       );
-      for (final key in toBeSubmitted.keys) {
-        await eventStore.removeEvent(key);
-      }
     } catch (e, stack) {
       reportWiredashInfo(
         e,

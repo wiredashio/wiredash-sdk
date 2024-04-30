@@ -77,6 +77,11 @@ class WiredashApi {
     return await postPing(_context, '$_host/ping', body);
   }
 
+  /// Sends analytics events to Wiredash
+  ///
+  /// POST /sendEvents
+  ///
+  /// May throw [PaidFeatureException] or [CouldNotHandleRequestException]
   Future<void> sendEvents(List<RequestEvent> events) async {
     return await postSendEvents(_context, '$_host/sendEvents', events);
   }

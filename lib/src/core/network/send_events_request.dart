@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:http/http.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
@@ -24,15 +25,27 @@ Future<void> postSendEvents(
 
   final response = await context.send(request);
   if (response.statusCode == 200) {
-    context.reportResponseWarnings(response, (WiredashApiWarning warning) {
-      if (warning.code != 2200) return null;
-      final index = warning.data['index'] as int;
-      final event = body[index];
-      return InvalidEventFormatException(
-        'Event "${event.eventName}" was rejected by the server due to an invalid format',
-        event,
-        warning,
+    final warnings = response.readWiredashWarnings();
+    final warning2003 = warnings.firstWhereOrNull((w) => w.code == 2003);
+    if (warning2003 != null) {
+      final plan = warning2003.data['plan'] as String?;
+      throw PaidFeatureException(
+        warning: warning2003,
+        currentPlan: plan ?? 'free',
       );
+    }
+
+    context.reportResponseWarnings(response, (WiredashApiWarning warning) {
+      if (warning.code == 2200) {
+        final index = warning.data['index'] as int;
+        final event = body[index];
+        return InvalidEventFormatException(
+          'Event "${event.eventName}" was rejected by the server due to an invalid format',
+          event,
+          warning,
+        );
+      }
+      return null;
     });
 
     return;
@@ -62,6 +75,20 @@ class InvalidEventFormatException implements Exception {
   @override
   String toString() {
     return 'InvalidEventFormatException{message: $message, event: $event, warning: $warning}';
+  }
+}
+
+/// Thrown when using the API of a paid feature while the project is on a free plan
+class PaidFeatureException implements Exception {
+  final WiredashApiWarning warning;
+  final String? currentPlan;
+
+  PaidFeatureException({required this.warning, required this.currentPlan});
+
+  @override
+  String toString() {
+    return 'PaidFeatureException: Custom events are only available in paid plans. '
+        'Current plan: $currentPlan.\nServer response: $warning';
   }
 }
 
