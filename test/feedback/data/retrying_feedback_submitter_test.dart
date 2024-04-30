@@ -378,11 +378,13 @@ void main() {
 
       mockApi.sendFeedbackInvocations.interceptor = (iv) {
         final response = Response(
-          jsonEncode({
-            "errorCode": -1,
-            "errorMessage":
-                "Feedback validation failed: metadata.compilationMode: `something` is not a valid enum value for path `compilationMode`."
-          }),
+          jsonEncode(
+            {
+              "errorCode": -1,
+              "errorMessage":
+                  "Feedback validation failed: metadata.compilationMode: `something` is not a valid enum value for path `compilationMode`.",
+            },
+          ),
           400,
         );
         throw WiredashApiException(response: response);

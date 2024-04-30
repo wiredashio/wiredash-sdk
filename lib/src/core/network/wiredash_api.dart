@@ -1,9 +1,7 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers, unnecessary_await_in_return
 
-import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
@@ -126,7 +124,6 @@ class ApiClientContext {
         mappedException = handleWarning?.call(warning);
       } catch (_) {
         // ignore
-        print(_);
       }
       reportWiredashInfo(
         mappedException ?? warning,
