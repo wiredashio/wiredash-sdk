@@ -73,10 +73,7 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: ./wiresdk deps
-      - uses: futureware-tech/simulator-action@v3
-        with:
-          model: 'iPhone 15'
-      - run: cd examples/theming && ./../../wiresdk flutter test integration_test
+      - run: cd examples/theming && ./../../wiresdk flutter test -d macos integration_test
 
   pr-beta:
     runs-on: ubuntu-latest
