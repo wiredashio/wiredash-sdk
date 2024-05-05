@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 
+/// Exposes [AppLifecycleState] on all flutter supported platforms, including web.
 class FlutterAppLifecycleNotifier extends ValueNotifier<AppLifecycleState> {
   FlutterAppLifecycleNotifier() : super(AppLifecycleState.detached);
 

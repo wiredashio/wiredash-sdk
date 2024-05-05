@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:http/http.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
 
 /// Generic error from the Wiredash API
 class WiredashApiException implements Exception {
@@ -86,6 +87,7 @@ class KillSwitchException extends WiredashApiException {
   }
 }
 
+/// A general error response from [WiredashApi] with a known error [code]
 class WiredashApiErrorResponse {
   final String? message;
   final int code;
@@ -104,6 +106,9 @@ class WiredashApiErrorResponse {
   }
 }
 
+/// A warning that may be returned by any response from the [WiredashApi]
+///
+/// Use via `response.readWiredashWarnings()`
 class WiredashApiWarning {
   final int code;
   final String message;
@@ -129,6 +134,7 @@ class WiredashApiWarning {
   }
 }
 
+/// Allows parsing of the 'warnings' key from a [Response]
 extension WiredashApiWarnings on Response {
   /// Any response from the Wiredash API might contain a
   /// top-level 'warnings' key with a list of warnings that

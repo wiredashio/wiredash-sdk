@@ -85,6 +85,7 @@ class WiredashApi {
   }
 }
 
+/// All information needed to send request and handle responses from the [WiredashApi]
 class ApiClientContext {
   final Client httpClient;
   final String secret;

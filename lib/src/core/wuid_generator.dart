@@ -105,6 +105,9 @@ class SharedPrefsWuidGenerator
   static const _sharedPrefsTimeout = Duration(seconds: 2);
 }
 
+/// Allows notifying listeners when a new key is created
+///
+/// Used by [SharedPrefsWuidGenerator] and `IncrementalIdGenerator` in tests
 mixin OnKeyCreatedNotifier {
   final List<void Function(String key)> _onKeyCreatedListeners = [];
 
@@ -124,6 +127,7 @@ mixin OnKeyCreatedNotifier {
   }
 }
 
+/// Handles the persistent unique id for feedback
 extension SubmitIdGenerator on WuidGenerator {
   /// Returns the unique id that is used for submitting feedback and promoter score
   ///
@@ -137,6 +141,7 @@ extension SubmitIdGenerator on WuidGenerator {
   }
 }
 
+/// Handles the persistent unique id for analytics
 extension AppUsageIdGenerator on WuidGenerator {
   /// Returns the unique id that is used for tracking app usage
   ///
@@ -147,11 +152,13 @@ extension AppUsageIdGenerator on WuidGenerator {
   }
 }
 
+/// Creates the local uuids for feedback
 extension PersistedFeedbackIds on WuidGenerator {
   /// Feedbacks that are saved locally (offline) until they are sent to the server
   String localFeedbackId() => generateId(8);
 }
 
+/// Creates the local uuids for screenshots
 extension UniqueScreenshotName on WuidGenerator {
   /// screenshot attachment name (png)
   String screenshotFilename() => generateId(8);
