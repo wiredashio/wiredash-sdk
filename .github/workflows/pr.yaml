@@ -60,11 +60,7 @@ jobs:
       - name: Download dependencies
         run: |
           # Override dependencies
-          printf "dependency_overrides:\n  checks: 0.2.2\n  meta: 1.9.0\n  test_api: 0.4.9" >> pubspec.yaml
-          
-          # The override syntax does not work with Flutter 3.0
-          #./wiresdk flutter pub add 'override:checks:0.2.2'  
-          
+          printf "dependency_overrides:\n  checks: 0.2.2\n  meta: 1.9.0\n  test_api: 0.4.12" >> pubspec.yaml
           ./wiresdk deps
       - name: Test
         run: ./wiresdk test
