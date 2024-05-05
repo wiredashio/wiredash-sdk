@@ -66,6 +66,22 @@ jobs:
           model: 'iPhone 14'
       - run: cd examples/theming && ./../../wiresdk flutter test integration_test
 
+  pr-stable-integration:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Flutter version
+        run: flutter doctor -v
+      - name: Download dependencies
+        run: ./wiresdk deps
+      - uses: futureware-tech/simulator-action@v3
+        with:
+          model: 'iPhone 15'
+      - run: cd examples/theming && ./../../wiresdk flutter test integration_test
+
   pr-beta:
     runs-on: ubuntu-latest
     container:
