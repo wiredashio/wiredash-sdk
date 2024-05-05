@@ -44,7 +44,7 @@ class FlutterErrors {
 
   String get errorText {
     final renderer = TextTreeRenderer(wrapWidth: 100000);
-    return warnings.map((e) {
+    return errors.map((e) {
       return renderer.render(e.toDiagnosticsNode());
     }).join('\n');
   }
