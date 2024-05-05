@@ -61,10 +61,6 @@ jobs:
         run: ./wiresdk test
       - name: Build
         run: cd examples/theming && ./../../wiresdk flutter build web
-      - uses: futureware-tech/simulator-action@v3
-        with:
-          model: 'iPhone 14'
-      - run: cd examples/theming && ./../../wiresdk flutter test integration_test
 
   pr-stable-integration:
     runs-on: macos-latest

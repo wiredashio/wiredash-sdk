@@ -8,13 +8,7 @@ import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
-// Required
-
-// Important
-// TODO allow resetting of the analyticsId
-
 // Nice to have
-// TODO write integration_test for isolates
 // TODO automatically add page_name as property
 // TODO implement lifecycle for windows
 // TODO implement lifecycle for linux
