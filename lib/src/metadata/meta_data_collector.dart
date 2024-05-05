@@ -19,15 +19,11 @@ import 'package:wiredash/wiredash.dart';
 /// This class is stateless, all state is cached/stored in [WiredashModel]
 class MetaDataCollector {
   MetaDataCollector({
-    required this.wiredashModel,
     required this.deviceInfoCollector,
-    required this.wiredashWidget,
     required this.buildInfoProvider,
   });
 
-  final WiredashModel wiredashModel;
   final FlutterInfoCollector Function() deviceInfoCollector;
-  final Wiredash Function() wiredashWidget;
   final BuildInfo Function() buildInfoProvider;
 
   /// In-memory cache for fixed metadata
@@ -44,7 +40,7 @@ class MetaDataCollector {
       [
         _collectAppInfo(),
         _collectDeviceInfo(),
-        Future(buildInfoProvider),
+        Future.sync(buildInfoProvider),
       ].map((Future<Object> future) {
         return future.then<Object?>((value) => value);
       }).map((e) {

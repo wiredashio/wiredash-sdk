@@ -30,7 +30,7 @@ class PingJob extends Job {
   }
 
   @override
-  Future<void> execute() async {
+  Future<void> execute(SdkEvent event) async {
     final now = clock.now();
 
     if (await _isSilenced(now)) {

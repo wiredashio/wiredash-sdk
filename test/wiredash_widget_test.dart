@@ -20,8 +20,8 @@ void main() {
   group('Wiredash', () {
     setUp(() {
       SharedPreferences.setMockInitialValues({});
-      debugServicesCreator = createMockServices;
-      addTearDown(() => debugServicesCreator = null);
+      WiredashServices.debugServicesCreator = createMockServices;
+      addTearDown(() => WiredashServices.debugServicesCreator = null);
     });
 
     testWidgets('widget can be created', (tester) async {
@@ -160,9 +160,9 @@ void main() {
         final _MockProjectCredentialValidator validator =
             _MockProjectCredentialValidator();
 
-        debugServicesCreator = () => createMockServices()
+        WiredashServices.debugServicesCreator = () => createMockServices()
           ..inject<ProjectCredentialValidator>((_) => validator);
-        addTearDown(() => debugServicesCreator = null);
+        addTearDown(() => WiredashServices.debugServicesCreator = null);
 
         await tester.pumpWidget(
           const Wiredash(
@@ -346,15 +346,16 @@ void main() {
       SharedPreferences.setMockInitialValues({});
 
       final api = MockWiredashApi();
-      debugServicesCreator = () {
-        final services = WiredashServices();
-        // Don't do actual http calls
-        services.inject<WiredashApi>((_) {
-          // depend on the widget (secret/project)
-          services.wiredashWidget;
-          return api;
+      WiredashServices.debugServicesCreator = () {
+        return WiredashServices.setup((services) {
+          registerProdWiredashServices(services);
+          // Don't do actual http calls
+          services.inject<WiredashApi>((_) {
+            // depend on the widget (secret/project)
+            services.wiredashWidget;
+            return api;
+          });
         });
-        return services;
       };
 
       await tester.pumpWidget(
@@ -376,6 +377,76 @@ void main() {
       // not disk writes
       final data = await SharedPreferences.getInstance();
       expect(data.getKeys(), isEmpty);
+    });
+  });
+
+  group('registry', () {
+    testWidgets('cleanup removes inaccessible references', (tester) async {
+      expect(WiredashRegistry.instance.referenceCount, 0);
+
+      await tester.pumpWidget(
+        const Wiredash(
+          projectId: 'my-project-id',
+          secret: 'my-secret',
+          child: SizedBox(),
+        ),
+      );
+      expect(WiredashRegistry.instance.referenceCount, 1);
+
+      for (int i = 0; i < 10; i++) {
+        await tester.pumpWidget(
+          Wiredash(
+            key: ValueKey(i),
+            projectId: 'my-project-id-$i',
+            secret: 'my-secret',
+            child: const SizedBox(),
+          ),
+        );
+        expect(WiredashRegistry.instance.referenceCount, 1);
+      }
+
+      await tester.pumpWidget(const SizedBox());
+      expect(WiredashRegistry.instance.referenceCount, 0);
+    });
+
+    test('singleton', () {
+      final r1 = WiredashRegistry.instance;
+      final r2 = WiredashRegistry.instance;
+      expect(identical(r1, r2), isTrue);
+    });
+
+    testWidgets('add existing item throws', (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp();
+
+      final registry = WiredashRegistry.instance;
+      final element =
+          tester.firstElement(find.byWidget(robot.widget)) as StatefulElement;
+      expect(
+        () => registry.register(element.state as WiredashState),
+        throwsA(
+          isA<StateError>().having(
+            (e) => e.message,
+            'message',
+            contains('is already registered'),
+          ),
+        ),
+      );
+    });
+
+    testWidgets('add item', (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp();
+
+      final registry = WiredashRegistry.instance;
+      expect(registry.allWidgets, hasLength(1));
+      expect(registry.referenceCount, 1);
+    });
+
+    test('zero items', () {
+      // by default, the registry is empty.
+      // and the state added in the previous test is not present anymore
+      expect(WiredashRegistry.instance.allWidgets, isEmpty);
     });
   });
 }

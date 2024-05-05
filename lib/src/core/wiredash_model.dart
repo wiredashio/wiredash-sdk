@@ -174,6 +174,19 @@ class WiredashModel with ChangeNotifier {
     }
     return customizableMetaData;
   }
+
+  /// Submits pending analytics events
+  ///
+  /// Usually, events are submitted automatically, batched every 30 seconds, and
+  /// when the app goes to the background.
+  /// This methods allows manually submitting events at any time.
+  Future<void> forceSubmitAnalyticsEvents() async {
+    try {
+      await services.eventSubmitter.submitEvents(force: true);
+    } catch (e, stack) {
+      reportWiredashInfo(e, stack, 'Unexpected error while submitting events');
+    }
+  }
 }
 
 extension ChangeNotifierAsValueNotifier<C extends ChangeNotifier> on C {
@@ -199,6 +212,7 @@ extension ChangeNotifierAsValueNotifier<C extends ChangeNotifier> on C {
 
 class _DisposableValueNotifier<T> extends ValueNotifier<T> {
   _DisposableValueNotifier(super.value, {required this.onDispose});
+
   void Function() onDispose;
 
   @override

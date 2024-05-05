@@ -227,10 +227,10 @@ void main() {
       // method returns only valid items
       expect(retrieved.length, 1);
 
-      expect(errors.presentError, isNotEmpty);
+      expect(errors.warnings, isNotEmpty);
       // error was reported to Flutter.onError
       expect(
-        errors.presentError[0].stack.toString(),
+        errors.warnings[0].stack.toString(),
         stringContainsInOrder([
           'deserializePendingFeedbackItem',
           'PendingFeedbackItemStorage.retrieveAllPendingItems',
@@ -393,7 +393,9 @@ class InMemorySharedPreferences extends Fake implements SharedPreferences {
 }
 
 /// Creates string IDs that increment
-class IncrementalIdGenerator implements WuidGenerator {
+class IncrementalIdGenerator
+    with OnKeyCreatedNotifier
+    implements WuidGenerator {
   var _nextInt = 0;
 
   @override

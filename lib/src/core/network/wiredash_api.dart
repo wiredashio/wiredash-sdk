@@ -2,13 +2,16 @@
 
 import 'dart:typed_data';
 
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:wiredash/src/core/network/api_exceptions.dart';
 import 'package:wiredash/src/core/network/ping_request.dart';
+import 'package:wiredash/src/core/network/send_events_request.dart';
 import 'package:wiredash/src/core/network/send_feedback_request.dart';
 import 'package:wiredash/src/core/network/send_promoter_score_request.dart';
 import 'package:wiredash/src/core/network/upload_attachment_request.dart';
+import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 
 export 'package:wiredash/src/core/network/api_exceptions.dart';
@@ -71,8 +74,18 @@ class WiredashApi {
   Future<PingResponse> ping(PingRequestBody body) async {
     return await postPing(_context, '$_host/ping', body);
   }
+
+  /// Sends analytics events to Wiredash
+  ///
+  /// POST /sendEvents
+  ///
+  /// May throw [PaidFeatureException] or [CouldNotHandleRequestException]
+  Future<void> sendEvents(List<RequestEvent> events) async {
+    return await postSendEvents(_context, '$_host/sendEvents', events);
+  }
 }
 
+/// All information needed to send request and handle responses from the [WiredashApi]
 class ApiClientContext {
   final Client httpClient;
   final String secret;
@@ -99,4 +112,30 @@ class ApiClientContext {
     }
     throw WiredashApiException(response: response);
   }
+
+  /// Reports all warnings from [response] to [FlutterError.presentError]
+  ///
+  /// Return a specific exceptions from [handleWarning] to enhance error reporting
+  void reportResponseWarnings(
+    Response response,
+    Exception? Function(WiredashApiWarning warning)? handleWarning,
+  ) {
+    final warnings = response.readWiredashWarnings();
+    if (warnings.isEmpty) return;
+    for (final warning in warnings) {
+      Object? mappedException;
+      try {
+        mappedException = handleWarning?.call(warning);
+      } catch (_) {
+        // ignore
+      }
+      reportWiredashInfo(
+        mappedException ?? warning,
+        StackTrace.current,
+        'Warning from Wiredash API',
+      );
+    }
+  }
+
+  void handleWarning() {}
 }

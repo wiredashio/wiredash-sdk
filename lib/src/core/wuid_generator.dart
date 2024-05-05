@@ -1,8 +1,11 @@
 // ignore: depend_on_referenced_packages
+import 'dart:async';
+
 import 'package:async/async.dart' show ResultFuture;
 import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/utils/disposable.dart';
 
 /// Wiredash Unique Identifier Generator
 abstract class WuidGenerator {
@@ -13,10 +16,15 @@ abstract class WuidGenerator {
   ///
   /// Calling it a second time with the same [key] will return the same id
   Future<String> generatePersistedId(String key, int length);
+
+  /// Adds a listener that is called when a new key is created
+  Disposable addOnKeyCreatedListener(void Function(String key) listener);
 }
 
 /// Persistent implementation of [WuidGenerator] that uses shared preferences
-class SharedPrefsWuidGenerator implements WuidGenerator {
+class SharedPrefsWuidGenerator
+    with OnKeyCreatedNotifier
+    implements WuidGenerator {
   final Future<SharedPreferences> Function() sharedPrefsProvider;
 
   SharedPrefsWuidGenerator({
@@ -80,6 +88,7 @@ class SharedPrefsWuidGenerator implements WuidGenerator {
 
     // first time generation or fallback in case of sharedPrefs error
     final deviceId = generateId(length);
+    Future(() => notifyKeyCreated(key));
     try {
       final prefs = await sharedPrefsProvider().timeout(_sharedPrefsTimeout);
       await prefs.setString(key, deviceId).timeout(_sharedPrefsTimeout);
@@ -96,6 +105,29 @@ class SharedPrefsWuidGenerator implements WuidGenerator {
   static const _sharedPrefsTimeout = Duration(seconds: 2);
 }
 
+/// Allows notifying listeners when a new key is created
+///
+/// Used by [SharedPrefsWuidGenerator] and `IncrementalIdGenerator` in tests
+mixin OnKeyCreatedNotifier {
+  final List<void Function(String key)> _onKeyCreatedListeners = [];
+
+  Disposable addOnKeyCreatedListener(void Function(String key) listener) {
+    _onKeyCreatedListeners.add(listener);
+    return Disposable(() => _onKeyCreatedListeners.remove(listener));
+  }
+
+  void notifyKeyCreated(String key) {
+    for (final listener in _onKeyCreatedListeners.toList()) {
+      try {
+        listener(key);
+      } catch (e, stack) {
+        reportWiredashError(e, stack, 'Error in onKeyCreatedListener');
+      }
+    }
+  }
+}
+
+/// Handles the persistent unique id for feedback
 extension SubmitIdGenerator on WuidGenerator {
   /// Returns the unique id that is used for submitting feedback and promoter score
   ///
@@ -109,6 +141,7 @@ extension SubmitIdGenerator on WuidGenerator {
   }
 }
 
+/// Handles the persistent unique id for analytics
 extension AppUsageIdGenerator on WuidGenerator {
   /// Returns the unique id that is used for tracking app usage
   ///
@@ -119,11 +152,13 @@ extension AppUsageIdGenerator on WuidGenerator {
   }
 }
 
+/// Creates the local uuids for feedback
 extension PersistedFeedbackIds on WuidGenerator {
   /// Feedbacks that are saved locally (offline) until they are sent to the server
   String localFeedbackId() => generateId(8);
 }
 
+/// Creates the local uuids for screenshots
 extension UniqueScreenshotName on WuidGenerator {
   /// screenshot attachment name (png)
   String screenshotFilename() => generateId(8);

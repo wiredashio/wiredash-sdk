@@ -11,11 +11,14 @@ class UploadPendingFeedbackJob extends Job {
 
   @override
   bool shouldExecute(SdkEvent event) {
-    return [SdkEvent.appStartDelayed].contains(event);
+    return [
+      SdkEvent.appStartDelayed,
+      SdkEvent.appMovedToBackground,
+    ].contains(event);
   }
 
   @override
-  Future<void> execute() async {
+  Future<void> execute(SdkEvent event) async {
     final submitter = feedbackSubmitterProvider();
     if (submitter is! RetryingFeedbackSubmitter) {
       return;

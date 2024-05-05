@@ -35,12 +35,13 @@ void main() {
       errors.restoreDefaultErrorHandlers();
       // This causes the TestWidget to lose its state
       expect(TestWidget.createCount, 2);
-      expect(errors.presentErrorText, contains("SynchronousFuture"));
+      printOnFailure("captured error: ${errors.warningText}");
+      expect(errors.warningText, contains("SynchronousFuture"));
       expect(
-        errors.presentErrorText,
+        errors.warningText,
         contains("AsyncCustomWiredashTranslationsDelegate"),
       );
-      expect(errors.presentError.length, 1);
+      expect(errors.warnings.length, 1);
     });
   });
 }
