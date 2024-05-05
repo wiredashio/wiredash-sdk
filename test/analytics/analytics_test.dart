@@ -754,6 +754,26 @@ void main() {
     expect(eventsOnDisk2, hasLength(0));
   });
 
+  testWidgets('trackEvent does not throw when submit fails', (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp();
+
+    bool thrown = false;
+    robot.mockServices.mockApi.sendEventsInvocations.interceptor =
+        (invocation) async {
+      thrown = true;
+      throw const SocketException('no internet');
+    };
+
+    try {
+      await Wiredash.trackEvent('someEvent');
+      await tester.idle();
+    } catch (e, stack) {
+      fail('trackEvent should never throw\n$e\n$stack');
+    }
+    expect(thrown, isTrue);
+  });
+
   test('3rd party implements WiredashAnalytics', () {
     final analytics = ThirdPartyAnalytics();
     expect(analytics.projectId, isNull);
