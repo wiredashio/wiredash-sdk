@@ -162,7 +162,6 @@ class RequestEvent {
 
     final _eventData = eventData;
     if (_eventData != null) {
-      // TODO encode like customMetaData
       body['eventData'] = _eventData;
     }
 
