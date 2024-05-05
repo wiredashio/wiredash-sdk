@@ -491,7 +491,6 @@ void main() {
       final start = clock.now();
       final robot = WiredashTestRobot(tester);
       await robot.launchApp(useDirectEventSubmitter: false);
-      debugDumpApp();
       for (int i = 0; i < 65; i++) {
         await robot.triggerAnalyticsEvent();
         await tester.pumpSmart(const Duration(seconds: 1));
