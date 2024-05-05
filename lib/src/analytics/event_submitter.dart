@@ -167,6 +167,15 @@ class DebounceEventSubmitter implements EventSubmitter {
         stack,
         'Custom events is a paid feature. Upgrade now https://wiredash.com/console/$projectId/settings/billing.',
       );
+    } on UnauthenticatedWiredashApiException catch (e, stack) {
+      for (final key in toBeSubmitted.keys) {
+        await eventStore.removeEvent(key);
+      }
+      reportWiredashInfo(
+        e,
+        stack,
+        "Invalid projectId: '${e.projectId}', secret: '${e.secret}'. Get the correct credentials at https://wiredash.com/console/$projectId/settings/general.",
+      );
     } catch (e, stack) {
       reportWiredashInfo(
         e,

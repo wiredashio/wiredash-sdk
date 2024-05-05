@@ -666,6 +666,38 @@ void main() {
     expect(eventsOnDisk, hasLength(1));
   });
 
+  testWidgets('Drop events for unauthorized requests', (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp();
+
+    final errors = captureFlutterErrors();
+    robot.mockServices.mockApi.sendEventsInvocations.interceptor =
+        (invocation) async {
+      final httpClient = MockClient((request) async {
+        return Response.bytes([], 401); // unauthorized
+      });
+
+      final context =
+          ApiClientContext(httpClient: httpClient, secret: '', projectId: '');
+      return postSendEvents(
+        context,
+        'url',
+        invocation.positionalArguments[0] as List<RequestEvent>,
+      );
+    };
+
+    await robot.triggerAnalyticsEvent();
+    await tester.idle();
+
+    errors.restoreDefaultErrorHandlers();
+    expect(errors.warningText, contains('UnauthenticatedWiredashApiException'));
+    expect(errors.warningText, contains("Invalid projectId: '', secret: ''"));
+
+    // events have been dropped, to prevent spamming the server with invalid credentials
+    final eventsOnDisk = await robot.services.eventStore.getEvents('test');
+    expect(eventsOnDisk, hasLength(0));
+  });
+
   testWidgets('Server could not handle requests - statuscode 500',
       (tester) async {
     final robot = WiredashTestRobot(tester);
