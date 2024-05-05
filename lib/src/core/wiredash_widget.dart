@@ -8,10 +8,13 @@ import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/context_cache.dart';
+import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/not_a_widgets_app.dart';
 import 'package:wiredash/src/feedback/feedback_backdrop.dart';
+import 'package:wiredash/src/utils/disposable.dart';
 import 'package:wiredash/wiredash.dart';
 
 /// Capture in-app user feedback, wishes, ratings and much more
@@ -46,8 +49,6 @@ class Wiredash extends StatefulWidget {
     super.key,
     required this.projectId,
     required this.secret,
-    @Deprecated('Since 1.0.0 the navigatorKey is not required anymore')
-    this.navigatorKey,
     this.options,
     this.theme,
     this.feedbackOptions,
@@ -56,10 +57,6 @@ class Wiredash extends StatefulWidget {
     this.collectMetaData,
     required this.child,
   });
-
-  /// Reference to the app [Navigator] to show the Wiredash bottom sheet
-  @Deprecated('Since 1.0.0 the navigatorKey is not required anymore')
-  final GlobalKey<NavigatorState>? navigatorKey;
 
   /// Your Wiredash projectId
   final String projectId;
@@ -83,8 +80,8 @@ class Wiredash extends StatefulWidget {
   ///   projectId: "...",
   ///   secret: "...",
   ///   collectMetaData: (metaData) => metaData
-  ///     ..userEmail = 'dash@wiredash.io'
-  ///     ..userEmail = 'dash@wiredash.io'
+  ///     ..userEmail = 'dash@wiredash.com'
+  ///     ..userEmail = 'dash@wiredash.com'
   ///     ..custom['isPremium'] = false
   ///     ..custom['nested'] = {'wire': 'dash'},
   ///   child: MyApp(),
@@ -167,18 +164,88 @@ class Wiredash extends StatefulWidget {
     state.widget.showBuildContext = context;
     return WiredashController(state._services.wiredashModel);
   }
+
+  /// Tracks an event with Wiredash.
+  ///
+  /// This method allows you to record user interactions or other significant
+  /// occurrences within your app and send them to the Wiredash service for
+  /// analysis.
+  ///
+  /// ```dart
+  /// await Wiredash.of(context).trackEvent('button_tapped', data: {
+  ///  'button_id': 'submit_button',
+  /// });
+  /// ```
+  ///
+  /// **[eventName] constraints**
+  /// {@macro eventNameConstraints}
+  ///
+  /// **[data] constraints**
+  /// {@macro eventDataConstraints}
+  ///
+  /// **Event Sending Behavior:**
+  ///
+  /// * Events are batched and sent to the Wiredash server periodically at 30-second intervals.
+  /// * The first batch of events is sent after a 5-second delay.
+  /// * Events are also sent immediately when the app goes to the background (not applicable to web platforms).
+  /// * If events cannot be sent due to network issues, they are stored locally and retried later.
+  /// * Unsent events are discarded after 3 days.
+  ///
+  /// **Multiple Wiredash Widgets:**
+  ///
+  /// If you have multiple [Wiredash] widgets in your app with different projectIds,
+  /// you can specify the desired [projectId] when creating [WiredashAnalytics].
+  /// This ensures that the event is sent to the correct project.
+  ///
+  /// If no [projectId] is provided and multiple widgets are mounted, the event will be sent to
+  /// the project associated with the first mounted widget. A warning message will also be logged
+  /// to the console in this scenario.
+  ///
+  /// **Background Isolates:**
+  ///
+  /// When calling [trackEvent] from a background isolate, the event will be stored locally.
+  /// The main isolate will pick up these events and send them along with the next batch or
+  /// when the app goes to the background.
+  ///
+  /// **See also**
+  ///
+  /// Use [WiredashAnalytics] for easy mocking and testing
+  ///
+  /// ```dart
+  /// final analytics = WiredashAnalytics();
+  /// await analytics.trackEvent('Click Button', data: {/**/});
+  ///
+  /// // inject into other classes
+  /// final bloc = MyBloc(analytics: analytics);
+  /// ```
+  ///
+  /// Access the correct [Wiredash] project via context to send events to if you
+  /// use multiple Wiredash widgets in your app. This way you don't have to
+  /// specify the [projectId] every time you call [trackEvent].
+  ///
+  /// ```dart
+  /// Wiredash.of(context).trackEvent('Click Button');
+  /// ```
+  static Future<void> trackEvent(
+    String eventName, {
+    Map<String, Object?>? data,
+    String? projectId,
+  }) async {
+    final analytics = WiredashAnalytics(projectId: projectId);
+    await analytics.trackEvent(eventName, data: data);
+  }
 }
 
 class WiredashState extends State<Wiredash> {
   final GlobalKey _appKey = GlobalKey(debugLabel: 'app');
 
-  final WiredashServices _services = _createServices();
+  final WiredashServices _services = WiredashServices();
 
   late final WiredashBackButtonDispatcher _backButtonDispatcher;
 
-  Timer? _submitTimer;
-
   final FocusScopeNode _appFocusScopeNode = FocusScopeNode();
+
+  Disposable? _unregister;
 
   /// A way to access the services during testing
   @visibleForTesting
@@ -196,13 +263,21 @@ class WiredashState extends State<Wiredash> {
       projectId: widget.projectId,
       secret: widget.secret,
     );
+    _verifySyncLocalizationsDelegate();
+
+    _unregister = WiredashRegistry.instance.register(this);
     _services.updateWidget(widget);
     _services.addListener(_markNeedsBuild);
     _services.wiredashModel.addListener(_markNeedsBuild);
     _services.backdropController.addListener(_markNeedsBuild);
 
-    // start the sync engine
-    unawaited(_services.syncEngine.onWiredashInit());
+    _services.appLifecycleNotifier.addListener(() {
+      final state = _services.appLifecycleNotifier.value;
+      if (state == AppLifecycleState_hidden_compat()) {
+        _services.syncEngine.onAppMovedToBackground();
+      }
+    });
+    _onProjectIdChanged();
 
     _backButtonDispatcher = WiredashBackButtonDispatcher()..initialize();
   }
@@ -212,10 +287,21 @@ class WiredashState extends State<Wiredash> {
     setState(() {});
   }
 
+  /// Notifies the [EventSubmitter] to send all pending events to the server.
+  ///
+  /// This method is called by [WiredashAnalytics] when new events have been
+  /// added or the app goes to the background.
+  Future<void> triggerAnalyticsEventUpload() async {
+    try {
+      await _services.eventSubmitter.submitEvents();
+    } catch (e, stack) {
+      reportWiredashInfo(e, stack, 'Unexpected error while submitting events');
+    }
+  }
+
   @override
   void dispose() {
-    _submitTimer?.cancel();
-    _submitTimer = null;
+    _unregister?.dispose();
     _services.dispose();
     _backButtonDispatcher.dispose();
     _appFocusScopeNode.dispose();
@@ -225,14 +311,34 @@ class WiredashState extends State<Wiredash> {
   @override
   void didUpdateWidget(Wiredash oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    _unregister?.dispose();
+    _unregister = WiredashRegistry.instance.register(this);
+    _services.updateWidget(widget);
+
     if (oldWidget.projectId != widget.projectId ||
         oldWidget.secret != widget.secret) {
       _services.projectCredentialValidator.validate(
         projectId: widget.projectId,
         secret: widget.secret,
       );
+
+      if (oldWidget.options?.localizationDelegate !=
+          widget.options?.localizationDelegate) {
+        _verifySyncLocalizationsDelegate();
+      }
+      _services.updateWidget(widget);
+
+      _onProjectIdChanged();
     }
-    _services.updateWidget(widget);
+  }
+
+  void _onProjectIdChanged() {
+    final inFakeAsync = _services.testDetector.inFakeAsync();
+    if (!inFakeAsync) {
+      // start the sync engine
+      unawaited(_services.syncEngine.onWiredashInit());
+    }
   }
 
   @override
@@ -386,6 +492,34 @@ class WiredashState extends State<Wiredash> {
     // Use what's set by the operating system
     return _defaultLocale;
   }
+
+  void _verifySyncLocalizationsDelegate() {
+    assert(() {
+      final delegate = widget.options?.localizationDelegate;
+      if (delegate == null) {
+        return true;
+      }
+      final locale = _currentLocale;
+      if (!delegate.isSupported(locale)) {
+        // load should not be called
+        return true;
+      }
+      final loadFuture = delegate.load(locale);
+      if (loadFuture is! SynchronousFuture) {
+        reportWiredashInfo(
+          'Warning: $delegate load() is async',
+          StackTrace.current,
+          'Warning: ${delegate.runtimeType}.load() returned a Future for Locale "$locale".\n'
+              'This will lead to your app losing all its state when you open Wiredash!\n'
+              '\tDO return a SynchronousFuture from your LocalizationsDelegate.load() method. \n'
+              '\tDO NOT use the async keyword in LocalizationsDelegate.load().\n'
+              'When load() returns SynchronousFuture the Localizations widget can build your app widget with the already loaded localizations at the first frame.\n'
+              'For more information visit https://github.com/wiredashio/wiredash-sdk/issues/341',
+        );
+      }
+      return true;
+    }());
+  }
 }
 
 Locale get _defaultLocale {
@@ -393,20 +527,4 @@ Locale get _defaultLocale {
   // ignore: unnecessary_nullable_for_final_variable_declarations, deprecated_member_use
   final Locale? locale = ui.window.locale;
   return locale ?? const Locale('en', 'US');
-}
-
-/// Can be used to inject mock services for testing
-@visibleForTesting
-WiredashServices Function()? debugServicesCreator;
-
-WiredashServices _createServices() {
-  WiredashServices? services;
-  assert(
-    () {
-      services = debugServicesCreator?.call();
-      return true;
-    }(),
-  );
-
-  return services ?? WiredashServices();
 }

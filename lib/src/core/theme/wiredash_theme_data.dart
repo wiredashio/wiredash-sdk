@@ -27,7 +27,6 @@ class WiredashThemeData {
     Color? secondPenColor,
     Color? thirdPenColor,
     Color? fourthPenColor,
-    @Deprecated('Use textTheme instead') String? fontFamily,
     Size? windowSize,
     WiredashTextTheme? textTheme,
   }) {

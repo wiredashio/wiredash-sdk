@@ -151,6 +151,7 @@ class _HomePage extends StatelessWidget {
   }
 
   void _openDetailsPage(BuildContext context, int which) {
+    Wiredash.trackEvent('open details page', data: {'index': which});
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
@@ -195,8 +196,7 @@ class _DetailsPage extends StatelessWidget {
             children: [
               Text(
                 'Details page #$index',
-                // ignore: deprecated_member_use
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               SizedBox(height: 32),
               Text('Try navigating here in feedback mode.'),

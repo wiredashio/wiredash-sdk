@@ -9,9 +9,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/analytics/event_store.dart';
+import 'package:wiredash/src/analytics/event_submitter.dart';
+import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
+import 'package:wiredash/src/core/lifecycle/lifecycle_stub.dart'
+    if (dart.library.io) 'package:wiredash/src/core/lifecycle/lifecycle_io.dart'
+    if (dart.library.html) 'package:wiredash/src/core/lifecycle/lifecycle_web.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/app_telemetry_job.dart';
+import 'package:wiredash/src/core/sync/event_upload_job.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/sync/sync_feedback_job.dart';
@@ -26,15 +33,38 @@ import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/ui/screencapture.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
+import 'package:wiredash/src/utils/test_detector.dart';
 import 'package:wiredash/wiredash.dart';
 
 /// Internal service locator
 class WiredashServices extends ChangeNotifier {
-  WiredashServices() {
-    _setupServices(this);
+  factory WiredashServices() {
+    WiredashServices? services;
+    assert(
+      () {
+        if (debugServicesCreator != null) {
+          services = debugServicesCreator!.call();
+        }
+        return true;
+      }(),
+    );
+
+    return services ?? WiredashServices.setup(registerProdWiredashServices);
   }
 
-  final Locator _locator = Locator();
+  WiredashServices.setup(
+    void Function(WiredashServices sl) setup,
+  ) {
+    setup(this);
+  }
+
+  /// Can be used to inject mock services for testing
+  @visibleForTesting
+  static WiredashServices Function()? debugServicesCreator;
+
+  Locator get locator => _locator;
+
+  final InjectableLocator _locator = InjectableLocator();
 
   WiredashModel get wiredashModel => _locator.watch();
 
@@ -76,6 +106,20 @@ class WiredashServices extends ChangeNotifier {
 
   MetaDataCollector get metaDataCollector => _locator.watch();
 
+  TestDetector get testDetector => _locator.watch();
+
+  AnalyticsEventStore get eventStore => _locator.watch();
+
+  EventSubmitter get eventSubmitter => _locator.watch();
+
+  FlutterAppLifecycleNotifier get appLifecycleNotifier => _locator.watch();
+
+  Future<SharedPreferences> Function() get sharedPreferencesProvider {
+    // explicitly using get instead of watch, because it is a factory not an
+    // object that returns the correct object for every call
+    return _locator.get();
+  }
+
   void updateWidget(Wiredash wiredashWidget) {
     inject<Wiredash>((_) => wiredashWidget);
   }
@@ -99,8 +143,12 @@ class WiredashServices extends ChangeNotifier {
   }
 }
 
-void _setupServices(WiredashServices sl) {
+void registerProdWiredashServices(WiredashServices sl) {
   sl.inject<WiredashServices>((_) => sl);
+
+  sl.inject<Future<SharedPreferences> Function()>(
+    (_) => SharedPreferences.getInstance,
+  );
 
   sl.inject<Wiredash>(
     (_) => const Wiredash(
@@ -110,18 +158,26 @@ void _setupServices(WiredashServices sl) {
     ),
   );
   sl.inject<WuidGenerator>(
-    (_) => SharedPrefsWuidGenerator(
-      sharedPrefsProvider: SharedPreferences.getInstance,
-    ),
+    (_) {
+      final generator = SharedPrefsWuidGenerator(
+        sharedPrefsProvider: sl.sharedPreferencesProvider,
+      );
+      generator.addOnKeyCreatedListener((key) {
+        if (key == '_wiredashAppUsageID') {
+          Wiredash.trackEvent('#firstLaunch');
+        }
+      });
+      return generator;
+    },
   );
   sl.inject<ProjectCredentialValidator>(
     (_) => const ProjectCredentialValidator(),
   );
   sl.inject<AppTelemetry>(
-    (_) => PersistentAppTelemetry(SharedPreferences.getInstance),
+    (_) => PersistentAppTelemetry(sl.sharedPreferencesProvider),
   );
   sl.inject<WiredashTelemetry>(
-    (_) => PersistentWiredashTelemetry(SharedPreferences.getInstance),
+    (_) => PersistentWiredashTelemetry(sl.sharedPreferencesProvider),
   );
   sl.inject<PsTrigger>((_) {
     return PsTrigger(
@@ -130,21 +186,41 @@ void _setupServices(WiredashServices sl) {
       wiredashTelemetry: sl.wiredashTelemetry,
     );
   });
+  sl.inject<AnalyticsEventStore>((_) {
+    return PersistentAnalyticsEventStore(
+      sharedPreferences: sl.sharedPreferencesProvider,
+    );
+  });
+
+  sl.inject<EventSubmitter>(
+    (_) {
+      if (kIsWeb) {
+        return DirectEventSubmitter(
+          eventStore: sl.eventStore,
+          api: sl.api,
+          projectId: () => sl.wiredashWidget.projectId,
+        );
+      }
+
+      return DebounceEventSubmitter(
+        api: sl.api,
+        eventStore: sl.eventStore,
+        projectId: () => sl.wiredashWidget.projectId,
+      );
+    },
+  );
+
   sl.inject<BackdropController>(
     (_) => BackdropController(),
-    dispose: (model) => model.dispose(),
   );
-  sl.inject<PicassoController>(
-    (locator) {
-      final controller = PicassoController();
-      locator.listen<Wiredash>((wiredashWidget) {
-        controller.color ??= wiredashWidget.theme?.firstPenColor;
-      });
+  sl.inject<PicassoController>((locator) {
+    final controller = PicassoController();
+    locator.listen<Wiredash>((wiredashWidget) {
+      controller.color ??= wiredashWidget.theme?.firstPenColor;
+    });
 
-      return controller;
-    },
-    dispose: (model) => model.dispose(),
-  );
+    return controller;
+  });
   // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
   // ignore: deprecated_member_use
   sl.inject<FlutterInfoCollector>((_) => FlutterInfoCollector(window));
@@ -152,25 +228,13 @@ void _setupServices(WiredashServices sl) {
   sl.inject<WiredashOptionsData>(
     (_) => sl.wiredashWidget.options ?? const WiredashOptionsData(),
   );
-  sl.inject<ScreenCaptureController>(
-    (locator) => ScreenCaptureController(),
-    dispose: (model) => model.dispose(),
-  );
+  sl.inject<ScreenCaptureController>((locator) => ScreenCaptureController());
 
-  sl.inject<WiredashModel>(
-    (locator) => WiredashModel(sl),
-    dispose: (model) => model.dispose(),
-  );
+  sl.inject<WiredashModel>((locator) => WiredashModel(sl));
 
-  sl.inject<FeedbackModel>(
-    (locator) => FeedbackModel(sl),
-    dispose: (model) => model.dispose(),
-  );
+  sl.inject<FeedbackModel>((locator) => FeedbackModel(sl));
 
-  sl.inject<PsModel>(
-    (locator) => PsModel(sl),
-    dispose: (model) => model.dispose(),
-  );
+  sl.inject<PsModel>((locator) => PsModel(sl));
 
   sl.inject<WiredashApi>(
     (locator) {
@@ -191,7 +255,7 @@ void _setupServices(WiredashServices sl) {
       const fileSystem = LocalFileSystem();
       final storage = PendingFeedbackItemStorage(
         fileSystem: fileSystem,
-        sharedPreferencesProvider: SharedPreferences.getInstance,
+        sharedPreferencesProvider: sl.sharedPreferencesProvider,
         dirPathProvider: () async =>
             (await getApplicationDocumentsDirectory()).path,
         wuidGenerator: sl.wuidGenerator,
@@ -204,12 +268,14 @@ void _setupServices(WiredashServices sl) {
 
   sl.inject<MetaDataCollector>((sl) {
     return MetaDataCollector(
-      wiredashModel: sl.get(),
       deviceInfoCollector: sl.get,
-      wiredashWidget: sl.get,
       buildInfoProvider: sl.get,
     );
   });
+
+  sl.inject<FlutterAppLifecycleNotifier>(
+    (_) => createFlutterAppLifecycleNotifier(),
+  );
 
   sl.inject<SyncEngine>(
     (locator) {
@@ -230,7 +296,7 @@ void _setupServices(WiredashServices sl) {
           apiProvider: () => sl.api,
           wuidGenerator: () => sl.wuidGenerator,
           metaDataCollector: () => sl.metaDataCollector,
-          sharedPreferencesProvider: SharedPreferences.getInstance,
+          sharedPreferencesProvider: sl.sharedPreferencesProvider,
         ),
       );
       engine.addJob(
@@ -240,6 +306,12 @@ void _setupServices(WiredashServices sl) {
         ),
       );
 
+      final job = EventUploadJob(
+        sharedPreferencesProvider: sl.sharedPreferencesProvider,
+        eventSubmitter: () => sl.eventSubmitter,
+      );
+      engine.addJob('upload_events', job);
+
       return engine;
     },
     dispose: (engine) => engine.onWiredashDispose(),
@@ -247,6 +319,7 @@ void _setupServices(WiredashServices sl) {
 
   sl.inject<DiscardFeedbackUseCase>((_) => DiscardFeedbackUseCase(sl));
   sl.inject<DiscardPsUseCase>((_) => DiscardPsUseCase(sl));
+  sl.inject<TestDetector>((_) => TestDetector());
 }
 
 /// Discards the current feedback
@@ -256,10 +329,7 @@ class DiscardFeedbackUseCase {
   final WiredashServices services;
 
   void call() {
-    services.inject<FeedbackModel>(
-      (locator) => FeedbackModel(services),
-      dispose: (model) => model.dispose(),
-    );
+    services.inject<FeedbackModel>((locator) => FeedbackModel(services));
   }
 }
 
@@ -270,9 +340,6 @@ class DiscardPsUseCase {
   final WiredashServices services;
 
   void call() {
-    services.inject<PsModel>(
-      (locator) => PsModel(services),
-      dispose: (model) => model.dispose(),
-    );
+    services.inject<PsModel>((locator) => PsModel(services));
   }
 }

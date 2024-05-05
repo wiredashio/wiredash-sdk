@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nanoid2/nanoid2.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spot/spot.dart';
@@ -15,10 +16,13 @@ import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/analytics/event_submitter.dart';
+import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 // ignore: unused_import
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
+import 'package:wiredash/src/utils/test_detector.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'mock_api.dart';
@@ -37,14 +41,24 @@ class WiredashTestRobot {
     SharedPreferences.setMockInitialValues({
       'mocked': true,
     });
+    addTearDown(() => SharedPreferences.setMockInitialValues({}));
     PackageInfo.setMockInitialValues(
-      appName: 'Wiredash Demo',
-      packageName: 'io.wiredash.demo',
-      version: '0.1.0',
-      buildNumber: '1',
+      appName: 'Wiredash Test',
+      packageName: 'io.wiredash.test',
+      version: '9.9.9',
+      buildNumber: '9001',
       buildSignature: 'buildSignature',
       // ignore: avoid_redundant_argument_values
       installerStore: null,
+    );
+    addTearDown(
+      () => PackageInfo.setMockInitialValues(
+        appName: '',
+        packageName: '',
+        version: '',
+        buildNumber: '',
+        buildSignature: '',
+      ),
     );
     TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -131,19 +145,69 @@ class WiredashTestRobot {
       CustomizableWiredashMetaData metaData,
     )? collectMetaData,
     Widget Function(BuildContext)? builder,
+    String? projectId,
     FutureOr<void> Function()? afterPump,
     List<LocalizationsDelegate> appLocalizationsDelegates = const [],
     bool useDirectFeedbackSubmitter = true,
+    bool useDirectEventSubmitter = true,
+    bool wrapWithWiredash = true,
+    bool firstLaunch = false,
   }) async {
     setupMocks();
-    debugServicesCreator = () => createMockServices(
+    WiredashServices.debugServicesCreator = () => createMockServices(
           useDirectFeedbackSubmitter: useDirectFeedbackSubmitter,
+          useDirectEventSubmitter: useDirectEventSubmitter,
         );
-    addTearDown(() => debugServicesCreator = null);
+    addTearDown(() => WiredashServices.debugServicesCreator = null);
 
-    await tester.pumpWidget(
-      Wiredash(
-        projectId: 'test',
+    if (!firstLaunch) {
+      await regenerateAnalyticsId();
+    }
+
+    Widget child = MaterialApp(
+      locale: const Locale('test'),
+      localizationsDelegates: [
+        ...appLocalizationsDelegates,
+        DefaultWidgetsLocalizations.delegate,
+      ],
+      home: Builder(
+        builder: builder ??
+            (context) {
+              return Scaffold(
+                body: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Wiredash.of(context).show();
+                      },
+                      child: const Text('Feedback'),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Wiredash.of(context).showPromoterSurvey(force: true);
+                      },
+                      child: const Text('Promoter Score'),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Wiredash.of(context).trackEvent(
+                          'default_event',
+                          data: {
+                            'wire': 'dash',
+                          },
+                        );
+                      },
+                      child: const Text('Send event'),
+                    ),
+                  ],
+                ),
+              );
+            },
+      ),
+    );
+    if (wrapWithWiredash) {
+      child = Wiredash(
+        projectId: projectId ?? 'test',
         secret: 'test',
         feedbackOptions: feedbackOptions,
         psOptions: psOptions,
@@ -156,39 +220,10 @@ class WiredashTestRobot {
           primaryBackgroundColor: Colors.grey,
           secondaryBackgroundColor: Colors.brown,
         ),
-        child: MaterialApp(
-          locale: const Locale('test'),
-          localizationsDelegates: [
-            ...appLocalizationsDelegates,
-            DefaultWidgetsLocalizations.delegate,
-          ],
-          home: Builder(
-            builder: builder ??
-                (context) {
-                  return Scaffold(
-                    body: Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Wiredash.of(context).show();
-                          },
-                          child: const Text('Feedback'),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Wiredash.of(context)
-                                .showPromoterSurvey(force: true);
-                          },
-                          child: const Text('Promoter Score'),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-          ),
-        ),
-      ),
-    );
+        child: child,
+      );
+    }
+    await tester.pumpWidget(child);
     if (afterPump != null) {
       await afterPump();
     }
@@ -212,6 +247,15 @@ class WiredashTestRobot {
     return (element.state as WiredashState).debugServices;
   }
 
+  WiredashServices servicesForProject(String projectId) {
+    final elements =
+        find.byType(Wiredash).evaluate().map((e) => e as StatefulElement);
+    final element = elements.firstWhere(
+      (e) => (e.state as WiredashState).widget.projectId == projectId,
+    );
+    return (element.state as WiredashState).debugServices;
+  }
+
   /// Equivalent to `Wiredash.of(context)`
   WiredashController get wiredashController {
     return WiredashController(services.wiredashModel);
@@ -219,6 +263,11 @@ class WiredashTestRobot {
 
   WiredashMockServices get mockServices {
     return WiredashMockServices(services);
+  }
+
+  Future<void> regenerateAnalyticsId() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('_wiredashAppUsageID', nanoid(length: 16));
   }
 
   Future<void> submitMinimalFeedback() async {
@@ -235,13 +284,7 @@ class WiredashTestRobot {
     final feedbackText = spotSingle<MaterialApp>().spotSingleText('Feedback')
       ..existsOnce();
     await _tap(feedbackText);
-
-    // process the event, wait for backdrop to appear in the widget tree
-    await tester.pumpN(4);
-    // wait for animation finish
-    await tester.pump(const Duration(milliseconds: 500));
-    // When the pump pattern on top fails, use this instead
-    // await tester.pumpAndSettle();
+    await tester.pumpSmart();
 
     _spotBackdrop.spotSingle<WiredashFeedbackFlow>().existsOnce();
     print('opened Wiredash');
@@ -252,16 +295,16 @@ class WiredashTestRobot {
         .spotSingleText('Promoter Score')
       ..existsOnce();
     await _tap(promoterScoreText);
-
-    // process the event, wait for backdrop to appear in the widget tree
-    await tester.pumpN(4);
-    // wait for animation finish
-    await tester.pump(const Duration(milliseconds: 500));
-    // When the pump pattern on top fails, use this instead
-    // await tester.pumpAndSettle();
+    await tester.pumpSmart();
 
     _spotBackdrop.spotSingle<PromoterScoreFlow>().existsOnce();
     print('opened promoter score');
+  }
+
+  Future<void> triggerAnalyticsEvent() async {
+    await _tap(spotSingleText('Send event'));
+    await tester.pumpSmart();
+    print('sent event');
   }
 
   Future<void> closeWiredashWithButton() async {
@@ -272,6 +315,7 @@ class WiredashTestRobot {
       ],
     )..existsOnce();
     await _tap(spotCloseButton);
+    await tester.pumpSmart();
     print('closed Wiredash');
   }
 
@@ -279,16 +323,42 @@ class WiredashTestRobot {
     // tap app which is located at the bottom of the screen
     final bottomRight = tester.getBottomRight(find.byType(Wiredash));
     await tester.tapAt(Offset(bottomRight.dx / 2, bottomRight.dy - 20));
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     _spotBackdrop.spotSingle<WiredashFeedbackFlow>().doesNotExist();
     _spotBackdrop.spotSingle<PromoterScoreFlow>().doesNotExist();
     print('closed Wiredash');
   }
 
+  Future<void> moveAppToBackground() async {
+    print('Robot: Moving app to background');
+
+    // iPad: resumed | (move to background) | inactive, hidden, paused
+    // iPad: resumed | (app switcher) | inactive
+    // iPad: resumed | (app switcher -> kill) | inactive, hidden, paused, detached | <dead>
+    // macos: resumed | (app switcher) | inactive
+    // macos: resumed | (minimize) | inactive, hidden
+    // macos: resumed | (CMD + Q) or close button | <dead>
+    // android: resumed | (switch app) | inactive, hidden, paused
+    // android: resumed | (app switcher -> kill) | inactive, hidden, paused
+    // android: resumed | (home) | inactive, hidden, paused
+    // android: resumed | (back (close)) | inactive, hidden, paused, detached | <dead>
+    // chrome: resumed | (switch tab) | inactive, hidden
+    // chrome: resumed | (switch app) | inactive
+    // chrome: resumed | (close tab) | hidden | <dead>
+    TestWidgetsFlutterBinding.instance
+        .handleAppLifecycleStateChanged(AppLifecycleState_hidden_compat());
+    addTearDown(() {
+      // reset to default
+      TestWidgetsFlutterBinding.instance
+          .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    });
+    await tester.pumpSmart(const Duration(seconds: 1));
+  }
+
   Future<void> enterFeedbackMessage(String message) async {
     _spotPageView.spotSingle<Step1FeedbackMessage>().existsOnce();
     await tester.enterText(find.byType(TextField), message);
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     final button = spotSingle<TronButton>(
       children: [spotSingleText('l10n.feedbackNextButton')],
     );
@@ -308,7 +378,7 @@ class WiredashTestRobot {
     )..existsOnce();
     step.spotSingleText('l10n.promoterScoreBackButton').existsOnce();
     await tester.enterText(find.byType(TextField), message);
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
 
     // TODO find easier way to check if the button is clickable. Hit Testing?
     await done.waitUntil(tester, (it) => it.isTappable(true));
@@ -319,7 +389,7 @@ class WiredashTestRobot {
   Future<void> enterEmail(String emailAddress) async {
     final step = _spotPageView.spotSingle<Step5Email>()..existsOnce();
     await tester.enterText(step.spotSingle<TextField>().finder, emailAddress);
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     print('entered email: $emailAddress');
   }
 
@@ -329,8 +399,7 @@ class WiredashTestRobot {
     await _tap(
       step.spotSingleText('l10n.feedbackStep3ScreenshotOverviewSkipButton'),
     );
-    await tester.pumpAndSettle();
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Skipped taking screenshot, next $newStatus');
   }
@@ -351,13 +420,13 @@ class WiredashTestRobot {
     );
     print('submit feedback');
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
   }
 
   Future<void> skipEmail({bool catchError = true}) async {
     final step = _spotPageView.spotSingle<Step5Email>()..existsOnce();
     await _tap(step.spotSingleText('l10n.feedbackNextButton'));
-    await tester.pumpAndSettle();
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     if (catchError) {
@@ -371,7 +440,7 @@ class WiredashTestRobot {
   Future<void> submitEmailViaButton() async {
     final step = _spotPageView.spotSingle<Step5Email>()..existsOnce();
     await _tap(step.spotSingleText('l10n.feedbackNextButton'));
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Submitted email, next $newStatus');
@@ -379,7 +448,7 @@ class WiredashTestRobot {
 
   Future<void> submitEmailViaKeyboard() async {
     await tester.testTextInput.receiveAction(TextInputAction.send);
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Submitted email, next $newStatus');
@@ -388,8 +457,7 @@ class WiredashTestRobot {
   Future<void> goToNextStep() async {
     final oldStatus = services.feedbackModel.feedbackFlowStatus;
     await _tap(spotSingleText('l10n.feedbackNextButton'));
-    await tester.pumpAndSettle();
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Jumped from $oldStatus to next $newStatus');
   }
@@ -405,7 +473,7 @@ class WiredashTestRobot {
       await _tap(texts.first());
     }
 
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Jumped back from $oldStatus to prev $newStatus');
   }
@@ -420,8 +488,7 @@ class WiredashTestRobot {
       const Offset(0, -5000),
       5000,
     );
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
   }
 
   Future<void> enterScreenshotMode() async {
@@ -441,7 +508,7 @@ class WiredashTestRobot {
         ..existsOnce();
       await _tap(addAttachmentItem);
     }
-
+    await tester.pumpSmart();
     await tester.waitUntil(find.byType(ScreenshotBar), findsOneWidget);
     await tester.waitUntil(find.byIcon(Wirecons.camera), findsOneWidget);
     expect(
@@ -465,10 +532,10 @@ class WiredashTestRobot {
       screenshotBar
           .spotSingleText('l10n.feedbackStep3ScreenshotBarCaptureButton'),
     );
-    while (services.feedbackModel.feedbackFlowStatus !=
-        FeedbackFlowStatus.screenshotDrawing) {
-      await tester.pumpHardAndSettle();
-    }
+    await tester.waitUntil(
+      () => services.feedbackModel.feedbackFlowStatus,
+      isNot(FeedbackFlowStatus.screenshotDrawing),
+    );
 
     // Wait for active "Save" button
     final nextButton = screenshotBar.spotSingle<TronButton>(
@@ -495,7 +562,7 @@ class WiredashTestRobot {
     await _tap(
       screenshotBar.spotSingleText('l10n.feedbackStep3ScreenshotBarSaveButton'),
     );
-    await tester.pumpHardAndSettle(const Duration(milliseconds: 100));
+    await tester.pumpSmart(const Duration(milliseconds: 100));
 
     // wait until the animation is closed
     await tester.waitUntil(
@@ -506,7 +573,7 @@ class WiredashTestRobot {
     );
 
     await tester.waitUntil(
-      services.feedbackModel.feedbackFlowStatus,
+      () => services.feedbackModel.feedbackFlowStatus,
       isNot(
         anyOf(
           FeedbackFlowStatus.screenshotDrawing,
@@ -523,17 +590,17 @@ class WiredashTestRobot {
 
   Future<void> selectLabel(String labelText) async {
     await _tap(spotSingleText(labelText));
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
   }
 
   Future<void> pressAndroidBackButton() async {
     // ignore: invalid_use_of_protected_member
     await tester.binding.handlePopRoute();
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
   }
 
   Future<void> waitUntilWiredashIsClosed() async {
-    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpSmart();
     await tester.waitUntil(
       () => services.wiredashModel.isWiredashActive,
       isFalse,
@@ -553,12 +620,8 @@ class WiredashTestRobot {
         .first();
 
     await _tap(spotRatingCard(rating));
-    await tester.pumpAndSettle();
-
-    /// automatically goes to next step
-    await tester.pumpAndSettle();
-    await tester.pumpAndSettle();
-    await tester.pumpAndSettle(const Duration(milliseconds: 600));
+    await tester.pumpSmart();
+    await tester.pumpSmart(const Duration(milliseconds: 600));
   }
 
   Future<void> submitPromoterScore() async {
@@ -579,7 +642,7 @@ class WiredashTestRobot {
       scrollable: scrollable.finder,
     );
     await _tap(submitButton);
-    await tester.pumpAndSettle();
+    await tester.pumpSmart();
     print('submit Promoter Score');
   }
 
@@ -604,7 +667,7 @@ class WiredashTestRobot {
   Future<void> discardFeedback() async {
     _discard.existsOnce();
     await _tap(_discard);
-    await tester.pump();
+    await tester.pumpSmart();
     _reallyDiscard.existsOnce();
   }
 
@@ -613,7 +676,11 @@ class WiredashTestRobot {
     _discard.doesNotExist();
     _reallyDiscard.existsOnce();
     await _tap(_reallyDiscard);
-    await tester.pump();
+    await tester.pumpSmart();
+  }
+
+  Future<void> tapText(String text) {
+    return _tap(spotSingleText(text));
   }
 }
 
@@ -625,25 +692,62 @@ class WiredashMockServices {
   MockWiredashApi get mockApi => services.api as MockWiredashApi;
 }
 
-WiredashServices createMockServices({bool useDirectFeedbackSubmitter = false}) {
-  final services = WiredashServices();
+WiredashServices createMockServices({
+  bool useDirectFeedbackSubmitter = false,
+  bool useDirectEventSubmitter = false,
+}) {
+  return WiredashServices.setup((services) {
+    registerProdWiredashServices(services);
 
-  // Don't do actual http calls
-  services.inject<WiredashApi>((_) {
-    // depend on the widget (secret/project)
-    services.wiredashWidget;
-    return MockWiredashApi.fake();
-  });
-
-  if (useDirectFeedbackSubmitter) {
-    // replace submitter, because for testing we always want to submit directly
-    services.inject<FeedbackSubmitter>(
-      (locator) => DirectFeedbackSubmitter(services.api),
+    // Don't do actual http calls
+    services.inject<WiredashApi>(
+      (_) {
+        // depend on the widget (secret/project)
+        services.wiredashWidget;
+        return MockWiredashApi.fake();
+      },
     );
-  } else {
-    assert(services.feedbackSubmitter is RetryingFeedbackSubmitter);
+
+    // Let the widget behave as in production
+    services.inject<TestDetector>((_) => _OverlookFakeAsync());
+
+    if (useDirectFeedbackSubmitter) {
+      // replace submitter, because for testing we always want to submit directly
+      services.inject<FeedbackSubmitter>(
+        (_) => DirectFeedbackSubmitter(services.api),
+      );
+    } else {
+      assert(
+        services.feedbackSubmitter.runtimeType == RetryingFeedbackSubmitter,
+      );
+    }
+
+    if (useDirectEventSubmitter) {
+      services.inject<EventSubmitter>(
+        (_) {
+          print('create direct submitter');
+          return DirectEventSubmitter(
+            projectId: () => services.wiredashWidget.projectId,
+            eventStore: services.eventStore,
+            api: services.api,
+          );
+        },
+      );
+    } else {
+      assert(services.eventSubmitter.runtimeType == DebounceEventSubmitter);
+    }
+  });
+}
+
+/// Fake the test detector to not detect the fake async environment
+///
+/// Wiredash should behave differently in user tests. But wiredash tests should
+/// be able schedule jobs in a fake async environment.
+class _OverlookFakeAsync implements TestDetector {
+  @override
+  bool inFakeAsync() {
+    return false;
   }
-  return services;
 }
 
 class WiredashTestLocalizationDelegate
@@ -776,12 +880,8 @@ extension SpotWaitUntil<W extends Widget> on SingleWidgetSelector<W> {
           '\tException: $error',
         );
       }
-      if (attempt < 10) {
-        await tester.pumpAndSettle(duration);
-      } else {
-        await tester.pumpHardAndSettle(duration);
-        await tester.pump();
-      }
+
+      await tester.pumpSmart();
     }
   }
 }

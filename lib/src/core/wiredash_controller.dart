@@ -43,7 +43,7 @@ class WiredashController {
   /// ```dart
   /// Wiredash.of(context).modifyMetaData(
   ///   (metaData) => metaData
-  ///     ..userEmail = 'dash@wiredash.io'
+  ///     ..userEmail = 'dash@wiredash.com'
   ///     ..buildCommit = '43f23dd'
   ///     ..custom['screen'] = 'HomePage'
   ///     ..custom['isPremium'] = false,
@@ -126,37 +126,6 @@ class WiredashController {
     );
   }
 
-  /// Deprecated, do not use anymore.
-  ///
-  /// Was used to attach custom [buildVersion], [buildNumber] and
-  /// [buildCommit] to the feedback.
-  ///
-  /// This information is now collected automatically with platform APIs.
-  ///
-  /// Alternatively, on platforms, that do not provide the correct information
-  /// (sometimes on web) set env.BUILD_VERSION, env.BUILD_NUMBER or
-  /// env.BUILD_COMMIT during compile time with dart-define.
-  /// https://docs.wiredash.io/sdk/custom-properties/#during-compile-time
-  @Deprecated(
-    'Build information has to be provided during build time or is now collected automatically with platform APIs (where possible). '
-    'Set env.BUILD_VERSION, env.BUILD_NUMBER or env.BUILD_COMMIT with --dart-define. '
-    'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
-  )
-  void setBuildProperties({
-    String? buildVersion,
-    String? buildNumber,
-    String? buildCommit,
-  }) {
-    if (kDebugMode) {
-      print(
-        'Wiredash: setBuildProperties() is deprecated. The version information should be picked up automatically. '
-        'Alternatively, set env.BUILD_VERSION, env.BUILD_NUMBER or env.BUILD_COMMIT during compile time. '
-        'See https://docs.wiredash.io/sdk/custom-properties/#during-compile-time',
-      );
-    }
-    // noop
-  }
-
   /// This will open Wiredash and start the feedback flow.
   ///
   /// Use [options] to configure the feedback flow.
@@ -171,18 +140,103 @@ class WiredashController {
   /// Wiredash will automatically read colors from [context], overriding
   /// [Wiredash.theme].
   ///
-  /// For more advanced styling check the [documentation](https://docs.wiredash.io/sdk/theming/)
+  /// For more advanced styling check the [documentation](https://docs.wiredash.com/reference/sdk/theming)
   /// and use [Wiredash.theme].
   void show({
     bool? inheritMaterialTheme,
     bool? inheritCupertinoTheme,
-    @Deprecated('Use options') WiredashFeedbackOptions? feedbackOptions,
     WiredashFeedbackOptions? options,
   }) {
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
     _captureSessionMetaData();
-    _model.feedbackOptionsOverride = options ?? feedbackOptions;
+    _model.feedbackOptionsOverride = options;
     _model.show(flow: WiredashFlow.feedback);
+  }
+
+  /// Tracks an event with Wiredash.
+  ///
+  /// This method allows you to record user interactions or other significant
+  /// occurrences within your app and send them to the Wiredash service for
+  /// analysis.
+  ///
+  /// Access the correct [Wiredash] project via [context] to send events to if you
+  /// use multiple Wiredash widgets in your app. This way you don't have to
+  /// specify the [projectId] every time you call [trackEvent].
+  ///
+  /// ```dart
+  /// final analytics = WiredashAnalytics();
+  /// await analytics.trackEvent('button_tapped', data: {
+  ///  'button_id': 'submit_button',
+  /// });
+  /// ```
+  /// ### [eventName] constraints
+  /// {@macro eventNameConstraints}
+  ///
+  /// ### [data] constraints
+  /// {@macro eventDataConstraints}
+  ///
+  /// **Event Sending Behavior:**
+  ///
+  /// * Events are batched and sent to the Wiredash server periodically at 30-second intervals.
+  /// * The first batch of events is sent after a 5-second delay.
+  /// * Events are also sent immediately when the app goes to the background (not applicable to web platforms).
+  /// * If events cannot be sent due to network issues, they are stored locally and retried later.
+  /// * Unsent events are discarded after 3 days.
+  ///
+  /// **Multiple Wiredash Widgets:**
+  ///
+  /// If you have multiple [Wiredash] widgets in your app with different projectIds,
+  /// you can specify the desired [projectId] when creating [WiredashAnalytics].
+  /// This ensures that the event is sent to the correct project.
+  ///
+  /// If no [projectId] is provided and multiple widgets are mounted, the event will be sent to
+  /// the project associated with the first mounted widget. A warning message will also be logged
+  /// to the console in this scenario.
+  ///
+  /// **Background Isolates:**
+  ///
+  /// When calling [trackEvent] from a background isolate, the event will be stored locally.
+  /// The main isolate will pick up these events and send them along with the next batch or
+  /// when the app goes to the background.
+  ///
+  /// **See also**
+  ///
+  /// Use [Wiredash.trackEvent] for easy access from everywhere in your app.
+  ///
+  /// ```dart
+  /// await Wiredash.trackEvent('Click Button', data: {/**/});
+  /// ```
+  ///
+  /// Use [WiredashAnalytics] for easy mocking and testing
+  ///
+  /// ```dart
+  /// final analytics = WiredashAnalytics();
+  /// await analytics.trackEvent('Click Button', data: {/**/});
+  ///
+  /// // inject into other classes
+  /// final bloc = MyBloc(analytics: analytics);
+  /// ```
+  Future<void> trackEvent(
+    String eventName, {
+    Map<String, Object?>? data,
+  }) async {
+    Wiredash.trackEvent(
+      eventName,
+      data: data,
+      projectId: _model.services.wiredashWidget.projectId,
+    );
+  }
+
+  /// Submits all pending analytics events to the server
+  ///
+  /// Usually, events are submitted automatically, batched every 30 seconds, and
+  /// when the app goes to the background.
+  ///
+  /// This methods allows manually submitting events at any time.
+  ///
+  /// See [trackEvent] for more information on how events are sent.
+  Future<void> forceSubmitEvents() async {
+    await _model.forceSubmitAnalyticsEvents();
   }
 
   /// A [ValueNotifier] representing the current state of the capture UI. Use

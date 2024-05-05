@@ -215,7 +215,7 @@ class ScreenCaptureController extends ChangeNotifier {
     try {
       _screenshot = await _state!.captureScreen();
     } catch (e, stack) {
-      _error = reportWiredashError(e, stack, _screenshotTakenErrorMessage);
+      _error = reportWiredashInfo(e, stack, _screenshotTakenErrorMessage);
     }
     notifyListeners();
     return _screenshot;

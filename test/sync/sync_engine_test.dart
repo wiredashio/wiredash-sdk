@@ -117,7 +117,7 @@ class TestJob extends Job {
   });
 
   @override
-  Future<void> execute() async {
+  Future<void> execute(SdkEvent event) async {
     await block();
   }
 

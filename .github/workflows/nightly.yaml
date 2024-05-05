@@ -17,12 +17,19 @@ jobs:
           ref: stable
       - name: Flutter version
         run: flutter doctor -v
-      - name: Download dependencies
-        run: ./wiresdk deps
-      - name: Test
-        run: ./wiresdk test
       - name: Build
         run: cd examples/theming && ./../../wiresdk flutter build web
+      - name: Download dependencies
+        run: |
+          # Override dependencies
+          printf "dependency_overrides:\n  checks: 0.2.2\n  meta: 1.9.0\n  test_api: 0.4.9" >> pubspec.yaml
+          
+          # The override syntax does not work with Flutter 3.0
+          #./wiresdk flutter pub add 'override:checks:0.2.2'  
+          
+          ./wiresdk deps
+      - name: Test
+        run: ./wiresdk test
 
   stable:
     runs-on: ubuntu-latest
@@ -51,12 +58,16 @@ jobs:
           ref: beta
       - name: Flutter version
         run: flutter doctor -v
-      - name: Download dependencies
-        run: ./wiresdk deps
-      - name: Test
-        run: ./wiresdk test
       - name: Build
         run: cd examples/theming && ./../../wiresdk flutter build web
+      - name: Download dependencies
+        run: |
+          # Override dependencies as long as we depend on checks 0.2.2
+          ./wiresdk flutter pub add 'override:test_api:">=0.3.0 <1.0.0"'
+          ./wiresdk flutter pub add 'override:meta:">=1.14.0 <2.0.0"'
+          ./wiresdk deps
+      - name: Test
+        run: ./wiresdk test
 
   latest:
     runs-on: ubuntu-latest

@@ -376,7 +376,7 @@ class FeedbackModel extends ChangeNotifier2 {
           _feedbackProcessed = true;
           notifyListeners();
         } catch (e, stack) {
-          reportWiredashError(e, stack, 'Feedback submission failed');
+          reportWiredashInfo(e, stack, 'Feedback submission failed');
           _submissionError = e;
         }
       }

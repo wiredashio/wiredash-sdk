@@ -46,14 +46,14 @@ class DirectFeedbackSubmitter implements FeedbackSubmitter {
           e.message!.contains('is required')) {
         // some required property is missing. The item will never be delivered
         // to the server, therefore discard it.
-        reportWiredashError(
+        reportWiredashInfo(
           e,
           stack,
           'Feedback has missing properties and can not be submitted to server',
         );
         rethrow;
       }
-      reportWiredashError(
+      reportWiredashInfo(
         e,
         stack,
         'Wiredash server error. Will retry after app restart',

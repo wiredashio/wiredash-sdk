@@ -1,7 +1,3 @@
-<p align="center">  
-<img src="https://raw.githubusercontent.com/wiredashio/wiredash-sdk/stable/.github/wiredash-text-logo.svg?sanitize=true" width="512px" alt="Wiredash Logo">
-</p>
-
 # Wiredash SDK for Flutter
 
 [![Pub](https://img.shields.io/pub/v/wiredash.svg)](https://pub.dartlang.org/packages/wiredash)
@@ -9,27 +5,38 @@
 [![Pub Likes](https://img.shields.io/pub/likes/wiredash)](https://pub.dev/packages/wiredash/score)
 [![Popularity](https://img.shields.io/pub/popularity/wiredash)](https://pub.dev/packages/wiredash/score)
 [![Pub points](https://img.shields.io/pub/points/wiredash)](https://pub.dev/packages/wiredash/score)
-[![Website](https://img.shields.io/badge/website-wiredash.io-blue.svg)](https://wiredash.io/)
+[![Website](https://img.shields.io/badge/website-wiredash.com-blue.svg)](https://wiredash.com/)
 
-Wiredash is probably the easiest, and most convenient way to capture in-app user feedback, wishes, ratings and much
-more. The SDK is completely written in Dart and runs on Android, iOS, Desktop and the Web. For more info, head over
-to [wiredash.io](https://wiredash.io).
+[wiredash.com](https://wiredash.com) | [Console](https://wiredash.com/console) | [Pub](https://pub.dev/packages/wiredash) | [Documentation](https://docs.wiredash.com) | [Get Started](https://docs.wiredash.com/guide/start)
+
+- **Real-time analytics**: Get real-time analytics that is GDPR-compliant and hosted in the EU 🇪🇺
+- **Capture in-app user feedback**: Get direct user feedback from within your app with screenshots and tags
+- **Schedule promoter score surveys**: Schedule and automate promoter score surveys.
+- **Console**: The Wiredash [console](https://wiredash.com/console) provides a dashboard to access your feedback and analytics
+- **Universal compatibility**: Written in Dart, Wiredash is compatible with Android, iOS, Web, macOS, Windows, Linux, and IoT
+- **Free**: Wiredash is free for up to 100.000 monthly active devices
+
+<img width="830" alt="Wiredash Logo" src="https://github.com/wiredashio/wiredash-sdk/assets/1096485/37255958-2954-4fd4-8a43-82d3ba65a393"> <!-- 3x -->
+
+From members of the Flutter Community 💙 for the Flutter Community 💙
 
 ## 3-Minute Quick Start
 
 > It takes less than 180 seconds to integrate Wiredash in your existing app 🚀 <br />
-> Visit [docs.wiredash.io](https://docs.wiredash.io/guide/#integrating-wiredash-in-your-app) for the in-depth
+> Visit [docs.wiredash.com](https://docs.wiredash.com/guide/start) for the in-depth
 > guide and additional info.
 
-### 1. Create an account
+### 1. Create an account and project
 
-Go to the [Wiredash Console](https://console.wiredash.io) and sign in with a valid Google or GitHub account. _It's
-free!_<br />Click on `Create new project` and enter your app's name.
+Start by visiting the Wiredash Console: [Wiredash Console](https://wiredash.com/console).
+Create your free account using Google or GitHub or request an email sign-in link.
 
-### 2. Add wiredash to your pubspec.yaml
+Then create a project with a descriptive name.
+
+### 2. Add Wiredash to your pubspec.yaml
 
 ```bash
-$ flutter pub add wiredash:^1.9.0
+$ flutter pub add wiredash:^2.1.0
 ```
 
 ```yaml
@@ -37,13 +44,13 @@ dependencies:
   flutter:
     sdk: flutter
   ...
-  wiredash: ^1.9.0
+  wiredash: ^2.1.0
 ```
 
 ### 3. Wrap your root widget with Wiredash
 
 Wrap the root widget of your existing app with Wiredash and make sure to fill in the `projectId` and SDK `secret`
-from the [Wiredash Console](https://console.wiredash.io) > Your project >
+from the [Wiredash Console](https://console.wiredash.com) > Your project >
 Settings > General Settings.
 
 ```dart
@@ -66,47 +73,37 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-### 4. Use any of Wiredash's amazing features
+That's already it. Yes, it's *really that easy*.
+
+### 4. (Optional) More features
 
 #### Launch the feedback flow
 
-From anywhere in your app, call the `Wiredash.show()` method to launch Wiredash:
+Call the `Wiredash.of(context).show()` method from anywhere in your app to launch the Wiredash Feedback flow.
 
 ```dart
-onTap: () {
-  Wiredash.of(context).show(inheritMaterialTheme: true);
-}
+FloatingActionButton(
+  onPressed: () {
+    Wiredash.of(context).show(inheritMaterialTheme: true);
+  },
+  child: Icon(Icons.feedback_outlined),
+),
 ```
 
-Checkout [examples/theming](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/theming/lib/main.dart) for the full example.
-
-![wiredash-wonders-demo](https://user-images.githubusercontent.com/1096485/188439010-8da591df-e5cb-446a-be7f-971d0fda68d1.gif)
-
+Checkout [examples/theming](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/theming/lib/main.dart) for the full example or head to the [documentation](https://docs.wiredash.com/reference/feedback) for more info.
 
 #### Launch the Promoter Score Survey
 
 ```dart
-onTap: () {
+FloatingActionButton(
+  onPressed: () {
   Wiredash.of(context).showPromoterSurvey(force: true);
-}
+  },
+  child: Icon(Icons.feedback_outlined),
+),
 ```
 
-Checkout [examples/promoter_score](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/promoter_score/lib/main.dart) for the full example
-
-![Promoter Score demo](https://user-images.githubusercontent.com/1096485/187313854-343bfe52-9444-407b-9e7e-64738187f8af.png)
-
-That's already it. Yes, it's *really that easy*. Also works on all platforms.
-
-
-## Customization & More
-
-The Wiredash SDK is completely customizable and offers many configuration options (e.g. custom feedback categories a.k.a
-labels, custom metadata, custom theming, custom translations and much, much more!) 🤯
-
-For all the details, make sure to check out the full documentation
-at [docs.wiredash.io](https://docs.wiredash.io/).
-
-Also checkout the [examples/theming](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/theming/lib/main.dart) code example
+Checkout [examples/promoter_score](https://github.com/wiredashio/wiredash-sdk/blob/stable/examples/promoter_score/lib/main.dart) for the full example or head to the [documentation](https://docs.wiredash.com/reference/promoter-score) for more info.
 
 ## License
 

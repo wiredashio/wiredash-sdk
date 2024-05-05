@@ -3,25 +3,18 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 
+import '../../util/flutter_error.dart';
+
 void main() {
   group('Serialize feedback item', () {
     test('FeedbackBody.toJson()', () {
-      final oldOnErrorHandler = FlutterError.onError;
-      late FlutterErrorDetails caught;
-      FlutterError.onError = (FlutterErrorDetails details) {
-        caught = details;
-      };
-      addTearDown(() {
-        FlutterError.onError = oldOnErrorHandler;
-      });
-
+      final errors = captureFlutterErrors();
       final body = FeedbackItem(
         feedbackId: '1234',
         attachments: [
@@ -119,7 +112,7 @@ void main() {
         },
       );
       expect(
-        caught.toString(),
+        errors.errors.toString(),
         stringContainsInOrder([
           'customMetaData',
           'property function',
