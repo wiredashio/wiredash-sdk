@@ -8,11 +8,6 @@ import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
-// Nice to have
-// TODO automatically add page_name as property
-// TODO implement lifecycle for windows
-// TODO implement lifecycle for linux
-
 /// Interact with the Wiredash Analytics service.
 ///
 /// This class provides a convenient way to track events and send them to the

@@ -183,7 +183,6 @@ class PersistentAnalyticsEventStore implements AnalyticsEventStore {
       if (data == null) {
         continue;
       }
-      // TODO check what a normal event size is. Adjust limit accordingly
       final int size /* bytes */ = utf8.encode(data).length;
       limit -= size;
       if (limit < 0) {
