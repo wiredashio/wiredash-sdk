@@ -158,6 +158,10 @@ class DebounceEventSubmitter implements EventSubmitter {
       }
     } on PaidFeatureException catch (e, stack) {
       _freePlan = true;
+      // also delete all local events, they where successfully submitted but dropped
+      for (final key in toBeSubmitted.keys) {
+        await eventStore.removeEvent(key);
+      }
       reportWiredashInfo(
         e,
         stack,

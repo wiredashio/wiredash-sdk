@@ -691,6 +691,69 @@ void main() {
     expect(eventsOnDisk, hasLength(1));
   });
 
+  testWidgets(
+      'server drops custom events of free projects - Reports PaidFeatureException once',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp();
+
+    final errors = captureFlutterErrors();
+    robot.mockServices.mockApi.sendEventsInvocations.interceptor =
+        (invocation) async {
+      final httpClient = MockClient((request) async {
+        final body = jsonEncode(
+          {
+            "warnings": [
+              {
+                "code": 2003,
+                "index": 0,
+                "message":
+                    "Dropped event at index 0: Custom events are only available on paid plans. Current plan is 'free'.",
+              },
+            ],
+          },
+        );
+        return Response.bytes(body.codeUnits, 200);
+      });
+      final context =
+          ApiClientContext(httpClient: httpClient, secret: '', projectId: '');
+      return postSendEvents(
+        context,
+        'url',
+        invocation.positionalArguments[0] as List<RequestEvent>,
+      );
+    };
+
+    await robot.triggerAnalyticsEvent();
+    await tester.idle();
+
+    errors.restoreDefaultErrorHandlers();
+    expect(errors.errors, isEmpty);
+    expect(errors.warningText, contains('PaidFeatureException'));
+    expect(
+      errors.warningText,
+      contains(
+        'Custom events are only available in paid plans. Current plan: free.',
+      ),
+    );
+    expect(errors.warningText, contains('Custom events is a paid feature'));
+    expect(errors.warningText, contains('code: 2003'));
+
+    // no events are left to be resubmitted
+    final eventsOnDisk = await robot.services.eventStore.getEvents('test');
+    expect(eventsOnDisk, hasLength(0));
+
+    // submitting a second events once we know the project is on the free plan does not print the error anymore
+    final error2 = captureFlutterErrors();
+    await robot.triggerAnalyticsEvent();
+    await tester.idle();
+    error2.restoreDefaultErrorHandlers();
+    expect(error2.warningText, isEmpty);
+    expect(error2.errorText, isEmpty);
+    final eventsOnDisk2 = await robot.services.eventStore.getEvents('test');
+    expect(eventsOnDisk2, hasLength(0));
+  });
+
   test('3rd party implements WiredashAnalytics', () {
     final analytics = ThirdPartyAnalytics();
     expect(analytics.projectId, isNull);
