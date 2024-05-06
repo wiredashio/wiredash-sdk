@@ -145,6 +145,12 @@ void main() {
       _runValidateParameters({'null': null})
           .hasNoErrorsNoInfos()
           .parametersAreUnchanged();
+      _runValidateParameters({'double': 3.14})
+          .hasNoErrorsNoInfos()
+          .parametersAreUnchanged();
+      _runValidateParameters({'datetime': DateTime(2024)})
+          .hasNoErrorsNoInfos()
+          .hasValueForKey('datetime', '2024-01-01T00:00:00.000');
       _runValidateParameters({'list': <String>[]})
           .hasInfoContaining('list')
           .hasInfoContaining('unsupported type List<')
@@ -274,6 +280,15 @@ class _ValidateResult {
       errors.warningText,
       contains(text),
       reason: 'Expected an info containing "$text"',
+    );
+    return this;
+  }
+
+  _ValidateResult hasValueForKey(String key, Object? value) {
+    expect(
+      processed![key],
+      value,
+      reason: 'Expected value for key "$key" to be $value',
     );
     return this;
   }
