@@ -385,6 +385,8 @@ Map<String, Object?> validateEventData(
       // primitives are supported without further checks
       continue;
     }
+    if (value is DateTime) {
+      preprocessed[key] = value.toIso8601String();
       continue;
     }
     if (value is String) {
