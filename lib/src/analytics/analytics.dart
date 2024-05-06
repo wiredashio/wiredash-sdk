@@ -381,7 +381,10 @@ Map<String, Object?> validateEventData(
     }
 
     final value = data[key];
-    if (value == null || value is int || value is bool) {
+    if (value == null || value is bool || value is int || value is double) {
+      // primitives are supported without further checks
+      continue;
+    }
       continue;
     }
     if (value is String) {

@@ -145,6 +145,9 @@ void main() {
       _runValidateParameters({'null': null})
           .hasNoErrorsNoInfos()
           .parametersAreUnchanged();
+      _runValidateParameters({'double': 3.14})
+          .hasNoErrorsNoInfos()
+          .parametersAreUnchanged();
       _runValidateParameters({'list': <String>[]})
           .hasInfoContaining('list')
           .hasInfoContaining('unsupported type List<')
