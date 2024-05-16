@@ -149,7 +149,7 @@ class WiredashLocalizationsFr extends WiredashLocalizations {
 
   @override
   String feedbackStepXOfY(int current, int total) {
-    return 'Etape $current sur $total';
+    return 'Étape $current sur $total';
   }
 
   @override

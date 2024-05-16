@@ -47,7 +47,7 @@
   "feedbackStep7SubmissionOpenErrorButton": "Cliquer ici pour voir le détail de l'erreur",
   "feedbackStep7SubmissionRetryButton": "Réessayer",
 
-  "feedbackStepXOfY": "Etape {current} sur {total}",
+  "feedbackStepXOfY": "Étape {current} sur {total}",
   "@feedbackStepXOfY": {
     "placeholders": {
       "current": {
