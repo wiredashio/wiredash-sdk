@@ -1,12 +1,17 @@
+// ignore_for_file: avoid_dynamic_calls
+
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
+import 'package:wiredash/src/feedback/ui/dart_ui/dart_ui.dart';
 import 'package:wiredash/src/feedback/ui/grey_scale_filter.dart';
 
 class ScreenCapture extends StatefulWidget {
@@ -209,13 +214,34 @@ class ScreenCaptureController extends ChangeNotifier {
   ui.Image? get screenshot => _screenshot;
   ui.Image? _screenshot;
   FlutterErrorDetails? _error;
+
   FlutterErrorDetails? get error => _error;
 
   Future<ui.Image?> captureScreen() async {
     try {
       _screenshot = await _state!.captureScreen();
     } catch (e, stack) {
-      _error = reportWiredashInfo(e, stack, _screenshotTakenErrorMessage);
+      final List<_PlatformView> platformViews = [];
+      if (kIsWeb) {
+        Iterable<_PlatformView> findPlatformViews() sync* {
+          final max = platformViewsRegistry.getNextPlatformViewId();
+          for (int viewId = 0; viewId < max; viewId++) {
+            try {
+              final element = platformViewRegistry.getViewById(viewId);
+              yield _PlatformView(viewId, element);
+            } catch (e) {
+              continue;
+            }
+          }
+        }
+
+        platformViews.addAll(findPlatformViews().take(20));
+      }
+      _error = reportWiredashInfo(
+          e,
+          stack,
+          '$_screenshotTakenErrorMessage\n\n'
+          'Found platform views:\n${platformViews.join('\n')}');
     }
     notifyListeners();
     return _screenshot;
@@ -226,5 +252,37 @@ class ScreenCaptureController extends ChangeNotifier {
     _screenshot = null;
     _state?.releaseScreen();
     notifyListeners();
+  }
+}
+
+class _PlatformView {
+  final int id;
+  final Object element;
+
+  _PlatformView(this.id, this.element);
+
+  @override
+  String toString() {
+    if (kIsWeb) {
+      try {
+        // avoiding dart:html import, use dynamic instead
+        final dynamic element = this.element;
+        final size = Size(
+          element.offset.width.toDouble() as double,
+          element.offset.height.toDouble() as double,
+        );
+        final id = element.id;
+        final nodeName = element.nodeName?.toLowerCase() ?? 'div';
+        return '<$nodeName id="$id"></$nodeName> with size $size';
+      } catch (e, stack) {
+        reportWiredashInfo(
+          e,
+          stack,
+          'Could not parse platform view DOM elements',
+        );
+        // ignore
+      }
+    }
+    return '_PlatformView(id: $id, type: ${element.runtimeType}, element: $element)';
   }
 }
