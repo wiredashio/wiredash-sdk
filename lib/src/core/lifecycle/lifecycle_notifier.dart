@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import 'package:wiredash/src/core/lifecycle/lifecycle_stub.dart'
     if (dart.library.html) 'package:wiredash/src/core/lifecycle/lifecycle_web.dart';
@@ -40,14 +41,11 @@ class FlutterAppLifecycleNotifier extends ValueNotifier<AppLifecycleState> {
 
 /// Returns true if the current Flutter version is 3.22 or later
 bool _isBeforeFlutter3_22() {
-  final dynamic searchAnchor = SearchAnchor(
-    builder: (context, c) => const SizedBox(),
-    suggestionsBuilder: (context, c) async => [],
-  );
+  final dynamic node = SemanticsNode();
   try {
-    // this property was added in 3.19.0-8.0.pre https://github.com/flutter/flutter/pull/141223
+    // this property was added in https://github.com/flutter/flutter/pull/142826
     // ignore: unnecessary_statements, avoid_dynamic_calls
-    searchAnchor.headerHeight;
+    node.indexInParent;
     return false;
   } catch (e) {
     return true;
