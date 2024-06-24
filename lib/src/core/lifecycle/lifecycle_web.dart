@@ -5,7 +5,11 @@ import 'dart:js_util' as js_util;
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 
-FlutterAppLifecycleNotifier createFlutterAppLifecycleNotifier() {
+/// Creates a web version of [FlutterAppLifecycleNotifier] that is connected
+/// to the web app lifecycle. It is compatible with Flutter versions before
+/// Flutter 3.22, where it was added natively to the [WidgetsBindingObserver]
+/// lifecycle callback (https://github.com/flutter/engine/pull/44720/)
+FlutterAppLifecycleNotifier createFlutterAppLifecycleNotifierWebBackport() {
   final notifier = FlutterAppLifecycleNotifier();
   final notifierRef = WeakReference(notifier);
 
