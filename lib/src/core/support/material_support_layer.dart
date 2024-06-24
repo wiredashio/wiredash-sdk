@@ -32,7 +32,7 @@ class _MaterialSupportLayerState extends State<MaterialSupportLayer> {
     if (!kIsWeb && Platform.isMacOS) {
       // We can't check the flutter version, instead we check the version
       // of the embedded dart sdk. Good enough
-      final dartVersion = _parseFlutterVersion(Platform.version);
+      final dartVersion = _parseDartVersion(Platform.version);
       if (dartVersion != null) {
         if (dartVersion <= _removalOfDefaultTextEditingShortcuts) {
           debugPrint(_missingDefaultTextEditingShortcuts);
@@ -105,7 +105,7 @@ class _MaterialSupportLayerState extends State<MaterialSupportLayer> {
 ///
 /// The version string looks like this:
 /// 2.16.0-80.1.beta (beta) (Mon Dec 13 11:59:02 2021 +0100) on "macos_x64"
-Version? _parseFlutterVersion(String versionString) {
+Version? _parseDartVersion(String versionString) {
   // the first space separates the version from more meta information
   final versionPart = versionString.split(' ').first;
   try {

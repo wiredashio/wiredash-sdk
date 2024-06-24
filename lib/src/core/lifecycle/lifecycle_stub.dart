@@ -1,5 +1,5 @@
 import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 
-FlutterAppLifecycleNotifier createFlutterAppLifecycleNotifier() {
+FlutterAppLifecycleNotifier createFlutterAppLifecycleNotifierWebBackport() {
   throw UnimplementedError('stub');
 }

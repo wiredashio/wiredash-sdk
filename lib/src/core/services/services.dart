@@ -12,9 +12,6 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
-import 'package:wiredash/src/core/lifecycle/lifecycle_stub.dart'
-    if (dart.library.io) 'package:wiredash/src/core/lifecycle/lifecycle_io.dart'
-    if (dart.library.html) 'package:wiredash/src/core/lifecycle/lifecycle_web.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/app_telemetry_job.dart';
@@ -274,7 +271,7 @@ void registerProdWiredashServices(WiredashServices sl) {
   });
 
   sl.inject<FlutterAppLifecycleNotifier>(
-    (_) => createFlutterAppLifecycleNotifier(),
+    (_) => FlutterAppLifecycleNotifier.connected(),
   );
 
   sl.inject<SyncEngine>(
