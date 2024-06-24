@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 
@@ -28,5 +29,9 @@ class EventUploadJob extends Job {
     }
     final submitter = eventSubmitter();
     await submitter.submitEvents();
+
+    if (kDevMode) {
+      await submitter.deletePendingEvents();
+    }
   }
 }

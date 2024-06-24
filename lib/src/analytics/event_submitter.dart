@@ -20,6 +20,9 @@ abstract class EventSubmitter {
 
   /// Disposes the [EventSubmitter], cancels all scheduled tasks and timers
   void dispose();
+
+  /// Deletes all pending events from the [AnalyticsEventStore]
+  Future<void> deletePendingEvents();
 }
 
 /// Sends events directly to the backend without batching.
@@ -34,6 +37,11 @@ class DirectEventSubmitter extends DebounceEventSubmitter {
           throttleDuration: Duration.zero,
           initialThrottleDuration: Duration.zero,
         );
+
+  @override
+  Future<void> deletePendingEvents() async {
+    // noop
+  }
 }
 
 /// Denounces event submission to the backend, minimizing network traffic by batching events.
@@ -188,5 +196,10 @@ class DebounceEventSubmitter implements EventSubmitter {
   @override
   void dispose() {
     _delay?.dispose();
+  }
+
+  @override
+  Future<void> deletePendingEvents() async {
+    await eventStore.wipe();
   }
 }

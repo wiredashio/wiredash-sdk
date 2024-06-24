@@ -131,4 +131,9 @@ class InMemoryEventStore implements AnalyticsEventStore {
   Future<void> trimToDiskLimit() async {
     // noop
   }
+
+  @override
+  Future<void> wipe() async {
+    _events.clear();
+  }
 }
