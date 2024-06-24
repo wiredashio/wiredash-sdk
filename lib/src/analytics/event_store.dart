@@ -23,6 +23,9 @@ abstract class AnalyticsEventStore {
 
   /// Removes outdated events
   Future<void> deleteOutdatedEvents();
+
+  /// Deletes all events from the store
+  Future<void> wipe();
 }
 
 /// Event to be saved in the [AnalyticsEventStore]
@@ -194,6 +197,16 @@ class PersistentAnalyticsEventStore implements AnalyticsEventStore {
     // remove remaining events that exceed the maximum size
     for (final event in oldestLast) {
       await prefs.remove(event);
+    }
+  }
+
+  @override
+  Future<void> wipe() async {
+    final prefs = await sharedPreferences();
+    final eventKeys =
+        prefs.getKeys().where((key) => eventKeyRegex.hasMatch(key)).toList();
+    for (final key in eventKeys) {
+      await prefs.remove(key);
     }
   }
 }
