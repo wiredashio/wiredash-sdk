@@ -1,5 +1,69 @@
 # Changelog
 
+## 2.2.0
+
+- Track Custom Analytics events (requires paid plan) [#338](https://github.com/wiredashio/wiredash-sdk/pull/338)
+ 
+  Record user interactions or other significant occurrences within your app and send them to the Wiredash service for analysis.
+
+  Use [Wiredash.trackEvent] for easy access from everywhere in your app.
+  
+  ```dart
+  await Wiredash.trackEvent('Click Button', data: {/**/});
+  ```
+  
+  Use the [WiredashAnalytics] instance for easy mocking and testing
+  
+  ```dart
+  final analytics = WiredashAnalytics();
+  await analytics.trackEvent('Click Button', data: {/**/});
+  
+  // inject into other classes
+  final bloc = MyBloc(analytics: analytics);
+  ```
+
+  Access the correct [Wiredash] project via context to send events to if you use multiple Wiredash widgets in your app. This way you don't have to specify the [projectId] every time you call [trackEvent].
+
+  ```dart
+  Wiredash.of(context).trackEvent('Click Button');
+  ```
+
+  **eventName** constraints
+
+   - The event name must be between 3 to 64 characters long
+   - Contain only letters (a-zA-Z), numbers (0-9), - and _ and spaces
+   - Must start with a letter (a-zA-Z)
+   - Must not contain double spaces
+   - Must not contain double or trailing spaces
+ 
+  **data** constraints
+
+   - Parameters must not contain more than 10 key-value pairs
+   - Keys must not exceed 128 characters
+   - Keys must not be empty
+   - Values can be String, int or bool. null is allowed, too.
+   - Each individual value must not exceed 1024 characters (after running them through jsonEncode).
+ 
+  **Event Sending Behavior:**
+ 
+  * Events are batched and sent to the Wiredash server periodically at 30-second intervals.
+  * The first batch of events is sent after a 5-second delay.
+  * Events are also sent immediately when the app goes to the background (not applicable to web platforms).
+  * If events cannot be sent due to network issues, they are stored locally and retried later.
+  * Unsent events are discarded after 3 days.
+ 
+  **Multiple Wiredash Widgets:**
+ 
+  If you have multiple [Wiredash] widgets in your app with different projectIds, you can specify the desired [projectId] when creating [WiredashAnalytics].
+  This ensures that the event is sent to the correct project.
+ 
+  If no [projectId] is provided and multiple widgets are mounted, the event will be sent to the project associated with the first mounted widget. A warning message will also be logged to the console in this scenario.
+ 
+  **Background Isolates:**
+ 
+  When calling [trackEvent] from a background isolate, the event will be stored locally.
+  The main isolate will pick up these events and send them along with the next batch or when the app goes to the background.
+
 ## 2.1.2
 
 - Widen package_info_plus range (include 8.x)
