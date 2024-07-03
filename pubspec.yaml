@@ -1,6 +1,6 @@
 name: wiredash
 description: Wiredash is an interactive user feedback tool for Flutter apps including Promoter Score.
-version: 2.2.0-dev.2
+version: 2.2.0
 homepage: https://wiredash.io
 repository: https://github.com/wiredashio/wiredash-sdk
 issue_tracker: https://github.com/wiredashio/wiredash-sdk/issues
