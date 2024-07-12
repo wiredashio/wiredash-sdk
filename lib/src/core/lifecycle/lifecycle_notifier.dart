@@ -41,15 +41,13 @@ class FlutterAppLifecycleNotifier extends ValueNotifier<AppLifecycleState> {
 
 /// Returns true if the current Flutter version is 3.22 or later
 bool _isBeforeFlutter3_22() {
-  final dynamic node = SemanticsNode();
-  try {
-    // this property was added in https://github.com/flutter/flutter/pull/142826
-    // ignore: unnecessary_statements, avoid_dynamic_calls
-    node.indexInParent;
+  final dynamic node = SemanticsNode()..indexInParent = 10;
+  final text = node.toString();
+  // this property was added in https://github.com/flutter/flutter/pull/142826
+  if (text.contains('indexInParent: 10')) {
     return false;
-  } catch (e) {
-    return true;
   }
+  return true;
 }
 
 /// A backwards compatible version of AppLifecycleState.hidden,
