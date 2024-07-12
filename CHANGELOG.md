@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.1
+
+- Fix `isBeforeFlutter3_22()` check, fixing the lifecycle on `web` in Flutter 3.19 [#354](https://github.com/wiredashio/wiredash-sdk/pull/354)
+- Detect `FakeTimer` without try-catch [#355](https://github.com/wiredashio/wiredash-sdk/pull/355)
+
 ## 2.2.0
 
 - Track Custom Analytics events (requires paid plan) [#338](https://github.com/wiredashio/wiredash-sdk/pull/338)
