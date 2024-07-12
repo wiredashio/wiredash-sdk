@@ -22,7 +22,7 @@ class TestDetector {
       final timer = Zone.current.createTimer(Duration.zero, () {});
       timer.cancel();
 
-      // Attempt #1 detect FakeTimer by its toString() method
+      // Detect FakeTimer by its toString() method
       // timer.toString(); returns => Instance of 'FakeTimer'
       final isFakeTimer = timer.toString().contains('FakeTimer');
       if (isFakeTimer) {
@@ -32,20 +32,6 @@ class TestDetector {
         // most likely not about the Wiredash jobs, but about the application itself.
         // Scheduling jobs would interfere with the test.
         return true;
-      }
-
-      // Attempt #2 detect FakeTimer by its creationStackTrace getter
-      // in case FakeTimer.toString() changes.
-      try {
-        // identify FakeTimer by its creationStackTrace getter
-        final dynamic dynamicTimer = timer;
-        // ignore: avoid_dynamic_calls
-        final stack = dynamicTimer.creationStackTrace;
-        if (stack is StackTrace) {
-          return true;
-        }
-      } catch (e) {
-        // ignore
       }
 
       return false;
