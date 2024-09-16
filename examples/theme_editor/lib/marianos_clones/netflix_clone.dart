@@ -1787,12 +1787,13 @@ class _BrowseScreenState extends State<BrowseScreen> {
                             final item = _originals[index];
                             return GestureDetector(
                               onTap: () {
+                                final navigator = Navigator.of(context);
                                 Future.delayed(Duration(milliseconds: 500), () {
                                   if (!_video.second.paused) {
                                     _video.second.pause();
                                     _video.second.remove();
                                   }
-                                  Navigator.of(context).push(
+                                  navigator.push(
                                     MaterialPageRoute(
                                       builder: (_) => PlayMovie(),
                                     ),
@@ -2308,13 +2309,13 @@ class _BrowseScreenState extends State<BrowseScreen> {
   Widget _playMovie(double width) {
     return GestureDetector(
       onTap: () {
+        final navigator = Navigator.of(context);
         Future.delayed(Duration(milliseconds: 500), () {
           if (!_video.second.paused) {
             _video.second.pause();
             _video.second.remove();
           }
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (_) => PlayMovie()));
+          navigator.push(MaterialPageRoute(builder: (_) => PlayMovie()));
         });
       },
       child: MouseRegion(
