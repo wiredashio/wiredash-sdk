@@ -24,12 +24,30 @@ class RecreateExamplesCommand extends Command {
       _recreatePlatformFolders(package);
     }
 
+    print('\nupgrading dependencies...');
+    for (final package in examples) {
+      _upgradeDependencies(package);
+    }
+
     print('\nbuilding examples...');
     for (final package in examples) {
       _buildPackage(package);
     }
 
     print(green('successfully recreated platform folders 🎉'));
+  }
+
+  void _upgradeDependencies(DartPackage package) {
+    final packageName = PubSpec.fromFile(package.pubspec.path).name;
+    final dir = package.root;
+
+    flutter(
+      ['pub', 'upgrade'],
+      workingDirectory: dir,
+      progress: Progress.printStdErr(),
+    );
+
+    print('- $packageName ✅');
   }
 
   void _buildPackage(DartPackage package) {
