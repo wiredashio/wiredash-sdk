@@ -83,17 +83,20 @@ class RecreateExamplesCommand extends Command {
     build(platformName: 'android', buildArgs: ['apk']);
     build(platformName: 'ios', buildArgs: ['ios', '--no-codesign']);
     build(
-        platformName: 'macos',
-        buildArgs: ['macos'],
-        skip: () => !Platform.isMacOS);
+      platformName: 'macos',
+      buildArgs: ['macos'],
+      skip: () => !Platform.isMacOS,
+    );
     build(
-        platformName: 'win',
-        buildArgs: ['windows'],
-        skip: () => !Platform.isWindows);
+      platformName: 'win',
+      buildArgs: ['windows'],
+      skip: () => !Platform.isWindows,
+    );
     build(
-        platformName: 'linux',
-        buildArgs: ['linux'],
-        skip: () => !Platform.isLinux);
+      platformName: 'linux',
+      buildArgs: ['linux'],
+      skip: () => !Platform.isLinux,
+    );
 
     stdout.write('\n');
   }
