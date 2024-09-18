@@ -24,6 +24,11 @@ class RecreateExamplesCommand extends Command {
       _recreatePlatformFolders(package);
     }
 
+    print('\nupgrading dependencies...');
+    for (final package in examples) {
+      _upgradeDependencies(package);
+    }
+
     print('\nbuilding examples...');
     for (final package in examples) {
       _buildPackage(package);
@@ -32,13 +37,34 @@ class RecreateExamplesCommand extends Command {
     print(green('successfully recreated platform folders 🎉'));
   }
 
+  void _upgradeDependencies(DartPackage package) {
+    final packageName = PubSpec.fromFile(package.pubspec.path).name;
+    final dir = package.root;
+
+    flutter(
+      ['pub', 'upgrade'],
+      workingDirectory: dir,
+      progress: Progress.printStdErr(),
+    );
+
+    print('- $packageName ✅ ');
+  }
+
   void _buildPackage(DartPackage package) {
     final packageName = PubSpec.fromFile(package.pubspec.path).name;
     final dir = package.root;
 
     stdout.write('Building $packageName');
 
-    void build(List<String> buildArgs) {
+    void build({
+      required String platformName,
+      required List<String> buildArgs,
+      bool Function()? skip,
+    }) {
+      if (skip?.call() == true) {
+        stdout.write(', $platformName ⏩ ');
+        return;
+      }
       final exit = flutter(
         ['build', ...buildArgs],
         workingDirectory: dir,
@@ -47,18 +73,30 @@ class RecreateExamplesCommand extends Command {
         nothrow: true,
       );
       if (exit != 0) {
-        stdout.write(', ${buildArgs.first} ❌');
+        stdout.write(', ${buildArgs.first} ❌ ');
       } else {
-        stdout.write(', ${buildArgs.first} ✅');
+        stdout.write(', ${buildArgs.first} ✅ ');
       }
     }
 
-    build(['web']);
-    build(['apk']);
-    build(['ios', '--no-codesign']);
-    build(['macos']);
-    build(['windows']);
-    build(['linux']);
+    build(platformName: 'web', buildArgs: ['web']);
+    build(platformName: 'android', buildArgs: ['apk']);
+    build(platformName: 'ios', buildArgs: ['ios', '--no-codesign']);
+    build(
+      platformName: 'macos',
+      buildArgs: ['macos'],
+      skip: () => !Platform.isMacOS,
+    );
+    build(
+      platformName: 'win',
+      buildArgs: ['windows'],
+      skip: () => !Platform.isWindows,
+    );
+    build(
+      platformName: 'linux',
+      buildArgs: ['linux'],
+      skip: () => !Platform.isLinux,
+    );
 
     stdout.write('\n');
   }
@@ -97,7 +135,7 @@ void _recreatePlatformFolders(DartPackage package) {
 
   dir.directory('test').saveDeleteSync();
 
-  print('- example $packageName ✅');
+  print('- example $packageName ✅ ');
 }
 
 extension on FileSystemEntity {
