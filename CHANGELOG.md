@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.2
+
+- Support for Flutter 3.26 [4684204](https://github.com/wiredashio/wiredash-sdk/commit/4684204ce36c00e203ed3aab25bae633faa0d464), [78fe666](https://github.com/wiredashio/wiredash-sdk/commit/78fe666078037a79bd85818d896acae364ba7d97), [46c43f7](https://github.com/wiredashio/wiredash-sdk/commit/46c43f706d037d88f0c4cbf472cc7bd801a9dd37)
+- Update License [5fb4cfc](https://github.com/wiredashio/wiredash-sdk/commit/5fb4cfc6f7ea0c28f21ff3536d97ce5df1e44105)
+
 ## 2.2.1
 
 - Fix `isBeforeFlutter3_22()` check, fixing the lifecycle on `web` in Flutter 3.19 [#354](https://github.com/wiredashio/wiredash-sdk/pull/354)

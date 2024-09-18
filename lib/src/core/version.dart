@@ -49,4 +49,5 @@
 /// 216 -> 2.2.0-dev.2
 /// 220 -> 2.2.0
 /// 221 -> 2.2.1
-const wiredashSdkVersion = 221;
+/// 222 -> 2.2.2
+const wiredashSdkVersion = 222;
