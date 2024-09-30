@@ -6,6 +6,7 @@ import 'dart:ui';
 
 import 'package:http/http.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/network/serializers.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 
@@ -210,41 +211,6 @@ extension AllMetaDataRequestJson on AllMetaData {
     });
 
     return values.map((k, v) => MapEntry(k, v));
-  }
-}
-
-// Remove when we drop support for Flutter v3.8.0-14.0.pre.
-// ignore: deprecated_member_use
-extension on WindowPadding {
-  List<double> toRequestJsonArray() {
-    return [left, top, right, bottom];
-  }
-}
-
-extension on Size {
-  List<double> toRequestJsonArray() {
-    return [width, height];
-  }
-}
-
-extension on Brightness {
-  String toRequestJsonValue() {
-    if (this == Brightness.dark) return 'dark';
-    if (this == Brightness.light) return 'light';
-    throw 'Unknown brightness value $this';
-  }
-}
-
-extension on CompilationMode {
-  String toRequestJsonValue() {
-    switch (this) {
-      case CompilationMode.release:
-        return 'release';
-      case CompilationMode.profile:
-        return 'profile';
-      case CompilationMode.debug:
-        return 'debug';
-    }
   }
 }
 

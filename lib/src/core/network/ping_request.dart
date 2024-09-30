@@ -3,7 +3,8 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/network/serializers.dart';
 import 'package:wiredash/src/core/version.dart';
 
 Future<PingResponse> postPing(
@@ -34,6 +35,7 @@ class PingRequestBody {
   final String? buildNumber;
   final String? buildVersion;
   final String? bundleId;
+  final CompilationMode? compilationMode;
   final String? platformOS;
   final String? platformOSVersion;
   final String? platformLocale;
@@ -45,6 +47,7 @@ class PingRequestBody {
     this.buildNumber,
     this.buildVersion,
     this.bundleId,
+    this.compilationMode,
     this.platformOS,
     this.platformOSVersion,
     this.platformLocale,
@@ -74,6 +77,11 @@ class PingRequestBody {
     final _bundleId = bundleId;
     if (_bundleId != null) {
       body['bundleId'] = _bundleId;
+    }
+
+    final _compilationMode = compilationMode;
+    if (_compilationMode != null) {
+      body['compilationMode'] = _compilationMode.toRequestJsonValue();
     }
 
     final _platformOS = platformOS;

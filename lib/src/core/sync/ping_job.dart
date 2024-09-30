@@ -59,6 +59,7 @@ class PingJob extends Job {
       buildNumber: fixedMetadata.resolvedBuildNumber,
       buildVersion: fixedMetadata.resolvedBuildVersion,
       bundleId: fixedMetadata.appInfo.bundleId,
+      compilationMode: fixedMetadata.buildInfo.compilationMode,
       platformLocale: flutterInfo.platformLocale,
       platformOS: flutterInfo.platformOS,
       platformOSVersion: fixedMetadata.deviceInfo.osVersion,
