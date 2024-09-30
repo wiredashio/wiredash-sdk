@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
+import 'package:wiredash/src/_wiredash_internal.dart';
 
 void main() {
   test('kDevMode == false', () {
@@ -8,6 +9,7 @@ void main() {
     final content = internalFile.readAsStringSync();
     expect(content, contains('kDevMode = false'));
     expect(content, isNot(contains('kDevMode = true')));
+    expect(kDevMode, isFalse);
   });
 
   test('_kDebugStreamPod == false', () {
