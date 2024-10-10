@@ -52,6 +52,12 @@ platforms:
   web:
   windows:
 
+dependency_overrides:
+  spot:
+    git:
+      url: https://github.com/passsy/spot.git
+      ref: add-hit-indicator
+
 flutter:
   assets:
     - packages/wiredash/assets/images/logo_white.png
