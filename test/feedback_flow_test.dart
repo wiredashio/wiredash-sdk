@@ -596,7 +596,7 @@ void main() {
       // Then tap to close while backdrop is still moving
       await robot.closeWiredashWithButton(); // caused crash
 
-      await tester.pumpSmart(Duration(seconds: 1));
+      await tester.pumpSmart(const Duration(seconds: 1));
       spot<FeedbackBackdrop>().doesNotExist();
     });
 

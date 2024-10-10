@@ -493,7 +493,7 @@ void main() {
       await robot.launchApp(useDirectEventSubmitter: false);
       for (int i = 0; i < 65; i++) {
         await robot.triggerAnalyticsEvent();
-        await tester.pumpSmart(const Duration(seconds: 1));
+        await tester.pumpHard(duration: const Duration(seconds: 1));
       }
       final diff = clock.now().difference(start);
       expect(diff, const Duration(seconds: 65)); // one event each second

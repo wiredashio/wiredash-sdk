@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void _debugPrint(Object message) {
-  //print('  $message');
+  // print('  $message');
 }
 
 extension WiredashTester on WidgetTester {
@@ -24,12 +24,41 @@ extension WiredashTester on WidgetTester {
   ///
   Future<void> pumpSmart([
     Duration minimumDuration = Duration.zero,
-    Duration timeout = const Duration(seconds: 10),
+    Duration? timeout,
   ]) async {
     assert(minimumDuration >= Duration.zero);
-    assert(timeout >= Duration.zero);
-    assert(minimumDuration < timeout);
+    final Duration adjustedTimeout;
+    if (timeout == null) {
+      adjustedTimeout = const Duration(seconds: 10);
+    } else {
+      assert(timeout >= Duration.zero);
+      assert(timeout > minimumDuration);
+      adjustedTimeout = timeout;
+    }
+
     final binding = TestWidgetsFlutterBinding.instance;
+
+    final start = binding.clock.now();
+    int count = -1;
+
+    Future<void> loop(Duration progress) async {
+      if (binding.defaultBinaryMessenger.pendingMessageCount > 0) {
+        // wait for pending platform channel messages
+        await drainPlatformChannelMessageQueue();
+      } else {
+        // allow dart:io operations to execute
+        await drainDartEventQueue();
+      }
+      await elapseTime(progress);
+
+      // build dirty widgets
+      await pumpWhenNecessary(1);
+    }
+
+    if (minimumDuration > Duration.zero) {
+      _debugPrint('elapseTime() - initial delay');
+      await elapseTime(minimumDuration);
+    }
 
     // Good stops during pump when to check if there is still work to do
     Iterable<int> stops() sync* {
@@ -43,33 +72,15 @@ extension WiredashTester on WidgetTester {
       }
     }
 
-    final start = binding.clock.now();
-    int count = -1;
-
-    Future<void> loop(Duration progress) async {
-      // wait for pending platform channel messages
-      if (binding.defaultBinaryMessenger.pendingMessageCount > 0) {
-        await drainPlatformChannelMessageQueue();
-      }
-
-      // drain dart event queue
-      await elapseTime(progress);
-      await drainDartEventQueue();
-
-      // build dirty widgets
-      if (binding.hasScheduledFrame) {
-        // draw the actual frame
-        await binding.pump(Duration.zero);
-      }
-    }
-
     for (final stop in stops()) {
       count++;
       _debugPrint(
-          'pumpSmart iteration $count ${binding.clock.now()} stop: $stop');
+        'pumpSmart iteration $count ${binding.clock.now()} stop: $stop',
+      );
 
       final now = binding.clock.now();
-      final nextStop = start.add(Duration(milliseconds: stop));
+      final nextStop =
+          start.add(Duration(milliseconds: stop)).add(minimumDuration);
       final duration = nextStop.difference(now);
 
       final stopwatch = Stopwatch()..start();
@@ -77,7 +88,8 @@ extension WiredashTester on WidgetTester {
       stopwatch.stop();
       _debugPrint('loop $count took ${stopwatch.elapsedMilliseconds}ms');
 
-      final reachedTimeout = binding.clock.now().isAfter(start.add(timeout));
+      final reachedTimeout =
+          binding.clock.now().isAfter(start.add(adjustedTimeout));
       _debugPrint('reachedTimeout: $reachedTimeout');
 
       final hasScheduledFrame = binding.hasScheduledFrame;
@@ -88,27 +100,53 @@ extension WiredashTester on WidgetTester {
 
       if (minimumDuration == Duration.zero) {
         if (!hasScheduledFrame && pendingMessageCount == 0) {
-          return;
+          break;
         }
         if (reachedTimeout) {
           _debugPrint(
-              'Warning: pumpSmart() reached maximum iterations and completed before all work was done');
-          return;
+            'Warning: pumpSmart() reached maximum iterations and completed before all work was done',
+          );
+          break;
         }
       } else {
         final reachedMinimumDuration =
             binding.clock.now().isAfter(start.add(minimumDuration));
         if (reachedMinimumDuration) {
           if (!hasScheduledFrame && pendingMessageCount == 0) {
-            return;
+            break;
           }
         }
 
         if (reachedTimeout) {
           _debugPrint(
-              'Warning: pumpSmart() reached maximum iterations and completed before all work was done');
-          return;
+            'Warning: pumpSmart() reached maximum iterations and completed before all work was done',
+          );
+          break;
         }
+      }
+    }
+
+    final itTook = binding.clock.now().difference(start);
+    assert(() {
+      if (minimumDuration > Duration.zero) {
+        return itTook >= minimumDuration;
+      }
+      return true;
+    }());
+    _debugPrint('pumpSmart() completed after $count iterations '
+        'in ${itTook.inMilliseconds}ms');
+  }
+
+  Future<void> pumpWhenNecessary([int max = 10]) async {
+    final binding = TestWidgetsFlutterBinding.instance;
+    int count = 0;
+    while (binding.hasScheduledFrame) {
+      _debugPrint('pump() - pumpWhenNecessary');
+      await binding.pump();
+      count++;
+      if (count >= max) {
+        _debugPrint('pumpWhenNecessary() reached maximum iterations');
+        return;
       }
     }
   }
@@ -140,33 +178,28 @@ extension WiredashTester on WidgetTester {
     }
   }
 
-  Future<void> drainPlatformChannelMessageQueue([int max = 20]) async {
-    // _debugPrint('drainPlatformChannelMessageQueue()');
-    final pendingMessages = binding.defaultBinaryMessenger.pendingMessageCount;
-    if (pendingMessages <= 0) {
-      return;
+  /// Allows dart:io operations to execute (like file io) or timers like the famous [Future.delayed]
+  Future<void> drainDartEventQueue() async {
+    // trigger timers
+    await binding.runAsync(() => Future.delayed(Duration.zero));
+    // wait for Futures to complete
+    await binding.runAsync(() => pumpEventQueue(times: 10));
+    // deliver results via microtasks
+    if (binding.microtaskCount > 0) {
+      await binding.delayed(Duration.zero);
     }
+  }
+
+  Future<void> drainPlatformChannelMessageQueue([int max = 20]) async {
     int count = 0;
-    while (
-        binding.defaultBinaryMessenger.pendingMessageCount == pendingMessages) {
-      // _debugPrint(
-      //     'Messages in queue ${binding.defaultBinaryMessenger.pendingMessageCount}');
-      _debugPrint('pumpEventQueue() - drainPlatformChannelMessageQueue');
-      // wait for platform channel futures to complete
-      await binding.runAsync(() => pumpEventQueue());
-      // trigger microtasks
-      if (binding.microtaskCount > 0) {
-        // _debugPrint('draining ${binding.microtaskCount} microtasks');
-        _debugPrint('delayed(0) - drainPlatformChannelMessageQueue');
-        await binding.delayed(Duration.zero);
-      }
+    while (binding.defaultBinaryMessenger.pendingMessageCount > 0) {
+      await drainDartEventQueue();
       count++;
       if (count >= max) {
         _debugPrint('platform channel message queue not fully drained');
         return;
       }
     }
-    // _debugPrint('Drained platform channel message queue');
   }
 
   /// Pumps new frames as long as there are frames scheduled
@@ -214,18 +247,6 @@ extension WiredashTester on WidgetTester {
     }
   }
 
-  /// Allows dart:io operations to execute (like file io) or timers like the famous [Future.delayed]
-  Future<void> drainDartEventQueue() async {
-    // trigger timers
-    await binding.runAsync(() => Future.delayed(Duration.zero));
-    // wait for Futures to complete
-    await binding.runAsync(() => pumpEventQueue());
-    // deliver results via microtasks
-    if (binding.microtaskCount > 0) {
-      await binding.delayed(Duration.zero);
-    }
-  }
-
   /// Pumps regularly until reaching [duration] while new frames are pumped and dart:io operations are executed
   ///
   /// Calling it with [duration] == Duration.zero calls the following pattern
@@ -239,10 +260,10 @@ extension WiredashTester on WidgetTester {
   /// When the [duration] is greater than zero, then it splits the duration
   /// into [rounds] segments and  repeats the pattern above. This guarantees
   /// that I/O operations are continuously executed.
-  Future<void> pumpHard([
+  Future<void> pumpHard({
     Duration duration = Duration.zero,
-    int rounds = 10,
-  ]) async {
+    Duration? interval,
+  }) async {
     final binding = TestWidgetsFlutterBinding.instance;
     final DateTime endTime = binding.clock.fromNowBy(duration);
 
@@ -252,8 +273,10 @@ extension WiredashTester on WidgetTester {
 
     if (duration != Duration.zero) {
       // pump for the duration the user defined
-      final stepDuration =
-          Duration(microseconds: duration.inMicroseconds ~/ rounds);
+
+      final stepDuration = interval ?? (duration ~/ 10);
+      final rounds =
+          (duration.inMilliseconds / stepDuration.inMilliseconds).ceil();
       for (int round = 1; round < rounds; round++) {
         await drainDartEventQueue();
         await binding.delayed(stepDuration);
@@ -302,7 +325,7 @@ extension WiredashTester on WidgetTester {
           'match $actualValue but got "${matcher.describe(StringDescription())}":',
         );
         _debugPrint(
-          "Text on screen: ${this.allWidgets.whereType<Text>().map((e) => e.data).toList()}",
+          "Text on screen: ${allWidgets.whereType<Text>().map((e) => e.data).toList()}",
         );
       }
 
@@ -312,7 +335,8 @@ extension WiredashTester on WidgetTester {
         if (actualValue.runtimeType.toString().contains('_TextFinder')) {
           _debugPrint('Text on screen:');
           _debugPrint(
-              this.allWidgets.whereType<Text>().map((e) => e.data).toList());
+            allWidgets.whereType<Text>().map((e) => e.data).toList(),
+          );
         }
         throw 'Did not find $actualValue after $timeout (attempt: $attempt)';
       }

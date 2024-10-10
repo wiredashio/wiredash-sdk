@@ -457,7 +457,8 @@ class WiredashTestRobot {
     print('go to next step');
     final oldStatus = services.feedbackModel.feedbackFlowStatus;
     await _tap(spotSingleText('l10n.feedbackNextButton'));
-    await tester.pumpSmart(const Duration(milliseconds: 1000));
+    await tester.pumpSmart();
+    await tester.pumpSmart(const Duration(milliseconds: 500));
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Jumped from $oldStatus to next $newStatus');
   }

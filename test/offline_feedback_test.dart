@@ -62,7 +62,7 @@ void main() {
       };
 
       // wait for the UploadPendingFeedbackJob to start
-      await tester.pumpSmart(const Duration(seconds: 5));
+      await tester.pumpHard(duration: const Duration(seconds: 5));
 
       final future = ResultFuture(
         robot.mockServices.services.syncEngine
@@ -108,7 +108,7 @@ void main() {
       };
 
       // wait for the UploadPendingFeedbackJob to start
-      await tester.pumpSmart(const Duration(seconds: 5));
+      await tester.pumpHard(duration: const Duration(seconds: 5));
 
       final future = ResultFuture(
         robot.mockServices.services.syncEngine
