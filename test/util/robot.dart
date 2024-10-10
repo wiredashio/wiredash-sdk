@@ -281,7 +281,7 @@ class WiredashTestRobot {
   }
 
   Future<void> openWiredash() async {
-    final feedbackText = spotSingle<MaterialApp>().spotSingleText('Feedback')
+    final feedbackText = spotSingle<MaterialApp>().spotText('Feedback')
       ..existsOnce();
     await _tap(feedbackText);
     await tester.pumpSmart();
@@ -291,9 +291,8 @@ class WiredashTestRobot {
   }
 
   Future<void> openPromoterScore() async {
-    final promoterScoreText = spotSingle<MaterialApp>()
-        .spotSingleText('Promoter Score')
-      ..existsOnce();
+    final promoterScoreText =
+        spotSingle<MaterialApp>().spotText('Promoter Score')..existsOnce();
     await _tap(promoterScoreText);
     await tester.pumpSmart();
 
@@ -311,7 +310,7 @@ class WiredashTestRobot {
     _spotPageView.spotSingle<Step1FeedbackMessage>().existsOnce();
     final spotCloseButton = _spotBackdrop.spotSingle<TronButton>(
       children: [
-        spotSingleText('l10n.feedbackCloseButton'),
+        spotText('l10n.feedbackCloseButton'),
       ],
     )..existsOnce();
     await _tap(spotCloseButton);
@@ -360,7 +359,7 @@ class WiredashTestRobot {
     await tester.enterText(find.byType(TextField), message);
     await tester.pumpSmart();
     final button = spotSingle<TronButton>(
-      children: [spotSingleText('l10n.feedbackNextButton')],
+      children: [spotText('l10n.feedbackNextButton')],
     );
 
     // TODO find easier way to check if the button is clickable. Hit Testing?
@@ -374,9 +373,9 @@ class WiredashTestRobot {
   Future<void> enterPromotionScoreMessage(String message) async {
     final step = _spotPageView.spotSingle<PsStep2Message>()..existsOnce();
     final done = step.spotSingle<TronButton>(
-      children: [spotSingleText('l10n.promoterScoreSubmitButton')],
+      children: [spotText('l10n.promoterScoreSubmitButton')],
     )..existsOnce();
-    step.spotSingleText('l10n.promoterScoreBackButton').existsOnce();
+    step.spotText('l10n.promoterScoreBackButton').existsOnce();
     await tester.enterText(find.byType(TextField), message);
     await tester.pumpSmart();
 
@@ -397,7 +396,7 @@ class WiredashTestRobot {
     final step = _spotPageView.spotSingle<Step3ScreenshotOverview>()
       ..existsOnce();
     await _tap(
-      step.spotSingleText('l10n.feedbackStep3ScreenshotOverviewSkipButton'),
+      step.spotText('l10n.feedbackStep3ScreenshotOverviewSkipButton'),
     );
     await tester.pumpSmart();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
@@ -415,7 +414,7 @@ class WiredashTestRobot {
     final step = _spotPageView.spotSingle<Step6Submit>()..existsOnce();
     await _tap(
       step.spot<TronButton>(
-        children: [step.spotSingleText('l10n.feedbackStep6SubmitSubmitButton')],
+        children: [step.spotText('l10n.feedbackStep6SubmitSubmitButton')],
       ).last(),
     );
     print('submit feedback');
@@ -431,7 +430,7 @@ class WiredashTestRobot {
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     if (catchError) {
       // no email validation error
-      step.spotSingleText('l10n.feedbackStep4EmailInvalidEmail').doesNotExist();
+      step.spotText('l10n.feedbackStep4EmailInvalidEmail').doesNotExist();
       expect(newStatus, isNot(FeedbackFlowStatus.email));
       print('Skipped email, next $newStatus');
     }
@@ -455,22 +454,22 @@ class WiredashTestRobot {
   }
 
   Future<void> goToNextStep() async {
+    print('go to next step');
     final oldStatus = services.feedbackModel.feedbackFlowStatus;
     await _tap(spotSingleText('l10n.feedbackNextButton'));
-    await tester.pumpSmart();
+    await tester.pumpSmart(const Duration(milliseconds: 1000));
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Jumped from $oldStatus to next $newStatus');
   }
 
   Future<void> goToPrevStep() async {
     final oldStatus = services.feedbackModel.feedbackFlowStatus;
-    final texts = spotTexts('l10n.feedbackBackButton');
     final backdropStatus = services.backdropController.backdropStatus;
 
     if (backdropStatus == WiredashBackdropStatus.centered) {
-      await _tap(texts.last());
+      await _tap(spotText('l10n.feedbackBackButton').last());
     } else {
-      await _tap(texts.first());
+      await _tap(spotText('l10n.feedbackBackButton').first());
     }
 
     await tester.pumpSmart();
@@ -498,7 +497,7 @@ class WiredashTestRobot {
         step.spot<Step3NoAttachments>().snapshot().discovered;
     if (noAttachmentsResult.isNotEmpty) {
       step.spot<Step3NoAttachments>().existsOnce();
-      final addScreenshotBtn = spotSingleText(
+      final addScreenshotBtn = spotText(
         'l10n.feedbackStep3ScreenshotOverviewAddScreenshotButton',
       );
       await _tap(addScreenshotBtn);
@@ -518,7 +517,7 @@ class WiredashTestRobot {
     print('Entered screenshot mode');
   }
 
-  Future<void> takeScreenshot() async {
+  Future<void> tapScreenshotButton() async {
     final screenshotBar = _spotBackdrop.spotSingle<ScreenshotBar>()
       ..existsOnce();
     expect(
@@ -526,11 +525,10 @@ class WiredashTestRobot {
       FeedbackFlowStatus.screenshotNavigating,
     );
 
-    print('Take screeshot');
+    print('Take screenshot');
     // Click the screenshot button
     await _tap(
-      screenshotBar
-          .spotSingleText('l10n.feedbackStep3ScreenshotBarCaptureButton'),
+      screenshotBar.spotText('l10n.feedbackStep3ScreenshotBarCaptureButton'),
     );
     await tester.waitUntil(
       () => services.feedbackModel.feedbackFlowStatus,
@@ -539,11 +537,15 @@ class WiredashTestRobot {
 
     // Wait for active "Save" button
     final nextButton = screenshotBar.spotSingle<TronButton>(
-      children: [spotSingleText('l10n.feedbackStep3ScreenshotBarSaveButton')],
+      children: [spotText('l10n.feedbackStep3ScreenshotBarSaveButton')],
     ).last();
 
     try {
       await tester.waitUntil(nextButton.finder, findsOneWidget);
+      await tester.waitUntil(
+        () => services.feedbackModel.feedbackFlowStatus,
+        equals(FeedbackFlowStatus.screenshotDrawing),
+      );
     } catch (e) {
       nextButton.existsOnce();
       rethrow;
@@ -560,14 +562,14 @@ class WiredashTestRobot {
     final screenshotBar = _spotBackdrop.spotSingle<ScreenshotBar>()
       ..existsOnce();
     await _tap(
-      screenshotBar.spotSingleText('l10n.feedbackStep3ScreenshotBarSaveButton'),
+      screenshotBar.spotText('l10n.feedbackStep3ScreenshotBarSaveButton'),
     );
     await tester.pumpSmart(const Duration(milliseconds: 100));
 
     // wait until the animation is closed
     await tester.waitUntil(
       screenshotBar
-          .spotSingleText('l10n.feedbackStep3ScreenshotBarSaveButton')
+          .spotText('l10n.feedbackStep3ScreenshotBarSaveButton')
           .finder,
       findsNothing,
     );
@@ -608,6 +610,7 @@ class WiredashTestRobot {
   }
 
   Future<void> ratePromoterScore(int rating) async {
+    print('rate PromoterScore $rating');
     assert(rating >= 0 && rating <= 10);
     final step = _spotPageView.spotSingle<PsStep1Rating>()..existsOnce();
 
@@ -619,15 +622,21 @@ class WiredashTestRobot {
         )
         .first();
 
+    print('tap rating $rating');
     await _tap(spotRatingCard(rating));
-    await tester.pumpSmart();
-    await tester.pumpSmart(const Duration(milliseconds: 600));
+    // rating button debounce
+    await tester.pumpSmart(const Duration(milliseconds: 400));
+    // next page delay
+    await tester.pumpSmart(const Duration(milliseconds: 250));
+    // next page animation
+    await tester.pumpSmart(const Duration(milliseconds: 500));
   }
 
   Future<void> submitPromoterScore() async {
+    print('submit Promoter Score');
     final step = _spotPageView.spotSingle<PsStep2Message>()..existsOnce();
     final submitButton = step.spot<TronButton>(
-      children: [spotSingleText('l10n.promoterScoreSubmitButton')],
+      children: [spotText('l10n.promoterScoreSubmitButton')],
     ).last()
       ..existsOnce();
     final scrollable = spotSingle<LarryPageView>()
@@ -643,7 +652,6 @@ class WiredashTestRobot {
     );
     await _tap(submitButton);
     await tester.pumpSmart();
-    print('submit Promoter Score');
   }
 
   Future<void> showsPromoterScoreThanksMessage([Finder? finder]) async {
@@ -653,15 +661,15 @@ class WiredashTestRobot {
     }
   }
 
-  Future<void> _tap(SingleWidgetSelector spot) async {
-    await tester.tap(spot.finder);
+  Future<void> _tap(WidgetSelector spot) async {
+    await act.tap(spot);
   }
 
   SingleWidgetSelector<Widget> get _discard =>
-      _spotPageView.spotSingleText('l10n.feedbackDiscardButton');
+      _spotPageView.spotText('l10n.feedbackDiscardButton');
 
   SingleWidgetSelector<Widget> get _reallyDiscard =>
-      _spotPageView.spotSingleText('l10n.feedbackDiscardConfirmButton');
+      _spotPageView.spotText('l10n.feedbackDiscardConfirmButton');
 
   /// Starts discarding feedback, call [confirmDiscardFeedback] to confirm
   Future<void> discardFeedback() async {
@@ -839,7 +847,7 @@ extension on Symbol {
 extension SpotWaitUntil<W extends Widget> on SingleWidgetSelector<W> {
   Future<void> waitUntil(
     WidgetTester tester,
-    void Function(SingleWidgetSnapshot<W>) matcher, {
+    void Function(WidgetMatcher<W>) matcher, {
     Duration timeout = const Duration(seconds: 5),
   }) async {
     final ogStack = StackTrace.current;
@@ -848,7 +856,7 @@ extension SpotWaitUntil<W extends Widget> on SingleWidgetSelector<W> {
     while (true) {
       attempt++;
 
-      final snapshot = this.snapshot();
+      final snapshot = this.snapshot().existsOnce();
 
       final Object error;
       final StackTrace stack;
@@ -889,14 +897,8 @@ extension SpotWaitUntil<W extends Widget> on SingleWidgetSelector<W> {
 extension EffectiveTextMatcher on WidgetMatcher<TronButton> {
   // ignore: avoid_positional_boolean_parameters
   WidgetMatcher<TronButton> isTappable(bool value) {
-    return hasProp(
-      selector: (subject) => subject.context.nest<bool>(
-        () => ['is clickable"'],
-        (Element element) {
-          final widget = element.widget as TronButton;
-          return Extracted.value(widget.onTap != null);
-        },
-      ),
+    return hasWidgetProp(
+      prop: widgetProp('isTappable', (w) => w.onTap != null),
       match: (it) => it.equals(value),
     );
   }
