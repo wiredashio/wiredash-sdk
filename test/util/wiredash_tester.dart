@@ -2,6 +2,7 @@ library wiredashtester;
 
 import 'dart:math' as math;
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,14 +19,171 @@ extension WiredashTester on WidgetTester {
     }
   }
 
+  Future<void> pumpBetter(
+    Duration duration, {
+    bool plugins = false,
+    bool io = false,
+  }) async {
+    assert(duration > Duration.zero);
+    if (plugins && binding.defaultBinaryMessenger.pendingMessageCount > 0) {
+      // wait for pending platform channel messages
+      await drainPlatformChannelMessageQueue();
+    } else if (io) {
+      // allow dart:io operations to execute
+      await drainDartEventQueue();
+    }
+    await elapseTime(duration);
+
+    // build dirty widgets
+    await pumpWhenNecessary(1);
+
+    // trigger all newly Futures
+    await elapseTime(Duration.zero);
+  }
+
+  Future<void> pumpFor(
+    Duration duration, {
+    Duration? interval,
+    bool plugins = false,
+    bool io = false,
+  }) async {
+    final Duration actualInterval;
+    if (interval != null) {
+      assert(interval > Duration.zero);
+      actualInterval = interval;
+    } else {
+      if (duration > const Duration(milliseconds: 100)) {
+        actualInterval = const Duration(milliseconds: 100);
+      } else {
+        actualInterval = duration ~/ 10;
+      }
+    }
+    // print('pumpFor() duration: $duration, interval: $actualInterval');
+
+    final binding = TestWidgetsFlutterBinding.instance;
+    final start = binding.clock.now();
+
+    Future<void> loop(Duration progress) async {
+      if (plugins && binding.defaultBinaryMessenger.pendingMessageCount > 0) {
+        // wait for pending platform channel messages
+        await drainPlatformChannelMessageQueue();
+      } else {
+        if (io) {
+          // allow dart:io operations to execute
+          await drainDartEventQueue();
+        }
+      }
+      await elapseTime(progress);
+
+      // build dirty widgets
+      await pumpWhenNecessary(1);
+    }
+
+    Iterable<Duration> stops() sync* {
+      final iterations =
+          duration.inMicroseconds ~/ actualInterval.inMicroseconds;
+      for (int i = 0; i <= iterations; i++) {
+        yield actualInterval * i;
+      }
+      final lastIteration = duration - (actualInterval * iterations);
+      if (lastIteration > Duration.zero) {
+        yield duration;
+      }
+    }
+
+    int count = -1;
+    for (final stop in stops()) {
+      count++;
+      // print('pumpSmart iteration $count ${binding.clock.now()} to $stop');
+
+      final now = binding.clock.now();
+      final nextStop = start.add(stop);
+      final duration = nextStop.difference(now);
+      // print('now: $now, nextStop: $nextStop, duration: $duration');
+      assert(duration >= Duration.zero);
+
+      final stopwatch = Stopwatch()..start();
+      await loop(duration);
+      stopwatch.stop();
+      _debugPrint('loop $count took ${stopwatch.elapsedMilliseconds}ms');
+
+      final hasScheduledFrame = binding.hasScheduledFrame;
+      final pendingMessageCount =
+          binding.defaultBinaryMessenger.pendingMessageCount;
+      _debugPrint('hasScheduledFrame: $hasScheduledFrame');
+      _debugPrint('pendingMessageCount: $pendingMessageCount');
+    }
+
+    final end = binding.clock.now();
+    final executionTime = end.difference(start);
+    // print('executionTime: $executionTime');
+    // print('duration: $duration');
+    assert(executionTime == duration);
+
+    _debugPrint('pumpFor() completed after $count iterations '
+        'in ${duration.inMilliseconds}ms');
+  }
+
+  Future<void> pumpSmartAfter(
+    Duration duration, {
+    bool plugins = false,
+    bool io = false,
+    // int maxPumps = 20,
+  }) async {
+    assert(duration >= Duration.zero);
+
+    final binding = TestWidgetsFlutterBinding.instance;
+
+    Future<void> loop() async {
+      if (plugins && binding.defaultBinaryMessenger.pendingMessageCount > 0) {
+        // wait for pending platform channel messages
+        await drainPlatformChannelMessageQueue();
+      } else {
+        if (io) {
+          // allow dart:io operations to execute
+          await drainDartEventQueue();
+        }
+      }
+      // trigger timers
+      await elapseTime(Duration.zero);
+
+      // build dirty widgets
+      await pumpWhenNecessary(1);
+    }
+
+    await loop();
+    await loop();
+    await loop();
+    await loop();
+    await loop();
+  }
+
   /// Pumps both, the Dart event loop and new frames as long as there are schedules frames
   ///
   /// This method is a combination of [pumpIfNecessary] and [pumpHard]
   ///
-  Future<void> pumpSmart([
+  Future<void> pumpSmart({
+    int? ms,
     Duration minimumDuration = Duration.zero,
+    bool plugins = false,
+    bool io = false,
     Duration? timeout,
-  ]) async {
+  }) async {
+    await drainDartEventQueue();
+    if (minimumDuration > Duration.zero) {
+      await elapseTime(minimumDuration);
+    }
+    if (ms != null) {
+      await elapseTime(Duration(milliseconds: ms));
+    }
+    await pumpSmartAfter(Duration.zero, plugins: plugins, io: io);
+    return;
+
+    if (ms != null) {
+      assert(minimumDuration == Duration.zero);
+      // ignore: parameter_assignments
+      minimumDuration = Duration(milliseconds: ms);
+    }
     assert(minimumDuration >= Duration.zero);
     final Duration adjustedTimeout;
     if (timeout == null) {
@@ -42,12 +200,14 @@ extension WiredashTester on WidgetTester {
     int count = -1;
 
     Future<void> loop(Duration progress) async {
-      if (binding.defaultBinaryMessenger.pendingMessageCount > 0) {
+      if (plugins && binding.defaultBinaryMessenger.pendingMessageCount > 0) {
         // wait for pending platform channel messages
         await drainPlatformChannelMessageQueue();
       } else {
-        // allow dart:io operations to execute
-        await drainDartEventQueue();
+        if (io) {
+          // allow dart:io operations to execute
+          await drainDartEventQueue();
+        }
       }
       await elapseTime(progress);
 
@@ -163,7 +323,7 @@ extension WiredashTester on WidgetTester {
       Duration remaining = duration;
       while (remaining > Duration.zero) {
         final newRemaining = remaining - step;
-        if (remaining > Duration.zero) {
+        if (newRemaining > Duration.zero) {
           await binding.delayed(step);
         } else {
           await binding.delayed(remaining);
@@ -302,9 +462,10 @@ extension WiredashTester on WidgetTester {
     final dynamic actual,
     Matcher matcher, {
     Duration timeout = const Duration(seconds: 5),
+    bool io = false,
   }) async {
     final stack = StackTrace.current;
-    final start = DateTime.now();
+    final start = clock.now();
     var attempt = 0;
     while (true) {
       attempt++;
@@ -316,7 +477,7 @@ extension WiredashTester on WidgetTester {
         break;
       }
 
-      final now = DateTime.now();
+      final now = clock.now();
       final executingTime = start.difference(now).abs();
       if (actualValue.runtimeType.toString().contains('_TextFinder') &&
           attempt > 1) {
@@ -341,8 +502,7 @@ extension WiredashTester on WidgetTester {
         throw 'Did not find $actualValue after $timeout (attempt: $attempt)';
       }
 
-      final duration =
-          Duration(milliseconds: math.pow(attempt, math.e).toInt());
+      final duration = _waitTime(attempt);
       if (executingTime > const Duration(seconds: 1) &&
           duration > const Duration(seconds: 1)) {
         // show continuous updates
@@ -352,7 +512,22 @@ extension WiredashTester on WidgetTester {
           '\tMatcher: ${matcher.describe(StringDescription())}',
         );
       }
-      await pumpSmart(duration);
+      print('Wait for ${duration.inMilliseconds}ms');
+      // await pump(duration);
+      // await pumpFor(duration, io: io);
+      await pumpBetter(duration, io: io);
     }
   }
+}
+
+const _oneFrame = Duration(milliseconds: 16);
+
+Duration _waitTime(int attempt) {
+  if (attempt <= 0) {
+    return _oneFrame;
+  }
+  if (attempt <= 5) {
+    return _oneFrame;
+  }
+  return const Duration(milliseconds: 100);
 }

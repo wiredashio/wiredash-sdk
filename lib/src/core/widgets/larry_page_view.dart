@@ -77,6 +77,10 @@ class LarryPageViewState extends State<LarryPageView>
   /// Should be smaller than [_pageSwitchDistance]
   static const _fadeDistance = 160.0;
 
+  bool isAnimating() {
+    return _controller.isAnimating || _nextPageTimer != null;
+  }
+
   @override
   void initState() {
     super.initState();

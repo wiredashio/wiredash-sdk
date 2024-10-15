@@ -9,7 +9,7 @@ void main() {
   testWidgets('#firstLaunch event is submitted', (tester) async {
     final robot = WiredashTestRobot(tester);
     await robot.launchApp(firstLaunch: true);
-    await tester.pumpSmart(const Duration(seconds: 5));
+    await tester.pumpSmart(ms: 5000);
     final eventSubmissions =
         robot.mockServices.mockApi.sendEventsInvocations.invocations;
     expect(eventSubmissions, hasLength(1)); // one call
@@ -25,7 +25,7 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('_wiredashAppUsageID', 'someId');
     await robot.launchApp();
-    await tester.pumpSmart(const Duration(seconds: 5));
+    await tester.pumpSmart(ms: 5000);
     final eventSubmissions =
         robot.mockServices.mockApi.sendEventsInvocations.invocations;
     expect(eventSubmissions, hasLength(0)); // no call

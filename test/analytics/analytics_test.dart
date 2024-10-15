@@ -356,7 +356,7 @@ void main() {
     // When a wiredash Widget is added to the tree, the events are sent
     await robot.launchApp();
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(0);
-    await tester.pumpSmart(const Duration(seconds: 5));
+    await tester.pumpSmart(ms: 5000);
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
   });
 
@@ -395,13 +395,13 @@ void main() {
     // other-project does not submit the event
     await robot.launchApp(projectId: 'other-project');
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(0);
-    await tester.pumpSmart(const Duration(seconds: 5));
+    await tester.pumpSmart(ms: 5000);
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(0);
 
     // project1 does
     await robot.launchApp(projectId: 'project1');
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(0);
-    await tester.pumpSmart(const Duration(seconds: 5));
+    await tester.pumpSmart(ms: 5000);
     robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
   });
 
@@ -514,11 +514,11 @@ void main() {
 
       // send first event to kick things off
       await robot.triggerAnalyticsEvent();
-      await tester.pumpSmart(const Duration(seconds: 1));
+      await tester.pumpSmart(ms: 1000);
 
-      await tester.pumpSmart(const Duration(seconds: 60));
+      await tester.pumpSmart(minimumDuration: const Duration(seconds: 60));
       await robot.triggerAnalyticsEvent();
-      await tester.pumpSmart(const Duration(milliseconds: 1));
+      await tester.pumpSmart();
 
       final List<AssertableInvocation> calls =
           robot.mockServices.mockApi.sendEventsInvocations.invocations;

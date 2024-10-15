@@ -64,7 +64,7 @@ void main() {
 
       // start debounce timer
       final future = ResultFuture(submitter.submitEvents());
-      await tester.pumpSmart(const Duration(seconds: 10));
+      await tester.pumpSmart(minimumDuration: const Duration(seconds: 10));
 
       expect(api.sendEventsInvocations.invocations, isEmpty);
 
@@ -75,7 +75,7 @@ void main() {
       expect(future.isComplete, isFalse);
 
       // does not send any events
-      await tester.pumpSmart(const Duration(seconds: 30));
+      await tester.pumpSmart(minimumDuration: const Duration(seconds: 30));
       expect(api.sendEventsInvocations.invocations, isEmpty);
     });
   });

@@ -284,7 +284,11 @@ class WiredashTestRobot {
     final feedbackText = spotSingle<MaterialApp>().spotText('Feedback')
       ..existsOnce();
     await _tap(feedbackText);
-    await tester.pumpSmart();
+    await tester.pumpFor(
+      const Duration(milliseconds: 500),
+      plugins: true,
+      io: true,
+    );
 
     _spotBackdrop.spotSingle<WiredashFeedbackFlow>().existsOnce();
     print('opened Wiredash');
@@ -322,7 +326,7 @@ class WiredashTestRobot {
     // tap app which is located at the bottom of the screen
     final bottomRight = tester.getBottomRight(find.byType(Wiredash));
     await tester.tapAt(Offset(bottomRight.dx / 2, bottomRight.dy - 20));
-    await tester.pumpSmart();
+    await tester.pumpFor(Duration(seconds: 1), io: true);
     _spotBackdrop.spotSingle<WiredashFeedbackFlow>().doesNotExist();
     _spotBackdrop.spotSingle<PromoterScoreFlow>().doesNotExist();
     print('closed Wiredash');
@@ -351,7 +355,7 @@ class WiredashTestRobot {
       TestWidgetsFlutterBinding.instance
           .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     });
-    await tester.pumpSmart(const Duration(seconds: 1));
+    await tester.pumpSmart(ms: 1000);
   }
 
   Future<void> enterFeedbackMessage(String message) async {
@@ -398,7 +402,14 @@ class WiredashTestRobot {
     await _tap(
       step.spotText('l10n.feedbackStep3ScreenshotOverviewSkipButton'),
     );
-    await tester.pumpSmart();
+    // 1s for collecting metadata
+    await tester.pumpFor(const Duration(milliseconds: 1000));
+    // anim to next page
+    await tester.waitUntil(
+      spot<LarryPageView>().snapshotState<LarryPageViewState>().isAnimating,
+      isFalse,
+    );
+    step.doesNotExist();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Skipped taking screenshot, next $newStatus');
   }
@@ -425,7 +436,7 @@ class WiredashTestRobot {
   Future<void> skipEmail({bool catchError = true}) async {
     final step = _spotPageView.spotSingle<Step5Email>()..existsOnce();
     await _tap(step.spotSingleText('l10n.feedbackNextButton'));
-    await tester.pumpSmart();
+    await tester.pumpFor(const Duration(milliseconds: 500));
 
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     if (catchError) {
@@ -457,8 +468,10 @@ class WiredashTestRobot {
     print('go to next step');
     final oldStatus = services.feedbackModel.feedbackFlowStatus;
     await _tap(spotSingleText('l10n.feedbackNextButton'));
-    await tester.pumpSmart();
-    await tester.pumpSmart(const Duration(milliseconds: 500));
+    await tester.waitUntil(
+      spot<LarryPageView>().snapshotState<LarryPageViewState>().isAnimating,
+      isFalse,
+    );
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Jumped from $oldStatus to next $newStatus');
   }
@@ -472,8 +485,33 @@ class WiredashTestRobot {
     } else {
       await _tap(spotText('l10n.feedbackBackButton').first());
     }
+    await tester.waitUntil(
+      spot<LarryPageView>().snapshotState<LarryPageViewState>().isAnimating,
+      isFalse,
+    );
+    await takeScreenshot();
+    final newStatus = services.feedbackModel.feedbackFlowStatus;
+    print('Jumped back from $oldStatus to prev $newStatus');
+  }
 
-    await tester.pumpSmart();
+  Future<void> exitScreenshotMode() async {
+    final oldStatus = services.feedbackModel.feedbackFlowStatus;
+    final backdropStatus = services.backdropController.backdropStatus;
+
+    if (backdropStatus == WiredashBackdropStatus.centered) {
+      await _tap(spotText('l10n.feedbackBackButton').last());
+    } else {
+      await _tap(spotText('l10n.feedbackBackButton').first());
+    }
+    await tester.waitUntil(
+      () => services.backdropController.backdropStatus,
+      equals(WiredashBackdropStatus.open),
+    );
+    await tester.waitUntil(
+      spot<LarryPageView>().snapshotState<LarryPageViewState>().isAnimating,
+      isFalse,
+    );
+    await takeScreenshot();
     final newStatus = services.feedbackModel.feedbackFlowStatus;
     print('Jumped back from $oldStatus to prev $newStatus');
   }
@@ -488,7 +526,10 @@ class WiredashTestRobot {
       const Offset(0, -5000),
       5000,
     );
-    await tester.pumpSmart();
+    await tester.waitUntil(
+      spot<LarryPageView>().snapshotState<LarryPageViewState>().isAnimating,
+      isFalse,
+    );
   }
 
   Future<void> enterScreenshotMode() async {
@@ -508,7 +549,12 @@ class WiredashTestRobot {
         ..existsOnce();
       await _tap(addAttachmentItem);
     }
-    await tester.pumpSmart();
+    // wait for center animation
+    await tester.waitUntil(
+      () => services.backdropController.backdropStatus,
+      equals(WiredashBackdropStatus.centered),
+      io: true,
+    );
     await tester.waitUntil(find.byType(ScreenshotBar), findsOneWidget);
     await tester.waitUntil(find.byIcon(Wirecons.camera), findsOneWidget);
     expect(
@@ -536,22 +582,27 @@ class WiredashTestRobot {
       isNot(FeedbackFlowStatus.screenshotDrawing),
     );
 
+    // wait for center animation
+    await tester.waitUntil(
+      () => services.backdropController.backdropStatus,
+      equals(WiredashBackdropStatus.centered),
+      io: true,
+    );
+
     // Wait for active "Save" button
     final nextButton = screenshotBar.spotSingle<TronButton>(
       children: [spotText('l10n.feedbackStep3ScreenshotBarSaveButton')],
     ).last();
+    await tester.waitUntil(nextButton.finder, findsOneWidget, io: true);
+    await tester.waitUntil(
+      () => services.feedbackModel.feedbackFlowStatus,
+      equals(FeedbackFlowStatus.screenshotDrawing),
+      io: true,
+      timeout: const Duration(seconds: 20),
+    );
 
-    try {
-      await tester.waitUntil(nextButton.finder, findsOneWidget);
-      await tester.waitUntil(
-        () => services.feedbackModel.feedbackFlowStatus,
-        equals(FeedbackFlowStatus.screenshotDrawing),
-      );
-    } catch (e) {
-      nextButton.existsOnce();
-      rethrow;
-    }
-
+    print('services.feedbackModel.feedbackFlowStatus: '
+        '${services.feedbackModel.feedbackFlowStatus}');
     expect(find.byType(ColorPalette), findsOneWidget);
   }
 
@@ -565,7 +616,7 @@ class WiredashTestRobot {
     await _tap(
       screenshotBar.spotText('l10n.feedbackStep3ScreenshotBarSaveButton'),
     );
-    await tester.pumpSmart(const Duration(milliseconds: 100));
+    await tester.pumpSmart(ms: 100);
 
     // wait until the animation is closed
     await tester.waitUntil(
@@ -626,11 +677,11 @@ class WiredashTestRobot {
     print('tap rating $rating');
     await _tap(spotRatingCard(rating));
     // rating button debounce
-    await tester.pumpSmart(const Duration(milliseconds: 400));
+    await tester.pumpSmart(ms: 400);
     // next page delay
-    await tester.pumpSmart(const Duration(milliseconds: 250));
+    await tester.pumpSmart(ms: 250);
     // next page animation
-    await tester.pumpSmart(const Duration(milliseconds: 500));
+    await tester.pumpSmart(ms: 500);
   }
 
   Future<void> submitPromoterScore() async {
@@ -676,7 +727,7 @@ class WiredashTestRobot {
   Future<void> discardFeedback() async {
     _discard.existsOnce();
     await _tap(_discard);
-    await tester.pumpSmart();
+    await tester.pumpFor(const Duration(seconds: 1));
     _reallyDiscard.existsOnce();
   }
 
@@ -902,5 +953,16 @@ extension EffectiveTextMatcher on WidgetMatcher<TronButton> {
       prop: widgetProp('isTappable', (w) => w.onTap != null),
       match: (it) => it.equals(value),
     );
+  }
+}
+
+extension ReadState<W extends StatefulWidget> on WidgetSelector<W> {
+  /// Convenience getter to access the [Element] when evaluating the [WidgetSelector]
+  S snapshotState<S extends State<W>>() {
+    final e = snapshot().single.element;
+    if (e is! StatefulElement) {
+      throw 'Element $e is not a StatefulElement';
+    }
+    return e.state as S;
   }
 }
