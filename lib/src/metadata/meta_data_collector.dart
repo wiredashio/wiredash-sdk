@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/wiredash.dart';
@@ -95,12 +93,6 @@ class MetaDataCollector {
   }
 
   Future<DeviceInfo> _collectDeviceInfo() async {
-    if (!kIsWeb && Platform.isLinux) {
-      // it just hangs on linux for some reason
-      // https://github.com/fluttercommunity/plus_plugins/issues/1552
-      return const DeviceInfo();
-    }
-
     try {
       final deviceInfo = await DeviceInfoPlugin().deviceInfo;
 
@@ -162,7 +154,6 @@ class MetaDataCollector {
         // https://github.com/fluttercommunity/plus_plugins/issues/1552
         return const DeviceInfo();
       }
-
       reportWiredashInfo(
         e,
         stack,
