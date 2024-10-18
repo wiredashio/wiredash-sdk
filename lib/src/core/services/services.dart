@@ -12,6 +12,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
+import 'package:wiredash/src/core/options/environment_loader.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/app_telemetry_job.dart';
@@ -111,6 +112,8 @@ class WiredashServices extends ChangeNotifier {
 
   FlutterAppLifecycleNotifier get appLifecycleNotifier => _locator.watch();
 
+  EnvironmentLoader get environmentLoader => _locator.watch();
+
   Future<SharedPreferences> Function() get sharedPreferencesProvider {
     // explicitly using get instead of watch, because it is a factory not an
     // object that returns the correct object for every call
@@ -154,6 +157,12 @@ void registerProdWiredashServices(WiredashServices sl) {
       child: SizedBox(),
     ),
   );
+  sl.inject<EnvironmentLoader>((_) {
+    return EnvironmentLoader(
+      wiredashWidget: () => sl.wiredashWidget,
+      metaDataCollector: () => sl.metaDataCollector,
+    );
+  });
   sl.inject<WuidGenerator>(
     (_) {
       final generator = SharedPrefsWuidGenerator(
@@ -294,6 +303,7 @@ void registerProdWiredashServices(WiredashServices sl) {
           wuidGenerator: () => sl.wuidGenerator,
           metaDataCollector: () => sl.metaDataCollector,
           sharedPreferencesProvider: sl.sharedPreferencesProvider,
+          environmentLoader: () => sl.environmentLoader,
         ),
       );
       engine.addJob(

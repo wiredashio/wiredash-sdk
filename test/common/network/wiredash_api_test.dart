@@ -313,6 +313,7 @@ void main() {
     test('PingRequestBody.toBody() minimal', () {
       final ps = PingRequestBody(
         analyticsId: '0123456789123456',
+        environment: 'custom',
         sdkVersion: 180,
       );
       final body = ps.toRequestJson();
@@ -321,6 +322,7 @@ void main() {
         body,
         {
           'analyticsId': '0123456789123456',
+          'environment': 'custom',
           'sdkVersion': 180,
         },
       );
@@ -333,6 +335,7 @@ void main() {
         buildNumber: '543',
         buildCommit: 'abcdefg',
         bundleId: 'com.example.app',
+        environment: 'prod',
         platformOS: 'ios',
         platformOSVersion: '17.1',
         platformLocale: 'en_US',
@@ -348,6 +351,7 @@ void main() {
           'buildNumber': '543',
           'buildVersion': '1.2.3',
           'bundleId': 'com.example.app',
+          'environment': 'prod',
           'platformOS': 'ios',
           'platformOSVersion': '17.1',
           'platformLocale': 'en_US',

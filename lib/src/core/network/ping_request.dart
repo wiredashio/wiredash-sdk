@@ -34,6 +34,7 @@ class PingRequestBody {
   final String? buildNumber;
   final String? buildVersion;
   final String? bundleId;
+  final String? environment;
   final String? platformOS;
   final String? platformOSVersion;
   final String? platformLocale;
@@ -45,6 +46,7 @@ class PingRequestBody {
     this.buildNumber,
     this.buildVersion,
     this.bundleId,
+    this.environment,
     this.platformOS,
     this.platformOSVersion,
     this.platformLocale,
@@ -74,6 +76,11 @@ class PingRequestBody {
     final _bundleId = bundleId;
     if (_bundleId != null) {
       body['bundleId'] = _bundleId;
+    }
+
+    final _environment = environment;
+    if (_environment != null) {
+      body['environment'] = _environment;
     }
 
     final _platformOS = platformOS;

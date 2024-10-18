@@ -7,9 +7,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/options/environment_loader.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
+import 'package:wiredash/src/core/wiredash_widget.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
 import '../feedback/data/pending_feedback_item_storage_test.dart';
@@ -36,6 +38,7 @@ void main() {
         wuidGenerator: () {
           return incrementalIdGenerator;
         },
+        environmentLoader: () => MockEnvironmentLoader('prod'),
       );
     }
 
@@ -150,6 +153,7 @@ void main() {
           sharedPreferencesProvider: prefsProvider,
           metaDataCollector: () => FakeMetaDataCollector(),
           wuidGenerator: () => IncrementalIdGenerator(),
+          environmentLoader: () => MockEnvironmentLoader('prod'),
         );
         pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
@@ -172,6 +176,7 @@ void main() {
           sharedPreferencesProvider: prefsProvider,
           metaDataCollector: () => FakeMetaDataCollector(),
           wuidGenerator: () => IncrementalIdGenerator(),
+          environmentLoader: () => MockEnvironmentLoader('prod'),
         );
         pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
@@ -222,5 +227,22 @@ class FakeMetaDataCollector with Fake implements MetaDataCollector {
       viewInsets: WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
       physicalSize: Size(1280, 720),
     );
+  }
+}
+
+class MockEnvironmentLoader implements EnvironmentLoader {
+  final String environment;
+
+  MockEnvironmentLoader(this.environment);
+
+  @override
+  Future<String> getEnvironment() async {
+    return environment;
+  }
+
+  @override
+  Future<bool> isDevEnvironment() {
+    // TODO: implement isDevEnvironment
+    throw UnimplementedError();
   }
 }
