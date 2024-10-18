@@ -107,6 +107,7 @@ class RequestEvent {
   final String? buildVersion;
   final String? bundleId;
   final DateTime? createdAt;
+  final String? environment;
   final Map<String, Object?>? eventData;
   final String eventName;
   final String? platformOS;
@@ -121,6 +122,7 @@ class RequestEvent {
     this.buildVersion,
     this.bundleId,
     this.createdAt,
+    this.environment,
     this.eventData,
     required this.eventName,
     this.platformOS,
@@ -158,6 +160,11 @@ class RequestEvent {
     if (_createdAt != null) {
       final unixTimestamp = _createdAt.millisecondsSinceEpoch;
       body['createdAt'] = unixTimestamp;
+    }
+
+    final _environment = environment;
+    if (_environment != null) {
+      body['environment'] = _environment;
     }
 
     final _eventData = eventData;

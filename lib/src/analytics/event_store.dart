@@ -37,6 +37,7 @@ class AnalyticsEvent {
   final String? bundleId;
   final DateTime? createdAt;
   final Map<String, Object?>? eventData;
+  final String? environment;
   final String eventName;
   final String? platformOS;
   final String? platformOSVersion;
@@ -51,6 +52,7 @@ class AnalyticsEvent {
     this.bundleId,
     this.createdAt,
     this.eventData,
+    this.environment,
     required this.eventName,
     this.platformOS,
     this.platformOSVersion,
@@ -67,6 +69,7 @@ class AnalyticsEvent {
         'buildVersion: $buildVersion, '
         'bundleId: $bundleId, '
         'createdAt: $createdAt, '
+        'environment: $environment, '
         'eventData: $eventData, '
         'eventName: $eventName, '
         'platformOS: $platformOS, '
@@ -75,6 +78,41 @@ class AnalyticsEvent {
         'sdkVersion: $sdkVersion'
         '}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AnalyticsEvent &&
+          runtimeType == other.runtimeType &&
+          analyticsId == other.analyticsId &&
+          buildCommit == other.buildCommit &&
+          buildNumber == other.buildNumber &&
+          buildVersion == other.buildVersion &&
+          bundleId == other.bundleId &&
+          createdAt == other.createdAt &&
+          eventData == other.eventData &&
+          environment == other.environment &&
+          eventName == other.eventName &&
+          platformOS == other.platformOS &&
+          platformOSVersion == other.platformOSVersion &&
+          platformLocale == other.platformLocale &&
+          sdkVersion == other.sdkVersion;
+
+  @override
+  int get hashCode =>
+      analyticsId.hashCode ^
+      buildCommit.hashCode ^
+      buildNumber.hashCode ^
+      buildVersion.hashCode ^
+      bundleId.hashCode ^
+      createdAt.hashCode ^
+      eventData.hashCode ^
+      environment.hashCode ^
+      eventName.hashCode ^
+      platformOS.hashCode ^
+      platformOSVersion.hashCode ^
+      platformLocale.hashCode ^
+      sdkVersion.hashCode;
 }
 
 /// Saves [AnalyticsEvent] on disk
@@ -220,6 +258,7 @@ Map<String, Object?> serializeEventV1(AnalyticsEvent event) {
     if (event.bundleId != null) "bundleId": event.bundleId,
     if (event.createdAt != null)
       "createdAt": event.createdAt!.toIso8601String(),
+    if (event.environment != null) "environment": event.environment,
     "eventName": event.eventName,
     if (event.platformOS != null) "platformOS": event.platformOS,
     if (event.platformOSVersion != null)
@@ -266,6 +305,7 @@ AnalyticsEvent deserializeEventV1(Map<String, Object?> map) {
     final buildVersion = map['buildVersion'] as String?;
     final bundleId = map['bundleId'] as String?;
     final createdAtRaw = map['createdAt'] as String?;
+    final environment = map['environment'] as String?;
     final eventData = map['eventData'] as Map<String, Object?>?;
     final eventName = map['eventName']! as String;
     final platformOS = map['platformOS'] as String?;
@@ -279,6 +319,7 @@ AnalyticsEvent deserializeEventV1(Map<String, Object?> map) {
       buildVersion: buildVersion,
       bundleId: bundleId,
       createdAt: createdAtRaw != null ? DateTime.parse(createdAtRaw) : null,
+      environment: environment,
       eventData: eventData,
       eventName: eventName,
       platformOS: platformOS,

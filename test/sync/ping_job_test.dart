@@ -11,7 +11,6 @@ import 'package:wiredash/src/core/options/environment_loader.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
-import 'package:wiredash/src/core/wiredash_widget.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
 import '../feedback/data/pending_feedback_item_storage_test.dart';

@@ -45,7 +45,9 @@ void main() {
 
     test('do not allow spaces', () {
       expect(
-          () => validateEnvironment('env name'), argErrorContaining('space'));
+        () => validateEnvironment('env name'),
+        argErrorContaining('space'),
+      );
       expect(() => validateEnvironment('env '), argErrorContaining('space'));
       expect(() => validateEnvironment(' env'), argErrorContaining('space'));
     });

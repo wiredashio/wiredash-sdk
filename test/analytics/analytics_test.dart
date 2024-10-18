@@ -56,6 +56,7 @@ void main() {
     expect(event.buildVersion, '9.9.9');
     expect(event.bundleId, 'io.wiredash.test');
     expect(event.createdAt, now);
+    expect(event.environment, 'dev');
     expect(event.platformOS, isNotNull);
     if (!Platform.isLinux) {
       expect(event.platformOSVersion, '10.0.1');
@@ -781,6 +782,26 @@ void main() {
       () => analytics.trackEvent('test_event', data: {'param1': 'value1'}),
       returnsNormally,
     );
+  });
+
+  test('serialize event', () {
+    final event = AnalyticsEvent(
+      analyticsId: '01234567890123456',
+      buildCommit: 'abcdef3',
+      buildNumber: '9001',
+      buildVersion: '9.9.9',
+      bundleId: 'io.wiredash.test',
+      createdAt: DateTime(2024, 1, 1),
+      environment: 'custom',
+      eventName: 'test_event',
+      platformLocale: 'en-US',
+      platformOS: 'android',
+      platformOSVersion: '10.0.1',
+      sdkVersion: 250,
+    );
+    final serialized = serializeEventV1(event);
+    final deserialized = deserializeEventV1(serialized);
+    expect(deserialized, event);
   });
 }
 

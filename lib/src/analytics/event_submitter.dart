@@ -152,6 +152,7 @@ class DebounceEventSubmitter implements EventSubmitter {
         createdAt: event.createdAt,
         eventData: event.eventData,
         eventName: event.eventName,
+        environment: event.environment,
         platformOS: event.platformOS,
         platformOSVersion: event.platformOSVersion,
         platformLocale: event.platformLocale,

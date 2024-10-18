@@ -98,9 +98,11 @@ class WiredashAnalytics {
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
     final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
+    final environment = await _services.environmentLoader.getEnvironment();
+    final analyticsId = await _services.wuidGenerator.appUsageId();
 
     final event = AnalyticsEvent(
-      analyticsId: await _services.wuidGenerator.appUsageId(),
+      analyticsId: analyticsId,
       buildCommit: fixedMetadata.resolvedBuildCommit,
       buildNumber: fixedMetadata.resolvedBuildNumber,
       buildVersion: fixedMetadata.resolvedBuildVersion,
@@ -108,6 +110,7 @@ class WiredashAnalytics {
       createdAt: clock.now(),
       eventData: eventData,
       eventName: eventName,
+      environment: environment,
       platformOS: flutterInfo.platformOS,
       platformOSVersion: fixedMetadata.deviceInfo.osVersion,
       platformLocale: flutterInfo.platformLocale,
