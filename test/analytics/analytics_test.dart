@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:clock/clock.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
@@ -10,11 +11,11 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
-
 import 'package:wiredash/src/core/network/send_events_request.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
+import 'package:wiredash/src/core/wiredash_widget.dart';
 import 'package:wiredash/wiredash.dart';
 
 import '../util/flutter_error.dart';
@@ -119,6 +120,67 @@ void main() {
     final event = events![0];
     expect(event.eventName, 'test_event');
     expect(event.eventData, {'param1': 'value1'});
+  });
+
+  testWidgets('sendEvent (static) to environment from Widget', (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      environment: 'custom',
+      builder: (context) {
+        return Scaffold(
+          body: ElevatedButton(
+            onPressed: () {
+              Wiredash.trackEvent('test_event', data: {'param1': 'value1'});
+            },
+            child: const Text('Send Event'),
+          ),
+        );
+      },
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+    final lastEvents = robot.mockServices.mockApi.sendEventsInvocations.latest;
+    final events = lastEvents[0] as List<RequestEvent>?;
+    expect(events, hasLength(1));
+    final event = events![0];
+    expect(event.eventName, 'test_event');
+    expect(event.environment, 'custom');
+  });
+
+  testWidgets('sendEvent (static) to different environment from Widget',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      environment: 'production',
+      builder: (context) {
+        return Scaffold(
+          body: ElevatedButton(
+            onPressed: () {
+              Wiredash.trackEvent(
+                'test_event',
+                data: {'param1': 'value1'},
+                environment: 'internal-dev-team',
+              );
+            },
+            child: const Text('Send Event'),
+          ),
+        );
+      },
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+    final lastEvents = robot.mockServices.mockApi.sendEventsInvocations.latest;
+    final events = lastEvents[0] as List<RequestEvent>?;
+    expect(events, hasLength(1));
+    final event = events![0];
+    expect(event.eventName, 'test_event');
+    expect(event.environment, 'internal-dev-team');
   });
 
   testWidgets(
@@ -777,7 +839,6 @@ void main() {
 
   test('3rd party implements WiredashAnalytics', () {
     final analytics = ThirdPartyAnalytics();
-    expect(analytics.projectId, isNull);
     expect(
       () => analytics.trackEvent('test_event', data: {'param1': 'value1'}),
       returnsNormally,
@@ -803,13 +864,31 @@ void main() {
     final deserialized = deserializeEventV1(serialized);
     expect(deserialized, event);
   });
+
+  test('WiredashAnalytics() accesses env from widget', () async {
+    SharedPreferences.setMockInitialValues({});
+
+    const widget = Wiredash(
+      projectId: '',
+      secret: '',
+      environment: 'custom',
+      child: SizedBox(),
+    );
+    final el = widget.createElement();
+    final state = el.state as WiredashState;
+    WiredashRegistry.instance.register(state);
+
+    final analytics = WiredashAnalytics();
+    await analytics.trackEvent('test_event');
+    final events = await state.debugServices.eventStore.getEvents(null);
+    final testEvent = events.values
+        .firstWhereOrNull((event) => event.eventName == 'test_event');
+    expect(testEvent!.environment, 'custom');
+  });
 }
 
 // verifies no new methods are accidentally added to WiredashAnalytics, making it easy to mock
 class ThirdPartyAnalytics implements WiredashAnalytics {
-  @override
-  String? get projectId => null;
-
   @override
   Future<void> trackEvent(
     String eventName, {

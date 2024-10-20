@@ -8,6 +8,7 @@ void main() {
       expect(() => validateEnvironment('prod'), returnsNormally);
       expect(() => validateEnvironment('qa'), returnsNormally);
       expect(() => validateEnvironment('staging'), returnsNormally);
+      expect(() => validateEnvironment('whitelabel-dev'), returnsNormally);
     });
 
     test('minimum 2 characters', () {
@@ -16,24 +17,21 @@ void main() {
         argErrorContaining('between 2 and 32'),
       );
       expect(() => validateEnvironment('aa'), returnsNormally);
-      expect(
-        () => validateEnvironment('A'),
-        argErrorContaining('between 2 and 32'),
-      );
-      expect(() => validateEnvironment('AA'), returnsNormally);
+      expect(() => validateEnvironment('a_'), returnsNormally);
+      expect(() => validateEnvironment('a-'), returnsNormally);
     });
 
-    test('must start with a-zA-Z', () {
+    test('must start with a-z', () {
       expect(() => validateEnvironment('a__'), returnsNormally);
       expect(() => validateEnvironment('z__'), returnsNormally);
-      expect(() => validateEnvironment('A__'), returnsNormally);
-      expect(() => validateEnvironment('Z__'), returnsNormally);
+      expect(() => validateEnvironment('A__'), argErrorContaining('(a-z)'));
+      expect(() => validateEnvironment('Z__'), argErrorContaining('(a-z)'));
 
-      expect(() => validateEnvironment('1__'), argErrorContaining('(a-zA-Z)'));
-      expect(() => validateEnvironment('___'), argErrorContaining('(a-zA-Z)'));
-      expect(() => validateEnvironment('-__'), argErrorContaining('(a-zA-Z)'));
-      expect(() => validateEnvironment('\$__'), argErrorContaining('(a-zA-Z)'));
-      expect(() => validateEnvironment('?__'), argErrorContaining('(a-zA-Z)'));
+      expect(() => validateEnvironment('1__'), argErrorContaining('(a-z)'));
+      expect(() => validateEnvironment('___'), argErrorContaining('(a-z)'));
+      expect(() => validateEnvironment('-__'), argErrorContaining('(a-z)'));
+      expect(() => validateEnvironment('\$__'), argErrorContaining('(a-z)'));
+      expect(() => validateEnvironment('?__'), argErrorContaining('(a-z)'));
       expect(() => validateEnvironment('ä__'), argErrorContaining('umlaut'));
     });
 

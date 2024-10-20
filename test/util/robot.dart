@@ -141,6 +141,7 @@ class WiredashTestRobot {
   Future<WiredashTestRobot> launchApp({
     WiredashFeedbackOptions? feedbackOptions,
     PsOptions? psOptions,
+    String? environment,
     FutureOr<CustomizableWiredashMetaData> Function(
       CustomizableWiredashMetaData metaData,
     )? collectMetaData,
@@ -209,6 +210,7 @@ class WiredashTestRobot {
       child = Wiredash(
         projectId: projectId ?? 'test',
         secret: 'test',
+        environment: environment,
         feedbackOptions: feedbackOptions,
         psOptions: psOptions,
         collectMetaData: collectMetaData,
@@ -714,7 +716,7 @@ WiredashServices createMockServices({
     if (useDirectFeedbackSubmitter) {
       // replace submitter, because for testing we always want to submit directly
       services.inject<FeedbackSubmitter>(
-        (_) => DirectFeedbackSubmitter(services.api),
+        (_) => DirectFeedbackSubmitter(() => services.api),
       );
     } else {
       assert(
@@ -727,9 +729,9 @@ WiredashServices createMockServices({
         (_) {
           print('create direct submitter');
           return DirectEventSubmitter(
-            projectId: () => services.wiredashWidget.projectId,
-            eventStore: services.eventStore,
-            api: services.api,
+            projectId: () => services.wiredashWidget!.projectId,
+            eventStore: () => services.eventStore,
+            api: () => services.api,
           );
         },
       );

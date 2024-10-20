@@ -16,8 +16,8 @@ void main() {
       final store = InMemoryEventStore.withDefaults();
       final api = MockWiredashApi();
       final DebounceEventSubmitter submitter = DebounceEventSubmitter(
-        eventStore: store,
-        api: api,
+        eventStore: () => store,
+        api: () => api,
         projectId: () => 'project-abc',
         initialThrottleDuration: const Duration(days: 1),
       );
@@ -46,8 +46,8 @@ void main() {
       final store = InMemoryEventStore.withDefaults();
       final api = MockWiredashApi();
       final DebounceEventSubmitter submitter = DebounceEventSubmitter(
-        eventStore: store,
-        api: api,
+        eventStore: () => store,
+        api: () => api,
         projectId: () => 'project-abc',
         initialThrottleDuration: const Duration(days: 1),
       );

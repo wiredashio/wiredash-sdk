@@ -1,9 +1,8 @@
 import 'dart:ui';
 
 import 'package:file/local.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -82,7 +81,7 @@ class WiredashServices extends ChangeNotifier {
 
   WuidGenerator get wuidGenerator => _locator.watch();
 
-  Wiredash get wiredashWidget => _locator.watch();
+  Wiredash? get wiredashWidget => _locator.watch();
 
   WiredashOptionsData get wiredashOptions => _locator.watch();
 
@@ -120,8 +119,8 @@ class WiredashServices extends ChangeNotifier {
     return _locator.get();
   }
 
-  void updateWidget(Wiredash wiredashWidget) {
-    inject<Wiredash>((_) => wiredashWidget);
+  void updateWidget(Wiredash? wiredashWidget) {
+    inject<Wiredash?>((_) => wiredashWidget);
   }
 
   @override
@@ -150,13 +149,9 @@ void registerProdWiredashServices(WiredashServices sl) {
     (_) => SharedPreferences.getInstance,
   );
 
-  sl.inject<Wiredash>(
-    (_) => const Wiredash(
-      projectId: '',
-      secret: '',
-      child: SizedBox(),
-    ),
-  );
+  sl.inject<Wiredash?>((_) {
+    return null;
+  });
   sl.inject<EnvironmentLoader>((_) {
     return EnvironmentLoader(
       wiredashWidget: () => sl.wiredashWidget,
@@ -202,16 +197,16 @@ void registerProdWiredashServices(WiredashServices sl) {
     (_) {
       if (kIsWeb) {
         return DirectEventSubmitter(
-          eventStore: sl.eventStore,
-          api: sl.api,
-          projectId: () => sl.wiredashWidget.projectId,
+          eventStore: () => sl.eventStore,
+          api: () => sl.api,
+          projectId: () => sl.wiredashWidget!.projectId,
         );
       }
 
       return DebounceEventSubmitter(
-        api: sl.api,
-        eventStore: sl.eventStore,
-        projectId: () => sl.wiredashWidget.projectId,
+        api: () => sl.api,
+        eventStore: () => sl.eventStore,
+        projectId: () => sl.wiredashWidget!.projectId,
       );
     },
   );
@@ -221,8 +216,8 @@ void registerProdWiredashServices(WiredashServices sl) {
   );
   sl.inject<PicassoController>((locator) {
     final controller = PicassoController();
-    locator.listen<Wiredash>((wiredashWidget) {
-      controller.color ??= wiredashWidget.theme?.firstPenColor;
+    locator.listen<Wiredash?>((wiredashWidget) {
+      controller.color ??= wiredashWidget?.theme?.firstPenColor;
     });
 
     return controller;
@@ -232,7 +227,7 @@ void registerProdWiredashServices(WiredashServices sl) {
   sl.inject<FlutterInfoCollector>((_) => FlutterInfoCollector(window));
   sl.inject<BuildInfo>((_) => getBuildInformation());
   sl.inject<WiredashOptionsData>(
-    (_) => sl.wiredashWidget.options ?? const WiredashOptionsData(),
+    (_) => sl.wiredashWidget?.options ?? const WiredashOptionsData(),
   );
   sl.inject<ScreenCaptureController>((locator) => ScreenCaptureController());
 
@@ -246,8 +241,8 @@ void registerProdWiredashServices(WiredashServices sl) {
     (locator) {
       return WiredashApi(
         httpClient: Client(),
-        projectId: sl.wiredashWidget.projectId,
-        secret: sl.wiredashWidget.secret,
+        projectId: sl.wiredashWidget!.projectId,
+        secret: sl.wiredashWidget!.secret,
       );
     },
   );
@@ -255,7 +250,7 @@ void registerProdWiredashServices(WiredashServices sl) {
   sl.inject<FeedbackSubmitter>(
     (locator) {
       if (kIsWeb) {
-        return DirectFeedbackSubmitter(sl.api);
+        return DirectFeedbackSubmitter(() => sl.api);
       }
 
       const fileSystem = LocalFileSystem();
@@ -267,7 +262,7 @@ void registerProdWiredashServices(WiredashServices sl) {
         wuidGenerator: sl.wuidGenerator,
       );
       final retryingFeedbackSubmitter =
-          RetryingFeedbackSubmitter(fileSystem, storage, sl.api);
+          RetryingFeedbackSubmitter(fileSystem, storage, () => sl.api);
       return retryingFeedbackSubmitter;
     },
   );
@@ -349,4 +344,22 @@ class DiscardPsUseCase {
   void call() {
     services.inject<PsModel>((locator) => PsModel(services));
   }
+}
+
+class UnmountedWiredashWidget extends Wiredash {
+  const UnmountedWiredashWidget({super.key})
+      : super(
+          projectId: 'unmounted',
+          secret: 'unmounted',
+          child: const SizedBox(),
+        );
+
+  @override
+  String get projectId => throw UnsupportedError('No widget is unmounted');
+
+  @override
+  String get secret => throw UnsupportedError('No widget is unmounted');
+
+  @override
+  String get environment => throw UnsupportedError('No widget is unmounted');
 }

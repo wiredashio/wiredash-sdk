@@ -210,19 +210,28 @@ class InstanceFactory<T> {
       _tracker.create();
       _log(() => '${DependencyTracker._levelIndent}Creating $factoryType');
       late final T i;
-      i = create(locator);
-      _log(() {
-        final deps = dependencies.map((e) {
-          final i = e._instance as Object?;
-          if (i == null) return e.factoryType;
-          if (i is Function) return i.objectId;
-          return '${e.factoryType}=>${i.objectId}';
-        }).join(', ');
-        final depsText = deps.isEmpty ? '' : ', watching $deps';
-        return '${DependencyTracker._levelIndent}Created $factoryType=>${(i as Object?).objectId}$depsText';
-      });
-      _tracker.created();
-      _instance = i;
+      try {
+        i = create(locator);
+        _log(() {
+          final deps = dependencies.map((e) {
+            final i = e._instance as Object?;
+            if (i == null) return e.factoryType;
+            if (i is Function) return i.objectId;
+            return '${e.factoryType}=>${i.objectId}';
+          }).join(', ');
+          final depsText = deps.isEmpty ? '' : ', watching $deps';
+          return '${DependencyTracker._levelIndent}Created $factoryType=>${(i as Object?).objectId}$depsText';
+        });
+        _instance = i;
+      } catch (e, stack) {
+        _log(
+          () =>
+              '${DependencyTracker._levelIndent}Error creating $factoryType: $e\n$stack',
+        );
+        rethrow;
+      } finally {
+        _tracker.created();
+      }
     } else {
       _tracker.create();
       _tracker.created();

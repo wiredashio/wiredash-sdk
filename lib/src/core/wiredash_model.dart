@@ -80,7 +80,7 @@ class WiredashModel with ChangeNotifier {
   }
 
   WiredashFeedbackOptions? get feedbackOptions =>
-      _feedbackOptionsOverride ?? services.wiredashWidget.feedbackOptions;
+      _feedbackOptionsOverride ?? services.wiredashWidget?.feedbackOptions;
 
   /// The ps options passed into `Wiredash.of(context).showPromoterSurvey()` call
   PsOptions? _psOptionsOverride;
@@ -94,7 +94,7 @@ class WiredashModel with ChangeNotifier {
 
   PsOptions get psOptions =>
       _psOptionsOverride ??
-      services.wiredashWidget.psOptions ??
+      services.wiredashWidget?.psOptions ??
       defaultPsOptions;
 
   /// Deletes pending feedbacks
@@ -157,7 +157,7 @@ class WiredashModel with ChangeNotifier {
     CustomMetaDataCollector? fallbackCollector,
   ) async {
     final collector =
-        services.wiredashWidget.collectMetaData ?? fallbackCollector;
+        services.wiredashWidget?.collectMetaData ?? fallbackCollector;
 
     if (collector != null) {
       try {
@@ -189,7 +189,7 @@ class WiredashModel with ChangeNotifier {
   }
 
   String get environment {
-    final widgetEnv = services.wiredashWidget.environment;
+    final widgetEnv = services.wiredashWidget?.environment;
     if (widgetEnv != null) {
       return widgetEnv;
     }

@@ -274,7 +274,7 @@ class FeedbackModel extends ChangeNotifier2 {
 
     final image = _services.screenCaptureController.screenshot;
     if (image != null) {
-      final bg = _services.wiredashWidget.theme?.appBackgroundColor ??
+      final bg = _services.wiredashWidget?.theme?.appBackgroundColor ??
           const Color(0xffcccccc);
       final screenshot =
           await _services.picassoController.paintDrawingOntoImage(image, bg);

@@ -241,6 +241,7 @@ class DeviceInfo {
   final String? deviceModel;
   final String? osVersion;
 
+  // TODO remove again
   /// Available on android/ios, some basic device categorization if the device
   /// is a physical device or emulated/simulated
   final bool? isPhysicalDevice;

@@ -49,8 +49,8 @@ class DirectEventSubmitter extends DebounceEventSubmitter {
 /// Use [initialThrottleDuration] to set the time to wait before sending the first event.
 /// Set [throttleDuration] to set the time to wait between sending batches of events.
 class DebounceEventSubmitter implements EventSubmitter {
-  final AnalyticsEventStore eventStore;
-  final WiredashApi api;
+  final AnalyticsEventStore Function() eventStore;
+  final WiredashApi Function() api;
   final String Function() projectId;
 
   final Duration throttleDuration;
@@ -119,9 +119,9 @@ class DebounceEventSubmitter implements EventSubmitter {
 
     final projectId = this.projectId();
 
-    await eventStore.deleteOutdatedEvents();
-    await eventStore.trimToDiskLimit();
-    final toBeSubmitted = await eventStore.getEvents(projectId);
+    await eventStore().deleteOutdatedEvents();
+    await eventStore().trimToDiskLimit();
+    final toBeSubmitted = await eventStore().getEvents(projectId);
 
     if (toBeSubmitted.isEmpty) {
       return;
@@ -135,7 +135,7 @@ class DebounceEventSubmitter implements EventSubmitter {
         return custom;
       });
       for (final key in droppedKeys) {
-        await eventStore.removeEvent(key);
+        await eventStore().removeEvent(key);
       }
     }
     if (toBeSubmitted.isEmpty) {
@@ -161,15 +161,15 @@ class DebounceEventSubmitter implements EventSubmitter {
     }).toList();
 
     try {
-      await api.sendEvents(requestEvents);
+      await api().sendEvents(requestEvents);
       for (final key in toBeSubmitted.keys) {
-        await eventStore.removeEvent(key);
+        await eventStore().removeEvent(key);
       }
     } on PaidFeatureException catch (e, stack) {
       _freePlan = true;
       // also delete all local events, they where successfully submitted but dropped
       for (final key in toBeSubmitted.keys) {
-        await eventStore.removeEvent(key);
+        await eventStore().removeEvent(key);
       }
       reportWiredashInfo(
         e,
@@ -178,7 +178,7 @@ class DebounceEventSubmitter implements EventSubmitter {
       );
     } on UnauthenticatedWiredashApiException catch (e, stack) {
       for (final key in toBeSubmitted.keys) {
-        await eventStore.removeEvent(key);
+        await eventStore().removeEvent(key);
       }
       reportWiredashInfo(
         e,
@@ -201,6 +201,6 @@ class DebounceEventSubmitter implements EventSubmitter {
 
   @override
   Future<void> deletePendingEvents() async {
-    await eventStore.wipe();
+    await eventStore().wipe();
   }
 }

@@ -78,7 +78,7 @@ class Wiredash extends StatefulWidget {
   ///
   /// The environment needs to be
   /// - at least 2 characters long, max 32 characters
-  /// - only use A-Z, a-z, - and _
+  /// - only use lowercase a-z, - and _
   /// - start with a letter (a-zA-Z)
   final String? environment;
 
@@ -248,8 +248,12 @@ class Wiredash extends StatefulWidget {
     String eventName, {
     Map<String, Object?>? data,
     String? projectId,
+    String? environment,
   }) async {
-    final analytics = WiredashAnalytics(projectId: projectId);
+    final analytics = WiredashAnalytics(
+      projectId: projectId,
+      environment: environment,
+    );
     await analytics.trackEvent(eventName, data: data);
   }
 }
@@ -589,12 +593,12 @@ void validateEnvironment(String environment) {
   if (firstChar == '#') {
     firstChar = String.fromCharCode(environment.codeUnitAt(1));
   }
-  final regex = RegExp('^[A-Za-z]');
+  final regex = RegExp('^[a-z]');
   if (!regex.hasMatch(firstChar)) {
     throw ArgumentError.value(
       environment,
       'environment',
-      '$environment must start with a letter (a-zA-Z)',
+      '$environment must start with a letter (a-z)',
     );
   }
 
@@ -602,7 +606,7 @@ void validateEnvironment(String environment) {
   ///
   /// All checks in validateEventName are based on this regular expression but
   /// are split up for better error messages.
-  final environmentRegExp = RegExp(r'^[A-Za-z][A-Za-z_-]+$');
+  final environmentRegExp = RegExp(r'^[a-z][a-z_-]+$');
   if (!environmentRegExp.hasMatch(environment)) {
     throw ArgumentError.value(
       environment,
