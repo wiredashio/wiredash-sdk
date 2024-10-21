@@ -223,8 +223,10 @@ void main() {
     await robot.tapText('Send Event');
     await tester.pumpSmart();
 
-    final api1 = robot.servicesForProject('project1').api as MockWiredashApi;
-    final api2 = robot.servicesForProject('project2').api as MockWiredashApi;
+    final api1 =
+        robot.servicesWith(projectId: 'project1').api as MockWiredashApi;
+    final api2 =
+        robot.servicesWith(projectId: 'project2').api as MockWiredashApi;
     api1.sendEventsInvocations.verifyInvocationCount(1);
     api2.sendEventsInvocations.verifyInvocationCount(0);
   });
@@ -269,10 +271,179 @@ void main() {
     await robot.tapText('Send Event');
     await tester.pumpSmart();
 
-    final api1 = robot.servicesForProject('project1').api as MockWiredashApi;
-    final api2 = robot.servicesForProject('project2').api as MockWiredashApi;
+    final api1 =
+        robot.servicesWith(projectId: 'project1').api as MockWiredashApi;
+    final api2 =
+        robot.servicesWith(projectId: 'project2').api as MockWiredashApi;
     api1.sendEventsInvocations.verifyInvocationCount(0);
     api2.sendEventsInvocations.verifyInvocationCount(1);
+  });
+
+  testWidgets('two instances - picks first project, ignores environment',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      wrapWithWiredash: false,
+      builder: (context) {
+        return Scaffold(
+          body: Column(
+            children: [
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project1',
+                  environment: 'env-a',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project1',
+                  environment: 'env-b',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await Wiredash.trackEvent('test_event', environment: 'env-b');
+                },
+                child: const Text('Send Event'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+
+    // picks first matching projectId, environment does not matter
+    final api = robot
+        .servicesWith(projectId: 'project1', environment: 'env-a')
+        .api as MockWiredashApi;
+    final lastEvents = api.sendEventsInvocations.latest;
+    final events = lastEvents[0] as List<RequestEvent>?;
+    expect(events, hasLength(1));
+    final event = events![0];
+    expect(event.eventName, 'test_event');
+    expect(event.environment, 'env-b');
+  });
+
+  testWidgets('two instances - picks correct project, ignores environment',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      wrapWithWiredash: false,
+      builder: (context) {
+        return Scaffold(
+          body: Column(
+            children: [
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project1',
+                  environment: 'env-a',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project2',
+                  environment: 'env-b',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await Wiredash.trackEvent(
+                    'test_event',
+                    projectId: 'project2',
+                    environment: 'env-x',
+                  );
+                },
+                child: const Text('Send Event'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+
+    final api =
+        robot.servicesWith(projectId: 'project2').api as MockWiredashApi;
+    final lastEvents = api.sendEventsInvocations.latest;
+    final events = lastEvents[0] as List<RequestEvent>?;
+    expect(events, hasLength(1));
+    final event = events![0];
+    expect(event.eventName, 'test_event');
+    // sends via correct projectId regardless of environment
+    expect(event.environment, 'env-x');
+  });
+
+  testWidgets(
+      'two instances - even when environment matches, '
+      'uses first Wiredash instance because no projectId is set',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      wrapWithWiredash: false,
+      builder: (context) {
+        return Scaffold(
+          body: Column(
+            children: [
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project1',
+                  environment: 'env-a',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project2',
+                  environment: 'env-b',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await Wiredash.trackEvent(
+                    'test_event',
+                    environment: 'env-b', // does not set projectId
+                  );
+                },
+                child: const Text('Send Event'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+
+    final api1 =
+        robot.servicesWith(projectId: 'project1').api as MockWiredashApi;
+    api1.sendEventsInvocations.verifyInvocationCount(1);
+    final lastEvents = api1.sendEventsInvocations.latest;
+    final events = lastEvents[0] as List<RequestEvent>?;
+    expect(events, hasLength(1));
+    final event = events![0];
+    expect(event.eventName, 'test_event');
+    expect(event.environment, 'env-b');
+
+    final api2 =
+        robot.servicesWith(projectId: 'project2').api as MockWiredashApi;
+    api2.sendEventsInvocations.verifyInvocationCount(0);
   });
 
   testWidgets('sendEvent is blocked by ad blocker', (tester) async {

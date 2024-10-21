@@ -249,12 +249,14 @@ class WiredashTestRobot {
     return (element.state as WiredashState).debugServices;
   }
 
-  WiredashServices servicesForProject(String projectId) {
+  WiredashServices servicesWith({String? projectId, String? environment}) {
     final elements =
         find.byType(Wiredash).evaluate().map((e) => e as StatefulElement);
-    final element = elements.firstWhere(
-      (e) => (e.state as WiredashState).widget.projectId == projectId,
-    );
+    final element = elements.firstWhere((e) {
+      final widget = (e.state as WiredashState).widget;
+      return (projectId == null || widget.projectId == projectId) &&
+          (environment == null || widget.environment == environment);
+    });
     return (element.state as WiredashState).debugServices;
   }
 

@@ -79,7 +79,7 @@ class Wiredash extends StatefulWidget {
   /// The environment needs to be
   /// - at least 2 characters long, max 32 characters
   /// - only use lowercase a-z, - and _
-  /// - start with a letter (a-zA-Z)
+  /// - start with a letter (a-z)
   final String? environment;
 
   /// Customize Wiredash's behaviour and language
