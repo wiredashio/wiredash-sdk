@@ -6,7 +6,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
-import 'package:wiredash/src/core/options/environment_loader.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
@@ -41,6 +40,8 @@ class WiredashAnalytics {
   /// - at least 2 characters long, max 32 characters
   /// - only use lowercase a-z, - and _
   /// - start with a letter (a-z)
+  ///
+  /// Experimental, because this feature is not yet fully rolled out in the console
   final String? _environment;
 
   /// Creates a new instance of [WiredashAnalytics], creating multiple is totally fine.
@@ -48,6 +49,13 @@ class WiredashAnalytics {
   ///
   /// Set the [projectId] in case you have multiple [Wiredash] widgets with different
   /// projectIds in your app. If you only have one [Wiredash] widget, you can omit the [projectId].
+  ///
+  /// Set the [environment] of your app, like 'prod', 'dev', 'staging'
+  /// Defaults to the environment of the [Wiredash] widget, which itself
+  /// defaults to 'dev' for debug builds and 'prod' for release builds.
+  ///
+  /// It is necessary to set the [environment] in cases when there is no [Wiredash]
+  /// widget mounted, like in a background isolate.
   WiredashAnalytics({
     String? projectId,
     String? environment,

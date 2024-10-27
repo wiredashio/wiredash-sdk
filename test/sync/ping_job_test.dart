@@ -238,10 +238,4 @@ class MockEnvironmentLoader implements EnvironmentLoader {
   Future<String> getEnvironment() async {
     return environment;
   }
-
-  @override
-  Future<bool> isDevEnvironment() {
-    // TODO: implement isDevEnvironment
-    throw UnimplementedError();
-  }
 }

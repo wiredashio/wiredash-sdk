@@ -122,7 +122,9 @@ void main() {
     expect(event.eventData, {'param1': 'value1'});
   });
 
-  testWidgets('sendEvent (static) to environment from Widget', (tester) async {
+  testWidgets(
+      'Wiredash.trackEvent automatically users the environment from the widget',
+      (tester) async {
     final robot = WiredashTestRobot(tester);
     await robot.launchApp(
       environment: 'custom',
