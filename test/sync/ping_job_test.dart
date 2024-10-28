@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/core/options/environment_loader.dart';
+import 'package:wiredash/src/core/options/environment_detector.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
@@ -37,7 +37,7 @@ void main() {
         wuidGenerator: () {
           return incrementalIdGenerator;
         },
-        environmentLoader: () => MockEnvironmentLoader('prod'),
+        environmentDetector: () => FixedEnvironmentDetector('prod'),
       );
     }
 
@@ -152,7 +152,7 @@ void main() {
           sharedPreferencesProvider: prefsProvider,
           metaDataCollector: () => FakeMetaDataCollector(),
           wuidGenerator: () => IncrementalIdGenerator(),
-          environmentLoader: () => MockEnvironmentLoader('prod'),
+          environmentDetector: () => FixedEnvironmentDetector('prod'),
         );
         pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
@@ -175,7 +175,7 @@ void main() {
           sharedPreferencesProvider: prefsProvider,
           metaDataCollector: () => FakeMetaDataCollector(),
           wuidGenerator: () => IncrementalIdGenerator(),
-          environmentLoader: () => MockEnvironmentLoader('prod'),
+          environmentDetector: () => FixedEnvironmentDetector('prod'),
         );
         pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
@@ -229,10 +229,10 @@ class FakeMetaDataCollector with Fake implements MetaDataCollector {
   }
 }
 
-class MockEnvironmentLoader implements EnvironmentLoader {
+class FixedEnvironmentDetector implements EnvironmentDetector {
   final String environment;
 
-  MockEnvironmentLoader(this.environment);
+  FixedEnvironmentDetector(this.environment);
 
   @override
   Future<String> getEnvironment() async {

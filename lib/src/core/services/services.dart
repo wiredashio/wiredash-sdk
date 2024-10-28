@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:file/local.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,7 +10,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
-import 'package:wiredash/src/core/options/environment_loader.dart';
+import 'package:wiredash/src/core/options/environment_detector.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/app_telemetry_job.dart';
@@ -103,6 +102,8 @@ class WiredashServices extends ChangeNotifier {
 
   MetaDataCollector get metaDataCollector => _locator.watch();
 
+  BuildInfo get buildInfo => _locator.get();
+
   TestDetector get testDetector => _locator.watch();
 
   AnalyticsEventStore get eventStore => _locator.watch();
@@ -111,7 +112,7 @@ class WiredashServices extends ChangeNotifier {
 
   FlutterAppLifecycleNotifier get appLifecycleNotifier => _locator.watch();
 
-  EnvironmentLoader get environmentLoader => _locator.watch();
+  EnvironmentDetector get environmentDetector => _locator.watch();
 
   Future<SharedPreferences> Function() get sharedPreferencesProvider {
     // explicitly using get instead of watch, because it is a factory not an
@@ -152,10 +153,11 @@ void registerProdWiredashServices(WiredashServices sl) {
   sl.inject<Wiredash?>((_) {
     return null;
   });
-  sl.inject<EnvironmentLoader>((_) {
-    return EnvironmentLoader(
+  sl.inject<EnvironmentDetector>((_) {
+    return EnvironmentDetector(
       wiredashWidget: () => sl.wiredashWidget,
       metaDataCollector: () => sl.metaDataCollector,
+      buildInfoProvider: () => sl.buildInfo,
     );
   });
   sl.inject<WuidGenerator>(
@@ -298,7 +300,7 @@ void registerProdWiredashServices(WiredashServices sl) {
           wuidGenerator: () => sl.wuidGenerator,
           metaDataCollector: () => sl.metaDataCollector,
           sharedPreferencesProvider: sl.sharedPreferencesProvider,
-          environmentLoader: () => sl.environmentLoader,
+          environmentDetector: () => sl.environmentDetector,
         ),
       );
       engine.addJob(

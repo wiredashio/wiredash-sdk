@@ -1,7 +1,7 @@
 import 'package:clock/clock.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/core/options/environment_loader.dart';
+import 'package:wiredash/src/core/options/environment_detector.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
@@ -11,14 +11,14 @@ class PingJob extends Job {
   final Future<SharedPreferences> Function() sharedPreferencesProvider;
   final WuidGenerator Function() wuidGenerator;
   final MetaDataCollector Function() metaDataCollector;
-  final EnvironmentLoader Function() environmentLoader;
+  final EnvironmentDetector Function() environmentDetector;
 
   PingJob({
     required this.apiProvider,
     required this.sharedPreferencesProvider,
     required this.wuidGenerator,
     required this.metaDataCollector,
-    required this.environmentLoader,
+    required this.environmentDetector,
   });
 
   static const lastSuccessfulPingKey = 'io.wiredash.last_successful_ping';
@@ -55,7 +55,7 @@ class PingJob extends Job {
 
     final fixedMetadata = await metaDataCollector().collectFixedMetaData();
     final flutterInfo = metaDataCollector().collectFlutterInfo();
-    final environment = await environmentLoader().getEnvironment();
+    final environment = await environmentDetector().getEnvironment();
 
     final body = PingRequestBody(
       analyticsId: await wuidGenerator().appUsageId(),

@@ -408,7 +408,7 @@ class FeedbackModel extends ChangeNotifier2 {
     final SessionMetaData? sessionMetadata =
         _services.wiredashModel.sessionMetaData;
     final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
-    final environment = await _services.environmentLoader.getEnvironment();
+    final environment = await _services.environmentDetector.getEnvironment();
 
     final email = () {
       if (_services.wiredashModel.feedbackOptions?.email ==

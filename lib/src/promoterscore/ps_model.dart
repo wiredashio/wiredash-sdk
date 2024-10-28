@@ -76,7 +76,7 @@ class PsModel extends ChangeNotifier2 {
         await _services.wiredashModel.collectSessionMetaData(fallbackCollector);
     final sessionMetadata = _services.wiredashModel.sessionMetaData;
     final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
-    final environment = await _services.environmentLoader.getEnvironment();
+    final environment = await _services.environmentDetector.getEnvironment();
 
     final body = PromoterScoreRequestBody(
       score: score,

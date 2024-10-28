@@ -132,7 +132,7 @@ class WiredashAnalytics {
     _services.updateWidget(wiredash?.widget);
 
     final String environment =
-        _environment ?? await _services.environmentLoader.getEnvironment();
+        _environment ?? await _services.environmentDetector.getEnvironment();
 
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();

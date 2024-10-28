@@ -67,7 +67,8 @@ class Wiredash extends StatefulWidget {
 
   /// The environment of your app, like 'prod', 'dev', 'staging'
   ///
-  /// Defaults to 'dev' for debug builds and 'prod' for release builds.
+  /// When null, defaults to 'prod' for release builds and 'dev' for debug builds and emulators.
+  /// To disable the automatic environment detection, set `environment: 'prod'`.
   ///
   /// Setting an environment is useful to differentiate between different
   /// versions of your app allowing you to filter analytics and feedback by
@@ -550,7 +551,7 @@ Locale get _defaultLocale {
   return locale ?? const Locale('en', 'US');
 }
 
-/// Validates [Wiredash.environment]
+/// Validates the value [Wiredash.environment]
 ///
 /// {@template environmentNameConstraints}
 /// The environment needs to be
