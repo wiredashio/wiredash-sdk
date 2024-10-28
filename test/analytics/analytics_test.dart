@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_redundant_argument_values
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -12,7 +14,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/core/network/send_events_request.dart';
-import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
