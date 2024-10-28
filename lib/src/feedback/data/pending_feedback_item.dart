@@ -175,6 +175,11 @@ extension on AllMetaData {
       }
     }
 
+    final _environment = environment;
+    if (_environment != null) {
+      values.addAll({'environment': _environment});
+    }
+
     assert(installId.length >= 16);
     values.addAll({'installId': nonNull(installId)});
 
