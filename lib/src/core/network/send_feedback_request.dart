@@ -142,6 +142,11 @@ extension AllMetaDataRequestJson on AllMetaData {
       values.addAll({'deviceModel': _deviceModel});
     }
 
+    final _environment = environment;
+    if (_environment != null) {
+      values.addAll({'environment': _environment});
+    }
+
     assert(installId.length >= 16);
     // for backwards compatability we convert the old uuid to a nanoId
     final _installNanoId = uuidToNanoId(installId, maxLength: 32);
