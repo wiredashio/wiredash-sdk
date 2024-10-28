@@ -200,5 +200,15 @@ void main() {
 
       await gesture.up(); // let go of the app
     });
+
+    testWidgets('PS - sends environment', (tester) async {
+      final robot = await WiredashTestRobot(tester).launchApp(
+        environment: 'alpha',
+      );
+      await robot.openPromoterScore();
+      final psCalls = robot.mockServices.mockApi.sendPsInvocations.invocations;
+      final call = psCalls[0][0] as PromoterScoreRequestBody?;
+      expect(call!.metadata.environment, 'alpha');
+    });
   });
 }
