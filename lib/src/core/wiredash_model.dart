@@ -187,17 +187,6 @@ class WiredashModel with ChangeNotifier {
       reportWiredashInfo(e, stack, 'Unexpected error while submitting events');
     }
   }
-
-  String get environment {
-    final widgetEnv = services.wiredashWidget?.environment;
-    if (widgetEnv != null) {
-      return widgetEnv;
-    }
-    if (kReleaseMode) {
-      return 'prod';
-    }
-    return 'dev';
-  }
 }
 
 extension ChangeNotifierAsValueNotifier<C extends ChangeNotifier> on C {

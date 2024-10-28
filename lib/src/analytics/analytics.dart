@@ -36,12 +36,7 @@ class WiredashAnalytics {
   /// White-label apps can use this to differentiate between different clients,
   /// when they share the same Wiredash project.
   ///
-  /// The environment needs to be
-  /// - at least 2 characters long, max 32 characters
-  /// - only use lowercase a-z, - and _
-  /// - start with a letter (a-z)
-  ///
-  /// Experimental, because this feature is not yet fully rolled out in the console
+  /// {@macro environmentNameConstraints}
   final String? _environment;
 
   /// Creates a new instance of [WiredashAnalytics], creating multiple is totally fine.

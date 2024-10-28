@@ -76,10 +76,7 @@ class Wiredash extends StatefulWidget {
   /// White-label apps can use this to differentiate between different clients,
   /// when they share the same Wiredash project.
   ///
-  /// The environment needs to be
-  /// - at least 2 characters long, max 32 characters
-  /// - only use lowercase a-z, - and _
-  /// - start with a letter (a-z)
+  /// {@macro environmentNameConstraints}
   final String? environment;
 
   /// Customize Wiredash's behaviour and language
@@ -352,7 +349,6 @@ class WiredashState extends State<Wiredash> {
         widget.options?.localizationDelegate) {
       _verifySyncLocalizationsDelegate();
     }
-    _services.updateWidget(widget);
   }
 
   void _onProjectEnvChanged() {
@@ -554,6 +550,14 @@ Locale get _defaultLocale {
   return locale ?? const Locale('en', 'US');
 }
 
+/// Validates [Wiredash.environment]
+///
+/// {@template environmentNameConstraints}
+/// The environment needs to be
+/// - at least 2 characters long, max 32 characters
+/// - only use lowercase a-z, - and _
+/// - start with a letter (a-z)
+/// {@endtemplate}
 void validateEnvironment(String environment) {
   if (environment.isEmpty) {
     throw ArgumentError.value(

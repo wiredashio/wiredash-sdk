@@ -345,21 +345,3 @@ class DiscardPsUseCase {
     services.inject<PsModel>((locator) => PsModel(services));
   }
 }
-
-class UnmountedWiredashWidget extends Wiredash {
-  const UnmountedWiredashWidget({super.key})
-      : super(
-          projectId: 'unmounted',
-          secret: 'unmounted',
-          child: const SizedBox(),
-        );
-
-  @override
-  String get projectId => throw UnsupportedError('No widget is unmounted');
-
-  @override
-  String get secret => throw UnsupportedError('No widget is unmounted');
-
-  @override
-  String get environment => throw UnsupportedError('No widget is unmounted');
-}
