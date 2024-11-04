@@ -1,8 +1,11 @@
+// ignore_for_file: avoid_redundant_argument_values
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:clock/clock.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
@@ -10,11 +13,10 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
-
 import 'package:wiredash/src/core/network/send_events_request.dart';
-import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
+import 'package:wiredash/src/core/wiredash_widget.dart';
 import 'package:wiredash/wiredash.dart';
 
 import '../util/flutter_error.dart';
@@ -56,6 +58,7 @@ void main() {
     expect(event.buildVersion, '9.9.9');
     expect(event.bundleId, 'io.wiredash.test');
     expect(event.createdAt, now);
+    expect(event.environment, 'dev');
     expect(event.platformOS, isNotNull);
     if (!Platform.isLinux) {
       expect(event.platformOSVersion, '10.0.1');
@@ -121,6 +124,69 @@ void main() {
   });
 
   testWidgets(
+      'Wiredash.trackEvent automatically users the environment from the widget',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      environment: 'custom',
+      builder: (context) {
+        return Scaffold(
+          body: ElevatedButton(
+            onPressed: () {
+              Wiredash.trackEvent('test_event', data: {'param1': 'value1'});
+            },
+            child: const Text('Send Event'),
+          ),
+        );
+      },
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+    final lastEvents = robot.mockServices.mockApi.sendEventsInvocations.latest;
+    final events = lastEvents[0] as List<RequestEvent>?;
+    expect(events, hasLength(1));
+    final event = events![0];
+    expect(event.eventName, 'test_event');
+    expect(event.environment, 'custom');
+  });
+
+  testWidgets('sendEvent (static) to different environment from Widget',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      environment: 'production',
+      builder: (context) {
+        return Scaffold(
+          body: ElevatedButton(
+            onPressed: () {
+              Wiredash.trackEvent(
+                'test_event',
+                data: {'param1': 'value1'},
+                environment: 'internal-dev-team',
+              );
+            },
+            child: const Text('Send Event'),
+          ),
+        );
+      },
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+
+    robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+    final lastEvents = robot.mockServices.mockApi.sendEventsInvocations.latest;
+    final events = lastEvents[0] as List<RequestEvent>?;
+    expect(events, hasLength(1));
+    final event = events![0];
+    expect(event.eventName, 'test_event');
+    expect(event.environment, 'internal-dev-team');
+  });
+
+  testWidgets(
       'sendEvent top-level with two instances - '
       'forwards to the first registered with warning - order 1',
       (tester) async {
@@ -160,8 +226,10 @@ void main() {
     await robot.tapText('Send Event');
     await tester.pumpSmart();
 
-    final api1 = robot.servicesForProject('project1').api as MockWiredashApi;
-    final api2 = robot.servicesForProject('project2').api as MockWiredashApi;
+    final api1 =
+        robot.servicesWith(projectId: 'project1').api as MockWiredashApi;
+    final api2 =
+        robot.servicesWith(projectId: 'project2').api as MockWiredashApi;
     api1.sendEventsInvocations.verifyInvocationCount(1);
     api2.sendEventsInvocations.verifyInvocationCount(0);
   });
@@ -206,10 +274,179 @@ void main() {
     await robot.tapText('Send Event');
     await tester.pumpSmart();
 
-    final api1 = robot.servicesForProject('project1').api as MockWiredashApi;
-    final api2 = robot.servicesForProject('project2').api as MockWiredashApi;
+    final api1 =
+        robot.servicesWith(projectId: 'project1').api as MockWiredashApi;
+    final api2 =
+        robot.servicesWith(projectId: 'project2').api as MockWiredashApi;
     api1.sendEventsInvocations.verifyInvocationCount(0);
     api2.sendEventsInvocations.verifyInvocationCount(1);
+  });
+
+  testWidgets('two instances - picks first project, ignores environment',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      wrapWithWiredash: false,
+      builder: (context) {
+        return Scaffold(
+          body: Column(
+            children: [
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project1',
+                  environment: 'env-a',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project1',
+                  environment: 'env-b',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await Wiredash.trackEvent('test_event', environment: 'env-b');
+                },
+                child: const Text('Send Event'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+
+    // picks first matching projectId, environment does not matter
+    final api = robot
+        .servicesWith(projectId: 'project1', environment: 'env-a')
+        .api as MockWiredashApi;
+    final lastEvents = api.sendEventsInvocations.latest;
+    final events = lastEvents[0] as List<RequestEvent>?;
+    expect(events, hasLength(1));
+    final event = events![0];
+    expect(event.eventName, 'test_event');
+    expect(event.environment, 'env-b');
+  });
+
+  testWidgets('two instances - picks correct project, ignores environment',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      wrapWithWiredash: false,
+      builder: (context) {
+        return Scaffold(
+          body: Column(
+            children: [
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project1',
+                  environment: 'env-a',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project2',
+                  environment: 'env-b',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await Wiredash.trackEvent(
+                    'test_event',
+                    projectId: 'project2',
+                    environment: 'env-x',
+                  );
+                },
+                child: const Text('Send Event'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+
+    final api =
+        robot.servicesWith(projectId: 'project2').api as MockWiredashApi;
+    final lastEvents = api.sendEventsInvocations.latest;
+    final events = lastEvents[0] as List<RequestEvent>?;
+    expect(events, hasLength(1));
+    final event = events![0];
+    expect(event.eventName, 'test_event');
+    // sends via correct projectId regardless of environment
+    expect(event.environment, 'env-x');
+  });
+
+  testWidgets(
+      'two instances - even when environment matches, '
+      'uses first Wiredash instance because no projectId is set',
+      (tester) async {
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      wrapWithWiredash: false,
+      builder: (context) {
+        return Scaffold(
+          body: Column(
+            children: [
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project1',
+                  environment: 'env-a',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              const Expanded(
+                child: Wiredash(
+                  projectId: 'project2',
+                  environment: 'env-b',
+                  secret: 'secret',
+                  child: SizedBox(),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await Wiredash.trackEvent(
+                    'test_event',
+                    environment: 'env-b', // does not set projectId
+                  );
+                },
+                child: const Text('Send Event'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    await robot.tapText('Send Event');
+    await tester.pumpSmart();
+
+    final api1 =
+        robot.servicesWith(projectId: 'project1').api as MockWiredashApi;
+    api1.sendEventsInvocations.verifyInvocationCount(1);
+    final lastEvents = api1.sendEventsInvocations.latest;
+    final events = lastEvents[0] as List<RequestEvent>?;
+    expect(events, hasLength(1));
+    final event = events![0];
+    expect(event.eventName, 'test_event');
+    expect(event.environment, 'env-b');
+
+    final api2 =
+        robot.servicesWith(projectId: 'project2').api as MockWiredashApi;
+    api2.sendEventsInvocations.verifyInvocationCount(0);
   });
 
   testWidgets('sendEvent is blocked by ad blocker', (tester) async {
@@ -776,19 +1013,56 @@ void main() {
 
   test('3rd party implements WiredashAnalytics', () {
     final analytics = ThirdPartyAnalytics();
-    expect(analytics.projectId, isNull);
     expect(
       () => analytics.trackEvent('test_event', data: {'param1': 'value1'}),
       returnsNormally,
     );
   });
+
+  test('serialize event', () {
+    final event = AnalyticsEvent(
+      analyticsId: '01234567890123456',
+      buildCommit: 'abcdef3',
+      buildNumber: '9001',
+      buildVersion: '9.9.9',
+      bundleId: 'io.wiredash.test',
+      createdAt: DateTime(2024, 1, 1),
+      environment: 'custom',
+      eventName: 'test_event',
+      platformLocale: 'en-US',
+      platformOS: 'android',
+      platformOSVersion: '10.0.1',
+      sdkVersion: 250,
+    );
+    final serialized = serializeEventV1(event);
+    final deserialized = deserializeEventV1(serialized);
+    expect(deserialized, event);
+  });
+
+  test('WiredashAnalytics() accesses env from widget', () async {
+    SharedPreferences.setMockInitialValues({});
+
+    const widget = Wiredash(
+      projectId: '',
+      secret: '',
+      environment: 'custom',
+      child: SizedBox(),
+    );
+    final el = widget.createElement();
+    final state = el.state as WiredashState;
+    WiredashRegistry.instance.register(state);
+
+    final analytics = WiredashAnalytics();
+    await analytics.trackEvent('test_event');
+    final events = await state.debugServices.eventStore.getEvents(null);
+    final testEvent = events.values
+        .firstWhereOrNull((event) => event.eventName == 'test_event');
+    expect(testEvent!.environment, 'custom');
+  });
 }
 
 // verifies no new methods are accidentally added to WiredashAnalytics, making it easy to mock
 class ThirdPartyAnalytics implements WiredashAnalytics {
-  @override
-  String? get projectId => null;
-
   @override
   Future<void> trackEvent(
     String eventName, {

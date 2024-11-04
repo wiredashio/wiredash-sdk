@@ -19,7 +19,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
 
   final FileSystem fs;
   final PendingFeedbackItemStorage _pendingFeedbackItemStorage;
-  final WiredashApi _api;
+  final WiredashApi Function() _api;
 
   // Ensures that we're not starting multiple "submitPendingFeedbackItems()"
   // jobs in parallel.
@@ -155,7 +155,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
             assert(screenshot.isOnDisk || screenshot.isInMemory);
             if (screenshot.isInMemory) {
               final AttachmentId attachemntId =
-                  await _api.uploadScreenshot(screenshot.binaryData(fs)!);
+                  await _api().uploadScreenshot(screenshot.binaryData(fs)!);
 
               final uploaded = PersistedAttachment.screenshot(
                 file: FileDataEventuallyOnDisk.uploaded(attachemntId),
@@ -165,7 +165,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
               final file = fs.file(screenshot.pathToFile);
               if (file.existsSync()) {
                 final AttachmentId attachemntId =
-                    await _api.uploadScreenshot(screenshot.binaryData(fs)!);
+                    await _api().uploadScreenshot(screenshot.binaryData(fs)!);
 
                 final uploaded = PersistedAttachment.screenshot(
                   file: FileDataEventuallyOnDisk.uploaded(attachemntId),
@@ -185,7 +185,7 @@ class RetryingFeedbackSubmitter implements FeedbackSubmitter {
         );
 
         // actually submit the feedback
-        await _api.sendFeedback(copy.feedbackItem);
+        await _api().sendFeedback(copy.feedbackItem);
 
         // ignore: avoid_print
         print(

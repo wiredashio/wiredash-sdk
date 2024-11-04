@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/options/environment_detector.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
@@ -36,6 +37,7 @@ void main() {
         wuidGenerator: () {
           return incrementalIdGenerator;
         },
+        environmentDetector: () => FixedEnvironmentDetector('prod'),
       );
     }
 
@@ -150,6 +152,7 @@ void main() {
           sharedPreferencesProvider: prefsProvider,
           metaDataCollector: () => FakeMetaDataCollector(),
           wuidGenerator: () => IncrementalIdGenerator(),
+          environmentDetector: () => FixedEnvironmentDetector('prod'),
         );
         pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
@@ -172,6 +175,7 @@ void main() {
           sharedPreferencesProvider: prefsProvider,
           metaDataCollector: () => FakeMetaDataCollector(),
           wuidGenerator: () => IncrementalIdGenerator(),
+          environmentDetector: () => FixedEnvironmentDetector('prod'),
         );
         pingJob.execute(SdkEvent.appStartDelayed);
         async.flushTimers();
@@ -222,5 +226,16 @@ class FakeMetaDataCollector with Fake implements MetaDataCollector {
       viewInsets: WiredashWindowPadding(left: 0, top: 0, right: 0, bottom: 685),
       physicalSize: Size(1280, 720),
     );
+  }
+}
+
+class FixedEnvironmentDetector implements EnvironmentDetector {
+  final String environment;
+
+  FixedEnvironmentDetector(this.environment);
+
+  @override
+  Future<String> getEnvironment() async {
+    return environment;
   }
 }

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.0
+
+- New: Add environments to `Wiredash(environment: 'staging')` and `WiredashAnalytics(environment: 'staging')`. Automatically detects dev environments [#369](https://github.com/wiredashio/wiredash-sdk/pull/369)
+- Widen `device_info_plus` dependency to include `11.x`
+
 ## 2.2.2
 
 - Support for Flutter 3.26 [4684204](https://github.com/wiredashio/wiredash-sdk/commit/4684204ce36c00e203ed3aab25bae633faa0d464), [78fe666](https://github.com/wiredashio/wiredash-sdk/commit/78fe666078037a79bd85818d896acae364ba7d97), [46c43f7](https://github.com/wiredashio/wiredash-sdk/commit/46c43f706d037d88f0c4cbf472cc7bd801a9dd37)

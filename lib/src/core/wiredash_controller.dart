@@ -220,10 +220,12 @@ class WiredashController {
     String eventName, {
     Map<String, Object?>? data,
   }) async {
+    final wiredash = _model.services.wiredashWidget;
     Wiredash.trackEvent(
       eventName,
       data: data,
-      projectId: _model.services.wiredashWidget.projectId,
+      projectId: wiredash?.projectId,
+      environment: wiredash?.environment,
     );
   }
 
@@ -271,7 +273,7 @@ class WiredashController {
 
   /// Captures the current locale of the app when opening wiredash
   Locale? _detectAppLocale() {
-    final context = _model.services.wiredashWidget.showBuildContext;
+    final context = _model.services.wiredashWidget?.showBuildContext;
     if (context == null) return null;
 
     final locale = Localizations.maybeLocaleOf(context);
@@ -331,7 +333,7 @@ class WiredashController {
 
   /// Search the user context for the material theme
   ThemeData? _detectMaterialTheme() {
-    final context = _model.services.wiredashWidget.showBuildContext;
+    final context = _model.services.wiredashWidget?.showBuildContext;
     if (context != null) {
       return Theme.of(context);
     }
@@ -340,7 +342,7 @@ class WiredashController {
 
   /// Search the user context for the cupertino theme
   CupertinoThemeData? _detectCupertinoTheme() {
-    final context = _model.services.wiredashWidget.showBuildContext;
+    final context = _model.services.wiredashWidget?.showBuildContext;
     if (context != null) {
       return CupertinoTheme.of(context);
     }

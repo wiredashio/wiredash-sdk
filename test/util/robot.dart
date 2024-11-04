@@ -141,6 +141,7 @@ class WiredashTestRobot {
   Future<WiredashTestRobot> launchApp({
     WiredashFeedbackOptions? feedbackOptions,
     PsOptions? psOptions,
+    String? environment,
     FutureOr<CustomizableWiredashMetaData> Function(
       CustomizableWiredashMetaData metaData,
     )? collectMetaData,
@@ -209,6 +210,7 @@ class WiredashTestRobot {
       child = Wiredash(
         projectId: projectId ?? 'test',
         secret: 'test',
+        environment: environment,
         feedbackOptions: feedbackOptions,
         psOptions: psOptions,
         collectMetaData: collectMetaData,
@@ -247,12 +249,14 @@ class WiredashTestRobot {
     return (element.state as WiredashState).debugServices;
   }
 
-  WiredashServices servicesForProject(String projectId) {
+  WiredashServices servicesWith({String? projectId, String? environment}) {
     final elements =
         find.byType(Wiredash).evaluate().map((e) => e as StatefulElement);
-    final element = elements.firstWhere(
-      (e) => (e.state as WiredashState).widget.projectId == projectId,
-    );
+    final element = elements.firstWhere((e) {
+      final widget = (e.state as WiredashState).widget;
+      return (projectId == null || widget.projectId == projectId) &&
+          (environment == null || widget.environment == environment);
+    });
     return (element.state as WiredashState).debugServices;
   }
 
@@ -774,7 +778,7 @@ WiredashServices createMockServices({
     if (useDirectFeedbackSubmitter) {
       // replace submitter, because for testing we always want to submit directly
       services.inject<FeedbackSubmitter>(
-        (_) => DirectFeedbackSubmitter(services.api),
+        (_) => DirectFeedbackSubmitter(() => services.api),
       );
     } else {
       assert(
@@ -787,9 +791,9 @@ WiredashServices createMockServices({
         (_) {
           print('create direct submitter');
           return DirectEventSubmitter(
-            projectId: () => services.wiredashWidget.projectId,
-            eventStore: services.eventStore,
-            api: services.api,
+            projectId: () => services.wiredashWidget!.projectId,
+            eventStore: () => services.eventStore,
+            api: () => services.api,
           );
         },
       );

@@ -55,6 +55,7 @@ class PendingFeedbackItemParserV3 {
           },
         ),
         deviceModel: metadataJson['deviceModel'] as String?,
+        environment: metadataJson['environment'] as String?,
         installId: metadataJson['installId'] as String,
         platformBrightness: () {
           final value = metadataJson['platformBrightness'];

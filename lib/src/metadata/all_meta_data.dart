@@ -20,6 +20,7 @@ class AllMetaData {
   final CompilationMode compilationMode;
   final Map<String, Object?>? custom;
   final String? deviceModel;
+  final String? environment;
 
   /// Either a 16 char nanoId or a 36 char uuid from SDK 1.7.X and earlier
   final String installId;
@@ -50,6 +51,7 @@ class AllMetaData {
     required this.compilationMode,
     this.custom,
     this.deviceModel,
+    this.environment,
     required this.installId,
     required this.platformBrightness,
     this.platformDartVersion,
@@ -74,6 +76,7 @@ class AllMetaData {
     required FixedMetaData fixedMetadata,
     required FlutterInfo flutterInfo,
     required String installId,
+    required String environment,
     String? email,
   }) get from => _from;
 
@@ -84,6 +87,7 @@ class AllMetaData {
     required FixedMetaData fixedMetadata,
     required FlutterInfo flutterInfo,
     required String installId,
+    required String environment,
     Object? email = defaultArgument,
   }) {
     return AllMetaData(
@@ -97,6 +101,7 @@ class AllMetaData {
       compilationMode: fixedMetadata.buildInfo.compilationMode,
       custom: customizableMetadata.custom,
       deviceModel: fixedMetadata.deviceInfo.deviceModel,
+      environment: environment,
       installId: installId,
       platformBrightness: flutterInfo.platformBrightness,
       platformDartVersion: flutterInfo.platformDartVersion,
@@ -132,6 +137,7 @@ class AllMetaData {
           compilationMode == other.compilationMode &&
           const DeepCollectionEquality().equals(custom, other.custom) &&
           deviceModel == other.deviceModel &&
+          environment == other.environment &&
           installId == other.installId &&
           platformBrightness == other.platformBrightness &&
           platformDartVersion == other.platformDartVersion &&
@@ -163,6 +169,7 @@ class AllMetaData {
       compilationMode.hashCode ^
       const DeepCollectionEquality().hash(custom) ^
       deviceModel.hashCode ^
+      environment.hashCode ^
       installId.hashCode ^
       platformBrightness.hashCode ^
       platformDartVersion.hashCode ^
@@ -192,6 +199,7 @@ class AllMetaData {
         'compilationMode: $compilationMode, '
         'custom: $custom, '
         'deviceModel: $deviceModel, '
+        'environment: $environment, '
         'installId: $installId, '
         'platformBrightness: $platformBrightness, '
         'platformDartVersion: $platformDartVersion, '
@@ -221,6 +229,7 @@ class AllMetaData {
     CompilationMode? compilationMode,
     Map<String, Object?>? custom,
     String? deviceModel,
+    String? environment,
     String? installId,
     Brightness? platformBrightness,
     String? platformDartVersion,
@@ -248,6 +257,7 @@ class AllMetaData {
       compilationMode: compilationMode ?? this.compilationMode,
       custom: custom ?? this.custom,
       deviceModel: deviceModel ?? this.deviceModel,
+      environment: environment ?? this.environment,
       installId: installId ?? this.installId,
       platformBrightness: platformBrightness ?? this.platformBrightness,
       platformDartVersion: platformDartVersion ?? this.platformDartVersion,

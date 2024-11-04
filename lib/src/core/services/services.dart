@@ -1,9 +1,7 @@
 import 'dart:ui';
 
 import 'package:file/local.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +10,7 @@ import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
+import 'package:wiredash/src/core/options/environment_detector.dart';
 import 'package:wiredash/src/core/project_credential_validator.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/app_telemetry_job.dart';
@@ -81,7 +80,7 @@ class WiredashServices extends ChangeNotifier {
 
   WuidGenerator get wuidGenerator => _locator.watch();
 
-  Wiredash get wiredashWidget => _locator.watch();
+  Wiredash? get wiredashWidget => _locator.watch();
 
   WiredashOptionsData get wiredashOptions => _locator.watch();
 
@@ -103,6 +102,8 @@ class WiredashServices extends ChangeNotifier {
 
   MetaDataCollector get metaDataCollector => _locator.watch();
 
+  BuildInfo get buildInfo => _locator.get();
+
   TestDetector get testDetector => _locator.watch();
 
   AnalyticsEventStore get eventStore => _locator.watch();
@@ -111,14 +112,16 @@ class WiredashServices extends ChangeNotifier {
 
   FlutterAppLifecycleNotifier get appLifecycleNotifier => _locator.watch();
 
+  EnvironmentDetector get environmentDetector => _locator.watch();
+
   Future<SharedPreferences> Function() get sharedPreferencesProvider {
     // explicitly using get instead of watch, because it is a factory not an
     // object that returns the correct object for every call
     return _locator.get();
   }
 
-  void updateWidget(Wiredash wiredashWidget) {
-    inject<Wiredash>((_) => wiredashWidget);
+  void updateWidget(Wiredash? wiredashWidget) {
+    inject<Wiredash?>((_) => wiredashWidget);
   }
 
   @override
@@ -147,13 +150,16 @@ void registerProdWiredashServices(WiredashServices sl) {
     (_) => SharedPreferences.getInstance,
   );
 
-  sl.inject<Wiredash>(
-    (_) => const Wiredash(
-      projectId: '',
-      secret: '',
-      child: SizedBox(),
-    ),
-  );
+  sl.inject<Wiredash?>((_) {
+    return null;
+  });
+  sl.inject<EnvironmentDetector>((_) {
+    return EnvironmentDetector(
+      wiredashWidget: () => sl.wiredashWidget,
+      metaDataCollector: () => sl.metaDataCollector,
+      buildInfoProvider: () => sl.buildInfo,
+    );
+  });
   sl.inject<WuidGenerator>(
     (_) {
       final generator = SharedPrefsWuidGenerator(
@@ -193,16 +199,16 @@ void registerProdWiredashServices(WiredashServices sl) {
     (_) {
       if (kIsWeb) {
         return DirectEventSubmitter(
-          eventStore: sl.eventStore,
-          api: sl.api,
-          projectId: () => sl.wiredashWidget.projectId,
+          eventStore: () => sl.eventStore,
+          api: () => sl.api,
+          projectId: () => sl.wiredashWidget!.projectId,
         );
       }
 
       return DebounceEventSubmitter(
-        api: sl.api,
-        eventStore: sl.eventStore,
-        projectId: () => sl.wiredashWidget.projectId,
+        api: () => sl.api,
+        eventStore: () => sl.eventStore,
+        projectId: () => sl.wiredashWidget!.projectId,
       );
     },
   );
@@ -212,8 +218,8 @@ void registerProdWiredashServices(WiredashServices sl) {
   );
   sl.inject<PicassoController>((locator) {
     final controller = PicassoController();
-    locator.listen<Wiredash>((wiredashWidget) {
-      controller.color ??= wiredashWidget.theme?.firstPenColor;
+    locator.listen<Wiredash?>((wiredashWidget) {
+      controller.color ??= wiredashWidget?.theme?.firstPenColor;
     });
 
     return controller;
@@ -223,7 +229,7 @@ void registerProdWiredashServices(WiredashServices sl) {
   sl.inject<FlutterInfoCollector>((_) => FlutterInfoCollector(window));
   sl.inject<BuildInfo>((_) => getBuildInformation());
   sl.inject<WiredashOptionsData>(
-    (_) => sl.wiredashWidget.options ?? const WiredashOptionsData(),
+    (_) => sl.wiredashWidget?.options ?? const WiredashOptionsData(),
   );
   sl.inject<ScreenCaptureController>((locator) => ScreenCaptureController());
 
@@ -237,8 +243,8 @@ void registerProdWiredashServices(WiredashServices sl) {
     (locator) {
       return WiredashApi(
         httpClient: Client(),
-        projectId: sl.wiredashWidget.projectId,
-        secret: sl.wiredashWidget.secret,
+        projectId: sl.wiredashWidget!.projectId,
+        secret: sl.wiredashWidget!.secret,
       );
     },
   );
@@ -246,7 +252,7 @@ void registerProdWiredashServices(WiredashServices sl) {
   sl.inject<FeedbackSubmitter>(
     (locator) {
       if (kIsWeb) {
-        return DirectFeedbackSubmitter(sl.api);
+        return DirectFeedbackSubmitter(() => sl.api);
       }
 
       const fileSystem = LocalFileSystem();
@@ -258,7 +264,7 @@ void registerProdWiredashServices(WiredashServices sl) {
         wuidGenerator: sl.wuidGenerator,
       );
       final retryingFeedbackSubmitter =
-          RetryingFeedbackSubmitter(fileSystem, storage, sl.api);
+          RetryingFeedbackSubmitter(fileSystem, storage, () => sl.api);
       return retryingFeedbackSubmitter;
     },
   );
@@ -294,6 +300,7 @@ void registerProdWiredashServices(WiredashServices sl) {
           wuidGenerator: () => sl.wuidGenerator,
           metaDataCollector: () => sl.metaDataCollector,
           sharedPreferencesProvider: sl.sharedPreferencesProvider,
+          environmentDetector: () => sl.environmentDetector,
         ),
       );
       engine.addJob(

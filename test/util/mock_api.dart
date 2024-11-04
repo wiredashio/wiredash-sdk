@@ -9,8 +9,12 @@ import 'package:wiredash/src/core/network/wiredash_api.dart';
 
 import 'invocation_catcher.dart';
 
+int _mockApiIndex = 0;
+
 class MockWiredashApi implements WiredashApi {
   MockWiredashApi();
+
+  final index = _mockApiIndex++;
 
   /// Returns "success" responses
   factory MockWiredashApi.fake() {

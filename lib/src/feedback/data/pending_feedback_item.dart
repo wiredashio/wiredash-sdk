@@ -6,6 +6,7 @@ import 'dart:ui';
 
 import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/network/serializers.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_parser_v2.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_parser_v3.dart';
 
@@ -173,6 +174,11 @@ extension on AllMetaData {
       if (customMetaData.isNotEmpty) {
         values.addAll({'custom': customMetaData});
       }
+    }
+
+    final _environment = environment;
+    if (_environment != null) {
+      values.addAll({'environment': _environment});
     }
 
     assert(installId.length >= 16);

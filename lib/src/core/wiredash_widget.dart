@@ -49,6 +49,7 @@ class Wiredash extends StatefulWidget {
     super.key,
     required this.projectId,
     required this.secret,
+    this.environment,
     this.options,
     this.theme,
     this.feedbackOptions,
@@ -63,6 +64,21 @@ class Wiredash extends StatefulWidget {
 
   /// Your Wiredash project secret
   final String secret;
+
+  /// The environment of your app, like 'prod', 'dev', 'staging'
+  ///
+  /// When null, defaults to 'prod' for release builds and 'dev' for debug builds and emulators.
+  /// To disable the automatic environment detection, set `environment: 'prod'`.
+  ///
+  /// Setting an environment is useful to differentiate between different
+  /// versions of your app allowing you to filter analytics and feedback by
+  /// environment.
+  ///
+  /// White-label apps can use this to differentiate between different clients,
+  /// when they share the same Wiredash project.
+  ///
+  /// {@macro environmentNameConstraints}
+  final String? environment;
 
   /// Customize Wiredash's behaviour and language
   final WiredashOptionsData? options;
@@ -230,8 +246,12 @@ class Wiredash extends StatefulWidget {
     String eventName, {
     Map<String, Object?>? data,
     String? projectId,
+    String? environment,
   }) async {
-    final analytics = WiredashAnalytics(projectId: projectId);
+    final analytics = WiredashAnalytics(
+      projectId: projectId,
+      environment: environment,
+    );
     await analytics.trackEvent(eventName, data: data);
   }
 }
@@ -277,7 +297,7 @@ class WiredashState extends State<Wiredash> {
         _services.syncEngine.onAppMovedToBackground();
       }
     });
-    _onProjectIdChanged();
+    _onProjectEnvChanged();
 
     _backButtonDispatcher = WiredashBackButtonDispatcher()..initialize();
   }
@@ -317,23 +337,25 @@ class WiredashState extends State<Wiredash> {
     _services.updateWidget(widget);
 
     if (oldWidget.projectId != widget.projectId ||
-        oldWidget.secret != widget.secret) {
+        oldWidget.secret != widget.secret ||
+        oldWidget.environment != widget.environment) {
       _services.projectCredentialValidator.validate(
         projectId: widget.projectId,
         secret: widget.secret,
       );
+      _onProjectEnvChanged();
+    }
 
-      if (oldWidget.options?.localizationDelegate !=
-          widget.options?.localizationDelegate) {
-        _verifySyncLocalizationsDelegate();
-      }
-      _services.updateWidget(widget);
-
-      _onProjectIdChanged();
+    if (oldWidget.options?.localizationDelegate !=
+        widget.options?.localizationDelegate) {
+      _verifySyncLocalizationsDelegate();
     }
   }
 
-  void _onProjectIdChanged() {
+  void _onProjectEnvChanged() {
+    if (widget.environment != null) {
+      validateEnvironment(widget.environment!);
+    }
     final inFakeAsync = _services.testDetector.inFakeAsync();
     if (!inFakeAsync) {
       // start the sync engine
@@ -527,4 +549,74 @@ Locale get _defaultLocale {
   // ignore: unnecessary_nullable_for_final_variable_declarations, deprecated_member_use
   final Locale? locale = ui.window.locale;
   return locale ?? const Locale('en', 'US');
+}
+
+/// Validates the value [Wiredash.environment]
+///
+/// {@template environmentNameConstraints}
+/// The environment needs to be
+/// - at least 2 characters long, max 32 characters
+/// - only use lowercase a-z, - and _
+/// - start with a letter (a-z)
+/// {@endtemplate}
+void validateEnvironment(String environment) {
+  if (environment.isEmpty) {
+    throw ArgumentError.value(
+      environment,
+      'environment',
+      'The environment must not be empty',
+    );
+  }
+  // at least two characters
+  if (environment.length < 2 || environment.length > 32) {
+    throw ArgumentError.value(
+      environment,
+      'environment',
+      '$environment must be between 2 and 32 characters long',
+    );
+  }
+
+  if (environment.contains(' ')) {
+    throw ArgumentError.value(
+      environment,
+      'environment',
+      '$environment must not contain spaces',
+    );
+  }
+
+  if (environment.contains('ä') ||
+      environment.contains('ö') ||
+      environment.contains('ü')) {
+    throw ArgumentError.value(
+      environment,
+      'environment',
+      '$environment must not contain umlauts',
+    );
+  }
+
+  String firstChar = String.fromCharCode(environment.codeUnitAt(0));
+  if (firstChar == '#') {
+    firstChar = String.fromCharCode(environment.codeUnitAt(1));
+  }
+  final regex = RegExp('^[a-z]');
+  if (!regex.hasMatch(firstChar)) {
+    throw ArgumentError.value(
+      environment,
+      'environment',
+      '$environment must start with a letter (a-z)',
+    );
+  }
+
+  /// The complete regular expression to validate a event name.
+  ///
+  /// All checks in validateEventName are based on this regular expression but
+  /// are split up for better error messages.
+  final environmentRegExp = RegExp(r'^[a-z][a-z_-]+$');
+  if (!environmentRegExp.hasMatch(environment)) {
+    throw ArgumentError.value(
+      environment,
+      'environment',
+      '$environment does not match $environmentRegExp',
+    );
+  }
 }

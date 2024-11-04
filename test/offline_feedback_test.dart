@@ -207,6 +207,7 @@ Map get fullJsonV3 => {
         "labels": ["bug", "lbl-1234"],
         "message": "Pending Feedback Item v3",
         "metadata": {
+          "appBrightness": "dark",
           "appLocale": "en_US",
           "appName": "MyApp",
           "buildCommit": "abcdef12",
@@ -219,6 +220,7 @@ Map get fullJsonV3 => {
             "nestedObject": {"frodo": "ring", "sam": "lembas"},
           },
           "deviceModel": "Google Pixel 8",
+          "environment": "beta",
           "installId": "8F821AB6-B3A7-41BA-882E-32D8367243C1",
           "physicalGeometry": [0.0, 0.0, 0.0, 0.0],
           "platformBrightness": "dark",

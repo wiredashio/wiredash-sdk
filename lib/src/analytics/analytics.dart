@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:clock/clock.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
@@ -18,17 +19,49 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 class WiredashAnalytics {
   /// Optional [projectId] in case multiple [Wiredash] widgets with different
   /// projectIds are used at the same time
-  final String? projectId;
+  final String? _projectId;
+
+  /// The environment of your app, like 'prod', 'dev', 'staging'
+  ///
+  /// Only required when
+  /// - Send events to a different environment than the one set in the [Wiredash] widget
+  /// - No [Wiredash] widget present, like in a background isolate
+  ///
+  /// Defaults to 'dev' for debug builds and 'prod' for release builds.
+  ///
+  /// Setting an environment is useful to differentiate between different
+  /// versions of your app allowing you to filter analytics and feedback by
+  /// environment.
+  ///
+  /// White-label apps can use this to differentiate between different clients,
+  /// when they share the same Wiredash project.
+  ///
+  /// {@macro environmentNameConstraints}
+  final String? _environment;
 
   /// Creates a new instance of [WiredashAnalytics], creating multiple is totally fine.
   /// The events are stored on disk and sent to the server in periodic intervals.
   ///
   /// Set the [projectId] in case you have multiple [Wiredash] widgets with different
   /// projectIds in your app. If you only have one [Wiredash] widget, you can omit the [projectId].
+  ///
+  /// Set the [environment] of your app, like 'prod', 'dev', 'staging'
+  /// Defaults to the environment of the [Wiredash] widget, which itself
+  /// defaults to 'dev' for debug builds and 'prod' for release builds.
+  ///
+  /// It is necessary to set the [environment] in cases when there is no [Wiredash]
+  /// widget mounted, like in a background isolate.
   WiredashAnalytics({
-    this.projectId,
-  });
+    String? projectId,
+    String? environment,
+  })  : _projectId = projectId,
+        _environment = environment {
+    if (environment != null) {
+      validateEnvironment(environment);
+    }
+  }
 
+  /// All services used by Wiredash, but no shared memory with the [WiredashState] services.
   final WiredashServices _services = WiredashServices();
 
   /// Tracks an event with Wiredash.
@@ -95,12 +128,19 @@ class WiredashAnalytics {
     validateEventName(eventName);
     final eventData = validateEventData(data, eventName);
 
+    final wiredash = _findWiredashInstance(_projectId, _environment);
+    _services.updateWidget(wiredash?.widget);
+
+    final String environment =
+        _environment ?? await _services.environmentDetector.getEnvironment();
+
     final fixedMetadata =
         await _services.metaDataCollector.collectFixedMetaData();
     final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
+    final analyticsId = await _services.wuidGenerator.appUsageId();
 
     final event = AnalyticsEvent(
-      analyticsId: await _services.wuidGenerator.appUsageId(),
+      analyticsId: analyticsId,
       buildCommit: fixedMetadata.resolvedBuildCommit,
       buildNumber: fixedMetadata.resolvedBuildNumber,
       buildVersion: fixedMetadata.resolvedBuildVersion,
@@ -108,14 +148,33 @@ class WiredashAnalytics {
       createdAt: clock.now(),
       eventData: eventData,
       eventName: eventName,
+      environment: environment,
       platformOS: flutterInfo.platformOS,
       platformOSVersion: fixedMetadata.deviceInfo.osVersion,
       platformLocale: flutterInfo.platformLocale,
       sdkVersion: wiredashSdkVersion,
     );
 
-    await _services.eventStore.saveEvent(event, projectId);
-    await _notifyWiredashInstance(projectId, eventName);
+    await _services.eventStore.saveEvent(event, _projectId);
+    await _notifyWiredashInstance(_projectId, _environment, eventName);
+  }
+
+  /// Finds the intrinsic matching [Wiredash] widget to gather information from,
+  /// usually the only mounted one, or the one that matches the [projectId] and/or [environment].
+  ///
+  /// The 95% case is that a single mounted [Wiredash] widget is found and used.
+  ///
+  /// If no matching widget is found, the developer must provide the information in the constructor.
+  WiredashState? _findWiredashInstance(
+    String? projectId,
+    String? environment,
+  ) {
+    final allWidget = WiredashRegistry.instance.allWidgets;
+
+    return allWidget.firstWhereOrNull((state) {
+      return (projectId == null || state.widget.projectId == projectId) &&
+          (environment == null || state.widget.environment == environment);
+    });
   }
 
   /// Checks the currently mounted [Wiredash] widgets and notifies the correct one
@@ -124,6 +183,7 @@ class WiredashAnalytics {
   /// making batching and sending more efficient.
   Future<void> _notifyWiredashInstance(
     String? projectId,
+    String? environment,
     String eventName,
   ) async {
     final allWidget = WiredashRegistry.instance.allWidgets;
@@ -150,15 +210,9 @@ class WiredashAnalytics {
 
     if (allWidget.length == 1) {
       final WiredashState state = allWidget.first;
-      if (projectId == null) {
-        // notify the only registered Wiredash instance
-        await state.triggerAnalyticsEventUpload();
-        return;
-      }
-
       final widget = state.widget;
-      if (widget.projectId == projectId) {
-        // projectId matches, notify the only and correct Wiredash instance
+      if (projectId == null || widget.projectId == projectId) {
+        // projectId and environment match when set, notify the only and correct Wiredash instance
         await state.triggerAnalyticsEventUpload();
         return;
       }
@@ -166,9 +220,9 @@ class WiredashAnalytics {
       reportWiredashInfo(
         NoWiredashInstanceFoundException(),
         StackTrace.current,
-        "Wiredash is registered with ${widget.projectId}. "
-        "The event event '$eventName' was explicit sent to projectId $projectId. "
-        "No Wiredash instance was found with projectId $projectId. "
+        "Wiredash is registered with projectId:${widget.projectId}. "
+        "The event event '$eventName' was explicit sent to projectId projectId:$projectId. "
+        "No Wiredash instance was found with projectId:$projectId. "
         "Please double check the projectId.",
       );
       return;
@@ -178,7 +232,9 @@ class WiredashAnalytics {
     if (projectId == null) {
       final firstWidgetState = allWidget.first;
 
-      final ids = allWidget.map((e) => e.widget.projectId).join(", ");
+      final ids = allWidget.map((e) {
+        return "projectId:${e.widget.projectId}/environment:${e.widget.environment}";
+      }).join(", ");
       reportWiredashInfo(
         NoProjectIdSpecifiedException(),
         StackTrace.current,
@@ -187,20 +243,23 @@ class WiredashAnalytics {
         "    Wiredash.trackEvent('$eventName', projectId: 'your_project_id');\n"
         "    WiredashAnalytics(projectId: 'your_project_id').trackEvent('$eventName');\n"
         "    Wiredash.of(context).trackEvent('$eventName');\n"
-        "The event '$eventName' was sent to project '${firstWidgetState.widget.projectId}', because that Wiredash widget was registered first.",
+        "The event '$eventName' was sent to project '${firstWidgetState.widget.projectId} "
+        "because that Wiredash widget was registered first.",
       );
       await firstWidgetState.triggerAnalyticsEventUpload();
       return;
     }
 
+    // Use first matching Wiredash instance by projectId. environment does not matter
     final projectInstances = allWidget
         .where((element) => element.widget.projectId == projectId)
         .toList();
+
     if (projectInstances.isEmpty) {
       reportWiredashInfo(
         NoWiredashInstanceFoundException(),
         StackTrace.current,
-        "No Wiredash instance was found with projectId $projectId. "
+        "No Wiredash instance was found with projectId:$projectId. "
         "Please double check the projectId.",
       );
       return;
@@ -214,6 +273,11 @@ class WiredashAnalytics {
       "Please specify a projectId to avoid sending events to all instances, "
       "or use Wiredash.of(context).trackEvent() to send events to a specific instance.",
     );
+  }
+
+  @override
+  String toString() {
+    return 'WiredashAnalytics{projectId: $_projectId, environment: $_environment}';
   }
 }
 

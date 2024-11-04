@@ -41,7 +41,7 @@ void main() {
       retryingFeedbackSubmitter = RetryingFeedbackSubmitter(
         fileSystem,
         storage,
-        mockApi,
+        () => mockApi,
       );
     });
 

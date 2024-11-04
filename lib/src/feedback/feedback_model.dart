@@ -274,7 +274,7 @@ class FeedbackModel extends ChangeNotifier2 {
 
     final image = _services.screenCaptureController.screenshot;
     if (image != null) {
-      final bg = _services.wiredashWidget.theme?.appBackgroundColor ??
+      final bg = _services.wiredashWidget?.theme?.appBackgroundColor ??
           const Color(0xffcccccc);
       final screenshot =
           await _services.picassoController.paintDrawingOntoImage(image, bg);
@@ -408,6 +408,7 @@ class FeedbackModel extends ChangeNotifier2 {
     final SessionMetaData? sessionMetadata =
         _services.wiredashModel.sessionMetaData;
     final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
+    final environment = await _services.environmentDetector.getEnvironment();
 
     final email = () {
       if (_services.wiredashModel.feedbackOptions?.email ==
@@ -437,6 +438,7 @@ class FeedbackModel extends ChangeNotifier2 {
         fixedMetadata: fixedMetadata,
         flutterInfo: flutterInfo,
         installId: deviceId,
+        environment: environment,
         email: email,
       ),
     );

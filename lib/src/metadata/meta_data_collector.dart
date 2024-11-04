@@ -128,12 +128,14 @@ class MetaDataCollector {
         return DeviceInfo(
           deviceModel: deviceInfo.model,
           osVersion: deviceInfo.systemVersion,
+          isPhysicalDevice: deviceInfo.isPhysicalDevice,
         );
       }
       if (deviceInfo is AndroidDeviceInfo) {
         return DeviceInfo(
           deviceModel: deviceInfo.model,
           osVersion: deviceInfo.version.release,
+          isPhysicalDevice: deviceInfo.isPhysicalDevice,
         );
       }
       if (deviceInfo is LinuxDeviceInfo) {
@@ -239,9 +241,14 @@ class DeviceInfo {
   final String? deviceModel;
   final String? osVersion;
 
+  /// Available on android/ios, some basic device categorization if the device
+  /// is a physical device or emulated/simulated
+  final bool? isPhysicalDevice;
+
   const DeviceInfo({
     this.deviceModel,
     this.osVersion,
+    this.isPhysicalDevice,
   });
 
   @override
@@ -250,26 +257,31 @@ class DeviceInfo {
       (other is DeviceInfo &&
           runtimeType == other.runtimeType &&
           deviceModel == other.deviceModel &&
-          osVersion == other.osVersion);
+          osVersion == other.osVersion &&
+          isPhysicalDevice == other.isPhysicalDevice);
 
   @override
-  int get hashCode => deviceModel.hashCode ^ osVersion.hashCode;
+  int get hashCode =>
+      deviceModel.hashCode ^ osVersion.hashCode ^ isPhysicalDevice.hashCode;
 
   @override
   String toString() {
     return 'DeviceInfo{ '
         'deviceModel: $deviceModel, '
         'osVersion: $osVersion, '
+        'isPhysicalDevice: $isPhysicalDevice'
         '}';
   }
 
   DeviceInfo copyWith({
     String? deviceModel,
     String? osVersion,
+    bool? isPhysicalDevice,
   }) {
     return DeviceInfo(
       deviceModel: deviceModel ?? this.deviceModel,
       osVersion: osVersion ?? this.osVersion,
+      isPhysicalDevice: isPhysicalDevice ?? this.isPhysicalDevice,
     );
   }
 }

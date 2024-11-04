@@ -644,6 +644,17 @@ void main() {
 
       await gesture.up(); // let go of the app
     });
+
+    testWidgets('Send environment', (tester) async {
+      final robot = await WiredashTestRobot(tester).launchApp(
+        environment: 'staging',
+      );
+      await robot.submitMinimalFeedback();
+      final latestCall =
+          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+      final submittedFeedback = latestCall[0] as FeedbackItem?;
+      expect(submittedFeedback!.metadata.environment, 'staging');
+    });
   });
 }
 
