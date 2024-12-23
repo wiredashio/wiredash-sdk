@@ -6,6 +6,8 @@ import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:spot/spot.dart' hide allWidgets;
+import 'package:spot/src/screenshot/screenshot.dart';
 
 void _debugPrint(Object message) {
   // print('  $message');
@@ -106,6 +108,11 @@ extension WiredashTester on WidgetTester {
       await loop(duration);
       stopwatch.stop();
       _debugPrint('loop $count took ${stopwatch.elapsedMilliseconds}ms');
+      timeline.addEvent(
+        details: 'pump (${count + 1}) until $nextStop in pumpFor',
+        eventType: 'pump',
+        screenshot: timeline.takeScreenshotSync(),
+      );
 
       final hasScheduledFrame = binding.hasScheduledFrame;
       final pendingMessageCount =

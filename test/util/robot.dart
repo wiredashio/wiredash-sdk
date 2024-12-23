@@ -19,6 +19,7 @@ import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
+import 'package:spot/src/screenshot/screenshot.dart';
 
 // ignore: unused_import
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
@@ -652,9 +653,14 @@ class WiredashTestRobot {
   }
 
   Future<void> pressAndroidBackButton() async {
+    timeline.addEvent(
+      details: 'Press Android back button',
+      eventType: 'Back button',
+      screenshot: timeline.takeScreenshotSync(),
+    );
     // ignore: invalid_use_of_protected_member
     await tester.binding.handlePopRoute();
-    await tester.pumpSmart();
+    await tester.pumpFor(const Duration(seconds: 1));
   }
 
   Future<void> waitUntilWiredashIsClosed() async {

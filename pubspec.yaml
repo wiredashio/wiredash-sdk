@@ -56,7 +56,7 @@ dependency_overrides:
   spot:
     git:
       url: https://github.com/passsy/spot.git
-      ref: add-hit-indicator
+      ref: main
 
 flutter:
   assets:
