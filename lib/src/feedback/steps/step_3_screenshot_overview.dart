@@ -301,11 +301,13 @@ class Elevation extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: const Color(0xFF000000).withOpacity(0.04),
             offset: Offset(0, elevation),
             blurRadius: elevation,
           ),
           BoxShadow(
+            // ignore: deprecated_member_use
             color: const Color(0xFF000000).withOpacity(0.10),
             offset: Offset(0, elevation * 3),
             blurRadius: elevation * 3,

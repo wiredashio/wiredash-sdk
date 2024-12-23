@@ -92,6 +92,7 @@ class _Step1FeedbackMessageState extends State<Step1FeedbackMessage>
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 hintStyle: context.text.input.onSurface.copyWith(
+                  // ignore: deprecated_member_use
                   color: context.text.input.onSurface.color?.withOpacity(0.6),
                 ),
                 errorStyle: context.text.inputError.textStyle.copyWith(
@@ -147,8 +148,10 @@ Widget? _getCounterText(
 
   Color getCounterColor() {
     if (remaining >= 150) {
+      // ignore: deprecated_member_use
       return Colors.green.shade400.withOpacity(0.8);
     } else if (remaining >= 50) {
+      // ignore: deprecated_member_use
       return Colors.orange.withOpacity(0.8);
     }
     return context.theme.errorColor;

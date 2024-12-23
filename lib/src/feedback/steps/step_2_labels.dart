@@ -131,6 +131,7 @@ class _Label extends StatelessWidget {
               border: Border.all(
                 width: 2,
                 // tint
+                // ignore: deprecated_member_use
                 color: context.theme.textOnPrimaryContainerColor.withOpacity(
                   () {
                     if (state.pressed || state.selected) {

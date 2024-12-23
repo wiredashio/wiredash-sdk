@@ -62,6 +62,8 @@ class WiredashThemeData {
     Color? secondaryColor,
     required Brightness brightness,
   }) {
+    // Changed in Flutter 3.26 https://github.com/flutter/engine/pull/54737
+    // ignore: deprecated_member_use
     if (secondaryColor?.value == primaryColor.value) {
       secondaryColor = null;
     }
@@ -255,6 +257,8 @@ class WiredashThemeData {
     }
     final merged =
         Color.lerp(primaryBackgroundColor, secondaryBackgroundColor, 0.5)!;
+    // Changed in Flutter 3.26 https://github.com/flutter/engine/pull/54737
+    // ignore: deprecated_member_use
     final palette = CorePalette.of(merged.value);
 
     final tone = isLight ? 10 : 100;
@@ -269,6 +273,8 @@ class WiredashThemeData {
     }
     final merged =
         Color.lerp(primaryBackgroundColor, secondaryBackgroundColor, 0.5)!;
+    // Changed in Flutter 3.26 https://github.com/flutter/engine/pull/54737
+    // ignore: deprecated_member_use
     final palette = CorePalette.of(merged.value);
 
     final tone = isLight ? 40 : 70;
@@ -301,6 +307,7 @@ class WiredashThemeData {
   }
 
   Color get secondaryTextOnSurfaceColor {
+    // ignore: deprecated_member_use
     return _primaryTone.onSurface.withOpacity(0.8);
   }
 
@@ -894,6 +901,7 @@ class SurfaceBasedTextStyle {
     theme,
     theme.textTheme.body2Medium,
     'body2Medium',
+    // ignore: deprecated_member_use
     colorMutation: (color) => color.withOpacity(0.7),
   );
 
@@ -901,6 +909,7 @@ class SurfaceBasedTextStyle {
     theme,
     theme.textTheme.body2Small,
     'body2Small',
+    // ignore: deprecated_member_use
     colorMutation: (color) => color.withOpacity(0.7),
   );
 
@@ -1068,6 +1077,8 @@ enum DeviceClass {
 /// Based on the theory in https://m3.material.io/styles/color/dynamic-color/user-generated-color
 class MaterialColorTone {
   MaterialColorTone(this.baseColor, this.brightness)
+      // Changed in Flutter 3.26 https://github.com/flutter/engine/pull/54737
+      // ignore: deprecated_member_use
       : palette = CorePalette.of(baseColor.value);
   final Color baseColor;
   final CorePalette palette;

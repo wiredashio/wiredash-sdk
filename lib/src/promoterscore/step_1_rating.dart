@@ -238,7 +238,9 @@ class _RatingCardState extends State<RatingCard>
     const animDuration = Duration(milliseconds: 210);
 
     final colorTween = ColorTween(
+      // ignore: deprecated_member_use
       begin: context.theme.primaryColor.withOpacity(0.25),
+      // ignore: deprecated_member_use
       end: context.theme.primaryColor.withOpacity(1.0),
     );
 

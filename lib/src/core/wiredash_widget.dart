@@ -503,7 +503,10 @@ class WiredashState extends State<Wiredash> {
       widget.options?.locale,
       // Use what users see in the app
       _services.wiredashModel.sessionMetaData?.appLocale,
-    ].whereNotNull();
+    ]
+        // Switch to .nonNulls when minSdk is Dart 3.0
+        // ignore: deprecated_member_use
+        .whereNotNull();
 
     for (final locale in localesInOrder) {
       if (_isLocaleSupported(locale)) {

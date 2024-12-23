@@ -54,6 +54,8 @@ class WiredashRegistry {
 
   List<WiredashState> get allWidgets {
     purge();
+    // Switch to .nonNulls when minSdk is Dart 3.0
+    // ignore: deprecated_member_use
     return _refs.map((ref) => ref.target).whereNotNull().toList();
   }
 
@@ -88,6 +90,8 @@ extension WiredashRegistryExt on WiredashRegistry {
     return _refs
         .map((ref) => ref.target)
         .where((state) => state?.widget.projectId == projectId)
+        // Switch to .nonNulls when minSdk is Dart 3.0
+        // ignore: deprecated_member_use
         .whereNotNull()
         .toList();
   }

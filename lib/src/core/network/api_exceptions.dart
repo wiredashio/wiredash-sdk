@@ -149,6 +149,8 @@ extension WiredashApiWarnings on Response {
       return warnings
           .whereType<Map>()
           .map((w) => WiredashApiWarning.tryParse(w))
+          // Switch to .nonNulls when minSdk is Dart 3.0
+          // ignore: deprecated_member_use
           .whereNotNull()
           .toList();
     } catch (_) {

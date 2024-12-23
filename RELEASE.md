@@ -14,3 +14,36 @@
 - Update wiredash-demo project for website
 - Update latest SDK version in `console`
 - Announce release on Twitter 🎉
+
+
+## Handling deprecations of the Flutter SDK and dependencies
+
+The Wiredash SDK strives to be compatible with all `stable` [Flutter releases](https://docs.flutter.dev/release/archive) within the last year as well as the current `master` channel.
+To achieve this, we go the extra mile and work around breaking API changes or contribute fixes directly to the Flutter SDK to ensure compatibility.
+
+The goal is to always have a single commit, being compatible with all versions.
+This way we can make sure to deliver the latest features and bug fixes to all of our users.
+
+These are the current deprecated APIs the Wiredash SDK is currently using as long as the deprecated APIs are not removed (usually after 12 months).
+
+### Flutter v3.28 / Dart 3.6.0
+
+- New `WidgetInspector` constructor https://github.com/flutter/flutter/pull/158219
+
+### Flutter 3.27 / Dart 3.6.0
+
+Multiple `Color` API changes 
+- https://docs.flutter.dev/release/breaking-changes/wide-gamut-framework
+- https://github.com/flutter/engine/pull/54737
+
+- `Color.alpha` -> `Color.a`
+- `Color.red` -> `Color.r`
+- `Color.green` -> `Color.g`
+- `Color.blue` -> `Color.b`
+- `Color.withOpacity()` -> `Color.withValues()`
+- `Color.value` -> ?
+
+### Flutter 3.10 / Dart 3.0.0
+
+- `Iterable<T?>.whereNotNull()` -> `Iterable<T>.nonNulls` (Caused by pinned [`collection: 1.19.0`](https://pub.dev/packages/collection/changelog#1190) package)
+- `MediaQuery.fromWindow` -> `MediaQuery.fromView` (deprecated in Flutter v3.7.0-32.0.pre) https://github.com/flutter/flutter/pull/119647

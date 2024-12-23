@@ -592,6 +592,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           decoration: BoxDecoration(
             border: Border.all(
               width: 4,
+              // ignore: deprecated_member_use
               color: Colors.yellow.withOpacity(0.5),
             ),
           ),
@@ -603,6 +604,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           decoration: BoxDecoration(
             border: Border.all(
               width: 3,
+              // ignore: deprecated_member_use
               color: Colors.blue.withOpacity(0.5),
             ),
           ),
@@ -616,6 +618,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         bottom: _mediaQueryData.size.height - _mediaQueryData.padding.top,
         child: DecoratedBox(
           decoration: BoxDecoration(
+            // ignore: deprecated_member_use
             color: Colors.orange.withOpacity(0.1),
             border: Border.all(
               color: Colors.orange,
@@ -631,6 +634,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         height: widget.padding?.top ?? 0,
         child: DecoratedBox(
           decoration: BoxDecoration(
+            // ignore: deprecated_member_use
             color: Colors.pink.withOpacity(0.1),
             border: Border.all(
               color: Colors.pink,
@@ -645,6 +649,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         top: _mediaQueryData.padding.top + context.theme.minContentHeight,
         child: DecoratedBox(
           decoration: BoxDecoration(
+            // ignore: deprecated_member_use
             color: Colors.greenAccent.withOpacity(0.1),
             border: Border.all(
               color: Colors.greenAccent,
@@ -660,6 +665,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         top: _mediaQueryData.size.height - _mediaQueryData.padding.bottom,
         child: DecoratedBox(
           decoration: BoxDecoration(
+            // ignore: deprecated_member_use
             color: Colors.orange.withOpacity(0.1),
             border: Border.all(
               color: Colors.orange,
@@ -672,6 +678,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         child: DecoratedBox(
           decoration: BoxDecoration(
             border: Border.all(
+              // ignore: deprecated_member_use
               color: Colors.red.withOpacity(0.5),
             ),
           ),
@@ -685,6 +692,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         bottom: 0,
         child: DecoratedBox(
           decoration: BoxDecoration(
+            // ignore: deprecated_member_use
             color: Colors.orange.withOpacity(0.1),
             border: Border.all(
               color: Colors.orange,
@@ -745,11 +753,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               borderRadius: _cornerRadiusAnimation.value,
               boxShadow: [
                 BoxShadow(
+                  // ignore: deprecated_member_use
                   color: const Color(0xFF000000).withOpacity(0.04),
                   offset: const Offset(0, 10),
                   blurRadius: 10,
                 ),
                 BoxShadow(
+                  // ignore: deprecated_member_use
                   color: const Color(0xFF000000).withOpacity(0.10),
                   offset: const Offset(0, 20),
                   blurRadius: 25,
@@ -799,6 +809,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
                         opacity: _appHandleAnimation.value,
                         child: ColoredBox(
                           color: context.theme.appHandleBackgroundColor
+                              // ignore: deprecated_member_use
                               .withOpacity(0.1),
                         ),
                       ),

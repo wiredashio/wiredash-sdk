@@ -120,15 +120,18 @@ class _LabeledButtonState extends AnimatedWidgetBaseState<TronLabeledButton> {
       _colorTween,
       () {
         if (widget.onTap == null) {
+          // ignore: deprecated_member_use
           return color.withOpacity(0);
         }
         if (_pressed) {
-          // ignore: avoid_redundant_argument_values
+          // ignore: avoid_redundant_argument_values, deprecated_member_use
           return color.withOpacity(0.4);
         }
         if (_hovered) {
+          // ignore: deprecated_member_use
           return color.withOpacity(0.2);
         }
+        // ignore: deprecated_member_use
         return color.withOpacity(0);
       }(),
       (dynamic value) => ColorTween(begin: value as Color?),

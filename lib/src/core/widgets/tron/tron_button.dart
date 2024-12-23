@@ -97,6 +97,7 @@ class _TronButtonState extends State<TronButton>
     final textColor = widget.textColor;
     if (textColor != null) {
       if (!_enabled) {
+        // ignore: deprecated_member_use
         return textColor.withOpacity(0.3);
       }
       return textColor;
@@ -108,9 +109,11 @@ class _TronButtonState extends State<TronButton>
         luminance < 0.4 ? const Color(0xffffffff) : const Color(0xff000000);
 
     if (!_enabled) {
+      // ignore: deprecated_member_use
       return blackOrWhite.withOpacity(0.3);
     }
 
+    // ignore: deprecated_member_use
     return blackOrWhite.withOpacity(math.max(hsl.saturation, 0.9));
   }
 

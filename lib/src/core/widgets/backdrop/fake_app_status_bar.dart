@@ -51,6 +51,7 @@ class FakeAppStatusBar extends StatelessWidget {
                     children: [
                       Icon(
                         Wirecons.cheveron_up,
+                        // ignore: deprecated_member_use
                         color: blackOrWhite.withOpacity(0.80),
                         size: 16,
                       ),
@@ -59,6 +60,7 @@ class FakeAppStatusBar extends StatelessWidget {
                       const SizedBox(width: 16),
                       Icon(
                         Wirecons.cheveron_up,
+                        // ignore: deprecated_member_use
                         color: blackOrWhite.withOpacity(0.80),
                         size: 16,
                       ),

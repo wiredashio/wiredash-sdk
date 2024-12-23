@@ -1,6 +1,5 @@
 // ignore_for_file: join_return_with_assignment
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Wrapper with default that most widgets required that are now wrapped by a

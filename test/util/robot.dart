@@ -58,6 +58,7 @@ class WiredashTestRobot {
         version: '',
         buildNumber: '',
         buildSignature: '',
+        installerStore: '',
       ),
     );
     TestWidgetsFlutterBinding.ensureInitialized();

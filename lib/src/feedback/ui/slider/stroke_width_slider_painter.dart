@@ -18,6 +18,7 @@ class StrokeWidthSliderPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
+      // ignore: deprecated_member_use
       ..color = color.withOpacity(0.2)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
@@ -29,6 +30,7 @@ class StrokeWidthSliderPainter extends CustomPainter {
       paint,
     );
 
+    // ignore: deprecated_member_use
     paint.color = color.withOpacity(0.7);
     canvas.drawLine(
       Offset(0, size.height / 2),

@@ -163,7 +163,6 @@ class FlutterInfo {
   @override
   int get hashCode =>
       platformLocale.hashCode ^
-      // ignore: deprecated_member_use
       Object.hashAll(platformSupportedLocales) ^
       viewPadding.hashCode ^
       physicalSize.hashCode ^

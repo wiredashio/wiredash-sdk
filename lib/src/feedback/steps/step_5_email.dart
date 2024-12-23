@@ -100,6 +100,7 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 hintStyle: context.text.input.onSurface.copyWith(
+                  // ignore: deprecated_member_use
                   color: context.text.input.onSurface.color?.withOpacity(0.6),
                 ),
                 errorStyle: context.text.inputError.textStyle.copyWith(

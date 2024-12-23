@@ -94,6 +94,7 @@ class _TronProgressIndicatorState extends State<TronProgressIndicator>
               context.theme.primaryColor,
               _currentProgress,
               context.theme.primaryColor.darken(0.05),
+              // ignore: deprecated_member_use
               context.theme.primaryColor.withOpacity(0.2),
               _nextProgress,
             ),

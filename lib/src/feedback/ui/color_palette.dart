@@ -374,8 +374,10 @@ class _AnimatedColorDotState extends State<AnimatedColorDot>
     if (widget.isSelected) {
       color = widget.color;
     } else if (_hovered) {
+      // ignore: deprecated_member_use
       color = Color.alphaBlend(widget.color.withOpacity(0.85), Colors.white);
     } else {
+      // ignore: deprecated_member_use
       color = Color.alphaBlend(widget.color.withOpacity(0.7), Colors.white);
     }
 
@@ -405,6 +407,7 @@ class _AnimatedColorDotState extends State<AnimatedColorDot>
           // outer ring
           child: AnimatedShape(
             color: widget.isSelected
+                // ignore: deprecated_member_use
                 ? outerCircleColor.withOpacity(0.5)
                 : outerCircleColor,
             shape: const StadiumBorder(),
