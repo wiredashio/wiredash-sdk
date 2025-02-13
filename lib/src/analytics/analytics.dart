@@ -156,7 +156,7 @@ class WiredashAnalytics {
     );
 
     await _services.eventStore.saveEvent(event, _projectId);
-    await _notifyWiredashInstance(_projectId, _environment, eventName);
+    _notifyWiredashInstance(_projectId, _environment, eventName);
   }
 
   /// Finds the intrinsic matching [Wiredash] widget to gather information from,

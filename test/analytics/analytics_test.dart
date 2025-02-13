@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_redundant_argument_values
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -1058,6 +1059,34 @@ void main() {
     final testEvent = events.values
         .firstWhereOrNull((event) => event.eventName == 'test_event');
     expect(testEvent!.environment, 'custom');
+  });
+
+  testWidgets('first trackEvent() is fast', (tester) async {
+    final Completer<void> completer = Completer<void>();
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      useDirectEventSubmitter: false,
+      builder: (context) {
+        return Scaffold(
+          body: ElevatedButton(
+            onPressed: () async {
+              await Wiredash.trackEvent('test_event');
+              completer.complete();
+            },
+            child: const Text('Send Event'),
+          ),
+        );
+      },
+    );
+
+    final beforeTrack = clock.now();
+    await robot.tapText('Send Event');
+    while (!completer.isCompleted) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    final afterTrack = clock.now();
+    final diff = afterTrack.difference(beforeTrack);
+    expect(diff.inMilliseconds, 100);
   });
 }
 
