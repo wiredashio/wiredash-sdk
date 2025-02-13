@@ -18,5 +18,6 @@ export 'src/core/wiredash_controller.dart'
 export 'src/core/wiredash_widget.dart' show Wiredash;
 export 'src/feedback/data/label.dart';
 export 'src/feedback/feedback_options.dart';
+export 'src/feedback/feedback_result.dart';
 export 'src/metadata/user_meta_data.dart';
 export 'src/promoterscore/ps_options.dart';
