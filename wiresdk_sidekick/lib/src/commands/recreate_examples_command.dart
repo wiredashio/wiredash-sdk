@@ -17,6 +17,7 @@ class RecreateExamplesCommand extends Command {
         .listSync()
         .whereType<Directory>()
         .mapNotNull((it) => DartPackage.fromDirectory(it))
+        .where((it) => it.name != 'old_flutter_3_0')
         .toList();
 
     print('\nrecreating platform folders...');
@@ -113,6 +114,9 @@ void _printFlutterVersion() {
 void _recreatePlatformFolders(DartPackage package) {
   final packageName = PubSpec.fromFile(package.pubspec.path).name;
   final dir = package.root;
+
+  dir.directory('.dart_tool').saveDeleteSync();
+  dir.directory('build').saveDeleteSync();
 
   dir.directory('android').saveDeleteSync();
   dir.directory('ios').saveDeleteSync();
