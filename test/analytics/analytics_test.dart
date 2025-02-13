@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_redundant_argument_values
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -14,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/core/network/send_events_request.dart';
+import 'package:wiredash/src/core/options/environment_detector.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
@@ -1059,6 +1061,59 @@ void main() {
         .firstWhereOrNull((event) => event.eventName == 'test_event');
     expect(testEvent!.environment, 'custom');
   });
+
+  testWidgets('first trackEvent() is fast', (tester) async {
+    final Completer<void> completer = Completer<void>();
+    final robot = WiredashTestRobot(tester);
+    await robot.launchApp(
+      useDirectEventSubmitter: false,
+      builder: (context) {
+        return Scaffold(
+          body: ElevatedButton(
+            onPressed: () async {
+              await Wiredash.trackEvent('test_event');
+              completer.complete();
+            },
+            child: const Text('Send Event'),
+          ),
+        );
+      },
+    );
+
+    final beforeTrack = clock.now();
+    await robot.tapText('Send Event');
+    while (!completer.isCompleted) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    final afterTrack = clock.now();
+    final diff = afterTrack.difference(beforeTrack);
+    expect(diff.inMilliseconds, 100);
+  });
+
+  test('trackEvent() can not throw but reports errors', () async {
+    final errors = captureFlutterErrors();
+    addTearDown(() => errors.restoreDefaultErrorHandlers());
+    await Wiredash.trackEvent('Illegal event name ❤️'); // no error
+    expect(errors.errors.first.toString(), contains('❤️'));
+    expect(errors.warnings, isEmpty);
+  });
+
+  test('trackEvent() can not throw but reports warnings', () async {
+    WiredashServices.debugServicesCreator = () {
+      return WiredashServices.setup((sl) {
+        sl.inject<EnvironmentDetector>((_) => _ThrowingEnvironmentDetector());
+      });
+    };
+
+    final errors = captureFlutterErrors();
+    addTearDown(() => errors.restoreDefaultErrorHandlers());
+    await Wiredash.trackEvent('event'); // no error
+    expect(
+      errors.warnings.first.toString(),
+      contains('unsupported'), // from _ThrowingEnvironmentDetector
+    );
+    expect(errors.errors, isEmpty);
+  });
 }
 
 // verifies no new methods are accidentally added to WiredashAnalytics, making it easy to mock
@@ -1068,4 +1123,11 @@ class ThirdPartyAnalytics implements WiredashAnalytics {
     String eventName, {
     Map<String, Object?>? data,
   }) async {}
+}
+
+class _ThrowingEnvironmentDetector implements EnvironmentDetector {
+  @override
+  Future<String> getEnvironment() async {
+    throw UnsupportedError('unsupported');
+  }
 }

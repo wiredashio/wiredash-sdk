@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
 
@@ -76,6 +77,13 @@ class WiredashAnalytics {
   ///  'button_id': 'submit_button',
   /// });
   /// ```
+  ///
+  /// Returns a [Future] which completes when the event is stored locally.
+  /// Calling `trackEvent()` without `await` is usually fine, unless the app is killed right after it.
+  ///
+  /// Submission to the server will happen later in batches in the background.
+  /// This method never crashes, instead it reports errors to [FlutterError.onError] or [FlutterError.presentError].
+  ///
   /// ### [eventName] constraints
   /// {@macro eventNameConstraints}
   ///
@@ -125,38 +133,45 @@ class WiredashAnalytics {
     String eventName, {
     Map<String, Object?>? data,
   }) async {
-    validateEventName(eventName);
-    final eventData = validateEventData(data, eventName);
+    final Map<String, Object?> eventData;
+    try {
+      validateEventName(eventName);
+      eventData = validateEventData(data, eventName);
 
-    final wiredash = _findWiredashInstance(_projectId, _environment);
-    _services.updateWidget(wiredash?.widget);
+      final wiredash = _findWiredashInstance(_projectId, _environment);
+      _services.updateWidget(wiredash?.widget);
+    } catch (e, stackTrace) {
+      reportWiredashError(e, stackTrace, 'Failed to track event $eventName');
+      return;
+    }
+    try {
+      final String environment =
+          _environment ?? await _services.environmentDetector.getEnvironment();
 
-    final String environment =
-        _environment ?? await _services.environmentDetector.getEnvironment();
-
-    final fixedMetadata =
-        await _services.metaDataCollector.collectFixedMetaData();
-    final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
-    final analyticsId = await _services.wuidGenerator.appUsageId();
-
-    final event = AnalyticsEvent(
-      analyticsId: analyticsId,
-      buildCommit: fixedMetadata.resolvedBuildCommit,
-      buildNumber: fixedMetadata.resolvedBuildNumber,
-      buildVersion: fixedMetadata.resolvedBuildVersion,
-      bundleId: fixedMetadata.appInfo.bundleId,
-      createdAt: clock.now(),
-      eventData: eventData,
-      eventName: eventName,
-      environment: environment,
-      platformOS: flutterInfo.platformOS,
-      platformOSVersion: fixedMetadata.deviceInfo.osVersion,
-      platformLocale: flutterInfo.platformLocale,
-      sdkVersion: wiredashSdkVersion,
-    );
-
-    await _services.eventStore.saveEvent(event, _projectId);
-    await _notifyWiredashInstance(_projectId, _environment, eventName);
+      final fixedMetadata =
+          await _services.metaDataCollector.collectFixedMetaData();
+      final flutterInfo = _services.metaDataCollector.collectFlutterInfo();
+      final analyticsId = await _services.wuidGenerator.appUsageId();
+      final event = AnalyticsEvent(
+        analyticsId: analyticsId,
+        buildCommit: fixedMetadata.resolvedBuildCommit,
+        buildNumber: fixedMetadata.resolvedBuildNumber,
+        buildVersion: fixedMetadata.resolvedBuildVersion,
+        bundleId: fixedMetadata.appInfo.bundleId,
+        createdAt: clock.now(),
+        eventData: eventData,
+        eventName: eventName,
+        environment: environment,
+        platformOS: flutterInfo.platformOS,
+        platformOSVersion: fixedMetadata.deviceInfo.osVersion,
+        platformLocale: flutterInfo.platformLocale,
+        sdkVersion: wiredashSdkVersion,
+      );
+      await _services.eventStore.saveEvent(event, _projectId);
+      unawaited(_notifyWiredashInstance(_projectId, _environment, eventName));
+    } catch (e, stackTrace) {
+      reportWiredashInfo(e, stackTrace, 'Failed to track event $eventName');
+    }
   }
 
   /// Finds the intrinsic matching [Wiredash] widget to gather information from,
