@@ -180,8 +180,8 @@ class WiredashTestRobot {
                 body: Column(
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        Wiredash.of(context).show();
+                      onTap: () async {
+                        feedbackResult = await Wiredash.of(context).show();
                       },
                       child: const Text('Feedback'),
                     ),
@@ -235,6 +235,8 @@ class WiredashTestRobot {
     return this;
   }
 
+  FeedbackResult? feedbackResult;
+
   WidgetSelector<WiredashBackdrop> get _spotBackdrop =>
       spot<Wiredash>().last().spotSingle<WiredashBackdrop>();
 
@@ -287,6 +289,7 @@ class WiredashTestRobot {
   }
 
   Future<void> openWiredash() async {
+    feedbackResult = null;
     final feedbackText = spotSingle<MaterialApp>().spotSingleText('Feedback')
       ..existsOnce();
     await _tap(feedbackText);

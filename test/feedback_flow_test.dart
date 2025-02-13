@@ -25,6 +25,16 @@ void main() {
       final submittedFeedback = latestCall[0] as FeedbackItem?;
       expect(submittedFeedback!.message, 'test message');
       expect(submittedFeedback.feedbackId, isNotNull);
+      expect(robot.feedbackResult!.hasSubmittedFeedback, isTrue);
+    });
+
+    testWidgets('Report not sending feedback as result', (tester) async {
+      final robot = await WiredashTestRobot(tester).launchApp();
+
+      await robot.openWiredash();
+      await robot.enterFeedbackMessage('test message');
+      await robot.closeWiredash();
+      expect(robot.feedbackResult!.hasSubmittedFeedback, isFalse);
     });
 
     testWidgets('Discard feedback', (tester) async {

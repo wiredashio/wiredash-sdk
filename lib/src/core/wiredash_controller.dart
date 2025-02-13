@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -142,15 +144,35 @@ class WiredashController {
   ///
   /// For more advanced styling check the [documentation](https://docs.wiredash.com/reference/sdk/theming)
   /// and use [Wiredash.theme].
-  void show({
+  Future<FeedbackResult> show({
     bool? inheritMaterialTheme,
     bool? inheritCupertinoTheme,
     WiredashFeedbackOptions? options,
-  }) {
+  }) async {
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
     _captureSessionMetaData();
     _model.feedbackOptionsOverride = options;
-    _model.show(flow: WiredashFlow.feedback);
+    await _model.show(flow: WiredashFlow.feedback);
+
+    // capture the current feedback model early, it will be destroyed after the feedback flow
+    final feedbackModel = _model.services.feedbackModel;
+
+    final completer = Completer<void>();
+    void Function()? listener;
+    listener = () {
+      if (_model.isWiredashActive == false) {
+        _model.removeListener(listener!);
+        completer.complete(null);
+      }
+    };
+    _model.addListener(listener);
+    await completer.future;
+
+    final hasSubmittedFeedback = feedbackModel.feedbackProcessed;
+    final result = FeedbackResult(
+      hasSubmittedFeedback: hasSubmittedFeedback,
+    );
+    return result;
   }
 
   /// Tracks an event with Wiredash.
