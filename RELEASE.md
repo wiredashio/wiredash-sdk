@@ -1,6 +1,6 @@
 # Release checklist
 
-- run `pana --no-warning` and check score is 130/130
+- run `pana --no-warning` and check the pub score is at maximum
 - Bump version with `wiresdk bump-version --minor` (or `--major`, `--patch`) which does
   - Bump version in `pubspec.yaml`
   - Increment `wiredashSdkVersion` in `lib/src/version.dart` by `1` for patch releases, by `10` for minor releases

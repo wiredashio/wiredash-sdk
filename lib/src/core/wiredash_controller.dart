@@ -30,7 +30,7 @@ class WiredashController {
   /// Modify the metadata that will be collected with Wiredash
   ///
   /// The metadata include user information (userId and userEmail) and
-  /// any custom data (Map<String, Object?>) you want to have attached to
+  /// any custom data (`Map<String, Object?>`) you want to have attached to
   /// feedback.
   ///
   /// Setting the userEmail prefills the email field.

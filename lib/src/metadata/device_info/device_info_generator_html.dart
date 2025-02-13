@@ -1,4 +1,4 @@
-// ignore: avoid_web_libraries_in_flutter
+// ignore: avoid_web_libraries_in_flutter, deprecated_member_use
 import 'dart:html' as html show window;
 // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
 // ignore: deprecated_member_use

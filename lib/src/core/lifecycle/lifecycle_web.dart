@@ -1,7 +1,7 @@
-// ignore_for_file: avoid_web_libraries_in_flutter
-
 import 'dart:async';
+// ignore: deprecated_member_use, avoid_web_libraries_in_flutter
 import 'dart:html';
+// ignore: deprecated_member_use, avoid_web_libraries_in_flutter
 import 'dart:js_util' as js_util;
 
 import 'package:flutter/widgets.dart';
@@ -63,8 +63,8 @@ AppLifecycleState readLifecycleState() {
 
 /// Creates a Future that completes when the Flutter app is hot-restarted.
 ///
-/// Flutter web replaces the <flutter-view> element when hot-restarting the app.
-/// This function observes when a new <flutter-view> element is added to the DOM, and then completes
+/// Flutter web replaces the `<flutter-view>` element when hot-restarting the app.
+/// This function observes when a new `<flutter-view>` element is added to the DOM, and then completes
 ///
 /// There is currently no clean way to get a hot-restart event https://github.com/flutter/flutter/issues/10437
 Future<void> _onHotRestart() async {
