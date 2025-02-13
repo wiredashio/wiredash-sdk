@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.4.0
+
+- Support for [Flutter 3.29](https://docs.flutter.dev/release/release-notes/release-notes-3.29.0)
+- New: `Wiredash.of(context).show()` now returns a `FeedbackResult` with a `bool hasSubmittedFeedback` [#379](https://github.com/wiredashio/wiredash-sdk/pull/379)
+- Fix: `trackEvent` now completes when the event is saved to disk, and does not wait for the network batch request [#378](https://github.com/wiredashio/wiredash-sdk/pull/378)
+- Fix: `trackEvent` now never crashes (and will never interrupt business logic) [#378](https://github.com/wiredashio/wiredash-sdk/pull/378)
+- Remove: Wiredash is now unable to be inspected with a `WidgetInspector` due to breaking API changes. Nobody outside the Wiredash dev team was using it, so we decided to remove it instead of raising the minimum Flutter version to 3.29.0 [#373](https://github.com/wiredashio/wiredash-sdk/pull/373)
+
 ## 2.3.0
 
 - New: Add environments to `Wiredash(environment: 'staging')` and `WiredashAnalytics(environment: 'staging')`. Automatically detects dev environments [#369](https://github.com/wiredashio/wiredash-sdk/pull/369)

@@ -26,11 +26,12 @@ This way we can make sure to deliver the latest features and bug fixes to all of
 
 These are the current deprecated APIs the Wiredash SDK is currently using as long as the deprecated APIs are not removed (usually after 12 months).
 
-### Flutter v3.28 / Dart 3.6.0
+### Flutter 3.29 / Dart 3.7.0 (12.02.2025)
 
+- `dart:html`, `dart:js_util` and `dart:js` are now deprecated https://github.com/dart-lang/sdk/issues/59716
 - New `WidgetInspector` constructor https://github.com/flutter/flutter/pull/158219
 
-### Flutter 3.27 / Dart 3.6.0
+### Flutter 3.27 / Dart 3.6.0 (11.12.2024)
 
 Multiple `Color` API changes 
 - https://docs.flutter.dev/release/breaking-changes/wide-gamut-framework
@@ -43,7 +44,7 @@ Multiple `Color` API changes
 - `Color.withOpacity()` -> `Color.withValues()`
 - `Color.value` -> ?
 
-### Flutter 3.10 / Dart 3.0.0
+### Flutter 3.10 / Dart 3.0.0 (10.05.2023)
 
 - `Iterable<T?>.whereNotNull()` -> `Iterable<T>.nonNulls` (Caused by pinned [`collection: 1.19.0`](https://pub.dev/packages/collection/changelog#1190) package)
 - `MediaQuery.fromWindow` -> `MediaQuery.fromView` (deprecated in Flutter v3.7.0-32.0.pre) https://github.com/flutter/flutter/pull/119647
