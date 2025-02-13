@@ -88,6 +88,7 @@ class WiredashTestRobot {
           'id': 'fake-id',
           'manufacturer': 'Instructure',
           'model': 'Some Phone',
+          'modelName': 'Some Phone',
           'product': 'fake-product',
           'supported32BitAbis': [],
           'supported64BitAbis': [],
