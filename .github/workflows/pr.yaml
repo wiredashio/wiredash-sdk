@@ -33,7 +33,7 @@ jobs:
       - name: Flutter version
         run: flutter doctor -v
       - name: Build
-        run: cd examples/theming && ./../../wiresdk flutter build web
+        run: cd examples/old_flutter_3_0 && ./../../wiresdk flutter build web
       - name: Download dependencies
         run: |
           # Override dependencies

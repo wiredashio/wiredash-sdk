@@ -17,6 +17,7 @@ class RecreateExamplesCommand extends Command {
         .listSync()
         .whereType<Directory>()
         .mapNotNull((it) => DartPackage.fromDirectory(it))
+        .where((it) => it.name != 'old_flutter_3_0')
         .toList();
 
     print('\nrecreating platform folders...');
