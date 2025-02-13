@@ -114,6 +114,9 @@ void _recreatePlatformFolders(DartPackage package) {
   final packageName = PubSpec.fromFile(package.pubspec.path).name;
   final dir = package.root;
 
+  dir.directory('.dart_tool').saveDeleteSync();
+  dir.directory('build').saveDeleteSync();
+
   dir.directory('android').saveDeleteSync();
   dir.directory('ios').saveDeleteSync();
   dir.directory('linux').saveDeleteSync();
