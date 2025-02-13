@@ -8,6 +8,7 @@ import 'package:async/async.dart';
 import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
@@ -1087,6 +1088,31 @@ void main() {
     final afterTrack = clock.now();
     final diff = afterTrack.difference(beforeTrack);
     expect(diff.inMilliseconds, 100);
+  });
+
+  test('trackEvent() can not throw but reports errors', () async {
+    final errors = captureFlutterErrors();
+    addTearDown(() => errors.restoreDefaultErrorHandlers());
+    await Wiredash.trackEvent('Illegal event name ❤️'); // no error
+    expect(errors.errors.first.toString(), contains('❤️'));
+    expect(errors.warnings, isEmpty);
+  });
+
+  test('trackEvent() can not throw but reports warnings', () async {
+    final binding = TestWidgetsFlutterBinding.instance;
+    binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('dev.fluttercommunity.plus/device_info'),
+      null, // reset handler to make data collection crash
+    );
+
+    final errors = captureFlutterErrors();
+    addTearDown(() => errors.restoreDefaultErrorHandlers());
+    await Wiredash.trackEvent('event'); // no error
+    expect(
+      errors.warnings.first.toString(),
+      contains('MissingPluginException'),
+    );
+    expect(errors.errors, isEmpty);
   });
 }
 

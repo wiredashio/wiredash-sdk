@@ -193,6 +193,12 @@ class Wiredash extends StatefulWidget {
   /// });
   /// ```
   ///
+  /// Returns a [Future] which completes when the event is stored locally.
+  /// Calling `trackEvent()` without `await` is usually fine, unless the app is killed right after it.
+  ///
+  /// Submission to the server will happen later in batches in the background.
+  /// This method never crashes, instead it reports errors to [FlutterError.onError] or [FlutterError.presentError].
+  ///
   /// **[eventName] constraints**
   /// {@macro eventNameConstraints}
   ///
