@@ -34,6 +34,9 @@ import 'package:wiredash/wiredash.dart';
 
 /// Internal service locator
 class WiredashServices extends ChangeNotifier {
+  /// Constructs the default services within Wiredash.
+  ///
+  /// For testing, the [debugServicesCreator] can be replaced with a custom variant
   factory WiredashServices() {
     WiredashServices? services;
     assert(
@@ -48,6 +51,7 @@ class WiredashServices extends ChangeNotifier {
     return services ?? WiredashServices.setup(registerProdWiredashServices);
   }
 
+  /// Constructs a empty [WiredashServices] instance which can be filled within [setup]
   WiredashServices.setup(
     void Function(WiredashServices sl) setup,
   ) {

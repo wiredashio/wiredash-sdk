@@ -8,7 +8,6 @@ import 'package:async/async.dart';
 import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
@@ -16,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/core/network/send_events_request.dart';
+import 'package:wiredash/src/core/options/environment_detector.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
@@ -1099,18 +1099,18 @@ void main() {
   });
 
   test('trackEvent() can not throw but reports warnings', () async {
-    final binding = TestWidgetsFlutterBinding.instance;
-    binding.defaultBinaryMessenger.setMockMethodCallHandler(
-      const MethodChannel('dev.fluttercommunity.plus/device_info'),
-      null, // reset handler to make data collection crash
-    );
+    WiredashServices.debugServicesCreator = () {
+      return WiredashServices.setup((sl) {
+        sl.inject<EnvironmentDetector>((_) => _ThrowingEnvironmentDetector());
+      });
+    };
 
     final errors = captureFlutterErrors();
     addTearDown(() => errors.restoreDefaultErrorHandlers());
     await Wiredash.trackEvent('event'); // no error
     expect(
       errors.warnings.first.toString(),
-      contains('MissingPluginException'),
+      contains('unsupported'), // from _ThrowingEnvironmentDetector
     );
     expect(errors.errors, isEmpty);
   });
@@ -1123,4 +1123,11 @@ class ThirdPartyAnalytics implements WiredashAnalytics {
     String eventName, {
     Map<String, Object?>? data,
   }) async {}
+}
+
+class _ThrowingEnvironmentDetector implements EnvironmentDetector {
+  @override
+  Future<String> getEnvironment() async {
+    throw UnsupportedError('unsupported');
+  }
 }

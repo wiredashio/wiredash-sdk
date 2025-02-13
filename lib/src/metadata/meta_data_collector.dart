@@ -27,13 +27,13 @@ class MetaDataCollector {
   final BuildInfo Function() buildInfoProvider;
 
   /// In-memory cache for fixed metadata
-  FixedMetaData? fixedMetaData;
+  FixedMetaData? _fixedMetaData;
 
   /// Collects all metadata that is pretty much static for the current session
   Future<FixedMetaData> collectFixedMetaData() async {
-    final cache = fixedMetaData;
+    final cache = _fixedMetaData;
     if (cache != null) {
-      return fixedMetaData!;
+      return _fixedMetaData!;
     }
 
     final results = await Future.wait(
@@ -68,7 +68,7 @@ class MetaDataCollector {
           const BuildInfo(compilationMode: CompilationMode.profile),
     );
 
-    fixedMetaData = combined;
+    _fixedMetaData = combined;
     return combined;
   }
 
