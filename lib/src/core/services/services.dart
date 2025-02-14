@@ -2,34 +2,66 @@ import 'dart:ui';
 
 import 'package:file/local.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
-import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
-import 'package:wiredash/src/core/options/environment_detector.dart';
-import 'package:wiredash/src/core/project_credential_validator.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/app_telemetry_job.dart';
 import 'package:wiredash/src/core/sync/event_upload_job.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
-import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/sync/sync_feedback_job.dart';
-import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
-import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
-import 'package:wiredash/src/feedback/picasso/picasso.dart';
-import 'package:wiredash/src/feedback/ui/screencapture.dart';
-import 'package:wiredash/src/metadata/meta_data_collector.dart';
-import 'package:wiredash/src/promoterscore/ps_model.dart';
+import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/promoterscore/ps_trigger.dart';
-import 'package:wiredash/src/utils/test_detector.dart';
-import 'package:wiredash/wiredash.dart';
+
+export 'package:wiredash/src/analytics/event_store.dart'
+    show AnalyticsEventStore;
+export 'package:wiredash/src/analytics/event_submitter.dart'
+    show EventSubmitter;
+export 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart'
+    show FlutterAppLifecycleNotifier;
+export 'package:wiredash/src/core/network/wiredash_api.dart' show WiredashApi;
+export 'package:wiredash/src/core/options/environment_detector.dart'
+    show EnvironmentDetector;
+export 'package:wiredash/src/core/options/wiredash_options_data.dart'
+    show WiredashOptionsData;
+export 'package:wiredash/src/core/project_credential_validator.dart'
+    show ProjectCredentialValidator;
+export 'package:wiredash/src/core/services/streampod.dart'
+    show InjectableLocator;
+export 'package:wiredash/src/core/sync/sync_engine.dart' show SyncEngine;
+export 'package:wiredash/src/core/telemetry/app_telemetry.dart'
+    show AppTelemetry;
+export 'package:wiredash/src/core/telemetry/wiredash_telemetry.dart'
+    show WiredashTelemetry;
+export 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart'
+    show BackdropController;
+export 'package:wiredash/src/core/wiredash_model.dart' show WiredashModel;
+export 'package:wiredash/src/core/wiredash_widget.dart' show Wiredash;
+export 'package:wiredash/src/core/wuid_generator.dart' show WuidGenerator;
+export 'package:wiredash/src/core/wuid_generator.dart';
+export 'package:wiredash/src/feedback/data/feedback_submitter.dart'
+    show FeedbackSubmitter;
+export 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart'
+    show SharedPreferences;
+export 'package:wiredash/src/feedback/feedback_model.dart' show FeedbackModel;
+export 'package:wiredash/src/feedback/picasso/picasso.dart'
+    show PicassoController;
+export 'package:wiredash/src/feedback/ui/screencapture.dart'
+    show ScreenCaptureController;
+export 'package:wiredash/src/metadata/build_info/build_info.dart'
+    show BuildInfo;
+export 'package:wiredash/src/metadata/device_info/device_info_generator.dart'
+    show FlutterInfoCollector;
+export 'package:wiredash/src/metadata/meta_data_collector.dart'
+    show MetaDataCollector;
+export 'package:wiredash/src/promoterscore/ps_model.dart' show PsModel;
+export 'package:wiredash/src/promoterscore/ps_trigger.dart' show PsTrigger;
+export 'package:wiredash/src/utils/test_detector.dart' show TestDetector;
 
 /// Internal service locator
 class WiredashServices extends ChangeNotifier {

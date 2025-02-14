@@ -4,8 +4,9 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:test/test.dart';
-import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
+import 'package:wiredash/src/metadata/all_meta_data.dart';
 
 void main() {
   final minimalFeedbackV2 = PendingFeedbackItem(

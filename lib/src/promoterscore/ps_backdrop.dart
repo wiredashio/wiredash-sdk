@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
+import 'package:wiredash/src/core/wiredash_model.dart';
 import 'package:wiredash/src/promoterscore/ps_flow.dart';
 
 /// The backdrop for [WiredashFlow.promoterScore]

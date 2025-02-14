@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/assets/l10n/wiredash_localizations.g.dart';
 import 'package:wiredash/assets/l10n/wiredash_localizations_en.g.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
+
+export 'package:wiredash/assets/l10n/wiredash_localizations.g.dart';
 
 extension WiredashLocalizationsExt on BuildContext {
   /// Accesses the [WiredashLocalizations] via [BuildContext]

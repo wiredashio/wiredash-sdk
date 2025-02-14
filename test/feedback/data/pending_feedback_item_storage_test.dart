@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:nanoid2/nanoid2.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/network/upload_attachment_request.dart';
+import 'package:wiredash/src/core/wuid_generator.dart';
+import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
+import 'package:wiredash/src/metadata/all_meta_data.dart';
 
 import '../../util/flutter_error.dart';
 import '../../util/invocation_catcher.dart';

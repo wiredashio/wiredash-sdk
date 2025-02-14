@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
+import 'package:wiredash/src/core/widgets/tron/animations_lib.dart';
 
 /// A better version of [AnimatedSwitcher] that fades the old child completely
 /// out before showing the new one

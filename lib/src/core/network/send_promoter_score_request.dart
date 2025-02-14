@@ -9,12 +9,6 @@ import 'package:wiredash/src/metadata/all_meta_data.dart' show AllMetaData;
 import 'package:wiredash/src/promoterscore/ps_model.dart'
     show PromoterScoreRating, PsRatingExt;
 
-export 'package:wiredash/src/core/network/wiredash_api.dart'
-    show ApiClientContext;
-export 'package:wiredash/src/metadata/all_meta_data.dart' show AllMetaData;
-export 'package:wiredash/src/promoterscore/ps_model.dart'
-    show PromoterScoreRating, PsRatingExt;
-
 Future<void> postSendPromoterScore(
   ApiClientContext context,
   String url,

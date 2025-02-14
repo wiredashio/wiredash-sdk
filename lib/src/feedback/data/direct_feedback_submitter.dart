@@ -1,5 +1,6 @@
-import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/core/services/error_report.dart';
+import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 
 /// Submits feedback immediately to the wiredash backend
 class DirectFeedbackSubmitter implements FeedbackSubmitter {

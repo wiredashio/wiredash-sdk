@@ -4,7 +4,11 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/services/error_report.dart';
+import 'package:wiredash/src/metadata/all_meta_data.dart';
+import 'package:wiredash/src/metadata/build_info/app_info.dart';
+import 'package:wiredash/src/metadata/build_info/build_info.dart';
+import 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
 import 'package:wiredash/wiredash.dart';
 
 /// Collects metadata for any user report from multiple sources

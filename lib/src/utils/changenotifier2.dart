@@ -8,6 +8,7 @@ import 'package:wiredash/src/utils/object_util.dart';
 /// - Knows when disposed [isDisposed]
 class ChangeNotifier2 implements ChangeNotifier {
   bool _isDisposed = false;
+
   bool get isDisposed => _isDisposed;
 
   final List<void Function()> listeners = [];

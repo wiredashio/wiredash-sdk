@@ -1,7 +1,9 @@
 import 'dart:ui';
 
-import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/feedback/data/pending_feedback_item.dart';
+import 'package:wiredash/src/metadata/all_meta_data.dart';
 
 /// Parses saved feedback in the format starting at SDK version 1.8.0
 class PendingFeedbackItemParserV3 {

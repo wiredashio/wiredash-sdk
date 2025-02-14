@@ -4,7 +4,9 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/services/error_report.dart';
+import 'package:wiredash/src/core/wuid_generator.dart';
+import 'package:wiredash/src/metadata/all_meta_data.dart';
 
 extension AllMetaDataRequestJson on AllMetaData {
   Map<String, Object?> toRequestJson() {

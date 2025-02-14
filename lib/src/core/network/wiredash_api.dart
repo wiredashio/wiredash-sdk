@@ -14,8 +14,10 @@ import 'package:wiredash/src/core/network/upload_attachment_request.dart';
 import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 
+export 'package:http/http.dart';
 export 'package:wiredash/src/core/network/api_exceptions.dart';
 export 'package:wiredash/src/core/network/ping_request.dart';
+export 'package:wiredash/src/core/network/send_events_request.dart';
 export 'package:wiredash/src/core/network/send_feedback_request.dart';
 export 'package:wiredash/src/core/network/send_promoter_score_request.dart';
 export 'package:wiredash/src/core/network/upload_attachment_request.dart';

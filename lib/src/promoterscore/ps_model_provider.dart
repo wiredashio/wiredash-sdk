@@ -12,6 +12,7 @@ class PsModelProvider extends InheritedNotifier<PsModel> {
 extension PsModelExtension on BuildContext {
   PsModel get watchPsModel =>
       dependOnInheritedWidgetOfExactType<PsModelProvider>()!.notifier!;
+
   PsModel get readPsModel =>
       findAncestorWidgetOfExactType<PsModelProvider>()!.notifier!;
 }

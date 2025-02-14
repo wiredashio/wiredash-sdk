@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:async/async.dart' show ResultFuture;
 import 'package:nanoid2/nanoid2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/utils/disposable.dart';
 
 /// Wiredash Unique Identifier Generator

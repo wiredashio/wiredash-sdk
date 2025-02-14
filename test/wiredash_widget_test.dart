@@ -4,12 +4,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/core/options/wiredash_options_data.dart';
-import 'package:wiredash/src/core/project_credential_validator.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/core/wiredash_registry.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/feedback/feedback_options.dart';
 
 import 'util/invocation_catcher.dart';
 import 'util/mock_api.dart';

@@ -1,9 +1,10 @@
 import 'package:clock/clock.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/options/environment_detector.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
+import 'package:wiredash/src/core/wuid_generator.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 
 class PingJob extends Job {

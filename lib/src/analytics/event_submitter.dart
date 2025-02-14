@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:clock/clock.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
-import 'package:wiredash/src/core/network/send_events_request.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/utils/delay.dart';
 
 /// Abstract interface for submitting events to the backend

@@ -5,9 +5,11 @@ import 'dart:isolate';
 import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
+import 'package:wiredash/src/core/services/error_report.dart';
+import 'package:wiredash/src/core/services/services.dart';
 import 'package:wiredash/src/core/version.dart';
+import 'package:wiredash/src/core/wiredash_registry.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 
 /// Interact with the Wiredash Analytics service.

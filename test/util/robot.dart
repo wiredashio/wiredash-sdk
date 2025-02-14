@@ -10,22 +10,32 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nanoid2/nanoid2.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spot/spot.dart';
-import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
 import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
+import 'package:wiredash/src/core/theme/wirecons.dart';
+import 'package:wiredash/src/core/widgets/backdrop/step_page_scaffold.dart';
+import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
+import 'package:wiredash/src/core/widgets/larry_page_view.dart';
+import 'package:wiredash/src/core/widgets/tron/tron_button.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
-
+import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
+import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
+import 'package:wiredash/src/feedback/feedback_flow.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/feedback/steps/step_1_feedback_message.dart';
+import 'package:wiredash/src/feedback/steps/step_2_labels.dart';
+import 'package:wiredash/src/feedback/steps/step_3_screenshot_overview.dart';
+import 'package:wiredash/src/feedback/steps/step_5_email.dart';
+import 'package:wiredash/src/feedback/steps/step_6_submit.dart';
+import 'package:wiredash/src/feedback/ui/color_palette.dart';
+import 'package:wiredash/src/feedback/ui/screenshot_bar.dart';
 // ignore: unused_import
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/src/promoterscore/ps_flow.dart';
 import 'package:wiredash/src/promoterscore/step_1_rating.dart';
 import 'package:wiredash/src/promoterscore/step_2_message.dart';
 import 'package:wiredash/src/promoterscore/step_3_thanks.dart';
-import 'package:wiredash/src/utils/test_detector.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'mock_api.dart';

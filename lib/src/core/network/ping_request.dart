@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 
-import 'package:http/http.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/version.dart';
 

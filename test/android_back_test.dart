@@ -3,10 +3,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spot/spot.dart';
-import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
+import 'package:wiredash/src/feedback/steps/step_1_feedback_message.dart';
+import 'package:wiredash/src/feedback/steps/step_3_screenshot_overview.dart';
+import 'package:wiredash/src/feedback/steps/step_5_email.dart';
+import 'package:wiredash/src/feedback/steps/step_6_submit.dart';
 
 import 'util/mock_api.dart';
 import 'util/robot.dart';
