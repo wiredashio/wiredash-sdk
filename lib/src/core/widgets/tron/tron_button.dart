@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/core/theme/color_ext.dart';
 import 'package:wiredash/src/core/theme/wiredash_theme.dart';

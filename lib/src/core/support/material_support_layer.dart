@@ -4,7 +4,8 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'
+    show Colors, Material, MaterialLocalizations, Theme, ThemeData;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:wiredash/src/core/theme/wiredash_theme.dart';
 import 'package:wiredash/src/utils/semver.dart';
