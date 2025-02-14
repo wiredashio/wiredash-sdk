@@ -1,10 +1,7 @@
 import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/_ps.dart';
-import 'package:wiredash/src/core/telemetry/app_telemetry.dart';
-import 'package:wiredash/src/core/telemetry/wiredash_telemetry.dart';
-import 'package:wiredash/src/core/wuid_generator.dart';
+import 'package:wiredash/src/promoterscore/ps_trigger.dart';
 
 void main() {
   setUp(() {

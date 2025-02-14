@@ -2,10 +2,15 @@ import 'dart:math';
 
 import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
-import 'package:wiredash/src/_ps.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/telemetry/app_telemetry.dart';
 import 'package:wiredash/src/core/telemetry/wiredash_telemetry.dart';
+import 'package:wiredash/src/core/wuid_generator.dart';
+import 'package:wiredash/src/promoterscore/ps_options.dart';
+
+export 'package:wiredash/src/core/telemetry/app_telemetry.dart';
+export 'package:wiredash/src/core/telemetry/wiredash_telemetry.dart';
+export 'package:wiredash/src/core/wuid_generator.dart';
+export 'package:wiredash/src/promoterscore/ps_options.dart';
 
 /// Decides when it is time to show the promoter score survey
 class PsTrigger {

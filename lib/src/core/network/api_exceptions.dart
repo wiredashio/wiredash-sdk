@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
-import 'package:http/http.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 
 /// Generic error from the Wiredash API
@@ -81,6 +80,7 @@ class UnauthenticatedWiredashApiException extends WiredashApiException {
 /// Backend returns an error which silences the SDK for one week
 class KillSwitchException extends WiredashApiException {
   const KillSwitchException({super.response});
+
   @override
   String toString() {
     return 'KillSwitchException{${response?.statusCode}, body: ${response?.body}}';

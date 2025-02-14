@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/painting.dart';
 
+export 'dart:ui' show Brightness;
+
 extension ColorBrightness on Color {
   Color darken([double amount = .1]) {
     assert(amount >= 0 && amount <= 1);

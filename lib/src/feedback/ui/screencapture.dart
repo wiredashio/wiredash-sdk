@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/core/services/error_report.dart';
+import 'package:wiredash/src/core/theme/wiredash_theme.dart';
+import 'package:wiredash/src/core/widgets/tron/animated_fade_widget_switcher.dart';
+import 'package:wiredash/src/core/wiredash_model.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/ui/grey_scale_filter.dart';
 
@@ -209,6 +210,7 @@ class ScreenCaptureController extends ChangeNotifier {
   ui.Image? get screenshot => _screenshot;
   ui.Image? _screenshot;
   FlutterErrorDetails? _error;
+
   FlutterErrorDetails? get error => _error;
 
   Future<ui.Image?> captureScreen() async {

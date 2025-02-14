@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/core/theme/wiredash_theme.dart';
 
 /// Clickable text
 class TronLabeledButton extends ImplicitlyAnimatedWidget {

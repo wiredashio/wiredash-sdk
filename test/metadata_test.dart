@@ -2,8 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/network/ping_request.dart';
+import 'package:wiredash/src/core/network/send_promoter_score_request.dart';
+import 'package:wiredash/src/core/services/services.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/metadata/all_meta_data.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'util/robot.dart';

@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:wiredash/src/_ps.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/core/theme/wirecons.dart';
+import 'package:wiredash/src/core/theme/wiredash_theme.dart';
+import 'package:wiredash/src/core/widgets/backdrop/step_page_scaffold.dart';
+import 'package:wiredash/src/core/wiredash_localizations_ext.dart';
+import 'package:wiredash/src/promoterscore/ps_model.dart';
+import 'package:wiredash/src/promoterscore/ps_model_provider.dart';
 
 class PsStep3Thanks extends StatelessWidget {
   const PsStep3Thanks({super.key});
@@ -25,7 +28,7 @@ class PsStep3Thanks extends StatelessWidget {
           ),
           Text(
             () {
-              final rating = context.watchPsModel.score!;
+              final PromoterScoreRating rating = context.watchPsModel.score!;
               switch (rating) {
                 case PromoterScoreRating.rating0:
                 case PromoterScoreRating.rating1:

@@ -1,10 +1,13 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import 'package:wiredash/src/_ps.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/network/serializers.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart'
+    show ApiClientContext;
 import 'package:wiredash/src/core/version.dart';
+import 'package:wiredash/src/metadata/all_meta_data.dart' show AllMetaData;
+import 'package:wiredash/src/promoterscore/ps_model.dart'
+    show PromoterScoreRating, PsRatingExt;
 
 Future<void> postSendPromoterScore(
   ApiClientContext context,

@@ -1,4 +1,6 @@
-import 'package:wiredash/src/_feedback.dart';
+import 'package:wiredash/src/feedback/data/feedback_item.dart';
+
+export 'package:wiredash/src/feedback/data/feedback_item.dart';
 
 /// Interface which allows submission of feedback to the backend
 ///

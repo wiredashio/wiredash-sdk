@@ -1,7 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:flutter/material.dart' show VerticalDivider;
+import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/core/theme/wirecons.dart';
+import 'package:wiredash/src/core/theme/wiredash_theme.dart';
+import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
+import 'package:wiredash/src/core/widgets/tron/animated_fade_widget_switcher.dart';
+import 'package:wiredash/src/core/widgets/tron/tron_button.dart';
+import 'package:wiredash/src/core/wiredash_localizations_ext.dart';
+import 'package:wiredash/src/core/wiredash_model.dart';
+import 'package:wiredash/src/feedback/feedback_flow.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
 
 class ScreenshotBar extends StatelessWidget {
   const ScreenshotBar({
@@ -41,7 +48,9 @@ class ScreenshotBar extends StatelessWidget {
             return () => context.readFeedbackModel.createMasterpiece();
           }
           if (feedbackStatus == FeedbackFlowStatus.screenshotSaving) {
-            return () {/* show enabled while closing */};
+            return () {
+              /* show enabled while closing */
+            };
           }
           return null;
         }(),

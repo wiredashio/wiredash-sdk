@@ -5,8 +5,9 @@ import 'dart:io';
 import 'package:async/async.dart' show ResultFuture;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/_feedback.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
+import 'package:wiredash/src/feedback/data/feedback_item.dart';
 
 import 'util/robot.dart';
 import 'util/wiredash_tester.dart';

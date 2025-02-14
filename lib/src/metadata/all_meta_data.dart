@@ -1,10 +1,21 @@
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/version.dart';
+import 'package:wiredash/src/metadata/build_info/build_info.dart';
+import 'package:wiredash/src/metadata/device_info/device_info.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
+import 'package:wiredash/src/metadata/session_meta_data.dart';
 import 'package:wiredash/src/metadata/user_meta_data.dart';
+import 'package:wiredash/src/utils/object_util.dart';
+
+export 'dart:ui' show Brightness;
+
+export 'package:wiredash/src/metadata/build_info/build_info.dart'
+    show CompilationMode;
+export 'package:wiredash/src/metadata/device_info/device_info.dart'
+    show FlutterInfo;
+export 'package:wiredash/src/metadata/session_meta_data.dart';
 
 /// A collection of captures metadata from different sources
 ///

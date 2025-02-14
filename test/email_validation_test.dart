@@ -4,8 +4,10 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spot/spot.dart';
-import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/feedback/steps/step_6_submit.dart';
+import 'package:wiredash/wiredash.dart';
 
 import 'util/robot.dart';
 import 'util/wiredash_tester.dart';

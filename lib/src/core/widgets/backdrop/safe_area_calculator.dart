@@ -4,6 +4,7 @@ import 'dart:ui';
 /// overlapping insets.
 class SafeAreaCalculator {
   final Size screenSize;
+
   SafeAreaCalculator({
     required this.screenSize,
   });
@@ -26,6 +27,7 @@ class SafeAreaCalculator {
   }
 
   double get topInset => _topInsets.maxBy((it) => it.height)?.height ?? 0.0;
+
   double get bottomInset =>
       _bottomInsets.maxBy((it) => it.height)?.height ?? 0.0;
 

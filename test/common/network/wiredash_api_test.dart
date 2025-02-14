@@ -3,11 +3,11 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:http/http.dart';
 import 'package:test/test.dart';
-import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_ps.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/feedback/data/feedback_item.dart';
+import 'package:wiredash/src/metadata/all_meta_data.dart';
+import 'package:wiredash/src/promoterscore/ps_model.dart';
 
 import '../../util/flutter_error.dart';
 

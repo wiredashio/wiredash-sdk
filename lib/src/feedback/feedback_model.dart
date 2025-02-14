@@ -2,13 +2,25 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/services/error_report.dart';
+import 'package:wiredash/src/core/services/services.dart';
+import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
+import 'package:wiredash/src/feedback/data/label.dart';
+import 'package:wiredash/src/feedback/feedback_options.dart';
+import 'package:wiredash/src/metadata/all_meta_data.dart';
 import 'package:wiredash/src/metadata/renderer/renderer.dart';
+import 'package:wiredash/src/metadata/user_meta_data.dart';
 import 'package:wiredash/src/utils/changenotifier2.dart';
 import 'package:wiredash/src/utils/delay.dart';
 import 'package:wiredash/src/utils/email_validator.dart';
-import 'package:wiredash/wiredash.dart';
+import 'package:wiredash/src/utils/object_util.dart';
+
+export 'package:wiredash/src/core/services/services.dart';
+export 'package:wiredash/src/feedback/data/feedback_item.dart'
+    show FeedbackItem, PersistedAttachment;
+export 'package:wiredash/src/feedback/data/label.dart';
+export 'package:wiredash/src/feedback/feedback_model_provider.dart';
+export 'package:wiredash/src/utils/changenotifier2.dart';
 
 enum FeedbackFlowStatus {
   none,

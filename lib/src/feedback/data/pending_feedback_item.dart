@@ -4,11 +4,12 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/network/serializers.dart';
+import 'package:wiredash/src/core/services/error_report.dart';
+import 'package:wiredash/src/feedback/data/feedback_item.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_parser_v2.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_parser_v3.dart';
+import 'package:wiredash/src/metadata/all_meta_data.dart';
 
 const int _serializationVersion = 3;
 

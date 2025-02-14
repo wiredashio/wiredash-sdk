@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spot/spot.dart';
-import 'package:wiredash/src/_feedback.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
 import 'package:wiredash/src/feedback/feedback_backdrop.dart';
+import 'package:wiredash/src/feedback/feedback_flow.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/feedback/steps/step_1_feedback_message.dart';
+import 'package:wiredash/src/feedback/steps/step_2_labels.dart';
+import 'package:wiredash/src/feedback/steps/step_3_screenshot_overview.dart';
+import 'package:wiredash/src/feedback/steps/step_6_submit.dart';
 import 'package:wiredash/wiredash.dart';
 
 import 'util/robot.dart';

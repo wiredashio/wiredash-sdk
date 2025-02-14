@@ -2,9 +2,8 @@
 
 import 'dart:convert';
 
-import 'package:http/http.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/network/serializers.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 

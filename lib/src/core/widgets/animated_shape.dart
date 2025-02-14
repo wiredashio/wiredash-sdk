@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show ShapeBorderTween;
+import 'package:flutter/widgets.dart';
 
 class AnimatedShape extends ImplicitlyAnimatedWidget {
   const AnimatedShape({

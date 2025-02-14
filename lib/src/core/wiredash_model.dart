@@ -1,11 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/services/error_report.dart';
+import 'package:wiredash/src/core/services/services.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
+import 'package:wiredash/src/metadata/session_meta_data.dart';
 import 'package:wiredash/wiredash.dart';
+
+export 'package:wiredash/src/core/wiredash_model_provider.dart';
 
 class WiredashModel with ChangeNotifier {
   WiredashModel(this.services);

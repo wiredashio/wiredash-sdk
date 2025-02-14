@@ -3,8 +3,8 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:file/file.dart';
-import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/metadata/all_meta_data.dart';
 
 /// Contains all relevant feedback information, both user-provided and
 /// automatically inferred, that will be eventually sent to the Wiredash

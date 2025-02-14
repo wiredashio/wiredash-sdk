@@ -1,10 +1,18 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
-import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
-import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:flutter/material.dart' show Colors;
+import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
+import 'package:wiredash/src/core/theme/wiredash_theme.dart';
+import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
+import 'package:wiredash/src/core/widgets/tron/animated_fade_widget_switcher.dart';
+import 'package:wiredash/src/core/wiredash_localizations_ext.dart';
+import 'package:wiredash/src/core/wiredash_model.dart';
+import 'package:wiredash/src/feedback/feedback_flow.dart';
+import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/feedback/ui/color_palette.dart';
+import 'package:wiredash/src/feedback/ui/screencapture.dart';
+import 'package:wiredash/src/feedback/ui/screenshot_bar.dart';
 
 /// The backdrop for [WiredashFlow.feedback]
 class FeedbackBackdrop extends StatelessWidget {

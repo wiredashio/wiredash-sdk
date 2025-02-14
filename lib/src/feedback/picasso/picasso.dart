@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Colors;
+import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/feedback/picasso/sketcher.dart';
 import 'package:wiredash/src/feedback/picasso/stroke.dart';
 
@@ -218,7 +219,9 @@ class PicassoController extends ChangeNotifier {
   }
 
   Color? _color;
+
   Color? get color => _color;
+
   set color(Color? value) {
     _color = value;
     notifyListeners();

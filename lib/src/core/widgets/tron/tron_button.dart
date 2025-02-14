@@ -1,9 +1,11 @@
 import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/core/theme/color_ext.dart';
+import 'package:wiredash/src/core/theme/wiredash_theme.dart';
+import 'package:wiredash/src/core/widgets/animated_shape.dart';
+import 'package:wiredash/src/core/widgets/tron/tron_icon.dart';
 
 class TronButton extends StatefulWidget {
   const TronButton({

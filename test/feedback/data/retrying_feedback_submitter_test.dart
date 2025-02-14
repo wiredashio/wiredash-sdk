@@ -3,15 +3,13 @@
 import 'dart:convert';
 
 import 'package:fake_async/fake_async.dart';
-import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:http/http.dart';
 import 'package:test/test.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/feedback/data/feedback_submitter.dart';
 import 'package:wiredash/src/feedback/data/pending_feedback_item_storage.dart';
+import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 
 import '../../util/mock_api.dart';
 import 'pending_feedback_item_storage_test.dart';

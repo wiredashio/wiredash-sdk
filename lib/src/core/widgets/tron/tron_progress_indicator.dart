@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/core/theme/color_ext.dart';
+import 'package:wiredash/src/core/theme/wiredash_theme.dart';
 
 class TronProgressIndicator extends StatefulWidget {
   const TronProgressIndicator({

@@ -9,15 +9,13 @@ import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart';
 import 'package:http/testing.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/analytics/event_store.dart';
-import 'package:wiredash/src/core/network/send_events_request.dart';
-import 'package:wiredash/src/core/options/environment_detector.dart';
+import 'package:wiredash/src/core/network/wiredash_api.dart';
+import 'package:wiredash/src/core/services/services.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
 import 'package:wiredash/src/core/version.dart';
+import 'package:wiredash/src/core/wiredash_registry.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
 import 'package:wiredash/wiredash.dart';
 
