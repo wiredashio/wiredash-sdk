@@ -5,7 +5,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
@@ -14,6 +13,8 @@ import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/not_a_widgets_app.dart';
 import 'package:wiredash/src/feedback/feedback_backdrop.dart';
+import 'package:wiredash/src/promoterscore/ps_backdrop.dart';
+import 'package:wiredash/src/promoterscore/ps_model_provider.dart';
 import 'package:wiredash/src/utils/disposable.dart';
 import 'package:wiredash/wiredash.dart';
 

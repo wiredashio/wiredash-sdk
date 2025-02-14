@@ -6,7 +6,6 @@ import 'dart:ui';
 import 'package:http/http.dart';
 import 'package:test/test.dart';
 import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 
 import '../../util/flutter_error.dart';

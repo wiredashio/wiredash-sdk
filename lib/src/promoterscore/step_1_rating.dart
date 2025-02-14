@@ -1,9 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
+import 'package:wiredash/src/promoterscore/ps_model.dart';
+import 'package:wiredash/src/promoterscore/ps_model_provider.dart';
 import 'package:wiredash/src/utils/delay.dart';
 
 class PsStep1Rating extends StatefulWidget {

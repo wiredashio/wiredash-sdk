@@ -13,7 +13,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spot/spot.dart';
 import 'package:wiredash/src/_feedback.dart';
-import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
 import 'package:wiredash/src/_wiredash_ui.dart';
 import 'package:wiredash/src/analytics/event_submitter.dart';
@@ -22,6 +21,10 @@ import 'package:wiredash/src/core/wiredash_widget.dart';
 
 // ignore: unused_import
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
+import 'package:wiredash/src/promoterscore/ps_flow.dart';
+import 'package:wiredash/src/promoterscore/step_1_rating.dart';
+import 'package:wiredash/src/promoterscore/step_2_message.dart';
+import 'package:wiredash/src/promoterscore/step_3_thanks.dart';
 import 'package:wiredash/src/utils/test_detector.dart';
 import 'package:wiredash/wiredash.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spot/spot.dart';
-import 'package:wiredash/src/_ps.dart';
 import 'package:wiredash/src/_wiredash_internal.dart';
+import 'package:wiredash/src/promoterscore/step_1_rating.dart';
 
 import 'util/flutter_error.dart';
 import 'util/robot.dart';
