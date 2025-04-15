@@ -56,10 +56,6 @@ class LarryPageViewState extends State<LarryPageView>
   /// The distance a page has to be moved before it switches to the next page
   static const double _pageSwitchDistance = 200;
 
-  /// Spring used when switching pages
-  static const _pageSpring =
-      SpringDescription(mass: 30, stiffness: 1, damping: 1);
-
   /// Fixed velocity for pages animating in
   static const double _pageEnterVelocity = 3000;
 
@@ -373,6 +369,7 @@ class LarryPageViewState extends State<LarryPageView>
     setState(() {
       _offset = _controller.value;
     });
+    print(_offset);
 
     if (_animatingPageOut) {
       if (_offset > _pageSwitchDistance) {
@@ -384,7 +381,7 @@ class LarryPageViewState extends State<LarryPageView>
           _animatingPageOut = false;
           widget.onPageChanged?.call(widget.pageIndex + 1);
           final sim =
-              SpringSimulation(_pageSpring, _offset, 0, _pageEnterVelocity);
+              SpringSimulation(pageSpring(), _offset, 0, _pageEnterVelocity);
           _nextPageTimer?.cancel();
           _nextPageTimer = Timer(_pageEnterDelay, () {
             _controller.animateWith(sim);
@@ -400,7 +397,7 @@ class LarryPageViewState extends State<LarryPageView>
           _animatingPageOut = false;
           widget.onPageChanged?.call(widget.pageIndex - 1);
           final sim =
-              SpringSimulation(_pageSpring, _offset, 0, -_pageEnterVelocity);
+              SpringSimulation(pageSpring(), _offset, 0, -_pageEnterVelocity);
           _nextPageTimer?.cancel();
           _nextPageTimer = Timer(_pageEnterDelay, () {
             _controller.animateWith(sim);
@@ -412,6 +409,7 @@ class LarryPageViewState extends State<LarryPageView>
   }
 
   void moveToNextPage() {
+    print('moveToNextPage()');
     if (widget.pageIndex + 1 >= widget.stepCount) {
       return;
     }
@@ -486,4 +484,37 @@ class StepInformation {
         context.dependOnInheritedWidgetOfExactType<StepInheritedWidget>();
     return widget!.data;
   }
+}
+
+SpringDescription pageSpring() {
+  if (usesCorrectSpringUnderdampingFormula()) {
+    // Flutter 3.31.0-0.1.pre and on
+    const correctSpring =
+        SpringDescription(mass: 1, damping: 35, stiffness: 400);
+    return correctSpring;
+  }
+
+  // until Flutter 3.30, values for the incorrect calculation
+  const corruptSpring = SpringDescription(
+    mass: 30,
+    stiffness: 1,
+    damping: 1,
+  );
+  return corruptSpring;
+}
+
+/// Tests for the SpringDescription change introduced by https://github.com/flutter/flutter/pull/165017
+bool usesCorrectSpringUnderdampingFormula() {
+  // values from test https://github.com/flutter/flutter/blob/77c42fbd22fe97ea4ae0524cd3d6641d2e2f5ccb/packages/flutter/test/physics/spring_simulation_test.dart#L39-L70
+  final springDescription = SpringDescription.withDampingRatio(
+      stiffness: 0.4, mass: 0.4, ratio: 1 - 1e-3);
+  final slightlyUnderdamped = SpringSimulation(springDescription, 0, 1, 0);
+  final x = slightlyUnderdamped.x(0.4);
+
+  // until Flutter 3.30
+  // flutter: x: 0.0021120486670557215
+
+  // Flutter 3.31.0-0.1.pre and on
+  // flutter: x: 0.06156623834271502
+  return x > 0.05;
 }

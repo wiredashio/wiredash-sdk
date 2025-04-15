@@ -11,6 +11,7 @@ import 'package:wiredash/src/core/theme/wiredash_theme.dart';
 import 'package:wiredash/src/core/widgets/backdrop/fake_app_status_bar.dart';
 import 'package:wiredash/src/core/widgets/backdrop/pull_to_close_detector.dart';
 import 'package:wiredash/src/core/widgets/backdrop/safe_area_calculator.dart';
+import 'package:wiredash/src/core/widgets/larry_page_view.dart';
 import 'package:wiredash/src/core/wiredash_model_provider.dart';
 import 'package:wiredash/src/feedback/ui/semi_transparent_statusbar.dart';
 import 'package:wiredash/src/utils/standard_kt.dart';
@@ -870,7 +871,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               _swapAnimation();
               _animCurves();
               final simApp = SpringSimulation(
-                const SpringDescription(mass: 30, stiffness: 1, damping: 1),
+                pageSpring(),
                 _backdropAnimationController.value,
                 1.0,
                 -velocity / outOfFocusPosition,
@@ -895,7 +896,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               _swapAnimation();
               _animCurves();
               final simApp = SpringSimulation(
-                const SpringDescription(mass: 30, stiffness: 1, damping: 1),
+                pageSpring(),
                 1 - _backdropAnimationController.value,
                 1.0,
                 -velocity / outOfFocusPosition,
