@@ -107,6 +107,7 @@ void main() {
 
 class TestJob extends Job {
   final List<SdkEvent> trigger;
+  // ignore: avoid_futureor_void
   final FutureOr<void> Function() block;
 
   TestJob({

@@ -198,7 +198,7 @@ class LarryPageViewState extends State<LarryPageView>
   /// Called when the inner scrollview scrolls
   ///
   /// Drives [_controller] on overscroll
-  bool _onInnerScroll(n) {
+  bool _onInnerScroll(Notification n) {
     // 1. the start event has to happen on the top or bottom edge to trigger
     // the outer scroll
     if (n is ScrollStartNotification) {
@@ -484,6 +484,9 @@ class StepInformation {
   }
 }
 
+/// A spring for [LarryPageView] for the scroll simulation
+///
+/// Used for both, when the user swipes and when pressing the next button
 SpringDescription pageSpring() {
   const spring = SpringDescription(mass: 1, damping: 40, stiffness: 400);
   assert(() {

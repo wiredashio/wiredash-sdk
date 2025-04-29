@@ -40,7 +40,7 @@ class SharedPrefsWuidGenerator
   /// is reinstalled
   ///
   /// https://zelark.github.io/nano-id-cc/
-  /// ```
+  /// ```txt
   /// 36 chars / length: 8 => 238K IDs needed, in order to have a 1% probability of at least one collision.
   /// 36 chars / length: 12 => 308M IDs needed, in order to have a 1% probability of at least one collision.
   /// 36 chars / length: 16 => 399B IDs needed, in order to have a 1% probability of at least one collision.

@@ -13,7 +13,7 @@ import 'package:flutter/widgets.dart';
 /// If you want full control over making custom spring curves, [Sprung.custom]
 /// allows you to adjust damping, stiffness, mass, and velocity.
 ///
-/// ```
+/// ```dart
 /// Sprung.custom(
 ///   damping: 20,
 ///   stiffness: 180,
