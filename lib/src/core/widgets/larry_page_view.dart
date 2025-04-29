@@ -485,37 +485,18 @@ class StepInformation {
 }
 
 SpringDescription pageSpring() {
-  if (usesCorrectSpringUnderdampingFormula()) {
-    // Flutter 3.31.0-0.1.pre and on
-    const correctSpring =
-        SpringDescription(mass: 1, damping: 35, stiffness: 400);
-    return correctSpring;
-  }
+  const spring = SpringDescription(mass: 1, damping: 35, stiffness: 400);
+  assert(() {
+    // Remove when we drop support for Flutter3.31
+    final springType = SpringSimulation(spring, 0, 1, 0).type;
+    assert(
+        springType != SpringType.underDamped,
+        'The underdamped spring logic is wrong before Flutter 3.31, '
+        'do not use underdamped springs to have the same code path for all Flutter versions. '
+        'https://github.com/flutter/flutter/issues/163858 '
+        'https://docs.flutter.dev/release/breaking-changes/spring-description-underdamped');
 
-  // until Flutter 3.30, values for the incorrect calculation
-  const corruptSpring = SpringDescription(
-    mass: 30,
-    stiffness: 1,
-    damping: 1,
-  );
-  return corruptSpring;
-}
-
-/// Tests for the SpringDescription change introduced by https://github.com/flutter/flutter/pull/165017
-bool usesCorrectSpringUnderdampingFormula() {
-  // values from test https://github.com/flutter/flutter/blob/77c42fbd22fe97ea4ae0524cd3d6641d2e2f5ccb/packages/flutter/test/physics/spring_simulation_test.dart#L39-L70
-  final springDescription = SpringDescription.withDampingRatio(
-    stiffness: 0.4,
-    mass: 0.4,
-    ratio: 1 - 1e-3,
-  );
-  final slightlyUnderdamped = SpringSimulation(springDescription, 0, 1, 0);
-  final x = slightlyUnderdamped.x(0.4);
-
-  // until Flutter 3.30
-  // flutter: x: 0.0021120486670557215
-
-  // Flutter 3.31.0-0.1.pre and on
-  // flutter: x: 0.06156623834271502
-  return x > 0.05;
+    return true;
+  }());
+  return spring;
 }
