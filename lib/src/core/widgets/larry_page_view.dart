@@ -343,7 +343,7 @@ class LarryPageViewState extends State<LarryPageView>
     if (jumpToZero) {
       _animatingPageOut = false;
       final sim = SpringSimulation(
-        const SpringDescription(mass: 30, stiffness: 1, damping: 1),
+        pageSpring(),
         _offset,
         0,
         -primaryVelocity,
@@ -369,7 +369,6 @@ class LarryPageViewState extends State<LarryPageView>
     setState(() {
       _offset = _controller.value;
     });
-    print(_offset);
 
     if (_animatingPageOut) {
       if (_offset > _pageSwitchDistance) {
@@ -409,7 +408,6 @@ class LarryPageViewState extends State<LarryPageView>
   }
 
   void moveToNextPage() {
-    print('moveToNextPage()');
     if (widget.pageIndex + 1 >= widget.stepCount) {
       return;
     }
@@ -507,7 +505,10 @@ SpringDescription pageSpring() {
 bool usesCorrectSpringUnderdampingFormula() {
   // values from test https://github.com/flutter/flutter/blob/77c42fbd22fe97ea4ae0524cd3d6641d2e2f5ccb/packages/flutter/test/physics/spring_simulation_test.dart#L39-L70
   final springDescription = SpringDescription.withDampingRatio(
-      stiffness: 0.4, mass: 0.4, ratio: 1 - 1e-3);
+    stiffness: 0.4,
+    mass: 0.4,
+    ratio: 1 - 1e-3,
+  );
   final slightlyUnderdamped = SpringSimulation(springDescription, 0, 1, 0);
   final x = slightlyUnderdamped.x(0.4);
 
