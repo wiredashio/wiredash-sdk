@@ -485,7 +485,7 @@ class StepInformation {
 }
 
 SpringDescription pageSpring() {
-  const spring = SpringDescription(mass: 1, damping: 35, stiffness: 400);
+  const spring = SpringDescription(mass: 1, damping: 40, stiffness: 400);
   assert(() {
     // Remove when we drop support for Flutter3.31
     final springType = SpringSimulation(spring, 0, 1, 0).type;
