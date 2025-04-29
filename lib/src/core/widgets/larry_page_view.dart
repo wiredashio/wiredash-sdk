@@ -56,10 +56,6 @@ class LarryPageViewState extends State<LarryPageView>
   /// The distance a page has to be moved before it switches to the next page
   static const double _pageSwitchDistance = 200;
 
-  /// Spring used when switching pages
-  static const _pageSpring =
-      SpringDescription(mass: 30, stiffness: 1, damping: 1);
-
   /// Fixed velocity for pages animating in
   static const double _pageEnterVelocity = 3000;
 
@@ -202,7 +198,7 @@ class LarryPageViewState extends State<LarryPageView>
   /// Called when the inner scrollview scrolls
   ///
   /// Drives [_controller] on overscroll
-  bool _onInnerScroll(n) {
+  bool _onInnerScroll(Notification n) {
     // 1. the start event has to happen on the top or bottom edge to trigger
     // the outer scroll
     if (n is ScrollStartNotification) {
@@ -347,7 +343,7 @@ class LarryPageViewState extends State<LarryPageView>
     if (jumpToZero) {
       _animatingPageOut = false;
       final sim = SpringSimulation(
-        const SpringDescription(mass: 30, stiffness: 1, damping: 1),
+        pageSpring(),
         _offset,
         0,
         -primaryVelocity,
@@ -384,7 +380,7 @@ class LarryPageViewState extends State<LarryPageView>
           _animatingPageOut = false;
           widget.onPageChanged?.call(widget.pageIndex + 1);
           final sim =
-              SpringSimulation(_pageSpring, _offset, 0, _pageEnterVelocity);
+              SpringSimulation(pageSpring(), _offset, 0, _pageEnterVelocity);
           _nextPageTimer?.cancel();
           _nextPageTimer = Timer(_pageEnterDelay, () {
             _controller.animateWith(sim);
@@ -400,7 +396,7 @@ class LarryPageViewState extends State<LarryPageView>
           _animatingPageOut = false;
           widget.onPageChanged?.call(widget.pageIndex - 1);
           final sim =
-              SpringSimulation(_pageSpring, _offset, 0, -_pageEnterVelocity);
+              SpringSimulation(pageSpring(), _offset, 0, -_pageEnterVelocity);
           _nextPageTimer?.cancel();
           _nextPageTimer = Timer(_pageEnterDelay, () {
             _controller.animateWith(sim);
@@ -486,4 +482,24 @@ class StepInformation {
         context.dependOnInheritedWidgetOfExactType<StepInheritedWidget>();
     return widget!.data;
   }
+}
+
+/// A spring for [LarryPageView] for the scroll simulation
+///
+/// Used for both, when the user swipes and when pressing the next button
+SpringDescription pageSpring() {
+  const spring = SpringDescription(mass: 1, damping: 40, stiffness: 400);
+  assert(() {
+    // Remove when we drop support for Flutter3.31
+    final springType = SpringSimulation(spring, 0, 1, 0).type;
+    assert(
+        springType != SpringType.underDamped,
+        'The underdamped spring logic is wrong before Flutter 3.31, '
+        'do not use underdamped springs to have the same code path for all Flutter versions. '
+        'https://github.com/flutter/flutter/issues/163858 '
+        'https://docs.flutter.dev/release/breaking-changes/spring-description-underdamped');
+
+    return true;
+  }());
+  return spring;
 }

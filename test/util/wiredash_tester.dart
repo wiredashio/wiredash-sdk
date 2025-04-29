@@ -90,7 +90,7 @@ extension WiredashTester on WidgetTester {
   /// Pumps regularly until reaching [duration] while new frames are pumped and dart:io operations are executed
   ///
   /// Calling it with [duration] == Duration.zero calls the following pattern
-  /// ```
+  /// ```dart
   /// pump(); // handle input events / draws new frame
   /// runAsync(() => Future.delayed(Duration.zero)) // start io operations
   /// runAsync(() => pumpEventQueue()) // waits for io operations to finish

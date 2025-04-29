@@ -12,3 +12,6 @@ linter:
 
     # Enable when min Dart version reaches 3.0.0
     unnecessary_library_directive: false
+
+    # Adding async makes debugging easier
+    unnecessary_async: false

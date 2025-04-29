@@ -10,3 +10,4 @@ linter:
     prefer_const_constructors: false
     prefer_const_literals_to_create_immutables: false
     prefer_const_constructors_in_immutables: false
+    unnecessary_async: false

@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 /// `--dart-define` flag to the `flutter run` or `flutter build`.
 ///
 /// For example:
-/// ```
+/// ```sh
 /// flutter build --dart-define=BUILD_NUMBER=$BUILD_NUMBER \
 ///   --dart-define=BUILD_VERSION=$BUILD_VERSION \
 ///   --dart-define=BUILD_COMMIT=$FCI_COMMIT
