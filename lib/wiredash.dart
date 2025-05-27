@@ -3,7 +3,7 @@ library wiredash;
 export 'assets/l10n/wiredash_localizations.g.dart' show WiredashLocalizations;
 export 'assets/l10n/wiredash_localizations_de.g.dart';
 export 'assets/l10n/wiredash_localizations_en.g.dart';
-export 'src/analytics/analytics.dart'
+export 'src/an4lytics/an4lytics.dart'
     show
         InvalidEventKeyFormatException,
         NoProjectIdSpecifiedException,

@@ -3,12 +3,12 @@ import 'dart:ui';
 import 'package:file/local.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:wiredash/src/analytics/event_store.dart';
-import 'package:wiredash/src/analytics/event_submitter.dart';
+import 'package:wiredash/src/an4lytics/ev3nt_store.dart';
+import 'package:wiredash/src/an4lytics/ev3nt_submitter.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/services/streampod.dart';
 import 'package:wiredash/src/core/sync/app_telemetry_job.dart';
-import 'package:wiredash/src/core/sync/event_upload_job.dart';
+import 'package:wiredash/src/core/sync/ev3nt_upload_job.dart';
 import 'package:wiredash/src/core/sync/ping_job.dart';
 import 'package:wiredash/src/core/sync/sync_feedback_job.dart';
 import 'package:wiredash/src/feedback/data/direct_feedback_submitter.dart';
@@ -18,9 +18,9 @@ import 'package:wiredash/src/feedback/feedback_model.dart';
 import 'package:wiredash/src/metadata/build_info/build_info.dart';
 import 'package:wiredash/src/promoterscore/ps_trigger.dart';
 
-export 'package:wiredash/src/analytics/event_store.dart'
+export 'package:wiredash/src/an4lytics/ev3nt_store.dart'
     show AnalyticsEventStore;
-export 'package:wiredash/src/analytics/event_submitter.dart'
+export 'package:wiredash/src/an4lytics/ev3nt_submitter.dart'
     show EventSubmitter;
 export 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart'
     show FlutterAppLifecycleNotifier;

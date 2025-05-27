@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:clock/clock.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/analytics/event_store.dart';
+import 'package:wiredash/src/an4lytics/ev3nt_store.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/utils/delay.dart';

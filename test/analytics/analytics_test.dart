@@ -10,7 +10,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/testing.dart';
-import 'package:wiredash/src/analytics/event_store.dart';
+import 'package:wiredash/src/an4lytics/ev3nt_store.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/services/services.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';

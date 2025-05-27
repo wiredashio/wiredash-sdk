@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/core/network/send_events_request.dart';
+import 'package:wiredash/src/core/network/send_ev3nts_request.dart';
 
 import '../util/robot.dart';
 import '../util/wiredash_tester.dart';

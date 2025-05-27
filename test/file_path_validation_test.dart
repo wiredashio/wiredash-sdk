@@ -22,11 +22,7 @@ void main() {
         'tracker',
         'stats',
         'metric',
-        'beacon',
         'pixel',
-        'counter',
-        'collect',
-        'capture',
         'monitor',
       ];
 
