@@ -2421,8 +2421,8 @@ class AnimatedRoute extends PageRouteBuilder {
         );
 }
 
-Type when<Input, Type>(Input selectedOption, Map<Input, Type> branches,
-    [Type? defaultValue]) {
+T when<Input, T>(Input selectedOption, Map<Input, T> branches,
+    [T? defaultValue]) {
   if (!branches.containsKey(selectedOption)) {
     if (defaultValue != null) {
       return defaultValue;
@@ -2430,5 +2430,5 @@ Type when<Input, Type>(Input selectedOption, Map<Input, Type> branches,
       throw Exception('No matching branch');
     }
   }
-  return branches[selectedOption] as Type;
+  return branches[selectedOption] as T;
 }
