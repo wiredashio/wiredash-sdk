@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wiredash/src/analytics/event_store.dart';
+import 'package:wiredash/src/an4lytics/ev3nt_store.dart';
 
 import '../util/flutter_error.dart';
 

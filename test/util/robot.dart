@@ -11,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nanoid2/nanoid2.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:spot/spot.dart';
-import 'package:wiredash/src/analytics/event_submitter.dart';
+import 'package:wiredash/src/an4lytics/ev3nt_submitter.dart';
 import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 import 'package:wiredash/src/core/theme/wirecons.dart';
 import 'package:wiredash/src/core/widgets/backdrop/step_page_scaffold.dart';

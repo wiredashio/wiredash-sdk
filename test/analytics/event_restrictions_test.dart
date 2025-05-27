@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:wiredash/src/analytics/analytics.dart';
+import 'package:wiredash/src/an4lytics/an4lytics.dart';
 
 import '../util/flutter_error.dart';
 
