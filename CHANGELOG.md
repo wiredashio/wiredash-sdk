@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.5.0
+- Support for [Flutter 3.32](https://docs.flutter.dev/release/release-notes/release-notes-3.32.0)
+- Update PageView spring physics for Flutter 3.31 [#386](https://github.com/wiredashio/wiredash-sdk/pull/386)
+- Allow `flutter run -d web-server` with ad blocker [#387](https://github.com/wiredashio/wiredash-sdk/pull/387)
+
 ## 2.4.0
 
 - Support for [Flutter 3.29](https://docs.flutter.dev/release/release-notes/release-notes-3.29.0)
