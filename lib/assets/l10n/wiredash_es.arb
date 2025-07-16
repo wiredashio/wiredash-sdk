@@ -1,14 +1,14 @@
 {
   "@@locale": "es",
-  "feedbackStep1MessageTitle": "Envíenos sus comentarios",
+  "feedbackStep1MessageTitle": "Envianos tu comentario",
   "feedbackStep1MessageBreadcrumbTitle": "Redacta un mensaje",
   "feedbackStep1MessageDescription": "Escribe una pequeña descripción de lo que ha ocurrido",
   "feedbackStep1MessageHint": "Ocurre un error desconocido cuando trato de cambiar mi foto de perfil...",
-  "feedbackStep1MessageErrorMissingMessage": "Por favor escriba un mensaje",
+  "feedbackStep1MessageErrorMissingMessage": "Por favor, escribe un mensaje",
 
-  "feedbackStep2LabelsTitle": "¿Qué etiqueta representa mejor tus comentarios?",
+  "feedbackStep2LabelsTitle": "¿Qué etiqueta representa mejor tu comentario?",
   "feedbackStep2LabelsBreadcrumbTitle": "Etiqueta",
-  "feedbackStep2LabelsDescription": "Seleccionar la categoría correcta nos ayuda a identificar el problema y a enviar tus comentarios al equipo correcto",
+  "feedbackStep2LabelsDescription": "Seleccionar la categoría correcta nos ayuda a identificar el problema y a dirigir tu comentario al equipo correcto",
 
 
   "feedbackStep3ScreenshotOverviewTitle": "Añade capturas de pantalla",
@@ -18,6 +18,7 @@
   "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Hacer captura",
 
   "feedbackStep3ScreenshotBarNavigateTitle": "Haz una captura de pantalla",
+  "feedbackStep3ScreenshotBottomBarTitle": "Incluye una captura para brindar más contexto",
   "feedbackStep3ScreenshotBarDrawTitle": "Marca los detalles importantes",
   "feedbackStep3ScreenshotBarDrawUndoButton": "Deshacer",
   "feedbackStep3ScreenshotBarCaptureButton": "Capturar",
@@ -26,17 +27,17 @@
 
   "feedbackStep3GalleryTitle": "Capturas de pantalla adjuntas",
   "feedbackStep3GalleryBreadcrumbTitle": "Capturas de pantalla",
-  "feedbackStep3GalleryDescription": "Añadir más capturas de pantalla nos ayuda a entender mejor el problema.",
+  "feedbackStep3GalleryDescription": "Agrega más capturas de pantalla para ayudarnos a entender mejor el problema.",
 
   "feedbackStep4EmailTitle": "Reciba actualizaciones por correo electrónico",
   "feedbackStep4EmailBreadcrumbTitle": "Contacto",
-  "feedbackStep4EmailDescription": "Agregue su dirección de correo electrónico para recibir acutalizaciones sobre tu caso o déjelo sin rellenar",
+  "feedbackStep4EmailDescription": "Agrega tu dirección de correo electrónico para recibir acutalizaciones sobre tu caso o déjalo sin rellenar",
   "feedbackStep4EmailInvalidEmail": "Esto no parece una dirección de correo electrónico válida. Puedes dejarlo sin rellenar.",
   "feedbackStep4EmailInputHint": "mail@ejemplo.com",
 
   "feedbackStep6SubmitTitle": "Enviar sugerencias",
   "feedbackStep6SubmitBreadcrumbTitle": "Enviar",
-  "feedbackStep6SubmitDescription": "Por favor, revise toda la información antes de enviarla.\nPuedes navegar hacia atrás para editar sus comentarios en cualquier momento.",
+  "feedbackStep6SubmitDescription": "Por favor, revisa toda la información antes de enviarla.\nPuedes navegar hacia atrás para editar tus comentarios en cualquier momento.",
   "feedbackStep6SubmitSubmitButton": "Enviar",
   "feedbackStep6SubmitSubmitShowDetailsButton": "Mostrar detalles",
   "feedbackStep6SubmitSubmitHideDetailsButton": "Ocultar detalles",
@@ -64,7 +65,7 @@
     }
   },
   "feedbackDiscardButton": "Eliminar comentario",
-  "feedbackDiscardConfirmButton": "¿De verdad? ¡Elimínalo!",
+  "feedbackDiscardConfirmButton": "¿De verdad? ¡Eliminar!",
   "feedbackNextButton": "Siguiente",
   "feedbackBackButton": "Atrás",
   "feedbackCloseButton": "Cerrar",
