@@ -2,7 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
-// ignore: deprecated_member_use
+
 import 'dart:html' as html;
 import 'dart:ui' as ui;
 
@@ -19,7 +19,7 @@ class Netflix extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // Remove when we drop support for Flutter v3.7.0-29.0.pre.
-      // ignore: deprecated_member_use
+
       useInheritedMediaQuery: true,
       debugShowCheckedModeBanner: false,
       home: InitScreen(),
@@ -186,11 +186,8 @@ class _InitScreenState extends State<InitScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  // ignore: deprecated_member_use
                   Colors.black.withOpacity(0.8),
-                  // ignore: deprecated_member_use
                   Colors.black.withOpacity(0.42),
-                  // ignore: deprecated_member_use
                   Colors.black.withOpacity(0.9),
                 ],
                 begin: Alignment.topCenter,
@@ -907,11 +904,8 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    // ignore: deprecated_member_use
                     Colors.black.withOpacity(0.8),
-                    // ignore: deprecated_member_use
                     Colors.black.withOpacity(0.42),
-                    // ignore: deprecated_member_use
                     Colors.black.withOpacity(0.9),
                   ],
                   begin: Alignment.topCenter,
@@ -935,7 +929,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     width: 450,
                     height: 675,
-                    // ignore: deprecated_member_use
                     color: Colors.black.withOpacity(0.8),
                     padding: EdgeInsets.symmetric(
                       horizontal: breakpoint(size.width, 60, 40, 30),
@@ -1087,7 +1080,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 100),
                   Container(
                     width: size.width,
-                    // ignore: deprecated_member_use
                     color: Colors.black.withOpacity(0.5),
                     height: 240,
                     child: Column(
@@ -1153,7 +1145,6 @@ class _LoginScreenState extends State<LoginScreen> {
             height: 60,
             width: 140,
             decoration: BoxDecoration(
-              // ignore: deprecated_member_use
               color: Colors.black.withOpacity(0.8),
               border: Border.all(color: Color(0xFF333333), width: 2),
             ),
@@ -1200,7 +1191,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          // ignore: deprecated_member_use
                           Colors.black.withOpacity(0.8),
                           Colors.transparent,
                         ],
@@ -1926,9 +1916,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    // ignore: deprecated_member_use
                     Color(0xFF060606).withOpacity(_fadePercentage),
-                    // ignore: deprecated_member_use
                     Color(0xFF141414).withOpacity(_fadePercentage),
                   ],
                   begin: Alignment.topCenter,
@@ -1986,9 +1974,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            // ignore: deprecated_member_use
             Color(0xFF060606).withOpacity(0.8),
-            // ignore: deprecated_member_use
             Color(0xFF141414).withOpacity(0.0),
           ],
           begin: Alignment.topCenter,
@@ -2006,9 +1992,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    // ignore: deprecated_member_use
                     Color(0xFF060606).withOpacity(_fadePercentage),
-                    // ignore: deprecated_member_use
                     Color(0xFF141414).withOpacity(_fadePercentage),
                   ],
                   begin: Alignment.topCenter,
@@ -2131,7 +2115,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
               height: 150,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  // ignore: deprecated_member_use
                   colors: [Color(0xFF141414).withOpacity(0), Color(0xFF141414)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -2167,7 +2150,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
               child: Text(
                 'Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself.',
                 style: TextStyle(color: Colors.white, fontSize: 20),
-                // ignore: deprecated_member_use
                 textScaleFactor: scaleFactor,
               ),
             ),
@@ -2250,7 +2232,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
               height: 150,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  // ignore: deprecated_member_use
                   colors: [Color(0xFF141414).withOpacity(0), Color(0xFF141414)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -2758,13 +2739,9 @@ class NetflixPainter extends CustomPainter {
         ..lineTo(legWidth + 70, 0)
         ..close();
       final shadowPaint = Paint()
-        // ignore: deprecated_member_use
         ..color = Colors.black.withOpacity(anim.middleLegOpacity)
         ..maskFilter = MaskFilter.blur(BlurStyle.normal, 30);
-      final middleLegPaint = Paint()
-        ..color =
-            // ignore: deprecated_member_use
-            NetflixColors.netflixDarkRed.withOpacity(anim.middleLegOpacity);
+      final middleLegPaint = Paint()..color = NetflixColors.netflixDarkRed.withOpacity(anim.middleLegOpacity);
       canvas.clipRect(middleLegClipPath);
       canvas.drawPath(shadowPath, shadowPaint);
       canvas.drawPath(middleLeg, middleLegPaint);
@@ -2848,9 +2825,7 @@ class NetflixPainter extends CustomPainter {
   void _drawLeftLeg(Canvas canvas, Rect leftLeg) {
     canvas.save();
     if (anim.leftLegOpacity > 0) {
-      final leftLegPaint = Paint()
-        // ignore: deprecated_member_use
-        ..color = NetflixColors.netflixDarkRed.withOpacity(anim.leftLegOpacity);
+      final leftLegPaint = Paint()..color = NetflixColors.netflixDarkRed.withOpacity(anim.leftLegOpacity);
 
       canvas.drawRect(
         leftLeg,
@@ -2872,9 +2847,7 @@ class NetflixPainter extends CustomPainter {
           canvas.drawRect(
             rect,
             Paint()
-              ..color = rainbowColors[i % rainbowColors.length]!
-                  // ignore: deprecated_member_use
-                  .withOpacity(1.0 - anim.leftLegOpacity)
+              ..color = rainbowColors[i % rainbowColors.length]!.withOpacity(1.0 - anim.leftLegOpacity)
               ..maskFilter = MaskFilter.blur(BlurStyle.normal, 3),
           );
         }
