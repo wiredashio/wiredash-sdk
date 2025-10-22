@@ -13,6 +13,7 @@
 
 - Bump package `device_info_plus` to ">=8.0.0 <13.0.0"
 - Bump package `package_info_plus` to ">=3.0.0 <10.0.0"
+- Improve ES localization 🇪🇸 [#389](https://github.com/wiredashio/wiredash-sdk/pull/389)
 
 ## 2.5.0
 
