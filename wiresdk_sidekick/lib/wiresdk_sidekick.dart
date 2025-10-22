@@ -51,8 +51,9 @@ Future<void> bumpVersionFile(
   final content = versionFile.readAsStringSync();
 
   final versionNumberRegex = RegExp(r'const wiredashSdkVersion = (\d)+;');
-  final oldVersionNumber =
-      int.parse(versionNumberRegex.firstMatch(content)!.group(1)!);
+  final oldVersionNumber = int.parse(
+    versionNumberRegex.firstMatch(content)!.group(1)!,
+  );
 
   int nextVersionNumber =
       newVersion.major * 100 + newVersion.minor * 10 + newVersion.patch;
@@ -80,13 +81,17 @@ Future<void> bumpReadme(
 ) async {
   final readme = package.root.file('README.md');
   final content = readme.readAsStringSync();
-  final oldMinorRelease =
-      Version.parse('${oldVersion.major}.${oldVersion.minor}.0');
-  final newMinorRelease =
-      Version.parse('${newVersion.major}.${newVersion.minor}.0');
+  final oldMinorRelease = Version.parse(
+    '${oldVersion.major}.${oldVersion.minor}.0',
+  );
+  final newMinorRelease = Version.parse(
+    '${newVersion.major}.${newVersion.minor}.0',
+  );
   if (oldMinorRelease == newMinorRelease) {
-    print("Not updating version in README.md, "
-        "because it's not a major or minor version bump (old: $oldVersion, new: $newVersion)");
+    print(
+      "Not updating version in README.md, "
+      "because it's not a major or minor version bump (old: $oldVersion, new: $newVersion)",
+    );
     return;
   }
 
@@ -94,12 +99,11 @@ Future<void> bumpReadme(
     'Bumping version in README.md to ${newMinorRelease.canonicalizedVersion}',
   );
   final versionRegex = RegExp(r'wiredash:\s*\^(.+)');
-  final update = content.replaceAllMapped(
-    versionRegex,
-    (match) {
-      return match[0]!
-          .replaceFirst(match[1]!, newMinorRelease.canonicalizedVersion);
-    },
-  );
+  final update = content.replaceAllMapped(versionRegex, (match) {
+    return match[0]!.replaceFirst(
+      match[1]!,
+      newMinorRelease.canonicalizedVersion,
+    );
+  });
   readme.writeAsStringSync(update);
 }

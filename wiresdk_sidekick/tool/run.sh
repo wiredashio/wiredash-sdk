@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -e
 
 # Attempt to set TOOL_HOME
@@ -42,16 +42,18 @@ fi
 
 HASH_PROGRAM='sha1sum'
 OS="$(uname -s)"
-if [[ $OS =~ Darwin.* ]]; then
-  HASH_PROGRAM="shasum"
-fi
+case "$OS" in
+  Darwin*)
+    HASH_PROGRAM="shasum"
+    ;;
+esac
 
 # Creates a hash of files that should cause the cli to recompile
 #
 # Usually, this works just fine, but this technique is unable to detect changes
 # of path dependencies. Use the `<cli> sidekick recompile` command in those
 # cases, forcing a recompile.
-function computeHash() {
+computeHash() {
   SAVED="$(pwd)"
   cd "${SIDEKICK_PACKAGE_HOME}"
   find \
@@ -77,6 +79,13 @@ if [ ! -f "$EXE" ] || [ "$HASH" != "$EXISTING_HASH" ]; then
   # pubspec.lock may have changed, recompute hash
   NEW_HASH=$(computeHash)
   echo "$NEW_HASH" > "$STAMP_FILE"
+fi
+
+# Handle sidekick dart-internal command
+if [ "$1" = "sidekick" ] && [ "$2" = "dart-internal" ]; then
+  shift 2
+  "${DART_SDK}/bin/dart" "$@"
+  exit $?
 fi
 
 "${EXE}" "$@"

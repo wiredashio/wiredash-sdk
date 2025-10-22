@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -e
 
 # Parses a yaml file and prints the variables
@@ -13,7 +13,7 @@ set -e
 # CONF_output_file="yes"
 #
 # From https://stackoverflow.com/questions/5014632/how-can-i-parse-a-yaml-file-from-a-linux-shell-script
-function parse_yaml {
+parse_yaml() {
    local prefix=$2
    local s='[[:space:]]*' 
    local w='[a-zA-Z0-9_]*' 

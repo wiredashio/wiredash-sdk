@@ -11,10 +11,7 @@ class TestCommand extends Command {
   TestCommand() {
     argParser
       ..addFlag('all', hide: true, help: 'deprecated')
-      ..addOption(
-        'package',
-        abbr: 'p',
-      );
+      ..addOption('package', abbr: 'p');
   }
 
   @override
@@ -43,8 +40,9 @@ class TestCommand extends Command {
     final allPackages = findAllPackages(SidekickContext.projectRoot);
     final package = allPackages.firstOrNullWhere((it) => it.name == name);
     if (package == null) {
-      final packageOptions =
-          allPackages.map((it) => it.name).toList(growable: false);
+      final packageOptions = allPackages
+          .map((it) => it.name)
+          .toList(growable: false);
       error(
         'Could not find package $name. '
         'Please use one of ${packageOptions.joinToString()}',
@@ -99,8 +97,4 @@ class _TestResultCollector {
   }
 }
 
-enum _TestResult {
-  success,
-  failed,
-  noTests,
-}
+enum _TestResult { success, failed, noTests }

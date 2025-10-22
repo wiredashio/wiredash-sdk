@@ -4,19 +4,20 @@ version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: ">=3.2.6 <4.0.0"
+  sdk: ">=3.9.4 <4.0.0"
 
 executables:
   main:
 
 dependencies:
-  dcli: ^2.2.3
-  phntmxyz_bump_version_sidekick_plugin: ^1.2.1
-  sidekick_core: ^2.1.2
+  phntmxyz_bump_version_sidekick_plugin: ^2.0.0
+  sidekick_core: ^3.0.1
+  dcli: ^7.0.2
+  pubspec_manager: ^1.0.0
 
 dev_dependencies:
   lint: ^2.0.0
 
 # generated code, do not edit this manually
 sidekick:
-  cli_version: 2.1.2
+  cli_version: 3.0.1

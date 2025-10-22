@@ -1,4 +1,5 @@
 import 'package:dcli/dcli.dart' as dcli;
+import 'package:pubspec_manager/pubspec_manager.dart';
 import 'package:sidekick_core/sidekick_core.dart';
 
 class RecreateExamplesCommand extends Command {
@@ -39,7 +40,7 @@ class RecreateExamplesCommand extends Command {
   }
 
   void _upgradeDependencies(DartPackage package) {
-    final packageName = PubSpec.fromFile(package.pubspec.path).name;
+    final packageName = PubSpec.loadFromPath(package.pubspec.path).name;
     final dir = package.root;
 
     flutter(
@@ -52,7 +53,7 @@ class RecreateExamplesCommand extends Command {
   }
 
   void _buildPackage(DartPackage package) {
-    final packageName = PubSpec.fromFile(package.pubspec.path).name;
+    final packageName = PubSpec.loadFromPath(package.pubspec.path).name;
     final dir = package.root;
 
     stdout.write('Building $packageName');
@@ -112,7 +113,7 @@ void _printFlutterVersion() {
 }
 
 void _recreatePlatformFolders(DartPackage package) {
-  final packageName = PubSpec.fromFile(package.pubspec.path).name;
+  final packageName = PubSpec.loadFromPath(package.pubspec.path).name;
   final dir = package.root;
 
   dir.directory('.dart_tool').saveDeleteSync();
