@@ -9,7 +9,7 @@ class CleanCommand extends Command {
 
   @override
   Future<void> run() async {
-    flutter(['clean'], workingDirectory: mainProject?.root);
+    await flutter(['clean'], workingDirectory: mainProject?.root);
     // TODO Please add your own project clean logic here
 
     print('✔️Cleaned project');

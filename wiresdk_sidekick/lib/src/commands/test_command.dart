@@ -22,20 +22,22 @@ class TestCommand extends Command {
 
     if (packageArg != null) {
       // only run tests in selected package
-      collector.add(_testPackageWithName(packageArg));
+      final result = await _testPackageWithName(packageArg);
+      collector.add(result);
       return;
     }
 
     // outside of package, fallback to all packages
     for (final package in findAllPackages(SidekickContext.projectRoot)) {
-      collector.add(_test(package, false));
+      final result = await _test(package, false);
+      collector.add(result);
       print('\n');
     }
 
     exit(collector.exitCode);
   }
 
-  _TestResult _testPackageWithName(String name) {
+  Future<_TestResult> _testPackageWithName(String name) async {
     // only run tests in selected package
     final allPackages = findAllPackages(SidekickContext.projectRoot);
     final package = allPackages.firstOrNullWhere((it) => it.name == name);
@@ -48,10 +50,10 @@ class TestCommand extends Command {
         'Please use one of ${packageOptions.joinToString()}',
       );
     }
-    return _test(package, true);
+    return await _test(package, true);
   }
 
-  _TestResult _test(DartPackage package, bool requireTests) {
+  Future<_TestResult> _test(DartPackage package, bool requireTests) async {
     print(yellow('=== package ${package.name} ==='));
     if (!package.testDir.existsSync()) {
       if (requireTests) {
@@ -65,13 +67,14 @@ class TestCommand extends Command {
       }
     }
 
-    final exitCode = () {
+    final Future<ProcessCompletion> completion = () {
       if (package.isFlutterPackage) {
         return flutter(['test'], workingDirectory: package.root);
       } else {
         return dart(['test'], workingDirectory: package.root);
       }
     }();
+    final exitCode = (await completion).exitCode;
     if (exitCode == 0) {
       return _TestResult.success;
     }

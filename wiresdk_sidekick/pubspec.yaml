@@ -10,10 +10,10 @@ executables:
   main:
 
 dependencies:
-  phntmxyz_bump_version_sidekick_plugin: ^2.0.0
-  sidekick_core: ^3.0.1
   dcli: ^7.0.2
+  phntmxyz_bump_version_sidekick_plugin: ^2.0.0
   pubspec_manager: ^1.0.0
+  sidekick_core: ^3.0.1
 
 dev_dependencies:
   lint: ^2.0.0

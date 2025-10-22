@@ -16,7 +16,7 @@ class GenL10nCommand extends Command {
       from: SidekickContext.projectRoot.path,
     );
 
-    flutter([
+    await flutter([
       'gen-l10n',
       '--arb-dir=$arbDir',
       '--no-synthetic-package',
