@@ -1,6 +1,21 @@
 # Changelog
 
+## 2.6.0
+
+> Note: This release has breaking changes.
+>
+> For device_info_plus >= 12.0.0 and package_info_plus >= 9.0.0
+> Plugin now requires the following:
+>
+> - Android Gradle Plugin >=8.12.1
+> - Gradle wrapper >=8.13
+> - Kotlin 2.2.0
+
+- Bump package `device_info_plus` to ">=8.0.0 <13.0.0"
+- Bump package `package_info_plus` to ">=3.0.0 <10.0.0"
+
 ## 2.5.0
+
 - Support for [Flutter 3.32](https://docs.flutter.dev/release/release-notes/release-notes-3.32.0)
 - Update PageView spring physics for Flutter 3.31 [#386](https://github.com/wiredashio/wiredash-sdk/pull/386)
 - Allow `flutter run -d web-server` with ad blocker [#387](https://github.com/wiredashio/wiredash-sdk/pull/387)
@@ -31,7 +46,7 @@
 ## 2.2.0
 
 - Track Custom Analytics events (requires paid plan) [#338](https://github.com/wiredashio/wiredash-sdk/pull/338)
- 
+
   Record user interactions or other significant occurrences within your app and send them to the Wiredash service for analysis.
 
   Use [Wiredash.trackEvent] for easy access from everywhere in your app.
@@ -58,37 +73,37 @@
 
   **eventName** constraints
 
-   - The event name must be between 3 to 64 characters long
-   - Contain only letters (a-zA-Z), numbers (0-9), - and _ and spaces
-   - Must start with a letter (a-zA-Z)
-   - Must not contain double spaces
-   - Must not contain double or trailing spaces
- 
+  - The event name must be between 3 to 64 characters long
+  - Contain only letters (a-zA-Z), numbers (0-9), - and _ and spaces
+  - Must start with a letter (a-zA-Z)
+  - Must not contain double spaces
+  - Must not contain double or trailing spaces
+
   **data** constraints
 
-   - Parameters must not contain more than 10 key-value pairs
-   - Keys must not exceed 128 characters
-   - Keys must not be empty
-   - Values can be String, int or bool. null is allowed, too.
-   - Each individual value must not exceed 1024 characters (after running them through jsonEncode).
- 
+  - Parameters must not contain more than 10 key-value pairs
+  - Keys must not exceed 128 characters
+  - Keys must not be empty
+  - Values can be String, int or bool. null is allowed, too.
+  - Each individual value must not exceed 1024 characters (after running them through jsonEncode).
+
   **Event Sending Behavior:**
- 
-  * Events are batched and sent to the Wiredash server periodically at 30-second intervals.
-  * The first batch of events is sent after a 5-second delay.
-  * Events are also sent immediately when the app goes to the background (not applicable to web platforms).
-  * If events cannot be sent due to network issues, they are stored locally and retried later.
-  * Unsent events are discarded after 3 days.
- 
+
+  - Events are batched and sent to the Wiredash server periodically at 30-second intervals.
+  - The first batch of events is sent after a 5-second delay.
+  - Events are also sent immediately when the app goes to the background (not applicable to web platforms).
+  - If events cannot be sent due to network issues, they are stored locally and retried later.
+  - Unsent events are discarded after 3 days.
+
   **Multiple Wiredash Widgets:**
- 
+
   If you have multiple [Wiredash] widgets in your app with different projectIds, you can specify the desired [projectId] when creating [WiredashAnalytics].
   This ensures that the event is sent to the correct project.
- 
+
   If no [projectId] is provided and multiple widgets are mounted, the event will be sent to the project associated with the first mounted widget. A warning message will also be logged to the console in this scenario.
- 
+
   **Background Isolates:**
- 
+
   When calling [trackEvent] from a background isolate, the event will be stored locally.
   The main isolate will pick up these events and send them along with the next batch or when the app goes to the background.
 
@@ -100,7 +115,8 @@
 
 - Widen ranges for device_info_plus and package_info_plus [#344](https://github.com/wiredashio/wiredash-sdk/pull/344)
 
-## 2.1.0 
+## 2.1.0
+
 - Prevent `Wiredash` from scheduling tasks in your widget tests [#332](https://github.com/wiredashio/wiredash-sdk/pull/332)
 - Update README with new header image, adjust pub tags
 - Run tests successfully on Flutter 3.0.0 and 3.20.0 [#335](https://github.com/wiredashio/wiredash-sdk/pull/335)
@@ -115,6 +131,7 @@
 - Compatability with Flutter 3.19.0 (stable) and 3.20.0 (beta)
 
 #### Removed deprecated APIs
+
 - `WiredashThemeData()` parameter `fontFamily`, use `textTheme` instead
 - `Wiredash.of(context).setBuildProperties()` will be captured automatically. Just remove the call
 - `Wiredash.of(context).show()` parameter `feedbackOptions` is now `options`
@@ -125,6 +142,7 @@
 - `CustomizableWiredashMetaData` removed `buildVersion`, `buildNumber` and `buildCommit`. Those are now captured automatically
 
 ## 1.9.0
+
 - Add support for Flutter 3.17.0 (removing [`physicalGeometry`](https://github.com/flutter/flutter/pull/138103)) [#324](https://github.com/wiredashio/wiredash-sdk/pull/324)
 - Add more `WiredashTheme` color overrides [#325](https://github.com/wiredashio/wiredash-sdk/pull/325)
 
@@ -134,8 +152,10 @@
 - Improve SDK usage reporting
 
 ## 1.8.0
-- Wiredash now automatically collects the version information of your app. No need to set `buildVersion`, `buildNumber` anymore. If you want to override this information, you can still do so via dart-define at compile time https://docs.wiredash.io/sdk/custom-properties/#during-compile-time.
+
+- Wiredash now automatically collects the version information of your app. No need to set `buildVersion`, `buildNumber` anymore. If you want to override this information, you can still do so via dart-define at compile time <https://docs.wiredash.io/sdk/custom-properties/#during-compile-time>.
 - New: `Wiredash(collectSessionMetaData: )` combines and replaces `collectSessionMetaData` of `WiredashFeedbackOptions` and `PsOptions`. No deduplicate code anymore 🎉
+
   ```dart
   // Before
   return Wiredash(
@@ -157,6 +177,7 @@
     ), 
   ), 
   ```
+
   ```dart
   // After
   return Wiredash(
@@ -169,7 +190,8 @@
         ..custom['myKey'] = {'myValue': '007'}},
   ), 
   ```
-- The metadata properties `buildVersion`, `buildNumber` and `buildCommit` cannot be set via `Wiredash.of(context).modifyiMetaData()` anymore. This information has to be provided at compile time (dart-define) or is read automatically from the app bundle 
+
+- The metadata properties `buildVersion`, `buildNumber` and `buildCommit` cannot be set via `Wiredash.of(context).modifyiMetaData()` anymore. This information has to be provided at compile time (dart-define) or is read automatically from the app bundle
 - `setBuildProperties()` is now deprecated and noop, also use dart-define instead
 - New `Wiredash.of(context).resetMetaData()` to easily reset all metadata
 - Add italian `it` locale 🇮🇹[#317](https://github.com/wiredashio/wiredash-sdk/pull/317)
@@ -178,7 +200,8 @@
 - Fix issues with the animated backdrop [#314](https://github.com/wiredashio/wiredash-sdk/pull/314) [#315](https://github.com/wiredashio/wiredash-sdk/pull/315)
 
 ## 1.7.5
-- Add norwegian `no` locale 🇳🇴 
+
+- Add norwegian `no` locale 🇳🇴
 
 ## 1.7.4
 
@@ -187,10 +210,12 @@
 - Remove hit testing warnings in tests #300
 
 ## 1.7.3
+
 - Update to Flutter 3.13 [#292](https://github.com/wiredashio/wiredash-sdk/pull/292)
 - Update cirruslabs Flutter containers to always test against the latest Flutter versions
 
 ## 1.7.2
+
 - [#285](https://github.com/wiredashio/wiredash-sdk/pull/285) Add Support danish (`da`) and arabic (`ar`)
 
 ## 1.7.1
@@ -253,6 +278,7 @@
 When you're upgrading from 0.7.0:
 
 A whole new SDK!
+
 - Completely rewritten UI layer
 - Custom metadata properties
 - Custom labels
@@ -269,6 +295,7 @@ Upgrading from the 1.0.0-beta? Cool features await you!
 - [#218](https://github.com/wiredashio/wiredash-sdk/pull/218) Don't show "No pending feedbacks" in console
 
 ## 1.0.0-beta.5
+
 - Capture feedback metadata even when no screenshot was made
 
 ## 1.0.0-beta.4
@@ -284,6 +311,7 @@ Upgrading from the 1.0.0-beta? Cool features await you!
 - [#209](https://github.com/wiredashio/wiredash-sdk/pull/209) Sync state between sdk and console via `ping`
 
 ## 1.0.0-beta.2
+
 - [#207](https://github.com/wiredashio/wiredash-sdk/pull/207) Multi language support. Currently, Wiredash support English 🇬🇧 and German 🇩🇪. We'd happily accept any other languages!
 - [e8de7b5](https://github.com/wiredashio/wiredash-sdk/commit/e8de7b53c98edeb949a2d4117cf8c82cfdcb0c08) Fix `Confidential` widget hiding content when Wiredash was closed.
 - Updated `README.md` for upcoming 1.0.0 release.
@@ -292,7 +320,7 @@ Is this release stable? Yes. And once the documentation is update we feel ready 
 
 ## 1.0.0-beta.1
 
-- [#205](https://github.com/wiredashio/wiredash-sdk/pull/205) Improve theming capabilities. Better automatic colors, more customizations. New `WiredashThemeData` properties: 
+- [#205](https://github.com/wiredashio/wiredash-sdk/pull/205) Improve theming capabilities. Better automatic colors, more customizations. New `WiredashThemeData` properties:
   - `primaryContainerColor`
   - `textOnPrimaryContainerColor`
   - `secondaryContainerColor`
