@@ -33,3 +33,12 @@ Wiredash.of(context).show(inheritMaterialTheme: true);
 ```
 
 That's already it. Yes, it's *really that easy*. Also works on all platforms.
+
+## More Examples
+
+Check out these examples for specific use cases:
+
+- [examples/localization](../examples/localization/lib/main.dart) - Override wording and add new languages
+- [examples/promoter_score](../examples/promoter_score/lib/main.dart) - NPS surveys implementation
+- [examples/theming](../examples/theming/lib/main.dart) - Custom theme creation
+- [examples/theme_editor](../examples/theme_editor/lib/main.dart) - Interactive theme playground
