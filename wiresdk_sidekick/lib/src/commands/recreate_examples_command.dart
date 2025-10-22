@@ -1,4 +1,5 @@
 import 'package:dcli/dcli.dart' as dcli;
+import 'package:pubspec_manager/pubspec_manager.dart';
 import 'package:sidekick_core/sidekick_core.dart';
 
 class RecreateExamplesCommand extends Command {
@@ -10,7 +11,7 @@ class RecreateExamplesCommand extends Command {
 
   @override
   Future<void> run() async {
-    _printFlutterVersion();
+    await _printFlutterVersion();
 
     final examplesDir = SidekickContext.projectRoot.directory('examples');
     final examples = examplesDir
@@ -22,27 +23,27 @@ class RecreateExamplesCommand extends Command {
 
     print('\nrecreating platform folders...');
     for (final package in examples) {
-      _recreatePlatformFolders(package);
+      await _recreatePlatformFolders(package);
     }
 
     print('\nupgrading dependencies...');
     for (final package in examples) {
-      _upgradeDependencies(package);
+      await _upgradeDependencies(package);
     }
 
     print('\nbuilding examples...');
     for (final package in examples) {
-      _buildPackage(package);
+      await _buildPackage(package);
     }
 
     print(green('successfully recreated platform folders 🎉'));
   }
 
-  void _upgradeDependencies(DartPackage package) {
-    final packageName = PubSpec.fromFile(package.pubspec.path).name;
+  Future<void> _upgradeDependencies(DartPackage package) async {
+    final packageName = PubSpec.loadFromPath(package.pubspec.path).name;
     final dir = package.root;
 
-    flutter(
+    await flutter(
       ['pub', 'upgrade'],
       workingDirectory: dir,
       progress: Progress.printStdErr(),
@@ -51,49 +52,49 @@ class RecreateExamplesCommand extends Command {
     print('- $packageName ✅ ');
   }
 
-  void _buildPackage(DartPackage package) {
-    final packageName = PubSpec.fromFile(package.pubspec.path).name;
+  Future<void> _buildPackage(DartPackage package) async {
+    final packageName = PubSpec.loadFromPath(package.pubspec.path).name;
     final dir = package.root;
 
     stdout.write('Building $packageName');
 
-    void build({
+    Future<void> build({
       required String platformName,
       required List<String> buildArgs,
       bool Function()? skip,
-    }) {
+    }) async {
       if (skip?.call() == true) {
         stdout.write(', $platformName ⏩ ');
         return;
       }
-      final exit = flutter(
+      final completion = await flutter(
         ['build', ...buildArgs],
         workingDirectory: dir,
         progress: Progress.devNull(),
         // silently fail when one platform is not supported
         nothrow: true,
       );
-      if (exit != 0) {
+      if (completion.exitCode != 0) {
         stdout.write(', ${buildArgs.first} ❌ ');
       } else {
         stdout.write(', ${buildArgs.first} ✅ ');
       }
     }
 
-    build(platformName: 'web', buildArgs: ['web']);
-    build(platformName: 'android', buildArgs: ['apk']);
-    build(platformName: 'ios', buildArgs: ['ios', '--no-codesign']);
-    build(
+    await build(platformName: 'web', buildArgs: ['web']);
+    await build(platformName: 'android', buildArgs: ['apk']);
+    await build(platformName: 'ios', buildArgs: ['ios', '--no-codesign']);
+    await build(
       platformName: 'macos',
       buildArgs: ['macos'],
       skip: () => !Platform.isMacOS,
     );
-    build(
+    await build(
       platformName: 'win',
       buildArgs: ['windows'],
       skip: () => !Platform.isWindows,
     );
-    build(
+    await build(
       platformName: 'linux',
       buildArgs: ['linux'],
       skip: () => !Platform.isLinux,
@@ -103,16 +104,16 @@ class RecreateExamplesCommand extends Command {
   }
 }
 
-void _printFlutterVersion() {
+Future<void> _printFlutterVersion() async {
   final capture = dcli.Progress.capture(captureStderr: false);
-  flutter(['--version'], progress: capture);
+  await flutter(['--version'], progress: capture);
   print(
     'Rebuilding examples with ${capture.lines.firstOrNull ?? "unknown Flutter version"}',
   );
 }
 
-void _recreatePlatformFolders(DartPackage package) {
-  final packageName = PubSpec.fromFile(package.pubspec.path).name;
+Future<void> _recreatePlatformFolders(DartPackage package) async {
+  final packageName = PubSpec.loadFromPath(package.pubspec.path).name;
   final dir = package.root;
 
   dir.directory('.dart_tool').saveDeleteSync();
@@ -125,7 +126,7 @@ void _recreatePlatformFolders(DartPackage package) {
   dir.directory('web').saveDeleteSync();
   dir.directory('windows').saveDeleteSync();
 
-  flutter(
+  await flutter(
     [
       'create',
       '--org=io.wiredash.example',

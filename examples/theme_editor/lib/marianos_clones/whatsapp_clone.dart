@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_classes_with_only_static_members, avoid_positional_boolean_parameters, require_trailing_commas, avoid_setters_without_getters, avoid_bool_literals_in_conditional_expressions, constant_identifier_names
+// ignore_for_file: avoid_classes_with_only_static_members, avoid_positional_boolean_parameters, require_trailing_commas, avoid_setters_without_getters, avoid_bool_literals_in_conditional_expressions, constant_identifier_names, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
@@ -12,7 +12,6 @@ class WhatsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // Remove when we drop support for Flutter v3.7.0-29.0.pre.
-      // ignore: deprecated_member_use
       useInheritedMediaQuery: true,
       title: 'WhatsApp',
       home: HomeScreen(),
@@ -425,7 +424,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ConversationCallback callback, RefreshCallback refresh) {
     return MaterialApp(
       // Remove when we drop support for Flutter v3.7.0-29.0.pre.
-      // ignore: deprecated_member_use
+
       useInheritedMediaQuery: true,
       title: 'WhatsApp',
       initialRoute: '/',
@@ -917,7 +916,6 @@ class ContactItem extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 14,
-                          // ignore: deprecated_member_use
                           color: Colors.black.withOpacity(0.6),
                         ),
                       ),
@@ -1038,11 +1036,9 @@ class _ChatItemState extends State<ChatItem> {
                                     color: _lastMessageMine(
                                       widget.conversation,
                                     )
-                                        // ignore: deprecated_member_use
                                         ? Colors.black.withOpacity(0.6)
                                         : _countUnread(widget.conversation) > 0
                                             ? Colors.black
-                                            // ignore: deprecated_member_use
                                             : Colors.black.withOpacity(0.6),
                                   ),
                                 ),
@@ -1782,14 +1778,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(height: 15),
                     Text(
                       'Your Name',
-                      // ignore: deprecated_member_use
                       style: TextStyle(color: Colors.black.withOpacity(0.5)),
                     ),
                     SizedBox(height: 20),
                     Text(
                       widget.user.name,
                       style: TextStyle(
-                        // ignore: deprecated_member_use
                         color: Colors.black.withOpacity(0.8),
                         fontSize: 18,
                       ),
@@ -1808,7 +1802,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 child: Text(
                   'This is not your username or pin. This name will be visible to your WhatsApp contacts.',
-                  // ignore: deprecated_member_use
                   style: TextStyle(color: Colors.black.withOpacity(0.5)),
                 ),
               ),
@@ -1823,14 +1816,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(height: 15),
                     Text(
                       'About',
-                      // ignore: deprecated_member_use
                       style: TextStyle(color: Colors.black.withOpacity(0.5)),
                     ),
                     SizedBox(height: 20),
                     Text(
                       widget.user.status,
                       style: TextStyle(
-                        // ignore: deprecated_member_use
                         color: Colors.black.withOpacity(0.8),
                         fontSize: 18,
                       ),
@@ -2045,9 +2036,7 @@ class ContactScreenState extends State<ContactScreen> {
                                             decoration: BoxDecoration(
                                               gradient: LinearGradient(
                                                 colors: [
-                                                  // ignore: deprecated_member_use
                                                   Colors.black.withOpacity(0.0),
-                                                  // ignore: deprecated_member_use
                                                   Colors.black.withOpacity(0.8)
                                                 ],
                                                 begin: Alignment.topCenter,
@@ -2180,7 +2169,6 @@ class ContactScreenState extends State<ContactScreen> {
                                   Text(
                                     'About and phone number',
                                     style: TextStyle(
-                                      // ignore: deprecated_member_use
                                       color: Colors.black.withOpacity(0.5),
                                     ),
                                   ),
@@ -2188,7 +2176,6 @@ class ContactScreenState extends State<ContactScreen> {
                                   Text(
                                     _user!.status,
                                     style: TextStyle(
-                                      // ignore: deprecated_member_use
                                       color: Colors.black.withOpacity(0.8),
                                     ),
                                   ),

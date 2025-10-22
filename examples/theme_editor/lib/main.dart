@@ -753,6 +753,7 @@ class _WiredashColorPickerState extends State<WiredashColorPicker> {
                     inputFormatters: [
                       UpperCaseTextFormatter(),
                       FilteringTextInputFormatter.allow(
+                        // ignore: deprecated_member_use
                         RegExp(kValidHexPattern),
                       ),
                     ],

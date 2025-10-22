@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -e
 
 CWD=$PWD
@@ -34,9 +34,11 @@ cd "${CLI_PACKAGE_DIR}" || exit
 
   # If we're on Windows, invoke the batch script instead
   OS="$(uname -s)"
-  if [[ $OS =~ MINGW.* || $OS =~ CYGWIN.* ]]; then
-    DART="$DART_SDK/bin/dart.exe"
-  fi
+  case "$OS" in
+    MINGW*|CYGWIN*)
+      DART="$DART_SDK/bin/dart.exe"
+      ;;
+  esac
 
   # Build the cli
   EXE="build/cli.exe"
