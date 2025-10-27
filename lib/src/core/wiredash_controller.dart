@@ -173,6 +173,10 @@ class WiredashController {
     final result = FeedbackResult(
       hasSubmittedFeedback: hasSubmittedFeedback,
     );
+
+    // reset the metadata at the end of the feedback flow to avoid leaking metadata between feedbacks
+    resetMetaData();
+
     return result;
   }
 
