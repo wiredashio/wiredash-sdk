@@ -150,6 +150,7 @@ class WiredashController {
     bool? inheritCupertinoTheme,
     WiredashFeedbackOptions? options,
   }) async {
+    print(options != null);
     _captureAppTheme(inheritMaterialTheme, inheritCupertinoTheme);
     _captureSessionMetaData();
     _model.feedbackOptionsOverride = options;
@@ -175,7 +176,8 @@ class WiredashController {
     );
 
     // reset the metadata at the end of the feedback flow to avoid leaking metadata between feedbacks
-    resetMetaData();
+    _model.customizableMetaData =
+        _model.customizableMetaData.copyWith(custom: {});
 
     return result;
   }
