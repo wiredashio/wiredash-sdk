@@ -77,6 +77,8 @@ void main() {
 
         MapEntry<String, String> customMetaData = const MapEntry('foo', 'bar');
 
+        int collectMetaDataFunctionCalls = 0;
+
         await robot.launchApp(
           collectMetaData: (metaData) {
             return metaData
@@ -94,6 +96,7 @@ void main() {
                       wiredash.show(
                         options: WiredashFeedbackOptions(
                           collectMetaData: (metaData) {
+                            collectMetaDataFunctionCalls++;
                             return metaData
                               ..custom[customMetaData.key] =
                                   customMetaData.value;
@@ -113,6 +116,8 @@ void main() {
         AssertableInvocation latestCall =
             robot.mockServices.mockApi.sendFeedbackInvocations.latest;
         final firstFeedback = latestCall[0] as FeedbackItem?;
+
+        expect(collectMetaDataFunctionCalls, 1); // we fail here
 
         expect(firstFeedback!.metadata.userEmail, 'user@mail.com');
         expect(firstFeedback.metadata.userId, '123');
