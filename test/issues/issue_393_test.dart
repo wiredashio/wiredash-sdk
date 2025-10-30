@@ -8,175 +8,250 @@ import '../util/robot.dart';
 
 void main() {
   group('issue 393', () {
-    testWidgets(
-        'metadata should be encapsulated per opened Wiredash Feedback and be merged with collectMetaData',
-        (tester) async {
-      final robot = WiredashTestRobot(tester);
+    group('collectMetaData', () {
+      testWidgets(
+          'metadata should be encapsulated per opened Wiredash Feedback and be merged with collectMetaData and modifyMetaData',
+          (tester) async {
+        final robot = WiredashTestRobot(tester);
 
-      MapEntry<String, String> customMetaData = const MapEntry('foo', 'bar');
+        MapEntry<String, String> customMetaData = const MapEntry('foo', 'bar');
 
-      await robot.launchApp(
-        collectMetaData: (metaData) {
-          return metaData
-            ..userEmail = "user@mail.com"
-            ..userId = "123"
-            ..custom['foz'] = 'baz';
-        },
-        builder: (context) {
-          return Scaffold(
-            body: Column(
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    final wiredash = Wiredash.of(context);
-                    wiredash.modifyMetaData((metaData) {
-                      return metaData
-                        ..custom[customMetaData.key] = customMetaData.value;
-                    });
-                    wiredash.show();
-                  },
-                  child: const Text('Feedback'),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-
-      await robot.submitMinimalFeedback();
-      AssertableInvocation latestCall =
-          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final firstFeedback = latestCall[0] as FeedbackItem?;
-      expect(firstFeedback!.metadata.userEmail, 'user@mail.com');
-      expect(firstFeedback.metadata.userId, '123');
-      expect(firstFeedback.metadata.custom!['foz'], 'baz');
-      expect(firstFeedback.metadata.custom!['foo'], 'bar');
-
-      customMetaData = const MapEntry('bar', 'foo');
-
-      await robot.submitMinimalFeedback();
-      latestCall = robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final secondFeedback = latestCall[0] as FeedbackItem?;
-      expect(secondFeedback!.metadata.userEmail, 'user@mail.com');
-      expect(secondFeedback.metadata.userId, '123');
-      expect(secondFeedback.metadata.custom!['foz'], 'baz');
-      expect(secondFeedback.metadata.custom!['bar'], 'foo');
-    });
-
-    testWidgets(
-        'metadata should be encapsulated per opened Wiredash Feedback and be merged with feedbackOptions.collectMetaData',
-        (tester) async {
-      final robot = WiredashTestRobot(tester);
-
-      MapEntry<String, String> customMetaData = const MapEntry('foo', 'bar');
-
-      await robot.launchApp(
-        feedbackOptions: WiredashFeedbackOptions(
+        await robot.launchApp(
           collectMetaData: (metaData) {
             return metaData
               ..userEmail = "user@mail.com"
               ..userId = "123"
               ..custom['foz'] = 'baz';
           },
-        ),
-        builder: (context) {
-          return Scaffold(
-            body: Column(
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    final wiredash = Wiredash.of(context);
-                    wiredash.modifyMetaData((metaData) {
-                      return metaData
-                        ..custom[customMetaData.key] = customMetaData.value;
-                    });
-                    wiredash.show();
-                  },
-                  child: const Text('Feedback'),
-                ),
-              ],
-            ),
-          );
-        },
-      );
+          builder: (context) {
+            return Scaffold(
+              body: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final wiredash = Wiredash.of(context);
 
-      await robot.submitMinimalFeedback();
-      AssertableInvocation latestCall =
-          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final firstFeedback = latestCall[0] as FeedbackItem?;
-      expect(firstFeedback!.metadata.userEmail, 'user@mail.com');
-      expect(firstFeedback.metadata.userId, '123');
-      expect(firstFeedback.metadata.custom!['foz'], 'baz');
-      expect(firstFeedback.metadata.custom!['foo'], 'bar');
+                      wiredash.modifyMetaData(
+                        (metaData) {
+                          return metaData
+                            ..custom[customMetaData.key] = customMetaData.value;
+                        },
+                      );
+                      wiredash.show();
+                    },
+                    child: const Text('Feedback'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
 
-      customMetaData = const MapEntry('bar', 'foo');
+        await robot.submitMinimalFeedback();
+        AssertableInvocation latestCall =
+            robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+        final firstFeedback = latestCall[0] as FeedbackItem?;
 
-      await robot.submitMinimalFeedback();
-      latestCall = robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final secondFeedback = latestCall[0] as FeedbackItem?;
-      expect(secondFeedback!.metadata.custom, hasLength(2));
-      expect(secondFeedback.metadata.userEmail, 'user@mail.com');
-      expect(secondFeedback.metadata.userId, '123');
-      expect(secondFeedback.metadata.custom!['foz'], 'baz');
-      expect(secondFeedback.metadata.custom!['bar'], 'foo');
-    });
+        expect(firstFeedback!.metadata.userEmail, 'user@mail.com');
+        expect(firstFeedback.metadata.userId, '123');
+        expect(firstFeedback.metadata.custom!['foz'], 'baz');
+        expect(firstFeedback.metadata.custom!['foo'], 'bar');
 
-    testWidgets(
-        'metadata should be encapsulated per opened Wiredash Feedback and be merged with feedbackOptions.collectMetaData',
-        (tester) async {
-      final robot = WiredashTestRobot(tester);
+        customMetaData = const MapEntry('bar', 'foo');
 
-      MapEntry<String, String> customMetaData = const MapEntry('foo', 'bar');
+        await robot.submitMinimalFeedback();
+        latestCall = robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+        final secondFeedback = latestCall[0] as FeedbackItem?;
+        expect(secondFeedback!.metadata.custom, hasLength(2));
 
-      await robot.launchApp(
-        feedbackOptions: WiredashFeedbackOptions(
+        expect(secondFeedback.metadata.userEmail, 'user@mail.com');
+        expect(secondFeedback.metadata.userId, '123');
+        expect(secondFeedback.metadata.custom!['foz'], 'baz');
+        expect(secondFeedback.metadata.custom!['bar'], 'foo');
+      });
+
+      testWidgets(
+          'metadata should be encapsulated per opened Wiredash Feedback and be merged with collectMetaData',
+          (tester) async {
+        final robot = WiredashTestRobot(tester);
+
+        MapEntry<String, String> customMetaData = const MapEntry('foo', 'bar');
+
+        await robot.launchApp(
           collectMetaData: (metaData) {
             return metaData
               ..userEmail = "user@mail.com"
               ..userId = "123"
               ..custom['foz'] = 'baz';
           },
-        ),
-        builder: (context) {
-          return Scaffold(
-            body: Column(
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    final wiredash = Wiredash.of(context);
-                    wiredash.modifyMetaData((metaData) {
-                      return metaData
-                        ..custom[customMetaData.key] = customMetaData.value;
-                    });
-                    wiredash.show();
-                  },
-                  child: const Text('Feedback'),
-                ),
-              ],
-            ),
-          );
-        },
-      );
+          builder: (context) {
+            return Scaffold(
+              body: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final wiredash = Wiredash.of(context);
+                      wiredash.show(
+                        options: WiredashFeedbackOptions(
+                          collectMetaData: (metaData) {
+                            return metaData
+                              ..custom[customMetaData.key] =
+                                  customMetaData.value;
+                          },
+                        ),
+                      );
+                    },
+                    child: const Text('Feedback'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
 
-      await robot.submitMinimalFeedback();
-      AssertableInvocation latestCall =
-          robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final firstFeedback = latestCall[0] as FeedbackItem?;
-      expect(firstFeedback!.metadata.userEmail, 'user@mail.com');
-      expect(firstFeedback.metadata.userId, '123');
-      expect(firstFeedback.metadata.custom!['foz'], 'baz');
-      expect(firstFeedback.metadata.custom!['foo'], 'bar');
+        await robot.submitMinimalFeedback();
+        AssertableInvocation latestCall =
+            robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+        final firstFeedback = latestCall[0] as FeedbackItem?;
 
-      customMetaData = const MapEntry('bar', 'foo');
+        expect(firstFeedback!.metadata.userEmail, 'user@mail.com');
+        expect(firstFeedback.metadata.userId, '123');
+        expect(firstFeedback.metadata.custom!['foz'], 'baz');
+        expect(firstFeedback.metadata.custom!['foo'], 'bar');
 
-      await robot.submitMinimalFeedback();
-      latestCall = robot.mockServices.mockApi.sendFeedbackInvocations.latest;
-      final secondFeedback = latestCall[0] as FeedbackItem?;
-      expect(secondFeedback!.metadata.custom, hasLength(2));
-      expect(secondFeedback.metadata.userEmail, 'user@mail.com');
-      expect(secondFeedback.metadata.userId, '123');
-      expect(secondFeedback.metadata.custom!['foz'], 'baz');
-      expect(secondFeedback.metadata.custom!['bar'], 'foo');
+        customMetaData = const MapEntry('bar', 'foo');
+
+        await robot.submitMinimalFeedback();
+        latestCall = robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+        final secondFeedback = latestCall[0] as FeedbackItem?;
+
+        expect(secondFeedback!.metadata.custom, hasLength(2));
+        expect(secondFeedback.metadata.userEmail, 'user@mail.com');
+        expect(secondFeedback.metadata.userId, '123');
+        expect(secondFeedback.metadata.custom!['foz'], 'baz');
+        expect(secondFeedback.metadata.custom!['bar'], 'foo');
+      });
+    });
+    group('WiredashFeedbackOptions.collectMetaData', () {
+      testWidgets('''
+          metadata should be encapsulated per opened Wiredash Feedback 
+          and be merged with WiredashFeedbackOptions.collectMetaData when calling modifyMetaData''',
+          (tester) async {
+        final robot = WiredashTestRobot(tester);
+
+        MapEntry<String, String> customMetaData = const MapEntry('foo', 'bar');
+
+        await robot.launchApp(
+          feedbackOptions: WiredashFeedbackOptions(
+            collectMetaData: (metaData) {
+              return metaData
+                ..userEmail = "user@mail.com"
+                ..userId = "123"
+                ..custom['foz'] = 'baz';
+            },
+          ),
+          builder: (context) {
+            return Scaffold(
+              body: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final wiredash = Wiredash.of(context);
+                      wiredash.modifyMetaData(
+                        (metaData) {
+                          return metaData
+                            ..custom[customMetaData.key] = customMetaData.value;
+                        },
+                      );
+                      wiredash.show();
+                    },
+                    child: const Text('Feedback'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+
+        await robot.submitMinimalFeedback();
+        AssertableInvocation latestCall =
+            robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+        final firstFeedback = latestCall[0] as FeedbackItem?;
+
+        expect(firstFeedback!.metadata.userEmail, 'user@mail.com');
+        expect(firstFeedback.metadata.userId, '123');
+        expect(firstFeedback.metadata.custom!['foz'], 'baz');
+        expect(firstFeedback.metadata.custom!['foo'], 'bar');
+
+        customMetaData = const MapEntry('bar', 'foo');
+
+        await robot.submitMinimalFeedback();
+        latestCall = robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+        final secondFeedback = latestCall[0] as FeedbackItem?;
+        expect(secondFeedback!.metadata.custom, hasLength(2));
+        expect(secondFeedback.metadata.userEmail, 'user@mail.com');
+        expect(secondFeedback.metadata.userId, '123');
+        expect(secondFeedback.metadata.custom!['foz'], 'baz');
+        expect(secondFeedback.metadata.custom!['bar'], 'foo');
+      });
+
+      testWidgets('''
+      metadata should be encapsulated per opened Wiredash Feedback
+      and feedbackOptions of show should override WiredashFeedbackOptions.collectMetaData''',
+          (tester) async {
+        final robot = WiredashTestRobot(tester);
+
+        MapEntry<String, String> customMetaData = const MapEntry('foo', 'bar');
+
+        await robot.launchApp(
+          feedbackOptions: WiredashFeedbackOptions(
+            collectMetaData: (metaData) {
+              return metaData
+                ..userEmail = "user@mail.com"
+                ..userId = "123"
+                ..custom['foz'] = 'baz';
+            },
+          ),
+          builder: (context) {
+            return Scaffold(
+              body: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final wiredash = Wiredash.of(context);
+                      wiredash.show(
+                        options: WiredashFeedbackOptions(
+                          collectMetaData: (metaData) {
+                            return metaData
+                              ..custom[customMetaData.key] =
+                                  customMetaData.value;
+                          },
+                        ),
+                      );
+                    },
+                    child: const Text('Feedback'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+
+        await robot.submitMinimalFeedback();
+        AssertableInvocation latestCall =
+            robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+        final firstFeedback = latestCall[0] as FeedbackItem?;
+
+        expect(firstFeedback!.metadata.custom!['foo'], 'bar');
+
+        customMetaData = const MapEntry('bar', 'foo');
+
+        await robot.submitMinimalFeedback();
+        latestCall = robot.mockServices.mockApi.sendFeedbackInvocations.latest;
+        final secondFeedback = latestCall[0] as FeedbackItem?;
+        expect(secondFeedback!.metadata.custom, hasLength(1));
+        expect(secondFeedback.metadata.custom!['bar'], 'foo');
+      });
     });
 
     testWidgets(
@@ -194,11 +269,12 @@ void main() {
                 GestureDetector(
                   onTap: () async {
                     final wiredash = Wiredash.of(context);
-                    wiredash.modifyMetaData((metaData) {
-                      return metaData
-                        ..custom[customMetaData.key] = customMetaData.value;
-                    });
-                    wiredash.show();
+                    wiredash.show(options: WiredashFeedbackOptions(
+                      collectMetaData: (metaData) {
+                        return metaData
+                          ..custom[customMetaData.key] = customMetaData.value;
+                      },
+                    ));
                   },
                   child: const Text('Feedback'),
                 ),
