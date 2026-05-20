@@ -22,9 +22,9 @@ From members of the Flutter Community 💙 for the Flutter Community 💙
 
 ## 3-Minute Quick Start
 
-> It takes less than 180 seconds to integrate Wiredash in your existing app 🚀 <br />
-> Visit [docs.wiredash.com](https://docs.wiredash.com/guide/start) for the in-depth
-> guide and additional info.
+> It takes less than 180 seconds to integrate Wiredash in your existing app 🚀
+>
+> Visit [docs.wiredash.com](https://docs.wiredash.com/guide/start) for the in-depth guide and additional info.
 
 ### 1. Create an account and project
 
@@ -36,7 +36,7 @@ Then create a project with a descriptive name.
 ### 2. Add Wiredash to your pubspec.yaml
 
 ```bash
-$ flutter pub add wiredash:^2.6.0
+flutter pub add wiredash:^2.6.0
 ```
 
 ```yaml
@@ -49,9 +49,7 @@ dependencies:
 
 ### 3. Wrap your root widget with Wiredash
 
-Wrap the root widget of your existing app with Wiredash and make sure to fill in the `projectId` and SDK `secret`
-from the [Wiredash Console](https://console.wiredash.com) > Your project >
-Settings > General Settings.
+Wrap the root widget of your existing app with Wiredash and make sure to fill in the `projectId` and SDK `secret` from the [Wiredash Console](https://console.wiredash.com) > Your project > Settings > General Settings.
 
 ```dart
 import 'package:flutter/material.dart';
@@ -73,7 +71,8 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-That's already it. Yes, it's *really that easy*.
+That's already it.
+Yes, it's *really that easy*.
 
 ### 4. (Optional) More features
 

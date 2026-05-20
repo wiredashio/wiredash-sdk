@@ -136,7 +136,7 @@
 - New: Force an email address with `EmailPrompt.mandatory` in feedback flow [#327](https://github.com/wiredashio/wiredash-sdk/pull/327)
 - Compatability with Flutter 3.19.0 (stable) and 3.20.0 (beta)
 
-#### Removed deprecated APIs
+### Removed deprecated APIs
 
 - `WiredashThemeData()` parameter `fontFamily`, use `textTheme` instead
 - `Wiredash.of(context).setBuildProperties()` will be captured automatically. Just remove the call
