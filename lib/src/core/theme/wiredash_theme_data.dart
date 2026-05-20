@@ -64,16 +64,17 @@ class WiredashThemeData {
     Color? secondaryColor,
     required Brightness brightness,
   }) {
+    Color? resolvedSecondaryColor = secondaryColor;
     // Changed in Flutter 3.26 https://github.com/flutter/engine/pull/54737
     // ignore: deprecated_member_use
-    if (secondaryColor?.value == primaryColor.value) {
-      secondaryColor = null;
+    if (resolvedSecondaryColor?.value == primaryColor.value) {
+      resolvedSecondaryColor = null;
     }
 
     final theme = WiredashThemeData(
       brightness: brightness,
       primaryColor: primaryColor,
-      secondaryColor: secondaryColor,
+      secondaryColor: resolvedSecondaryColor,
     );
 
     return theme;
@@ -255,7 +256,7 @@ class WiredashThemeData {
 
   Color get primaryTextOnBackgroundColor {
     if (_primaryTextOnBackgroundColor != null) {
-      return _primaryTextOnBackgroundColor!;
+      return _primaryTextOnBackgroundColor;
     }
     final merged =
         Color.lerp(primaryBackgroundColor, secondaryBackgroundColor, 0.5)!;
@@ -271,7 +272,7 @@ class WiredashThemeData {
 
   Color get secondaryTextOnBackgroundColor {
     if (_secondaryTextOnBackgroundColor != null) {
-      return _secondaryTextOnBackgroundColor!;
+      return _secondaryTextOnBackgroundColor;
     }
     final merged =
         Color.lerp(primaryBackgroundColor, secondaryBackgroundColor, 0.5)!;
@@ -1079,10 +1080,13 @@ enum DeviceClass {
 /// Based on the theory in https://m3.material.io/styles/color/dynamic-color/user-generated-color
 class MaterialColorTone {
   MaterialColorTone(this.baseColor, this.brightness)
-      // Changed in Flutter 3.26 https://github.com/flutter/engine/pull/54737
       // ignore: deprecated_member_use
       : palette = CorePalette.of(baseColor.value);
   final Color baseColor;
+  // CorePalette deprecation: replacement (CorePalettes) is not yet available
+  // across our supported Flutter versions. Revisit once the min Flutter version
+  // ships CorePalettes.
+  // ignore: deprecated_member_use
   final CorePalette palette;
   final Brightness brightness;
 

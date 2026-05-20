@@ -14,12 +14,12 @@ class RecreateExamplesCommand extends Command {
     await _printFlutterVersion();
 
     final examplesDir = SidekickContext.projectRoot.directory('examples');
-    final examples = examplesDir
-        .listSync()
-        .whereType<Directory>()
-        .mapNotNull((it) => DartPackage.fromDirectory(it))
-        .where((it) => it.name != 'old_flutter_3_0')
-        .toList();
+    final examples =
+        examplesDir
+            .listSync()
+            .whereType<Directory>()
+            .mapNotNull((it) => DartPackage.fromDirectory(it))
+            .toList();
 
     print('\nrecreating platform folders...');
     for (final package in examples) {

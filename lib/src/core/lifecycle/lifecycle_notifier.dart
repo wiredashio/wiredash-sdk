@@ -4,7 +4,7 @@ import 'package:flutter/material.dart'
     show AppLifecycleState, WidgetsBindingObserver;
 import 'package:flutter/semantics.dart';
 import 'package:wiredash/src/core/lifecycle/lifecycle_stub.dart'
-    if (dart.library.html) 'package:wiredash/src/core/lifecycle/lifecycle_web.dart';
+    if (dart.library.js_interop) 'package:wiredash/src/core/lifecycle/lifecycle_web.dart';
 import 'package:wiredash/src/core/support/widget_binding_support.dart';
 
 /// Exposes [AppLifecycleState] on all flutter supported platforms, including web.

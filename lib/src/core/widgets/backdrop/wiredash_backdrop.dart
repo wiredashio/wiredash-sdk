@@ -845,13 +845,13 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       builder: (context, app) {
         final outOfFocusPosition = _rectAppOutOfFocus.top;
 
-        app = AbsorbPointer(
+        Widget transformed = AbsorbPointer(
           absorbing: !widget.controller.isAppInteractive,
           child: app,
         );
 
         if (!widget.controller.isAppInteractive) {
-          app = PullToCloseDetector(
+          transformed = PullToCloseDetector(
             closeDirection: CloseDirection.upwards,
             onPullStart: () {
               _pulling = true;
@@ -913,14 +913,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               _backdropStatus = WiredashBackdropStatus.open;
               _swapAnimation();
             },
-            child: app,
+            child: transformed,
           );
 
-          app = GestureDetector(
+          transformed = GestureDetector(
             onTap: () async {
               await context.wiredashModel.hide();
             },
-            child: app,
+            child: transformed,
           );
         }
 
@@ -936,17 +936,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         final horizontalOffset =
             ((widget.padding?.left ?? 0) - (widget.padding?.right ?? 0)) / 2;
 
-        // ignore: join_return_with_assignment
-        app = Transform.translate(
+        return Transform.translate(
           offset: Offset(horizontalOffset, yTranslation),
           child: Transform.scale(
             scale: appScale,
             alignment: Alignment.topCenter,
-            child: app,
+            child: transformed,
           ),
         );
-
-        return app;
       },
       child: child,
     );
@@ -1035,7 +1032,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _cornerRadiusAnimation =
             const AlwaysStoppedAnimation(_appBorderRadiusOpen);
         _appHandleAnimation = const AlwaysStoppedAnimation(1.0);
-        break;
 
       case WiredashBackdropStatus.closed:
         _appTransformAnimation =
@@ -1044,7 +1040,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _cornerRadiusAnimation =
             const AlwaysStoppedAnimation(_appBorderRadiusClosed);
         _appHandleAnimation = const AlwaysStoppedAnimation(0.0);
-        break;
 
       case WiredashBackdropStatus.centered:
         _appTransformAnimation =
@@ -1053,7 +1048,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _cornerRadiusAnimation =
             const AlwaysStoppedAnimation(_appBorderRadiusOpen);
         _appHandleAnimation = const AlwaysStoppedAnimation(0.0);
-        break;
 
       case WiredashBackdropStatus.opening:
         _appTransformAnimation =
@@ -1071,7 +1065,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _appHandleAnimation = Tween(begin: 0.0, end: 1.0).animate(
           CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
         );
-        break;
 
       case WiredashBackdropStatus.closing:
         _appTransformAnimation =
@@ -1090,7 +1083,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _appHandleAnimation = Tween(begin: 1.0, end: 0.0).animate(
           CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
         );
-        break;
 
       case WiredashBackdropStatus.openingCentered:
         _appTransformAnimation =
@@ -1101,7 +1093,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _appHandleAnimation = Tween(begin: 1.0, end: 0.0).animate(
           CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
         );
-        break;
 
       case WiredashBackdropStatus.closingCentered:
         _appTransformAnimation =
@@ -1112,7 +1103,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _appHandleAnimation = Tween(begin: 0.0, end: 1.0).animate(
           CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
         );
-        break;
     }
   }
 

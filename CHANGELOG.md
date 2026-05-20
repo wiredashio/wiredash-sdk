@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+> Note: This release has breaking changes.
+>
+> Wiredash now requires Dart 3.3 / Flutter 3.19 or newer.
+
+- Raise minimum SDK to Dart 3.3 / Flutter 3.19
+- Replace `dart:html`, `dart:js`, and `dart:js_util` with `package:web` and `dart:js_interop` (enables WebAssembly compilation)
+- Drop the Flutter 3.0.0 compatibility example and CI job
+
 ## 2.6.1
 
 - Bump package `device_info_plus` to ">=8.0.0 <14.0.0"

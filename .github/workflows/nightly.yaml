@@ -10,26 +10,19 @@ jobs:
   minVersion:
     runs-on: ubuntu-latest
     container:
-      image: cirrusci/flutter:3.0.0
+      image: ghcr.io/cirruslabs/flutter:3.19.0
     steps:
       - uses: actions/checkout@v3
         with:
           ref: stable
       - name: Flutter version
         run: flutter doctor -v
-      - name: Build
-        run: cd examples/old_flutter_3_0 && ./../../wiresdk flutter build web
       - name: Download dependencies
-        run: |
-          # Override dependencies
-          printf "dependency_overrides:\n  checks: 0.2.2\n  meta: 1.9.0\n  test_api: 0.4.9" >> pubspec.yaml
-          
-          # The override syntax does not work with Flutter 3.0
-          #./wiresdk flutter pub add 'override:checks:0.2.2'  
-          
-          flutter pub get
+        run: ./wiresdk deps
       - name: Test
         run: ./wiresdk test
+      - name: Build
+        run: cd examples/theming && ./../../wiresdk flutter build web
 
   stable:
     runs-on: ubuntu-latest

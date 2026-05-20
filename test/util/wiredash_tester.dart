@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
 
-library wiredashtester;
+library;
 
 import 'dart:math' as math;
 

@@ -3,10 +3,10 @@
 import 'dart:ui' show Locale, SingletonFlutterWindow;
 
 import 'package:wiredash/src/metadata/all_meta_data.dart';
-// import a dart:html or dart:io version of `createDeviceInfoGenerator`
+// import a web (dart:js_interop) or dart:io version of `createDeviceInfoGenerator`
 // if non are available the stub is used
 import 'package:wiredash/src/metadata/device_info/device_info_generator_stub.dart'
-    if (dart.library.html) 'package:wiredash/src/metadata/device_info/device_info_generator_html.dart'
+    if (dart.library.js_interop) 'package:wiredash/src/metadata/device_info/device_info_generator_html.dart'
     if (dart.library.io) 'package:wiredash/src/metadata/device_info/device_info_generator_io.dart';
 
 abstract class FlutterInfoCollector {
