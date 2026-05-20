@@ -54,4 +54,5 @@
 /// 240 -> 2.4.0
 /// 250 -> 2.5.0
 /// 260 -> 2.6.0
-const wiredashSdkVersion = 260;
+/// 261 -> 2.6.1
+const wiredashSdkVersion = 261;

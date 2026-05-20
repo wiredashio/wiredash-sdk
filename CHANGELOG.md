@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.6.1
+
+- Bump package `device_info_plus` to ">=8.0.0 <14.0.0"
+- Bump package `package_info_plus` to ">=3.0.0 <11.0.0"
+
 ## 2.6.0
 
 > Note: This release has breaking changes.
