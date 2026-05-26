@@ -40,10 +40,10 @@ jobs:
         working-directory: examples/old_flutter_3_19_0
         run: flutter pub get
       - name: Test
-        run: flutter test
+        run: ./wiresdk test
       - name: Build
         working-directory: examples/old_flutter_3_19_0
-        run: flutter build web
+        run: ./../../wiresdk flutter build web
 
   pr-stable:
     runs-on: ubuntu-latest
