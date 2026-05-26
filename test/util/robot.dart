@@ -302,8 +302,7 @@ class WiredashTestRobot {
 
   Future<void> openWiredash() async {
     feedbackResult = null;
-    final feedbackText = spot<MaterialApp>().spotText('Feedback')
-      ..existsOnce();
+    final feedbackText = spot<MaterialApp>().spotText('Feedback')..existsOnce();
     await act.tap(feedbackText);
     await tester.pumpSmart();
 
@@ -312,8 +311,7 @@ class WiredashTestRobot {
   }
 
   Future<void> openPromoterScore() async {
-    final promoterScoreText = spot<MaterialApp>()
-        .spotText('Promoter Score')
+    final promoterScoreText = spot<MaterialApp>().spotText('Promoter Score')
       ..existsOnce();
     await act.tap(promoterScoreText);
     await tester.pumpSmart();
@@ -415,8 +413,7 @@ class WiredashTestRobot {
   }
 
   Future<void> skipScreenshot() async {
-    final step = _spotPageView.spot<Step3ScreenshotOverview>()
-      ..existsOnce();
+    final step = _spotPageView.spot<Step3ScreenshotOverview>()..existsOnce();
     await act.tap(
       step.spotText('l10n.feedbackStep3ScreenshotOverviewSkipButton'),
     );
@@ -513,8 +510,7 @@ class WiredashTestRobot {
   }
 
   Future<void> enterScreenshotMode() async {
-    final step = _spotPageView.spot<Step3ScreenshotOverview>()
-      ..existsOnce();
+    final step = _spotPageView.spot<Step3ScreenshotOverview>()..existsOnce();
     final noAttachmentsResult =
         step.spot<Step3NoAttachments>().snapshot().discovered;
     if (noAttachmentsResult.isNotEmpty) {
@@ -525,8 +521,7 @@ class WiredashTestRobot {
       await act.tap(addScreenshotBtn);
     } else {
       final gallery = step.spot<Step3WithGallery>()..existsOnce();
-      final addAttachmentItem = gallery.spot<NewAttachment>()
-        ..existsOnce();
+      final addAttachmentItem = gallery.spot<NewAttachment>()..existsOnce();
       await act.tap(addAttachmentItem);
     }
     await tester.pumpSmart();
@@ -540,8 +535,7 @@ class WiredashTestRobot {
   }
 
   Future<void> takeScreenshot() async {
-    final screenshotBar = _spotBackdrop.spot<ScreenshotBar>()
-      ..existsOnce();
+    final screenshotBar = _spotBackdrop.spot<ScreenshotBar>()..existsOnce();
     expect(
       services.feedbackModel.feedbackFlowStatus,
       FeedbackFlowStatus.screenshotNavigating,
@@ -550,8 +544,7 @@ class WiredashTestRobot {
     print('Take screeshot');
     // Click the screenshot button
     await act.tap(
-      screenshotBar
-          .spotText('l10n.feedbackStep3ScreenshotBarCaptureButton'),
+      screenshotBar.spotText('l10n.feedbackStep3ScreenshotBarCaptureButton'),
     );
     await tester.waitUntil(
       () => services.feedbackModel.feedbackFlowStatus,
@@ -578,8 +571,7 @@ class WiredashTestRobot {
       services.feedbackModel.feedbackFlowStatus,
       FeedbackFlowStatus.screenshotDrawing,
     );
-    final screenshotBar = _spotBackdrop.spot<ScreenshotBar>()
-      ..existsOnce();
+    final screenshotBar = _spotBackdrop.spot<ScreenshotBar>()..existsOnce();
     await act.tap(
       screenshotBar.spotText('l10n.feedbackStep3ScreenshotBarSaveButton'),
     );
