@@ -62,11 +62,11 @@ jobs:
         run: cd examples/theming && ./../../wiresdk flutter build web
 
   pr-stable-integration:
-    # Pinned to macos-14: on macos-15 `flutter test -d macos` hits
-    # "Failed to foreground app; open returned 1" and then hangs
-    # forever waiting for the VM-service handshake.
+    # Avoid macos-15: `flutter test -d macos` hits "Failed to foreground
+    # app; open returned 1" and then hangs forever waiting for the
+    # VM-service handshake.
     # See https://github.com/flutter/flutter/issues/176850
-    runs-on: macos-14
+    runs-on: macos-26
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
