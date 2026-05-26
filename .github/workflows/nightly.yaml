@@ -17,12 +17,18 @@ jobs:
           ref: stable
       - name: Flutter version
         run: flutter doctor -v
-      - name: Download dependencies
-        run: ./wiresdk deps
+      # Only resolve the wiredash package and the 3.19 sample; other examples
+      # use Kotlin Gradle / Dart 3.4+ APIs that Flutter 3.19 can't process.
+      - name: Download dependencies (wiredash)
+        run: flutter pub get
+      - name: Download dependencies (old_flutter_3_19_0)
+        working-directory: examples/old_flutter_3_19_0
+        run: flutter pub get
       - name: Test
-        run: ./wiresdk test
+        run: flutter test
       - name: Build
-        run: cd examples/old_flutter_3_19_0 && ./../../wiresdk flutter build web
+        working-directory: examples/old_flutter_3_19_0
+        run: flutter build web
 
   stable:
     runs-on: ubuntu-latest

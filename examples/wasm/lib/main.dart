@@ -15,10 +15,7 @@ class WiredashWasmApp extends StatelessWidget {
       secret: 'API Key from console.wiredash.io',
       child: MaterialApp(
         title: 'Wiredash Wasm Sample',
-        theme: ThemeData(
-          colorSchemeSeed: Colors.indigo,
-          useMaterial3: true,
-        ),
+        theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
         home: const HomePage(),
       ),
     );
