@@ -7,7 +7,7 @@ import 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
 class _DartHtmlDeviceInfoGenerator implements FlutterInfoCollector {
   _DartHtmlDeviceInfoGenerator(this.view);
 
-  final FlutterView view;
+  final FlutterView? view;
 
   @override
   FlutterInfo capture() {
@@ -19,6 +19,6 @@ class _DartHtmlDeviceInfoGenerator implements FlutterInfoCollector {
 }
 
 /// Called by [FlutterInfoCollector] factory constructor in browsers
-FlutterInfoCollector createDeviceInfoGenerator(FlutterView view) {
+FlutterInfoCollector createDeviceInfoGenerator(FlutterView? view) {
   return _DartHtmlDeviceInfoGenerator(view);
 }

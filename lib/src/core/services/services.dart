@@ -1,6 +1,5 @@
 import 'package:file/local.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart' show WidgetsBinding;
 import 'package:path_provider/path_provider.dart';
 import 'package:wiredash/src/an4lytics/ev3nt_store.dart';
 import 'package:wiredash/src/an4lytics/ev3nt_submitter.dart';
@@ -258,11 +257,15 @@ void registerProdWiredashServices(WiredashServices sl) {
 
     return controller;
   });
-  sl.inject<FlutterInfoCollector>(
-    (_) => FlutterInfoCollector(
-      WidgetsBinding.instance.platformDispatcher.views.first,
-    ),
-  );
+  // Read a FlutterView via PlatformDispatcher.views (which works on
+  // background isolates) instead of WidgetsBinding or
+  // PlatformDispatcher.implicitView — both throw in isolate contexts
+  // where no view exists. FlutterInfoCollector falls back to
+  // PlatformDispatcher defaults when the view is null.
+  sl.inject<FlutterInfoCollector>((_) {
+    final views = PlatformDispatcher.instance.views;
+    return FlutterInfoCollector(views.isEmpty ? null : views.first);
+  });
   sl.inject<BuildInfo>((_) => getBuildInformation());
   sl.inject<WiredashOptionsData>(
     (_) => sl.wiredashWidget?.options ?? const WiredashOptionsData(),

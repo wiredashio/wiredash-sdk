@@ -29,8 +29,10 @@ class _PicassoState extends State<Picasso> {
   final _strokesStreamController = StreamController<List<Stroke?>>.broadcast();
   final _currentStrokeStreamController = StreamController<Stroke?>.broadcast();
 
-  Size _sketcherCanvasSize =
-      WidgetsBinding.instance.platformDispatcher.views.first.physicalSize;
+  Size _sketcherCanvasSize = () {
+    final views = ui.PlatformDispatcher.instance.views;
+    return views.isEmpty ? Size.zero : views.first.physicalSize;
+  }();
 
   @override
   void initState() {
