@@ -62,7 +62,11 @@ jobs:
         run: cd examples/theming && ./../../wiresdk flutter build web
 
   pr-stable-integration:
-    runs-on: macos-latest
+    # Pinned to macos-14 because the macos-15 image (≥15.7.7) breaks
+    # `flutter test -d macos`: `open returned 1` and the test never
+    # attaches to the VM service. Also macos-latest queues for hours
+    # on this org. macos-14 still uses Apple Silicon.
+    runs-on: macos-14
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
