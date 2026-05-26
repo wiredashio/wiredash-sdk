@@ -14,12 +14,12 @@ import 'package:wiredash/src/metadata/all_meta_data.dart';
 class FlutterInfo {
   /// The primary locale enabled on the device
   ///
-  /// https://api.flutter.dev/flutter/dart-ui/SingletonFlutterWindow/locale.html
+  /// https://api.flutter.dev/flutter/dart-ui/PlatformDispatcher/locale.html
   final String platformLocale;
 
   /// Locales the user enabled on their device
   ///
-  /// https://api.flutter.dev/flutter/dart-ui/SingletonFlutterWindow/locales.html
+  /// https://api.flutter.dev/flutter/dart-ui/PlatformDispatcher/locales.html
   final List<String> platformSupportedLocales;
 
   /// Area not covered with system UI
@@ -41,7 +41,7 @@ class FlutterInfo {
 
   /// Is the system dark or light themed?
   ///
-  /// https://api.flutter.dev/flutter/dart-ui/SingletonFlutterWindow/platformBrightness.html
+  /// https://api.flutter.dev/flutter/dart-ui/PlatformDispatcher/platformBrightness.html
   final Brightness platformBrightness;
 
   /// A string representing the operating system or platform.
@@ -56,7 +56,7 @@ class FlutterInfo {
 
   /// Text scale factor, default 1.0
   ///
-  /// https://api.flutter.dev/flutter/dart-ui/SingletonFlutterWindow/textScaleFactor.html
+  /// https://api.flutter.dev/flutter/dart-ui/PlatformDispatcher/textScaleFactor.html
   final double textScaleFactor;
 
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/viewInsets.html
