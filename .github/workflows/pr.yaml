@@ -62,10 +62,10 @@ jobs:
         run: cd examples/theming && ./../../wiresdk flutter build web
 
   pr-stable-integration:
-    # Pinned to macos-14 because the macos-15 image (≥15.7.7) breaks
-    # `flutter test -d macos`: `open returned 1` and the test never
-    # attaches to the VM service. Also macos-latest queues for hours
-    # on this org. macos-14 still uses Apple Silicon.
+    # Pinned to macos-14: on macos-15 `flutter test -d macos` hits
+    # "Failed to foreground app; open returned 1" and then hangs
+    # forever waiting for the VM-service handshake.
+    # See https://github.com/flutter/flutter/issues/176850
     runs-on: macos-14
     timeout-minutes: 15
     steps:
@@ -80,12 +80,7 @@ jobs:
       - name: Run integration test
         timeout-minutes: 10
         working-directory: examples/theming
-        # `--no-enable-impeller` works around a regression in the
-        # macos-latest GHA image (15.7.7+) where the new Impeller backend
-        # makes the freshly-built .app fail to foreground via `open`,
-        # which then prevents flutter test from attaching to the VM
-        # service and hangs the job (Flutter #159278).
-        run: ./../../wiresdk flutter test -d macos --no-enable-impeller integration_test
+        run: ./../../wiresdk flutter test -d macos integration_test
 
   pr-beta:
     runs-on: ubuntu-latest
