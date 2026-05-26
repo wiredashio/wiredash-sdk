@@ -257,15 +257,7 @@ void registerProdWiredashServices(WiredashServices sl) {
 
     return controller;
   });
-  // Read a FlutterView via PlatformDispatcher.views (which works on
-  // background isolates) instead of WidgetsBinding or
-  // PlatformDispatcher.implicitView — both throw in isolate contexts
-  // where no view exists. FlutterInfoCollector falls back to
-  // PlatformDispatcher defaults when the view is null.
-  sl.inject<FlutterInfoCollector>((_) {
-    final views = PlatformDispatcher.instance.views;
-    return FlutterInfoCollector(views.isEmpty ? null : views.first);
-  });
+  sl.inject<FlutterInfoCollector>((_) => FlutterInfoCollector());
   sl.inject<BuildInfo>((_) => getBuildInformation());
   sl.inject<WiredashOptionsData>(
     (_) => sl.wiredashWidget?.options ?? const WiredashOptionsData(),
