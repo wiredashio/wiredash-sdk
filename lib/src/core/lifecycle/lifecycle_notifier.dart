@@ -1,11 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
-    show AppLifecycleState, WidgetsBindingObserver;
+    show AppLifecycleState, WidgetsBinding, WidgetsBindingObserver;
 import 'package:flutter/semantics.dart';
 import 'package:wiredash/src/core/lifecycle/lifecycle_stub.dart'
     if (dart.library.js_interop) 'package:wiredash/src/core/lifecycle/lifecycle_web.dart';
-import 'package:wiredash/src/core/support/widget_binding_support.dart';
 
 /// Exposes [AppLifecycleState] on all flutter supported platforms, including web.
 class FlutterAppLifecycleNotifier extends ValueNotifier<AppLifecycleState> {
@@ -67,7 +66,7 @@ AppLifecycleState AppLifecycleState_hidden_compat() {
 FlutterAppLifecycleNotifier createFlutterAppLifecycleNotifier() {
   final notifier = FlutterAppLifecycleNotifier();
 
-  final state = widgetsBindingInstance.lifecycleState;
+  final state = WidgetsBinding.instance.lifecycleState;
   if (state != null) {
     notifier.value = state;
   }
@@ -76,10 +75,10 @@ FlutterAppLifecycleNotifier createFlutterAppLifecycleNotifier() {
   final observer = LifecycleChangeObserver((state) {
     notifier.value = state;
   });
-  widgetsBindingInstance.addObserver(observer);
+  WidgetsBinding.instance.addObserver(observer);
 
   notifier.addOnDisposeListener(() {
-    widgetsBindingInstance.removeObserver(observer);
+    WidgetsBinding.instance.removeObserver(observer);
   });
 
   return notifier;

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:wiredash/src/core/support/widget_binding_support.dart';
+
 import 'package:wiredash/src/utils/disposable.dart';
 
 /// Allows intercepting of the Android back button
@@ -70,12 +70,12 @@ enum BackButtonAction {
 /// to [BackButtonInterceptor] in the widget tree
 class WiredashBackButtonDispatcher extends WidgetsBindingObserver {
   void initialize() {
-    widgetsBindingInstance.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @mustCallSuper
   void dispose() {
-    widgetsBindingInstance.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   @override

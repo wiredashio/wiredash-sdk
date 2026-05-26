@@ -1,6 +1,6 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/core/support/widget_binding_support.dart';
+
 
 /// from https://stackoverflow.com/a/60868972/669294
 class MeasureSize extends SingleChildRenderObjectWidget {
@@ -34,7 +34,7 @@ class _MeasureSizeRenderObject extends RenderProxyBox {
 
     oldBounds = newBounds;
     oldSize = newSize;
-    widgetsBindingInstance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       onChange(newSize, newBounds);
     });
   }
