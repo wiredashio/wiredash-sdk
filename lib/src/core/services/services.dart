@@ -1,7 +1,6 @@
-import 'dart:ui';
-
 import 'package:file/local.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show WidgetsBinding;
 import 'package:path_provider/path_provider.dart';
 import 'package:wiredash/src/an4lytics/ev3nt_store.dart';
 import 'package:wiredash/src/an4lytics/ev3nt_submitter.dart';
@@ -259,9 +258,11 @@ void registerProdWiredashServices(WiredashServices sl) {
 
     return controller;
   });
-  // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
-  // ignore: deprecated_member_use
-  sl.inject<FlutterInfoCollector>((_) => FlutterInfoCollector(window));
+  sl.inject<FlutterInfoCollector>(
+    (_) => FlutterInfoCollector(
+      WidgetsBinding.instance.platformDispatcher.views.first,
+    ),
+  );
   sl.inject<BuildInfo>((_) => getBuildInformation());
   sl.inject<WiredashOptionsData>(
     (_) => sl.wiredashWidget?.options ?? const WiredashOptionsData(),

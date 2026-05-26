@@ -1,21 +1,17 @@
 import 'dart:io';
-// Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
-// ignore: deprecated_member_use
-import 'dart:ui' show SingletonFlutterWindow;
+import 'dart:ui' show FlutterView;
 
 import 'package:wiredash/src/metadata/device_info/device_info.dart';
 import 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
 
 class _DartIoDeviceInfoGenerator implements FlutterInfoCollector {
-  _DartIoDeviceInfoGenerator(this.window);
+  _DartIoDeviceInfoGenerator(this.view);
 
-  // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
-  // ignore: deprecated_member_use
-  final SingletonFlutterWindow window;
+  final FlutterView view;
 
   @override
   FlutterInfo capture() {
-    final base = FlutterInfoCollector.flutterInfo(window);
+    final base = FlutterInfoCollector.flutterInfo(view);
     final info = base.copyWith(
       platformOS: Platform.operatingSystem,
       platformVersion: Platform.version,
@@ -25,8 +21,6 @@ class _DartIoDeviceInfoGenerator implements FlutterInfoCollector {
 }
 
 /// Called by [FlutterInfoCollector] factory constructor
-// Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
-// ignore: deprecated_member_use
-FlutterInfoCollector createDeviceInfoGenerator(SingletonFlutterWindow window) {
-  return _DartIoDeviceInfoGenerator(window);
+FlutterInfoCollector createDeviceInfoGenerator(FlutterView view) {
+  return _DartIoDeviceInfoGenerator(view);
 }

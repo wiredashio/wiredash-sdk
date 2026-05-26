@@ -160,9 +160,7 @@ extension AllMetaDataRequestJson on AllMetaData {
   }
 }
 
-// Remove when we drop support for Flutter v3.8.0-14.0.pre.
-// ignore: deprecated_member_use
-extension SerizalizeWindowPadding on WindowPadding {
+extension SerizalizeWindowPadding on ViewPadding {
   List<double> toRequestJsonArray() {
     return [left, top, right, bottom];
   }

@@ -292,11 +292,9 @@ class AllMetaData {
   }
 }
 
-/// WindowPadding doesn't offer a public constructor and doesn't implement
+/// ViewPadding doesn't offer a public constructor and doesn't implement
 /// ==() and hashCode
-// Remove when we drop support for Flutter v3.8.0-14.0.pre.
-// ignore: deprecated_member_use
-class WiredashWindowPadding implements WindowPadding {
+class WiredashWindowPadding implements ViewPadding {
   const WiredashWindowPadding({
     required this.left,
     required this.top,
@@ -313,9 +311,7 @@ class WiredashWindowPadding implements WindowPadding {
     );
   }
 
-  // Remove when we drop support for Flutter v3.8.0-14.0.pre.
-  // ignore: deprecated_member_use
-  factory WiredashWindowPadding.fromWindowPadding(WindowPadding padding) {
+  factory WiredashWindowPadding.fromViewPadding(ViewPadding padding) {
     return WiredashWindowPadding(
       left: padding.left,
       top: padding.top,
