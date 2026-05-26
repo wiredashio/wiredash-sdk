@@ -103,10 +103,12 @@ extension AllMetaDataRequestJson on AllMetaData {
       values.addAll({'platformDartVersion': _platformDartVersion});
     }
 
-    values.addAll({
-      'platformGestureInsets':
-          nonNull(platformGestureInsets).toRequestJsonArray(),
-    });
+    final _platformGestureInsets = platformGestureInsets;
+    if (_platformGestureInsets != null) {
+      values.addAll({
+        'platformGestureInsets': _platformGestureInsets.toRequestJsonArray(),
+      });
+    }
 
     values.addAll({'platformLocale': nonNull(platformLocale)});
 
@@ -136,21 +138,25 @@ extension AllMetaDataRequestJson on AllMetaData {
       values.addAll({'userId': _userId});
     }
 
-    values.addAll({
-      'windowInsets': nonNull(windowInsets).toRequestJsonArray(),
-    });
+    final _windowInsets = windowInsets;
+    if (_windowInsets != null) {
+      values.addAll({'windowInsets': _windowInsets.toRequestJsonArray()});
+    }
 
-    values.addAll({
-      'windowPadding': nonNull(windowPadding).toRequestJsonArray(),
-    });
+    final _windowPadding = windowPadding;
+    if (_windowPadding != null) {
+      values.addAll({'windowPadding': _windowPadding.toRequestJsonArray()});
+    }
 
-    values.addAll({
-      'windowPixelRatio': nonNull(windowPixelRatio),
-    });
+    final _windowPixelRatio = windowPixelRatio;
+    if (_windowPixelRatio != null) {
+      values.addAll({'windowPixelRatio': _windowPixelRatio});
+    }
 
-    values.addAll({
-      'windowSize': nonNull(windowSize).toRequestJsonArray(),
-    });
+    final _windowSize = windowSize;
+    if (_windowSize != null) {
+      values.addAll({'windowSize': _windowSize.toRequestJsonArray()});
+    }
 
     values.addAll({
       'windowTextScaleFactor': nonNull(windowTextScaleFactor),

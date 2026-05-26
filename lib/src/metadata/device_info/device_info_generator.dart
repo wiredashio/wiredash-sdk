@@ -1,4 +1,4 @@
-import 'dart:ui' show FlutterView, Locale, PlatformDispatcher, Size;
+import 'dart:ui' show FlutterView, Locale, PlatformDispatcher;
 
 import 'package:wiredash/src/metadata/all_meta_data.dart';
 // import a web (dart:js_interop) or dart:io version of `createDeviceInfoGenerator`
@@ -18,18 +18,13 @@ abstract class FlutterInfoCollector {
     return createDeviceInfoGenerator(view);
   }
 
-  /// Collection of all [FlutterInfo] shared between all platforms
+  /// Collection of all [FlutterInfo] shared between all platforms.
+  ///
+  /// View-specific fields are `null` when [view] is `null`.
   static FlutterInfo flutterInfo(FlutterView? view) {
     final dispatcher = view?.platformDispatcher ?? PlatformDispatcher.instance;
     Locale windowLocale() => dispatcher.locale;
     List<Locale> windowLocales() => dispatcher.locales;
-
-    const WiredashWindowPadding zeroPadding = WiredashWindowPadding(
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-    );
 
     return FlutterInfo(
       platformLocale: windowLocale().toLanguageTag(),
@@ -37,17 +32,17 @@ abstract class FlutterInfoCollector {
           windowLocales().map((it) => it.toLanguageTag()).toList(),
       viewPadding: view != null
           ? WiredashWindowPadding.fromViewPadding(view.padding)
-          : zeroPadding,
-      physicalSize: view?.physicalSize ?? Size.zero,
-      pixelRatio: view?.devicePixelRatio ?? 1.0,
+          : null,
+      physicalSize: view?.physicalSize,
+      pixelRatio: view?.devicePixelRatio,
       textScaleFactor: dispatcher.textScaleFactor,
       viewInsets: view != null
           ? WiredashWindowPadding.fromViewPadding(view.viewInsets)
-          : zeroPadding,
+          : null,
       platformBrightness: dispatcher.platformBrightness,
       gestureInsets: view != null
           ? WiredashWindowPadding.fromViewPadding(view.systemGestureInsets)
-          : zeroPadding,
+          : null,
     );
   }
 

@@ -37,7 +37,9 @@ class AllMetaData {
   final String installId;
   final Brightness platformBrightness;
   final String? platformDartVersion;
-  final WiredashWindowPadding platformGestureInsets;
+
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  final WiredashWindowPadding? platformGestureInsets;
   final String platformLocale;
   final String? platformOS;
   final String? platformOSVersion;
@@ -45,10 +47,18 @@ class AllMetaData {
   final int sdkVersion;
   final String? userId;
   final String? userEmail;
-  final WiredashWindowPadding windowInsets;
-  final WiredashWindowPadding windowPadding;
-  final double windowPixelRatio;
-  final Size windowSize;
+
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  final WiredashWindowPadding? windowInsets;
+
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  final WiredashWindowPadding? windowPadding;
+
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  final double? windowPixelRatio;
+
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  final Size? windowSize;
   final double windowTextScaleFactor;
 
   const AllMetaData({

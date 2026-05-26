@@ -24,20 +24,26 @@ class FlutterInfo {
 
   /// Area not covered with system UI
   ///
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/padding.html
-  final WiredashWindowPadding viewPadding;
+  final WiredashWindowPadding? viewPadding;
 
   /// The dimensions of the rectangle into which the scene rendered in this
   /// view will be drawn on the screen, in physical pixels.
   ///
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/physicalSize.html
-  final Size physicalSize;
+  final Size? physicalSize;
 
   /// The number of device pixels for each logical pixel for the screen this
   /// view is displayed on.
   ///
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/devicePixelRatio.html
-  final double pixelRatio;
+  final double? pixelRatio;
 
   /// Is the system dark or light themed?
   ///
@@ -59,14 +65,18 @@ class FlutterInfo {
   /// https://api.flutter.dev/flutter/dart-ui/PlatformDispatcher/textScaleFactor.html
   final double textScaleFactor;
 
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/viewInsets.html
-  final WiredashWindowPadding viewInsets;
+  final WiredashWindowPadding? viewInsets;
 
   /// Area where Android does not intercept i.e. for the back button gesture
   /// (swipe from the side of the screen)
   ///
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  ///
   /// https://api.flutter.dev/flutter/dart-ui/FlutterView/systemGestureInsets.html
-  final WiredashWindowPadding gestureInsets;
+  final WiredashWindowPadding? gestureInsets;
 
   /// When in web, the full user agent String of the browser
   ///
@@ -76,16 +86,16 @@ class FlutterInfo {
   const FlutterInfo({
     required this.platformLocale,
     required this.platformSupportedLocales,
-    required this.viewPadding,
-    required this.physicalSize,
-    required this.pixelRatio,
+    this.viewPadding,
+    this.physicalSize,
+    this.pixelRatio,
     this.platformOS,
     this.platformDartVersion,
     required this.textScaleFactor,
-    required this.viewInsets,
+    this.viewInsets,
     this.userAgent,
     required this.platformBrightness,
-    required this.gestureInsets,
+    this.gestureInsets,
   });
 
   FlutterInfo copyWith({
