@@ -12,7 +12,6 @@ import 'package:nanoid2/nanoid2.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:spot/spot.dart';
 import 'package:wiredash/src/an4lytics/ev3nt_submitter.dart';
-import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 import 'package:wiredash/src/core/theme/wirecons.dart';
 import 'package:wiredash/src/core/widgets/backdrop/step_page_scaffold.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
@@ -368,7 +367,7 @@ class WiredashTestRobot {
     // chrome: resumed | (switch app) | inactive
     // chrome: resumed | (close tab) | hidden | <dead>
     TestWidgetsFlutterBinding.instance
-        .handleAppLifecycleStateChanged(AppLifecycleState_hidden_compat());
+        .handleAppLifecycleStateChanged(AppLifecycleState.hidden);
     addTearDown(() {
       // reset to default
       TestWidgetsFlutterBinding.instance

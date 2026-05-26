@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
     show AppLifecycleState, WidgetsBinding, WidgetsBindingObserver;
@@ -49,17 +48,6 @@ bool _isBeforeFlutter3_22() {
   return true;
 }
 
-/// A backwards compatible version of AppLifecycleState.hidden,
-/// which returns AppLifecycleState.inactive for Flutter 3.13 and below
-// ignore: non_constant_identifier_names
-AppLifecycleState AppLifecycleState_hidden_compat() {
-  // The hidden state was added in Flutter 3.13
-  final AppLifecycleState? hidden = AppLifecycleState.values
-      .firstWhereOrNull((element) => element.name == 'hidden');
-  // for earlier flutter versions, fallback to inactive
-  return hidden ?? AppLifecycleState.inactive;
-}
-
 /// Creates a [FlutterAppLifecycleNotifier] connected to [WidgetsBindingObserver]
 ///
 /// It does not support web, before Flutter 3.22. Use [createFlutterAppLifecycleNotifierWebBackport] instead.
@@ -71,7 +59,6 @@ FlutterAppLifecycleNotifier createFlutterAppLifecycleNotifier() {
     notifier.value = state;
   }
 
-  // Can't use AppLifecycleListener, as it was introduced in Flutter3.13
   final observer = LifecycleChangeObserver((state) {
     notifier.value = state;
   });

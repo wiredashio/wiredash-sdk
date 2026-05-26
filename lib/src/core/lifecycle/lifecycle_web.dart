@@ -50,7 +50,7 @@ FlutterAppLifecycleNotifier createFlutterAppLifecycleNotifierWebBackport() {
 
 AppLifecycleState readLifecycleState() {
   if (web.document.hidden) {
-    return AppLifecycleState_hidden_compat();
+    return AppLifecycleState.hidden;
   }
   if (web.document.hasFocus()) {
     return AppLifecycleState.resumed;

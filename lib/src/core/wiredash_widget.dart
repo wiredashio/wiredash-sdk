@@ -5,7 +5,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/core/context_cache.dart';
-import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/not_a_widgets_app.dart';
@@ -303,7 +302,7 @@ class WiredashState extends State<Wiredash> {
 
     _services.appLifecycleNotifier.addListener(() {
       final state = _services.appLifecycleNotifier.value;
-      if (state == AppLifecycleState_hidden_compat()) {
+      if (state == AppLifecycleState.hidden) {
         _services.syncEngine.onAppMovedToBackground();
       }
     });
