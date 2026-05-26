@@ -63,6 +63,11 @@ jobs:
 
   pr-stable-integration:
     runs-on: macos-latest
+    # The macOS runners regularly fail to foreground the test app
+    # ("Failed to foreground app; open returned 1") and then the whole job
+    # hangs until the 6h default timeout. Cap the job at 15 minutes so a
+    # known-bad run fails fast instead of blocking the queue.
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -72,7 +77,9 @@ jobs:
         run: flutter doctor -v
       - name: Download dependencies
         run: ./wiresdk deps
-      - run: cd examples/theming && ./../../wiresdk flutter test -d macos integration_test
+      - name: Run integration test
+        timeout-minutes: 8
+        run: cd examples/theming && ./../../wiresdk flutter test -d macos integration_test
 
   pr-beta:
     runs-on: ubuntu-latest
