@@ -191,13 +191,13 @@ void main() {
       await robot.submitPromoterScore();
       await robot.showsPromoterScoreThanksMessage();
 
-      spotSingle<PsStep1Rating>().doesNotExist();
+      spot<PsStep1Rating>().doesNotExist();
 
       // wait for wiredash hide() after 2s delay
       await tester.pumpSmart(const Duration(seconds: 3));
 
       // back on first step, the form got reset
-      spotSingle<PsStep1Rating>().existsOnce();
+      spot<PsStep1Rating>().existsOnce();
 
       await gesture.up(); // let go of the app
     });

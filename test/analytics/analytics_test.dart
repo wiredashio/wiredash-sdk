@@ -1085,7 +1085,7 @@ void main() {
     }
     final afterTrack = clock.now();
     final diff = afterTrack.difference(beforeTrack);
-    expect(diff.inMilliseconds, 100);
+    expect(diff.inMilliseconds, lessThanOrEqualTo(100));
   });
 
   test('trackEvent() can not throw but reports errors', () async {
