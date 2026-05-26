@@ -6,34 +6,29 @@ The point of this sample is not the UI — it is to verify that Wiredash and its
 
 ## Build
 
+`--strip-wasm` drops the JS fallback so any non-wasm code path becomes a hard build error rather than a silent downgrade.
+
 ```sh
-flutter build web --wasm
+../../wiresdk flutter build web --wasm --strip-wasm
 ```
 
-A successful build produces:
+Output:
 
 - `build/web/main.dart.wasm` — the compiled wasm module
 - `build/web/main.dart.mjs` — the wasm loader
-- `build/web/main.dart.js` — JS fallback (for browsers without wasm-GC support)
-
-To produce a wasm-only build with no JS fallback:
-
-```sh
-flutter build web --wasm --strip-wasm
-```
 
 ## Run
 
 A static file server is included that sets the COOP / COEP headers wasm needs for `SharedArrayBuffer`:
 
 ```sh
-flutter build web --wasm
+../../wiresdk flutter build web --wasm --strip-wasm
 python3 serve.py 8123
 ```
 
 Then open <http://127.0.0.1:8123/>.
 
-To confirm you are actually running wasm and not the JS fallback, check DevTools → Network for `main.dart.wasm` being loaded, or run in the console:
+To confirm `main.dart.wasm` is actually loaded, check DevTools → Network, or run in the console:
 
 ```js
 performance.getEntriesByType('resource').filter(r => r.name.endsWith('.wasm'))
