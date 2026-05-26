@@ -1,7 +1,6 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-
 /// from https://stackoverflow.com/a/60868972/669294
 class MeasureSize extends SingleChildRenderObjectWidget {
   final void Function(Size size, Rect bounds) onChange;
