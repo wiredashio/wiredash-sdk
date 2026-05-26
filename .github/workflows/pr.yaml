@@ -76,7 +76,12 @@ jobs:
       - name: Run integration test
         timeout-minutes: 10
         working-directory: examples/theming
-        run: ./../../wiresdk flutter test -d macos integration_test
+        # `--no-enable-impeller` works around a regression in the
+        # macos-latest GHA image (15.7.7+) where the new Impeller backend
+        # makes the freshly-built .app fail to foreground via `open`,
+        # which then prevents flutter test from attaching to the VM
+        # service and hangs the job (Flutter #159278).
+        run: ./../../wiresdk flutter test -d macos --no-enable-impeller integration_test
 
   pr-beta:
     runs-on: ubuntu-latest
