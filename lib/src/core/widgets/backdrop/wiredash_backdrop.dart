@@ -845,13 +845,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       builder: (context, app) {
         final outOfFocusPosition = _rectAppOutOfFocus.top;
 
-        Widget transformed = AbsorbPointer(
+        // ignore: parameter_assignments
+        app = AbsorbPointer(
           absorbing: !widget.controller.isAppInteractive,
           child: app,
         );
 
         if (!widget.controller.isAppInteractive) {
-          transformed = PullToCloseDetector(
+          // ignore: parameter_assignments
+          app = PullToCloseDetector(
             closeDirection: CloseDirection.upwards,
             onPullStart: () {
               _pulling = true;
@@ -913,14 +915,15 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
               _backdropStatus = WiredashBackdropStatus.open;
               _swapAnimation();
             },
-            child: transformed,
+            child: app,
           );
 
-          transformed = GestureDetector(
+          // ignore: parameter_assignments
+          app = GestureDetector(
             onTap: () async {
               await context.wiredashModel.hide();
             },
-            child: transformed,
+            child: app,
           );
         }
 
@@ -941,7 +944,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
           child: Transform.scale(
             scale: appScale,
             alignment: Alignment.topCenter,
-            child: transformed,
+            child: app,
           ),
         );
       },
