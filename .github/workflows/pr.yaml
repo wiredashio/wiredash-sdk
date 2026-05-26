@@ -27,7 +27,7 @@ jobs:
   pr-min:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/cirruslabs/flutter:3.24.0
+      image: ghcr.io/cirruslabs/flutter:3.19.0
     steps:
       - uses: actions/checkout@v3
       - name: Flutter version
@@ -37,7 +37,7 @@ jobs:
       - name: Test
         run: ./wiresdk test
       - name: Build
-        run: cd examples/theming && ./../../wiresdk flutter build web
+        run: cd examples/old_flutter_3_19_0 && ./../../wiresdk flutter build web
 
   pr-stable:
     runs-on: ubuntu-latest

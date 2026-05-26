@@ -4,6 +4,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
+// `package:http/http.dart` re-exports `MediaType` only on Flutter >=3.22.
+// Keep the explicit import so we stay compatible with Flutter 3.19.
+// ignore: unnecessary_import
+import 'package:http_parser/http_parser.dart';
 import 'package:wiredash/src/core/network/api_exceptions.dart';
 import 'package:wiredash/src/core/network/ping_request.dart';
 import 'package:wiredash/src/core/network/send_ev3nts_request.dart';
@@ -14,6 +18,7 @@ import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/feedback/data/feedback_item.dart';
 
 export 'package:http/http.dart';
+export 'package:http_parser/http_parser.dart' show MediaType;
 export 'package:wiredash/src/core/network/api_exceptions.dart';
 export 'package:wiredash/src/core/network/ping_request.dart';
 export 'package:wiredash/src/core/network/send_ev3nts_request.dart';
