@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show WidgetsBinding;
 import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/core/services/services.dart';
-
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/src/metadata/session_meta_data.dart';

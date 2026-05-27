@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-
 import 'package:wiredash/src/utils/disposable.dart';
 
 /// Allows intercepting of the Android back button

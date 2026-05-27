@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-
 import 'package:wiredash/src/core/widgets/tron/animations_lib.dart';
 
 /// A better version of [AnimatedSwitcher] that fades the old child completely

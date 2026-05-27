@@ -6,7 +6,6 @@ import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
-
 import 'package:wiredash/src/core/theme/wiredash_theme.dart';
 import 'package:wiredash/src/core/widgets/backdrop/fake_app_status_bar.dart';
 import 'package:wiredash/src/core/widgets/backdrop/pull_to_close_detector.dart';
