@@ -356,6 +356,35 @@ void main() {
         fullFeedbackV3,
       );
     });
+
+    test('parse v3 without FlutterView fields (background isolate)', () {
+      final json = {
+        "feedbackItem": {
+          'feedbackId': '0123456789abcdef',
+          "message": "Hello world!",
+          "metadata": {
+            "compilationMode": "profile",
+            "installId": "8F821AB6-B3A7-41BA-882E-32D8367243C1",
+            "platformBrightness": "dark",
+            "platformLocale": "en_US",
+            "platformSupportedLocales": ["en_US", "de_DE"],
+            "sdkVersion": 174,
+            "windowTextScaleFactor": 1.0,
+            // platformGestureInsets, windowInsets, windowPadding,
+            // windowPixelRatio, windowSize are all omitted — there is no
+            // FlutterView when running on a background isolate.
+          },
+        },
+        "id": "012345-6789-abcdef-ghi",
+        "version": 3,
+      };
+      final parsed = deserializePendingFeedbackItem(jsonEncode(json));
+      expect(parsed.feedbackItem.metadata.platformGestureInsets, isNull);
+      expect(parsed.feedbackItem.metadata.windowInsets, isNull);
+      expect(parsed.feedbackItem.metadata.windowPadding, isNull);
+      expect(parsed.feedbackItem.metadata.windowPixelRatio, isNull);
+      expect(parsed.feedbackItem.metadata.windowSize, isNull);
+    });
   });
 
   test('back and forth - minimal', () {
@@ -370,5 +399,48 @@ void main() {
     final parsed = deserializePendingFeedbackItem(json);
     expect(parsed, fullFeedbackV3);
     expect(parsed.hashCode, fullFeedbackV3.hashCode);
+  });
+
+  test('back and forth - no FlutterView (background isolate)', () {
+    // Mirrors what FlutterInfoCollector emits when
+    // PlatformDispatcher.views is empty.
+    final feedback = PendingFeedbackItem(
+      id: '012345-6789-abcdef-ghi',
+      feedbackItem: FeedbackItem(
+        feedbackId: '0123456789abcdef',
+        message: 'Hello from a background isolate',
+        metadata: AllMetaData(
+          installId: '8F821AB6-B3A7-41BA-882E-32D8367243C1',
+          sdkVersion: 174,
+          compilationMode: CompilationMode.profile,
+          windowTextScaleFactor: 1.0,
+          platformLocale: 'en_US',
+          platformSupportedLocales: ['en_US', 'de_DE'],
+          platformBrightness: Brightness.dark,
+          // No view → all view-derived fields are null.
+          platformGestureInsets: null,
+          windowInsets: null,
+          windowPadding: null,
+          windowPixelRatio: null,
+          windowSize: null,
+        ),
+      ),
+    );
+
+    final json = jsonEncode(feedback.toJson());
+    final parsed = deserializePendingFeedbackItem(json);
+    expect(parsed, feedback);
+    expect(parsed.hashCode, feedback.hashCode);
+
+    // Sanity-check that the serializer actually drops the keys (vs. writing
+    // nulls), so future readers don't get confused by ghost fields.
+    final decoded = jsonDecode(json) as Map<String, dynamic>;
+    final metadata =
+        (decoded['feedbackItem'] as Map)['metadata'] as Map<String, dynamic>;
+    expect(metadata.containsKey('platformGestureInsets'), isFalse);
+    expect(metadata.containsKey('windowInsets'), isFalse);
+    expect(metadata.containsKey('windowPadding'), isFalse);
+    expect(metadata.containsKey('windowPixelRatio'), isFalse);
+    expect(metadata.containsKey('windowSize'), isFalse);
   });
 }
