@@ -1,14 +1,11 @@
 # Changelog
 
-## Unreleased
+## 2.7.0
 
-> Note: This release has breaking changes.
->
-> Wiredash now requires Dart 3.3 / Flutter 3.19 or newer.
-
-- Raise minimum SDK to Dart 3.3 / Flutter 3.19
-- Replace `dart:html`, `dart:js`, and `dart:js_util` with `package:web` and `dart:js_interop` (enables WebAssembly compilation)
-- Drop the Flutter 3.0.0 compatibility example and CI job
+- **Breaking** Raise minimum SDK to Dart 3.3 / Flutter 3.19 [#401](https://github.com/wiredashio/wiredash-sdk/pull/401)
+- **New** WebAssembly support — Wiredash now compiles with `flutter build web --wasm` [#401](https://github.com/wiredashio/wiredash-sdk/pull/401)
+- Migrate web interop from `dart:html` / `dart:js` / `dart:js_util` to `package:web` and `dart:js_interop`
+- Add `package:web` (`>=0.5.1 <2.0.0`) as a new dependency
 
 ## 2.6.1
 
