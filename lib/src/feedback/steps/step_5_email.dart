@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart'
     show Colors, InputDecoration, OutlineInputBorder, TextFormField;
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/core/theme/wirecons.dart';
 import 'package:wiredash/src/core/theme/wiredash_theme.dart';
 import 'package:wiredash/src/core/widgets/backdrop/step_page_scaffold.dart';
@@ -39,7 +38,7 @@ class _Step5EmailState extends State<Step5Email> with TickerProviderStateMixin {
           context.readFeedbackModel.userEmail = text;
         }
       });
-    widgetsBindingInstance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.readFeedbackModel.userEmail = _controller.text;
     });

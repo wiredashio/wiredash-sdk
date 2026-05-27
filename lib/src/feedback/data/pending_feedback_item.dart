@@ -199,9 +199,12 @@ extension on AllMetaData {
       values.addAll({'platformDartVersion': _platformDartVersion});
     }
 
-    values.addAll({
-      'platformGestureInsets': nonNull(platformGestureInsets).toJson(),
-    });
+    final _platformGestureInsets = platformGestureInsets;
+    if (_platformGestureInsets != null) {
+      values.addAll({
+        'platformGestureInsets': _platformGestureInsets.toJson(),
+      });
+    }
 
     values.addAll({'platformLocale': nonNull(platformLocale)});
 
@@ -231,21 +234,25 @@ extension on AllMetaData {
       values.addAll({'userId': _userId});
     }
 
-    values.addAll({
-      'windowInsets': nonNull(windowInsets).toJson(),
-    });
+    final _windowInsets = windowInsets;
+    if (_windowInsets != null) {
+      values.addAll({'windowInsets': _windowInsets.toJson()});
+    }
 
-    values.addAll({
-      'windowPadding': nonNull(windowPadding).toJson(),
-    });
+    final _windowPadding = windowPadding;
+    if (_windowPadding != null) {
+      values.addAll({'windowPadding': _windowPadding.toJson()});
+    }
 
-    values.addAll({
-      'windowPixelRatio': nonNull(windowPixelRatio),
-    });
+    final _windowPixelRatio = windowPixelRatio;
+    if (_windowPixelRatio != null) {
+      values.addAll({'windowPixelRatio': _windowPixelRatio});
+    }
 
-    values.addAll({
-      'windowSize': nonNull(windowSize).toJson(),
-    });
+    final _windowSize = windowSize;
+    if (_windowSize != null) {
+      values.addAll({'windowSize': _windowSize.toJson()});
+    }
 
     values.addAll({
       'windowTextScaleFactor': nonNull(windowTextScaleFactor),
@@ -255,9 +262,7 @@ extension on AllMetaData {
   }
 }
 
-// Remove when we drop support for Flutter v3.8.0-14.0.pre.
-// ignore: deprecated_member_use
-extension on WindowPadding {
+extension on ViewPadding {
   List<double> toJson() {
     return [left, top, right, bottom];
   }

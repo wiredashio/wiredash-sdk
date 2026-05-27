@@ -1,10 +1,8 @@
 import 'dart:async';
-// ignore: deprecated_member_use, avoid_web_libraries_in_flutter
-import 'dart:html';
-// ignore: deprecated_member_use, avoid_web_libraries_in_flutter
-import 'dart:js_util' as js_util;
+import 'dart:js_interop';
 
 import 'package:flutter/widgets.dart';
+import 'package:web/web.dart' as web;
 import 'package:wiredash/src/core/lifecycle/lifecycle_notifier.dart';
 
 /// Creates a web version of [FlutterAppLifecycleNotifier] that is connected
@@ -17,7 +15,7 @@ FlutterAppLifecycleNotifier createFlutterAppLifecycleNotifierWebBackport() {
 
   notifier.value = readLifecycleState();
 
-  void onStateChanged(Event _) {
+  void onStateChanged(web.Event _) {
     final notifier = notifierRef.target;
     if (notifier == null) {
       return;
@@ -25,37 +23,36 @@ FlutterAppLifecycleNotifier createFlutterAppLifecycleNotifierWebBackport() {
     notifier.value = readLifecycleState();
   }
 
-  document.addEventListener('load', onStateChanged);
-  window.addEventListener('focus', onStateChanged);
-  window.addEventListener('blur', onStateChanged);
-  document.addEventListener('visibilitychange', onStateChanged);
+  final listener = onStateChanged.toJS;
 
-  notifier.addOnDisposeListener(() {
-    // unregister listeners when notifier gets disposed
-    document.removeEventListener('load', onStateChanged);
-    window.removeEventListener('focus', onStateChanged);
-    window.removeEventListener('blur', onStateChanged);
-    document.removeEventListener('visibilitychange', onStateChanged);
-  });
+  web.document.addEventListener('load', listener);
+  web.window.addEventListener('focus', listener);
+  web.window.addEventListener('blur', listener);
+  web.document.addEventListener('visibilitychange', listener);
+
+  void removeAllListeners() {
+    web.document.removeEventListener('load', listener);
+    web.window.removeEventListener('focus', listener);
+    web.window.removeEventListener('blur', listener);
+    web.document.removeEventListener('visibilitychange', listener);
+  }
+
+  notifier.addOnDisposeListener(removeAllListeners);
 
   _onHotRestart().then((_) {
     // Also unregister the listeners when the app is hot-restarted, or it will leak
     // resulting in one listener for each hot-restart (only on web)
-    document.removeEventListener('load', onStateChanged);
-    window.removeEventListener('focus', onStateChanged);
-    window.removeEventListener('blur', onStateChanged);
-    document.removeEventListener('visibilitychange', onStateChanged);
+    removeAllListeners();
   });
 
   return notifier;
 }
 
 AppLifecycleState readLifecycleState() {
-  if (document.hidden == true) {
-    return AppLifecycleState_hidden_compat();
+  if (web.document.hidden) {
+    return AppLifecycleState.hidden;
   }
-  final focused = js_util.callMethod(document, 'hasFocus', []);
-  if (focused == true) {
+  if (web.document.hasFocus()) {
     return AppLifecycleState.resumed;
   }
   return AppLifecycleState.inactive;
@@ -70,31 +67,39 @@ AppLifecycleState readLifecycleState() {
 Future<void> _onHotRestart() async {
   final Completer<void> completer = Completer<void>();
 
-  // Use querySelector to find the 'flt-glass-pane' element and get its parent
-  final Node? parentNode = querySelector('flutter-view')?.parent;
+  final web.Node? parentNode =
+      web.document.querySelector('flutter-view')?.parentNode;
 
-  // Ensure parentNode is not null
   if (parentNode == null) {
     completer.completeError('Could not find a <flutter-view> element');
     return;
   }
 
-  final observer = MutationObserver((mutations, observer) {
-    final typedMutations = mutations.cast<MutationRecord>();
-    for (final MutationRecord mutation in typedMutations) {
-      if (mutation.type == 'childList') {
-        final addedNodes = mutation.addedNodes ?? <Node>[];
-        for (final node in addedNodes) {
-          if (node.nodeName == 'FLUTTER-VIEW') {
+  late final web.MutationObserver observer;
+  observer = web.MutationObserver(
+    (JSArray<web.MutationRecord> entries, web.MutationObserver _) {
+      for (var i = 0; i < entries.toDart.length; i++) {
+        final mutation = entries.toDart[i];
+        if (mutation.type != 'childList') {
+          continue;
+        }
+        final addedNodes = mutation.addedNodes;
+        for (var j = 0; j < addedNodes.length; j++) {
+          final node = addedNodes.item(j);
+          if (node != null && node.nodeName == 'FLUTTER-VIEW') {
             completer.complete();
             observer.disconnect();
+            return;
           }
         }
       }
-    }
-  });
+    }.toJS,
+  );
 
-  observer.observe(parentNode, childList: true, subtree: true);
+  observer.observe(
+    parentNode,
+    web.MutationObserverInit(childList: true, subtree: true),
+  );
 
   return completer.future;
 }

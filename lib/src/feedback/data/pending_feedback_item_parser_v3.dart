@@ -23,7 +23,18 @@ class PendingFeedbackItemParserV3 {
     }).toList();
 
     final metadataJson = feedbackItemJson['metadata'] as Map<dynamic, dynamic>;
-    final windowSize = metadataJson['windowSize'] as List<dynamic>;
+
+    WiredashWindowPadding? readPadding(String key) {
+      final list = metadataJson[key] as List<dynamic>?;
+      if (list == null) return null;
+      return WiredashWindowPadding.fromJson(list);
+    }
+
+    final Size? windowSize = () {
+      final list = metadataJson['windowSize'] as List<dynamic>?;
+      if (list == null) return null;
+      return Size((list[0] as num).toDouble(), (list[1] as num).toDouble());
+    }();
 
     final feedbackItem = FeedbackItem(
       feedbackId: feedbackItemJson['feedbackId'] as String,
@@ -66,9 +77,7 @@ class PendingFeedbackItemParserV3 {
           throw 'Unknown brightness value $value';
         }(),
         platformDartVersion: metadataJson['platformDartVersion'] as String?,
-        platformGestureInsets: WiredashWindowPadding.fromJson(
-          metadataJson['platformGestureInsets'] as List<dynamic>,
-        ),
+        platformGestureInsets: readPadding('platformGestureInsets'),
         platformLocale: metadataJson['platformLocale'] as String,
         platformOS: metadataJson['platformOS'] as String?,
         platformOSVersion: metadataJson['platformOSVersion'] as String?,
@@ -78,17 +87,11 @@ class PendingFeedbackItemParserV3 {
         sdkVersion: metadataJson['sdkVersion'] as int,
         userId: metadataJson['userId'] as String?,
         userEmail: metadataJson['userEmail'] as String?,
-        windowInsets: WiredashWindowPadding.fromJson(
-          metadataJson['windowInsets'] as List<dynamic>,
-        ),
-        windowPadding: WiredashWindowPadding.fromJson(
-          metadataJson['windowPadding'] as List<dynamic>,
-        ),
-        windowPixelRatio: (metadataJson['windowPixelRatio'] as num).toDouble(),
-        windowSize: Size(
-          (windowSize[0] as num).toDouble(),
-          (windowSize[1] as num).toDouble(),
-        ),
+        windowInsets: readPadding('windowInsets'),
+        windowPadding: readPadding('windowPadding'),
+        windowPixelRatio:
+            (metadataJson['windowPixelRatio'] as num?)?.toDouble(),
+        windowSize: windowSize,
         windowTextScaleFactor:
             (metadataJson['windowTextScaleFactor'] as num).toDouble(),
       ),

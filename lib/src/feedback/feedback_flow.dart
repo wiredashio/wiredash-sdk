@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
 import 'package:wiredash/src/core/support/material_support_layer.dart';
-import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/core/widgets/backdrop/step_page_scaffold.dart';
 import 'package:wiredash/src/core/widgets/larry_page_view.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
@@ -50,7 +49,7 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       if (state == null) return;
       // jump to next page after the widget has been rebuild and LarryPageView
       // knows about the new itemCount
-      widgetsBindingInstance.addPostFrameCallback((timeStamp) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         state.moveToPage(newIndex);
       });
     }

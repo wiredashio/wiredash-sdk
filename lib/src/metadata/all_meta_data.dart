@@ -37,7 +37,9 @@ class AllMetaData {
   final String installId;
   final Brightness platformBrightness;
   final String? platformDartVersion;
-  final WiredashWindowPadding platformGestureInsets;
+
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  final WiredashWindowPadding? platformGestureInsets;
   final String platformLocale;
   final String? platformOS;
   final String? platformOSVersion;
@@ -45,10 +47,18 @@ class AllMetaData {
   final int sdkVersion;
   final String? userId;
   final String? userEmail;
-  final WiredashWindowPadding windowInsets;
-  final WiredashWindowPadding windowPadding;
-  final double windowPixelRatio;
-  final Size windowSize;
+
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  final WiredashWindowPadding? windowInsets;
+
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  final WiredashWindowPadding? windowPadding;
+
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  final double? windowPixelRatio;
+
+  /// `null` when there is no [FlutterView] (e.g. on background isolates).
+  final Size? windowSize;
   final double windowTextScaleFactor;
 
   const AllMetaData({
@@ -292,11 +302,9 @@ class AllMetaData {
   }
 }
 
-/// WindowPadding doesn't offer a public constructor and doesn't implement
+/// ViewPadding doesn't offer a public constructor and doesn't implement
 /// ==() and hashCode
-// Remove when we drop support for Flutter v3.8.0-14.0.pre.
-// ignore: deprecated_member_use
-class WiredashWindowPadding implements WindowPadding {
+class WiredashWindowPadding implements ViewPadding {
   const WiredashWindowPadding({
     required this.left,
     required this.top,
@@ -313,9 +321,7 @@ class WiredashWindowPadding implements WindowPadding {
     );
   }
 
-  // Remove when we drop support for Flutter v3.8.0-14.0.pre.
-  // ignore: deprecated_member_use
-  factory WiredashWindowPadding.fromWindowPadding(WindowPadding padding) {
+  factory WiredashWindowPadding.fromViewPadding(ViewPadding padding) {
     return WiredashWindowPadding(
       left: padding.left,
       top: padding.top,

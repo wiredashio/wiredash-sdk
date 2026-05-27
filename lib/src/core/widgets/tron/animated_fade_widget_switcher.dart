@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/core/widgets/tron/animations_lib.dart';
 
 /// A better version of [AnimatedSwitcher] that fades the old child completely
@@ -48,7 +47,7 @@ class _AnimatedFadeWidgetSwitcherState
   @override
   Widget build(BuildContext context) {
     if (_firstBuild) {
-      widgetsBindingInstance.addPostFrameCallback((timeStamp) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         if (mounted) {
           setState(() {
             _firstBuild = false;

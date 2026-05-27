@@ -6,7 +6,6 @@ import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
-import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/core/theme/wiredash_theme.dart';
 import 'package:wiredash/src/core/widgets/backdrop/fake_app_status_bar.dart';
 import 'package:wiredash/src/core/widgets/backdrop/pull_to_close_detector.dart';
@@ -125,7 +124,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   @override
   void initState() {
     super.initState();
-    widgetsBindingInstance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.controller._state = this;
     });
     _backdropAnimationController
@@ -845,12 +844,14 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
       builder: (context, app) {
         final outOfFocusPosition = _rectAppOutOfFocus.top;
 
+        // ignore: parameter_assignments
         app = AbsorbPointer(
           absorbing: !widget.controller.isAppInteractive,
           child: app,
         );
 
         if (!widget.controller.isAppInteractive) {
+          // ignore: parameter_assignments
           app = PullToCloseDetector(
             closeDirection: CloseDirection.upwards,
             onPullStart: () {
@@ -916,6 +917,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             child: app,
           );
 
+          // ignore: parameter_assignments
           app = GestureDetector(
             onTap: () async {
               await context.wiredashModel.hide();
@@ -936,8 +938,7 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         final horizontalOffset =
             ((widget.padding?.left ?? 0) - (widget.padding?.right ?? 0)) / 2;
 
-        // ignore: join_return_with_assignment
-        app = Transform.translate(
+        return Transform.translate(
           offset: Offset(horizontalOffset, yTranslation),
           child: Transform.scale(
             scale: appScale,
@@ -945,8 +946,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
             child: app,
           ),
         );
-
-        return app;
       },
       child: child,
     );
@@ -1035,7 +1034,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _cornerRadiusAnimation =
             const AlwaysStoppedAnimation(_appBorderRadiusOpen);
         _appHandleAnimation = const AlwaysStoppedAnimation(1.0);
-        break;
 
       case WiredashBackdropStatus.closed:
         _appTransformAnimation =
@@ -1044,7 +1042,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _cornerRadiusAnimation =
             const AlwaysStoppedAnimation(_appBorderRadiusClosed);
         _appHandleAnimation = const AlwaysStoppedAnimation(0.0);
-        break;
 
       case WiredashBackdropStatus.centered:
         _appTransformAnimation =
@@ -1053,7 +1050,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _cornerRadiusAnimation =
             const AlwaysStoppedAnimation(_appBorderRadiusOpen);
         _appHandleAnimation = const AlwaysStoppedAnimation(0.0);
-        break;
 
       case WiredashBackdropStatus.opening:
         _appTransformAnimation =
@@ -1071,7 +1067,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _appHandleAnimation = Tween(begin: 0.0, end: 1.0).animate(
           CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
         );
-        break;
 
       case WiredashBackdropStatus.closing:
         _appTransformAnimation =
@@ -1090,7 +1085,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _appHandleAnimation = Tween(begin: 1.0, end: 0.0).animate(
           CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
         );
-        break;
 
       case WiredashBackdropStatus.openingCentered:
         _appTransformAnimation =
@@ -1101,7 +1095,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _appHandleAnimation = Tween(begin: 1.0, end: 0.0).animate(
           CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
         );
-        break;
 
       case WiredashBackdropStatus.closingCentered:
         _appTransformAnimation =
@@ -1112,7 +1105,6 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
         _appHandleAnimation = Tween(begin: 0.0, end: 1.0).animate(
           CurvedAnimation(parent: _driverAnimation, curve: Curves.easeInOut),
         );
-        break;
     }
   }
 

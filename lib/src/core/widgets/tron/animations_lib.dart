@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /// Taken from https://github.com/flutter/packages/tree/master/packages/animations
-library animations;
+library;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';

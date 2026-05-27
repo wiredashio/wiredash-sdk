@@ -1,12 +1,6 @@
-// Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
-// ignore: deprecated_member_use
-import 'dart:ui' show SingletonFlutterWindow;
-
 import 'package:wiredash/src/metadata/device_info/device_info_generator.dart';
 
-// Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
-// ignore: deprecated_member_use
-FlutterInfoCollector createDeviceInfoGenerator(SingletonFlutterWindow window) {
+FlutterInfoCollector createDeviceInfoGenerator() {
   throw UnsupportedError(
     'Cannot create a DeviceInfoCollector without dart:html or dart:io',
   );

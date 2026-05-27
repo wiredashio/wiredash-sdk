@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show WidgetsBinding;
 import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/core/services/services.dart';
-import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/feedback/data/retrying_feedback_submitter.dart';
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/src/metadata/session_meta_data.dart';
@@ -229,7 +229,7 @@ class _DisposableValueNotifier<T> extends ValueNotifier<T> {
 Stream<Duration> _postFrameCallbackStream() async* {
   while (true) {
     final completer = Completer<Duration>();
-    widgetsBindingInstance.addPostFrameCallback((Duration timestamp) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration timestamp) {
       completer.complete(timestamp);
     });
     yield await completer.future;

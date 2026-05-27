@@ -6,7 +6,7 @@
 // ignore_for_file: lines_longer_than_80_chars, prefer_single_quotes, require_trailing_commas, noop_primitive_operations, prefer_const_constructors, unnecessary_this, prefer_final_locals, prefer_constructors_over_static_methods, avoid_multiple_declarations_per_line
 
 /// Provides version objects to enforce conformance to the Semantic Versioning 2.0 spec. The spec can be read at http://semver.org/
-library version;
+library;
 
 /// Provides immutable storage and comparison of semantic version numbers.
 class Version implements Comparable<Version> {

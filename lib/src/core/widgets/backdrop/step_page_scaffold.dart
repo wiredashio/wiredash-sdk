@@ -3,7 +3,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart' show Scrollbar, Theme, VerticalDivider;
 import 'package:flutter/widgets.dart';
-import 'package:wiredash/src/core/support/widget_binding_support.dart';
 import 'package:wiredash/src/core/theme/wirecons.dart';
 import 'package:wiredash/src/core/theme/wiredash_theme.dart';
 import 'package:wiredash/src/core/widgets/backdrop/wiredash_backdrop.dart';
@@ -104,7 +103,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
   void didUpdateWidget(covariant StepPageScaffold oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.minHeight != widget.minHeight) {
-      widgetsBindingInstance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _reportWidgetHeight();
       });
     }
@@ -118,7 +117,7 @@ class StepPageScaffoldState extends State<StepPageScaffold> {
     final newMinHeight = context.theme.minContentHeight;
     if (_minHeight != newMinHeight) {
       _minHeight = newMinHeight;
-      widgetsBindingInstance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _reportWidgetHeight();
       });
     }

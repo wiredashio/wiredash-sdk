@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:file/local.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -259,9 +257,7 @@ void registerProdWiredashServices(WiredashServices sl) {
 
     return controller;
   });
-  // Replace with FlutterView when we drop support for Flutter v3.7.0-32.0.pre.
-  // ignore: deprecated_member_use
-  sl.inject<FlutterInfoCollector>((_) => FlutterInfoCollector(window));
+  sl.inject<FlutterInfoCollector>((_) => FlutterInfoCollector());
   sl.inject<BuildInfo>((_) => getBuildInformation());
   sl.inject<WiredashOptionsData>(
     (_) => sl.wiredashWidget?.options ?? const WiredashOptionsData(),
