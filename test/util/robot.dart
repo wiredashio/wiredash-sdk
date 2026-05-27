@@ -29,6 +29,7 @@ import 'package:wiredash/src/feedback/steps/step_5_email.dart';
 import 'package:wiredash/src/feedback/steps/step_6_submit.dart';
 import 'package:wiredash/src/feedback/ui/color_palette.dart';
 import 'package:wiredash/src/feedback/ui/screenshot_bar.dart';
+
 // ignore: unused_import
 import 'package:wiredash/src/metadata/meta_data_collector.dart';
 import 'package:wiredash/src/promoterscore/ps_flow.dart';
@@ -169,6 +170,21 @@ class WiredashTestRobot {
     bool firstLaunch = false,
   }) async {
     setupMocks();
+    await loadAppFonts();
+    // spot's loadAppFonts() reads wiredash's pubspec and registers "Inter" /
+    // "Wirecons" — but wiredash's TextStyles set `package: 'wiredash'`, so the
+    // engine actually looks up "packages/wiredash/Inter" / "packages/wiredash/
+    // Wirecons". Re-register under those names so Wiredash text isn't rendered
+    // with the Ahem fallback. Remove once spot itself bridges this for
+    // self-tested package fonts.
+    await loadFont('packages/wiredash/Inter', const [
+      'lib/assets/fonts/Inter-Regular.ttf',
+      'lib/assets/fonts/Inter-SemiBold.ttf',
+      'lib/assets/fonts/Inter-Bold.ttf',
+    ]);
+    await loadFont('packages/wiredash/Wirecons', const [
+      'lib/assets/fonts/Wirecons.ttf',
+    ]);
     WiredashServices.debugServicesCreator = () => createMockServices(
           useDirectFeedbackSubmitter: useDirectFeedbackSubmitter,
           useDirectEventSubmitter: useDirectEventSubmitter,
@@ -540,8 +556,7 @@ class WiredashTestRobot {
       services.feedbackModel.feedbackFlowStatus,
       FeedbackFlowStatus.screenshotNavigating,
     );
-
-    print('Take screeshot');
+    print('Take screenshot');
     // Click the screenshot button
     await act.tap(
       screenshotBar.spotText('l10n.feedbackStep3ScreenshotBarCaptureButton'),
@@ -550,7 +565,6 @@ class WiredashTestRobot {
       () => services.feedbackModel.feedbackFlowStatus,
       equals(FeedbackFlowStatus.screenshotDrawing),
     );
-
     // Wait for active "Save" button
     final nextButton = screenshotBar.spot<TronButton>(
       children: [spotText('l10n.feedbackStep3ScreenshotBarSaveButton')],
