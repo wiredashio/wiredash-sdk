@@ -271,6 +271,25 @@ class WiredashTestRobot {
   WidgetSelector<LarryPageView> get _spotPageView =>
       _spotBackdrop.spot<LarryPageView>();
 
+  LarryPageView get pageView =>
+      tester.widget<LarryPageView>(_spotPageView.finder);
+
+  int get pageIndex => pageView.pageIndex;
+
+  int get pageCount => pageView.stepCount;
+
+  void verifyOnPage(int index) {
+    expect(pageIndex, index);
+  }
+
+  void verifyHasNextPage() {
+    expect(pageIndex + 1, lessThan(pageCount));
+  }
+
+  void verifyPageCount(int count) {
+    expect(pageCount, count);
+  }
+
   Wiredash get widget {
     final element = find.byType(Wiredash).evaluate().first as StatefulElement;
     return element.widget as Wiredash;
@@ -307,13 +326,31 @@ class WiredashTestRobot {
   }
 
   Future<void> submitMinimalFeedback() async {
+    await goToMinimalFeedbackSubmitStep();
+    await submitFeedback();
+    await waitUntilWiredashIsClosed();
+  }
+
+  Future<void> goToMinimalFeedbackSubmitStep() async {
     await openWiredash();
     await enterFeedbackMessage('test message');
     await goToNextStep();
     await skipScreenshot();
     await skipEmail();
-    await submitFeedback();
-    await waitUntilWiredashIsClosed();
+  }
+
+  Future<PendingFeedbackSubmission> startPendingFeedbackSubmission() async {
+    final sendFeedback = Completer<void>();
+    mockServices.mockApi.sendFeedbackInvocations.interceptor =
+        (_) => sendFeedback.future;
+    await _tapSubmitFeedbackButton();
+    await tester.pump();
+
+    while (mockServices.mockApi.sendFeedbackInvocations.count == 0) {
+      await tester.pump();
+    }
+
+    return PendingFeedbackSubmission(sendFeedback);
   }
 
   Future<void> openWiredash() async {
@@ -446,6 +483,12 @@ class WiredashTestRobot {
 
   /// Actually calling [FeedbackModel.submitFeedback]
   Future<void> submitFeedback() async {
+    await _tapSubmitFeedbackButton();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
+  Future<void> _tapSubmitFeedbackButton() async {
     final step = _spotPageView.spot<Step6Submit>()..existsOnce();
     await act.tap(
       step.spot<TronButton>(
@@ -453,8 +496,6 @@ class WiredashTestRobot {
       ).last(),
     );
     print('submit feedback');
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
   }
 
   Future<void> skipEmail({bool catchError = true}) async {
@@ -704,6 +745,16 @@ class WiredashTestRobot {
 
   Future<void> tapText(String text) {
     return act.tap(spotText(text));
+  }
+}
+
+class PendingFeedbackSubmission {
+  PendingFeedbackSubmission(this._sendFeedback);
+
+  final Completer<void> _sendFeedback;
+
+  void complete() {
+    _sendFeedback.complete();
   }
 }
 

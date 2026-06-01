@@ -659,6 +659,42 @@ void main() {
       await gesture.up(); // let go of the app
     });
 
+    testWidgets('Ignore stale page callback while submitting feedback',
+        (tester) async {
+      final robot = await WiredashTestRobot(tester).launchApp();
+
+      await robot.goToMinimalFeedbackSubmitStep();
+      final submission = await robot.startPendingFeedbackSubmission();
+
+      // Tapping submit starts the transition from the submit page to the
+      // submitting page. Advance the animation, but stop before it switches
+      // pages and invokes onPageChanged.
+      final pageIndex = robot.pageIndex;
+      final pageCount = robot.pageCount;
+      robot.verifyHasNextPage();
+      await tester.pump(const Duration(milliseconds: 30));
+      robot.verifyOnPage(pageIndex);
+
+      // The race happens here: the API responds while the page transition is
+      // still running. The model collapses its steps to the single success
+      // page, while the mounted LarryPageView still has the previous pages.
+      submission.complete();
+      await tester.idle();
+      expect(robot.services.feedbackModel.steps, hasLength(1));
+      robot.verifyPageCount(pageCount);
+
+      // Let the old transition finish. Its stale onPageChanged callback must
+      // be ignored because that next page no longer exists in the model.
+      await tester.pump(const Duration(milliseconds: 80));
+      expect(tester.takeException(), isNull);
+      expect(
+        robot.services.feedbackModel.feedbackFlowStatus,
+        FeedbackFlowStatus.submittingAndRetry,
+      );
+
+      await robot.waitUntilWiredashIsClosed();
+    });
+
     testWidgets('Send environment', (tester) async {
       final robot = await WiredashTestRobot(tester).launchApp(
         environment: 'staging',
