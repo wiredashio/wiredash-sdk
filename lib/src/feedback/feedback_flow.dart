@@ -62,19 +62,23 @@ class _WiredashFeedbackFlowState extends State<WiredashFeedbackFlow>
       stepCount: context.watchFeedbackModel.steps.length,
       pageIndex: _index,
       onPageChanged: (index) {
+        final feedbackModel = context.readFeedbackModel;
+        if (index < 0 || index >= feedbackModel.steps.length) {
+          return;
+        }
         setState(() {
           _index = index;
-          final stepIndex = context.readFeedbackModel.currentStepIndex;
+          final stepIndex = feedbackModel.currentStepIndex;
           if (stepIndex == null) {
             return;
           }
 
           if (stepIndex < _index) {
-            context.readFeedbackModel.goToNextStep();
+            feedbackModel.goToNextStep();
           }
 
           if (stepIndex > _index) {
-            context.readFeedbackModel.goToPreviousStep();
+            feedbackModel.goToPreviousStep();
           }
         });
       },
