@@ -3,6 +3,7 @@ import 'dart:io';
 
 // ignore: depend_on_referenced_packages
 import 'package:async/async.dart' show ResultFuture;
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
@@ -42,6 +43,9 @@ void main() {
 
       // insert feedback in v2 format with attachment
       final tempDir = Directory.systemTemp.createTempSync();
+      // The screenshot lives in the app documents directory; loading pending
+      // feedback rebuilds its path against the current directory.
+      _mockApplicationDocumentsDirectory(tester, tempDir.path);
       File('${tempDir.path}/image.png').writeAsStringSync('test img content');
       final json = fullJsonV2;
       // ignore: avoid_dynamic_calls
@@ -88,6 +92,9 @@ void main() {
 
       // insert feedback in v3 format with attachment
       final tempDir = Directory.systemTemp.createTempSync();
+      // The screenshot lives in the app documents directory; loading pending
+      // feedback rebuilds its path against the current directory.
+      _mockApplicationDocumentsDirectory(tester, tempDir.path);
       File('${tempDir.path}/image.png').writeAsStringSync('test img content');
       final json = fullJsonV3;
       // ignore: avoid_dynamic_calls
@@ -128,6 +135,21 @@ void main() {
       );
     });
   });
+}
+
+/// Routes `getApplicationDocumentsDirectory()` to [path] for the duration of a
+/// test, so the storage layer can rebuild persisted screenshot paths against a
+/// known directory.
+void _mockApplicationDocumentsDirectory(WidgetTester tester, String path) {
+  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+    const MethodChannel('plugins.flutter.io/path_provider'),
+    (call) async {
+      if (call.method == 'getApplicationDocumentsDirectory') {
+        return path;
+      }
+      return null;
+    },
+  );
 }
 
 Map get fullJsonV2 => {
