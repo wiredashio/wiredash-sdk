@@ -61,7 +61,7 @@ jobs:
       - name: Build
         run: cd examples/theming && ./../../wiresdk flutter build web
 
-  pr-stable-integration:
+  pr-stable-integration-macos:
     # Avoid macos-15: `flutter test -d macos` hits "Failed to foreground
     # app; open returned 1" and then hangs forever waiting for the
     # VM-service handshake.
@@ -81,6 +81,32 @@ jobs:
         timeout-minutes: 10
         working-directory: examples/theming
         run: ./../../wiresdk flutter test -d macos integration_test
+
+  pr-stable-integration-linux:
+    # Runs the integration tests on Linux desktop, where shared_preferences
+    # keeps a per-isolate cache. This guards the background-isolate analytics
+    # path (events_on_isolate_test.dart) on the platform that exposed the bug.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Install Linux desktop dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev xvfb
+      - name: Flutter version
+        run: flutter doctor -v
+      - name: Enable Linux desktop
+        run: flutter config --enable-linux-desktop
+      - name: Download dependencies
+        run: ./wiresdk deps
+      - name: Run integration test
+        timeout-minutes: 10
+        working-directory: examples/theming
+        run: xvfb-run -a ./../../wiresdk flutter test -d linux integration_test
 
   pr-beta:
     runs-on: ubuntu-latest
