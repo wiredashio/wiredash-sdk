@@ -7,9 +7,11 @@ import 'dart:io';
 import 'package:async/async.dart';
 import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
+import 'package:file/memory.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/testing.dart';
+import 'package:wiredash/src/an4lytics/ev3nt_file_store.dart';
 import 'package:wiredash/src/an4lytics/ev3nt_store.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/services/services.dart';
@@ -584,9 +586,7 @@ void main() {
     await tester.pumpSmart();
 
     // event is saved locally for the "default" project
-    final eventStore = PersistentAnalyticsEventStore(
-      sharedPreferences: SharedPreferences.getInstance,
-    );
+    final eventStore = _debugFileEventStore();
     final eventsOnDisk = await eventStore.getEvents('default');
     expect(eventsOnDisk, hasLength(1));
 
@@ -621,9 +621,7 @@ void main() {
     await tester.pumpSmart();
 
     // event is saved locally for project1
-    final eventStore = PersistentAnalyticsEventStore(
-      sharedPreferences: SharedPreferences.getInstance,
-    );
+    final eventStore = _debugFileEventStore();
     final eventsOnDisk = await eventStore.getEvents('project1');
     expect(eventsOnDisk, hasLength(1));
     final defaultEventsOnDisk = await eventStore.getEvents('default');
@@ -667,9 +665,7 @@ void main() {
     await robot.tapText('Send Event');
     await tester.pumpSmart();
 
-    final eventStore = PersistentAnalyticsEventStore(
-      sharedPreferences: SharedPreferences.getInstance,
-    );
+    final eventStore = _debugFileEventStore();
     final eventsOnDisk1 = await eventStore.getEvents('projectX');
     expect(eventsOnDisk1, hasLength(2));
 
@@ -1041,6 +1037,7 @@ void main() {
 
   test('WiredashAnalytics() accesses env from widget', () async {
     SharedPreferences.setMockInitialValues({});
+    _useInMemoryEventStore();
 
     const widget = Wiredash(
       projectId: '',
@@ -1128,4 +1125,25 @@ class _ThrowingEnvironmentDetector implements EnvironmentDetector {
   Future<String> getEnvironment() async {
     throw UnsupportedError('unsupported');
   }
+}
+
+/// Reads events from the shared in-memory store the robot set up via
+/// [FileAnalyticsEventStore.debugFileSystem]; the constructor args are ignored
+/// while that override is active.
+FileAnalyticsEventStore _debugFileEventStore() {
+  return FileAnalyticsEventStore(
+    fileSystem: MemoryFileSystem.test(),
+    directoryProvider: () async => '',
+  );
+}
+
+/// Points the analytics event store at a shared in-memory file system for tests
+/// that don't go through [WiredashTestRobot.setupMocks].
+void _useInMemoryEventStore() {
+  FileAnalyticsEventStore.debugFileSystem = MemoryFileSystem.test();
+  FileAnalyticsEventStore.debugDirectory = '/wiredash-test';
+  addTearDown(() {
+    FileAnalyticsEventStore.debugFileSystem = null;
+    FileAnalyticsEventStore.debugDirectory = null;
+  });
 }

@@ -116,8 +116,8 @@ class AnalyticsEvent {
 }
 
 /// Saves [AnalyticsEvent] on disk
-class PersistentAnalyticsEventStore implements AnalyticsEventStore {
-  PersistentAnalyticsEventStore({
+class SharedPreferencesAnalyticsEventStore implements AnalyticsEventStore {
+  SharedPreferencesAnalyticsEventStore({
     required this.sharedPreferences,
   });
 
