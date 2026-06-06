@@ -15,6 +15,11 @@ const String _portName = 'io.wiredash.analytics.events';
 ReceivePort? _receivePort;
 final _registrations = <Object, StackTrace>{};
 
+@visibleForTesting
+int get debugMainIsolateAnalyticsRegistrationCount {
+  return _registrations.length;
+}
+
 /// Publishes the main isolate's wake-up port.
 Disposable registerMainIsolateAnalyticsListener() {
   final token = Object();

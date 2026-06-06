@@ -119,12 +119,16 @@ void main() {
 
   test('each registration disposes only its own port ownership', () async {
     final errors = captureFlutterErrors();
+    expect(debugMainIsolateAnalyticsRegistrationCount, 0);
     final firstRegistration = registerMainIsolateAnalyticsListener();
     addTearDown(firstRegistration.dispose);
+    expect(debugMainIsolateAnalyticsRegistrationCount, 1);
     final secondRegistration = registerMainIsolateAnalyticsListener();
     addTearDown(secondRegistration.dispose);
+    expect(debugMainIsolateAnalyticsRegistrationCount, 2);
 
     firstRegistration.dispose();
+    expect(debugMainIsolateAnalyticsRegistrationCount, 1);
     notifyMainIsolateOfAnalyticsEvent(
       const AnalyticsIsolateMessage(
         projectId: 'my_project',
@@ -138,6 +142,7 @@ void main() {
     expect(errors.warnings, hasLength(1));
 
     secondRegistration.dispose();
+    expect(debugMainIsolateAnalyticsRegistrationCount, 0);
     notifyMainIsolateOfAnalyticsEvent(
       const AnalyticsIsolateMessage(
         projectId: 'my_project',

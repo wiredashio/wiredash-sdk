@@ -445,18 +445,22 @@ void main() {
     testWidgets('notifies listeners when widgets register and unregister',
         (tester) async {
       final registry = WiredashRegistry.instance;
+      expect(registry.debugListenerCount, 0);
       final counts = <int>[];
       final listenerRegistration = registry.addListener(() {
         counts.add(registry.referenceCount);
       });
       addTearDown(listenerRegistration.dispose);
+      expect(registry.debugListenerCount, 1);
 
       final robot = WiredashTestRobot(tester);
       await robot.launchApp();
       expect(counts, [1]);
+      expect(registry.debugListenerCount, 2);
 
       await tester.pumpWidget(const SizedBox());
       expect(counts, [1, 0]);
+      expect(registry.debugListenerCount, 1);
     });
 
     test('zero items', () {

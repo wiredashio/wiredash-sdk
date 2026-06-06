@@ -23,6 +23,11 @@ class WiredashRegistry {
 
   final Finalizer<Disposable> _finalizer = Finalizer((d) => d.dispose());
 
+  @visibleForTesting
+  int get debugListenerCount {
+    return _listeners.length;
+  }
+
   /// Runs [listener] whenever the mounted [Wiredash] widget list changes.
   Disposable addListener(VoidCallback listener) {
     _listeners.add(listener);

@@ -296,10 +296,10 @@ class WiredashState extends State<Wiredash> {
     );
     _verifySyncLocalizationsDelegate();
 
+    _unregister = WiredashRegistry.instance.register(this);
     // Let background isolates wake the main isolate to upload events they
     // buffered to disk, instead of waiting for the next lifecycle trigger.
     ensureAnalyticsIsolateListenerRegistered();
-    _unregister = WiredashRegistry.instance.register(this);
     _services.updateWidget(widget);
     _services.addListener(_markNeedsBuild);
     _services.wiredashModel.addListener(_markNeedsBuild);
@@ -359,6 +359,7 @@ class WiredashState extends State<Wiredash> {
 
     _unregister?.dispose();
     _unregister = WiredashRegistry.instance.register(this);
+    ensureAnalyticsIsolateListenerRegistered();
     _services.updateWidget(widget);
 
     if (oldWidget.projectId != widget.projectId ||

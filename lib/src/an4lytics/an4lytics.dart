@@ -280,6 +280,8 @@ void _syncAnalyticsIsolateListener() {
 
   _analyticsIsolateListenerRegistration?.dispose();
   _analyticsIsolateListenerRegistration = null;
+  _analyticsRegistryListenerRegistration?.dispose();
+  _analyticsRegistryListenerRegistration = null;
 }
 
 /// This is the complete list of internal events that Wiredash uses.
