@@ -4,6 +4,7 @@ import 'dart:isolate';
 
 import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/an4lytics/an4lytics_isolate_message.dart';
 import 'package:wiredash/src/an4lytics/an4lytics_upload_router.dart';
@@ -238,7 +239,10 @@ class WiredashAnalytics {
       eventName: eventName,
       submitImmediately: submitImmediately,
     );
-    final bool isMainIsolate = Isolate.current.debugName == 'main';
+    // The web has no background isolates and `Isolate.current` throws there
+    // (`dart:isolate` is unsupported on dart4web), so treat web as the main
+    // isolate and route the event directly.
+    final bool isMainIsolate = kIsWeb || Isolate.current.debugName == 'main';
     if (isMainIsolate) {
       await notifyMatchingWiredashInstance(message);
       return;
