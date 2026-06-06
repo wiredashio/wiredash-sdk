@@ -4,6 +4,9 @@ import 'dart:ui' as ui;
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/an4lytics/an4lytics.dart';
+import 'package:wiredash/src/an4lytics/isolate_messenger.dart'
+    if (dart.library.io) 'package:wiredash/src/an4lytics/isolate_messenger_io.dart';
 import 'package:wiredash/src/core/context_cache.dart';
 import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
@@ -228,9 +231,10 @@ class Wiredash extends StatefulWidget {
   ///
   /// **Background Isolates:**
   ///
-  /// When calling [trackEvent] from a background isolate, the event will be stored locally.
-  /// The main isolate will pick up these events and send them along with the next batch or
-  /// when the app goes to the background.
+  /// When calling [trackEvent] from a background isolate, the event is stored
+  /// locally and the background isolate wakes the main isolate to upload it.
+  /// If no [Wiredash] widget is mounted yet, the event is sent with the next
+  /// batch or when the app goes to the background.
   ///
   /// **See also**
   ///
@@ -295,6 +299,15 @@ class WiredashState extends State<Wiredash> {
     _verifySyncLocalizationsDelegate();
 
     _unregister = WiredashRegistry.instance.register(this);
+    // Let background isolates wake the main isolate to upload events they
+    // buffered to disk, instead of waiting for the next lifecycle trigger. The
+    // ping carries the projectId so it routes to the matching instance, exactly
+    // like a main-isolate trackEvent.
+    registerMainIsolateAnalyticsListener((projectId, environment, eventName) {
+      unawaited(
+        notifyMatchingWiredashInstance(projectId, environment, eventName),
+      );
+    });
     _services.updateWidget(widget);
     _services.addListener(_markNeedsBuild);
     _services.wiredashModel.addListener(_markNeedsBuild);
@@ -331,6 +344,10 @@ class WiredashState extends State<Wiredash> {
   @override
   void dispose() {
     _unregister?.dispose();
+    if (WiredashRegistry.instance.allWidgets.isEmpty) {
+      // Last Wiredash widget gone, stop listening for background-isolate pings.
+      unregisterMainIsolateAnalyticsListener();
+    }
     _services.dispose();
     _backButtonDispatcher.dispose();
     _appFocusScopeNode.dispose();

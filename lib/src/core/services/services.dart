@@ -1,6 +1,7 @@
 import 'package:file/local.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:wiredash/src/an4lytics/ev3nt_file_store.dart';
 import 'package:wiredash/src/an4lytics/ev3nt_store.dart';
 import 'package:wiredash/src/an4lytics/ev3nt_submitter.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
@@ -223,7 +224,21 @@ void registerProdWiredashServices(WiredashServices sl) {
     );
   });
   sl.inject<AnalyticsEventStore>((_) {
-    return PersistentAnalyticsEventStore(
+    if (kIsWeb) {
+      // Web has no background isolates, so the per-isolate cache is a non-issue;
+      // shared_preferences (localStorage) keeps working.
+      return SharedPreferencesAnalyticsEventStore(
+        sharedPreferences: sl.sharedPreferencesProvider,
+      );
+    }
+    // Mobile/desktop: store each event in its own file so an event a background
+    // isolate writes is immediately visible to the main isolate that uploads
+    // it. shared_preferences can't do that on Linux/Windows (per-isolate cache
+    // that reload() does not refresh).
+    return FileAnalyticsEventStore(
+      fileSystem: const LocalFileSystem(),
+      directoryProvider: () async =>
+          (await getApplicationSupportDirectory()).path,
       sharedPreferences: sl.sharedPreferencesProvider,
     );
   });

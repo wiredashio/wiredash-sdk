@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:file/memory.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nanoid2/nanoid2.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:spot/spot.dart';
+import 'package:wiredash/src/an4lytics/ev3nt_file_store.dart';
 import 'package:wiredash/src/an4lytics/ev3nt_submitter.dart';
 import 'package:wiredash/src/core/theme/wirecons.dart';
 import 'package:wiredash/src/core/widgets/backdrop/step_page_scaffold.dart';
@@ -55,6 +57,14 @@ class WiredashTestRobot {
       'mocked': true,
     });
     addTearDown(() => SharedPreferences.setMockInitialValues({}));
+    // Every WiredashServices() (incl. the one Wiredash.trackEvent creates) reads
+    // analytics events from this shared in-memory file system instead of disk.
+    FileAnalyticsEventStore.debugFileSystem = MemoryFileSystem.test();
+    FileAnalyticsEventStore.debugDirectory = '/wiredash-test';
+    addTearDown(() {
+      FileAnalyticsEventStore.debugFileSystem = null;
+      FileAnalyticsEventStore.debugDirectory = null;
+    });
     PackageInfo.setMockInitialValues(
       appName: 'Wiredash Test',
       packageName: 'io.wiredash.test',
