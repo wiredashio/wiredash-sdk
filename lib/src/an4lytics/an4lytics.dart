@@ -273,15 +273,16 @@ void ensureAnalyticsIsolateListenerRegistered() {
 void _syncAnalyticsIsolateListener() {
   final hasWidgets = WiredashRegistry.instance.referenceCount > 0;
   if (hasWidgets) {
+    // register listener once when >0 Wiredash widgets
     _analyticsIsolateListenerRegistration ??=
         registerMainIsolateAnalyticsListener();
-    return;
+  } else {
+    // cleanup when the last Wiredash widget got disposed
+    _analyticsIsolateListenerRegistration?.dispose();
+    _analyticsIsolateListenerRegistration = null;
+    _analyticsRegistryListenerRegistration?.dispose();
+    _analyticsRegistryListenerRegistration = null;
   }
-
-  _analyticsIsolateListenerRegistration?.dispose();
-  _analyticsIsolateListenerRegistration = null;
-  _analyticsRegistryListenerRegistration?.dispose();
-  _analyticsRegistryListenerRegistration = null;
 }
 
 /// This is the complete list of internal events that Wiredash uses.
