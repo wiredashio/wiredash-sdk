@@ -38,6 +38,13 @@ class Delay {
       }
     }
   }
+
+  void disposeWithError() {
+    _timer?.cancel();
+    if (!_completer.isCompleted) {
+      _completer.completeError(DelayCancelledException());
+    }
+  }
 }
 
 class DelayCancelledException implements Exception {}

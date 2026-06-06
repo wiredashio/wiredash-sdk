@@ -442,6 +442,23 @@ void main() {
       expect(registry.referenceCount, 1);
     });
 
+    testWidgets('notifies listeners when widgets register and unregister',
+        (tester) async {
+      final registry = WiredashRegistry.instance;
+      final counts = <int>[];
+      final listenerRegistration = registry.addListener(() {
+        counts.add(registry.referenceCount);
+      });
+      addTearDown(listenerRegistration.dispose);
+
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp();
+      expect(counts, [1]);
+
+      await tester.pumpWidget(const SizedBox());
+      expect(counts, [1, 0]);
+    });
+
     test('zero items', () {
       // by default, the registry is empty.
       // and the state added in the previous test is not present anymore

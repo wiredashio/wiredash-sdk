@@ -4,10 +4,10 @@ export 'assets/l10n/wiredash_localizations_en.g.dart';
 export 'src/an4lytics/an4lytics.dart'
     show
         InvalidEventKeyFormatException,
-        NoProjectIdSpecifiedException,
-        NoWiredashInstanceFoundException,
         TooManyEventParametersException,
         WiredashAnalytics;
+export 'src/an4lytics/an4lytics_upload_router.dart'
+    show NoProjectIdSpecifiedException, NoWiredashInstanceFoundException;
 export 'src/core/options/wiredash_options_data.dart';
 export 'src/core/theme/wiredash_theme_data.dart';
 export 'src/core/widgets/confidential.dart';

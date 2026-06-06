@@ -19,8 +19,17 @@ class WiredashRegistry {
   static final WiredashRegistry instance = WiredashRegistry._();
 
   final List<WeakReference<WiredashState>> _refs = [];
+  final List<VoidCallback> _listeners = [];
 
   final Finalizer<Disposable> _finalizer = Finalizer((d) => d.dispose());
+
+  /// Runs [listener] whenever the mounted [Wiredash] widget list changes.
+  Disposable addListener(VoidCallback listener) {
+    _listeners.add(listener);
+    return Disposable(() {
+      _listeners.remove(listener);
+    });
+  }
 
   /// Register all [Wiredash] widget state to eventually receive updates
   ///
@@ -42,14 +51,13 @@ class WiredashRegistry {
       // the context has been garbage collected, clean up in case
       // the dispose method was not called
       Disposable(() {
-        _refs.remove(elementRef);
+        _removeRef(elementRef);
       }),
     );
 
     // dispose called manually
-    return Disposable(() {
-      _refs.remove(elementRef);
-    });
+    _notifyListeners();
+    return Disposable(() => _removeRef(elementRef));
   }
 
   List<WiredashState> get allWidgets {
@@ -68,16 +76,35 @@ class WiredashRegistry {
   /// receive updates via [forEach].
   @visibleForTesting
   void clear() {
+    final hadWidgets = _refs.isNotEmpty;
     _refs.clear();
+    if (hadWidgets) {
+      _notifyListeners();
+    }
   }
 
   /// Removes all inaccessible references, Widgets that have already been garbage collected
   void purge() {
-    for (final ref in _refs) {
-      final state = ref.target;
-      if (state == null) {
-        _refs.remove(ref);
-      }
+    final before = _refs.length;
+    _refs.removeWhere((ref) => ref.target == null);
+    if (_refs.length == before) {
+      return;
+    }
+    _notifyListeners();
+  }
+
+  void _removeRef(WeakReference<WiredashState> ref) {
+    final removed = _refs.remove(ref);
+    if (!removed) {
+      return;
+    }
+    _notifyListeners();
+  }
+
+  void _notifyListeners() {
+    final listeners = List<VoidCallback>.of(_listeners);
+    for (final listener in listeners) {
+      listener();
     }
   }
 }

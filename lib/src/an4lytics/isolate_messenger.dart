@@ -7,30 +7,23 @@
 /// hours or days on a long-lived foreground session, exceeding the event TTL.
 ///
 /// The main isolate publishes a port via [registerMainIsolateAnalyticsListener];
-/// a background isolate pings it via [notifyMainIsolateOfNewEvent], which makes
-/// the main isolate reload pending events from disk and upload them.
+/// a background isolate pings it via [notifyMainIsolateOfAnalyticsEvent], which
+/// makes the main isolate reload pending events from disk and upload them.
 ///
 /// No-op on the web, which has no background isolates (the io variant uses
 /// `IsolateNameServer`).
 library;
 
-/// Publishes the main isolate's wake-up port and runs [onEvent] with the pinged
-/// event's `projectId`, `environment` and `eventName` on each ping.
+import 'package:wiredash/src/an4lytics/an4lytics_isolate_message.dart';
+import 'package:wiredash/src/utils/disposable.dart';
+
+/// Publishes the main isolate's wake-up port.
 ///
-/// Idempotent: the first registration handles any number of Wiredash widgets.
-void registerMainIsolateAnalyticsListener(
-  void Function(String? projectId, String? environment, String eventName)
-      onEvent,
-) {}
+/// The listener is kept alive until the returned disposable is disposed.
+Disposable registerMainIsolateAnalyticsListener() {
+  return Disposable(() {});
+}
 
-/// Removes the main isolate's wake-up port. Call when the last Wiredash widget
-/// is disposed.
-void unregisterMainIsolateAnalyticsListener() {}
-
-/// Pings the main isolate from a background isolate so it routes and uploads the
-/// just-saved event. No-op if no main isolate has registered a listener.
-void notifyMainIsolateOfNewEvent(
-  String? projectId,
-  String? environment,
-  String eventName,
-) {}
+/// Pings the main isolate from a background isolate so it routes and uploads
+/// pending events. No-op if no main isolate has registered a listener.
+void notifyMainIsolateOfAnalyticsEvent(AnalyticsIsolateMessage message) {}
