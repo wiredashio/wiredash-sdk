@@ -5,8 +5,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/an4lytics/an4lytics.dart';
-import 'package:wiredash/src/an4lytics/isolate_messenger.dart'
-    if (dart.library.io) 'package:wiredash/src/an4lytics/isolate_messenger_io.dart';
 import 'package:wiredash/src/core/context_cache.dart';
 import 'package:wiredash/src/core/services/error_report.dart';
 import 'package:wiredash/src/core/support/back_button_interceptor.dart';
@@ -300,14 +298,8 @@ class WiredashState extends State<Wiredash> {
 
     _unregister = WiredashRegistry.instance.register(this);
     // Let background isolates wake the main isolate to upload events they
-    // buffered to disk, instead of waiting for the next lifecycle trigger. The
-    // ping carries the projectId so it routes to the matching instance, exactly
-    // like a main-isolate trackEvent.
-    registerMainIsolateAnalyticsListener((projectId, environment, eventName) {
-      unawaited(
-        notifyMatchingWiredashInstance(projectId, environment, eventName),
-      );
-    });
+    // buffered to disk, instead of waiting for the next lifecycle trigger.
+    ensureAnalyticsIsolateListenerRegistered();
     _services.updateWidget(widget);
     _services.addListener(_markNeedsBuild);
     _services.wiredashModel.addListener(_markNeedsBuild);
@@ -334,7 +326,18 @@ class WiredashState extends State<Wiredash> {
   /// This method is called by [WiredashAnalytics] when new events have been
   /// added or the app goes to the background.
   Future<void> triggerAnalyticsEventUpload() async {
+    await _submitAnalyticsEvents(submitImmediately: false);
+  }
+
+  Future<void> _submitAnalyticsEvents({
+    required bool submitImmediately,
+  }) async {
     try {
+      if (submitImmediately) {
+        await _services.eventSubmitter.forceSubmitEvents();
+        return;
+      }
+
       await _services.eventSubmitter.submitEvents();
     } catch (e, stack) {
       reportWiredashInfo(e, stack, 'Unexpected error while submitting events');
@@ -344,10 +347,6 @@ class WiredashState extends State<Wiredash> {
   @override
   void dispose() {
     _unregister?.dispose();
-    if (WiredashRegistry.instance.allWidgets.isEmpty) {
-      // Last Wiredash widget gone, stop listening for background-isolate pings.
-      unregisterMainIsolateAnalyticsListener();
-    }
     _services.dispose();
     _backButtonDispatcher.dispose();
     _appFocusScopeNode.dispose();
@@ -360,6 +359,7 @@ class WiredashState extends State<Wiredash> {
 
     _unregister?.dispose();
     _unregister = WiredashRegistry.instance.register(this);
+    ensureAnalyticsIsolateListenerRegistered();
     _services.updateWidget(widget);
 
     if (oldWidget.projectId != widget.projectId ||
@@ -571,6 +571,21 @@ class WiredashState extends State<Wiredash> {
       return true;
     }());
   }
+}
+
+/// Submits the pending analytics events of [state] to the server.
+///
+/// When [submitImmediately] is `true` the debounce is bypassed and the upload
+/// starts right away, otherwise events are batched on the regular schedule.
+/// Used by the analytics upload router to forward events to the matching
+/// [Wiredash] instance.
+Future<void> submitAnalyticsEvents(
+  WiredashState state, {
+  required bool submitImmediately,
+}) async {
+  await state._submitAnalyticsEvents(
+    submitImmediately: submitImmediately,
+  );
 }
 
 Locale get _defaultLocale {

@@ -186,7 +186,7 @@ class WiredashModel with ChangeNotifier {
   /// This methods allows manually submitting events at any time.
   Future<void> forceSubmitAnalyticsEvents() async {
     try {
-      await services.eventSubmitter.submitEvents(force: true);
+      await services.eventSubmitter.forceSubmitEvents();
     } catch (e, stack) {
       reportWiredashInfo(e, stack, 'Unexpected error while submitting events');
     }

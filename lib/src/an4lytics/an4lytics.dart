@@ -5,6 +5,8 @@ import 'dart:isolate';
 import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wiredash/src/an4lytics/an4lytics_isolate_message.dart';
+import 'package:wiredash/src/an4lytics/an4lytics_upload_router.dart';
 import 'package:wiredash/src/an4lytics/ev3nt_store.dart';
 import 'package:wiredash/src/an4lytics/isolate_messenger.dart'
     if (dart.library.io) 'package:wiredash/src/an4lytics/isolate_messenger_io.dart';
@@ -13,6 +15,7 @@ import 'package:wiredash/src/core/services/services.dart';
 import 'package:wiredash/src/core/version.dart';
 import 'package:wiredash/src/core/wiredash_registry.dart';
 import 'package:wiredash/src/core/wiredash_widget.dart';
+import 'package:wiredash/src/utils/disposable.dart';
 
 /// Interact with the Wiredash Analytics service.
 ///
@@ -179,6 +182,26 @@ class WiredashAnalytics {
     }
   }
 
+  /// Submits all pending analytics events to the server.
+  ///
+  /// Usually, events are submitted automatically, batched every 30 seconds, and
+  /// when the app goes to the background.
+  ///
+  /// This method wakes the matching mounted [Wiredash] widget and asks it to
+  /// submit pending events immediately.
+  ///
+  /// From a background isolate, this method only wakes the main isolate.
+  /// The returned [Future] completes after the wake-up request was sent, not
+  /// after the upload finished.
+  Future<void> forceSubmitEvents() async {
+    await _notifyWiredashInstance(
+      _projectId,
+      _environment,
+      'forceSubmitEvents',
+      submitImmediately: true,
+    );
+  }
+
   /// Finds the intrinsic matching [Wiredash] widget to gather information from,
   /// usually the only mounted one, or the one that matches the [projectId] and/or [environment].
   ///
@@ -206,18 +229,22 @@ class WiredashAnalytics {
   Future<void> _notifyWiredashInstance(
     String? projectId,
     String? environment,
-    String eventName,
-  ) async {
+    String eventName, {
+    bool submitImmediately = false,
+  }) async {
+    final message = AnalyticsIsolateMessage(
+      projectId: projectId,
+      environment: environment,
+      eventName: eventName,
+      submitImmediately: submitImmediately,
+    );
     final bool isMainIsolate = Isolate.current.debugName == 'main';
     if (isMainIsolate) {
-      await notifyMatchingWiredashInstance(projectId, environment, eventName);
-    } else {
-      // Background isolate: no Wiredash widgets are mounted here (the registry is
-      // per-isolate), so wake the main isolate to reload the just-saved event
-      // from disk and upload it now, instead of waiting for the next main-isolate
-      // event or app lifecycle trigger.
-      notifyMainIsolateOfNewEvent(projectId, environment, eventName);
+      await notifyMatchingWiredashInstance(message);
+      return;
     }
+
+    notifyMainIsolateOfAnalyticsEvent(message);
   }
 
   @override
@@ -226,113 +253,36 @@ class WiredashAnalytics {
   }
 }
 
-/// Triggers the upload of pending events on the single mounted [Wiredash]
-/// instance that matches [projectId], reporting a misconfiguration warning when
-/// the target is ambiguous (multiple instances, or none with that projectId).
-///
-/// Routing is by [projectId] only; the event keeps its own [environment], so the
-/// chosen instance's environment does not have to match. [environment] and
-/// [eventName] are only used in the warning messages.
-///
-/// Picking one instance keeps batching efficient and avoids sending the same
-/// event to multiple backends. Used both when an event is tracked on the main
-/// isolate and when a background isolate wakes the main isolate via
-/// [registerMainIsolateAnalyticsListener], so both paths route identically.
-Future<void> notifyMatchingWiredashInstance(
-  String? projectId,
-  String? environment,
-  String eventName,
-) async {
-  final allWidget = WiredashRegistry.instance.allWidgets;
-  if (allWidget.isEmpty) {
-    reportWiredashInfo(
-      NoWiredashInstanceFoundException(),
-      StackTrace.current,
-      "No Wiredash widget is mounted. "
-      "The event '$eventName' (environment: $environment) was captured but not "
-      "yet submitted to the server. "
-      "Please make sure to wrap your app with Wiredash. "
-      "See https://docs.wiredash.com/guide/start",
-    );
+Disposable? _analyticsRegistryListenerRegistration;
+Disposable? _analyticsIsolateListenerRegistration;
+
+/// Ensures analytics keeps one process-wide isolate listener while at least one
+/// [Wiredash] widget is mounted.
+void ensureAnalyticsIsolateListenerRegistered() {
+  if (_analyticsRegistryListenerRegistration != null) {
     return;
   }
 
-  if (allWidget.length == 1) {
-    final WiredashState state = allWidget.first;
-    final widget = state.widget;
-    if (projectId == null || widget.projectId == projectId) {
-      // projectId matches when set, notify the only and correct Wiredash
-      // instance. The event keeps its own environment, so the instance's
-      // environment does not have to match.
-      await state.triggerAnalyticsEventUpload();
-      return;
-    }
-    // The only registered Wiredash instance has a different projectId
-    reportWiredashInfo(
-      NoWiredashInstanceFoundException(),
-      StackTrace.current,
-      "Wiredash is registered with projectId:${widget.projectId}. "
-      "The event event '$eventName' was explicit sent to projectId projectId:$projectId. "
-      "No Wiredash instance was found with projectId:$projectId. "
-      "Please double check the projectId.",
-    );
-    return;
-  }
-  assert(allWidget.length > 1, "Multiple Wiredash instances are mounted.");
-
-  if (projectId == null) {
-    final firstWidgetState = allWidget.first;
-
-    final ids = allWidget.map((e) {
-      return "projectId:${e.widget.projectId}/environment:${e.widget.environment}";
-    }).join(", ");
-    reportWiredashInfo(
-      NoProjectIdSpecifiedException(),
-      StackTrace.current,
-      "Multiple Wiredash instances with different projectIds are mounted ($ids). "
-      "Please specify a projectId when using multiple Wiredash instances like this:\n"
-      "    Wiredash.trackEvent('$eventName', projectId: 'your_project_id');\n"
-      "    WiredashAnalytics(projectId: 'your_project_id').trackEvent('$eventName');\n"
-      "    Wiredash.of(context).trackEvent('$eventName');\n"
-      "The event '$eventName' was sent to project '${firstWidgetState.widget.projectId} "
-      "because that Wiredash widget was registered first.",
-    );
-    await firstWidgetState.triggerAnalyticsEventUpload();
-    return;
-  }
-
-  // Use the first matching Wiredash instance by projectId.
-  final projectInstances = WiredashRegistry.instance.findByProjectId(projectId);
-  if (projectInstances.isEmpty) {
-    reportWiredashInfo(
-      NoWiredashInstanceFoundException(),
-      StackTrace.current,
-      "No Wiredash instance was found with projectId:$projectId. "
-      "Please double check the projectId.",
-    );
-    return;
-  }
-  // multiple with the same projectId, take the first one
-  await projectInstances.first.triggerAnalyticsEventUpload();
-  debugPrint(
-    "Multiple Wiredash instances are mounted! "
-    "Please specify a projectId to avoid sending events to all instances, "
-    "or use Wiredash.of(context).trackEvent() to send events to a specific instance.",
+  _analyticsRegistryListenerRegistration =
+      WiredashRegistry.instance.addListener(
+    _syncAnalyticsIsolateListener,
   );
+  _syncAnalyticsIsolateListener();
 }
 
-/// Reported when [WiredashAnalytics.trackEvent] but no [Wiredash] widget is mounted.
-///
-/// This warning is only throw on the main isolate, where the [Wiredash] widget
-/// is expected to be always mounted.
-class NoWiredashInstanceFoundException implements Exception {
-  NoWiredashInstanceFoundException();
-}
-
-/// Reported when multiple [Wiredash] widgets with different projectIds are
-/// mounted but [Wiredash.trackEvent] is called without a [projectId].
-class NoProjectIdSpecifiedException implements Exception {
-  NoProjectIdSpecifiedException();
+void _syncAnalyticsIsolateListener() {
+  final hasWidgets = WiredashRegistry.instance.referenceCount > 0;
+  if (hasWidgets) {
+    // register listener once when >0 Wiredash widgets
+    _analyticsIsolateListenerRegistration ??=
+        registerMainIsolateAnalyticsListener();
+  } else {
+    // cleanup when the last Wiredash widget got disposed
+    _analyticsIsolateListenerRegistration?.dispose();
+    _analyticsIsolateListenerRegistration = null;
+    _analyticsRegistryListenerRegistration?.dispose();
+    _analyticsRegistryListenerRegistration = null;
+  }
 }
 
 /// This is the complete list of internal events that Wiredash uses.

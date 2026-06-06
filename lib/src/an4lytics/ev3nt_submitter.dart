@@ -14,9 +14,10 @@ import 'package:wiredash/src/utils/delay.dart';
 /// - [DebounceEventSubmitter] for batching events within a certain time frame (usually mobile)
 abstract class EventSubmitter {
   /// Submits all pending events in [AnalyticsEventStore] ([SharedPreferences]) to the backend
-  ///
-  /// If [force] is `true`, the events are submitted immediately, regardless of the throttle duration.
-  Future<void> submitEvents({bool? force});
+  Future<void> submitEvents();
+
+  /// Submits all pending events immediately, regardless of the throttle duration.
+  Future<void> forceSubmitEvents();
 
   /// Disposes the [EventSubmitter], cancels all scheduled tasks and timers
   void dispose();
@@ -76,16 +77,7 @@ class DebounceEventSubmitter implements EventSubmitter {
   Future<void>? _pendingSubmit;
 
   @override
-  Future<void> submitEvents({bool? force}) async {
-    if (force == true) {
-      // submit again after previous submit is done
-      await _pendingSubmit;
-      _pendingSubmit = _actuallySubmit();
-      await _pendingSubmit;
-      _pendingSubmit = null;
-      return;
-    }
-
+  Future<void> submitEvents() async {
     if (_pendingSubmit != null) {
       await _pendingSubmit!;
       return;
@@ -111,9 +103,25 @@ class DebounceEventSubmitter implements EventSubmitter {
     _pendingSubmit = null;
   }
 
+  @override
+  Future<void> forceSubmitEvents() async {
+    // Replace an already scheduled debounce with an immediate submit.
+    _delay?.disposeWithError();
+    await _pendingSubmit;
+    _delay = Delay(Duration.zero);
+    _pendingSubmit = _actuallySubmit();
+    await _pendingSubmit;
+    _pendingSubmit = null;
+  }
+
   /// Gathers events from [eventStore] and sends them to the backend via [api]
   Future<void> _actuallySubmit() async {
-    await _delay!.future;
+    try {
+      await _delay!.future;
+    } on DelayCancelledException {
+      _delay = null;
+      return;
+    }
     _lastSubmit = clock.now();
     _delay = null;
 

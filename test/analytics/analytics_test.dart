@@ -11,8 +11,10 @@ import 'package:file/memory.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/testing.dart';
+import 'package:wiredash/src/an4lytics/an4lytics_isolate_message.dart';
 import 'package:wiredash/src/an4lytics/ev3nt_file_store.dart';
 import 'package:wiredash/src/an4lytics/ev3nt_store.dart';
+import 'package:wiredash/src/an4lytics/isolate_messenger_io.dart';
 import 'package:wiredash/src/core/network/wiredash_api.dart';
 import 'package:wiredash/src/core/services/services.dart';
 import 'package:wiredash/src/core/sync/sync_engine.dart';
@@ -760,6 +762,70 @@ void main() {
       expect(batches[0], hasLength(1));
       expect(batches[1], hasLength(1));
     });
+
+    testWidgets('forceSubmitEvents submits pending context events immediately',
+        (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp(useDirectEventSubmitter: false);
+
+      await robot.triggerAnalyticsEvent();
+      robot.mockServices.mockApi.sendEventsInvocations.verifyHasNoInvocation();
+
+      await robot.wiredashController.forceSubmitEvents();
+
+      robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+      final events = robot.mockServices.mockApi.sendEventsInvocations.latest[0]!
+          as List<RequestEvent>;
+      expect(events, hasLength(1));
+      expect(events.single.eventName, 'default_event');
+    });
+
+    testWidgets('WiredashAnalytics.forceSubmitEvents submits pending events',
+        (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp(useDirectEventSubmitter: false);
+
+      final analytics = WiredashAnalytics();
+      await analytics.trackEvent('test_event');
+      robot.mockServices.mockApi.sendEventsInvocations.verifyHasNoInvocation();
+
+      await analytics.forceSubmitEvents();
+
+      robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+      final events = robot.mockServices.mockApi.sendEventsInvocations.latest[0]!
+          as List<RequestEvent>;
+      expect(events, hasLength(1));
+      expect(events.single.eventName, 'test_event');
+    });
+
+    testWidgets('isolate wake-up submits pending events after widget registers',
+        (tester) async {
+      final robot = WiredashTestRobot(tester);
+      await robot.launchApp(useDirectEventSubmitter: false);
+
+      final analytics = WiredashAnalytics();
+      await analytics.trackEvent('test_event');
+      robot.mockServices.mockApi.sendEventsInvocations.verifyHasNoInvocation();
+
+      notifyMainIsolateOfAnalyticsEvent(
+        const AnalyticsIsolateMessage(
+          projectId: null,
+          environment: null,
+          eventName: 'test_event',
+          submitImmediately: true,
+        ),
+      );
+      await tester.waitUntil(
+        () => robot.mockServices.mockApi.sendEventsInvocations.count,
+        equals(1),
+      );
+
+      robot.mockServices.mockApi.sendEventsInvocations.verifyInvocationCount(1);
+      final events = robot.mockServices.mockApi.sendEventsInvocations.latest[0]!
+          as List<RequestEvent>;
+      expect(events, hasLength(1));
+      expect(events.single.eventName, 'test_event');
+    });
   });
 
   testWidgets('Server marks event as illegal - code 2200', (tester) async {
@@ -1113,6 +1179,9 @@ void main() {
 
 // verifies no new methods are accidentally added to WiredashAnalytics, making it easy to mock
 class ThirdPartyAnalytics implements WiredashAnalytics {
+  @override
+  Future<void> forceSubmitEvents() async {}
+
   @override
   Future<void> trackEvent(
     String eventName, {

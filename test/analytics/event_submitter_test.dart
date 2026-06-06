@@ -78,6 +78,39 @@ void main() {
       await tester.pumpSmart(const Duration(seconds: 30));
       expect(api.sendEventsInvocations.invocations, isEmpty);
     });
+
+    testWidgets('force submits without waiting for pending debounce',
+        (tester) async {
+      final store = InMemoryEventStore.withDefaults();
+      final api = MockWiredashApi();
+      final DebounceEventSubmitter submitter = DebounceEventSubmitter(
+        eventStore: () => store,
+        api: () => api,
+        projectId: () => 'project-abc',
+        initialThrottleDuration: const Duration(days: 1),
+      );
+      addTearDown(() => submitter.dispose());
+
+      await store.saveEvent(
+        AnalyticsEvent(
+          eventName: 'test',
+          analyticsId: nanoid(length: 16),
+          createdAt: clock.now(),
+          sdkVersion: wiredashSdkVersion,
+        ),
+        'project-abc',
+      );
+
+      final debouncedSubmit = ResultFuture(submitter.submitEvents());
+      await tester.pumpSmart(const Duration(seconds: 10));
+      expect(api.sendEventsInvocations.invocations, isEmpty);
+      expect(debouncedSubmit.isComplete, isFalse);
+
+      await submitter.forceSubmitEvents();
+
+      expect(debouncedSubmit.isComplete, isTrue);
+      api.sendEventsInvocations.verifyInvocationCount(1);
+    });
   });
 }
 
