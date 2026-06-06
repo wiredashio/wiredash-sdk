@@ -66,14 +66,13 @@ void main() {
     await tester.pump();
 
     final token = ServicesBinding.rootIsolateToken!;
-    late final _CapturedRequest request;
-    await tester.runAsync(() async {
+    final request = (await tester.runAsync(() async {
       // Track on a background isolate. After saving the event the SDK pings the
       // main isolate, which reloads the event from disk and uploads it without
       // waiting for the next lifecycle flush.
       await compute(_trackEventOnBackgroundIsolate, token);
-      request = await captured.future.timeout(const Duration(seconds: 20));
-    });
+      return captured.future.timeout(const Duration(seconds: 20));
+    }))!;
 
     // Full circle: the event the background isolate wrote left the device as a
     // POST to the Wiredash backend, carrying the event name and the exact
