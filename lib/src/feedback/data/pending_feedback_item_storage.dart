@@ -70,7 +70,65 @@ class PendingFeedbackItemStorage {
         }
       }
     }
-    return parsed.toList();
+
+    // Rebuild screenshot paths against the current directory, but only resolve
+    // that directory when at least one item actually has a screenshot on disk.
+    // Most feedback has no screenshot, and resolving the directory hits a
+    // platform channel (getApplicationDocumentsDirectory) that we don't want to
+    // require on every read.
+    if (!parsed.any(_hasOnDiskScreenshot)) {
+      return parsed;
+    }
+    final screenshotsDir = await _getScreenshotStorageDirectoryPath();
+    return parsed
+        .map((item) => _withCurrentScreenshotPaths(item, screenshotsDir))
+        .toList();
+  }
+
+  bool _hasOnDiskScreenshot(PendingFeedbackItem item) {
+    final attachments = item.feedbackItem.attachments;
+    if (attachments == null) {
+      return false;
+    }
+    return attachments.any((a) => a is Screenshot && a.file.isOnDisk);
+  }
+
+  /// Rebuilds on-disk screenshot paths against the *current* screenshot
+  /// directory.
+  ///
+  /// The absolute path to a file inside the app's container is not stable
+  /// between launches: on iOS the data container's GUID is reassigned when the
+  /// app is updated or reinstalled (Apple TN2406), so a path persisted earlier
+  /// may point at a directory that no longer exists even though the file itself
+  /// was migrated and still lives under the same name. Apple's guidance is to
+  /// resolve the standard directory at runtime rather than store an absolute
+  /// path, so we reconstruct the path from [screenshotsDir] (the current
+  /// directory) and the persisted file name.
+  PendingFeedbackItem _withCurrentScreenshotPaths(
+    PendingFeedbackItem item,
+    String screenshotsDir,
+  ) {
+    final attachments = item.feedbackItem.attachments;
+    if (attachments == null || attachments.isEmpty) {
+      return item;
+    }
+    final updated = <PersistedAttachment>[];
+    for (final attachment in attachments) {
+      if (attachment is Screenshot && attachment.file.isOnDisk) {
+        final fileName = _fs.path.basename(attachment.file.pathToFile!);
+        final currentPath =
+            _fs.path.normalize(_fs.path.join(screenshotsDir, fileName));
+        updated.add(
+          attachment.copyWith(file: FileDataEventuallyOnDisk.file(currentPath)),
+        );
+      } else {
+        updated.add(attachment);
+      }
+    }
+    return PendingFeedbackItem(
+      id: item.id,
+      feedbackItem: item.feedbackItem.copyWith(attachments: updated),
+    );
   }
 
   /// Saves [item] and [screenshot] in the persistent storage.

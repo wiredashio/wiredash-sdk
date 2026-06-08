@@ -85,6 +85,54 @@ void main() {
       ]);
     });
 
+    test(
+        'reconstructs the screenshot path against the current directory '
+        'when the container path changed (iOS reinstall, Apple TN2406)',
+        () async {
+      // Persist a screenshot under the "old" container directory.
+      await fileSystem.directory('/old/Documents').create(recursive: true);
+      final oldStorage = PendingFeedbackItemStorage(
+        fileSystem: fileSystem,
+        sharedPreferencesProvider: () async => prefs,
+        dirPathProvider: () async => '/old/Documents',
+        wuidGenerator: wuidGenerator,
+      );
+      final saved = await oldStorage.addPendingItem(
+        createFeedback(
+          attachments: [
+            PersistedAttachment.screenshot(
+              file: FileDataEventuallyOnDisk.inMemory(kTransparentImage),
+            ),
+          ],
+        ),
+      );
+      expect(
+        saved.feedbackItem.attachments!.single.file,
+        FileDataEventuallyOnDisk.file('/old/Documents/00000000.png'),
+      );
+
+      // The OS migrates the file to a new container on reinstall; the old
+      // absolute path no longer resolves.
+      await fileSystem.directory('/new/Documents').create(recursive: true);
+      await fileSystem
+          .file('/old/Documents/00000000.png')
+          .rename('/new/Documents/00000000.png');
+
+      // The next launch sees a new container directory but the same persisted
+      // pending items.
+      final newStorage = PendingFeedbackItemStorage(
+        fileSystem: fileSystem,
+        sharedPreferencesProvider: () async => prefs,
+        dirPathProvider: () async => '/new/Documents',
+        wuidGenerator: wuidGenerator,
+      );
+      final retrieved = await newStorage.retrieveAllPendingItems();
+      final file = retrieved.single.feedbackItem.attachments!.single.file;
+      expect(
+          file, FileDataEventuallyOnDisk.file('/new/Documents/00000000.png'));
+      expect(fileSystem.file(file.pathToFile).existsSync(), isTrue);
+    });
+
     test('store a second item without overriding the first one', () async {
       final firstFeedback = createFeedback(
         attachments: [

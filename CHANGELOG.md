@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **Fix** Recover screenshots when the app's data directory moves between launches. On iOS the data container GUID is reassigned on every reinstall or update (Apple TN2406), invalidating the absolute screenshot path stored at capture time and dropping the screenshot from the feedback. Paths are now rebuilt against the current directory when loading pending feedback in `retrieveAllPendingItems`.
+
 ## 2.7.0
 
 - **Breaking** Raise minimum SDK to Dart 3.3 / Flutter 3.19 [#401](https://github.com/wiredashio/wiredash-sdk/pull/401)
