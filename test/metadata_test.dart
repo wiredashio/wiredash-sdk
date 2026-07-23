@@ -48,6 +48,48 @@ void main() {
     expect(map['foo'], isNull);
   });
 
+  group('CustomizableWiredashMetaData.copyWith', () {
+    CustomizableWiredashMetaData createMetaData() {
+      return CustomizableWiredashMetaData()
+        ..userId = '123'
+        ..userEmail = 'dash@flutter.io'
+        ..custom = {'foo': 'bar'};
+    }
+
+    test('copies all properties when no argument is passed', () async {
+      final copy = createMetaData().copyWith();
+      expect(copy.userId, '123');
+      expect(copy.userEmail, 'dash@flutter.io');
+      expect(copy.custom, {'foo': 'bar'});
+    });
+
+    test('replaces only the properties that are passed', () async {
+      final copy = createMetaData().copyWith(userId: '456');
+      expect(copy.userId, '456');
+      expect(copy.userEmail, 'dash@flutter.io');
+      expect(copy.custom, {'foo': 'bar'});
+    });
+
+    test('explicit null clears a property', () async {
+      final copy = createMetaData().copyWith(userId: null, userEmail: null);
+      expect(copy.userId, isNull);
+      expect(copy.userEmail, isNull);
+      expect(copy.custom, {'foo': 'bar'});
+    });
+
+    test('custom can be replaced', () async {
+      final copy = createMetaData().copyWith(custom: {'baz': 'qux'});
+      expect(copy.custom, {'baz': 'qux'});
+      expect(copy.userId, '123');
+      expect(copy.userEmail, 'dash@flutter.io');
+    });
+
+    test('null custom keeps the existing map', () async {
+      final copy = createMetaData().copyWith(custom: null);
+      expect(copy.custom, {'foo': 'bar'});
+    });
+  });
+
   testWidgets('build information can be set via ENV', (tester) async {
     final robot = WiredashTestRobot(tester);
     await robot.launchApp();

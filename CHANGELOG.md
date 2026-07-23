@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **Breaking** Remove the `buildVersion`, `buildNumber` and `buildCommit` parameters from `CustomizableWiredashMetaData.copyWith()`. The matching properties were removed in 2.0.0, since then passing those arguments silently did nothing. Set build information at compile time with `env.BUILD_VERSION` / `env.BUILD_NUMBER` / `env.BUILD_COMMIT` instead, see [Custom Properties](https://docs.wiredash.com/sdk/custom-properties/#during-compile-time).
 - **Fix** Recover screenshots when the app's data directory moves between launches. On iOS the data container GUID is reassigned on every reinstall or update (Apple TN2406), invalidating the absolute screenshot path stored at capture time and dropping the screenshot from the feedback. Paths are now rebuilt against the current directory when loading pending feedback in `retrieveAllPendingItems`.
 
 ## 2.7.0

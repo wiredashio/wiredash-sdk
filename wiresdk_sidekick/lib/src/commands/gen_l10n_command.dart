@@ -16,16 +16,19 @@ class GenL10nCommand extends Command {
       from: SidekickContext.projectRoot.path,
     );
 
-    await flutter([
-      'gen-l10n',
-      '--arb-dir=$arbDir',
-      '--no-synthetic-package',
-      '--output-dir=$arbDir',
-      '--template-arb-file=wiredash_en.arb',
-      '--no-nullable-getter',
-      '--output-class=WiredashLocalizations',
-      '--output-localization-file=wiredash_localizations.g.dart',
-    ], workingDirectory: SidekickContext.projectRoot);
+    await flutter(
+      [
+        'gen-l10n',
+        '--arb-dir=$arbDir',
+        '--no-synthetic-package',
+        '--output-dir=$arbDir',
+        '--template-arb-file=wiredash_en.arb',
+        '--no-nullable-getter',
+        '--output-class=WiredashLocalizations',
+        '--output-localization-file=wiredash_localizations.g.dart',
+      ],
+      workingDirectory: SidekickContext.projectRoot,
+    );
 
     await runWiresdk(['format']);
 
