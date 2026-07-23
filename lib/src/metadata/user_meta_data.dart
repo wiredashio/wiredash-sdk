@@ -56,18 +56,12 @@ class CustomizableWiredashMetaData {
   CustomizableWiredashMetaData Function({
     String? userId,
     String? userEmail,
-    String? buildVersion,
-    String? buildNumber,
-    String? buildCommit,
     Map<String, Object?>? custom,
   }) get copyWith => _copyWith;
 
   CustomizableWiredashMetaData _copyWith({
     Object? userId = defaultArgument,
     Object? userEmail = defaultArgument,
-    Object? buildVersion = defaultArgument,
-    Object? buildNumber = defaultArgument,
-    Object? buildCommit = defaultArgument,
     Object? custom = defaultArgument,
   }) {
     final metaData = CustomizableWiredashMetaData();

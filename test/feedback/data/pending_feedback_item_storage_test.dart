@@ -129,7 +129,9 @@ void main() {
       final retrieved = await newStorage.retrieveAllPendingItems();
       final file = retrieved.single.feedbackItem.attachments!.single.file;
       expect(
-          file, FileDataEventuallyOnDisk.file('/new/Documents/00000000.png'));
+        file,
+        FileDataEventuallyOnDisk.file('/new/Documents/00000000.png'),
+      );
       expect(fileSystem.file(file.pathToFile).existsSync(), isTrue);
     });
 
