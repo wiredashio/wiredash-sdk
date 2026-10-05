@@ -14,5 +14,8 @@ Renderer getRenderer() {
 enum Renderer {
   skia,
   canvasKit,
+
+  /// The renderer of a WebAssembly build (`flutter build web --wasm`)
+  skwasm,
   html,
 }

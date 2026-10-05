@@ -6,6 +6,7 @@ import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/widgets.dart';
 import 'package:wiredash/src/feedback/picasso/sketcher.dart';
 import 'package:wiredash/src/feedback/picasso/stroke.dart';
+import 'package:wiredash/src/feedback/ui/png_encoder.dart';
 
 class Picasso extends StatefulWidget {
   const Picasso({
@@ -201,8 +202,11 @@ class _PicassoState extends State<Picasso> {
           imageSize.height.toInt(),
         );
 
-    final bytes = await masterpiece.toByteData(format: ui.ImageByteFormat.png);
-    return bytes!.buffer.asUint8List();
+    final png = await encodePng(masterpiece);
+    if (png == null) {
+      throw StateError('Could not encode the screenshot as PNG');
+    }
+    return png;
   }
 }
 
