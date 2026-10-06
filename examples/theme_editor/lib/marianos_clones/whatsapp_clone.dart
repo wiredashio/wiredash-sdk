@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_classes_with_only_static_members, avoid_positional_boolean_parameters, require_trailing_commas, avoid_setters_without_getters, avoid_bool_literals_in_conditional_expressions, constant_identifier_names, deprecated_member_use
+// ignore_for_file: avoid_classes_with_only_static_members, avoid_setters_without_getters, avoid_bool_literals_in_conditional_expressions, constant_identifier_names, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
