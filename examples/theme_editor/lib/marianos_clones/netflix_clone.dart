@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_classes_with_only_static_members, missing_whitespace_between_adjacent_strings, avoid_positional_boolean_parameters, avoid_dynamic_calls, unsafe_html, avoid_web_libraries_in_flutter, deprecated_member_use
+// ignore_for_file: avoid_classes_with_only_static_members, missing_whitespace_between_adjacent_strings, avoid_web_libraries_in_flutter, deprecated_member_use
 
 import 'dart:async';
 import 'dart:convert';
