@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
@@ -9,6 +10,8 @@ import 'package:wiredash/src/core/widgets/tron/animated_fade_widget_switcher.dar
 import 'package:wiredash/src/core/wiredash_model.dart';
 import 'package:wiredash/src/feedback/picasso/picasso.dart';
 import 'package:wiredash/src/feedback/ui/grey_scale_filter.dart';
+import 'package:wiredash/src/feedback/ui/png_encoder.dart';
+import 'package:wiredash/src/metadata/renderer/renderer.dart';
 
 class ScreenCapture extends StatefulWidget {
   const ScreenCapture({
@@ -34,6 +37,22 @@ class _ScreenCaptureState extends State<ScreenCapture>
   ui.Size? _screenshotSize;
 
   static const _screenshotPixelRatio = 1.5;
+
+  /// The pixel ratio the current screenshot was captured with
+  double _capturedPixelRatio = _screenshotPixelRatio;
+
+  double _capturePixelRatio() {
+    if (getRenderer() != Renderer.skwasm) {
+      return _screenshotPixelRatio;
+    }
+    // With skwasm, Flutter 3.44 only reads back the part of an image that fits
+    // into the browser window, the rest stays empty. A capture is as large as
+    // the window times the pixel ratio, so it must not exceed the device pixel
+    // ratio. Flutter 3.47 has no such limit. Remove this once the minimum
+    // Flutter version has the fix.
+    final devicePixelRatio = View.of(context).devicePixelRatio;
+    return math.min(_screenshotPixelRatio, devicePixelRatio);
+  }
 
   @override
   void initState() {
@@ -82,7 +101,9 @@ class _ScreenCaptureState extends State<ScreenCapture>
         as RenderRepaintBoundary?;
     if (canvas == null) return null;
 
-    final screenshot = await canvas.toImage(pixelRatio: _screenshotPixelRatio);
+    final pixelRatio = _capturePixelRatio();
+    final screenshot = await canvas.toImage(pixelRatio: pixelRatio);
+    _capturedPixelRatio = pixelRatio;
 
     await precacheScreenshot(screenshot).catchError((e, stack) {
       debugPrint(e?.toString());
@@ -92,11 +113,10 @@ class _ScreenCaptureState extends State<ScreenCapture>
   }
 
   Future<void> precacheScreenshot(ui.Image screenshot) async {
-    final byteData =
-        await screenshot.toByteData(format: ui.ImageByteFormat.png);
-    if (byteData == null) return;
+    final png = await encodePng(screenshot);
+    if (png == null) return;
 
-    final image = MemoryImage(byteData.buffer.asUint8List());
+    final image = MemoryImage(png);
     try {
       if (!mounted) return;
       await precacheImage(image, context);
@@ -107,8 +127,8 @@ class _ScreenCaptureState extends State<ScreenCapture>
     setState(() {
       _screenshotMemoryImage = image;
       _screenshotSize = Size(
-        screenshot.width.toDouble() / _screenshotPixelRatio,
-        screenshot.height.toDouble() / _screenshotPixelRatio,
+        screenshot.width.toDouble() / _capturedPixelRatio,
+        screenshot.height.toDouble() / _capturedPixelRatio,
       );
       _controller.forward(from: 0);
     });
