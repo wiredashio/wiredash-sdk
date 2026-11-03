@@ -6,7 +6,8 @@ import 'util/robot.dart';
 void main() {
   group('Semantics', () {
     testWidgets('feedback form is in the semantics tree', (tester) async {
-      final handle = tester.ensureSemantics();
+      SemanticsHandle? handle = tester.ensureSemantics();
+      addTearDown(() => handle?.dispose());
       final robot = await WiredashTestRobot(tester).launchApp();
       await robot.openWiredash();
 
@@ -20,7 +21,9 @@ void main() {
         nodes.map((it) => it.label),
         anyElement(contains('l10n.feedbackCloseButton')),
       );
+      // Flutter checks for active handles before running addTearDown callbacks.
       handle.dispose();
+      handle = null;
     });
   });
 }
