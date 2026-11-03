@@ -6,7 +6,7 @@
   The screenshot step was missing from the feedback flow there, because the skwasm renderer was mistaken for the HTML renderer.
 - **Breaking** Remove the `buildVersion`, `buildNumber` and `buildCommit` parameters from `CustomizableWiredashMetaData.copyWith()`. The matching properties were removed in 2.0.0, since then passing those arguments silently did nothing. Set build information at compile time with `env.BUILD_VERSION` / `env.BUILD_NUMBER` / `env.BUILD_COMMIT` instead, see [Custom Properties](https://docs.wiredash.com/sdk/custom-properties/#during-compile-time).
 - **Fix** Recover screenshots when the app's data directory moves between launches. On iOS the data container GUID is reassigned on every reinstall or update (Apple TN2406), invalidating the absolute screenshot path stored at capture time and dropping the screenshot from the feedback. Paths are now rebuilt against the current directory when loading pending feedback in `retrieveAllPendingItems`.
-- **Fix** The feedback flow works when semantics are enabled, e.g. with a screen reader. The app's route barriers hid the Wiredash UI from the semantics tree, so the text field couldn't be focused and buttons ignored taps.
+- **Fix** The feedback flow works when semantics are enabled, e.g. with a screen reader. The app's route barriers hid the Wiredash UI from the semantics tree, so the text field couldn't be focused and buttons ignored taps. [#416](https://github.com/wiredashio/wiredash-sdk/pull/416)
 
 ## 2.7.0
 
