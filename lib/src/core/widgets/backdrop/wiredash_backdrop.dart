@@ -532,7 +532,9 @@ class _WiredashBackdropState extends State<WiredashBackdrop>
   }) {
     final keyedApp = KeyedSubtree(
       key: const ValueKey('app'),
-      child: app,
+      // Keeps the app's route barriers (BlockSemantics) from hiding the
+      // Wiredash content painted before it
+      child: Semantics(container: true, child: app),
     );
     final keyedContent = KeyedSubtree(
       key: const ValueKey('content'),
