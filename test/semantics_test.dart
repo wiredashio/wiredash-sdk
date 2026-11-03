@@ -38,6 +38,8 @@ List<SemanticsData> _semanticsNodes(WidgetTester tester) {
     });
   }
 
-  visit(tester.binding.pipelineOwner.semanticsOwner!.rootSemanticsNode!);
+  visit(
+    tester.binding.renderViews.single.owner!.semanticsOwner!.rootSemanticsNode!,
+  );
   return nodes;
 }
