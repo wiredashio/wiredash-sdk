@@ -1,0 +1,75 @@
+{
+  "@@locale": "uk",
+  "feedbackStep1MessageTitle": "Надішли нам свій відгук",
+  "feedbackStep1MessageBreadcrumbTitle": "Скласти повідомлення",
+  "feedbackStep1MessageDescription": "Додай короткий опис того, з чим ви зіткнулися.",
+  "feedbackStep1MessageHint": "Виникає невідома помилка, коли я намагаюся...",
+  "feedbackStep1MessageErrorMissingMessage": "Будь ласка, додай повідомлення",
+
+  "feedbackStep2LabelsTitle": "Яка мітка найкраще відображає твій відгук?",
+  "feedbackStep2LabelsBreadcrumbTitle": "Мітки",
+  "feedbackStep2LabelsDescription": "Вибір категорії допомагає нам визначити проблему та спрямувати твій відгук до відповідальної особи",
+
+
+  "feedbackStep3ScreenshotOverviewTitle": "Додати скріншоти для кращого контексту?",
+  "feedbackStep3ScreenshotOverviewBreadcrumbTitle": "Знімки екрана",
+  "feedbackStep3ScreenshotOverviewDescription": "Ти зможеш переміщатися застосунком та обирати, коли зробити знімок екрана.",
+  "feedbackStep3ScreenshotOverviewSkipButton": "Пропустити",
+  "feedbackStep3ScreenshotOverviewAddScreenshotButton": "Додати скріншот",
+
+  "feedbackStep3ScreenshotBarNavigateTitle": "Зроби знімок екрана",
+  "feedbackStep3ScreenshotBottomBarTitle": "Додай скріншот для кращого розуміння контексту",
+  "feedbackStep3ScreenshotBarDrawTitle": "Малюй на екрані, щоб додати виділення",
+  "feedbackStep3ScreenshotBarDrawUndoButton": "Скасувати",
+  "feedbackStep3ScreenshotBarCaptureButton": "Зробити знімок",
+  "feedbackStep3ScreenshotBarSaveButton": "Зберегти",
+  "feedbackStep3ScreenshotBarOkButton": "ОК",
+
+  "feedbackStep3GalleryTitle": "Додані скріншоти",
+  "feedbackStep3GalleryBreadcrumbTitle": "Знімки екрана",
+  "feedbackStep3GalleryDescription": "Ти можеш додати більше скріншотів, щоб допомогти нам краще зрозуміти проблему.",
+
+  "feedbackStep4EmailTitle": "Отримуй оновлення щодо проблеми",
+  "feedbackStep4EmailBreadcrumbTitle": "Контакти",
+  "feedbackStep4EmailDescription": "Введи свою електронну адресу нижче або залиш поле порожнім",
+  "feedbackStep4EmailInvalidEmail": "Це не схоже на правильну адресу електронної пошти. Ти можеш лишити це поле порожнім.",
+  "feedbackStep4EmailInputHint": "mail@example.com",
+
+  "feedbackStep6SubmitTitle": "Надіслати відгук",
+  "feedbackStep6SubmitBreadcrumbTitle": "Надіслати",
+  "feedbackStep6SubmitDescription": "Будь ласка, переглянь всю інформацію перед надсиланням.\nТи можеш будь-коли повернутися, щоб змінити свій відгук.",
+  "feedbackStep6SubmitSubmitButton": "Надіслати",
+  "feedbackStep6SubmitSubmitShowDetailsButton": "Показати деталі",
+  "feedbackStep6SubmitSubmitHideDetailsButton": "Приховати деталі",
+  "feedbackStep6SubmitSubmitDetailsTitle": "Деталі відгуку",
+
+  "feedbackStep7SubmissionInFlightMessage": "Надсилання відгуку",
+  "feedbackStep7SubmissionSuccessMessage": "Дякуємо за твій відгук!",
+  "feedbackStep7SubmissionErrorMessage": "Не вдалося надіслати відгук",
+  "feedbackStep7SubmissionOpenErrorButton": "Натисни, щоб переглянути деталі помилки",
+  "feedbackStep7SubmissionRetryButton": "Повторити",
+
+  "feedbackStepXOfY": "Крок {current} із {total}",
+  "feedbackDiscardButton": "Скасувати",
+  "feedbackDiscardConfirmButton": "Справді? Відхилити!",
+  "feedbackNextButton": "Далі",
+  "feedbackBackButton": "Назад",
+  "feedbackCloseButton": "Закрити",
+
+  "promoterScoreStep1Question": "Наскільки ймовірно, що ти порекомендуєш нас?",
+  "promoterScoreStep1Description": "0 = Малоймовірно, 10 = Найімовірніше",
+
+  "promoterScoreStep2MessageTitle": "Наскільки ймовірно, що ти порадиш наш застосунок своїм друзям і рідним?",
+  "promoterScoreStep2MessageDescription": "Розкажи трохи більше про те, чому саме {rating}? Цей крок є необов’язковим.",
+  "promoterScoreStep2MessageHint": "Було б чудово, якби ви могли покращити...",
+
+  "promoterScoreStep3ThanksMessagePromoters": "Дякуємо за твою оцінку!",
+  "promoterScoreStep3ThanksMessagePassives": "Дякуємо за твою оцінку!",
+  "promoterScoreStep3ThanksMessageDetractors": "Дякуємо за твою оцінку!",
+
+  "promoterScoreNextButton": "Далі",
+  "promoterScoreBackButton": "Назад",
+  "promoterScoreSubmitButton": "Надіслати",
+
+  "backdropReturnToApp": "Повернутися до застосунку"
+}
